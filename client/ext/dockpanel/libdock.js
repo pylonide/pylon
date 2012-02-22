@@ -38,6 +38,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     
     function findParentState(data, forceSearch){
         var uniqueId = data.uniqueId;
+        if (!uniqueId)
+            return;
         var node = lookup[uniqueId].node;
         
         if (!forceSearch && node && node.parentNode)
@@ -303,7 +305,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     
     /**
      * Experimental and probably useless
-     *
+     */
     this.updateState = function(data, section){
         var before;
         
@@ -312,7 +314,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             for (var i = 0; i < bars.length; i++) {
                 if (!bars[i].uniqueId) {
                     var before = findNextKnownNode(bars, i);
-                    addBarState(bars[i], before);
+                    addBarState.call(this, bars[i], before);
                 }
                 else
                     this.updateState(bars[i]);
@@ -325,7 +327,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             for (var i = 0; i < sections.length; i++) {
                 if (!sections[i].uniqueId) {
                     var before = findNextKnownNode(sections, i);
-                    addSectionState(sections[i], before, bar);
+                    addSectionState.call(this, sections[i], before, bar);
                 }
                 else
                     this.updateState(sections[i]);
@@ -334,13 +336,13 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             //@todo update other states here
         }
         else if (data.buttons) {
-            var section = this.lookup[data.uniqueId];
+            section = section || this.lookup[data.uniqueId];
             
             var buttons = data.buttons;
             for (var i = 0; i < buttons.length; i++) {
                 if (!buttons[i].uniqueId) {
                     var before = findNextKnownNode(buttons, i);
-                    addButtonState(buttons[i], section);
+                    addButtonState.call(this, buttons[i], before, section);
                 }
                 else {
                     this.updateState(buttons[i], section);
@@ -363,7 +365,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             //@todo update other states here
         }
-    }*/
+    }
     
     this.show = function(uniqueId, byUser){
         var item  = lookup[uniqueId].data;

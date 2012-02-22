@@ -225,7 +225,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     }, //properties.forceShow ??
     
     getButtons : function(name, type, state){
-        var state = state || this.layout.getState(true);
+        state = state || this.layout.getState(true);
         var list  = [];
         
         if(!state)
@@ -388,21 +388,12 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
      * Updates the notification element to visually reflect notCount
      */
     updateNotificationElement: function(btnObj, count){
-        if (count == 0) {
-            var countInner = "";
-        }
-        
-        else {
-            var countInner = count;
-        }
+        var countInner = count === 0 ? "" : count;
 
-        if (apf.isGecko) {
+        if (apf.isGecko)
             btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
-        }
-            
-        else {
+        else
             btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
-        }
         
         return true;
     }
