@@ -2,6 +2,7 @@
 
 define(function(require, exports, module) {
 var registers = require("ext/vim/registers");
+var ide = require("core/ide");
 
 module.exports = {
     onVisualMode: false,
@@ -10,6 +11,8 @@ module.exports = {
     insertMode: function(editor) {
         var _self = this;
         var theme = editor && editor.getTheme() || "ace/theme/textmate";
+
+        ide.dispatchEvent("vim.changeMode", { mode : "insert" });
 
         require(["require", theme], function (require) {
             var isDarkTheme = require(theme).isDark;
@@ -50,6 +53,8 @@ module.exports = {
     normalMode: function(editor) {
         // Switch editor to normal mode
         this.currentMode = 'normal';
+        
+        ide.dispatchEvent("vim.changeMode", { mode : "normal" });
 
         editor.setStyle('normal-mode');
         editor.clearSelection();
