@@ -4,4 +4,4 @@ package:
 	#git commit -m "new apf_release.js"
 
 worker:
-    Makefile.dryice.js
+	./Makefile.dryice.js worker
