@@ -11501,7 +11501,8 @@ break;}}_self.$down();_self.$up();_self.$click();});}};this.$propHandlers.icon=f
 }if(!withinParent&&this.skinName!=pNode.skinName){this.loadAml();}});this.$down=function(){};
 this.$up=function(){if(this.type=="radio"){this.parentNode.select(this.group,this.value||this.caption);
 }else{if(this.type=="check"){this.setProperty("checked",!this.checked);}}if(this.submenu){this.$over(null,true);
-return;}this.parentNode.$hideTree=true;this.parentNode.hide();this.parentNode.dispatchEvent("itemclick",{value:this.value||this.caption,relatedNode:this,checked:this.checked,selected:this.selected});
+return;}this.parentNode.$hideTree=true;if(!this.parentNode.sticky){this.parentNode.hide();
+}this.parentNode.dispatchEvent("itemclick",{value:this.value||this.caption,relatedNode:this,checked:this.checked,selected:this.selected});
 this.dispatchEvent("click",{xmlContext:this.parentNode.xmlReference,opener:this.parentNode.opener});
 };this.$click=function(){};var timer;this.$out=function(e){if(apf.isChildOf(this.$ext,e.toElement||e.explicitOriginalTarget)||apf.isChildOf(this.$ext,e.srcElement||e.target)){return;
 }clearTimeout(timer);if(!this.submenu||this.$submenu(true)){apf.setStyleClass(this.$ext,"",["hover"]);
@@ -11972,7 +11973,7 @@ apf.destroyHtmlNode(this.oDrag);this.oDrag=null;};}).call(apf.markupedit.prototy
 apf.aml.setElement("markupedit",apf.markupedit);apf.menu=function(struct,tagName){this.$init(tagName||"menu",apf.NODE_VISIBLE,struct);
 this.animate=apf.enableAnim;};(function(){this.$focussable=apf.KEYBOARD;this.$positioning="basic";
 this.visible=false;this.matchhide=false;this.$booleanProperties.animate=true;this.$booleanProperties.pinned=true;
-this.$booleanProperties.matchhide=true;this.$propHandlers.visible=function(value,prop,force,nofocus,hideOpener){if(value){this.$ext.style.display="block";
+this.$booleanProperties.sticky=true;this.$booleanProperties.matchhide=true;this.$propHandlers.visible=function(value,prop,force,nofocus,hideOpener){if(value){this.$ext.style.display="block";
 if(this.opener&&this.opener.localName.indexOf("item")>-1){this.opener.parentNode.$showingSubMenu=this;
 }}else{this.$ext.style.display="none";var lastFocus=apf.menu.lastFocus;var opener=this.opener;
 if(lastFocus!=this.opener&&this.opener&&this.opener.$blur){this.opener.$blur();

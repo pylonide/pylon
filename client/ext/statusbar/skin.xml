@@ -5,7 +5,7 @@
             .bar-status {
                 position : absolute;
                 color: rgba(0, 0, 0, 0.4);
-                padding: 3px 2px;
+                padding: 2px;
                 overflow: hidden;
                 border: 1px solid transparent;
 
