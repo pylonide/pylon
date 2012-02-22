@@ -51,7 +51,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     _self.toggleOnInit = true;
             }
 
-            _self.horScrollAutoHide = e.model.queryNode("//editors/code").getAttribute("autohidehorscrollbar");
+            var codeSettings = e.model.queryNode("//editors/code");
+            if (codeSettings && codeSettings.hasAttribute("autohidehorscrollbar")) {
+                _self.horScrollAutoHide = codeSettings.getAttribute("autohidehorscrollbar");
+            }
         });
 
         ide.addEventListener("savesettings", function(e){
