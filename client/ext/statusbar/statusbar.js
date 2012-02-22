@@ -83,6 +83,9 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             setTimeout(function() {
                 _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                 _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
+                    if (typeof lblSelectionLength === "undefined")
+                        return;
+
                     var range = ceEditor.$editor.getSelectionRange();
                     if (range.start.row != range.end.row || range.start.column != range.end.column) {
                         var doc = ceEditor.getDocument();
@@ -192,7 +195,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             apf.tween.single(hboxStatusBarSettings.$ext, {
                 type  : "width",
                 anim  : apf.tween.easeOutQuint,
-                from  : 50,
+                from  : apf.isWebkit ? 50 : 52,
                 to    : 1,
                 steps : 8,
                 interval : 5,
@@ -209,7 +212,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 type  : "width",
                 anim  : apf.tween.easeOutQuint,
                 from  : 1,
-                to    : 50,
+                to    : apf.isWebkit ? 50 : 52,
                 steps : 8,
                 interval : 5
             });

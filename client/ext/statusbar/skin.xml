@@ -9,8 +9,6 @@
                 overflow: hidden;
                 border: 1px solid transparent;
 
-                -webkit-border-radius: 6px;
-                -moz-border-radius: 6px;
                 border-radius: 6px;
 
                 -webkit-transition: background-color 0.2s linear, border 0.2s linear;
@@ -31,7 +29,6 @@
                 box-shadow: inset 0px 3px 5px rgba(255, 255, 255, 0.1);
 
                 background-color: transparent;
-                /*background-position: 0px -30px;*/
             }
 
             .ace_dark.bar-status:hover {
@@ -77,8 +74,7 @@
                 user-select         : none;
                 background-position : 2px 8px;
                 background-repeat   : no-repeat;
-                -webkit-border-radius: 3px;
-                -moz-border-radius: 3px;
+
                 border-radius: 3px;
             }
 
@@ -183,9 +179,7 @@
                 background-image: -ms-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
 
                 position : absolute;
-                -moz-border-radius    : 9px;
-                -webkit-border-radius : 9px;
-                border-radius         : 9px;
+                border-radius : 9px;
                 -webkit-box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
                 -moz-box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
                 box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);

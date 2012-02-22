@@ -97,6 +97,9 @@ module.exports = ext.register("ext/beautify/beautify", {
                 _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                 _self.editorSession.selection.addEventListener("changeSelection",
                     _self.$selectionEvent = function(e) {
+                        if (typeof beautify_selection === "undefined")
+                            return;
+
                         var range = ceEditor.$editor.getSelectionRange();
                         if (range.start.row == range.end.row && range.start.column == range.end.column)
                             beautify_selection.disable();
