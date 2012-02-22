@@ -184,7 +184,7 @@ apf.popup = {
                         value = (edgeX - (options.width || o.width || o.content.offsetWidth) 
                                 - (parentMenu ? (parentMenu.width || parentMenu.content.offsetWidth) : 0));
                     }
-                    popup.style.left = value < 0 ? x : value + "px";
+                    popup.style.left = value < 0 ? x : (value - 1) + "px";
                 }
                 else {
                     popup.style.left = x + "px";
