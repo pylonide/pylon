@@ -100,6 +100,7 @@ apf.menu = function(struct, tagName){
 
     this.$booleanProperties["animate"]  = true;
     this.$booleanProperties["pinned"] = true;
+    this.$booleanProperties["sticky"] = true;
     this.$booleanProperties["matchhide"] = true;
     
     this.$propHandlers["visible"] = function(value, prop, force, nofocus, hideOpener){

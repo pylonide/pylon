@@ -387,7 +387,8 @@ apf.item  = function(struct, tagName){
         this.parentNode.$hideTree = true;
         
         //@todo This statement makes the menu loose focus.
-        this.parentNode.hide();//true not focus?/
+        if (!this.parentNode.sticky)
+            this.parentNode.hide();//true not focus?/
 
         this.parentNode.dispatchEvent("itemclick", {
             value       : this.value || this.caption,
