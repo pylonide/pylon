@@ -213,7 +213,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 
             var staticUrl = _self.options.staticUrl;
             var aceScripts =
-                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/ace-uncompressed.js"></script>\n' +
+                '<script type="text/javascript" data-ace-base="/static/js" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n' +
                 '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/mode-javascript.js"></script>'
 
             var replacements = {
