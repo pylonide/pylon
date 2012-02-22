@@ -39,7 +39,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         var _self = this;
         ide.addEventListener("afteropenfile", this.$aofListener = function() {
             ext.initExtension(_self);
-            ide.removeEventListener("afteropenfile", this.$aofListener);
+            ide.removeEventListener("afteropenfile", _self.$aofListener);
         });
 
         ide.addEventListener("loadsettings", function(e){
