@@ -44,9 +44,9 @@ var jump = function(path, row, column) {
 };
 
 // Maximum amount of buffer history
-var bufferInterval;
-var setBufferInterval = function(el) {
-    bufferInterval = setInterval(function() {
+var bufferInterval = {};
+var setBufferInterval = function(el, id) {
+    bufferInterval[id] = setInterval(function() {
         balanceBuffer(el);
     }, 1000);
 };
@@ -84,11 +84,12 @@ var createItem = module.exports.test.createItem = function(line, ide) {
         });
 };
 
-var childBuffer;
-var childBufferInterval;
+var childBuffer = {};
+var childBufferInterval = {};
 var eventsAttached;
 module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     var parentEl = (useOutput ? txtOutput : txtConsole).$ext;
+    var outputId = useOutput ? "output" : "console";
 
     if (eventsAttached !== true) {
         parentEl.addEventListener("click", function(e) {
@@ -99,8 +100,8 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
         eventsAttached = true;
     }
 
-    if (!bufferInterval) {
-        setBufferInterval(parentEl);
+    if (!bufferInterval[outputId]) {
+        setBufferInterval(parentEl, outputId);
     }
 
     // This is a bit cumbersome, but it solves the issue in which logging stuff
@@ -108,15 +109,15 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     // sometimes it even crashes. An interval is created in which every 100ms
     // The lines stored in the document fragment are appended in the actual console
     // output.
-    if (!childBuffer) {
-        childBuffer = document.createDocumentFragment();
-        childBufferInterval = setInterval(function() {
-            parentEl.appendChild(childBuffer);
-            childBuffer = document.createDocumentFragment();
+    if (!childBuffer[outputId]) {
+        childBuffer[outputId] = document.createDocumentFragment();
+        childBufferInterval[outputId] = setInterval(function() {
+            parentEl.appendChild(childBuffer[outputId]);
+            childBuffer[outputId] = document.createDocumentFragment();
         }, 100);
     }
 
-    var lines = data.split("\n", MAX_LINES);
+    var lines = (data.toString()).split("\n", MAX_LINES);
     var fragment = document.createDocumentFragment();
     for (var i=0, l = lines.length; i<l; i++) {
         var div = document.createElement("div");
@@ -126,7 +127,7 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
             fragment.appendChild(div);
         }
     }
-    childBuffer.appendChild(fragment);
+    childBuffer[outputId].appendChild(fragment);
 };
 
 var messages = {
@@ -135,7 +136,7 @@ var messages = {
     command: "<span style='color:#86c2f6'><span>&gt;&gt;&gt;</span><div>__MSG__</div></span>"
 };
 
-module.exports.log = function(msg, type, pre, post, otherOutput) {
+module.exports.log = function(msg, type, pre, post, useOutput) {
     msg = msg.toString().escapeHTML();
     if (!type)
         type = "log";
@@ -144,9 +145,11 @@ module.exports.log = function(msg, type, pre, post, otherOutput) {
         msg = messages[type].replace("__MSG__", msg);
     }
 
-    var parentEl = (otherOutput || txtConsole).$ext;
-    if (!bufferInterval) {
-        setBufferInterval(parentEl);
+    var parentEl = (useOutput ? txtOutput : txtConsole).$ext;
+    var outputId = useOutput ? "output" : "console";
+
+    if (!bufferInterval[outputId]) {
+        setBufferInterval(parentEl, outputId);
     }
 
     parentEl.innerHTML +=
@@ -154,4 +157,5 @@ module.exports.log = function(msg, type, pre, post, otherOutput) {
             (pre || "") + msg + (post || "") +
         "</div>";
 };
+
 });

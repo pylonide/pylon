@@ -111,6 +111,23 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "error":
+                // child process already running
+                if (message.code == 1) {
+                    stDebugProcessRunning.setProperty("active", false);
+                    stProcessRunning.setProperty("active", true);
+
+                    //ide.send({"command": "state"});
+                    break;
+                }
+                // debug process already running
+                else if (message.code == 5) {
+                    stDebugProcessRunning.setProperty("active", true);
+                    stProcessRunning.setProperty("active", true);
+
+                    //ide.send({"command": "state"});
+                    break;
+                }
+
                 /*
                     6:
                     401: Authorization Required
@@ -121,11 +138,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                         + message.message + "</div>");
                 }
                 else if (message.code !== 6 && message.code != 401 && message.code != 455 && message.code != 456) {
-                    //util.alert("Server Error", "Server Error "
-                    //    + (message.code || ""), message.message);
-
                     txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception "
-                        + (message.code || "") + "] " + message.message.message + "</div>");
+                        + (message.code || "") + "] " + message.message + "</div>");
 
                     apf.ajax("/debug", {
                         method      : "POST",
@@ -161,6 +175,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         if (nodeVersion == 'default')
             nodeVersion = "";
+
+        path = path.trim();
 
         var page = ide.getActivePageModel();
         var command = {

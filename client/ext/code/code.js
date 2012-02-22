@@ -151,6 +151,7 @@ module.exports = ext.register("ext/code/code", {
     nodes : [],
 
     fileExtensions : Object.keys(contentTypes),
+    supportedModes: Object.keys(SupportedModes),
     commandManager : new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
 
     getState : function(doc) {
@@ -342,7 +343,7 @@ module.exports = ext.register("ext/code/code", {
 
             if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
                 // check if there is a scriptid, if not check if the file is somewhere in the stack
-                if (mdlDbgStack && mdlDbgStack.data && e.node
+                if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
                   && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
                   && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
                     var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
@@ -462,9 +463,7 @@ module.exports = ext.register("ext/code/code", {
             // In case the `keybindingschange` event gets fired after other
             // plugins that change keybindings have already changed them (i.e.
             // the vim plugin), we fire an event so these plugins can react to it.
-            ide.dispatchEvent("code.ext:defaultbindingsrestored", {
-                bindings: ceEditor.$editor.getKeyboardHandler()
-            });
+            ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
         });
     },
 

@@ -79,6 +79,20 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             })),
+            mnuTabs.appendChild(new apf.item({
+                caption : "Close Tabs to the Right",
+                onclick : function() {
+                    _self.closealltotheright();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
+            mnuTabs.appendChild(new apf.item({
+                caption : "Close Tabs to the Left",
+                onclick : function() {
+                    _self.closealltotheleft();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
             //mnuTabs.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuContextTabs",
@@ -104,18 +118,50 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         onclick : function() {
                             _self.closeallbutme(tabEditors.contextPage);
                         }
+                    }),
+                    new apf.item({
+                        caption : "Close Tabs to the Right",
+                        onclick : function() {
+                            _self.closealltotheright();
+                        }
+                    }),
+                    new apf.item({
+                        caption : "Close Tabs to the Left",
+                        onclick : function() {
+                            _self.closealltotheleft();
+                        }
                     })
                 ]
             }))
         );
-
+        
         this.hotitems.revealtab     = [this.nodes[0], mnuContextTabs.childNodes[0]];
         this.hotitems.closetab      = [this.nodes[1], mnuContextTabs.childNodes[1]];
         this.hotitems.closealltabs  = [this.nodes[2], mnuContextTabs.childNodes[2]];
         this.hotitems.closeallbutme = [this.nodes[3], mnuContextTabs.childNodes[3]];
-
+        this.hotitems.closealltotheright = [this.nodes[4], mnuContextTabs.childNodes[4]];
+        this.hotitems.closealltotheleftt = [this.nodes[5], mnuContextTabs.childNodes[5]];
+        
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
+        mnuContextTabs.addEventListener("prop.visible", function(e) {
+            var page = tabEditors.getPage();
+            var pages = tabEditors.getPages();
+            
+            // be optimistic, reset menu items to disabled
+            mnuContextTabs.childNodes[4].setAttribute('disabled', false);
+            mnuContextTabs.childNodes[5].setAttribute('disabled', false);
+                
+            // if last tab, remove "close to the right"
+            if (page.nextSibling.localName !== "page") {
+                mnuContextTabs.childNodes[4].setAttribute('disabled', true);
+            }
+            // if first tab, remove "close to the left"
+            else if (pages.indexOf(page) == 0) {
+                mnuContextTabs.childNodes[5].setAttribute('disabled', true);
+            }
+        });
+        
         tabEditors.addEventListener("close", function(e) {
             if (!e || !e.htmlEvent)
                 return;
@@ -231,8 +277,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
 
-            if (ignore && page == ignore)
+            if (ignore && (page == ignore || ignore.hasOwnProperty(i))) {
                 continue;
+            }
 
             if (page.$doc.getNode().getAttribute("changed") == "1") {
                 page.noAnim = true; // turn off animation on closing tab
@@ -282,6 +329,34 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             callback();
     },
 
+    closealltotheright : function() {
+        var page = tabEditors.getPage();
+        var pages = tabEditors.getPages();
+    
+        var currIdx = pages.indexOf(page);
+        var ignore = {};
+            
+        for (var j = 0; j <= currIdx; j++) {
+            ignore[j] = page;
+        }
+
+        this.closeallbutme(ignore);
+    },
+
+    closealltotheleft : function() {
+        var page = tabEditors.getPage();
+        var pages = tabEditors.getPages();
+    
+        var currIdx = pages.indexOf(page);
+        var ignore = {};
+            
+        for (var j = pages.length - 1; j >= currIdx; j--) {
+            ignore[j] = page;
+        }
+        
+        this.closeallbutme(ignore);
+    },
+    
     nexttab : function(){
         var n = this.accessed.length - this.$tabAccessCycle++;
         if (n < 0) {

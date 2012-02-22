@@ -105,11 +105,6 @@ define(function(require, exports, module) {
         ide.start();
     });
 
-    //@todo this doesnt work
-    apf.addEventListener("exit", function(){
-        //return "Are you sure you want to close Cloud9? Your state will be saved and will be loaded next time you start Cloud9";
-    });
-
     ide.addEventListener("extload", function() {
         // fire up the socket connection:
         var options = {
@@ -234,11 +229,6 @@ define(function(require, exports, module) {
         ide.socket.on("reconnect",  ide.socketReconnect);
         //ide.socket.on("reconnecting",  ide.socketReconnecting);
         ide.socket.on("disconnect", ide.socketDisconnect);
-        var _oldsend = ide.socket.send;
-        ide.socket.send = function(msg) {
-            // pass a lambda to enable socket.io ACK
-            _oldsend.call(ide.socket, msg, function() {});
-        };
         this.inited = true;
     });
 
