@@ -121,7 +121,7 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         this.nodes.push(menuItem);
 
-        require("ext/statusbar/statusbar").addToolsItem(menuItem);//.cloneNode(true));
+        require("ext/statusbar/statusbar").addToolsItem(menuItem);
 
         this.hotitems.beautify = [this.nodes[0]];
         code.commandManager.addCommand({

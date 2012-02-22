@@ -18,6 +18,7 @@ var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
 var settings = require("ext/settings/settings");
+var util = require("ext/vim/maps/util");
 
 var VIM_ENABLED = false;
 var OLD_HANDLER;
@@ -122,10 +123,6 @@ module.exports = ext.register("ext/vim/vim", {
             checked: "[{require('ext/settings/settings').model}::editors/code/@vimmode]",
             onclick: function() { self.toggle(); }
         });
-        // In order to behave like a code extension (i.e. hiding when we are not
-        // in a code editor) we import it into the code plugin nodes instead of
-        // ours.
-        code.nodes.push(mnuView.appendChild(menuItem));
 
         require("ext/statusbar/statusbar").addToolsItem(menuItem.cloneNode(true));
 

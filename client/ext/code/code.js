@@ -400,15 +400,9 @@ module.exports = ext.register("ext/code/code", {
                 caption : "Length: {ceEditor.value.length}"
             })),
 
-            mnuView.appendChild(menuSyntaxHighlight),
-            
-            mnuView.appendChild(new apf.divider()),
-
-            mnuView.appendChild(menuShowInvisibles),
-
-            mnuView.appendChild(menuWrapLines)
+            mnuView.appendChild(menuSyntaxHighlight)
         );
-        
+
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
 
@@ -448,12 +442,10 @@ module.exports = ext.register("ext/code/code", {
                 }
             }
         };
-    
-        statusbar.addPrefsItem(menuSyntaxHighlight.cloneNode(true), 1);
-        statusbar.addPrefsItem(new apf.divider(), 2);
-        statusbar.addPrefsItem(menuShowInvisibles.cloneNode(true), 4);
-        statusbar.addPrefsItem(menuWrapLines.cloneNode(true), 5);
-    
+
+        statusbar.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
+        statusbar.addPrefsItem(menuWrapLines.cloneNode(true), 1);
+
         ide.addEventListener("keybindingschange", function(e) {
             if (typeof ceEditor == "undefined")
                 return;

@@ -218,10 +218,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
     checkTheme: function(theme){
         require(["require", theme], function (require) {
-            if(require(theme).isDark)
+            var reqTheme = require(theme);
+            if(reqTheme.isDark)
                 apf.setStyleClass(barIdeStatus.$ext, "ace_dark");
             else
                 apf.setStyleClass(barIdeStatus.$ext, '', ["ace_dark"]);
+
+            var aceBg = apf.getStyle(ceEditor.$editor.renderer.scroller, "background-color");
+            aceBg = aceBg.replace("rgb", "rgba").replace(")", "");
+            apf.setStyleRule(".bar-status", "background-color", aceBg + ", 0.0)");
+            apf.setStyleRule(".bar-status:hover", "background-color", aceBg + ", 1.0)");
         });
     },
 

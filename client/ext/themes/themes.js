@@ -72,8 +72,6 @@ module.exports = ext.register("ext/themes/themes", {
             }))
         );
 
-        require("ext/statusbar/statusbar").addPrefsItem(menuItem.cloneNode(true), 0);
-
         ide.addEventListener("init.ext/code/code", function() {
             if (ceEditor && ceEditor.$editor)
                 mnuThemes.select(null, ceEditor.$editor.getTheme());
