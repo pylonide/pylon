@@ -113,6 +113,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/help/help",
     //"ext/ftp/ftp",
     "ext/code/code",
+    "ext/statusbar/statusbar",
     "ext/imgview/imgview",
     //"ext/preview/preview",
     "ext/extmgr/extmgr",
