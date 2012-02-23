@@ -57,8 +57,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     this.$users = {};
     
     this.nodeCmd = options.exec || process.argv[0];
-    console.log("JOEJOEJOE");
-    console.log(this.nodeCmd);
+    
     var davOptions = {
         node: this.options.mountDir,
         mount: this.options.davPrefix,
