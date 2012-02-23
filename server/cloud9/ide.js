@@ -113,6 +113,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/help/help",
     //"ext/ftp/ftp",
     "ext/code/code",
+    "ext/statusbar/statusbar",
     "ext/imgview/imgview",
     //"ext/preview/preview",
     "ext/extmgr/extmgr",
@@ -143,6 +144,10 @@ Ide.DEFAULT_PLUGINS = [
     "ext/autotest/autotest",
     "ext/splitview/splitview",
     "ext/tabsessions/tabsessions"
+    "ext/tabsessions/tabsessions",
+    "ext/closeconfirmation/closeconfirmation",
+    "ext/codetools/codetools",
+    "ext/colorpicker/colorpicker"
     //"ext/acebugs/acebugs"
 ];
 
@@ -333,10 +338,17 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
     };
 
     this.broadcast = function(msg, scope) {
-        // TODO check permissions
-        for (var username in this.$users) {
-            var user = this.$users[username];
-            user.broadcast(msg, scope);
+        try {
+            // TODO check permissions
+            for (var username in this.$users) {
+                var user = this.$users[username];
+                user.broadcast(msg, scope);
+            }
+        }
+        catch (e) {
+            var ex = new Error("Stack overflow just happened");
+            ex.original = e;
+            throw ex;
         }
     };
 
