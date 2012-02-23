@@ -35,17 +35,23 @@ module.exports = {
                 _self.renameVariable();
             }
         });
-        
-        var mnuRefactor = new apf.menu({id: "mnuRefactor"});
-        apf.document.body.appendChild(mnuRefactor);
-        
-        nodes.push(mnuRefactor.appendChild(this.refactorItem));
-        var refactorItem = new apf.item({
-            caption: "Refactor",
-            submenu: "mnuRefactor"
+
+        // There is a problem with APF setting the $disabled attribute of
+        // a cloned menu item, so we have to create a second one ourselves
+        this.refactorItemDup = new apf.item({
+            caption: "Rename variable",
+            disabled: true,
+            onclick: function() {
+                _self.renameVariable();
+            }
         });
-        nodes.push(ide.mnuEdit.appendChild(refactorItem));
-        
+
+        nodes.push(this.refactorItem, this.refactorItemDup);
+
+        mnuEdit.appendChild(this.refactorItem);
+        require("ext/statusbar/statusbar").addToolsItem(new apf.divider());
+        require("ext/statusbar/statusbar").addToolsItem(this.refactorItemDup);
+
         code.commandManager.addCommand({
             name: "renameVar",
             exec: function(editor) {
@@ -66,7 +72,9 @@ module.exports = {
                 enableVariableRename = true;
             }
         }
+
         this.refactorItem.setAttribute('disabled', !enableVariableRename);
+        this.refactorItemDup.setAttribute('disabled', !enableVariableRename);
     },
     
     enableVariableRefactor: function(data) {

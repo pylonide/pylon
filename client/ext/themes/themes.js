@@ -50,18 +50,20 @@ module.exports = ext.register("ext/themes/themes", {
         //Save theme settings
         settings.model.setQueryValue("editors/code/@theme", path);
         settings.save();
+        ide.dispatchEvent("theme_change", {theme: path});
         this.saved = true;
         ide.dispatchEvent("track_action", {type: "theme change", theme: path});
     },
 
     init : function(){
         var _self = this;
+        var menuItem = new apf.item({
+            caption : "Themes",
+            submenu : "mnuThemes"
+        });
 
         this.nodes.push(
-            mnuView.appendChild(new apf.item({
-                caption : "Themes",
-                submenu : "mnuThemes"
-            })),
+            mnuView.appendChild(menuItem),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuThemes",
                 onitemclick : function(e){
@@ -69,6 +71,11 @@ module.exports = ext.register("ext/themes/themes", {
                 }
             }))
         );
+
+        ide.addEventListener("init.ext/code/code", function() {
+            if (ceEditor && ceEditor.$editor)
+                mnuThemes.select(null, ceEditor.$editor.getTheme());
+        });
     },
     
     enable : function(){

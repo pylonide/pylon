@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:checkbox class="underlined" label="Auto-pair Quotes, Brackets, e.t.c." value="[editors/code/@behaviors]" skin="checkbox_grey" />
+    <a:checkbox class="underlined" label="Auto-pair Quotes, Brackets, etc." value="[editors/code/@behaviors]" skin="checkbox_grey" />
     <a:checkbox class="underlined" label="Code Folding" value="[editors/code/@folding]" skin="checkbox_grey" />
     <a:checkbox class="underlined" label="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" skin="checkbox_grey" />
     <a:checkbox class="underlined" label="Highlight Active Line" value="[editors/code/@activeline]" skin="checkbox_grey" />

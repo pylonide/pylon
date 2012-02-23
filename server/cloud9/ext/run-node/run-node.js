@@ -25,8 +25,8 @@ sys.inherits(NodeRuntimePlugin, Plugin);
     this.init = function() {
         var _self = this;
         this.workspace.getExt("state").on("statechange", function(state) {
-            state.nodeDebugClient    = !!_self.debugClient;
-            state.nodeProcessRunning = !!_self.child;
+            state.debugClient    = !!_self.debugClient;
+            state.processRunning = !!_self.child;
         });
     };
 
@@ -41,7 +41,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
         var _self = this;
 
         var res = true;
-                
+
         switch (cmd) {
             case "run":
                 this.$run(message);
@@ -107,7 +107,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
         }
         return res;
     };
-    
+
     this.$error = function(message, code, data) {
         this.ide.broadcast(JSON.stringify({
             "type": "error",
@@ -142,11 +142,11 @@ sys.inherits(NodeRuntimePlugin, Plugin);
             return _self.$error("Child process already running!", 1, message);
 
         var file = _self.ide.workspaceDir + "/" + message.file;
-        
+
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.$error("File does not exist: " + message.file, 2, message);
-            
+
            var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
@@ -167,7 +167,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 env[key] = process.env[key];
         }
 
-        console.log("Executing node " + proc + " " + args.join(" ") + " " + cwd); 
+        console.log("Executing node " + proc + " " + args.join(" ") + " " + cwd);
 
         var child = _self.child = Spawn(proc, args, {cwd: cwd, env: env});
         _self.debugClient = args.join(" ").search(/(?:^|\b)\-\-debug\b/) != -1;
@@ -194,7 +194,7 @@ sys.inherits(NodeRuntimePlugin, Plugin);
 
         return child;
     };
-    
+
     this.$procExit = function(noBroadcast) {
         if (!noBroadcast)
             this.ide.broadcast(JSON.stringify({"type": "node-exit"}), this.name);
@@ -240,11 +240,11 @@ sys.inherits(NodeRuntimePlugin, Plugin);
                 // TODO: in theory a "node-start" event might be sent after this event (though
                 //       extremely unlikely). Deal with all this event mess
                 _self.send({"type": "node-exit-with-error", errorMessage: err}, null, _self.name);
-                // the idea is that if the "node-exit-with-error" event is dispatched, 
+                // the idea is that if the "node-exit-with-error" event is dispatched,
                 // then the "node-exit" event is not.
                 if (_self.child)
                     _self.child.removeAllListeners("exit");
-                // in this case the debugger process is still running. We need to 
+                // in this case the debugger process is still running. We need to
                 // kill that process, while not interfering with other parts of the source.
                 _self.$kill();
                 _self.$procExit(true);
@@ -255,10 +255,10 @@ sys.inherits(NodeRuntimePlugin, Plugin);
 
         this.nodeDebugProxy.connect();
     };
-    
+
     this.dispose = function(callback) {
         this.$kill();
         callback && callback();
     };
-    
+
 }).call(NodeRuntimePlugin.prototype);

@@ -23,6 +23,7 @@ var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
+var statusbar = require("ext/statusbar/statusbar");
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
     var q = undoObj.args;
@@ -370,7 +371,24 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.$editor.commands = this.commandManager;
 
         var _self = this;
-
+        
+        var menuSyntaxHighlight = new apf.item({
+            caption : "Syntax Highlighting",
+            submenu : "mnuSyntax"
+        });
+        
+        var menuShowInvisibles = new apf.item({
+            type    : "check",
+            caption : "Show Invisibles",
+            checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+        });
+        
+        var menuWrapLines = new apf.item({
+            type    : "check",
+            caption : "Wrap Lines",
+            checked : "{ceEditor.wrapmode}"
+        });
+        
         this.nodes.push(
             //Add a panel to the statusbar showing whether the insert button is pressed
             sbMain.appendChild(new apf.section({
@@ -382,24 +400,7 @@ module.exports = ext.register("ext/code/code", {
                 caption : "Length: {ceEditor.value.length}"
             })),
 
-            mnuView.appendChild(new apf.item({
-                caption : "Syntax Highlighting",
-                submenu : "mnuSyntax"
-            })),
-
-            mnuView.appendChild(new apf.divider()),
-
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Show Invisibles",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-            })),
-
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Wrap Lines",
-                checked : "{ceEditor.wrapmode}"
-            }))
+            mnuView.appendChild(menuSyntaxHighlight)
         );
 
         mnuSyntax.onitemclick = function(e) {
@@ -442,6 +443,9 @@ module.exports = ext.register("ext/code/code", {
             }
         };
 
+        statusbar.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
+        statusbar.addPrefsItem(menuWrapLines.cloneNode(true), 1);
+
         ide.addEventListener("keybindingschange", function(e) {
             if (typeof ceEditor == "undefined")
                 return;
@@ -451,9 +455,7 @@ module.exports = ext.register("ext/code/code", {
             // In case the `keybindingschange` event gets fired after other
             // plugins that change keybindings have already changed them (i.e.
             // the vim plugin), we fire an event so these plugins can react to it.
-            ide.dispatchEvent("code.ext:defaultbindingsrestored", {
-                bindings: ceEditor.$editor.getKeyboardHandler()
-            });
+            ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
         });
     },
 

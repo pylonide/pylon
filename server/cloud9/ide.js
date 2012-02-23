@@ -113,6 +113,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/help/help",
     //"ext/ftp/ftp",
     "ext/code/code",
+    "ext/statusbar/statusbar",
     "ext/imgview/imgview",
     //"ext/preview/preview",
     "ext/extmgr/extmgr",
@@ -213,7 +214,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 
             var staticUrl = _self.options.staticUrl;
             var aceScripts =
-                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/ace-uncompressed.js"></script>\n' +
+                '<script type="text/javascript" data-ace-base="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n' +
                 '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/mode-javascript.js"></script>'
 
             var replacements = {
