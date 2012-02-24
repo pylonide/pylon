@@ -65,9 +65,10 @@ module.exports = ext.register("ext/stripws/stripws", {
             ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(menuItem)
         );
 
+        var menuItemClone = menuItem.cloneNode(true);
         ide.dispatchEvent("statusbar.addtoolsitems", {
             items : [
-                menuItem.cloneNode(true)
+                menuItemClone
             ]
         });
 
