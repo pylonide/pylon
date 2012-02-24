@@ -124,10 +124,12 @@ module.exports = ext.register("ext/vim/vim", {
             onclick: function() { self.toggle(); }
         });
 
-        ide.dispatchEvent("statusbar.addtoolsitems", {
-            items : [
-                menuItem.cloneNode(true)
-            ]
+        ide.addEventListener("init.ext/statusbar/statusbar", function() {
+            ide.dispatchEvent("statusbar.addtoolsitems", {
+                items : [
+                    { el : menuItem.cloneNode(true), pos : 0 }
+                ]
+            });
         });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {

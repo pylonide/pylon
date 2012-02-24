@@ -80,7 +80,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         
         ide.addEventListener("statusbar.addtoolsitems", function(e) {
             for (var i = 0; i < e.items.length; i++)
-                _self.addToolsItem(e.items[i]);
+                _self.addToolsItem(e.items[i].el, e.items[i].pos);
         });
         
         ide.addEventListener("statusbar.addprefsitems", function(e) {
@@ -145,7 +145,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         hboxStatusBarSettings.$ext.style.overflow = "hidden";
 
         for(var i = 0, l = this.toolItems.length; i < l; i++) {
-            mnuStatusBarTools.appendChild(this.toolItems.shift());
+            var tItem = this.toolItems[i];
+            if (typeof tItem.pos === "number")
+                mnuStatusBarTools.insertBefore(tItem.item, mnuStatusBarPrefs.childNodes[tItem.pos]);
+            else
+                mnuStatusBarTools.appendChild(tItem.item);
         }
 
         for(var i = 0, l = this.prefsItems.length; i < l; i++) {
@@ -182,16 +186,22 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         this.inited = true;
     },
 
-    addToolsItem: function(menuItem){
-        if(!self["mnuStatusBarTools"])
-            this.toolItems.push(menuItem);
-        else
-            mnuStatusBarTools.appendChild(menuItem);
+    addToolsItem: function(menuItem, position){
+        if(!self["mnuStatusBarTools"]) {
+            this.toolItems.push({ item : menuItem, pos : position });
+        }
+        else {
+            if (typeof position === "number")
+                mnuStatusBarTools.insertBefore(menuItem, mnuStatusBarTools.childNodes[position]);
+            else
+                mnuStatusBarTools.appendChild(menuItem);
+        }
     },
 
     addPrefsItem: function(menuItem, position){
-        if(!self["mnuStatusBarPrefs"])
+        if(!self["mnuStatusBarPrefs"]) {
             this.prefsItems.push({ item: menuItem, pos : position });
+        }
         else {
             if (typeof position === "number")
                 mnuStatusBarPrefs.insertBefore(menuItem, mnuStatusBarPrefs.childNodes[position]);

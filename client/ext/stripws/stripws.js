@@ -61,15 +61,20 @@ module.exports = ext.register("ext/stripws/stripws", {
                                 strip();
                             }
                         });
+        var menuItemClone = menuItem.cloneNode(true);
+
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(menuItem)
+            ide.mnuEdit.appendChild(new apf.divider()),
+            ide.mnuEdit.appendChild(menuItem),
+            menuItemClone
         );
 
-        var menuItemClone = menuItem.cloneNode(true);
-        ide.dispatchEvent("statusbar.addtoolsitems", {
-            items : [
-                menuItemClone
-            ]
+        ide.addEventListener("init.ext/statusbar/statusbar", function() {
+            ide.dispatchEvent("statusbar.addtoolsitems", {
+                items : [
+                    { el : menuItemClone, pos : 2 }
+                ]
+            });
         });
 
         ide.addEventListener("beforefilesave", function(data) {
