@@ -64,9 +64,13 @@ module.exports = ext.register("ext/stripws/stripws", {
         this.nodes.push(
             ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(menuItem)
         );
-        
-        require("ext/statusbar/statusbar").addToolsItem(menuItem.cloneNode(true));
-        
+
+        ide.dispatchEvent("statusbar.addtoolsitems", {
+            items : [
+                menuItem.cloneNode(true)
+            ]
+        });
+
         ide.addEventListener("beforefilesave", function(data) {
             var node =
                 extSettings.model.data.selectSingleNode("editors/code/@stripws");
