@@ -407,6 +407,12 @@ apf.http = function(){
                     + apf.config.queryAppend;
             }
             //#endif
+            
+            var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
+            if (requestedWithParam) {
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
+                    + requestedWithParam + "=1";
+            }
 
             http.open(this.method || options.method || "GET", httpUrl, async);
 
@@ -416,7 +422,9 @@ apf.http = function(){
             }
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
-            setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            if (!requestedWithParam)
+                setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
             if (!options.headers || !options.headers["Content-type"])
                 setRequestHeader("Content-type", options.contentType || this.contentType
                     || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
@@ -440,33 +448,6 @@ apf.http = function(){
 
         if (errorFound) {
             var useOtherXH = false;
-
-            //#ifdef __WITH_UNSAFE_XMLHTTP
-            if (self.XMLHttpRequestUnSafe) {
-                try {
-                    http = new XMLHttpRequestUnSafe();
-                    http.onreadystatechange = function(){
-                        if (!_self.queue[id] || http.readyState != 4)
-                            return;
-
-                        _self.receive(id);
-                    }
-                    http.open(this.method || options.method || "GET", (options.nocache
-                        ? apf.getNoCacheUrl(httpUrl)
-                        : httpUrl), async);
-
-                    setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                    if (!options.headers || !options.headers["Content-type"])
-                        setRequestHeader("Content-type", this.contentType
-                            || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
-
-                    this.queue[id].http = http;
-                    options.async     = true; //force async
-                    useOtherXH        = true;
-                }
-                catch (e) {}
-            }
-            //#endif
 
             // Retry request by routing it
             if (!useOtherXH && this.autoroute && !autoroute) {
