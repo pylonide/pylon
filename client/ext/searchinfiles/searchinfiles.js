@@ -14,6 +14,7 @@ var editors = require("ext/editors/editors");
 var ideConsole = require("ext/console/console");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
+//var searchReplace = require("ext/searchreplace/searchreplace");
 
 module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",
@@ -21,6 +22,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     type     : ext.GENERAL,
     alone    : true,
     offline  : false,
+    replaceAll : false,
     markup   : markup,
     skin     : {
         id   : "searchinfiles",
@@ -38,7 +40,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
     hook : function(){
         var _self = this;
-
+        
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
@@ -48,15 +50,19 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 }
             }))
         );
-
+    
         this.hotitems.searchinfiles = [this.nodes[1]];
     },
 
     init : function(amlNode){
         this.txtFind       = txtSFFind;
         this.btnFind       = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
-        this.btnFind.onclick = this.execFind.bind(this);
-
+        this.btnFind.onclick = this.execFind.bind(this, false);
+        
+        this.txtReplace     = txtReplace;
+        this.btnReplaceAll = btnReplaceAll;
+        this.btnReplaceAll.onclick = this.execFind.bind(this, true);
+        
         var _self = this;
         winSearchInFiles.onclose = function() {
             ceEditor.focus();
@@ -89,6 +95,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
             });
         });
+
         //ideConsole.show();
     },
 
@@ -110,7 +117,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         }
 
         if (!winSearchInFiles.visible || forceShow || this.$lastState != isReplace) {
-            //this.setupDialog(isReplace);
             var editor = editors.currentEditor;
             if (editor) {
                 var value  = editor.getDocument().getTextRange(editor.getSelection().getRange());
@@ -135,33 +141,31 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         return this.toggleDialog(false, true);
     },
 
-    setupDialog: function(isReplace) {
-        this.$lastState = isReplace;
-
-        // hide all 'replace' features
-        //this.barReplace.setProperty("visible", isReplace);
-        //this.btnReplace.setProperty("visible", isReplace);
-        //this.btnReplaceAll.setProperty("visible", isReplace);
-        return this;
-    },
-
     getOptions: function() {
+        var _self = this;
+        
         var matchCase = "0";
         if (chkSFMatchCase.checked)
             matchCase = "1";
         var regex = "0";
         if (chkSFRegEx.checked)
             regex = "1";
+            
         return {
             query: txtSFFind.value,
+            needle: txtSFFind.value,
             pattern: ddSFPatterns.value,
             casesensitive: matchCase,
-            regexp: regex
+            regexp: regex,
+            replaceAll: _self.replaceAll ? "true" : "false",
+            replacement: txtReplace.value
         };
     },
 
-    execFind: function() {
+    execFind: function(replaceEnabled) {
         var _self = this;
+        _self.replaceAll = replaceEnabled;
+        
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
         ideConsole.show();
@@ -196,28 +200,50 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
+        
         davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
+            var replaced = _self.replaceAll;
+            _self.replaceAll = false; // reset
+            
             if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10))
                 return trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");;
 
+            if (replaced) {
+                for (var c = 1; c < data.childNodes.length; c++) { // paths start at [1]
+                    var filePath = data.childNodes[c].getAttribute("path"), 
+                    root = trFiles.xmlRoot.selectSingleNode("folder[1]");
+                    editors.showFile(root.getAttribute("path") + "/" + filePath, 0, 0);
+                    
+                    var options = _self.getOptions();
+                    options.needle = options.query;
+
+                    if (!_self.editor)
+                        _self.setEditor();
+                    if (!_self.$editor)
+                        return;
+                   
+                    var options = _self.getOptions();
+                    options.needle = _self.txtFind.getValue();
+                    
+                    ceEditor.$editor.replaceAll(options.replacement || "", options);
+                    ide.dispatchEvent("track_action", {type: "replace"});
+                    //searchReplace.replaceAllFromOutside(options, options.query, options.replacement || "");
+                }
+            }
             _self.$model.load(data);
         });
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 
-    replaceAll: function() {
-        return;
-        /*if (!this.editor)
-            this.setEditor();
-        if (!this.$editor)
+    setEditor: function(editor, selection) {
+        if (typeof ceEditor == "undefined")
             return;
-        this.$crtSearch = null;
-        var options = this.getOptions();
-        this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
-        ide.dispatchEvent("track_action", {type: "replace"});*/
+        this.$editor = editor || ceEditor.$editor;
+        this.$selection = selection || this.$editor.getSelection();
+        return this;
     },
-
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

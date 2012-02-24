@@ -88,6 +88,14 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             }
         });
 
+        txtQuickSearch.addEventListener("keyup", function(e){
+            switch (true){
+                case (e.keyCode >=48 && e.keyCode <= 90): 
+                    _self.execSearch(false, !!e.shiftKey);
+                    return false;
+            }
+        });
+        
         winQuickSearch.addEventListener("blur", function(e){
             if (!apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);

@@ -196,7 +196,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         return this;
     },
 
-    getOptions: function() {
+    getOptions: function(options) {
+        if (options !== undefined) {
+            return options;
+        }
+        
         return {
             backwards: chkSearchBackwards.checked,
             wrap: chkWrapAround.checked,
@@ -236,14 +240,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         chkSearchSelection.setAttribute("checked", false);
     },
 
-    replace: function() {
+    replace: function(outsideOptions) {
         if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
             return;
         if (!this.barReplace.visible)
             return;
-        var options = this.getOptions();
+        var options = this.getOptions(outsideOptions);
         options.needle = this.txtFind.getValue();
         options.scope = search.Search.SELECTION;
         this.$editor.replace(this.txtReplace.getValue() || "", options);
@@ -264,6 +268,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         ide.dispatchEvent("track_action", {type: "replace"});
     },
 
+    replaceAllFromOutside(outsideOptions, textToFind, textToReplace) {
+        this.txtFind.setValue(textToFind);
+        this.txtReplace.setValue(textToReplace);
+        outsideOptions.scope = search.Search.ALL;
+        this.replaceAll(outsideOptions);
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
