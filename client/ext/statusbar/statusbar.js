@@ -77,11 +77,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             else
                 lblInsertActive.hide();
         });
-        
-        ide.addEventListener("statusbar.addprefsitems", function(e) {
-            for (var i = 0; i < e.items.length; i++)
-                _self.addPrefsItem(e.items[i].item, e.items[i].pos);
-        });
 
         tabEditors.addEventListener("afterswitch", function() {
             if (_self.$changeEvent)

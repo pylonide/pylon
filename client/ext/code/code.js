@@ -398,7 +398,7 @@ module.exports = ext.register("ext/code/code", {
             sbMain.appendChild(new apf.section({
                 caption : "Length: {ceEditor.value.length}"
             })),
-
+            
             mnuView.appendChild(menuSyntaxHighlight)
         );
 
@@ -441,17 +441,13 @@ module.exports = ext.register("ext/code/code", {
                 }
             }
         };
-
-        ide.dispatchEvent("statusbar.addprefsitems", {
-            items : [{
-                item: menuShowInvisibles.cloneNode(true),
-                pos : 0
-            }, {
-                item : menuWrapLines.cloneNode(true),
-                pos : 1
-            }]
+        
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            // add preferences to the statusbar plugin
+            e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
+            e.ext.addPrefsItem(menuWrapLines.cloneNode(true), 1);
         });
-
+        
         ide.addEventListener("keybindingschange", function(e) {
             if (typeof ceEditor == "undefined")
                 return;
