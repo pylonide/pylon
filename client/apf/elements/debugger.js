@@ -217,32 +217,7 @@ apf.dbg = module.exports = function(struct, tagName){
     };
 
     this.$updateMarkerPrerequisite = function () {
-        var frame = this.activeframe;
-        if (!frame) {
-            return;
-        }
-        
-        return frame;
-
-        // when running node with 'debugbrk' it will auto break on the first line of executable code
-        // we don't want to really break here so we put this:
-        if (frame.getAttribute("name") === "anonymous(exports, require, module, __filename, __dirname)"
-                && frame.getAttribute("index") === "0") {
-
-            var line = frame.getAttribute("line");
-            var fileNameNode = frame.selectSingleNode("//frame/vars/item[@name='__filename']");
-            var fileName = fileNameNode ? fileNameNode.getAttribute("value") : "";
-            var model = this.$mdlBreakpoints.data;
-            
-            // is there a breakpoint on the exact same line and file? then continue
-            if (fileName && model && model.selectSingleNode("//breakpoints/breakpoint[@script='" + fileName + "' and @line=" + line +  "]")) {
-                return frame;
-            }
-
-            return;
-        }
-
-        return frame;
+        return this.activeframe;
     };
     this.$onAfterCompile = function(e) {
         var id = e.script.getAttribute("id");
