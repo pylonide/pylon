@@ -78,11 +78,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 lblInsertActive.hide();
         });
         
-        ide.addEventListener("statusbar.addtoolsitems", function(e) {
-            for (var i = 0; i < e.items.length; i++)
-                _self.addToolsItem(e.items[i].el, e.items[i].pos);
-        });
-        
         ide.addEventListener("statusbar.addprefsitems", function(e) {
             for (var i = 0; i < e.items.length; i++)
                 _self.addPrefsItem(e.items[i].item, e.items[i].pos);

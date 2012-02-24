@@ -124,12 +124,8 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         this.nodes.push(menuItem);
 
-        ide.addEventListener("init.ext/statusbar/statusbar", function() {
-            ide.dispatchEvent("statusbar.addtoolsitems", {
-                items : [
-                    { el : menuItem, pos : 1 }
-                ]
-            });
+        ide.addEventListener("init.ext/statusbar/statusbar", function(e) {
+            e.ext.addToolsItem(menuItem, 1);
         });
 
         this.hotitems.beautify = [this.nodes[0]];

@@ -69,12 +69,8 @@ module.exports = ext.register("ext/stripws/stripws", {
             menuItemClone
         );
 
-        ide.addEventListener("init.ext/statusbar/statusbar", function() {
-            ide.dispatchEvent("statusbar.addtoolsitems", {
-                items : [
-                    { el : menuItemClone, pos : 2 }
-                ]
-            });
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            e.ext.addToolsItem(menuItemClone, 2);
         });
 
         ide.addEventListener("beforefilesave", function(data) {

@@ -50,13 +50,9 @@ module.exports = {
 
         mnuEdit.appendChild(this.refactorItem);
 
-        ide.addEventListener("init.ext/statusbar/statusbar", function() {
-            ide.dispatchEvent("statusbar.addtoolsitems", {
-                items : [
-                    { el : new apf.divider(), pos : 3 },
-                    { el : _self.refactorItemDup, pos : 4 }
-                ]
-            });
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            e.ext.addToolsItem(new apf.divider(), 3);
+            e.ext.addToolsItem(_self.refactorItemDup, 4);
         });
 
         code.commandManager.addCommand({
