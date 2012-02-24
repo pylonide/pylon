@@ -193,7 +193,7 @@ apf.BaseTree = function(){
     this.expandList = function (paths, onFinished) {
         var _self = this;
         var root = this.xmlRoot;
-            
+        
         // recursive load function
         function expand(currentSelector, allSelectors) {
             var selectorNode = root.selectSingleNode(currentSelector);
@@ -213,8 +213,27 @@ apf.BaseTree = function(){
                 var callback = function () {
                     // check whether the node is loaded
                     if (!_self.$hasLoadStatus(root.selectSingleNode(currentSelector), "loaded")) {
-                        // otherwise wait if timesRan under 30
-                        return ++timesRan < 30 ? setTimeout(callback, 1000 / 30) : null;
+                        // if not, retry after a second (max 3 times)
+                        if (++timesRan < 3) {
+                            return setTimeout(function () {
+                                _self.slideToggle(apf.xmldb.getHtmlNode(selectorNode, _self), 1, true, null, callback);
+                            }, 1000);
+                        }
+                        else {
+                            // still failing? call 'hasExpanded' for this one and all its children
+                            // cause we're ignoring everything from now;
+                            // and we need the callback to be fired anyway
+                            var allAncestors = allSelectors.filter(function (s) { 
+                                return s.indexOf(currentSelector + "/") === 0;
+                            });
+                            
+                            hasExpanded(currentSelector);
+                            allAncestors.forEach(function (sel) {
+                                hasExpanded(sel);
+                            });
+                                
+                            return null;
+                        }
                     }
                     
                     // notify
@@ -253,7 +272,7 @@ apf.BaseTree = function(){
         rootNodes.forEach(function (node) {
             expand(node, paths);
         });
-    };    
+    }; 
     
     /**
      * @notimplemented
@@ -268,14 +287,16 @@ apf.BaseTree = function(){
      * @private
      */
     this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
+        callback = typeof callback === "function" ? callback : function () {};
+        
         if (this.nocollapse || userAction && this.disabled)
-            return;
+            return callback();
 
         if (!htmlNode)
             htmlNode = this.$selected;
         
         if (!htmlNode)
-            return callback && callback();
+            return callback();
         
         var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
@@ -283,7 +304,7 @@ apf.BaseTree = function(){
                 .getAttribute(apf.xmldb.htmlIdTag);
 
         var container = this.$getLayoutNode("item", "container", htmlNode);
-        if (!container) return;
+        if (!container) return callback();
         
         if (apf.getStyle(container, "display") == "block") {
             if (force == 1) {
