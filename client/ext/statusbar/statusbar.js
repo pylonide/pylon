@@ -232,7 +232,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             var aceBg = apf.getStyle(ceEditor.$editor.renderer.scroller, "background-color");
             aceBg = aceBg.replace("rgb", "rgba").replace(")", "");
             apf.setStyleRule(".bar-status", "background-color", aceBg + ", 0.0)");
-            apf.setStyleRule(".bar-status:hover", "background-color", aceBg + ", 1.0)");
+            apf.setStyleRule(".bar-status:hover", "background-color", aceBg + ", 0.95)");
         });
     },
 
