@@ -154,14 +154,14 @@ apf.popup = {
             if (moveUp) {
                 var value;
                 if (refNode)
-                    value = (pos[1] - (options.height || o.height || o.content.offsetHeight));
+                    value = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + 3;
                 else
                     value = (edgeY - (options.height || o.height || o.content.offsetHeight));
                 
                 popup.style.top = value < 0 ? y : value + "px";
             }
             else {
-                popup.style.top = y + "px"
+                popup.style.top = y + "px";
             }
             
             if (!options.noleft) {
@@ -173,7 +173,7 @@ apf.popup = {
                 moveLeft = options.autoCorrect && (x
                     + (options.width || o.width || o.content.offsetWidth))
                     > edgeX;
-                
+
                 if (moveLeft) {
                     var value;
                     if (options.ref) {
