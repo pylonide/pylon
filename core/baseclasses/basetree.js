@@ -196,8 +196,16 @@ apf.BaseTree = function(){
             
         // recursive load function
         function expand(currentSelector, allSelectors) {
+            var selectorNode = root.selectSingleNode(currentSelector);
+            
+            // if the node could not be found,
+            // just tell the consumer that it has expanded
+            if (!selectorNode) {
+                return hasExpanded(currentSelector);
+            }
+            
             // first expand the item passed in
-            _self.slideToggle(apf.xmldb.getHtmlNode(root.selectSingleNode(currentSelector), _self), 1, true, null, function () {
+            _self.slideToggle(apf.xmldb.getHtmlNode(selectorNode, _self), 1, true, null, function () {
                 // the number of times the callback has fired, prevent it from executing forever
                 var timesRan = 0;
                 
