@@ -58,7 +58,7 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
-                fileDesc.$ext.innerHTML =  "<h3>Save " + filename + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div>";
+                fileDesc.$ext.innerHTML =  "<h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div>";
                 
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
