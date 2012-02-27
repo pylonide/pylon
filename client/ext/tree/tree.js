@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
@@ -33,11 +34,6 @@ module.exports = ext.register("ext/tree/tree", {
     nodes            : [],
 
     "default"        : true,
-
-    //@todo deprecated?
-    getSelectedPath: function() {
-        return trFiles.selected.getAttribute("path");
-    },
 
     hook : function(){
         panels.register(this, {
@@ -91,12 +87,9 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.setAttribute("model", fs.model);
 
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
-            var settings = require("ext/settings/settings");
             if (settings.model && settings.model.data && trFiles.selected) {
-                var settings          = settings.model.data;
-                if (!settings)
-                    return;
-                var treeSelectionNode = settings.selectSingleNode("auto/tree_selection");
+                var settingsData      = settings.model.data;
+                var treeSelectionNode = settingsData.selectSingleNode("auto/tree_selection");
                 var nodeSelected      = trFiles.selected.getAttribute("path");
                 var nodeType          = trFiles.selected.getAttribute("type");
                 if(treeSelectionNode) {
@@ -104,23 +97,25 @@ module.exports = ext.register("ext/tree/tree", {
                     apf.xmldb.setAttribute(treeSelectionNode, "type", nodeType);
                 }
                 else
-                    apf.xmldb.appendChild(settings.selectSingleNode("auto"),
-                        apf.getXml('<tree_selection path="' + nodeSelected + '" type="' + nodeType + '" />')
+                    apf.xmldb.appendChild(settingsData.selectSingleNode("auto"),
+                        apf.getXml('<tree_selection path="' + nodeSelected +
+                            '" type="' + nodeType + '" />')
                     );
             }
         });
 
-        trFiles.addEventListener("afterchoose", this.$afterselect = function(e) {
+        trFiles.addEventListener("afterchoose", this.$afterchoose = function() {
             var node = this.selected;
-            if (!node || node.tagName != "file" || this.selection.length > 1
-              || !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
+            if (!node || node.tagName != "file" || this.selection.length > 1 ||
+                !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
 
         trFiles.addEventListener("beforecopy", function(e) {
-            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport)
+                return false;
 
             var args     = e.args[0].args,
                 filename = args[1].getAttribute("name");
@@ -139,7 +134,8 @@ module.exports = ext.register("ext/tree/tree", {
         });
 
         trFiles.addEventListener("beforestoprename", function(e) {
-            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport)
+                return false;
 
             return fs.beforeStopRename(e.value);
         });
@@ -152,28 +148,30 @@ module.exports = ext.register("ext/tree/tree", {
 
             // check for a path with the same name, which is not allowed to rename to:
             var path = e.args[0].getAttribute("path"),
-                newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]);
+                newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]).toLowerCase();
 
-            var exists, nodes = trFiles.getModel().queryNodes(".//node()[@path=\""+ newpath +"\"]");
-            for (var i = 0; i < nodes.length; i++) {
-                if (nodes[i] == e.args[0])
-                    continue;
-                exists = true;
-                break;
+            var exists, nodes = trFiles.getModel().queryNodes(".//node()");
+            for (var i = 0, len = nodes.length; i < len; i++) {
+                var pathLwr = nodes[i].getAttribute("path").toLowerCase();
+                if (nodes[i] != e.args[0] && pathLwr === newpath) {
+                    exists = true;
+                    break;
+                }
             }
-            /*if (exists) {
-                util.alert("Error", "Unable to move", "Couldn't move to this destination because there's already a node with the same name");
+
+            if (exists) {
+                util.alert("Error", "Unable to Rename",
+                    "That name is already taken. Please choose a different name.");
                 trFiles.getActionTracker().undo();
                 return false;
-            }*/
+            }
 
-            //setTimeout(function(){
-                fs.beforeRename(e.args[0], e.args[1]);
-            //});
+            fs.beforeRename(e.args[0], e.args[1]);
         });
 
         trFiles.addEventListener("beforemove", function(e){
-            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport)
+                return false;
 
             setTimeout(function(){
                 var changes = e.args;
@@ -185,7 +183,8 @@ module.exports = ext.register("ext/tree/tree", {
         });
 
         var cancelWhenOffline = function(){
-            if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
+            if (!ide.onLine && !ide.offlineFileSystemSupport)
+                return false;
         };
 
         trFiles.addEventListener("beforeadd", cancelWhenOffline);
@@ -193,18 +192,6 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforeremove", cancelWhenOffline);
         trFiles.addEventListener("dragstart", cancelWhenOffline);
         trFiles.addEventListener("dragdrop", cancelWhenOffline);
-
-        ide.addEventListener("afteroffline", function(e){
-            if (!ide.offlineFileSystemSupport) {
-                //trFiles.disable();
-                //mnuCtxTree.disable();
-            }
-        });
-
-        ide.addEventListener("afteronline", function(e){
-            //trFiles.enable();
-            //mnuCtxTree.enable();
-        });
 
         ide.addEventListener("filecallback", function (e) {
             _self.refresh();
@@ -221,6 +208,7 @@ module.exports = ext.register("ext/tree/tree", {
                 settings.save();
             }
         });
+
         trFiles.addEventListener("collapse", function(e){
             if (!e.xmlNode)
                 return;
@@ -236,14 +224,16 @@ module.exports = ext.register("ext/tree/tree", {
             function treeSelect(){
                 var treeSelection = model.queryNode("auto/tree_selection");
                 if(treeSelection) {
-                    trFiles.select(trFiles.$model.queryNode('//node()[@path="'
-                        + model.queryValue('auto/tree_selection/@path') + '" and @type="'
-                        + model.queryValue('auto/tree_selection/@type') + '"]'))
+                    trFiles.select(trFiles.$model.queryNode('//node()[@path="' +
+                        model.queryValue('auto/tree_selection/@path') +
+                        '" and @type="' + model.queryValue('auto/tree_selection/@type') +
+                        '"]')
+                    );
                 }
                 else {
                     trFiles.select(trFiles.$model.queryNode("node()"));
                 }
-            };
+            }
 
             var model = e.model;
             var strSettings = model.queryValue("auto/tree");
@@ -301,7 +291,7 @@ module.exports = ext.register("ext/tree/tree", {
             for (id in _self.expandedList) {
                 try {
                     path = apf.xmlToXpath(_self.expandedList[id], trFiles.xmlRoot);
-                    
+
                     // i won't remove the try-catch here cause it might
                     // be importante, but 'xmlToXpath' doesn't throw as far as I can see
                     // however; it CAN return 'false' or empty if something happens there
@@ -338,43 +328,6 @@ module.exports = ext.register("ext/tree/tree", {
             return true;
         });
 
-        /*
-        ide.addEventListener("treecreate", function (e) {
-            var names   = e.path.replace(/^\//g, "").split("/").reverse(),
-                parent  = trFiles.getModel().data.firstChild,
-                name, node;
-
-            names.pop();
-            do {
-                if (!trFiles.$hasLoadStatus(parent, "loaded"))
-                    break;
-                name    = names.pop();
-                node    = parent.selectSingleNode("node()[@name=\"" + name + "\"]");
-                if (!node) {
-                    var path = parent.getAttribute("path") + "/" + name,
-                        xmlNode;
-
-                    if (names.length > 0 || e.type == "folder")
-                        xmlNode = "<folder type='folder' " + " path='" + path + "' name='" + name + "' />";
-                    trFiles.add(xmlNode, parent);
-                    break;
-                }
-                parent = node;
-            } while (names.length > 0);
-
-        });
-
-        ide.addEventListener("treeremove", function (e) {
-            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                        .replace(/\[@name="workspace"\]/, "")
-                        .replace(/\//, "");
-            var node = trFiles.getModel().data.selectSingleNode(path);
-
-            if (node)
-                apf.xmldb.removeNode(node);
-        });
-        */
-
         ide.addEventListener("treechange", function(e) {
             var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                 .replace(/\[@name="workspace"\]/, "")
@@ -388,8 +341,8 @@ module.exports = ext.register("ext/tree/tree", {
                 removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
-                var node    = nodes[i],
-                    name    = node.getAttribute("name");
+                var node = nodes[i],
+                    name = node.getAttribute("name");
 
                 if (files && files[name])
                     delete files[name];
@@ -420,7 +373,9 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     refresh : function(){
-        trFiles.getModel().load("<data><folder type='folder' name='" + ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
+        trFiles.getModel().load("<data><folder type='folder' name='" +
+            ide.projectName + "' path='" + ide.davPrefix +
+            "' root='1'/></data>");
         this.expandedList = {};
         this.loading = true;
         ide.dispatchEvent("track_action", {type: "reloadtree"});
@@ -449,6 +404,7 @@ module.exports = ext.register("ext/tree/tree", {
 
     destroy : function(){
         trFiles.removeEventListener("afterselect", this.$afterselect);
+        trFiles.removeEventListener("afterchoose", this.$afterchoose);
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

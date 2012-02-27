@@ -260,19 +260,6 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var path = node.getAttribute("path"),
             page = tabEditors.getPage(path),
             newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
-            //webdav = this.webdav;
-
-        // Check the newpath doesn't exists first
-        // if (tree.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
-        //             webdav.$undoFlag = true;
-        //             util.alert("Error", "Unable to move", "Couldn't move to this "
-        //               + "destination because there's already a node with the same name", function() {
-        //                 tree.getActionTracker().undo();
-        //                 tree.enable();
-        //             });
-        //             tree.enable();
-        //             return false;
-        //         }
 
         node.setAttribute("path", newpath);
         if (page)
