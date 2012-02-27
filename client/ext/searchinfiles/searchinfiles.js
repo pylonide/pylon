@@ -14,7 +14,6 @@ var editors = require("ext/editors/editors");
 var ideConsole = require("ext/console/console");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
-//var searchReplace = require("ext/searchreplace/searchreplace");
 
 module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",
@@ -208,28 +207,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10))
                 return trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");;
 
-            if (replaced) {
-                for (var c = 1; c < data.childNodes.length; c++) { // paths start at [1]
-                    var filePath = data.childNodes[c].getAttribute("path"), 
-                    root = trFiles.xmlRoot.selectSingleNode("folder[1]");
-                    editors.showFile(root.getAttribute("path") + "/" + filePath, 0, 0);
-                    
-                    var options = _self.getOptions();
-                    options.needle = options.query;
-
-                    if (!_self.editor)
-                        _self.setEditor();
-                    if (!_self.$editor)
-                        return;
-                   
-                    var options = _self.getOptions();
-                    options.needle = _self.txtFind.getValue();
-                    
-                    ceEditor.$editor.replaceAll(options.replacement || "", options);
-                    ide.dispatchEvent("track_action", {type: "replace"});
-                    //searchReplace.replaceAllFromOutside(options, options.query, options.replacement || "");
-                }
-            }
             _self.$model.load(data);
         });
 
