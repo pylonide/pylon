@@ -148,7 +148,7 @@ define(function(require, exports, module) {
                 if (!path[1] || !path[2]) {
                     return;
                 }
-                url = path[1] + "/" + path[2] + "/reconnect";
+                url = "/" + path[1] + "/" + path[2] + "/reconnect";
             }
             apf.ajax(url, {
                 callback: function(data, state, extra) {
