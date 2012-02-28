@@ -124,7 +124,9 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         this.nodes.push(menuItem);
 
-        require("ext/statusbar/statusbar").addToolsItem(menuItem);
+        ide.addEventListener("init.ext/statusbar/statusbar", function(e) {
+            e.ext.addToolsItem(menuItem, 1);
+        });
 
         this.hotitems.beautify = [this.nodes[0]];
         code.commandManager.addCommand({
