@@ -289,7 +289,7 @@ apf.textbox  = function(struct, tagName){
     };
 
     /**
-     * @attribute {Number} cols the row length for a text area
+     * @attribute {Number} cols the column height for a text area
      */
     this.$propHandlers["cols"] = function(value){
         if (this.$input.tagName.toLowerCase() == "textarea" && value) {
