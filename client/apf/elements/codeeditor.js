@@ -286,7 +286,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         var _self = this;
         this.getMode(value, function(mode) {
             setTimeout(function() {
-                console.log("set mode", value)
                 _self.$editor.getSession().setMode(mode);
             });
         });
