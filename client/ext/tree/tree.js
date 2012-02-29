@@ -1,6 +1,9 @@
 /**
  * Code Editor for the Cloud9 IDE
  *
+ * @TODO
+ * - Save & load scroll position of tree
+ * 
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -128,7 +131,9 @@ module.exports = ext.register("ext/tree/tree", {
             args[1].setAttribute("newname", filename);
 
             setTimeout(function () {
-                fs.beforeRename(args[1], null, args[0].getAttribute("path").replace(/[\/]+$/, "") + "/" + filename, true);
+                fs.beforeRename(args[1], null,
+                    args[0].getAttribute("path").replace(/[\/]+$/, "") +
+                    "/" + filename, true);
                 args[1].removeAttribute("newname");
             });
         });
@@ -221,6 +226,8 @@ module.exports = ext.register("ext/tree/tree", {
         });
 
         ide.addEventListener("loadsettings", function(e){
+            _self.model = fs.model;
+
             function treeSelect(){
                 var treeSelection = model.queryNode("auto/tree_selection");
                 if(treeSelection) {
@@ -247,26 +254,36 @@ module.exports = ext.register("ext/tree/tree", {
                     _self.currentSettings = [];
                 }
 
+                function setCachedNodesAsLoaded() {
+                    for (var i = 0, len = _self.currentSettings.length; i < len; i++)
+                        trFiles.$setLoadStatus(trFiles.xmlRoot.selectSingleNode(_self.currentSettings[i]), "loaded");
+                }
+
                 //Unstable - temporary fix
                 try {
                     if (!trFiles.xmlRoot) {
-                        var model = trFiles.getModel();
-                        model.addEventListener("afterload", function(){
+                        _self.model.addEventListener("afterload", function(){
+                            setCachedNodesAsLoaded();
                             trFiles.expandList(_self.currentSettings, function(){
                                 _self.loading = false;
                                 treeSelect();
+                                trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
                             });
 
-                            model.removeEventListener("afterload", arguments.callee);
+                            _self.model.removeEventListener("afterload", arguments.callee);
 
-                            if (model.queryNodes('/data//node()').length <= 1)
+                            if (_self.model.queryNodes('/data//node()').length <= 1) {
                                 trFiles.expandAll();
+                                trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+                            }
                         });
                     }
                     else {
+                        setCachedNodesAsLoaded();
                         trFiles.expandList(_self.currentSettings, function(){
                             _self.loading = false;
                             treeSelect();
+                            trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
                         });
                     }
                 }
@@ -275,6 +292,7 @@ module.exports = ext.register("ext/tree/tree", {
                 }
             }
             else {
+                trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
                 if (trFiles.$model.queryNodes('/data//node()').length <= 1)
                     trFiles.expandAll();
             }

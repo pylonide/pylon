@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
+var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
@@ -291,43 +292,77 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     /**** Init ****/
 
-    init : function(amlNode){
-        this.model = new apf.model();
-        this.model.setAttribute("whitespace", false);
+    init : function() {
+        var _self = this;
+        ide.addEventListener("loadsettings", function(e){
+            var filesysSettings = e.model.queryNode("auto/filesystem");
+            _self.model = new apf.model();
+            if (!filesysSettings) {
+                filesysSettings = apf.createNodeFromXpath(e.model.data, "auto/filesystem");
+                _self.model.load("<data><folder type='folder' name='" + ide.projectName +
+                    "' path='" + ide.davPrefix + "' root='1'/></data>");
+            }
+            else {
+                _self.model.load(filesysSettings);
+            }
 
-        var processing = {};
-        this.model.addEventListener("update", function(e){
-            //resort on move, copy, rename, add
-            if (e.action == "attribute" || e.action == "add" || e.action == "move") {
-                var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
-                if (processing[xmlNode.getAttribute("a_id")])
-                    return;
-                processing[xmlNode.getAttribute("a_id")] = true;
+            _self.model.setAttribute("whitespace", false);
 
-                var sort = new apf.Sort();
-                sort.set({xpath: "@name", method: "filesort"});
-                var nodes = sort.apply(pNode.childNodes);
-
-                for (var i = 0, l = nodes.length; i < l; i++) {
-                    if (nodes[i] == xmlNode) {
-                        if (xmlNode.nextSibling != nodes[i+1])
-                            apf.xmldb.appendChild(pNode, xmlNode, nodes[i+1]);
-                        break;
+            var processing = {};
+            _self.model.addEventListener("update", function(e){
+                //resort on move, copy, rename, add
+                if (e.action == "attribute" || e.action == "add" || e.action == "move") {
+                    var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
+                    if (processing[xmlNode.getAttribute("a_id")])
+                        return;
+                    processing[xmlNode.getAttribute("a_id")] = true;
+    
+                    var sort = new apf.Sort();
+                    sort.set({xpath: "@name", method: "filesort"});
+                    var nodes = sort.apply(pNode.childNodes);
+    
+                    for (var i = 0, l = nodes.length; i < l; i++) {
+                        if (nodes[i] == xmlNode) {
+                            if (xmlNode.nextSibling != nodes[i+1])
+                                apf.xmldb.appendChild(pNode, xmlNode, nodes[i+1]);
+                            break;
+                        }
                     }
                 }
-            }
+
+                settings.save();
+            });
+    
+            var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
+            _self.webdav = new apf.webdav({
+                id  : "davProject",
+                url : dav_url,
+                onauthfailure: function() {
+                    ide.dispatchEvent("authrequired");
+                }
+            });
+
+            ide.dispatchEvent("fs.afterloadsettings", {
+                model: _self.model
+            });
         });
 
-        var _self = this;
-        _self.model.load("<data><folder type='folder' name='" + ide.projectName
-            + "' path='" + ide.davPrefix + "' root='1'/></data>");
+        ide.addEventListener("savesettings", function(e) {
+            if (!e.model.data)
+                return;
 
-        var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
-        this.webdav = new apf.webdav({
-            id  : "davProject",
-            url : dav_url,
-            onauthfailure: function(e) {
-                ide.dispatchEvent("authrequired");
+            var pNode = e.model.data.selectSingleNode("auto/filesystem");
+
+            if (pNode) {
+                pNode.parentNode.removeChild(pNode);
+                pNode = null;
+            }
+
+            pNode = apf.createNodeFromXpath(e.model.data, "auto/filesystem");
+            var node = _self.model.queryNode("//folder[@root='1']");
+            if (node) {
+                var nodeCopy = apf.xmldb.cleanNode(node.cloneNode(true));
+                pNode.appendChild(nodeCopy);
             }
         });
 
