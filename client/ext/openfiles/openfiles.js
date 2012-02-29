@@ -10,9 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels");
-var settings = require("ext/settings/settings");
 var markup = require("text!ext/openfiles/openfiles.xml");
-var fs = require("ext/filesystem/filesystem");
 
 module.exports = ext.register("ext/openfiles/openfiles", {
     name            : "Active Files",
@@ -127,8 +125,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
             path = parent.getAttribute("path");
 
-            for (var name in files) {
-                var file = files[name];
+            for (var filename in files) {
+                var file = files[filename];
 
                 var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +
