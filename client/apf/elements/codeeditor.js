@@ -285,9 +285,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["syntax"] = function(value) {
         var _self = this;
         this.getMode(value, function(mode) {
-            setTimeout(function() {
+            // the syntax could have changed while loading the mode
+            if (_self.syntax == value)
                 _self.$editor.getSession().setMode(mode);
-            });
         });
     };
 
@@ -675,7 +675,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc = ed.getSession();
 
         if (this.syntax === undefined)
-            this.syntax = "Text";
+            this.syntax = "text";
         if (this.tabsize === undefined)
             this.tabsize = doc.getTabSize(); //4
         if (this.softtabs === undefined)
