@@ -2854,7 +2854,7 @@
         }
 
         .ace_text-layer {
-          font-family: Monaco, "Courier New", monospace;
+          font-family: Monaco, Menlo, Consolas, monospace;
           color: black;
         }
 
@@ -4020,11 +4020,12 @@
         }
         
         .divider-status-bar {
-            border-color : rgba(193,193,193,0.4) #efefef #efefef rgba(193,193,193,0.4);
+            border: none;
+            background: url(images/toolbar-divider.png) 0px 0px repeat-y;
         }
         
         .ace_dark .divider-status-bar {
-            border-color : rgba(4,4,4,0.5) rgba(4,4,4,0.1) rgba(4,4,4,0.1) rgba(4,4,4,0.5);
+            background: url(images/toolbar-divider.png) -6px 0px repeat-y;
         }
     ]]></a:style>
 
@@ -5048,8 +5049,12 @@
             background-position: -22px -45px;
         }
 
-        .menu-bk.mnuSbPrefs .arrow {
-            right: 3%;
+        .menu-bk.mnuSbPrefs.upward .arrow, .menu-bk.mnuSbTools.upward .arrow {
+            right: 5px;
+        }
+        
+        .menu-bk.mnuSbPrefs.downward .arrow, .menu-bk.mnuSbTools.downward .arrow {
+            right: 4px;
         }
 
         .menu-bk>div.menu_item{

@@ -11,35 +11,29 @@
 
                 border-radius: 6px;
 
-                -webkit-transition: background-color 0.2s linear, border 0.2s linear;
-                -moz-transition: background-color 0.2s linear, border 0.2s linear;
-                -o-transition: background-color 0.2s linear, border 0.2s linear;
+                -webkit-transition: background-color 0.2s linear, border 0.2s linear, box-shadow 0.2s linear;
+                -moz-transition: background-color 0.2s linear, border 0.2s linear, -moz-box-shadow 0.2s linear;
 
                 background: transparent url('images/editor_bar_bg.png') 0px 30px repeat-x;
             }
 
             .bar-status:hover {
-                border-top: 1px solid #dcdcdc;
-                border-bottom: 1px solid #dddddd;
-                border-left: 1px solid #dedede;
-                border-right: 1px solid #dedede;
+                border: 1px solid rgba(0, 0, 0, 0.12);
 
-                -webkit-box-shadow: inset 0px 3px 5px rgba(255, 255, 255, 0.1);
-                -moz-box-shadow: inset 0px 3px 5px rgba(255, 255, 255, 0.1);
-                box-shadow: inset 0px 3px 5px rgba(255, 255, 255, 0.1);
+                -moz-box-shadow: inset 0px 1px 0px 0px #f5f5f5;
+                box-shadow: inset 0px 1px 0px 0px #f5f5f5;
 
                 background-color: transparent;
             }
 
             .ace_dark.bar-status:hover {
-                border-top: 1px solid #001736;
-                border-bottom: 1px solid #021834;
-                border-left: 1px solid #001634;
-                border-right: 1px solid #001634;
-
-                -webkit-box-shadow: inset 0px 3px 5px rgba(255, 255, 255, 0.1);
-                -moz-box-shadow: inset 0px 3px 5px rgba(255, 255, 255, 0.1);
-                box-shadow: inset 0px 3px 5px rgba(255, 255, 255, 0.1);
+                -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+                box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            }
+            
+            .bar-status .lbl_row_col {
+                text-align: center;
+                color: rgba(0, 0, 0, 0.4);
             }
 
             .bar-status .label {
@@ -72,15 +66,14 @@
                 -moz-user-select    : none;
                 -khtml-user-select  : none;
                 user-select         : none;
-                background-position : 2px 8px;
+                background-position : 2px 7px;
                 background-repeat   : no-repeat;
 
                 border-radius: 3px;
             }
 
             .btn-expand-statusbarOver {
-                background-position : 2px -18px;
-                /*border: 1px solid rgba(160, 160, 160, 0.4);*/
+                background-position : 2px -19px;
             }
 
             .expanded .btn-expand-statusbar {
