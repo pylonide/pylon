@@ -164,7 +164,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        _self.$getMode(_self.syntax, function(mode) {
+        _self.getMode(_self.syntax, function(mode) {
             doc.setMode(mode);
         });
 
@@ -284,8 +284,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["syntax"] = function(value) {
         var _self = this;
-        this.$getMode(value, function(mode) {
+        this.getMode(value, function(mode) {
             setTimeout(function() {
+                console.log("set mode", value)
                 _self.$editor.getSession().setMode(mode);
             });
         });
@@ -345,7 +346,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.$modeCallbacks = {};
-    this.$getMode = function(syntax, callback) {
+    this.getMode = function(syntax, callback) {
         var _self = this;
 
         syntax = (syntax || "text").toLowerCase();
