@@ -1,0 +1,225 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:bar name="bar-status">
+        <a:style><![CDATA[
+            .bar-status {
+                position : absolute;
+                color: rgba(0, 0, 0, 0.4);
+                padding: 2px;
+                overflow: hidden;
+                border: 1px solid transparent;
+
+                border-radius: 6px;
+
+                -webkit-transition: background-color 0.2s linear, border 0.2s linear, box-shadow 0.2s linear;
+                -moz-transition: background-color 0.2s linear, border 0.2s linear, -moz-box-shadow 0.2s linear;
+
+                background: transparent url('images/editor_bar_bg.png') 0px 30px repeat-x;
+            }
+
+            .bar-status:hover {
+                border: 1px solid rgba(0, 0, 0, 0.12);
+
+                -moz-box-shadow: inset 0px 1px 0px 0px #f5f5f5;
+                box-shadow: inset 0px 1px 0px 0px #f5f5f5;
+
+                background-color: transparent;
+            }
+
+            .ace_dark.bar-status:hover {
+                -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+                box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
+            }
+            
+            .bar-status .lbl_row_col {
+                text-align: center;
+                color: rgba(0, 0, 0, 0.4);
+            }
+
+            .bar-status .label {
+                color: rgba(0, 0, 0, 0.4);
+                padding-left: 1px;
+                overflow: visible;
+            }
+
+            .ace_dark.bar-status .label {
+                color: rgba(255, 255, 255, 0.4);
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container=".">
+                <div class="bar-status">
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:bar>
+    <a:button name="btn-expand-statusbar">
+        <a:style><![CDATA[
+            .btn-expand-statusbar {
+                height              : 8px;
+                width               : 10px;
+                overflow            : hidden;
+                cursor              : pointer;
+                position            : relative;
+                cursor              : default;
+                -moz-user-select    : none;
+                -khtml-user-select  : none;
+                user-select         : none;
+                background-position : 2px 7px;
+                background-repeat   : no-repeat;
+
+                border-radius: 3px;
+            }
+
+            .btn-expand-statusbarOver {
+                background-position : 2px -19px;
+            }
+
+            .expanded .btn-expand-statusbar {
+                background-position : -11px 7px;
+            }
+
+            .expanded .btn-expand-statusbarOver {
+                background-position : -11px -19px;
+            }
+
+            .ace_dark .btn-expand-statusbar {
+                background-position : -28px 7px;
+            }
+
+            .ace_dark .btn-expand-statusbarOver {
+                background-position : -28px -19px;
+            }
+
+            .ace_dark.expanded .btn-expand-statusbar {
+                background-position : -42px -18px;
+            }
+
+            .ace_dark.expanded .btn-expand-statusbarOver {
+                background-position : -42px 7px;
+
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main
+              caption      = "text()"
+              background = "."
+              icon       = ".">
+                <div class="btn-expand-statusbar"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+    <a:button name="btn-statusbar-icon">
+        <a:style><![CDATA[
+            .btn-statusbar-icon {
+                height              : 23px;
+                width               : 22px;
+                overflow            : hidden;
+                cursor              : pointer;
+                position            : relative;
+                cursor              : default;
+                -moz-user-select    : none;
+                -khtml-user-select  : none;
+                user-select         : none;
+                background-position : 0 0;
+                background-repeat   : no-repeat;
+            }
+            .btn-statusbar-iconOver {
+                background-position : 0 -23px;
+            }
+
+            .btn-statusbar-iconDown {
+                background-position : 0 -46px;
+            }
+
+            .ace_dark .btn-statusbar-icon {
+                background-position : -22px 0;
+            }
+
+            .ace_dark .btn-statusbar-iconOver {
+                background-position : -22px -23px;
+            }
+
+            .ace_dark .btn-statusbar-iconDown {
+                background-position : -22px -46px;
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main
+              caption      = "text()"
+              background = "."
+              icon       = ".">
+                <div class="btn-statusbar-icon"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+    <a:menu name="statusbar-mnu">
+        <a:style><![CDATA[
+            .statusbar-mnu {
+                margin   : 0;
+                z-index  : 10000;
+                position : absolute;
+                overflow : visible;
+                display  : none;
+
+                background-image: linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
+                background-image: -o-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
+                background-image: -moz-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
+                background-image: -webkit-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
+                background-image: -ms-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
+
+                position : absolute;
+                border-radius : 9px;
+                -webkit-box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
+                -moz-box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
+                box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
+                border: 1px solid #e8e8e8;
+
+                margin-top: -17px;
+                margin-left: -10px;
+
+                padding: 3px 0;
+            }
+
+            .statusbar-mnu .arrow {
+                position : absolute;
+                width: 19px;
+                height: 17px;
+                bottom: -16px;
+                left: 40px;
+                z-index: 10001;
+                background: url(images/arrow-sb.png) no-repeat 0 0;
+            }
+
+            .statusbar-mnu .menu-item {
+                padding: 5px 15px;
+                cursor: default;
+                color: rgba(0, 0, 0, 0.4);
+            }
+            .statusbar-mnu .menu-item.hover{
+                background-color: rgba(170, 170, 170, 0.14);
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container=".">
+                <div class="statusbar-mnu">
+                    <div class="arrow"> </div>
+                </div>
+            </a:main>
+            <a:item
+              caption = "text()"
+              icon    = "div"
+              hotkey  = "div"
+              inherit = "true">
+                <div class="menu-item">-<div class="icon"></div></div>
+            </a:item>
+            <a:divider inherit="true">
+                <div class="menu-divider"></div>
+            </a:divider>
+        </a:presentation>
+    </a:menu>
+</a:skin>

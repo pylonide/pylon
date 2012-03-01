@@ -42,8 +42,7 @@ this.supportCSSAnim=false;this.supportCSSTransition=false;for(;i<l&&!this.suppor
 ++i){if(typeof t.style[props[i]]=="undefined"){continue;}this.supportCSSAnim=props[i];
 this.runtimeStylePrefix=prefixR[i];this.classNamePrefix=prefixC[i];this.cssAnimEvent=events[i];
 }t=null;delete t;this.supportVML=apf.isIE;this.supportSVG=!apf.isIE||apf.isIE>8;
-this.hasHtml5XDomain=apf.versionGecko>=3.5;this.supportCanvas=!!document.createElement("canvas").getContext;
-this.supportCanvasText=!!(this.supportCanvas&&typeof document.createElement("canvas").getContext("2d").fillText=="function");
+this.supportCanvas=!!document.createElement("canvas").getContext;this.supportCanvasText=!!(this.supportCanvas&&typeof document.createElement("canvas").getContext("2d").fillText=="function");
 this.hasVideo=!!document.createElement("video")["canPlayType"];this.hasAudio=!!document.createElement("audio")["canPlayType"];
 this.supportHashChange=("onhashchange" in self)&&(!apf.isIE||apf.isIE>=8);if(self.XMLHttpRequest){var xhr=new XMLHttpRequest();
 this.hasXhrProgress=!!xhr.upload;if(this.hasXhrBinary=!!(xhr.sendAsBinary||xhr.upload)){this.hasHtml5File=!!(File&&File.prototype.getAsDataURL);
@@ -557,13 +556,13 @@ x=(x||0)+pos[0];y=(y||0)+pos[1];}if(options.width||o.width){popup.style.width=((
 }popup.style.position="absolute";var parentMenu=this.cache[options.allowTogether];
 var pOverflow=apf.getOverflowParent(o.content);var edgeY=(pOverflow==document.documentElement?(apf.isIE?pOverflow.offsetHeight:(window.innerHeight+window.pageYOffset))+pOverflow.scrollTop:pOverflow.offsetHeight+pOverflow.scrollTop);
 moveUp=options.autoCorrect&&(y+(options.height||o.height||o.content.offsetHeight))>edgeY;
-if(moveUp){var value;if(refNode){value=(pos[1]-(options.height||o.height||o.content.offsetHeight));
+if(moveUp){var value;if(refNode){value=(pos[1]-(options.height||o.height||o.content.offsetHeight))+3;
 }else{value=(edgeY-(options.height||o.height||o.content.offsetHeight));}popup.style.top=value<0?y:value+"px";
 }else{popup.style.top=y+"px";}if(!options.noleft){var edgeX=(pOverflow==document.documentElement?(apf.isIE?pOverflow.offsetWidth:(window.innerWidth+window.pageXOffset))+pOverflow.scrollLeft:pOverflow.offsetWidth+pOverflow.scrollLeft);
 moveLeft=options.autoCorrect&&(x+(options.width||o.width||o.content.offsetWidth))>edgeX;
 if(moveLeft){var value;if(options.ref){value=(pos[0]-(options.width||o.width||o.content.offsetWidth))+(options.ref.offsetWidth);
 }else{value=(edgeX-(options.width||o.width||o.content.offsetWidth)-(parentMenu?(parentMenu.width||parentMenu.content.offsetWidth):0));
-}popup.style.left=value<0?x:value+"px";}else{popup.style.left=x+"px";}}}else{pos=apf.getAbsolutePosition(options.ref,refNode);
+}popup.style.left=value<0?x:(value-1)+"px";}else{popup.style.left=x+"px";}}}else{pos=apf.getAbsolutePosition(options.ref,refNode);
 y=(y||0)+pos[1]+refNode.offsetTop;pos[0]+=refNode.offsetLeft;popup.style.position="fixed";
 popup.style.top=y+"px";if(!options.noleft){popup.style.left=x+"px";}}apf.setStyleClass(popup,moveUp?"upward":"downward",[moveUp?"downward":"upward"]);
 apf.setStyleClass(popup,moveLeft?"moveleft":"moveright",[moveLeft?"moveright":"moveleft"]);
@@ -1629,9 +1628,10 @@ id=this.queue.push({http:http,url:url,callback:options.callback,retries:0,option
 var headers=[];function setRequestHeader(name,value){http.setRequestHeader(name,value);
 }var errorFound=false;try{if(options.nocache){httpUrl=apf.getNoCacheUrl(httpUrl);
 }if(apf.config.queryAppend){httpUrl+=(httpUrl.indexOf("?")==-1?"?":"&")+apf.config.queryAppend;
-}if(apf.hasHtml5XDomain&&httpUrl.match(/^http:\/\//)&&!new apf.url(httpUrl).isSameLocation()){throw new Error(apf.formatErrorString(0,this,"Communication error","Url: "+httpUrl+"\nReason: Same origin policy in effect"));
+}var requestedWithParam=apf.config?apf.config["requested-with-getparam"]:null;if(requestedWithParam){httpUrl+=(httpUrl.indexOf("?")==-1?"?":"&")+requestedWithParam+"=1";
 }http.open(this.method||options.method||"GET",httpUrl,async);if(options.username){setRequestHeader("Authorization","Basic "+apf.crypto.Base64.encode(options.username+":"+options.password));
-}setRequestHeader("X-Requested-With","XMLHttpRequest");if(!options.headers||!options.headers["Content-type"]){setRequestHeader("Content-type",options.contentType||this.contentType||(this.useXML||options.useXML?"text/xml":"text/plain"));
+}if(!requestedWithParam){setRequestHeader("X-Requested-With","XMLHttpRequest");
+}if(!options.headers||!options.headers["Content-type"]){setRequestHeader("Content-type",options.contentType||this.contentType||(this.useXML||options.useXML?"text/xml":"text/plain"));
 }if(autoroute){setRequestHeader("X-Route-Request",url);setRequestHeader("X-Proxy-Request",url);
 setRequestHeader("X-Compress-Response","gzip");}if(binary){setRequestHeader("Cache-Control","no-cache");
 setRequestHeader("X-File-Name",binary.filename);setRequestHeader("X-File-Size",binary.filesize);
@@ -6235,7 +6235,8 @@ break;}}_self.$down();_self.$up();_self.$click();});}};this.$propHandlers.icon=f
 }if(!withinParent&&this.skinName!=pNode.skinName){this.loadAml();}});this.$down=function(){};
 this.$up=function(){if(this.type=="radio"){this.parentNode.select(this.group,this.value||this.caption);
 }else{if(this.type=="check"){this.setProperty("checked",!this.checked);}}if(this.submenu){this.$over(null,true);
-return;}this.parentNode.$hideTree=true;this.parentNode.hide();this.parentNode.dispatchEvent("itemclick",{value:this.value||this.caption,relatedNode:this,checked:this.checked,selected:this.selected});
+return;}this.parentNode.$hideTree=true;if(!this.parentNode.sticky){this.parentNode.hide();
+}this.parentNode.dispatchEvent("itemclick",{value:this.value||this.caption,relatedNode:this,checked:this.checked,selected:this.selected});
 this.dispatchEvent("click",{xmlContext:this.parentNode.xmlReference,opener:this.parentNode.opener});
 };this.$click=function(){};var timer;this.$out=function(e){if(apf.isChildOf(this.$ext,e.toElement||e.explicitOriginalTarget)||apf.isChildOf(this.$ext,e.srcElement||e.target)){return;
 }clearTimeout(timer);if(!this.submenu||this.$submenu(true)){apf.setStyleClass(this.$ext,"",["hover"]);
@@ -6346,7 +6347,7 @@ _self.hide();}}});};};apf.loader.prototype=new apf.AmlElement();apf.aml.setEleme
 apf.menu=function(struct,tagName){this.$init(tagName||"menu",apf.NODE_VISIBLE,struct);
 this.animate=apf.enableAnim;};(function(){this.$focussable=apf.KEYBOARD;this.$positioning="basic";
 this.visible=false;this.matchhide=false;this.$booleanProperties.animate=true;this.$booleanProperties.pinned=true;
-this.$booleanProperties.matchhide=true;this.$propHandlers.visible=function(value,prop,force,nofocus,hideOpener){if(value){this.$ext.style.display="block";
+this.$booleanProperties.sticky=true;this.$booleanProperties.matchhide=true;this.$propHandlers.visible=function(value,prop,force,nofocus,hideOpener){if(value){this.$ext.style.display="block";
 if(this.opener&&this.opener.localName.indexOf("item")>-1){this.opener.parentNode.$showingSubMenu=this;
 }}else{this.$ext.style.display="none";var lastFocus=apf.menu.lastFocus;var opener=this.opener;
 if(lastFocus!=this.opener&&this.opener&&this.opener.$blur){this.opener.$blur();
@@ -6403,7 +6404,7 @@ while(op&&op.parentNode&&op.parentNode.localName=="menu"){op=op.parentNode.opene
 }if(node){node.dispatchEvent("mouseover");var btnMenu=node.parentNode.menuIsPressed;
 if(btnMenu){self[btnMenu.submenu].dispatchEvent("keydown",{keyCode:40});}return;
 }}}if(!this.$selected){arguments.callee.call(this,{keyCode:40});}break;default:return;
-}return false;},true);function forceHide(e){if(this.$showingSubMenu||this.pinned||apf.isChildOf(e.fromElement,e.toElement)||apf.isChildOf(this,e.toElement)||!e.toElement){return;
+}return false;},true);function forceHide(e){if(this.$showingSubMenu||this.pinned||apf.isChildOf(e.fromElement,e.toElement)||apf.isChildOf(this,e.toElement)||(e.name!=="popuphide"&&!e.toElement)){return;
 }if(this.$hideTree!=-1){this.$hideTree=true;this.hide();}return false;}this.addEventListener("focus",function(){apf.popup.last=this.$uniqueId;
 });this.addEventListener("blur",forceHide);this.addEventListener("popuphide",forceHide);
 this.$draw=function(){this.$pHtmlNode=document.body;this.$ext=this.$getExternal();

@@ -18,6 +18,7 @@ var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
 var settings = require("ext/settings/settings");
+var util = require("ext/vim/maps/util");
 
 var VIM_ENABLED = false;
 var OLD_HANDLER;
@@ -92,7 +93,7 @@ var enableVim = function enableVim() {
     commands.stop.exec(editor);
     VIM_ENABLED = true;
         
-    ide.dispatchEvent("track_action", { type: "vim", action: "enable" });
+    ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: util.currentMode});
 };
 
 var disableVim = function() {
@@ -122,10 +123,10 @@ module.exports = ext.register("ext/vim/vim", {
             checked: "[{require('ext/settings/settings').model}::editors/code/@vimmode]",
             onclick: function() { self.toggle(); }
         });
-        // In order to behave like a code extension (i.e. hiding when we are not
-        // in a code editor) we import it into the code plugin nodes instead of
-        // ours.
-        code.nodes.push(mnuView.appendChild(menuItem));
+
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            e.ext.addToolsItem(menuItem.cloneNode(true), 0);
+        });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.getHeading("Code Editor").appendChild(new apf.checkbox({

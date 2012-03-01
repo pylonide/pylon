@@ -1,0 +1,72 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:bar id="barIdeStatus" 
+      skin    = "bar-status" 
+      skinset = "statusbar"
+      height  = "28"
+      bottom  = "3"
+      right   = "3">
+        <a:hbox height="23">
+            <a:label id="lblInsertActive" caption="INS" visible="false" margin="2 3 0 3" />
+            <a:label id="lblSelectionLength" visible="false" margin="2 3 0 3" />
+            <a:label caption="{ceEditor.line}:{ceEditor.col}" class="lbl_row_col" margin="2 6 0 3"/>
+            <a:divider class="divider-status-bar" width="2" height="20" margin="1 0 1 0" />
+            <a:button 
+              skin    = "btn-expand-statusbar" 
+              skinset = "statusbar"
+              icon    = "statusbar-arrow.png" 
+              onclick = "require('ext/statusbar/statusbar').toggleStatusBar()"
+              margin  = "1 1 2 3"
+            />
+            <a:hbox id="hboxStatusBarSettings" width="1">
+                <a:button id="btnSbTools"
+                  skin    = "btn-statusbar-icon" 
+                  skinset = "statusbar"
+                  height  = "23"
+                  margin  = "0 3 0 3"
+                  icon    = "tool-ico.png"
+                  submenu = "mnuStatusBarTools"/>
+                <a:button id="btnSbPrefs"
+                  skin    = "btn-statusbar-icon" 
+                  skinset = "statusbar"
+                  height  = "23"
+                  icon    = "pref-ico.png" 
+                  submenu = "mnuStatusBarPrefs"/>
+            </a:hbox>
+        </a:hbox>
+    </a:bar>
+    <a:menu id="mnuStatusBarTools"
+      ref   = "{btnSbTools}"
+      class = "mnuSbTools"
+      skin  = "menu-bk">
+    </a:menu>
+    <a:menu id="mnuStatusBarPrefs"
+      ref   = "{btnSbPrefs}"
+      class = "mnuSbPrefs"
+      skin  = "menu-bk"
+      sticky = "true">
+      <a:item type="check" caption="Code Folding" checked="[{require('ext/settings/settings').model}::editors/code/@folding]" />
+      <a:item type="check" caption="Full Line Selection" checked="[{require('ext/settings/settings').model}::editors/code/@selectstyle]" values="line|text" />
+      <a:item type="check" caption="Highlight Active Line" checked="[{require('ext/settings/settings').model}::editors/code/@activeline]" />
+      <a:item type="check" caption="Show Gutter" checked="[{require('ext/settings/settings').model}::editors/code/@gutter]" />
+      <a:item type="check" caption="Highlight Selected Word" checked="[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]" />
+      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[{require('ext/settings/settings').model}::editors/code/@behaviors]" />
+      <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]" />
+      <a:divider />
+      <a:hbox edge="0 5 2 23" align="center">
+          <a:label flex="1" style="padding: 2px 2px 2px 0">Font Size</a:label>
+          <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" />
+      </a:hbox>
+      <a:hbox edge="0 5 2 0" align="center">
+          <a:checkbox label="Show Print Margin" value="[{require('ext/settings/settings').model}::editors/code/@showprintmargin]" flex="1" skin="checkbox-menu" />
+          <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" />
+      </a:hbox>
+      <a:hbox edge="0 5 2 0" align="center">
+          <a:checkbox label="Soft Tabs" value="[{require('ext/settings/settings').model}::editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>
+          <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />
+      </a:hbox>
+      <a:hbox edge="0 5 2 23" align="center">
+          <a:label flex="1" style="padding: 2px 2px 2px 0">Mouse Scroll Speed</a:label>
+          <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@scrollspeed]" min="1" max="8" width="50" />
+      </a:hbox>
+    </a:menu>
+</a:application>

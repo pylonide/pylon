@@ -2481,7 +2481,7 @@
             top        : 2px;
             background : url("images/checkbox.png") no-repeat 0 -12px;
         }
-
+        
         .cbcontainerDown .checkbox {
             background-position : 0 -36px;
         }
@@ -2512,6 +2512,95 @@
     <a:presentation>
         <a:main label="span/text()" minheight="18" minwidth="18">
             <div class='cbcontainer'>
+                <div class='checkbox'> </div>
+                <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
+<a:checkbox name="checkbox-menu">
+    <a:style><![CDATA[
+        .cbmcontainer {
+            padding: 3px 16px 5px 23px;
+            white-space: nowrap;
+            cursor : default;
+            z-index:1100000;
+            position: relative;
+            height: 13px;
+        }
+
+        .cbmcontainer span {
+
+            font-family   : Tahoma, Arial;
+            font-size     : 11px;
+            line-height   : 14px;
+            color         : #f1f1f1;
+            cursor:default;
+            
+            padding     : 1px 3px 2px 0px;
+            position    : relative;
+            top         : -2px;
+            overflow    : visible;
+            display     : inline-block;
+            line-height : 13px;
+            white-space        : nowrap;
+            text-overflow      : ellipsis;
+        }
+
+        .cbmcontainerFocus span {
+        }
+        
+        .cbmcontainerOver  {
+            background-color : #393939;
+        }
+        
+        .cbmcontainerChecked.cbmcontainerDown.cbmcontainerFocus .checkbox {
+            
+        }
+
+        .cbmcontainer .checkbox {
+            width      : 12px;
+            height     : 12px;
+            overflow   : hidden;
+            position   : absolute;
+            left       : 2px;
+            top        : 1px;
+            background: none;
+        }
+        
+        .cbmcontainerDown .checkbox {
+            
+        }
+
+        .cbmcontainerChecked .checkbox {
+            background-image: url(images/check.gif);
+            background-repeat: no-repeat;
+            background-position: 0 -16px;
+        }
+
+        .cbmcontainerError span {
+            right: 15px;
+            margin-top: 0px;
+            z-index: 10;
+            text-align: right;
+            padding-left: 15px;
+            /*margin-right: -15px;
+            position : absolute;*/
+            float : right;
+        }
+
+        .cbmcontainerDisabled .checkbox {
+            background : none;
+        }
+
+        .cbmcontainerDisabled span {
+            color : #bebebe;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="span/text()" minheight="18" minwidth="18">
+            <div class='cbmcontainer'>
                 <div class='checkbox'> </div>
                 <span>-</span>
             </div>
@@ -2765,7 +2854,7 @@
         }
 
         .ace_text-layer {
-          font-family: Monaco, "Courier New", monospace;
+          font-family: Monaco, Menlo, Consolas, monospace;
           color: black;
         }
 
@@ -3929,6 +4018,15 @@
         .modal-divider {
             border-color : #b0b2b4 #E6E6E6 #E6E6E6 #b0b2b4;
         }
+        
+        .divider-status-bar {
+            border: none;
+            background: url(images/toolbar-divider.png) 0px 0px repeat-y;
+        }
+        
+        .ace_dark .divider-status-bar {
+            background: url(images/toolbar-divider.png) -6px 0px repeat-y;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -4550,6 +4648,10 @@
             color: #303030;
             font-size: 12px;
         }
+        
+        .menu-bk .label {
+            color: #F1F1F1;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -4837,7 +4939,7 @@
             /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
         }
         .menu>div.menu_item.disabled>span{
-            display : none;
+            /*display : none;*/
         }
 
         .menu>div.menu_item>u{
@@ -4865,6 +4967,197 @@
             <blockquote class='menu'>
 
             </blockquote>
+        </a:main>
+        <a:item caption="text()" icon="u" hotkey="span" inherit="true">
+            <div class="menu_item"><span> </span><u> </u>-</div>
+        </a:item>
+        <a:divider inherit="true">
+            <div class='menu_divider'></div>
+        </a:divider>
+    </a:presentation>
+</a:menu>
+<a:menu name="menu-bk">
+    <a:style><![CDATA[
+        .menu-bk {
+            display  : none;
+            
+            /* fallback (Older Opera) */
+            background: #272727;
+            /* Mozilla: */
+            background-image: -moz-linear-gradient(top, #2f2f2f, #202020);
+            /* Chrome, Safari:*/
+            background-image: -webkit-gradient(linear, left top, left bottom, from(#2f2f2f), to(#202020));
+            -moz-border-radius    : 9px;
+            -webkit-border-radius : 9px;
+            border-radius         : 9px;
+            -moz-box-shadow       : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
+            -webkit-box-shadow    : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.21);
+            box-shadow            : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
+            border: 1px solid #000000;
+            
+            margin-left: 5px;
+            
+            
+            margin: -1px 0 0 0;
+            padding: 3px 0 3px 0;
+            z-index: 10000;
+            position: absolute;
+            overflow:visible;
+
+            font-family   : Tahoma, Arial;
+            font-size     : 11px;
+            line-height   : 14px;
+            color         : #f1f1f1;
+            cursor:default;
+        }
+        
+        .menu-bk.moveleft {
+            margin-left: 6px;
+        }
+
+        .menu-bk.upward {
+            margin-top: -10px;
+            margin-left: 6px;
+        }
+        
+        .menu-bk.downward {
+            margin-left: 6px;
+            margin-top: 30px;
+        }
+        
+        .menu-bk.moveright {
+            margin-left: -8px;
+        }
+        
+        .menu-bk .arrow {
+            position : absolute;
+            width: 24px;
+            height: 14px;
+            top: -13px;
+            right: 9px;
+            z-index: 10001;
+            background: url(images/flyout_arrows.png) no-repeat -20px 0;
+        }
+        .menu-bk.moveright .arrow {
+            left: 9px;
+        }
+        
+        .menu-bk.upward .arrow {
+            top: auto;
+            bottom: -14px;
+            width: 20px;
+            background-position: -22px -45px;
+        }
+
+        .menu-bk.mnuSbPrefs.upward .arrow, .menu-bk.mnuSbTools.upward .arrow {
+            right: 5px;
+        }
+        
+        .menu-bk.mnuSbPrefs.downward .arrow, .menu-bk.mnuSbTools.downward .arrow {
+            right: 4px;
+        }
+
+        .menu-bk>div.menu_item{
+            padding: 3px 16px 5px 23px;
+            white-space: nowrap;
+            cursor : default;
+            z-index:1100000;
+            height: 13px;
+        }
+        .menu-bk>div:nth-child(2){
+            -webkit-border-top-left-radius: 7px;
+            -webkit-border-top-right-radius: 7px;
+            -moz-border-radius-topleft: 7px;
+            -moz-border-radius-topright: 7px;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+        }
+        .menu-bk>div:last-child {
+            -webkit-border-bottom-right-radius: 5px;
+            -webkit-border-bottom-left-radius: 5px;
+            -moz-border-radius-bottomright: 5px;
+            -moz-border-radius-bottomleft: 5px;
+            border-bottom-right-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+        .menu-bk>div.menu_item.hover {
+            background-color : #393939;
+        }
+
+        .menu-bk>div.menu_divider{
+            overflow: visible;
+            padding: 0;
+            font-size: 1px;
+
+            margin:2px 3px;
+            border-top:1px solid #000000;
+            border-bottom:1px solid #313131;
+        }
+
+        .menu-bk>div.menu_divider{
+            height: 0;
+        }
+
+        .menu-bk>div.menu_item>span{
+            right: 15px;
+            margin-top: 0px;
+            z-index: 10;
+            text-align: right;
+            padding-left: 15px;
+            /*margin-right: -15px;
+            position : absolute;*/
+            float : right;
+        }
+
+        .menu-bk>div.submenu>span{
+            background: url(images/submenu_arrow.gif) no-repeat right -15px;
+            width: 4px;
+            height: 7px;
+            display: block;
+            position: absolute;
+            right: 8px;
+            margin: 4px 0 0 0;
+            z-index: 10;
+        }
+
+        .menu-bk>div.menu_item.hover>span{
+            background-position : right -15px;
+        }
+
+        .menu-bk>div.menu_item.disabled{
+            color: gray;
+            /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
+        }
+        .menu-bk>div.menu_item.disabled>span{
+            /*display : none;*/
+        }
+
+        .menu-bk>div.menu_item>u{
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            left: 3px;
+            margin-top : -1px;
+        }
+
+        .menu-bk>div.menu_item.selected>u{
+            background-image: url(images/radio.gif);
+            background-repeat: no-repeat;
+            background-position: 0 -16px;
+        }
+
+        .menu-bk>div.menu_item.checked>u{
+            background-image: url(images/check.gif);
+            background-repeat: no-repeat;
+            background-position: 0 -16px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="menu-bk">
+                <div class="arrow"> </div>
+            </div>
         </a:main>
         <a:item caption="text()" icon="u" hotkey="span" inherit="true">
             <div class="menu_item"><span> </span><u> </u>-</div>
@@ -7536,7 +7829,6 @@
         overflow: hidden;
         position:relative;
         padding-top: 32px;
-        border-bottom: 1px solid white;
         background-color:#e8e8e8;
     }
 

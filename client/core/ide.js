@@ -139,7 +139,7 @@ define(function(require, exports, module) {
             // lost our session. Now we do an HTTP request to fetch the current
             // session ID and update the Cloud9 config with it. Also, re-attach
             // with the backend.
-            apf.ajax("/reconnect", {
+            apf.ajax((window.location.pathname + "/$reconnect").replace(/\/\//g, "/"), {
                 callback: function(data, state, extra) {
                     ide.sessionId = data;
                     ide.socketConnect();

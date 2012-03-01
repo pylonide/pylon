@@ -301,7 +301,17 @@ module.exports = ext.register("ext/tree/tree", {
             for (id in _self.expandedList) {
                 try {
                     path = apf.xmlToXpath(_self.expandedList[id], trFiles.xmlRoot);
-                    lut[path] = true;
+                    
+                    // i won't remove the try-catch here cause it might
+                    // be importante, but 'xmlToXpath' doesn't throw as far as I can see
+                    // however; it CAN return 'false' or empty if something happens there
+                    // so:
+                    if (!path) {
+                        delete _self.expandedList[id];
+                    }
+                    else {
+                        lut[path] = true;
+                    }
                 }
                 catch(err){
                     //Node is deleted

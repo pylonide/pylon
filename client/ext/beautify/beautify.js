@@ -86,21 +86,49 @@ module.exports = ext.register("ext/beautify/beautify", {
     },
 
     init: function () {
-        
+        var _self = this;
+        tabEditors.addEventListener("afterswitch", function() {
+            if (_self.$selectionEvent) {
+                _self.editorSession.selection.removeEventListener("changeSelection",
+                    _self.$selectionEvent);
+            }
+
+            setTimeout(function() {
+                _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
+                _self.editorSession.selection.addEventListener("changeSelection",
+                    _self.$selectionEvent = function(e) {
+                        if (typeof beautify_selection === "undefined")
+                            return;
+
+                        var range = ceEditor.$editor.getSelectionRange();
+                        if (range.start.row == range.end.row && range.start.column == range.end.column)
+                            beautify_selection.disable();
+                        else
+                            beautify_selection.enable();
+                    }
+                );
+            }, 200);
+        });
     },
 
     hook: function () {
         var _self = this;
-        this.nodes.push(
-        ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(new apf.item({
+        var menuItem = new apf.item({
+            id : "beautify_selection",
+            disabled : "true",
             caption: "Beautify Selection",
             onclick: function () {
-                ext.initExtension(_self);
                 _self.beautify();
             }
-        })));
+        });
 
-        this.hotitems.beautify = [this.nodes[1]];
+        this.nodes.push(menuItem);
+
+        ide.addEventListener("init.ext/statusbar/statusbar", function(e) {
+            e.ext.addToolsItem(menuItem, 1);
+        });
+
+        this.hotitems.beautify = [this.nodes[0]];
         code.commandManager.addCommand({
             name: "beautify",
             exec: function () {
@@ -112,10 +140,10 @@ module.exports = ext.register("ext/beautify/beautify", {
             var heading = e.ext.getHeading("JS Beautify");
             heading.insertMarkup(settings);
         });
-        
+
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
-            
+
             if (!model.queryNode("beautify/jsbeautify")) {
                 model.setQueryValue("beautify/jsbeautify/@preserveempty", "true");
                 model.setQueryValue("beautify/jsbeautify/@keeparrayindentation", "false");
@@ -125,6 +153,8 @@ module.exports = ext.register("ext/beautify/beautify", {
                 model.setQueryValue("editors/code/@softtabs", "true");
             }
         });
+        
+        ext.initExtension(this);
     },
 
     enable: function () {
