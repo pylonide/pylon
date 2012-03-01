@@ -4,6 +4,7 @@
       center    = "true"
       height    = "300"
       icon      = ""
+      skin      = "bk-window"
       buttons   = "close"
       kbclose   = "true"
       resizable = "true"
@@ -47,15 +48,15 @@
             </div>
 
             <a:hbox
-              edge    = "10 0 0"
+              edge    = "30 0 0"
               pack    = "end"
               padding = "5">
-                <a:button
+                <a:button skin = "btn-default-css3"
                   onclick = "winSaveSessionAs.hide()">
                     Cancel
                 </a:button>
                 <a:button
-                  class    = "ui-btn-green"
+                  class="btn-green" skin="btn-default-css3"
                   default  = "2"
                   onclick  = "require('ext/tabsessions/tabsessions').saveSession(txtSaveSessionAs.getValue())">
                     Save

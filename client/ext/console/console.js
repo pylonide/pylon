@@ -19,6 +19,7 @@ var settings = require("core/settings");
 var Logger = require("ext/console/logger");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
+var theme = require("text!ext/console/themes/arthur.css");
 
 // Some constants used throughout the plugin
 var RE_band = /^\s*!/;
@@ -86,7 +87,7 @@ module.exports = ext.register("ext/console/console", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-    css    : css,
+    css    : css + theme,
     height : 200,
     hidden : true,
     nodes : [],
