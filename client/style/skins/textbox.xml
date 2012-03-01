@@ -236,24 +236,21 @@
             overflow: auto;
             resize: none;
             
-            padding: 2px 5px;
+            padding: 2px 6px;
+            border: 1px solid #AFAFAF;
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, white),color-stop(1, #EBEBEB));
             background: -moz-linear-gradient(center bottom,white 50%,#EBEBEB 100%);
             margin: 0;
-            font-family: Tahoma, Arial;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
             -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
-         
-            border: 0;
-            height: 17px;
+            
             font-size: 12px;
             color: #333;
             font-family: Arial;
             outline: none;
             background-color: transparent;
-            width: 100%;
         }
 
         .taFocus{

@@ -5,11 +5,13 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+x
+y
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -77,8 +79,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         winSearchReplace.onclose = function() {
             ceEditor.focus();
         }
-        
-        this.txtFind.$ext.cols = this.txtFind.cols;
         
         this.txtFind.addEventListener("keydown", function(e){
             switch (e.keyCode){
@@ -219,7 +219,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         if (!txt)
             return;
         var options = this.getOptions();
-        
+
         if (this.$crtSearch != txt) {
             this.$crtSearch = txt;
             // structure of the options:
