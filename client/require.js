@@ -2174,6 +2174,11 @@ var requirejs, require, define;
              * @returns Boolean
              */
             canUseXhr: function (url, protocol, hostname, port) {
+                if (typeof XMLHttpRequest !== "undefined") {
+                    if ("withCredentials" in new XMLHttpRequest()) {
+                        return true;
+                    }
+                }
                 var match = text.xdRegExp.exec(url),
                     uProtocol, uHostName, uPort;
                 if (!match) {
