@@ -251,50 +251,16 @@ module.exports = ext.register("ext/tree/tree", {
                 }
                 catch (ex) {
                     //fail! revert to default
-                    _self.currentSettings = [];
+                    _self.currentSettings = [ide.davPrefix];
                 }
 
-                function setCachedNodesAsLoaded() {
-                    for (var i = 0, len = _self.currentSettings.length; i < len; i++)
-                        trFiles.$setLoadStatus(trFiles.xmlRoot.selectSingleNode(_self.currentSettings[i]), "loaded");
-                }
-
-                //Unstable - temporary fix
-                try {
-                    if (!trFiles.xmlRoot) {
-                        _self.model.addEventListener("afterload", function(){
-                            setCachedNodesAsLoaded();
-                            trFiles.expandList(_self.currentSettings, function(){
-                                _self.loading = false;
-                                treeSelect();
-                                trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
-                            });
-
-                            _self.model.removeEventListener("afterload", arguments.callee);
-
-                            if (_self.model.queryNodes('/data//node()').length <= 1) {
-                                trFiles.expandAll();
-                                trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
-                            }
-                        });
-                    }
-                    else {
-                        setCachedNodesAsLoaded();
-                        trFiles.expandList(_self.currentSettings, function(){
-                            _self.loading = false;
-                            treeSelect();
-                            trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
-                        });
-                    }
-                }
-                catch (err){
-                    model.setQueryValue("auto/tree/text()", "");
-                }
+                _self.loadProjectTree(function() {
+                    treeSelect();
+                });
             }
             else {
                 trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
-                if (trFiles.$model.queryNodes('/data//node()').length <= 1)
-                    trFiles.expandAll();
+                trFiles.expandAll();
             }
         });
 
@@ -307,23 +273,12 @@ module.exports = ext.register("ext/tree/tree", {
 
             var path, id, lut = {};
             for (id in _self.expandedList) {
-                try {
-                    path = apf.xmlToXpath(_self.expandedList[id], trFiles.xmlRoot);
-
-                    // i won't remove the try-catch here cause it might
-                    // be importante, but 'xmlToXpath' doesn't throw as far as I can see
-                    // however; it CAN return 'false' or empty if something happens there
-                    // so:
-                    if (!path) {
-                        delete _self.expandedList[id];
-                    }
-                    else {
-                        lut[path] = true;
-                    }
-                }
-                catch(err){
-                    //Node is deleted
+                path = _self.expandedList[id].getAttribute("path");
+                if (!path) {
                     delete _self.expandedList[id];
+                }
+                else {
+                    lut[path] = true;
                 }
             }
 
@@ -390,19 +345,54 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.focus();
     },
 
+    loadProjectTree : function(callback) {
+        var currentSettings = this.currentSettings;
+        var len = currentSettings.length;
+        var _self = this;
+
+        function getLoadPath(i) {
+            if (i >= len)
+                return onFinish();
+
+            var path = currentSettings[i];
+            davProject.realWebdav.readdir(path, function(data, state, extra) {
+                var realPath = extra.url.substr(0, extra.url.length-1);
+                var parentNode = trFiles.queryNode('//folder[@path="' + realPath + '"]');
+
+                var xmlRoot = apf.getXml(data);
+                for (var x = 0, xmlLen = xmlRoot.childNodes.length; x < xmlLen; x++)
+                    trFiles.add(xmlRoot.childNodes[x], parentNode);
+
+                trFiles.$setLoadStatus(parentNode, "loaded");
+                trFiles.slideToggle(apf.xmldb.getHtmlNode(parentNode, trFiles), 1, true, null, function() {
+                    getLoadPath(++i);
+                });
+            });
+        }
+
+        function onFinish() {
+            _self.loading = false;
+            trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+            if (callback)
+                return callback();
+        }
+
+        getLoadPath(0);
+    },
+
     refresh : function(){
         trFiles.getModel().load("<data><folder type='folder' name='" +
             ide.projectName + "' path='" + ide.davPrefix +
             "' root='1'/></data>");
         this.expandedList = {};
         this.loading = true;
+
+        trFilesInsertRule.setAttribute("get", "");
+
         ide.dispatchEvent("track_action", {type: "reloadtree"});
         try {
             var _self = this;
-
-            trFiles.expandList(this.currentSettings, function(){
-                _self.loading = false;
-            });
+            this.loadProjectTree();
         } catch(e) {
 
         }

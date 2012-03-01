@@ -293,10 +293,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     /**** Init ****/
 
     init : function() {
+        this.model = new apf.model();
+
         var _self = this;
         ide.addEventListener("loadsettings", function(e){
             var filesysSettings = e.model.queryNode("auto/filesystem");
-            _self.model = new apf.model();
             if (!filesysSettings) {
                 filesysSettings = apf.createNodeFromXpath(e.model.data, "auto/filesystem");
                 _self.model.load("<data><folder type='folder' name='" + ide.projectName +
