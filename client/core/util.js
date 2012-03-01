@@ -279,6 +279,11 @@ exports.escapeXml = function(str, noQuotes) {
     });
 };
 
+// taken from http://xregexp.com/
+exports.escapeRegExp = function(str) {
+    return str.replace(/[-[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
+}
+
 /*
  * JavaScript Linkify - v0.3 - 6/27/2009
  * http://benalman.com/projects/javascript-linkify/

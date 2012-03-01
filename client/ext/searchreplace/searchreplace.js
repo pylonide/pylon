@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -76,6 +77,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         winSearchReplace.onclose = function() {
             ceEditor.focus();
         }
+        
+        this.txtFind.$ext.cols = this.txtFind.cols;
         
         this.txtFind.addEventListener("keydown", function(e){
             switch (e.keyCode){
@@ -217,6 +220,16 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return;
         var options = this.getOptions();
 
+        if (options.regExp !== true) {
+            options.regExp = true;
+            var splitQuery = txt.split("\n");
+
+            for (var q  = 0; q < splitQuery.length; q++) {
+                splitQuery[q] = util.escapeRegExp(splitQuery[q]); 
+            }
+            txt = splitQuery.join("\n");
+        }
+        
         if (this.$crtSearch != txt) {
             this.$crtSearch = txt;
             // structure of the options:
@@ -260,7 +273,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.$crtSearch = null;
         var options = this.getOptions();
         options.needle = this.txtFind.getValue();
+        
+        var cursor = this.$editor.getCursorPosition();
+        var line = cursor.row;
+        
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
+        
+        this.$editor.gotoLine(line); // replaceAll jumps you elsewhere; go back to where you were
+        
         ide.dispatchEvent("track_action", {type: "replace"});
     },
 

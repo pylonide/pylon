@@ -63,6 +63,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         this.btnReplaceAll.onclick = this.execFind.bind(this, true);
         
         var _self = this;
+        
+        this.txtFind.$ext.cols = this.txtFind.cols;
+        
         winSearchInFiles.onclose = function() {
             ceEditor.focus();
         };
