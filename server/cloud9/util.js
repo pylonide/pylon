@@ -18,8 +18,9 @@ exports.escapeRegExp = function(str) {
 
 exports.arrayToMap = function(arr) {
     var map = {};
-    for (var i = 0; i < arr.length; i++)
+    for (var i = 0, l = arr.length; i < l; i++) {
         map[arr[i]] = 1;
+    }
     return map;
 };
 
