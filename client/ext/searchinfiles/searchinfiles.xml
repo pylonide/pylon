@@ -10,16 +10,16 @@
       width   = "450"
       kbclose = "true">
         <a:vbox edge="10" padding="5">
-            <a:hbox align="center">
+            <a:hbox >
                 <a:label width="95">Containing Text</a:label>
-                <a:textbox id="txtSFFind" flex="1" focusselect="true"/>
+                <a:textarea id="txtSFFind" flex="1" focusselect="true" rows="2" cols="70"/>
             </a:hbox>
             <a:hbox align="center">
                 <a:label width="95">Filename Patterns</a:label>
-                <a:textbox id="ddSFPatterns" flex="1" focusselect="true"/>
+                <a:textbox id="ddSFPatterns" flex="1" focusselect="true" initial-message="*.*"/>
             </a:hbox>
             <a:hbox id="barReplace" align="center">
-                <a:label width="75">Replace With</a:label>
+                <a:label width="95">Replace With</a:label>
                 <a:textbox id="txtReplace" flex="1" />
             </a:hbox>
             <a:hbox edge="10 0 5">
@@ -68,6 +68,7 @@
           autoselect      = "false">
             <a:model />
             <a:caption match="[d:querydetail]">Search results for '{apf.htmlentities([@query])}'</a:caption>
+            <a:caption match="[d:replacement]">Into '{apf.htmlentities([@replacement])}'</a:caption>
             <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
             <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>

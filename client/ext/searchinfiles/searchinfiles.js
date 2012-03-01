@@ -196,11 +196,15 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
             
-        var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, "\\$1");
+        var options = this.getOptions();
+        var query = txtSFFind.value;
+        options.query = query.replace(/\n/g, "\\n");
+
+        var findValueSanitized = query.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
         
-        davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
+        davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
             var replaced = _self.replaceAll;
             _self.replaceAll = false; // reset
             
