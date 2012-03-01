@@ -145,9 +145,8 @@ User.VISITOR_PERMISSIONS = {
         if (scope && this.$server_exclude[scope])
             return;
 
-        // pass a lambda to enable socket.io ACK
         for (var id in this.clients)
-            this.clients[id].send(msg, function() {});
+            this.clients[id].send(msg);
     };
     
 }).call(User.prototype);
