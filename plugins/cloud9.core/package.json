@@ -8,11 +8,7 @@
         "jsDAV": "0.1.x",
         "asyncjs": "0.0.x",
         "socket.io": "0.8.x",
-        "connect": "1.8.x",
-
-        "ace": "0.2.x",
-        "v8debug": "0.1.x",
-        "treehugger": "0.0.x"
+        "connect": "1.8.x"
     },
 
     "plugin": {
@@ -21,7 +17,8 @@
             "log",
             "hub",
             "connect",
-            "http"
+            "http",
+            "static"
         ]
     }
 }

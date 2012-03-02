@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.v8debug",
+    "version": "0.0.1",
+    "main": "v8debug-lib.js",
+    "private": true,
+
+    "dependencies": {
+        "v8debug": "0.1.x"
+    },
+
+    "plugin": {
+        "provides": ["client.v8debug"],
+        "consumes": ["static"]
+    }
+}
