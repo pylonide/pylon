@@ -6,7 +6,9 @@
 
     "dependencies": {
         "jsDAV": "0.1.x",
-        "asyncjs": "0.0.x"
+        "asyncjs": "0.0.x",
+        "socket.io": "0.8.x",
+        "connect": "1.8.x"
     },
 
     "plugin": {
@@ -14,7 +16,7 @@
         "consumes": [
             "log",
             "hub",
-            "connect.route",
+            "connect",
             "http"
         ]
     }

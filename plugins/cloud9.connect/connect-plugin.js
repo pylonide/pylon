@@ -21,8 +21,9 @@ var exports = module.exports = function startup(options, imports, register) {
                 server.close();
                 server.on("close", callback);
             },
-            "connect.route": {
-                addRoute: server.addRoute
+            "connect": {
+                addRoute: server.addRoute,
+                addMiddleware: server.use.bind(server)
             },
             "http": {
                 getServer: function() {
