@@ -4,17 +4,27 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Plugin = require("cloud9/plugin");
-var sys = require("sys");
-var util = require("cloud9/util");
 
-var ShellGitPlugin = module.exports = function(ide, workspace) {
+"use strict";
+
+var Plugin = require("cloud9/plugin");
+var util = require("util");
+var c9util = require("cloud9/util");
+
+var name = "git";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, ShellGitPlugin, register);
+};
+
+
+var ShellGitPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "git";
 };
 
-sys.inherits(ShellGitPlugin, Plugin);
+util.inherits(ShellGitPlugin, Plugin);
 
 (function() {
     var githelp     = "",
@@ -50,14 +60,14 @@ sys.inherits(ShellGitPlugin, Plugin);
         }
 
         function onfinish() {
-            util.extend(commands, githelp);
+            c9util.extend(commands, githelp);
             callback();
         }
     };
 
     this.augmentCommand = function(cmd, struct) {
         var map = commandsMap[cmd] || commandsMap["default"];
-        return util.extend(struct, map || {});
+        return c9util.extend(struct, map || {});
     };
 
     this.command = function(user, message, client) {

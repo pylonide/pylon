@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.ide.settings",
+    "version": "0.0.1",
+
+    "main": "./settings.js",
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}

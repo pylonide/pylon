@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.ide.state",
+    "version": "0.0.1",
+
+    "main": "./state.js",
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}

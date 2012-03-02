@@ -4,17 +4,25 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Plugin = require("cloud9/plugin");
-var Fs     = require("fs");
-var sys    = require("sys");
 
-var BlamePlugin = module.exports = function(ide, workspace) {
-    Plugin.call(this, ide, workspace);
-    this.hooks = ["command"];
-    this.name  = "blame";
+"use strict";
+
+var Plugin = require("cloud9/plugin");
+var util = require("util");
+
+var name = "blame";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, BlamePlugin, register);
 };
 
-sys.inherits(BlamePlugin, Plugin);
+var BlamePlugin = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
+    this.hooks = ["command"];
+    this.name  = name;
+};
+
+util.inherits(BlamePlugin, Plugin);
 
 (function() {
 

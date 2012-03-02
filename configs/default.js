@@ -12,6 +12,8 @@ module.exports = {
                 packagePath: __dirname + "/../plugins/cloud9.log"
             }, {
                 packagePath: __dirname + "/../plugins/cloud9.core"
+            }, {
+                packagePath: __dirname + "/../plugins/cloud9.ide.auth"
             }]
         }
     }

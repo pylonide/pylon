@@ -4,20 +4,28 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Path             = require("path"),
-    Spawn            = require("child_process").spawn,
-    Plugin           = require("cloud9/plugin"),
-    sys              = require("sys"),
-    netutil          = require("cloud9/netutil");
 
-var PythonRuntimePlugin = module.exports = function(ide, workspace) {
+"use strict";
+
+var Path = require("path");
+var Spawn = require("child_process").spawn;
+var Plugin = require("cloud9/plugin");
+var util = require("util");
+
+var name = "python-runtime";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, PythonRuntimePlugin, register);
+};
+
+var PythonRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
     this.workspace = workspace;
     this.hooks = ["command"];
-    this.name = "python-runtime";
+    this.name = name;
 };
 
-sys.inherits(PythonRuntimePlugin, Plugin);
+util.inherits(PythonRuntimePlugin, Plugin);
 
 (function() {
     this.init = function() {
@@ -74,11 +82,11 @@ sys.inherits(PythonRuntimePlugin, Plugin);
             return _self.ide.error("Child process already running!", 1, message);
 
         var file = _self.ide.workspaceDir + "/" + message.file;
-        
+
         Path.exists(file, function(exists) {
            if (!exists)
                return _self.ide.error("File does not exist: " + message.file, 2, message);
-            
+
            var cwd = _self.ide.workspaceDir + "/" + (message.cwd || "");
            Path.exists(cwd, function(exists) {
                if (!exists)
@@ -129,10 +137,10 @@ sys.inherits(PythonRuntimePlugin, Plugin);
 
         return child;
     };
-    
+
     this.dispose = function(callback) {
         this.$kill();
         callback();
     };
-    
+
 }).call(PythonRuntimePlugin.prototype);

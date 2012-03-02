@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.ide.blame",
+    "version": "0.0.1",
+
+    "main": "./blame.js",
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}

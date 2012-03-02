@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.ide.shell",
+    "version": "0.0.1",
+
+    "main": "./shell.js",
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}

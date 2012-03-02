@@ -3,7 +3,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-var net = require("net");
+"use strict";
+
 var sys = require("sys");
 var NodeSocket = require("v8debug/NodeSocket");
 var ChromeDebugMessageStream = require("v8debug/ChromeDebugMessageStream");
