@@ -1,7 +1,7 @@
-var connect = require("connect"),
-    error   = require("./error"),
-    fs      = require("fs"),
-    path    = require("path");
+var connect = require("connect");
+var error = require("./error");
+var fs = require("fs");
+var path = require("path");
 
 exports.staticProvider = function (root, mount) {
     var staticProvider = connect.static(path.normalize(root));

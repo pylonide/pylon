@@ -7,7 +7,6 @@ var User = require("./user");
 var middleware = require("./middleware");
 
 module.exports = function setup(options, imports, register) {
-
     var log = imports.log;
     var hub = imports.hub;
     var connect = imports.connect;
@@ -34,11 +33,21 @@ module.exports = function setup(options, imports, register) {
         connect.addMiddleware(Connect.session({
             store: sessionStore,
             key: "cloud9.sid",
-            secret: "123"
+            secret: "1234"
         }));
 
         //connect.addMiddleware(middleware.staticProvider(path.normalize(__dirname + "/../../support"), "/static/support"));
         connect.addMiddleware(middleware.staticProvider(path.normalize(__dirname + "/www"), "/static"));
+
+        var aceBase = require.resolve("ace/package.json").slice(0, -13);
+        connect.addMiddleware(middleware.staticProvider(aceBase + "/lib", "/static/ace/lib"));
+        connect.addMiddleware(middleware.staticProvider(aceBase + "/build/src", "/static/ace/build"));
+
+        var v8debugBase = require.resolve("v8debug/package.json").slice(0, -13);
+        connect.addMiddleware(middleware.staticProvider(v8debugBase + "/lib", "/static/v8debug/lib"));
+
+        var treehuggerBase = require.resolve("treehugger/package.json").slice(0, -13);
+        connect.addMiddleware(middleware.staticProvider(treehuggerBase + "/lib", "/static/treehugger/lib"));
 
         connect.addMiddleware(ideProvider(projectDir, http.getServer(), sessionStore));
         log.info("IDE server initialized");
@@ -85,7 +94,15 @@ function ideProvider(projectDir, server, sessionStore) {
         staticUrl: "/static",
         workspaceId: name,
         name: name,
-        version: "0.7.0"
+        version: "0.7.0",
+        requirejsConfig: {
+            baseUrl: "/static/",
+            paths: {
+                "ace": "/static/ace/lib/ace",
+                "debug": "/static/v8debug/lib/v8debug",
+                "treehugger": "/static/treehugger/lib/treehugger"
+            }
+        }
     };
 
     var ide = new IdeServer(serverOptions, server, []);
