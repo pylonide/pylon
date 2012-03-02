@@ -21,6 +21,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     this.socket = socket;
 
     this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
+
     var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     var staticUrl = options.staticUrl || "/static";
     var requirejsConfig = options.requirejsConfig || {
@@ -69,8 +70,8 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         c9util.extend(davOptions, options.remote);
     else
         davOptions.path = this.options.mountDir;
-
     this.davServer = jsDAV.mount(davOptions);
+
     this.davInited = false;
 
     this.workspace = new Workspace({ ide: this });

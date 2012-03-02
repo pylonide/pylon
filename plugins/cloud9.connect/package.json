@@ -10,7 +10,7 @@
 
     "plugin": {
         "provides": [
-            "connect.route",
+            "connect",
             "http"
         ],
 
