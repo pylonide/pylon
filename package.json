@@ -1,20 +1,21 @@
 {
     "name": "cloud9",
     "description": "Cloud9 IDE",
-    "version": "0.6",
+    "version": "0.7",
     "homepage" : "http://github.com/ajaxorg/cloud9",
-    "engines": {"node": ">= 0.4.0"},
+    "engines": {"node": ">= 0.6.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
-    "main": "bin/cloud9",
+
+    "dependencies": {
+        "architect": "0.0.x"
+    },
+
     "repository" : {
         "type" : "git",
          "url" : "git://github.com/ajaxorg/cloud9.git"
     },
-    "bin" : {
-        "cloud9" : "./bin/cloud9-npm.js"
-    },
     "licenses": [{
         "type": "GPLv3",
-        "url": "http://www.gnu.org/licenses/gpl-3.0.txt"}
-    ]
+        "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
+    }]
 }
