@@ -1,0 +1,14 @@
+{
+    "name": "cloud9.client.apf",
+    "version": "0.0.1",
+    "main": "apf-lib.js",
+    "private": true,
+
+    "dependencies": {
+    },
+
+    "plugin": {
+        "provides": ["client.apf"],
+        "consumes": ["static"]
+    }
+}

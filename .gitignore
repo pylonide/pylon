@@ -22,3 +22,7 @@ plugins/cloud9.core/node_modules/
 plugins/cloud9.connect/node_modules/
 plugins/cloud9.ide.run-node/node_modules/
 plugins/cloud9.ide.shell/node_modules/
+plugins/cloud9.client.ace/node_modules/
+plugins/cloud9.client.treehugger/node_modules/
+plugins/cloud9.client.v8debug/node_modules/
+plugins/cloud9.static/node_modules/

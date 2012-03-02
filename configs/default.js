@@ -9,6 +9,17 @@ module.exports = {
                 port: process.env.PORT || 3131,
                 host: "localhost"
             }, {
+                packagePath: __dirname + "/../plugins/cloud9.static",
+                prefix: "/static"
+            }, {
+                packagePath: __dirname + "/../plugins/cloud9.client.ace"
+            }, {
+                packagePath: __dirname + "/../plugins/cloud9.client.apf"
+            }, {
+                packagePath: __dirname + "/../plugins/cloud9.client.treehugger"
+            }, {
+                packagePath: __dirname + "/../plugins/cloud9.client.v8debug"
+            }, {
                 packagePath: __dirname + "/../plugins/cloud9.log"
             }, {
                 packagePath: __dirname + "/../plugins/cloud9.core"

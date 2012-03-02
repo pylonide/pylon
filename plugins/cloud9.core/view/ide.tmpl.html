@@ -44,7 +44,7 @@
 
             var apfLoc = VERSION == FILES
                 ? "[%staticUrl%]/support/apf/apf.js"
-                : "[%staticUrl%]/js/apf_" + VERSION + ".js";
+                : "[%staticUrl%]/apf-packaged/apf_" + VERSION + ".js";
 
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){

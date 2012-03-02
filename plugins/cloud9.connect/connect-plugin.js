@@ -23,7 +23,7 @@ var exports = module.exports = function startup(options, imports, register) {
             },
             "connect": {
                 addRoute: server.addRoute,
-                addMiddleware: server.use.bind(server)
+                use: server.use.bind(server)
             },
             "http": {
                 getServer: function() {
