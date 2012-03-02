@@ -122,34 +122,19 @@ module.exports = ext.register("ext/tree/tree", {
             var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
             _self.currentSettings = [];
 
-            var path, id, lut = {};
+            var path, id;
             
             // expandedList keeps an active record of all the expanded nodes
             // so that on each save this gets serialized into the auto/projecttree
             // settings node
             for (id in _self.expandedList) {
                 path = _self.expandedList[id].getAttribute("path");
-                if (!path)
+                if (!path) {
                     delete _self.expandedList[id];
-                else
-                    lut[path] = true;
-            }
-
-            // This checks that each expanded folder has a root that's already
-            // been saved
-            var cc, parts;
-            for (path in lut) {
-                parts = path.split("/");
-                cc = parts.shift();
-                do {
-                    if (!parts.length)
-                        break;
-
-                    cc += "/" + parts.shift();
-                } while(lut[cc]);
-
-                if (!parts.length)
+                }
+                else {
                     _self.currentSettings.push(path);
+                }
             }
 
             xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
