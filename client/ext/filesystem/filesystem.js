@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
+var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
@@ -260,19 +261,6 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var path = node.getAttribute("path"),
             page = tabEditors.getPage(path),
             newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
-            //webdav = this.webdav;
-
-        // Check the newpath doesn't exists first
-        // if (tree.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
-        //             webdav.$undoFlag = true;
-        //             util.alert("Error", "Unable to move", "Couldn't move to this "
-        //               + "destination because there's already a node with the same name", function() {
-        //                 tree.getActionTracker().undo();
-        //                 tree.enable();
-        //             });
-        //             tree.enable();
-        //             return false;
-        //         }
 
         node.setAttribute("path", newpath);
         if (page)
@@ -304,8 +292,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     /**** Init ****/
 
-    init : function(amlNode){
+    init : function() {
         this.model = new apf.model();
+        this.model.load("<data><folder type='folder' name='" + ide.projectName +
+            "' path='" + ide.davPrefix + "' root='1'/></data>");
+
         this.model.setAttribute("whitespace", false);
 
         var processing = {};
@@ -331,15 +322,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             }
         });
 
-        var _self = this;
-        _self.model.load("<data><folder type='folder' name='" + ide.projectName
-            + "' path='" + ide.davPrefix + "' root='1'/></data>");
-
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
         this.webdav = new apf.webdav({
             id  : "davProject",
             url : dav_url,
-            onauthfailure: function(e) {
+            onauthfailure: function() {
                 ide.dispatchEvent("authrequired");
             }
         });
