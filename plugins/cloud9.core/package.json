@@ -18,7 +18,9 @@
             "hub",
             "connect",
             "http",
-            "static"
+            "static",
+
+            "client.cloud9"
         ]
     }
 }
