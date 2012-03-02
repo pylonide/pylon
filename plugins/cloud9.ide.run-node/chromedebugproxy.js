@@ -5,10 +5,9 @@
 "use strict";
 
 var util = require("util");
-var NodeSocket = require("v8debug/NodeSocket");
-var ChromeDebugMessageStream = require("v8debug/ChromeDebugMessageStream");
-var DevToolsMessage = require("v8debug/DevToolsMessage");
-
+var NodeSocket = require("v8debug").NodeSocket;
+var ChromeDebugMessageStream = require("v8debug").ChromeDebugMessageStream;
+var DevToolsMessage = require("v8debug").DevToolsMessage;
 
 var DebugProxy = module.exports = function(port) {
     process.EventEmitter.call(this);

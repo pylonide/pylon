@@ -2,7 +2,7 @@
     "name": "cloud9.ide.node-runtime",
     "version": "0.0.1",
 
-    "main": "./node-runtime.js",
+    "main": "./run-node.js",
 
     "dependencies": {
         "v8debug": "0.0.x"

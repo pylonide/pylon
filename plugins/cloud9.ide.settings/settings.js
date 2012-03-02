@@ -7,7 +7,7 @@
 
 "use strict";
 
-var Plugin = require("cloud9/plugin");
+var Plugin = require("../cloud9.core/plugin");
 var Path = require("path");
 var fs = require("fs");
 var util = require("util");

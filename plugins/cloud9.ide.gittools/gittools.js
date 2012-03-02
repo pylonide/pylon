@@ -7,7 +7,7 @@
 
 "use strict";
 
-var Plugin = require("cloud9/plugin");
+var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
 var name = "gittools";

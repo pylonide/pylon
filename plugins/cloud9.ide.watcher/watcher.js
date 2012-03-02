@@ -9,7 +9,7 @@
 
 var fs = require("fs");
 var util = require("util");
-var Plugin = require("cloud9/plugin");
+var Plugin = require("../cloud9.core/plugin");
 
 var name = "watcher";
 

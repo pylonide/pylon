@@ -2,7 +2,7 @@
     "name": "cloud9.ide.gittools",
     "version": "0.0.1",
 
-    "main": "./auth.js",
+    "main": "./gittools.js",
 
     "plugin": {
         "consumes": [
