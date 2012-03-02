@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.recentfiles",
+    "version": "0.0.1",
+    "main": "recentfiles-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.recentfiles"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

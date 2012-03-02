@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.gotoline",
+    "version": "0.0.1",
+    "main": "gotoline-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.gotoline"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

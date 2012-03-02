@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.statusbar",
+    "version": "0.0.1",
+    "main": "statusbar-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.statusbar"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

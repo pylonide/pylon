@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.gittools",
+    "version": "0.0.1",
+    "main": "gittools-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.gittools"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

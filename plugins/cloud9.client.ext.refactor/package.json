@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.refactor",
+    "version": "0.0.1",
+    "main": "refactor-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.refactor"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

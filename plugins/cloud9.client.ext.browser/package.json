@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.browser",
+    "version": "0.0.1",
+    "main": "browser-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.browser"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

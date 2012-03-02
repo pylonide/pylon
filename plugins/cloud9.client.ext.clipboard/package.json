@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.clipboard",
+    "version": "0.0.1",
+    "main": "clipboard-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.clipboard"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}
