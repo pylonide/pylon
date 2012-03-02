@@ -10,9 +10,9 @@
       width   = "450"
       kbclose = "true">
         <a:vbox edge="10" padding="5">
-            <a:hbox >
+            <a:hbox>
                 <a:label width="95">Containing Text</a:label>
-                <a:textarea id="txtSFFind" flex="1" focusselect="true" rows="2" cols="70"/>
+                <a:textarea id="txtSFFind" flex="1" focusselect="true" cols="70" />
             </a:hbox>
             <a:hbox align="center">
                 <a:label width="95">Filename Patterns</a:label>

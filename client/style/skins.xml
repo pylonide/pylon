@@ -9384,7 +9384,7 @@
 
     <a:presentation>
         <a:main input=".">
-            <textarea type="text" class="ta"/>
+            <textarea type="text" class="ta" />
         </a:main>
     </a:presentation>
 </a:textbox>
