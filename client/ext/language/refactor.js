@@ -49,8 +49,11 @@ module.exports = {
         nodes.push(this.refactorItem, this.refactorItemDup);
 
         mnuEdit.appendChild(this.refactorItem);
-        require("ext/statusbar/statusbar").addToolsItem(new apf.divider());
-        require("ext/statusbar/statusbar").addToolsItem(this.refactorItemDup);
+
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            e.ext.addToolsItem(new apf.divider(), 3);
+            e.ext.addToolsItem(_self.refactorItemDup, 4);
+        });
 
         code.commandManager.addCommand({
             name: "renameVar",

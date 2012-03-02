@@ -23,7 +23,6 @@ var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
-var statusbar = require("ext/statusbar/statusbar");
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
     var q = undoObj.args;
@@ -296,7 +295,7 @@ module.exports = ext.register("ext/code/code", {
     },
 
     hook: function() {
-        var _self      = this;
+        var _self = this;
 
         //Settings Support
         ide.addEventListener("init.ext/settings/settings", function(e) {
@@ -358,9 +357,6 @@ module.exports = ext.register("ext/code/code", {
         tabEditors.addEventListener("afterswitch", function(e) {
             ceEditor.afterOpenFile(ceEditor.getSession());
         });
-
-        // preload common language modes
-        require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
     },
 
     init: function(amlPage) {
@@ -370,25 +366,31 @@ module.exports = ext.register("ext/code/code", {
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = this.commandManager;
 
+        // preload common language modes
+        var noop = function() {};
+        ceEditor.getMode("javascript", noop);
+        ceEditor.getMode("html", noop);
+        ceEditor.getMode("css", noop);
+
         var _self = this;
-        
+
         var menuSyntaxHighlight = new apf.item({
             caption : "Syntax Highlighting",
             submenu : "mnuSyntax"
         });
-        
+
         var menuShowInvisibles = new apf.item({
             type    : "check",
             caption : "Show Invisibles",
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
         });
-        
+
         var menuWrapLines = new apf.item({
             type    : "check",
             caption : "Wrap Lines",
             checked : "{ceEditor.wrapmode}"
         });
-        
+
         this.nodes.push(
             //Add a panel to the statusbar showing whether the insert button is pressed
             sbMain.appendChild(new apf.section({
@@ -443,8 +445,11 @@ module.exports = ext.register("ext/code/code", {
             }
         };
 
-        statusbar.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
-        statusbar.addPrefsItem(menuWrapLines.cloneNode(true), 1);
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            // add preferences to the statusbar plugin
+            e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
+            e.ext.addPrefsItem(menuWrapLines.cloneNode(true), 1);
+        });
 
         ide.addEventListener("keybindingschange", function(e) {
             if (typeof ceEditor == "undefined")

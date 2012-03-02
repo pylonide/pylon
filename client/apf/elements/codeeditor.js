@@ -164,7 +164,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        _self.$getMode(_self.syntax, function(mode) {
+        _self.getMode(_self.syntax, function(mode) {
             doc.setMode(mode);
         });
 
@@ -230,7 +230,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         var frame = this.$updateMarkerPrerequisite();
         if (!frame) {
-        	return;
+            return;
         }
 
         var script = this.xmlRoot;
@@ -284,10 +284,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["syntax"] = function(value) {
         var _self = this;
-        this.$getMode(value, function(mode) {
-            setTimeout(function() {
+        this.getMode(value, function(mode) {
+            // the syntax could have changed while loading the mode
+            if (_self.syntax == value)
                 _self.$editor.getSession().setMode(mode);
-            });
         });
     };
 
@@ -315,38 +315,68 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         return this.$basePath;
     };
 
-    this.$loadedModes = {};
-    this.$getMode = function(syntax, callback) {
+    /**
+     * Looks up an object by ID from a cache. If the item is not in the cache it is
+     * created on demand using the factory function. Intermitted calls to the same
+     * id are pooled until the object is created
+     */
+    this._lazyCreate = function(id, cache, callbackStore, factory, callback) {
+        var item = cache[id];
+        if (item)
+            return callback(null, item);
+
+        if (callbackStore[id]) {
+            callbackStore[id].push(callback);
+            return;
+        }
+
+        callbackStore[id] = [callback];
+
+        factory(id, function(err, item) {
+            var callbacks = callbackStore[id];
+            delete callbackStore[id];
+
+            cache[id] = item;
+
+            callbacks.forEach(function(cb) {
+                cb(err, item);
+            });
+        });
+    };
+
+    this.$modeCallbacks = {};
+    this.getMode = function(syntax, callback) {
+        var _self = this;
+
         syntax = (syntax || "text").toLowerCase();
         if (syntax.indexOf("/") == -1)
             syntax = "ace/mode/" + syntax;
-        if (this.$modes[syntax])
-            return callback(this.$modes[syntax]);
 
-        // load packaged version
-        if (define.packaged) {
-            if (this.$loadedModes[syntax])
-                return afterPreload();
+        this._lazyCreate(syntax, this.$modes, this.$modeCallbacks, function(syntax, callback) {
+            // load packaged version
+            if (define.packaged) {
+                var base = syntax.split("/").pop();
+                var fileName = _self.$guessBasePath() + "mode-" + base + ".js";
+                net.loadScript(fileName, afterPreload);
+            }
+            else
+                afterPreload();
 
-            var base = syntax.split("/").pop();
-            var fileName = this.$guessBasePath() + "mode-" + base + ".js";
-            net.loadScript(fileName, afterPreload);
-        }
-        else
-            afterPreload();
-
-        var _self = this;
-        function afterPreload() {
-            _self.$loadedModes[syntax] = true;
-            require([syntax], function(modeModule) {
-                // #ifdef __DEBUG
-                if (typeof modeModule.Mode != "function")
-                    return apf.console.error("Unkown syntax type: '" + syntax + "'");
-                // #endif
-                _self.$modes[syntax] = new modeModule.Mode();
-                callback(_self.$modes[syntax]);
-            });
-        }
+            function afterPreload() {
+                require([syntax], function(modeModule) {
+                    // #ifdef __DEBUG
+                    if (typeof modeModule.Mode != "function") {
+                        apf.console.error("Unkown syntax type: '" + syntax + "'");
+                        return callback("Unkown syntax type: '" + syntax + "'");
+                    }
+                    // #endif
+                    _self.$modes[syntax] = new modeModule.Mode();
+                    callback(null, _self.$modes[syntax]);
+                });
+            }
+        }, function(err, mode) {
+            callback(mode);
+        });
     };
 
     this.$propHandlers["activeline"] = function(value) {
@@ -645,7 +675,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc = ed.getSession();
 
         if (this.syntax === undefined)
-            this.syntax = "Text";
+            this.syntax = "text";
         if (this.tabsize === undefined)
             this.tabsize = doc.getTabSize(); //4
         if (this.softtabs === undefined)

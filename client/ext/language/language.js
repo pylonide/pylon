@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var noderunner = require("ext/noderunner/noderunner");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
@@ -29,7 +30,7 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors, noderunner],
+    deps    : [editors, noderunner, code],
     nodes   : [],
     alone   : true,
     markup  : markup,
@@ -55,7 +56,7 @@ module.exports = ext.register("ext/language/language", {
         complete.setWorker(worker);
 
         //ide.addEventListener("init.ext/code/code", function(){
-		ide.addEventListener("afteropenfile", function(event){
+        ide.addEventListener("afteropenfile", function(event){
             if (!event.node)
                 return;
             if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
@@ -68,7 +69,7 @@ module.exports = ext.register("ext/language/language", {
             });
             // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
             deferred.cancel().schedule(100);
-	    });
+        });
 
         // Language features
         marker.hook(this, worker);
@@ -84,7 +85,7 @@ module.exports = ext.register("ext/language/language", {
             var heading = e.ext.getHeading("Language Support");
             heading.insertMarkup(settings);
         });
-	},
+    },
 
     init : function() {
         var _self = this;
@@ -124,6 +125,14 @@ module.exports = ext.register("ext/language/language", {
 
         ide.addEventListener("liveinspect", function (e) {
             worker.emit("inspect", { data: { row: e.row, col: e.col } });
+        });
+
+        // Monkeypatching ACE's JS mode to disable worker
+        // this will be handled by C9's worker
+        ceEditor.getMode("javascript", function(mode) {
+            mode.createWorker = function() {
+                return null;
+            };
         });
     },
 

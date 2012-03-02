@@ -198,7 +198,7 @@ define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, ex
     RegExp.prototype.exec = function (str) {
         var match = real.exec.apply(this, arguments),
             name, r2;
-        if (match) {
+        if ( typeof(str) == 'string' && match) {
             // Fix browsers whose `exec` methods don't consistently return `undefined` for
             // nonparticipating capturing groups
             if (!compliantExecNpcg && match.length > 1 && indexOf(match, "") > -1) {
@@ -263,7 +263,8 @@ define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, ex
         return -1;
     };
 
-});// vim: ts=4 sts=4 sw=4 expandtab
+});
+// vim: ts=4 sts=4 sw=4 expandtab
 // -- kriskowal Kris Kowal Copyright (C) 2009-2011 MIT License
 // -- tlrobinson Tom Robinson Copyright (C) 2009-2010 MIT License (Narwhal Project)
 // -- dantman Daniel Friesen Copyright (C) 2010 XXX TODO License or CLA
@@ -3149,11 +3150,20 @@ ConsNode.prototype.getPos = function() {
     }
     for (var i = 0; i < this.length; i++) {
         var p = this[i].getPos();
+
         if (p) {
+            var oldSl = pos.sl;
             pos.sl = Math.min(pos.sl, p.sl);
-            pos.sc = Math.min(pos.sc, p.sc);
+            if(pos.sl !== oldSl)
+                pos.sc = p.sc;
+            else
+                pos.sc = Math.min(pos.sc, p.sc);
+            var oldEl = pos.el;
             pos.el = Math.max(pos.el, p.el);
-            pos.ec = Math.max(pos.ec, p.ec);
+            if(pos.el !== oldEl)
+                pos.ec = p.ec;
+            else
+                pos.ec = Math.max(pos.ec, p.ec);
         }
     }
     return pos;
@@ -3255,7 +3265,7 @@ ListNode.prototype.findNode = ConsNode.prototype.findNode;
  */
 ListNode.prototype.forEach = function(fn) {
     for(var i = 0; i < this.length; i++) {
-        fn.call(this[i], this[i]);
+        fn.call(this[i], this[i], i);
     }
 };
 
@@ -3849,11 +3859,8 @@ completer.handlesLanguage = function(language) {
 };
 
 completer.fetchText = function(path) {
-    var chunks = path.split("/");
-    chunks[0] = globalRequire.tlns[chunks[0]] || chunks[0];
-    var url = chunks.join("/");
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, false);
+    xhr.open('GET', "/static/" + path, false);
     xhr.send();
     if(xhr.status === 200)
         return xhr.responseText;
@@ -4033,18 +4040,23 @@ handler.analyze = function(doc, ast) {
 };
 */
 
-});define('treehugger/js/parse', ['require', 'exports', 'module' , 'treehugger/uglifyparser', 'treehugger/tree'], function(require, exports, module) {
+});define('treehugger/js/parse', ['require', 'exports', 'module' , 'treehugger/js/uglifyparser', 'treehugger/tree'], function(require, exports, module) {
 
-var parser = require("treehugger/uglifyparser");
+var parser = require("treehugger/js/uglifyparser");
 var tree = require('treehugger/tree');
 
 exports.parse = function(s) {
-    var n = parser.parse(s, false, true);
-    return exports.transform(n);
+    var result = parser.parse(s, false, true);
+    var node = exports.transform(result.ast);
+    if(result.error)
+        node.setAnnotation("error", result.error);
+    return node;
 };
 
 
 function setIdPos(oNode, node) {
+    if(!oNode.name)
+        oNode.name = "";
     node.setAnnotation("pos", {
         sl: oNode.start.line,
         sc: oNode.start.col,
@@ -4076,6 +4088,16 @@ exports.transform = function(n) {
                     return tree.cons("VarDeclInit", [idNode, transform(varNode[1])]);
                 else
                     return tree.cons("VarDecl", [idNode]);
+            }))]);
+            break;
+        case "let":
+            resultNode = tree.cons("LetDecls", [tree.list(n[1].map(function(varNode) {
+                var idNode = tree.string(varNode[0].name);
+                setIdPos(varNode[0], idNode);
+                if(varNode[1])
+                    return tree.cons("LetDeclInit", [idNode, transform(varNode[1])]);
+                else
+                    return tree.cons("LetDecl", [idNode]);
             }))]);
             break;
         case "const":
@@ -4131,12 +4153,12 @@ exports.transform = function(n) {
             resultNode = tree.cons("Var", [tree.string(n[1])]);
             break;
         case "defun":
-            resultNode = tree.cons("Function", [setIdPos(n[1], tree.string(n[1].name)), tree.list(n[2].map(function(arg) {
+            resultNode = tree.cons("Function", [setIdPos(n[1], tree.string(n[1].name || "")), tree.list(n[2].map(function(arg) {
                 return setIdPos(arg, tree.cons("FArg", [tree.string(arg.name)]));
             })), tree.list(n[3].map(transform))]);
             break;
         case "function":
-            var funName = tree.string(n[1].name);
+            var funName = tree.string(n[1].name || "");
             if(n[1].name)
                 setIdPos(n[1], funName);
             var fargs = tree.list(n[2].map(function(arg) {
@@ -4168,7 +4190,7 @@ exports.transform = function(n) {
             resultNode = tree.cons("For", [transform(n[1]), transform(n[2]), transform(n[3]), transform(n[4])]);
             break;
         case "for-in":
-            resultNode = tree.cons("For", [transform(n[1]), transform(n[3]), transform(n[4])]);
+            resultNode = tree.cons("ForIn", [transform(n[1]), transform(n[3]), transform(n[4])]);
             break;
         case "while":
             resultNode = tree.cons("While", [transform(n[1]), transform(n[2])]);
@@ -4203,6 +4225,9 @@ exports.transform = function(n) {
             resultNode = tree.cons("Try", [tree.list(n[1].map(transform)),
                  tree.list(n[2] ? [tree.cons("Catch", [tree.string(n[2][0]), tree.list(n[2][1].map(transform))])] : []),
                  n[3] ? tree.list(n[3].map(transform)) : tree.cons("None", [])]);
+            break;
+        case "with":
+            resultNode = tree.cons("With", [transform(n[1]), tree.list(n[2][1].map(transform))]);
             break;
         case "atom":
             resultNode = tree.cons("Atom", []);
@@ -4252,8 +4277,8 @@ exports.transform = function(n) {
 
   ----------------------------------------------------------------------
   
-  This is an updated version of UglifyJS, adapted by zef@ajax.org with error
-  recovery, to keep  parsing code when errors are encountered.
+  This is an updated version of UglifyJS, adapted by zef@c9.io with error
+  recovery, to keep  parsing code when errors are encountered
 
   -------------------------------- (C) ---------------------------------
 
@@ -4294,7 +4319,7 @@ exports.transform = function(n) {
 
  ***********************************************************************/
  
-define('treehugger/uglifyparser', ['require', 'exports', 'module' ], function(require, exports, module) {
+define('treehugger/js/uglifyparser', ['require', 'exports', 'module' ], function(require, exports, module) {
 
 /* -----[ Tokenizer (constants) ]----- */
 
@@ -4323,7 +4348,8 @@ var KEYWORDS = array_to_hash([
     "var",
     "void",
     "while",
-    "with"
+    "with",
+    "let"
 ]);
 
 var RESERVED_WORDS = array_to_hash([
@@ -4936,7 +4962,8 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         in_loop     : 0,
         labels      : [],
         line        : 0,
-        col         : 0
+        col         : 0,
+        error       : null
     };
 
     S.token = next();
@@ -4947,6 +4974,13 @@ function parse($TEXT, exigent_mode, embed_tokens) {
 
     function peek() {
         return S.peeked || (S.peeked = S.input());
+    }
+    
+    function register_error(message, token) {
+        if (!token)
+            token = S.token;
+        if(!S.error)
+            S.error = {line: token.line, col: token.col, message: message};
     }
     
     function next() {
@@ -4977,12 +5011,16 @@ function parse($TEXT, exigent_mode, embed_tokens) {
     }
 
     function token_error(token, msg) {
-        croak(msg, token.line, token.col);
+        // RECOVERY
+        register_error(msg, token);
+        // croak(msg, token.line, token.col);
     }
 
     function unexpected(token) {
         // RECOVERY
-        return;
+        if (token == null)
+            token = S.token;
+        register_error("Unexpected token: " + token.type + " (" + token.value + ")", token);
         /*if (token == null)
             token = S.token;
         token_error(token, "Unexpected token: " + token.type + " (" + token.value + ")");*/
@@ -4992,7 +5030,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         if (is(type, val)) {
             return next();
         }
-        token_error(S.token, "Unexpected token " + S.token.type + ", expected " + type);
+        register_error("Unexpected token " + S.token.type + ", expected " + type, S.token);
     }
     
     function expect(punc) {
@@ -5000,6 +5038,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         if(is("punc", punc))
            return next();
         
+        register_error("Expected: " + punc);
         // return expect_token("punc", punc);
     }
 
@@ -5008,9 +5047,11 @@ function parse($TEXT, exigent_mode, embed_tokens) {
     }
     
     function semicolon() {
-        if (is("punc", ";")) next();
         // RECOVER
-        //else if (!can_insert_semicolon()) unexpected();
+        if (is("punc", ";")) 
+            next();
+        else if (!can_insert_semicolon())
+            register_error("Semicolon expected");
     }
 
     function as() {
@@ -5020,6 +5061,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
     function parenthesised() {
         if(!is("punc", "(")) {
             // RECOVER
+            register_error("Expected: (");
             return as("ERROR");
         }
         expect("(");
@@ -5036,7 +5078,10 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         if (embed_tokens) return function() {
             var start = S.token;
             var ast = parser.apply(this, arguments);
-            if (!ast) return ["ERROR"];
+            if (!ast) {
+                register_error("Parse error");
+                return ["ERROR"];
+            }
             ast[0] = add_tokens(ast[0], start, prev());
             return ast;
         };
@@ -5074,6 +5119,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
             default:
                 // RECOVER
                 next();
+                register_error("Bracket expected.");
                 return as("ERROR");
                 //unexpected();
             }
@@ -5098,6 +5144,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                         return as("do", prog1(parenthesised, semicolon), body);
                     }
                     else {
+                        register_error("Invalid do statement.");
                         return as("do", as("ERROR"), as("ERROR"));
                     }
                 })(in_loop(statement));
@@ -5112,8 +5159,8 @@ function parse($TEXT, exigent_mode, embed_tokens) {
 
             case "return":
                 // RECOVERY
-                /*if (S.in_function == 0)
-                        croak("'return' outside of function");*/
+                if (S.in_function == 0)
+                    register_error("'return' outside of function");
                 return as("return",
                           is("punc", ";")
                           ? (next(), null)
@@ -5134,6 +5181,9 @@ function parse($TEXT, exigent_mode, embed_tokens) {
 
             case "var":
                 return prog1(var_, semicolon);
+                
+            case "let":
+                return prog1(let_, semicolon);
 
             case "const":
                 return prog1(const_, semicolon);
@@ -5180,16 +5230,20 @@ function parse($TEXT, exigent_mode, embed_tokens) {
     function for_() {
         // RECOVER
         if(!is("punc", "(")) {
+            register_error("Expected: (");
             return as("for", as("ERROR"), as("ERROR"), as("ERROR"), as("ERROR"));
         } else {
             expect("(");
             var init = null;
             if (!is("punc", ";")) {
-                    init = is("keyword", "var")
-                            ? (next(), var_(true))
-                            : expression(true, true);
-                    if (is("operator", "in"))
-                            return for_in(init);
+                if(is("keyword", "var"))
+                    init = (next(), var_(true));
+                else if(is("keyword", "let"))
+                    init = (next(), let_(true));
+                else
+                    init = expression(true, true);
+                if (is("operator", "in"))
+                        return for_in(init);
             }
             return regular_for(init);
         }
@@ -5202,19 +5256,25 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         if(is("punc", ";")) {
             expect(";");
             var step = is("punc", ")") ? null : expression();
-            if(is("punc", ")"))
-                expect(")");
+            expect(")");
+        }
+        else {
+            register_error("Expected: ;");
         }
         return as("for", init, test, step, in_loop(statement));
     };
 
     function for_in(init) {
-        var lhs = init[0] == "var" ? as("name", init[1][0]) : init;
+        var lhs;
+        if(init[0] == "var")
+            lhs = as("name", init[1][0]);
+        else if(init[0] == "let")
+            lhs = as("name", init[1][0]);
+        else
+            lhs = init;
         next();
         var obj = expression();
-        // RECOVER
-        if(is("punc", ")"))
-            expect(")");
+        expect(")");
         return as("for-in", init, lhs, obj, in_loop(statement));
     }
 
@@ -5224,6 +5284,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         name = add_tokens(name, prev, S.token);
         if (in_statement && !name) {
             // RECOVER
+            register_error("Invalid function definition");
             return as("function", "", [], []);
         }
         expect("(");
@@ -5359,6 +5420,10 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         return as("var", vardefs(no_in));
     }
     
+    function let_(no_in) {
+        return as("let", vardefs(no_in));
+    }
+    
     function const_() {
         return as("const", vardefs());
     }
@@ -5398,6 +5463,7 @@ function parse($TEXT, exigent_mode, embed_tokens) {
                 return subscripts(object_(), allow_calls);
             }
             // RECOVER
+            register_error("Bracket expected.");
             return as("ERROR");
             //unexpected();
         }
@@ -5479,7 +5545,8 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         default:
             //unexpected();
             // RECOVER: Return empty token
-            return prog1("", next);
+            register_error("Name, operator, keyword or atom expected.");
+            return ""; // prog1("", next);
         }
     };
     
@@ -5606,11 +5673,14 @@ function parse($TEXT, exigent_mode, embed_tokens) {
         }
     }
     
-    return as("toplevel", (function(a) {
-        while (!is("eof"))
-        a.push(statement());
-        return a;
-    })([]));
+    return {
+        ast: as("toplevel", (function(a) {
+            while (!is("eof"))
+            a.push(statement());
+            return a;
+        })([])),
+        error: S.error
+    };
 };
 
 /* -----[ Utilities ]----- */
@@ -6356,32 +6426,12 @@ exports.traverseTopDown = function(fn) {
  */
 exports.traverseUp = function(fn) {
     fn = normalizeArgs(arguments);
-    var meIndex, i, result, parent = this.parent;
-    if (!parent) {
+    var result = fn.call(this);
+    if(result)
+        return result;
+    if (!this.parent)
         return false;
-    }
-    if (parent instanceof tree.ConsNode || parent instanceof tree.ListNode) {
-        findLbl: for (meIndex = 0; meIndex < parent.length; meIndex++) {
-            if (parent[meIndex] === this) {
-                break findLbl;
-            }
-        }
-        for (i = meIndex - 1; i >= 0; i--) {
-            result = fn.call(parent[i]);
-            if (result) {
-                return result;
-            }
-        }
-        result = fn.call(parent);
-        if (result) {
-            return result;
-        }
-        // Not found, traverse up
-        return parent.traverseUp(fn);
-    }
-    else {
-        return false;
-    }
+    return this.parent.traverseUp(fn);
 };
 
 exports.collectTopDown = function(fn) {
