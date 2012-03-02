@@ -219,14 +219,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
-
-    setEditor: function(editor, selection) {
-        if (typeof ceEditor == "undefined")
-            return;
-        this.$editor = editor || ceEditor.$editor;
-        this.$selection = selection || this.$editor.getSelection();
-        return this;
-    },
     
     enable : function(){
         this.nodes.each(function(item){
