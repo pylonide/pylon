@@ -3,6 +3,7 @@
  *
  * @TODO
  * - Save & load scroll position of tree
+ * - Comment everything
  * 
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -31,10 +32,12 @@ module.exports = ext.register("ext/tree/tree", {
 
     currentSettings  : [],
     expandedList     : {},
+    treeSelection    : { path : null, type : null },
     loading          : false,
     changed          : false,
     animControl      : {},
     nodes            : [],
+    model            : null,
 
     "default"        : true,
 
@@ -44,23 +47,138 @@ module.exports = ext.register("ext/tree/tree", {
             caption: "Project Files",
             "class": "project_files"
         });
+
+        var _self = this;
+        ide.addEventListener("init.ext/filesystem/filesystem", function(e) {
+            _self.model = e.ext.model;
+            trFiles.setAttribute("model", e.ext.model);
+
+            if (_self.currentSettings.length >= 1) {
+                setTimeout(function() {
+                    _self.loadProjectTree();
+                }, 1000);
+            }
+        });
+
+        ide.addEventListener("loadsettings", function(e){
+            var model = e.model;
+            (davProject.realWebdav || davProject).setAttribute("showhidden",
+                apf.isTrue(model.queryValue('auto/projecttree/@showhidden')));
+
+            var strSettings = model.queryValue("auto/projecttree");
+            if (strSettings) {
+                try {
+                    _self.currentSettings = JSON.parse(strSettings);
+                }
+                catch (ex) {
+                    _self.currentSettings = [ide.davPrefix];
+                }
+
+                var savedTreeSelection = model.queryNode("auto/tree_selection");
+                if (savedTreeSelection) {
+                    _self.treeSelection.Path = model.queryValue('auto/tree_selection/@path');
+                    _self.treeSelection.Type = model.queryValue('auto/tree_selection/@type');
+                }
+
+                if (_self.model) {
+                    setTimeout(function() {
+                        _self.loadProjectTree();
+                    }, 1000);
+                }
+            }
+            else {
+                trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+                trFiles.expandAll();
+            }
+        });
+
+        ide.addEventListener("savesettings", function(e){
+            if (!_self.changed)
+                return;
+
+            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
+            _self.currentSettings = [];
+
+            var path, id, lut = {};
+            for (id in _self.expandedList) {
+                path = _self.expandedList[id].getAttribute("path");
+                if (!path) {
+                    delete _self.expandedList[id];
+                }
+                else {
+                    lut[path] = true;
+                }
+            }
+
+            var cc, parts;
+            for (path in lut) {
+                parts = path.split("/");
+                cc = parts.shift();
+                do {
+                    if (!parts.length)
+                        break;
+
+                    cc += "/" + parts.shift();
+                } while(lut[cc]);
+
+                if (!parts.length)
+                    _self.currentSettings.push(path);
+            }
+
+            xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
+            return true;
+        });
+
+        ide.addEventListener("treechange", function(e) {
+            var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                                .replace(/\[@name="workspace"\]/, "")
+                                .replace(/\//, "");
+            var parent = trFiles.getModel().data.selectSingleNode(path);
+
+            if (!parent)
+                return;
+
+            var nodes   = parent.childNodes;
+            var files   = e.files;
+            var removed = [];
+
+            for (var i = 0; i < nodes.length; ++i) {
+                var node = nodes[i],
+                    name = node.getAttribute("name");
+
+                if (files && files[name])
+                    delete files[name];
+                else
+                    removed.push(node);
+            }
+            removed.forEach(function (node) {
+                apf.xmldb.removeNode(node);
+            });
+            path = parent.getAttribute("path");
+            for (var filename in files) {
+                var file = files[filename];
+
+                var xmlNode = "<" + file.type +
+                    " type='" + file.type + "'" +
+                    " name='" + filename + "'" +
+                    " path='" + path + "/" + filename + "'" +
+                "/>";
+                trFiles.add(xmlNode, parent);
+            }
+        });
     },
 
     init : function() {
         var _self = this;
-
         this.panel = winFilesViewer;
-
         this.nodes.push(winFilesViewer);
 
         colLeft.addEventListener("hide", function(){
             splitterPanelLeft.hide();
         });
-
         colLeft.addEventListener("show", function() {
            splitterPanelLeft.show();
         });
-
         colLeft.appendChild(winFilesViewer);
 
         mnuFilesSettings.appendChild(new apf.item({
@@ -68,26 +186,25 @@ module.exports = ext.register("ext/tree/tree", {
             type    : "check",
             caption : "Show Hidden Files",
             visible : "{trFiles.visible}",
-            checked : "[{require('ext/settings/settings').model}::auto/tree/@showhidden]",
-            onclick : function(){
-                _self.changed = true;
-                (davProject.realWebdav || davProject)
-                    .setAttribute("showhidden", this.checked);
+            checked : "[{require('ext/settings/settings').model}::auto/projecttree/@showhidden]",
+            onclick : function(e){
+                setTimeout(function() {
+                    _self.changed = true;
+                    (davProject.realWebdav || davProject)
+                        .setAttribute("showhidden", e.currentTarget.checked);
 
-                _self.refresh();
-                settings.save();
+                    _self.refresh();
+                });
             }
         }));
 
-        ide.addEventListener("loadsettings", function(e) {
-            var model = e.model;
-            (davProject.realWebdav || davProject).setAttribute("showhidden",
-                apf.isTrue(model.queryValue('auto/tree/@showhidden')));
-        });
-
         mnuView.appendChild(new apf.divider());
 
-        trFiles.setAttribute("model", fs.model);
+        this.setupTreeListeners();
+    },
+
+    setupTreeListeners : function() {
+        var _self = this;
 
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             if (settings.model && settings.model.data && trFiles.selected) {
@@ -224,119 +341,6 @@ module.exports = ext.register("ext/tree/tree", {
                 settings.save();
             }
         });
-
-        ide.addEventListener("loadsettings", function(e){
-            _self.model = fs.model;
-
-            function treeSelect(){
-                var treeSelection = model.queryNode("auto/tree_selection");
-                if(treeSelection) {
-                    trFiles.select(trFiles.$model.queryNode('//node()[@path="' +
-                        model.queryValue('auto/tree_selection/@path') +
-                        '" and @type="' + model.queryValue('auto/tree_selection/@type') +
-                        '"]')
-                    );
-                }
-                else {
-                    trFiles.select(trFiles.$model.queryNode("node()"));
-                }
-            }
-
-            var model = e.model;
-            var strSettings = model.queryValue("auto/tree");
-            if (strSettings) {
-                _self.loading = true;
-                try {
-                    _self.currentSettings = JSON.parse(strSettings);
-                }
-                catch (ex) {
-                    //fail! revert to default
-                    _self.currentSettings = [ide.davPrefix];
-                }
-
-                _self.loadProjectTree(function() {
-                    treeSelect();
-                });
-            }
-            else {
-                trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
-                trFiles.expandAll();
-            }
-        });
-
-        ide.addEventListener("savesettings", function(e){
-            if (!_self.changed)
-                return;
-
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/tree/text()");
-            _self.currentSettings = [];
-
-            var path, id, lut = {};
-            for (id in _self.expandedList) {
-                path = _self.expandedList[id].getAttribute("path");
-                if (!path) {
-                    delete _self.expandedList[id];
-                }
-                else {
-                    lut[path] = true;
-                }
-            }
-
-            var cc, parts;
-            for (path in lut) {
-                parts = path.split("/");
-                cc = parts.shift();
-                do {
-                    if (!parts.length)
-                        break;
-
-                    cc += "/" + parts.shift();
-                } while(lut[cc]);
-
-                if (!parts.length)
-                    _self.currentSettings.push(path);
-            }
-
-            xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
-            return true;
-        });
-
-        ide.addEventListener("treechange", function(e) {
-            var path    = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                .replace(/\[@name="workspace"\]/, "")
-                                .replace(/\//, ""),
-                parent  = trFiles.getModel().data.selectSingleNode(path);
-            if (!parent)
-                return;
-
-            var nodes   = parent.childNodes,
-                files   = e.files,
-                removed = [];
-
-            for (var i = 0; i < nodes.length; ++i) {
-                var node = nodes[i],
-                    name = node.getAttribute("name");
-
-                if (files && files[name])
-                    delete files[name];
-                else
-                    removed.push(node);
-            }
-            removed.forEach(function (node) {
-                apf.xmldb.removeNode(node);
-            });
-            path = parent.getAttribute("path");
-            for (var name in files) {
-                var file = files[name];
-
-                xmlNode = "<" + file.type +
-                    " type='" + file.type + "'" +
-                    " name='" + name + "'" +
-                    " path='" + path + "/" + name + "'" +
-                "/>";
-                trFiles.add(xmlNode, parent);
-            }
-        });
     },
 
     moveFile : function(path, newpath){
@@ -346,6 +350,8 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     loadProjectTree : function(callback) {
+        this.loading = true;
+
         var currentSettings = this.currentSettings;
         var len = currentSettings.length;
         var _self = this;
@@ -355,13 +361,24 @@ module.exports = ext.register("ext/tree/tree", {
                 return onFinish();
 
             var path = currentSettings[i];
-            davProject.realWebdav.readdir(path, function(data, state, extra) {
+            (davProject.realWebdav || davProject).readdir(path, function(data, state, extra) {
+                // Strip the extra "/" that webDav adds on
                 var realPath = extra.url.substr(0, extra.url.length-1);
-                var parentNode = trFiles.queryNode('//folder[@path="' + realPath + '"]');
 
-                var xmlRoot = apf.getXml(data);
-                for (var x = 0, xmlLen = xmlRoot.childNodes.length; x < xmlLen; x++)
-                    trFiles.add(xmlRoot.childNodes[x], parentNode);
+                // Get the parent node of the new items. If the parent path is
+                // the same as `ide.davPrefix`, then we append to root
+                var parentNode;
+                if (realPath === ide.davPrefix)
+                    parentNode = trFiles.queryNode("folder[@root=1]");
+                else
+                    parentNode = trFiles.queryNode('//folder[@path="' + realPath + '"]');
+
+                if (!parentNode)
+                    return; // Ruh oh
+
+                var dataXml = apf.getXml(data);
+                for (var x = 0, xmlLen = dataXml.childNodes.length; x < xmlLen; x++)
+                    trFiles.add(dataXml.childNodes[x], parentNode);
 
                 trFiles.$setLoadStatus(parentNode, "loaded");
                 trFiles.slideToggle(apf.xmldb.getHtmlNode(parentNode, trFiles), 1, true, null, function() {
@@ -372,7 +389,22 @@ module.exports = ext.register("ext/tree/tree", {
 
         function onFinish() {
             _self.loading = false;
+
+            // Re-select the last selected item
+            if(_self.treeSelection.path) {
+                var xmlNode = trFiles.$model.queryNode('//node()[@path="' +
+                    _self.treeSelection.path + '" and @type="' +
+                    _self.treeSelection.type + '"]');
+                trFiles.select(xmlNode);
+            }
+            else {
+                trFiles.select(trFiles.$model.queryNode("node()"));
+            }
+
             trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+
+            settings.save();
+
             if (callback)
                 return callback();
         }
@@ -382,20 +414,14 @@ module.exports = ext.register("ext/tree/tree", {
 
     refresh : function(){
         trFiles.getModel().load("<data><folder type='folder' name='" +
-            ide.projectName + "' path='" + ide.davPrefix +
-            "' root='1'/></data>");
+            ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
         this.expandedList = {};
-        this.loading = true;
 
         trFilesInsertRule.setAttribute("get", "");
 
-        ide.dispatchEvent("track_action", {type: "reloadtree"});
-        try {
-            var _self = this;
-            this.loadProjectTree();
-        } catch(e) {
+        ide.dispatchEvent("track_action", { type: "reloadtree" });
 
-        }
+        this.loadProjectTree();
     },
 
     enable : function(){

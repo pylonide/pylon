@@ -25,9 +25,11 @@
                 visible = "{lstOpenFiles.visible}"
                 checked = "[{require('ext/settings/settings').model}::auto/openfiles/@showpath]"
                 onclick = "
-                    var sel = lstOpenFiles.getSelection();
-                    lstOpenFiles.reload();
-                    lstOpenFiles.selectList(sel);
+                    setTimeout(function() {
+                        var sel = lstOpenFiles.getSelection();
+                        lstOpenFiles.reload();
+                        lstOpenFiles.selectList(sel);
+                    });
                 "
             />
         </a:menu>
