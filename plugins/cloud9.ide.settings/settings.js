@@ -4,27 +4,36 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
+"use strict";
+
 var Plugin = require("cloud9/plugin");
 var Path = require("path");
 var fs = require("fs");
 var util = require("util");
 
-var SettingsPlugin = module.exports = function(ide, workspace) {
+var name = "settings";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, SettingsPlugin, register);
+};
+
+var SettingsPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
-    this.name = "settings";
-    
+    this.name = name;
+
     this.settingsPath = ide.options.mountDir + "/.settings.xml";
 };
 
 util.inherits(SettingsPlugin, Plugin);
 
 (function() {
-    
+
     this.command = function(user, message, client) {
         if (message.command != "settings")
             return false;
-        
+
         var _self = this;
         if (message.action == "get") {
             this.loadSettings(user, function(err, settings) {
@@ -42,7 +51,7 @@ util.inherits(SettingsPlugin, Plugin);
         }
         return true;
     };
-    
+
     this.loadSettings = function(user, callback) {
         // console.log("load settings", this.settingsPath);
         var _self = this;
@@ -55,10 +64,10 @@ util.inherits(SettingsPlugin, Plugin);
             }
         });
     };
-    
+
     this.storeSettings = function(user, settings, callback) {
         // console.log("store settings", this.settingsPath);
         fs.writeFile(this.settingsPath, settings, "utf8", callback);
     };
-      
+
 }).call(SettingsPlugin.prototype);

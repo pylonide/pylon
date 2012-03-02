@@ -2,8 +2,8 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+"use strict";
 
-var net = require("net");
 var util = require("util");
 var NodeSocket = require("v8debug/NodeSocket");
 var ChromeDebugMessageStream = require("v8debug/ChromeDebugMessageStream");

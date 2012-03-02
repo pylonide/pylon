@@ -12,13 +12,19 @@ var Plugin = require("cloud9/plugin");
 var Fs = require("fs");
 var Path = require("path");
 var Async = require("asyncjs");
-var Cloud9Util = require("cloud9/util");
+var c9util = require("cloud9/util");
 
-var ShellPlugin = module.exports = function(ide, workspace) {
+var name = "shell";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, ShellPlugin, register);
+};
+
+var ShellPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.workspaceDir = workspace.workspaceDir;
     this.hooks = ["command"];
-    this.name = "shell";
+    this.name = name;
 };
 
 util.inherits(ShellPlugin, Plugin);
@@ -114,7 +120,7 @@ util.inherits(ShellPlugin, Plugin);
                  }
                  else {
                      if (oExt.metadata && oExt.metadata.commands)
-                         Cloud9Util.extend(commands, oExt.metadata.commands);
+                         c9util.extend(commands, oExt.metadata.commands);
                      next();
                  }
              })
@@ -122,7 +128,7 @@ util.inherits(ShellPlugin, Plugin);
                  _self.sendResult(0, message.command, commands);
              });
     };
-    
+
     this.mv    =
     this.pwd   =
     this.mkdir =

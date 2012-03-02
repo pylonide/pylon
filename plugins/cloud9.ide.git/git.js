@@ -4,11 +4,20 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Plugin = require("cloud9/plugin");
-var Cloud9Util = require("cloud9/util");
-var util = require("util");
 
-var ShellGitPlugin = module.exports = function(ide, workspace) {
+"use strict";
+
+var Plugin = require("cloud9/plugin");
+var util = require("util");
+var c9util = require("cloud9/util");
+
+var name = "git";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, ShellGitPlugin, register);
+};
+
+var ShellGitPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "git";
@@ -50,14 +59,14 @@ util.inherits(ShellGitPlugin, Plugin);
         }
 
         function onfinish() {
-            Cloud9Util.extend(commands, githelp);
+            c9util.extend(commands, githelp);
             callback();
         }
     };
 
     this.augmentCommand = function(cmd, struct) {
         var map = commandsMap[cmd] || commandsMap["default"];
-        return Cloud9Util.extend(struct, map || {});
+        return c9util.extend(struct, map || {});
     };
 
     this.command = function(user, message, client) {
@@ -74,7 +83,7 @@ util.inherits(ShellGitPlugin, Plugin);
                 message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
             }
         }
-        
+
         this.spawnCommand(message.command, argv.slice(1), message.cwd,
             function(err) { // Error
                 _self.sendResult(0, message.command, {

@@ -4,19 +4,27 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Plugin = require("cloud9/plugin");
+"use strict";
+
+var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
-var AuthPlugin = module.exports = function(ide, workspace) {
+var name = "auth";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, AuthPlugin, register);
+};
+
+var AuthPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
-    this.name = "auth";
+    this.name = name;
 };
 
 util.inherits(AuthPlugin, Plugin);
 
 (function() {
-    
+
     this.command = function(user, message, client) {
         if (message.command != "attach")
             return false;
@@ -30,5 +38,5 @@ util.inherits(AuthPlugin, Plugin);
         this.workspace.execHook("connect", user, client);
         return true;
     };
-      
+
 }).call(AuthPlugin.prototype);

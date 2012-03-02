@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.ide.auth",
+    "version": "0.0.1",
+
+    "main": "./auth.js",
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}

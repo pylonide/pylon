@@ -4,16 +4,25 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+
+"use strict";
+
 var Plugin = require("cloud9/plugin");
 var util = require("util");
 
-var cloud9StatePlugin = module.exports = function(ide, workspace) {
-    Plugin.call(this, ide, workspace);
-    this.hooks = ["connect", "command"];
-    this.name = "state";
+var name = "state";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, StatePlugin, register);
 };
 
-util.inherits(cloud9StatePlugin, Plugin);
+var StatePlugin = function(ide, workspace) {
+    Plugin.call(this, ide, workspace);
+    this.hooks = ["connect", "command"];
+    this.name = name;
+};
+
+util.inherits(StatePlugin, Plugin);
 
 (function() {
     this.connect = function(user, message, client) {
@@ -42,4 +51,4 @@ util.inherits(cloud9StatePlugin, Plugin);
         this.send(state, null, this.name);
     };
 
-}).call(cloud9StatePlugin.prototype);
+}).call(StatePlugin.prototype);

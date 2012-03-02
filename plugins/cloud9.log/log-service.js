@@ -1,3 +1,4 @@
+"use strict";
 
 module.exports = function startup(options, imports, register) {
     var logger = new LogService();

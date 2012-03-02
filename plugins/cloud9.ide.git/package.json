@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.ide.git",
+    "version": "0.0.1",
+
+    "main": "./git.js",
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}

@@ -49,7 +49,7 @@ module.exports = function setup(options, imports, register) {
         var treehuggerBase = require.resolve("treehugger/package.json").slice(0, -13);
         connect.addMiddleware(middleware.staticProvider(treehuggerBase + "/lib", "/static/treehugger/lib"));
 
-        connect.addMiddleware(ideProvider(projectDir, http.getServer(), sessionStore));
+        connect.addMiddleware(ideProvider(plugins, projectDir, http.getServer(), sessionStore));
         log.info("IDE server initialized");
     });
 };
@@ -84,7 +84,7 @@ function initSocketIo(server, sessionStore, ide) {
     });
 }
 
-function ideProvider(projectDir, server, sessionStore) {
+function ideProvider(plugins, projectDir, server, sessionStore) {
     var name = projectDir.split("/").pop();
     var serverOptions = {
         workspaceDir: projectDir,
@@ -105,7 +105,7 @@ function ideProvider(projectDir, server, sessionStore) {
         }
     };
 
-    var ide = new IdeServer(serverOptions, server, []);
+    var ide = new IdeServer(serverOptions, server, plugins);
     initSocketIo(server, sessionStore, ide);
 
     return function(req, res, next) {

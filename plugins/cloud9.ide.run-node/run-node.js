@@ -4,15 +4,24 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Path             = require("path"),
-    Spawn            = require("child_process").spawn,
-    NodeDebugProxy   = require("./nodedebugproxy"),
-    ChromeDebugProxy = require("./chromedebugproxy"),
-    Plugin           = require("cloud9/plugin"),
-    util             = require("util"),
-    netutil          = require("cloud9/netutil");
 
-var NodeRuntimePlugin = module.exports = function(ide, workspace) {
+"use strict";
+
+var Path             = require("path");
+var Spawn            = require("child_process").spawn;
+var NodeDebugProxy   = require("./nodedebugproxy");
+var ChromeDebugProxy = require("./chromedebugproxy");
+var Plugin           = require("cloud9/plugin");
+var util             = require("util");
+var netutil          = require("cloud9/netutil");
+
+var name = "node-runtime";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, NodeRuntimePlugin, register);
+};
+
+var NodeRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
     this.workspace = workspace;
     this.hooks = ["command"];

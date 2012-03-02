@@ -5,16 +5,23 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-var fs      = require("fs");
-var util    = require("util");
-var Plugin  = require("cloud9/plugin");
-var async   = require("asyncjs");
+"use strict";
+
+var fs = require("fs");
+var util = require("util");
+var Plugin = require("cloud9/plugin");
+
+var name = "watcher";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, WatcherPlugin, register);
+};
 
 var IGNORE_TIMEOUT = 50,
     ignoredPaths = {},
     ignoreTimers = {};
 
-var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
+var WatcherPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
     ide.davServer.plugins['watcher'] = function (handler) {
@@ -28,12 +35,12 @@ var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     };
 
     this.hooks = ["disconnect", "command"];
-    this.name = "watcher";
+    this.name = name;
     this.filenames = {};
     this.basePath  = ide.workspaceDir;
 }
 
-util.inherits(cloud9WatcherPlugin, Plugin);
+util.inherits(WatcherPlugin, Plugin);
 
 (function() {
     this.unwatchFile = function(filename) {
@@ -146,4 +153,4 @@ util.inherits(cloud9WatcherPlugin, Plugin);
         callback();
     };
 
-}).call(cloud9WatcherPlugin.prototype);
+}).call(WatcherPlugin.prototype);

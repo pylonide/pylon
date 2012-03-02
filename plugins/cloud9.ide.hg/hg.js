@@ -4,18 +4,27 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Plugin = require("cloud9/plugin");
-var Cloud9Util   = require("cloud9/util");
-var Util   = require("util");
 
-var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
+"use strict";
+
+var Plugin = require("cloud9/plugin");
+var c9util = require("cloud9/util");
+var util = require("util");
+
+var name = "hg";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, ShellHgPlugin, register);
+};
+
+var ShellHgPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "hg";
     this.banned = ["serve"];
 };
 
-Util.inherits(ShellHgPlugin, Plugin);
+util.inherits(ShellHgPlugin, Plugin);
 
 (function() {
     var hghelp     = "";
@@ -53,25 +62,25 @@ Util.inherits(ShellHgPlugin, Plugin);
         }
 
         function onfinish() {
-            Cloud9Util.extend(commands, hghelp);
+            c9util.extend(commands, hghelp);
             callback();
         }
     };
 
     this.augmentCommand = function(cmd, struct) {
         var map = commandsMap[cmd] || commandsMap["default"];
-        return Cloud9Util.extend(struct, map || {});
+        return c9util.extend(struct, map || {});
     };
 
     this.command = function(user, message, client) {
         if (message.command != "hg")
             return false;
-            
+
         var _self = this;
         var argv = message.argv || [];
-        
+
         // Here we want to ban some commands like serve
-        if (argv.slice(1).length > 0 && _self.banned.indexOf(argv.slice(1)[0]) > -1) {    
+        if (argv.slice(1).length > 0 && _self.banned.indexOf(argv.slice(1)[0]) > -1) {
             _self.sendResult(0, message.command, {
                 code: 0,
                 argv: message.argv,
@@ -87,7 +96,7 @@ Util.inherits(ShellHgPlugin, Plugin);
             }
         }
 
-        this.spawnCommand(message.command, argv.slice(1), message.cwd, 
+        this.spawnCommand(message.command, argv.slice(1), message.cwd,
             function(err) { // Error
                 _self.sendResult(0, message.command, {
                     code: 0,
@@ -95,7 +104,7 @@ Util.inherits(ShellHgPlugin, Plugin);
                     err: err,
                     out: null
                 });
-            }, 
+            },
             function(out) { // Data
                 _self.sendResult(0, message.command, {
                     code: 0,
@@ -103,7 +112,7 @@ Util.inherits(ShellHgPlugin, Plugin);
                     err: null,
                     out: out
                 });
-            }, 
+            },
             function(code, err, out) {
                 _self.sendResult(0, message.command, {
                     code: code,
@@ -115,10 +124,10 @@ Util.inherits(ShellHgPlugin, Plugin);
 
         return true;
     };
-    
+
     this.dispose = function(callback) {
         // TODO kill all running processes!
         callback();
     };
-    
+
 }).call(ShellHgPlugin.prototype);

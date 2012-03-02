@@ -4,11 +4,19 @@
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Plugin = require("cloud9/plugin");
-var Fs     = require("fs");
-var util   = require("util");
 
-var GitToolsPlugin = module.exports = function(ide) {
+"use strict";
+
+var Plugin = require("cloud9/plugin");
+var util = require("util");
+
+var name = "gittools";
+
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, GitToolsPlugin, register);
+};
+
+var GitToolsPlugin = function(ide) {
     this.ide   = ide;
     this.hooks = ["command"];
     this.name  = "gittools";
@@ -55,7 +63,7 @@ util.inherits(GitToolsPlugin, Plugin);
      * Determines if the primary command is "gittools" and then
      * handles the subcommand. Assumes the user is passing a
      * file argument in @message to perform a git operation on
-     * 
+     *
      * @param {object} user
      * @param {object} message User's message to the plugin
      * @param {object} client Client connection to the server
@@ -77,7 +85,7 @@ util.inherits(GitToolsPlugin, Plugin);
         var lastSlash = message.file.lastIndexOf("/");
         var dirPath = "/" + message.file.substr(0, lastSlash);
 
-        // Get the absolute system path to the file (as opposed to the 
+        // Get the absolute system path to the file (as opposed to the
         // relative file path passed to us by the user)
         var absoluteFilePath = _self.ide.workspaceDir + "/" + message.file;
 
@@ -104,7 +112,7 @@ util.inherits(GitToolsPlugin, Plugin);
                     _self.gitShow(message, relativeFilePath, gitRoot, message.hash);
                     break;
                 default:
-                    console.log("Git Tools warning: subcommand `" + 
+                    console.log("Git Tools warning: subcommand `" +
                         message.subcommand + "` not found");
                     break;
             }
@@ -172,7 +180,7 @@ util.inherits(GitToolsPlugin, Plugin);
             }
         );
     };
-    
+
     this.gitShow = function(message, relativeFilePath, gitRoot, hash) {
         var gitCommand = "show";
         var argv  = [gitCommand, hash + ":" + relativeFilePath];

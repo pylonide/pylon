@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.ide.hg",
+    "version": "0.0.1",
+
+    "main": "./hg.js",
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}
