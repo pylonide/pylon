@@ -129,6 +129,10 @@ module.exports = ext.register("ext/tree/tree", {
             return true;
         });
 
+        ide.addEventListener("filecallback", function (e) {
+            _self.refresh();
+        });
+
         ide.addEventListener("treechange", function(e) {
             var path = e.path.replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                 .replace(/\[@name="workspace"\]/, "")
@@ -197,8 +201,6 @@ module.exports = ext.register("ext/tree/tree", {
                 });
             }
         }));
-
-        mnuView.appendChild(new apf.divider());
 
         this.setupTreeListeners();
     },
@@ -318,10 +320,6 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforeremove", cancelWhenOffline);
         trFiles.addEventListener("dragstart", cancelWhenOffline);
         trFiles.addEventListener("dragdrop", cancelWhenOffline);
-
-        ide.addEventListener("filecallback", function (e) {
-            _self.refresh();
-        });
 
         /**** Support for state preservation ****/
         trFiles.addEventListener("expand", function(e){
@@ -445,6 +443,7 @@ module.exports = ext.register("ext/tree/tree", {
     destroy : function(){
         trFiles.removeEventListener("afterselect", this.$afterselect);
         trFiles.removeEventListener("afterchoose", this.$afterchoose);
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
