@@ -65,7 +65,7 @@ var createItem = module.exports.test.createItem = function(line, ide) {
     // escape HTML/ XML, but preserve the links:
     var links = [];
     var replacer = "###$#$#$##0";
-    line = line.replace(/(<a.*a>)/gi, function(m) {
+    line = line.replace(/(<a.*?a>)/gi, function(m) {
         links.push(m);
         return replacer;
     });
