@@ -9,7 +9,7 @@
 
 var Path = require("path");
 var Spawn = require("child_process").spawn;
-var Plugin = require("cloud9/plugin");
+var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
 var name = "python-runtime";

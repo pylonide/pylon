@@ -7,9 +7,9 @@
 
 "use strict";
 
-var Plugin = require("cloud9/plugin");
+var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
-var c9util = require("cloud9/util");
+var c9util = require("../cloud9.core/util");
 
 var name = "git";
 

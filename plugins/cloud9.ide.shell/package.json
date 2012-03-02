@@ -4,6 +4,10 @@
 
     "main": "./shell.js",
 
+    "dependencies": {
+        "asyncjs": "0.0.x"
+    },
+
     "plugin": {
         "consumes": [
             "ide"

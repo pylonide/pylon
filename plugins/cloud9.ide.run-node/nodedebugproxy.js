@@ -6,8 +6,8 @@
 "use strict";
 
 var util = require("util");
-var NodeSocket = require("v8debug/NodeSocket");
-var StandaloneV8DebuggerService = require("v8debug/StandaloneV8DebuggerService");
+var NodeSocket = require("v8debug").NodeSocket;
+var StandaloneV8DebuggerService = require("v8debug").StandaloneV8DebuggerService;
 
 var DebugProxy = module.exports = function(port) {
     process.EventEmitter.call(this);

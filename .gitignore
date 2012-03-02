@@ -11,3 +11,5 @@ build/
 
 plugins/cloud9.core/node_modules/
 plugins/cloud9.connect/node_modules/
+plugins/cloud9.ide.run-node/node_modules/
+plugins/cloud9.ide.shell/node_modules/

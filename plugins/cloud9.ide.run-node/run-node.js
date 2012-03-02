@@ -11,9 +11,9 @@ var Path             = require("path");
 var Spawn            = require("child_process").spawn;
 var NodeDebugProxy   = require("./nodedebugproxy");
 var ChromeDebugProxy = require("./chromedebugproxy");
-var Plugin           = require("cloud9/plugin");
+var Plugin           = require("../cloud9.core/plugin");
 var util             = require("util");
-var netutil          = require("cloud9/netutil");
+var netutil          = require("../cloud9.core/netutil");
 
 var name = "node-runtime";
 

@@ -2,7 +2,7 @@
     "name": "cloud9.ide.python-runtime",
     "version": "0.0.1",
 
-    "main": "./python-runtime.js",
+    "main": "./run-python.js",
 
     "plugin": {
         "consumes": [
