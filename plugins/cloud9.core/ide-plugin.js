@@ -1,4 +1,3 @@
-var path = require("path");
 var IO = require("socket.io");
 var Connect = require("connect");
 
@@ -11,13 +10,24 @@ module.exports = function setup(options, imports, register) {
     var connect = imports.connect;
     var http = imports.http;
 
-    var plugins = {};
+    var serverPlugins = {};
+    var clientPlugins = [];
 
     register(null, {
         ide: {
             register: function(name, plugin, callback) {
-                plugins[name] = plugin;
+                log.info("IDE SERVER PLUGIN: ", name);
+                serverPlugins[name] = plugin;
                 callback();
+            },
+
+            registerClientPlugin: function(name, path) {
+                log.info("IDE CLIENT PLUGIN: ", name, path);
+                clientPlugins.push("ext/" + name + "/" + name);
+                imports.static.addStatics([{
+                    path: path,
+                    mount: "/ext/" + name
+                }]);
             }
         }
     });
@@ -37,12 +47,12 @@ module.exports = function setup(options, imports, register) {
             secret: "1234"
         }));
 
-        connect.use(ideProvider(plugins, rjsPaths, projectDir, http.getServer(), sessionStore));
+        connect.use(ideProvider(serverPlugins, clientPlugins, rjsPaths, projectDir, http.getServer(), sessionStore));
         log.info("IDE server initialized");
     });
 };
 
-function ideProvider(plugins, rjsPaths, projectDir, server, sessionStore) {
+function ideProvider(plugins, clientPlugins, rjsPaths, projectDir, server, sessionStore) {
     var name = projectDir.split("/").pop();
     var serverOptions = {
         workspaceDir: projectDir,
@@ -56,7 +66,8 @@ function ideProvider(plugins, rjsPaths, projectDir, server, sessionStore) {
         requirejsConfig: {
             baseUrl: "/static/",
             paths: rjsPaths
-        }
+        },
+        plugins: clientPlugins
     };
 
     var ide = new IdeServer(serverOptions, server, plugins);

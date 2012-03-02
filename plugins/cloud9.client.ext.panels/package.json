@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.panels",
+    "version": "0.0.1",
+    "main": "panels-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.panels"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

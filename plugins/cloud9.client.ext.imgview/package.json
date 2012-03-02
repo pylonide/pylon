@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.imgview",
+    "version": "0.0.1",
+    "main": "imgview-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.imgview"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

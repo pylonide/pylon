@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.gitblame",
+    "version": "0.0.1",
+    "main": "gitblame-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.gitblame"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

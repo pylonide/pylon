@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.gotofile",
+    "version": "0.0.1",
+    "main": "gotofile-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.gotofile"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

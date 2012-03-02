@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.run",
+    "version": "0.0.1",
+    "main": "run-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.run"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

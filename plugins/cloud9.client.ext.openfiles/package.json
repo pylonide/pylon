@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.openfiles",
+    "version": "0.0.1",
+    "main": "openfiles-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.openfiles"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

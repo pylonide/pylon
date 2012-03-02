@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.tree",
+    "version": "0.0.1",
+    "main": "tree-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.tree"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.ext.searchreplace",
+    "version": "0.0.1",
+    "main": "searchreplace-ext.js",
+    "private": true,
+    "dependencies": {},
+    "plugin": {
+        "provides": [
+            "client.ext.searchreplace"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}
