@@ -1,0 +1,271 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:textbox name="tb_console">
+    <a:style><![CDATA[
+        .tb_console {
+            position : relative;
+            height   : 31px;
+        }
+
+        .tb_console .sbtb_middle {
+            height           : 16px;
+            padding          : 6px 10px 8px;
+            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 1) inset;
+            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 1) inset;
+            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 1) inset;
+            color            : #303030;
+            margin           : 0 0 0 26px;
+            outline          : none;
+            font-size        : 14px;
+            text-overflow    : ellipsis;
+            -webkit-border-radius: 4px;
+            -moz-border-radius: 4px;
+            border-radius: 4px;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(247,247,247)),color-stop(1, rgb(218,218,218)));
+            background: -moz-linear-gradient(center bottom,rgb(247,247,247) 50%,rgb(218,218,218) 100%);
+        }
+
+        .topborder .sbtb_middle{
+            border-width : 1px 0 0 0;
+        }
+
+        .tb_console .sbtb_middle INPUT {
+            border           : 0;
+            height           : 17px;
+            font-size        : 14px;
+            color            : #303030;
+            font-family      : "courier new",fixed,swiss,sans-serif;
+            outline          : none;
+            font-weight      : bold;
+            background-color : transparent;
+            width: 100%;
+            padding : 0;
+        }
+
+        .tb_consoleInitial .sbtb_middle INPUT {
+            color : #777777;
+        }
+
+        .tb_consoleDisabled .sbtb_middle INPUT {
+            color : #CCC;
+        }
+
+        .tb_consoleDisabled .sbtb_middle{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            cursor : default;
+        }
+
+        .tb_console .console_arrow {
+            background: url(images/console_arrow.png) no-repeat 0 0;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 9px;
+            height: 14px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[2]/input">
+            <div class="tb_console">
+                <div class="console_arrow"/>
+                <div class="sbtb_middle">
+                    <input type="text"/>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+<a:textbox name="textbox">
+    <a:alias>input</a:alias>
+    <a:alias>secret</a:alias>
+    <a:style><![CDATA[
+        .tb_textbox {
+            position : relative;
+            height   : 25px;
+        }
+
+        .tb_textbox .sbtb_middle {
+            height           : 19px;
+            padding          : 2px 5px;
+            border: 1px solid #afafaf;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
+            color: #333333;
+            margin: 0;
+            outline: none;
+            font-family: Tahoma, Arial;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+        }
+
+        .topborder .sbtb_middle{
+            border-width : 1px 0 0 0;
+        }
+
+        .tb_textbox .sbtb_middle INPUT {
+            border           : 0;
+            height           : 17px;
+            font-size        : 12px;
+            color            : #333333;
+            font-family      : Arial;
+            outline          : none;
+            background-color : transparent;
+            width: 100%;
+        }
+
+        .tb_textboxInitial .sbtb_middle INPUT {
+            color : #777777;
+        }
+
+        .tb_textboxDisabled .sbtb_middle INPUT {
+            color : #CCC;
+        }
+
+        .tb_textboxDisabled .sbtb_middle{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(235,235,235)),color-stop(0.4, rgb(255,255,255)));
+            background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
+            cursor : default;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[1]/input">
+            <div class="tb_textbox">
+                <div class="sbtb_middle">
+                    <input type="text"/>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+<a:textbox name="searchbox_textbox">
+    <a:style><![CDATA[
+        .searchbox_textbox {
+            position : relative;
+            height   : 25px;
+        }
+
+        .searchbox_textbox .sbtb_middle {
+            height           : 19px;
+            padding          : 2px 25px 2px 25px;
+
+
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
+            color: #333333;
+            border: 1px solid #afafaf;
+            margin: 0;
+            outline: none;
+            font-family: Tahoma, Arial;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+        }
+
+        .searchbox_textbox .sbtb_middle INPUT {
+            border           : 0;
+            height           : 17px;
+            font-size        : 12px;
+            color            : #333333;
+            font-family      : Arial;
+            outline          : none;
+            background-color : transparent;
+            width: 100%;
+        }
+
+        .searchbox_textboxInitial .sbtb_middle INPUT {
+            color : #777777;
+        }
+
+        .searchbox_textbox .sbtb_arrow {
+
+        }
+
+        .searchbox_textbox .sbtb_icon {
+            width               : 18px;
+            height              : 18px;
+            position            : absolute;
+            top                 : 4px;
+            left                : 5px;
+            background-image    : url(images/searchbox_textbox_icon.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+
+        .searchbox_textboxFocus .sbtb_icon {
+            background-position : 0 -18px;
+        }
+
+        .searchbox_textboxFocus .btnclose {
+            position : absolute;
+            right : 11px;
+            top : 5px;
+            width : 14px;
+            height : 14px;
+            background : url(images/btnclose.gif) no-repeat 0 0;
+            display : none;
+            cursor: pointer;
+        }
+
+        .searchbox_textboxFocus .btnclose:hover{
+            background-position : 0 -14px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[3]/input" button="div[4]">
+            <div class="searchbox_textbox">
+                <div class="sbtb_arrow"/>
+                <div class="sbtb_icon"/>
+                <div class="sbtb_middle">
+                    <input type="text"/>
+                </div>
+                <div class="btnclose"> </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+<a:textbox name="textarea">
+    <a:style><![CDATA[
+        .ta{
+            border: 1px solid #c3c3c3;
+            background: white url("images/textarea_background2.png") no-repeat top left;
+            /*background-attachment: fixed !important; background-attachment: scroll; */
+            color: #333;
+            padding: 6px;
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+            overflow: auto;
+            outline: none;
+            resize: none;
+        }
+
+        .taFocus{
+        }
+
+        .taDisabled{
+            border: 1px solid #c3c3c3;
+            color: #bebebe;
+        }
+
+        .taInitial{
+            color : gray;
+        }
+
+        .taError{
+            border: 2px solid #ffb500;
+            padding : 5px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input=".">
+            <textarea type="text" class="ta"/>
+        </a:main>
+    </a:presentation>
+</a:textbox></a:skin>

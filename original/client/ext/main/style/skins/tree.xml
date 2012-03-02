@@ -1,0 +1,552 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:tree name="tree">
+    <a:style><![CDATA[
+        .filemgr-tree {
+            cursor           : default;
+            position         : relative;
+            padding          : 0;
+            overflow         : auto;
+            border-right     : 1px solid #f5f5f5;
+            background :url(images/tree-shadow-left.png) repeat-y left 0, url(images/tree-shadow-right.png) repeat-y right 0, url(images/tree_backg.png) repeat 0 0;
+        }
+        
+        .filemgr-tree U {
+            position:relative;
+            overflow:hidden;
+            display:block;
+            margin:0;
+            padding:0 0 0 0;
+            text-decoration:none;
+        }
+        
+        .filemgr-tree U .item-fix {
+            padding-left : 15px;
+        }
+        
+        .filemgr-tree U U .item-fix {
+            padding-left : 30px;
+        }
+        
+        .filemgr-tree U U U .item-fix {
+            padding-left : 45px;
+        }
+        
+        .filemgr-tree U U U U .item-fix {
+            padding-left : 60px;
+        }
+        
+        .filemgr-tree U U U U U .item-fix {
+            padding-left : 75px;
+        }
+        
+        .filemgr-tree U U U U U U .item-fix {
+            padding-left : 90px;
+        }
+        
+        .filemgr-tree U U U U U U U .item-fix {
+            padding-left : 105px;
+        }
+        
+        .filemgr-tree U U U U U U U U .item-fix {
+            padding-left : 120px;
+        }
+        
+        .filemgr-tree U U U U U U U U U .item-fix {
+            padding-left : 135px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U .item-fix {
+            padding-left : 150px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U .item-fix {
+            padding-left : 165px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U .item-fix {
+            padding-left : 180px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U U .item-fix {
+            padding-left : 195px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U U U .item-fix {
+            padding-left : 210px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U U U U .item-fix {
+            padding-left : 225px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U U U U U .item-fix {
+            padding-left : 240px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U U U U U U .item-fix {
+            padding-left : 255px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U U U U U U U .item-fix {
+            padding-left : 270px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U U U U U U U U .item-fix {
+            padding-left : 285px;
+        }
+        
+        .filemgr-tree U U U U U U U U U U U U U U U U U U U U .item-fix {
+            padding-left : 300px;
+        }
+
+        .filemgr-tree .item-fix {
+            position:relative;
+            height:20px;
+            border-top:1px solid transparent;
+            border-bottom:1px solid transparent;
+            /*width:100%;*/
+        }
+        
+        .filemgr-tree .item-fix .item {
+            height:20px;
+            padding:0 0 0 15px;
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .filemgr-tree .item-fix.selected {
+            background : url(images/tree_selected.png) repeat 0 0;
+        }
+        
+        .filemgr-treeFocus .item-fix.selected {
+            border-top:1px solid #3a9bec;
+            border-bottom:1px solid #185f97;
+            filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2');
+            -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2')";
+            background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
+            background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
+        }
+        
+        .filemgr-treeFocus .item-fix.selected .item LABEL .caption {
+            color:white;
+        }
+        
+        .filemgr-tree .item SPAN {
+            top:5px;
+            left:4px;
+            width:10px;
+            height:10px;
+            position:absolute;
+            overflow:hidden;
+        }
+        
+        .filemgr-tree U.root .item-fix.min .item SPAN, 
+        .filemgr-tree U.root .item-fix.plus .item SPAN,
+        .filemgr-tree .item-fix.root .item SPAN {
+            background-image:url(images/tree_close_arrow_small.png);
+            background-repeat: no-repeat;
+        }
+        
+        .filemgr-tree .item-fix.min .item SPAN,
+        .filemgr-tree .item-fix.minlast .item SPAN {
+            background-position: -10px 0;
+        }
+        
+        .filemgr-tree .item-fix.plus .item SPAN,
+        .filemgr-tree .item-fix.pluslast .item SPAN {
+            background-position: 0 0;
+        }
+        
+        .filemgr-tree .item LABEL {
+            display:block;
+            position:relative;
+            overflow:hidden;
+            height:20px;
+            background-position:0 0;
+            background-repeat:no-repeat;
+            padding-left:20px;
+        }
+        
+        .filemgr-tree .item LABEL .caption {
+            font-family : Tahoma, Arial;
+            font-size   : 11px;
+            color       : #101010;
+            display:block;
+            position:relative;
+            overflow:hidden;
+            height:19px;
+            padding:1px 0 0 0;
+            text-decoration:none;
+            white-space: nowrap;
+        }
+        
+        .filemgr-tree .loading,
+        .filemgr-tree .empty {
+            display : none;
+        }
+        
+        #txt_rename {
+            border:1px solid #2084d6;
+            height:16px;
+            background-color:#d7e7f4;
+            padding-left:4px;
+            margin-top:1px;
+            
+            font-family : Tahoma, Arial;
+            font-size   : 11px;
+            color       : #101010;
+            position:relative;
+            overflow:visible;
+            text-decoration:none;
+            white-space: nowrap;
+            word-break: keep-all;
+            cursor: text;
+            outline : none;
+        }
+        
+        .filemgr-dragtree {
+            overflow:hidden;
+            height:22px;
+            border:2px solid rgba(255, 255, 255, 0.5);
+            -moz-box-shadow    : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+            -webkit-box-shadow : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+            box-shadow         : 0px 3px 5px 0px rgba(0, 0, 0, 0.5);
+        }
+        
+        .filemgr-dragtree .item {
+            height:22px;
+            padding:0;
+            position:relative;
+            overflow:hidden;
+            background:url(images/drag-tree-item-backg.png) repeat-x 0 0;
+        }
+        
+        .filemgr-dragtree .item SPAN {
+            display:none;
+        }
+        
+        .filemgr-dragtree .item LABEL {
+            display:block;
+            position:relative;
+            overflow:hidden;
+            height:20px;
+            background-position:0 2px;
+            background-repeat:no-repeat;
+            margin-left:6px;
+            padding-right:6px;
+            float:left;
+        }
+        
+        .filemgr-dragtree .item LABEL .caption {
+            font-family     : Tahoma, Arial;
+            font-size       : 11px;
+            color           : white;
+            display         : block;
+            position        : relative;
+            overflow        : hidden;
+            height          : 18px;
+            padding         : 2px 0 0 20px;
+            text-decoration : none;
+            white-space     : nowrap;
+            text-shadow : #8394a2 0px 1px 0px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+        .filemgr-tree .item LABEL .caption {
+            height:18px;
+            padding:2px 0 0 0;
+        }
+        
+        #txt_rename {
+            height:15px;
+            padding-top:1px;
+        }
+        
+        .filemgr-dragtree .item LABEL .caption {
+            height          : 17px;
+            padding         : 3px 0 0 20px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="filemgr-tree">
+
+            </div>
+        </a:main>
+        <a:item
+          class     = "."
+          caption   = "div/label/u"
+          icon      = "div/label"
+          openclose = "div/span"
+          select    = "div/label"
+          container = "following-sibling::u">
+            <div class="item-fix">
+                <div class="item">
+                    <span> </span>
+                    <label>
+                        <u class="caption">-</u>
+                    </label>
+                </div>
+            </div>
+            <u> </u>
+        </a:item>
+        <a:dragindicator>
+            <div class="filemgr-dragtree">
+                <div class="item">
+                    <span> </span>
+                    <label>
+                        <u class="caption">-</u>
+                    </label>
+                </div>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+
+    <!--a:tree name="tree">
+        <a:style><![CDATA[
+            .tree{
+                border : 1px solid #AFAFAF;
+                padding : 3px;
+                background-color: #fdfdfd;
+                overflow: hidden;
+                cursor : default;
+                position : relative;
+                overflow: auto;
+            }
+    
+            .trDefines {
+                background: none;
+                border-bottom: 1px solid #c3c3c3;
+                border-top: 1px solid #c3c3c3;
+                border-right: none;
+                border-left: none;
+                posittion: relative;
+                padding-top: 8px;
+            }
+    
+            .tree SPAN, .dragtree SPAN{
+                width: 15px;
+                height: 18px;
+                background: no-repeat 3px 5px;
+                display: block;
+                margin-left: -15px;
+            }
+    
+            .dragtree SPAN{
+                background : transparent;
+            }
+    
+            .tree DIV.pluslast SPAN,
+            .tree DIV.plus SPAN{
+                background-image:url(images/plus.png);
+            }
+    
+            .tree DIV.minlast SPAN,
+            .tree DIV.min SPAN{
+                background-image:url(images/min.png);
+            }
+    
+            .tree DIV, .dragtree{
+                padding: 0;
+                height: 18px;
+                padding-left: 15px;
+                overflow : hidden;
+    
+                font-family: Tahoma, Arial, Arial;
+                font-size: 11px;
+            }
+    
+            .tree .focusbug{
+                padding-left : 0;
+                overflow : visible;
+            }
+    
+            .dragtree{
+                opacity : 0.5;
+                filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+                background : none;
+            }
+    
+            /*.tree DIV.root{
+                padding: 0;
+            }*/
+    
+            .tree LABEL, .dragtree LABEL{
+                padding: 1px 0 0 20px;
+                background: no-repeat 1px 1px;
+                height: 16px;
+                white-space: nowrap;
+                margin-left: 0px;
+                display: block;
+                float: left;
+                margin-top: -18px;
+            }
+    
+            .tree DIV.loading LABEL{
+    
+            }
+            .tree DIV.loading SPAN{
+                background: no-repeat 0px 0px;
+            }
+    
+            .tree U, .dragtree U{
+                text-decoration: none;
+                color: #333333;
+                cursor: default;
+                display: inline !important; display: block;
+                padding: 2px 4px 2px 2px;
+            }
+    
+            .treeFocus .indicate U{
+                border: 1px dotted #BBB;/*#25a8e7;*/
+                padding: 1px 3px 1px 1px;
+                color : black;
+            }
+    
+            .tree .selected U{
+                background-color: #f0f0f0;
+                color: black;
+            }
+    
+            .treeFocus .selected U, .tree .dragAppend U, .dragtree U{
+                background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+                background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+                color : white;
+            }
+    
+            .tree BLOCKQUOTE{
+                margin: 0;
+                padding: 0 0 0 20px;
+                display: none;
+                height: 0;
+                overflow: hidden;
+                background: repeat-y 0px center;
+    			clear: both;
+            }
+            /*.tree BLOCKQUOTE.root{padding:0}*/
+    
+            .tree #txt_rename{
+                border: 1px solid black;
+                padding: 1px 15px 1px 1px;
+                font-family: Tahoma, Arial;
+                font-size: 8pt;
+                color: black;
+                word-break: keep-all;
+                overflow: visible;
+                margin-top : -2px;
+                *margin-top: 0;
+                cursor: text;
+                height: 13px;
+                outline : none;
+            }
+    
+            .tree DIV.dragInsert label{
+                border-top: 1px dotted gray;
+                padding-top : 2px;
+                background-position : 1px 0;
+                height: 15px;
+                overflow: hidden;
+            }
+    
+            .tree DIV.dragInsert U{
+                padding-top: 0;
+            }
+    
+            /*.tree DIV.dragDenied label{
+                border-top: 2px solid red;
+                height: 14px;
+                overflow: hidden;
+                padding-top : 2px;
+                margin-top : -20px;
+                background-position : 1px 0;
+            }*/
+    
+            .tree .empty, .tree .offline, .tree .loading{
+                padding: 0 0 0px 0;
+                color: #AAA;
+                font-weight : normal;
+                height : 0;
+            }
+    
+            .tree div.loading{
+                text-align : left;
+            }
+    
+            .tree .message{
+                text-align: center;
+            }
+    
+            .tree .root{
+                position : relative;
+            }
+    
+            .treeDrop{
+                border : 1px solid #25a8e7;
+            }
+    
+            blockquote.dragInsert{
+                background : #f6f6f6;
+            }
+        ]]>
+        </a:style>
+        <a:style condition="!apf.isIE"><![CDATA[
+            .tree LABEL, .dragtree LABEL{
+                padding: 3px 0 0 20px;
+            }
+        ]]>
+        </a:style>
+        <a:style condition="apf.isGecko"><![CDATA[
+            .tree U, .dragtree U,
+            .treeFocus U, .dragtree U {
+                padding: 0px 4px 4px 2px;
+                top:-1px;
+                position:relative;
+            }  
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container="." startclosed="false">
+                <div class="tree">
+
+                </div>
+            </a:main>
+            <a:item class="." caption="label/u" icon="label" openclose="span" select="label" container="following-sibling::blockquote">
+                <div>
+                    <span> </span>
+                    <label>
+                        <u>-</u>
+                    </label>
+                </div>
+                <blockquote> </blockquote>
+            </a:item>
+            <a:dragindicator>
+                <div class="dragtree">
+                    <span> </span>
+                    <label>
+                        <u>-</u>
+                    </label>
+                </div>
+            </a:dragindicator>
+            <a:loading>
+                <div class="loading">
+                    <span> </span>
+                    <label>Loading...</label>
+                </div>
+            </a:loading>
+            <a:empty caption=".">
+                <div class="message"/>
+            </a:empty>
+        </a:presentation>
+    </a:tree-->
+</a:skin>

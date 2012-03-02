@@ -1,0 +1,64 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:toolbar name="toolbar">
+    <a:style><![CDATA[
+        .toolbar .menubar {
+            background: url(images/menubar_row.png) repeat-x top left;
+            height: 22px;
+            z-index: 1;
+            font-family: Tahoma, Arial;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .toolbar .subbar {
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
+            background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
+            font-family: Arial;
+            font-size: 12px;
+            border-bottom: 1px solid #b2b2b2;
+            position: relative;
+            padding: 0;
+            width : 100%;
+            overflow : hidden;
+            height : 27px;
+        }
+
+        .toolbar>.subbar>*{
+            display : inline-block;
+            float : left;
+            margin : 2px;
+        }
+
+        .toolbar>.subbar>.hbox, .toolbar>.subbar>.vbox, .toolbar>.subbar>.table{
+            display : block;
+            float : none;
+            margin : 0;
+        }
+
+        .toolbar>.subbar>.divider {
+            border-left: 1px solid #c4c4c4;
+            border-right: 1px solid #fafafa;
+            border-bottom: none;
+            border-top: none;
+            height: 17px;
+            float: left;
+            margin: 4px 0 0 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="toolbar"> </div>
+        </a:main>
+        <a:bar container="." inherit="true" minheight="28">
+            <div class="subbar"> </div>
+        </a:bar>
+        <a:menubar container="." inherit="true">
+            <div class="menubar">
+            </div>
+        </a:menubar>
+        <a:button link="toolbarbutton" inherit="true"/>
+        <a:divider inherit="true">
+            <div class="divider"> </div>
+        </a:divider>
+    </a:presentation>
+</a:toolbar></a:skin>

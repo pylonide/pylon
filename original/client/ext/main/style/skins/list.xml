@@ -1,0 +1,168 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:list name="lineselect">
+    <a:style><![CDATA[
+        .lineselect{
+            overflow: auto;
+            position: relative;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
+            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
+            color: #333333;
+            border: 1px solid #afafaf;
+            margin: 0;
+            outline: none;
+            font-family: Tahoma, Arial;
+            font-size: 12px;
+            text-overflow: ellipsis;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+
+            cursor: default;
+        }
+        .lineselect>.selected{
+            background-color: rgb(203, 205, 208);
+            color: black;
+        }
+        .lineselectFocus>.selected{
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
+            background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
+            color : white;
+        }
+        .lineselect .empty, .lineselect .offline, .lineselect .loading{
+            text-align: center;
+            padding: 8px 0 0 5px;
+            color: #AAA;
+            font-weight : normal;
+        }
+        .lineselect>DIV{
+            padding: 2px 6px;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class='lineselect'>
+            </div>
+        </a:main>
+        <a:item
+            class     = "."
+            container = "."
+            caption   = "."
+            select    = "."
+        >
+            <div> </div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+<a:list name="list">
+    <a:style><![CDATA[
+        .list{
+            overflow: auto;
+            position: relative;
+            border: 1px solid #c3c3c3;
+            background-color: #fafbfc;
+            cursor: default;
+        }
+
+        .white{
+            background : white;
+        }
+
+        .list, .draglist{
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+        }
+
+        .list>DIV, .draglist{
+            padding: 0;
+            height: 18px;
+        }
+
+        .list>DIV>SPAN, .draglist SPAN{
+            padding: 0 0 0 20px;
+            background: no-repeat 1px center;
+            height: 16px;
+            float: left;
+        }
+
+        .list>DIV>SPAN>U, .draglist U{
+            text-decoration: none;
+            color: black;
+            cursor: default;
+            display: block;
+            padding: 2px 4px 2px 2px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .listFocus>.indicate>SPAN>U{
+            border: 1px dotted #BBB;/*#25a8e7;*/
+            color : black;
+            /*background-color : #e4f4fc;*/
+            padding: 1px 3px 1px 1px;
+        }
+
+        .list>.selected>SPAN>U{
+            background-color: #f0f0f0;
+            color: black;
+        }
+        .listFocus>.selected>SPAN>U, .draglist U{
+            color: white;
+            background-color: #25a8e7;
+        }
+
+        .list #txt_rename{
+            border: 1px solid #bbb;
+            padding: 1px 15px 1px 1px;
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+            color: black;
+            word-break: keep-all;
+            overflow: visible;
+            margin-top : 0px;
+            cursor: text;
+            height: 13px;
+            display: block;
+            outline : none;
+        }
+
+        .list .empty, .list .offline, .list .loading{
+            text-align: center;
+            padding: 8px 0 0 5px;
+            color: #AAA;
+            font-weight : normal;
+        }
+
+        .shortlist{
+            border : 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+            max-height : 90px;
+            width : auto;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="list">
+            </div>
+        </a:main>
+        <a:item class="." caption="span/u" icon="span" select="span">
+            <div><span><u>-</u></span></div>
+        </a:item>
+        <a:dragindicator>
+            <div class="draglist"><span><u>-</u></span></div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+</a:skin>

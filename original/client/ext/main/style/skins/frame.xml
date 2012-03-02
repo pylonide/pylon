@@ -1,0 +1,63 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:frame name="frame">
+    <a:alias>fieldset</a:alias>
+    <a:style><![CDATA[
+        .frame{
+            padding: 0 7px 7px 7px;
+            border: 1px solid #dcd8d8;
+            color: #333;
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+            position: relative;
+            cursor : default;
+            margin : 0;
+        }
+
+        .frame .legend{
+            /*margin-top: 0px;
+            position: absolute;
+            background : #fafbfc;
+            left: 5px;
+            top: -8px;
+            padding: 0 2px 0 2px;
+            margin: 0px;*/
+            margin : 0 0 7px -7px;
+            cursor : default;
+            z-index : 10000;
+            position : relative;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE6">
+    	.frame {
+    	    height: 1%;
+    	}
+    </a:style>
+    <a:style condition="!apf.isIE">
+    	.frame .legend{
+    	    margin : 5px 0 7px -3px;
+    	}
+    </a:style>
+    <a:style condition="apf.isWebkit">
+    	.frame .legend{
+    	    height:20px
+    	}
+    </a:style>
+    <a:style condition="apf.isIE &gt; 7">
+        .frame {
+            padding-top : 10px;
+        }
+        .frame .legend{
+    	    margin : -15px 0 7px -3px;
+    	}
+    </a:style>
+    <a:style condition="apf.isChrome"><![CDATA[
+        .frame {
+            padding-top:4px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." caption="legend">
+            <fieldset class="frame"><legend class="legend"> </legend></fieldset>
+        </a:main>
+    </a:presentation>
+</a:frame></a:skin>

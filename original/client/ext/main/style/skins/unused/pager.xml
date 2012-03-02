@@ -1,0 +1,84 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:pager name="pager">
+    <a:style><![CDATA[
+        .pager {
+            width: 500px;
+            height: 600px;
+            background-color:#ebebeb;
+            border:1px solid #d7d7d7;
+            font-size:12px;
+            font-family:Tahoma;
+        }
+
+        .pager .pager_content {
+            width:100%;
+            background-color:red;
+        }
+
+        .pager .pager_pages {
+            height:50px;
+            width:100%;
+            min-height:10px;
+            overflow:hidden;
+            position:absolute;
+            bottom:0;
+            left:0;
+        }
+
+        .pager .pager_pages div {
+            background-color:#d7d7d7;
+            width:200px;
+            height:auto;
+            margin:0 auto;
+            position:relative;
+            overflow:hidden;
+            padding:3px;
+        }
+
+        .pager .pager_pages div .page {
+            text-align:center;
+            background-color:#acacac;
+            float:left;
+            position:relative;
+            padding:3px;
+            width:15px;
+            height:15px;
+            margin:1px;
+            overflow:hidden;
+            color:white;
+            cursor:pointer;
+        }
+
+        .pager .pager_pages div .page:hover {
+            background-color:#c2c2c2;
+        }
+
+        .pager .pager_pages div .selected {
+            background-color:#898989;
+        }
+
+        .pager .pager_pages div .previous, .pager .pager_pages div .next {
+            width:40px;
+            height:15px;
+            background-color:#acacac;
+            margin:1px 5px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE"><![CDATA[
+     ]]></a:style>
+    <a:presentation>
+        <a:main container="." content="div[1]" pages="div[2]/div">
+            <div class="pager">
+                <div class="pager_content"> </div>
+                <div class="pager_pages">
+                    <div> </div>
+                </div>
+            </div>
+        </a:main>
+        <a:pagebutton container=".">
+            <div class="pagebutton"> </div>
+        </a:pagebutton>
+        <a:empty caption=".">
+            <div class="empty"> </div>
+        </a:empty>
+    </a:presentation>
+</a:pager></a:skin>

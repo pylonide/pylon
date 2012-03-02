@@ -1,0 +1,38 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:picture name="picture">
+    <a:style><![CDATA[
+        .image{
+            margin-bottom: 10px;
+            background: white no-repeat 50% 50%;
+            border: 1px solid gray;
+        }
+
+        .imageDisabled{
+            background-position: 1000px 1000px;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main image=".">
+            <div class="image">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:picture>
+<a:picture name="logo">
+    <a:style><![CDATA[
+        .image{
+            margin-bottom: 10px;
+        }
+
+        .imageDisabled{
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main image="@src">
+            <img src=""/>
+        </a:main>
+    </a:presentation>
+</a:picture></a:skin>

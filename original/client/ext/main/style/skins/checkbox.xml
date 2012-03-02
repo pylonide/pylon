@@ -1,0 +1,105 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:checkbox name="checkbox">
+    <a:style><![CDATA[
+        .cbcontainer {
+            padding    : 2px 2px 2px 16px;
+            position   : relative;
+            overflow   : visible;
+            color      : #333;
+        }
+
+        .cbcontainer span {
+            font-family : Tahoma, Arial;
+            font-size   : 11px;
+            cursor      : default;
+            padding     : 1px 3px 2px 3px;
+            position    : relative;
+            top         : -2px;
+            overflow    : visible;
+            display     : inline-block;
+            line-height : 13px;
+            white-space        : nowrap;
+            text-overflow      : ellipsis;
+        }
+
+        .cbcontainerFocus span {
+            padding : 0px 2px 1px 2px;
+            border  : 1px dotted #BBB;
+        }
+
+        .cbcontainerChecked.cbcontainerDown.cbcontainerFocus .checkbox {
+            background-position : 0 -48px;
+        }
+
+        .cbcontainer .checkbox {
+            width      : 12px;
+            height     : 12px;
+            overflow   : hidden;
+            position   : absolute;
+            left       : 2px;
+            top        : 2px;
+            background : url("images/checkbox.png") no-repeat 0 -12px;
+        }
+
+        .cbcontainerDown .checkbox {
+            background-position : 0 -36px;
+        }
+
+        .cbcontainerChecked .checkbox {
+            background-position : 0 -24px;
+        }
+
+        .cbcontainerError span {
+            background-color : #ffb500;
+            color            : #fbfbfb;
+        }
+
+        .cbcontainerDisabled .checkbox {
+            background-position : 0 -0px;
+        }
+
+        .cbcontainerDisabled span {
+            color : #bebebe;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+        .cbcontainer span {
+            top : -2px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="span/text()" minheight="18" minwidth="18">
+            <div class='cbcontainer'>
+                <div class='checkbox'> </div>
+                <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
+<a:checkbox name="cboffline">
+    <a:style><![CDATA[
+        .cboffline {
+            width: 55px;
+            height: 21px;
+            background: url(images/sync.png) no-repeat 0 -21px;
+        }
+
+        .cbofflineDown {
+            background-position : 0 0px;
+        }
+
+        .cbofflineChecked {
+            background-position : 0 0px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main>
+            <div class='cboffline'>
+            
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
+</a:skin>

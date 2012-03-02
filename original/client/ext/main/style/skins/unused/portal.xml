@@ -1,0 +1,61 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:portal name="portal">
+    <a:style><![CDATA[
+        .portal{
+            overflow : visible;
+            position : relative;
+            clear : both;
+        }
+
+        .portal .column{
+            height : 100%;
+            width : 33.33%;
+            display : inline-block;
+            vertical-align : top;
+            min-height : 100px;
+        }
+
+        .portal .collast .position_holder,
+        .portal .collast .docklet{
+            margin-right : 0;
+        }
+
+        .portal .position_holder{
+            border : 2px dashed #3b5998;
+            margin : 0 10px 10px 0;
+        }
+
+        .portal .message{
+            position : absolute;
+            padding: 8px 10px 0 0;
+            color: #AAA;
+            left : 10px;
+            top : 10px;
+            font-size : 8pt;
+            font-family : Tahoma, Arial;
+        }
+        .portal>br{
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE &lt; 8"><![CDATA[
+        .portal .column{
+            float : left;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="portal">
+
+            <br clear="all"/></div>
+        </a:main>
+        <a:column>
+            <div class="column"> </div>
+        </a:column>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty caption="text()">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:portal></a:skin>

@@ -1,0 +1,375 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:notifier name="notifier">
+    <a:style><![CDATA[
+
+        .notifier {
+            width   : 200px;
+            padding : 7px 0 7px 0;
+            cursor  : default;
+            opacity : 0;
+        }
+
+        .notifier .lt {
+            background-image  : url(images/growl_lt.gif);
+            background-repeat : no-repeat;
+            width             : 8px;
+            height            : 8px;
+            float             : left;
+            overflow          : hidden;
+            margin-top        : -7px;
+        }
+
+        .notifier .rt {
+            background-image  : url(images/growl_rt.gif);
+            background-repeat : no-repeat;
+            width             : 8px;
+            height            : 8px;
+            float             : right;
+            overflow          : hidden;
+            margin-top        : -7px;
+        }
+
+        .notifier .lb {
+            background-image  : url(images/growl_lb.gif);
+            background-repeat : no-repeat;
+            width             : 8px;
+            height            : 7px;
+            float             : left;
+            margin-bottom     : -7px;
+        }
+
+        .notifier .rb {
+            background-image  : url(images/growl_rb.gif);
+            background-repeat : no-repeat;
+            width             : 8px;
+            height            : 7px;
+            float             : right;
+            margin-bottom     : -7px;
+        }
+
+        .notifier .line_t {
+            background-color : #3f3f3f;
+            overflow         : hidden;
+            height           : 8px !important;
+            line-height      : 8px;
+            margin           : -7px 8px 0 8px;
+        }
+
+        .notifier .line_b {
+            background-color : #3f3f3f;
+            height           : 7px !important;
+            line-height      : 7px;
+            margin           : 0 8px -7px 8px;
+        }
+
+        .notifier .body {
+            background-color : #3f3f3f;
+            width            : auto;
+            min-height       : 15px;
+            padding          : 0 10px 0 12px;
+            font-family      : Tahoma, Arial;
+            font-size        : 11px;
+            text-align       : left;
+            color            : white;
+        }
+
+        .notifier .body .icon {
+            width   : 48px;
+            height  : 48px;
+            margin  : 0 8px 0 0;
+            float   : left;
+            display : none;
+        }
+
+        .notifierShowIcon .body .icon {
+            display : block;
+        }
+
+        .notifierShowIcon .body {
+            min-height : 50px;
+        }
+
+        .notifier .hasicon {
+            min-height : 50px;
+        }
+
+        .notifier_hidden{
+            opacity : 0;
+        }
+
+        .notifier_shown{
+            opacity : 0.8;
+        }
+
+        .notifier_hover{
+            opacity : 1;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:notification message="." body="div[4]" icon="div[4]/div">
+            <div class="notifier">
+                <div class="lt"> </div>
+                <div class="rt"> </div>
+                <div class="line_t"> </div>
+                <div class="body">
+                    <div class="icon"> </div>
+                </div>
+                <div class="lb"> </div>
+                <div class="rb"> </div>
+                <div class="line_b"> </div>
+            </div>
+        </a:notification>
+    </a:presentation>
+</a:notifier>
+<a:notifier name="bubble">
+    <a:style><![CDATA[
+
+        .bubble {
+            width   : 200px;
+            padding : 14px 0 14px 0;
+            cursor  : default;
+            opacity : 0;
+        }
+
+        .bubble .lt {
+            background-image  : url(images/bubble_lt.png);
+            background-repeat : no-repeat;
+            width             : 15px;
+            height            : 16px;
+            float             : left;
+            overflow          : hidden;
+            margin-top        : -15px;
+        }
+
+        .bubble .rt {
+            background-image  : url(images/bubble_rt.png);
+            background-repeat : no-repeat;
+            width             : 15px;
+            height            : 16px;
+            float             : right;
+            overflow          : hidden;
+            margin-top        : -15px;
+        }
+
+        .bubble .lb {
+            background-image  : url(images/bubble_lb.png);
+            background-repeat : no-repeat;
+            width             : 15px;
+            height            : 14px;
+            float             : left;
+            margin-bottom     : -14px;
+        }
+
+        .bubble .rb {
+            background-image  : url(images/bubble_rb.png);
+            background-repeat : no-repeat;
+            width             : 15px;
+            height            : 14px;
+            float             : right;
+            margin-bottom     : -14px;
+        }
+
+        .bubble .line_t {
+            background-image  : url(images/bubble_line_t.png);
+            background-repeat : repeat-x;
+            overflow          : hidden;
+            height            : 16px !important;
+            line-height       : 16px;
+            margin            : -15px 15px 0 15px;
+        }
+
+        .bubble .line_b {
+            background-image  : url(images/bubble_line_b.png);
+            background-repeat : repeat-x;
+            height            : 14px !important;
+            line-height       : 14px;
+            margin            : 0 15px -14px 15px;
+        }
+
+        .bubble .body {
+            background-image    : url(images/bubble_body_small.png);
+            background-position : top;
+            background-repeat   : repeat-x;
+            background-color    : #bad9f6;
+            width               : auto;
+            border              : 4px solid #757a7f;
+            border-width        : 0 4px 0 4px;
+            min-height          : 15px;
+            padding             : 0 10px 0 12px;
+            font-family         : Tahoma, Arial;
+            font-size           : 11px;
+            text-align          : left;
+            color               : #252525;
+        }
+
+        .bubble .body .icon {
+            width   : 48px;
+            height  : 48px;
+            margin  : 0 8px 0 0;
+            float   : left;
+            display : none;
+        }
+
+        .bubbleShowIcon .body {
+            min-height          : 50px;
+            background-color    : #e5f0fb;
+            background-position : bottom;
+            background-image    : url(images/bubble_body.png);
+        }
+
+        .bubbleShowIcon .body .icon {
+            display : block;
+        }
+
+        .notifier_hidden {
+            opacity : 0;
+        }
+
+        .notifier_shown {
+            opacity : 0.8;
+        }
+
+        .notifier_hover {
+            opacity : 1;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:notification message="." body="div[4]" icon="div[4]/div">
+            <div class="bubble">
+                <div class="lt"> </div>
+                <div class="rt"> </div>
+                <div class="line_t"> </div>
+                <div class="body">
+                    <div class="icon"> </div>
+                </div>
+                <div class="lb"> </div>
+                <div class="rb"> </div>
+                <div class="line_b"> </div>
+            </div>
+        </a:notification>
+    </a:presentation>
+</a:notifier>
+<a:notifier name="smoke">
+    <a:style><![CDATA[
+        .smoke {
+            width   : 200px;
+            padding : 7px 0 7px 0;
+            cursor  : default;
+            opacity : 0;
+        }
+
+        .smoke .lt {
+            background-image  : url(images/smoke_lt.gif);
+            background-repeat : no-repeat;
+            width             : 8px;
+            height            : 8px;
+            float             : left;
+            overflow          : hidden;
+            margin-top        : -7px;
+        }
+
+        .smoke .rt {
+            background-image  : url(images/smoke_rt.gif);
+            background-repeat : no-repeat;
+            width             : 8px;
+            height            : 8px;
+            float             : right;
+            overflow          : hidden;
+            margin-top        : -7px;
+        }
+
+        .smoke .lb {
+            background-image  : url(images/smoke_lb.gif);
+            background-repeat : no-repeat;
+            width             : 8px;
+            height            : 7px;
+            float             : left;
+            margin-bottom     : -7px;
+        }
+
+        .smoke .rb {
+            background-image  : url(images/smoke_rb.gif);
+            background-repeat : no-repeat;
+            width             : 8px;
+            height            : 7px;
+            float             : right;
+            margin-bottom     : -7px;
+        }
+
+        .smoke .line_t {
+            background-color : #868c91;
+            overflow         : hidden;
+            height           : 8px !important;
+            line-height      : 8px;
+            margin           : -7px 8px 0 8px;
+        }
+
+        .smoke .line_b {
+            background-color : #868c91;
+            height           : 7px !important;
+            line-height      : 7px;
+            margin           : 0 8px -7px 8px;
+        }
+
+        .smoke .body {
+            background-color : #868c91;
+            width            : auto;
+            min-height       : 15px;
+            padding          : 0 10px 0 12px;
+            font-family      : Tahoma, Arial;
+            font-size        : 11px;
+            text-align       : left;
+            color            : white;
+        }
+
+        .smoke .body .icon {
+            width   : 48px;
+            height  : 48px;
+            margin  : 0 8px 0 0;
+            float   : left;
+            display : none;
+        }
+
+        .smokeShowIcon .body .icon {
+            display : block;
+        }
+
+        .smokeShowIcon .body {
+            min-height : 50px;
+        }
+
+        .smoke_message .hasicon {
+            min-height : 50px;
+        }
+
+        .notifier_hidden{
+            opacity : 0;
+        }
+
+        .notifier_shown{
+            opacity : 0.8;
+        }
+
+        .notifier_hover{
+            opacity : 1;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:notification message="." body="div[4]" icon="div[4]/div">
+            <div class="smoke">
+                <div class="lt"> </div>
+                <div class="rt"> </div>
+                <div class="line_t"> </div>
+                <div class="body">
+                    <div class="icon"> </div>
+                </div>
+                <div class="lb"> </div>
+                <div class="rb"> </div>
+                <div class="line_b"> </div>
+            </div>
+        </a:notification>
+    </a:presentation>
+</a:notifier></a:skin>
