@@ -133,19 +133,22 @@ oop.inherits(LanguageWorker, Mirror);
     this.analyze = function() {
         var ast = this.parse();
         var markers = [];
+        var handlerCount = 0;
         for(var i = 0; i < this.handlers.length; i++) {
             var handler = this.handlers[i];
             if (handler.handlesLanguage(this.$language) && (ast || !handler.analysisRequiresParsing())) {
                 var result = handler.analyze(this.doc, ast);
                 if (result)
                     markers = markers.concat(result);
+                handlerCount++;
             }
         }
         var extendedMakers = markers;
         filterMarkersAroundError(ast, markers);
         if (this.getLastAggregateActions().markers.length > 0)
             extendedMakers = markers.concat(this.getLastAggregateActions().markers);
-        this.scheduleEmit("markers", extendedMakers);
+        if(handlerCount > 0)
+            this.scheduleEmit("markers", extendedMakers);
         this.currentMarkers = markers;
         if (this.postponedCursorMove) {
             this.onCursorMove(this.postponedCursorMove);
