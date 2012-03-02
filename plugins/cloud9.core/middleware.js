@@ -1,26 +1,5 @@
-var connect = require("connect");
 var error = require("./error");
 var fs = require("fs");
-var path = require("path");
-
-exports.staticProvider = function (root, mount) {
-    var staticProvider = connect.static(path.normalize(root));
-
-    return function (request, response, next) {
-        var url      = request.url;
-        var pathname = require("url").parse(url).pathname;
-
-        if (pathname.indexOf(mount) === 0) {
-            request.url = url.replace(mount, "") || "/";
-
-            staticProvider(request, response, function (err) {
-                request.url = url;
-                next(err);
-            });
-        } else
-            next();
-    };
-};
 
 exports.errorHandler = function() {
     return function(err, req, res, next) {

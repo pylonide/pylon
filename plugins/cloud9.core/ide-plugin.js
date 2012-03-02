@@ -4,7 +4,6 @@ var Connect = require("connect");
 
 var IdeServer = require("./ide");
 var User = require("./user");
-var middleware = require("./middleware");
 
 module.exports = function setup(options, imports, register) {
     var log = imports.log;
@@ -37,8 +36,6 @@ module.exports = function setup(options, imports, register) {
             key: "cloud9.sid",
             secret: "1234"
         }));
-
-        connect.use(middleware.staticProvider(path.normalize(__dirname + "/www"), "/static"));
 
         connect.use(ideProvider(plugins, rjsPaths, projectDir, http.getServer(), sessionStore));
         log.info("IDE server initialized");
