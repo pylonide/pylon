@@ -76,8 +76,8 @@ module.exports = ext.register("ext/tree/tree", {
 
                 var savedTreeSelection = model.queryNode("auto/tree_selection");
                 if (savedTreeSelection) {
-                    _self.treeSelection.Path = model.queryValue('auto/tree_selection/@path');
-                    _self.treeSelection.Type = model.queryValue('auto/tree_selection/@type');
+                    _self.treeSelection.path = model.queryValue('auto/tree_selection/@path');
+                    _self.treeSelection.type = model.queryValue('auto/tree_selection/@type');
                 }
 
                 if (_self.model) {
@@ -208,19 +208,23 @@ module.exports = ext.register("ext/tree/tree", {
 
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             if (settings.model && settings.model.data && trFiles.selected) {
+                var nodePath          = trFiles.selected.getAttribute("path");
+                var nodeType          = trFiles.selected.getAttribute("type");
                 var settingsData      = settings.model.data;
                 var treeSelectionNode = settingsData.selectSingleNode("auto/tree_selection");
-                var nodeSelected      = trFiles.selected.getAttribute("path");
-                var nodeType          = trFiles.selected.getAttribute("type");
                 if(treeSelectionNode) {
-                    apf.xmldb.setAttribute(treeSelectionNode, "path", nodeSelected);
+                    apf.xmldb.setAttribute(treeSelectionNode, "path", nodePath);
                     apf.xmldb.setAttribute(treeSelectionNode, "type", nodeType);
                 }
-                else
+                else {
                     apf.xmldb.appendChild(settingsData.selectSingleNode("auto"),
-                        apf.getXml('<tree_selection path="' + nodeSelected +
+                        apf.getXml('<tree_selection path="' + nodePath +
                             '" type="' + nodeType + '" />')
                     );
+                }
+
+                _self.treeSelection.path = nodePath;
+                _self.treeSelection.type = nodeType;
             }
         });
 
@@ -377,8 +381,10 @@ module.exports = ext.register("ext/tree/tree", {
                     return; // Ruh oh
 
                 var dataXml = apf.getXml(data);
-                for (var x = 0, xmlLen = dataXml.childNodes.length; x < xmlLen; x++)
-                    trFiles.add(dataXml.childNodes[x], parentNode);
+                for (var x = 0, xmlLen = dataXml.childNodes.length; x < xmlLen; x++) {
+                    var clonedNode = dataXml.childNodes[x].cloneNode(true);
+                    apf.xmldb.appendChild(parentNode, clonedNode);
+                }
 
                 trFiles.$setLoadStatus(parentNode, "loaded");
                 trFiles.slideToggle(apf.xmldb.getHtmlNode(parentNode, trFiles), 1, true, null, function() {
