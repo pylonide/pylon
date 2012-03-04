@@ -512,19 +512,22 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         function scrollToFile() {
-            var htmlNode = apf.xmldb.getHtmlNode(trFiles.selected, trFiles);
-            var itemPos = apf.getAbsolutePosition(htmlNode, trFiles.$container);
-            var top = trFiles.$container.scrollTop;
-            var bottom = top + trFiles.$container.offsetHeight;
+            var tree = trFiles;
+            var htmlNode = apf.xmldb.getHtmlNode(tree.selected, tree);
+            if (!htmlNode)
+                return;
+            var itemPos = apf.getAbsolutePosition(htmlNode, tree.$container);
+            var top = tree.$container.scrollTop;
+            var bottom = top + tree.$container.offsetHeight;
 
             // No scrolling needed when item is between visible boundaries.
             if (itemPos[1] >= top && itemPos[1] <= bottom) {
                 return;
             }
             
-            var center = (trFiles.$container.offsetHeight / 2) | 0;
+            var center = (tree.$container.offsetHeight / 2) | 0;
             var newTop = itemPos[1] - center;
-            trFiles.$ext.scrollTop = newTop;
+            tree.$ext.scrollTop = newTop;
         }
     },
 
