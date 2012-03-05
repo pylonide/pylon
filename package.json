@@ -1,13 +1,21 @@
 {
     "name": "cloud9",
     "description": "Cloud9 IDE",
-    "version": "0.7",
+    "version": "0.7.0",
     "homepage" : "http://github.com/ajaxorg/cloud9",
     "engines": {"node": ">= 0.6.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
 
     "dependencies": {
-        "architect": "0.0.x"
+        "architect": "0.0.x",
+        "connect": "1.8.x",
+        "asyncjs": "0.0.x",
+        "socket.io": "0.8.x",
+        "jsDAV": "0.1.x",
+        "gnu-tools": "0.0.x",
+        "v8debug": "0.1.x",
+        "treehugger": "0.0.x",
+        "ace": "0.2.x"
     },
 
     "repository" : {

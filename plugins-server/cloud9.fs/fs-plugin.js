@@ -30,11 +30,9 @@ var exports = module.exports = function setup(options, imports, register) {
             return next();
 
         if (!inited) {
-            if (process.platform == "sunos") {
-                davServer.plugins["codesearch"].GREP_CMD = gnutools.GREP_CMD;
-                davServer.plugins["filesearch"].FIND_CMD = gnutools.FIND_CMD;
-                davServer.plugins["filelist"].FIND_CMD = gnutools.FIND_CMD;
-            }
+            davServer.plugins["codesearch"].GREP_CMD = gnutools.GREP_CMD;
+            davServer.plugins["filesearch"].FIND_CMD = gnutools.FIND_CMD;
+            davServer.plugins["filelist"].FIND_CMD = gnutools.FIND_CMD;
             davServer.plugins["permission"] = DavPermission;
             inited = true;
         }
