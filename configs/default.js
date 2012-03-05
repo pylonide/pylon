@@ -1,22 +1,20 @@
 var fs = require("fs");
 
 var skipClientExt = {
-    "cloud9.client.ext.richtext": 1,
-    "cloud9.client.ext.docs": 1,
-    "cloud9.client.ext.gittools": 1,
-    "cloud9.client.ext.browser": 1,
-    "cloud9.client.ext.acebugs": 1,
-    "cloud9.client.ext.refactor": 1
+    "ext.richtext": 1,
+    "ext.docs": 1,
+    "ext.gittools": 1,
+    "ext.browser": 1,
+    "ext.acebugs": 1,
+    "ext.refactor": 1
 };
 
-var clientExtensions = fs.readdirSync(__dirname + "/../plugins")
+var clientExtensions = fs.readdirSync(__dirname + "/../plugins-client")
     .filter(function(dir) {
-        return dir.indexOf("cloud9.client.ext.") === 0 && !skipClientExt[dir];
+        return dir.indexOf("ext.") === 0 && !skipClientExt[dir];
     })
     .map(function(dir) {
-        return {
-            packagePath: __dirname + "/../plugins/" + dir
-        };
+        return __dirname + "/../plugins-client/" + dir;
     });
 
 module.exports = {
@@ -26,54 +24,36 @@ module.exports = {
         master: {
             title: "Cloud9",
             plugins: [{
-                packagePath: __dirname + "/../plugins/cloud9.connect",
+                packagePath: __dirname + "/../plugins-server/cloud9.connect",
                 port: process.env.PORT || 3131,
                 host: "localhost"
             }, {
-                packagePath: __dirname + "/../plugins/cloud9.static",
+                packagePath: __dirname + "/../plugins-server/cloud9.static",
                 prefix: "/static"
             },
 
             // Client libraries
-            {
-                packagePath: __dirname + "/../plugins/cloud9.client.ace"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.client.apf"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.client.core"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.client.treehugger"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.client.v8debug"
-            },
+            __dirname + "/../plugins-client/cloud9.core",
+            __dirname + "/../plugins-client/lib.ace",
+            __dirname + "/../plugins-client/lib.apf",
+            __dirname + "/../plugins-client/lib.treehugger",
+            __dirname + "/../plugins-client/lib.v8debug",
 
-            {
-                packagePath: __dirname + "/../plugins/cloud9.log"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.core"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.auth"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.blame"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.git"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.gittools"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.hg"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.run-node"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.run-python"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.settings"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.shell"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.state"
-            }, {
-                packagePath: __dirname + "/../plugins/cloud9.ide.watcher"
-            }].concat(clientExtensions)
+            // server plugins
+            __dirname + "/../plugins-server/cloud9.log",
+            __dirname + "/../plugins-server/cloud9.core",
+            __dirname + "/../plugins-server/cloud9.ide.auth",
+            __dirname + "/../plugins-server/cloud9.ide.blame",
+            __dirname + "/../plugins-server/cloud9.ide.git",
+            __dirname + "/../plugins-server/cloud9.ide.gittools",
+            __dirname + "/../plugins-server/cloud9.ide.hg",
+            __dirname + "/../plugins-server/cloud9.ide.run-node",
+            __dirname + "/../plugins-server/cloud9.ide.run-python",
+            __dirname + "/../plugins-server/cloud9.ide.settings",
+            __dirname + "/../plugins-server/cloud9.ide.shell",
+            __dirname + "/../plugins-server/cloud9.ide.state",
+            __dirname + "/../plugins-server/cloud9.ide.watcher"
+            ].concat(clientExtensions)
         }
     }
 };
