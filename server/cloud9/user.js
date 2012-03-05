@@ -98,6 +98,18 @@ User.VISITOR_PERMISSIONS = {
             _self.onClientMessage(message, client);         
     };
     
+    this.disconnectClients = function() {
+        var self  = this;
+        Object.keys(this.clients).forEach(function(id) {
+            self.emit("disconnectClient", {
+                user: self,
+                client: self.clients[id]
+            });
+            delete self.clients[id];
+            self.onClientCountChange();
+        });
+    };
+    
     this.onClientMessage = function(message, client) {
         try {
             if (typeof message == "string")
