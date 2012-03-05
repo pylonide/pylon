@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.autosave",
+    "name": "ext.autosave",
     "version": "0.0.1",
     "main": "autosave-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.autosave"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

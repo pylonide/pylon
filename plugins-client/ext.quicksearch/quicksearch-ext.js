@@ -1,7 +1,3 @@
 module.exports = function setup(options, imports, register) {
-    imports.ide.registerClientPlugin("quicksearch", __dirname + "/quicksearch");
-
-    register(null, {
-        "client.ext.quicksearch": {}
-    });
+    imports["client-plugins"].register("quicksearch", __dirname + "/quicksearch", register);
 };

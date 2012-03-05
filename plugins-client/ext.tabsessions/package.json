@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.tabsessions",
+    "name": "ext.tabsessions",
     "version": "0.0.1",
     "main": "tabsessions-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.tabsessions"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

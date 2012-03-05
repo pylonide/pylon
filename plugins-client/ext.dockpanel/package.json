@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.dockpanel",
+    "name": "ext.dockpanel",
     "version": "0.0.1",
     "main": "dockpanel-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.dockpanel"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

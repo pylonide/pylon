@@ -1,7 +1,3 @@
 module.exports = function setup(options, imports, register) {
-    imports.ide.registerClientPlugin("stripws", __dirname + "/stripws");
-
-    register(null, {
-        "client.ext.stripws": {}
-    });
+    imports["client-plugins"].register("stripws", __dirname, register);
 };

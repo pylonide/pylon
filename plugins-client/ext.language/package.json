@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.language",
+    "name": "ext.language",
     "version": "0.0.1",
     "main": "language-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.language"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

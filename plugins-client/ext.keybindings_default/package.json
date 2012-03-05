@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.keybindings_default",
+    "name": "ext.keybindings_default",
     "version": "0.0.1",
     "main": "keybindings_default-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.keybindings_default"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

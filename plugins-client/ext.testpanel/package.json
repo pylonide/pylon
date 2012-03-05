@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.testpanel",
+    "name": "ext.testpanel",
     "version": "0.0.1",
     "main": "testpanel-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.testpanel"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

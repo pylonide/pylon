@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.noderunner",
+    "name": "ext.noderunner",
     "version": "0.0.1",
     "main": "noderunner-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.noderunner"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

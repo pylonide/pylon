@@ -1,7 +1,3 @@
 module.exports = function setup(options, imports, register) {
-    imports.ide.registerClientPlugin("formatjson", __dirname + "/formatjson");
-
-    register(null, {
-        "client.ext.formatjson": {}
-    });
+    imports["client-plugins"].register("formatjson", __dirname, register);
 };

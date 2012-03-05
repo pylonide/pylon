@@ -1,7 +1,3 @@
 module.exports = function setup(options, imports, register) {
-    imports.ide.registerClientPlugin("nodeunit", __dirname + "/nodeunit");
-
-    register(null, {
-        "client.ext.nodeunit": {}
-    });
+    imports["client-plugins"].register("nodeunit", __dirname, register);
 };

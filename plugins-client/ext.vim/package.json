@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.vim",
+    "name": "ext.vim",
     "version": "0.0.1",
     "main": "vim-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.vim"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

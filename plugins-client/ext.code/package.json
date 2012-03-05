@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.code",
+    "name": "ext.code",
     "version": "0.0.1",
     "main": "code-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.code"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

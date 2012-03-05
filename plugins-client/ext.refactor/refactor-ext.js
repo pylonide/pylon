@@ -1,7 +1,3 @@
 module.exports = function setup(options, imports, register) {
-    imports.ide.registerClientPlugin("refactor", __dirname + "/refactor");
-
-    register(null, {
-        "client.ext.refactor": {}
-    });
+    imports["client-plugins"].register("refactor", __dirname, register);
 };

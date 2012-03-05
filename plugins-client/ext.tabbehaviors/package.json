@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.tabbehaviors",
+    "name": "ext.tabbehaviors",
     "version": "0.0.1",
     "main": "tabbehaviors-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.tabbehaviors"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

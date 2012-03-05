@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.codecomplete",
+    "name": "ext.codecomplete",
     "version": "0.0.1",
     "main": "codecomplete-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.codecomplete"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.template",
+    "name": "ext.template",
     "version": "0.0.1",
     "main": "template-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.template"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

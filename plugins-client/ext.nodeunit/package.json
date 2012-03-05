@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.nodeunit",
+    "name": "ext.nodeunit",
     "version": "0.0.1",
     "main": "nodeunit-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.nodeunit"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

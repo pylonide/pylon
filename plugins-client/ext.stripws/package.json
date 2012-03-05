@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.stripws",
+    "name": "ext.stripws",
     "version": "0.0.1",
     "main": "stripws-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.stripws"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

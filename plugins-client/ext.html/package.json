@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.html",
+    "name": "ext.html",
     "version": "0.0.1",
     "main": "html-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.html"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }
