@@ -1,6 +1,3 @@
-[submodule "support/connect"]
-    path = support/connect
-    url = https://github.com/ajaxorg/connect.git
 [submodule "support/asyncjs"]
     path = support/asyncjs
     url = https://github.com/ajaxorg/async.js.git
@@ -16,24 +13,9 @@
 [submodule "support/apf"]
     path = support/apf
     url = https://github.com/ajaxorg/apf.git
-[submodule "support/node-builds-v4"]
-    path = support/node-builds-v4
-    url = https://github.com/ajaxorg/node-builds-v4.git
-[submodule "support/gnu-builds"]
-    path = support/gnu-builds
-    url = https://github.com/ajaxorg/gnu-builds.git
-[submodule "support/socket.io"]
-    path = support/socket.io
-    url = https://github.com/ajaxorg/socket.io.git
-[submodule "support/socket.io-client"]
-    path = support/socket.io-client
-    url = https://github.com/ajaxorg/socket.io-client.git
-[submodule "support/uglify-js"]
-    path = support/uglify-js
-    url = https://github.com/ajaxorg/UglifyJS.git
 [submodule "support/treehugger"]
     path = support/treehugger
     url = https://github.com/ajaxorg/treehugger.git
 [submodule "support/packager"]
-	path = support/packager
-	url = https://github.com/ajaxorg/packager
+    path = support/packager
+    url = https://github.com/ajaxorg/packager
