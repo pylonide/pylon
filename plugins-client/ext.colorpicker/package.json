@@ -4,6 +4,9 @@
     "main": "colorpicker-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.colorpicker"
+        ],
         "consumes": [
             "client-plugins"
         ]

@@ -4,6 +4,9 @@
     "main": "nodeunit-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.nodeunit"
+        ],
         "consumes": [
             "client-plugins"
         ]

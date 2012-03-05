@@ -4,6 +4,9 @@
     "main": "gittools-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.gittools"
+        ],
         "consumes": [
             "client-plugins"
         ]

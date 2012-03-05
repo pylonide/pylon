@@ -4,6 +4,9 @@
     "main": "template-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.template"
+        ],
         "consumes": [
             "client-plugins"
         ]

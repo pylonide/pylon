@@ -2,8 +2,6 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var jsDAV = require("jsdav");
-var DavPermission = require("./dav/permission");
 var Async = require("asyncjs");
 var User = require("./user");
 var fs = require("fs");
@@ -57,22 +55,6 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
 
     this.$users = {};
     this.nodeCmd = process.argv[0];
-
-    var davOptions = {
-        node: this.options.mountDir,
-        mount: this.options.davPrefix,
-        plugins: this.options.davPlugins,
-        server: this.httpServer,
-        standalone: false
-    };
-
-    if (options.remote)
-        c9util.extend(davOptions, options.remote);
-    else
-        davOptions.path = this.options.mountDir;
-    this.davServer = jsDAV.mount(davOptions);
-
-    this.davInited = false;
 
     this.workspace = new Workspace({ ide: this });
 
@@ -150,8 +132,6 @@ Ide.DEFAULT_PLUGINS = [
     //"ext/acebugs/acebugs"
 ];
 
-exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
-
 (function () {
 
     this.handle = function(req, res, next) {
@@ -159,7 +139,6 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 
         this.indexRe = this.indexRe || new RegExp("^" + c9util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
         this.reconnectRe = this.reconnectRe || new RegExp("^" + c9util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
-        this.workspaceRe = this.workspaceRe || new RegExp("^" + c9util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
@@ -171,20 +150,6 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                 return next();
             res.writeHead(200);
             res.end(req.sessionID);
-        }
-        else if (path.match(this.workspaceRe)) {
-            if (!this.davInited) {
-                if (process.platform == "sunos") {
-                    this.davServer.plugins["codesearch"].GREP_CMD = __dirname+"/../../support/gnu-builds/grep-sunos";
-                    this.davServer.plugins["filesearch"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
-                    this.davServer.plugins["filelist"].FIND_CMD = __dirname+"/../../support/gnu-builds/find-sunos";
-                }
-                this.davServer.plugins["permission"] = DavPermission;
-                this.davInited = true;
-                this.emit("configureDav", this.davServer);
-            }
-            this.davServer.permissions = this.getPermissions(req);
-            this.davServer.exec(req, res);
         } else {
             next();
         }
@@ -225,7 +190,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                 sessionId: req.sessionID, // set by connect
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),
-                readonly: (permissions.dav !== "rw"),
+                readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
                 offlineManifest: _self.options.offlineManifest,
@@ -270,7 +235,6 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
             });
             user.on("disconnectUser", function(user) {
                 console.log("Running user disconnect timer...");
-                _self.davServer.unmount();
 
                 setTimeout(function() {
                     var now = new Date().getTime();

@@ -4,6 +4,9 @@
     "main": "codetools-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.codetools"
+        ],
         "consumes": [
             "client-plugins"
         ]

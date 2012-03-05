@@ -4,6 +4,9 @@
     "main": "beautify-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.beautify"
+        ],
         "consumes": [
             "client-plugins"
         ]

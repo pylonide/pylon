@@ -4,6 +4,9 @@
     "main": "imgview-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.imgview"
+        ],
         "consumes": [
             "client-plugins"
         ]

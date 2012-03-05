@@ -4,6 +4,9 @@
     "main": "clipboard-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.clipboard"
+        ],
         "consumes": [
             "client-plugins"
         ]

@@ -4,6 +4,9 @@
     "main": "jslanguage-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.jslanguage"
+        ],
         "consumes": [
             "client-plugins"
         ]

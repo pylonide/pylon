@@ -1,3 +1,4 @@
+var assert = require("assert");
 var IO = require("socket.io");
 var Connect = require("connect");
 
@@ -5,6 +6,11 @@ var IdeServer = require("./ide");
 var User = require("./user");
 
 module.exports = function setup(options, imports, register) {
+
+    assert(options.projectDir, "option projectDir required");
+    assert(options.fsUrl, "option fsUrl required");
+    assert(options.workspaceId, "option workspaceId required");
+
     var log = imports.log;
     var hub = imports.hub;
     var connect = imports.connect;
@@ -24,9 +30,6 @@ module.exports = function setup(options, imports, register) {
 
     hub.on("containersDone", function() {
 
-        var rjsPaths = imports.static.getRequireJsPaths();
-        var projectDir = __dirname + "/../";
-
         connect.use(Connect.cookieParser());
 
         var sessionStore = new Connect.session.MemoryStore({ reapInterval: -1 });
@@ -36,41 +39,37 @@ module.exports = function setup(options, imports, register) {
             secret: "1234"
         }));
 
-        var clientPlugins = options.clientPlugins || [];
-        connect.use(ideProvider(serverPlugins, clientPlugins, rjsPaths, projectDir, http.getServer(), sessionStore));
+        var serverOptions = {
+            workspaceDir: options.projectDir,
+            davPrefix: "/workspace",
+            baseUrl: "",
+            debug: false,
+            staticUrl: options.staticUrl || "/static",
+            workspaceId: options.workspaceId,
+            name: options.name || options.workspaceId,
+            version: options.version || null,
+            requirejsConfig: {
+                baseUrl: "/static/",
+                paths: imports.static.getRequireJsPaths()
+            },
+            plugins: options.clientPlugins || []
+        };
+
+        var server = http.getServer();
+        var ide = new IdeServer(serverOptions, server, serverPlugins);
+        initSocketIo(server, sessionStore, ide);
+
+        connect.use(function(req, res, next) {
+            if (!req.session.uid)
+                req.session.uid = "owner_" + req.sessionID;
+
+            ide.addUser(req.session.uid, User.OWNER_PERMISSIONS);
+            ide.handle(req, res, next);
+        });
+
         log.info("IDE server initialized");
     });
 };
-
-function ideProvider(plugins, clientPlugins, rjsPaths, projectDir, server, sessionStore) {
-    var name = projectDir.split("/").pop();
-    var serverOptions = {
-        workspaceDir: projectDir,
-        davPrefix: "/workspace",
-        baseUrl: "",
-        debug: false,
-        staticUrl: "/static",
-        workspaceId: name,
-        name: name,
-        version: "0.7.0",
-        requirejsConfig: {
-            baseUrl: "/static/",
-            paths: rjsPaths
-        },
-        plugins: clientPlugins
-    };
-
-    var ide = new IdeServer(serverOptions, server, plugins);
-    initSocketIo(server, sessionStore, ide);
-
-    return function(req, res, next) {
-        if (!req.session.uid)
-            req.session.uid = "owner_" + req.sessionID;
-
-        ide.addUser(req.session.uid, User.OWNER_PERMISSIONS);
-        ide.handle(req, res, next);
-    };
-}
 
 function initSocketIo(server, sessionStore, ide) {
     var socketIo = IO.listen(server);

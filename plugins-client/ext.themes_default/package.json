@@ -4,6 +4,9 @@
     "main": "themes_default-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.themes_default"
+        ],
         "consumes": [
             "client-plugins"
         ]

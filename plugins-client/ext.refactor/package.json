@@ -4,6 +4,9 @@
     "main": "refactor-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.refactor"
+        ],
         "consumes": [
             "client-plugins"
         ]

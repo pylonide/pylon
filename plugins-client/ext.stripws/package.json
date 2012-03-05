@@ -4,6 +4,9 @@
     "main": "stripws-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.stripws"
+        ],
         "consumes": [
             "client-plugins"
         ]

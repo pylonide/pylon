@@ -4,6 +4,9 @@
     "main": "help-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.help"
+        ],
         "consumes": [
             "client-plugins"
         ]

@@ -1,3 +1,6 @@
 module.exports = function setup(options, imports, register) {
-    imports["client-plugins"].register("template", __dirname, register);
+    imports["client-plugins"].register("template", __dirname);
+    register(null, {
+        "ext.template": {}
+    })
 };

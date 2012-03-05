@@ -4,6 +4,9 @@
     "main": "keybindings_default-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.keybindings_default"
+        ],
         "consumes": [
             "client-plugins"
         ]

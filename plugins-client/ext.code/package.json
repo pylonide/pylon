@@ -4,6 +4,9 @@
     "main": "code-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.code"
+        ],
         "consumes": [
             "client-plugins"
         ]

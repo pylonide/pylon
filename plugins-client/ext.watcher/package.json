@@ -4,6 +4,9 @@
     "main": "watcher-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.watcher"
+        ],
         "consumes": [
             "client-plugins"
         ]

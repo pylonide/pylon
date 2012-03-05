@@ -4,6 +4,9 @@
     "main": "connect-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.connect"
+        ],
         "consumes": [
             "client-plugins"
         ]

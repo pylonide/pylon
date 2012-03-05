@@ -4,6 +4,9 @@
     "main": "run-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.run"
+        ],
         "consumes": [
             "client-plugins"
         ]

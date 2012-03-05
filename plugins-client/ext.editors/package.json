@@ -4,8 +4,12 @@
     "main": "editors-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.editors"
+        ],
         "consumes": [
-            "client-plugins"
+            "client-plugins",
+            "ext.newresource"
         ]
     }
 }

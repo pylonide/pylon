@@ -4,6 +4,9 @@
     "main": "openfiles-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.openfiles"
+        ],
         "consumes": [
             "client-plugins"
         ]

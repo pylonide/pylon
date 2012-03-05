@@ -1,3 +1,6 @@
 module.exports = function setup(options, imports, register) {
-    imports["client-plugins"].register("gittools", __dirname, register);
+    imports["client-plugins"].register("gittools", __dirname);
+    register(null, {
+        "ext.gittools": {}
+    })
 };

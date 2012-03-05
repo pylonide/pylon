@@ -4,6 +4,9 @@
     "main": "autosave-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.autosave"
+        ],
         "consumes": [
             "client-plugins"
         ]

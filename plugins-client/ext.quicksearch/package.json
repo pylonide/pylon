@@ -4,6 +4,9 @@
     "main": "quicksearch-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.quicksearch"
+        ],
         "consumes": [
             "client-plugins"
         ]
