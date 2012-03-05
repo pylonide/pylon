@@ -11,6 +11,7 @@
         "connect": "1.8.x",
         "asyncjs": "0.0.x",
         "socket.io": "0.8.x",
+        "socket.io-client": "0.8.x",
         "jsDAV": "0.1.x",
         "gnu-tools": "0.0.x",
         "v8debug": "0.1.x",
