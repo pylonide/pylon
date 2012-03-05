@@ -5,9 +5,10 @@
 
 var Util = require("util");
 
-exports.extend = function(dest, src) {
+exports.extend = function(dest, src, noOverwrite) {
     for (var prop in src) {
-        dest[prop] = src[prop];
+        if (!noOverwrite || typeof dest[prop] == "undefined")
+            dest[prop] = src[prop];
     }
     return dest;
 };
