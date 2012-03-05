@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.extmgr",
+    "name": "ext.extmgr",
     "version": "0.0.1",
     "main": "extmgr-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.extmgr"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.autotest",
+    "name": "ext.autotest",
     "version": "0.0.1",
     "main": "autotest-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.autotest"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

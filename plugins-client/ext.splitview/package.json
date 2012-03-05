@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.splitview",
+    "name": "ext.splitview",
     "version": "0.0.1",
     "main": "splitview-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.splitview"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

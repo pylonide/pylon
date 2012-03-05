@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.newresource",
+    "name": "ext.newresource",
     "version": "0.0.1",
     "main": "newresource-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.newresource"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

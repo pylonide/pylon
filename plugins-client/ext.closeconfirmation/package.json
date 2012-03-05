@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.closeconfirmation",
+    "name": "ext.closeconfirmation",
     "version": "0.0.1",
     "main": "closeconfirmation-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.closeconfirmation"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

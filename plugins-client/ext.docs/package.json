@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.docs",
+    "name": "ext.docs",
     "version": "0.0.1",
     "main": "docs-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.docs"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.debugger",
+    "name": "ext.debugger",
     "version": "0.0.1",
     "main": "debugger-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.debugger"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

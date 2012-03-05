@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.searchinfiles",
+    "name": "ext.searchinfiles",
     "version": "0.0.1",
     "main": "searchinfiles-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.searchinfiles"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

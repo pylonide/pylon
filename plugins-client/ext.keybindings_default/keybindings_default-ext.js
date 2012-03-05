@@ -1,7 +1,3 @@
 module.exports = function setup(options, imports, register) {
-    imports.ide.registerClientPlugin("keybindings_default", __dirname + "/keybindings_default");
-
-    register(null, {
-        "client.ext.keybindings_default": {}
-    });
+    imports["client-plugins"].register("keybindings_default", __dirname, register);
 };

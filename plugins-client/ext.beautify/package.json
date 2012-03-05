@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.beautify",
+    "name": "ext.beautify",
     "version": "0.0.1",
     "main": "beautify-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.beautify"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.connect",
+    "name": "ext.connect",
     "version": "0.0.1",
     "main": "connect-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.connect"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

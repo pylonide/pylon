@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.richtext",
+    "name": "ext.richtext",
     "version": "0.0.1",
     "main": "richtext-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.richtext"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

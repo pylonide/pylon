@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.zen",
+    "name": "ext.zen",
     "version": "0.0.1",
     "main": "zen-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.zen"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

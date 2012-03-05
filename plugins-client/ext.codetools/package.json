@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.codetools",
+    "name": "ext.codetools",
     "version": "0.0.1",
     "main": "codetools-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.codetools"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.save",
+    "name": "ext.save",
     "version": "0.0.1",
     "main": "save-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.save"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

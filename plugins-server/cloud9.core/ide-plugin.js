@@ -11,7 +11,6 @@ module.exports = function setup(options, imports, register) {
     var http = imports.http;
 
     var serverPlugins = {};
-    var clientPlugins = [];
 
     register(null, {
         ide: {
@@ -19,15 +18,6 @@ module.exports = function setup(options, imports, register) {
                 log.info("IDE SERVER PLUGIN: ", name);
                 serverPlugins[name] = plugin;
                 callback();
-            },
-
-            registerClientPlugin: function(name, path) {
-                log.info("IDE CLIENT PLUGIN: ", name, path);
-                clientPlugins.push("ext/" + name + "/" + name);
-                imports.static.addStatics([{
-                    path: path,
-                    mount: "/ext/" + name
-                }]);
             }
         }
     });
@@ -35,7 +25,6 @@ module.exports = function setup(options, imports, register) {
     hub.on("containersDone", function() {
 
         var rjsPaths = imports.static.getRequireJsPaths();
-
         var projectDir = __dirname + "/../";
 
         connect.use(Connect.cookieParser());
@@ -47,6 +36,7 @@ module.exports = function setup(options, imports, register) {
             secret: "1234"
         }));
 
+        var clientPlugins = options.clientPlugins || [];
         connect.use(ideProvider(serverPlugins, clientPlugins, rjsPaths, projectDir, http.getServer(), sessionStore));
         log.info("IDE server initialized");
     });

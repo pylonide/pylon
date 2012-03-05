@@ -1,7 +1,3 @@
 module.exports = function setup(options, imports, register) {
-    imports.ide.registerClientPlugin("gotoline", __dirname + "/gotoline");
-
-    register(null, {
-        "client.ext.gotoline": {}
-    });
+    imports["client-plugins"].register("gotoline", __dirname, register);
 };

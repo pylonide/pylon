@@ -1,8 +1,0 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="barBrowserTb" visible="false">
-        <a:divider />
-        <a:button skin="c9-toolbarbutton">Home</a:button>
-        <a:button skin="c9-toolbarbutton">Back</a:button>
-        <a:button skin="c9-toolbarbutton">Forward</a:button>
-    </a:bar>
-</a:application>

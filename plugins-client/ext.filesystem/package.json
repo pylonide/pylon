@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.filesystem",
+    "name": "ext.filesystem",
     "version": "0.0.1",
     "main": "filesystem-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.filesystem"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

@@ -3,7 +3,7 @@
 var fs = require("fs");
 
 var dirs = fs.readdirSync(__dirname).filter(function(dir) {
-    return dir.indexOf("cloud9.client.ext.") == 0;
+    return dir.indexOf("ext.") == 0;
 })
 
 console.log(dirs)
@@ -11,33 +11,33 @@ console.log(dirs)
 dirs.forEach(function(dir) {
     var pkg = __dirname + "/" + dir;
     var name = fs.readdirSync(pkg).filter(function(dir) {
-        return dir.indexOf(".") == -1;
-    })[0];
+        return dir.indexOf("-ext.js") !== -1;
+    })[0].replace("-ext.js", "");
     
     var src = pkg;
     var dest = __dirname + "/ext." + name;
-    
+    /*
     try {
     if (src !== dest)
         fs.renameSync(src, dest);
     } catch (e) {
         console.log(e)
     }
+    */
       
+    //console.log("mv %s/%s/* %s", pkg, name, pkg)
+    //console.log("rm -rf %s/%s", pkg, name)
       
     //package(pkg, name);
-    //ext(pkg, name)
-    console.log(name, dest)
+    ext(pkg, name)
+    //console.log(name, dest)
 })
 
 function ext(pkg, name) {
+    console.log(pkg, name)
     var file = [
 'module.exports = function setup(options, imports, register) {',
-'    imports.ide.registerClientPlugin("' + name + '", __dirname + "/' + name +'");',
-'',
-'    register(null, {',
-'        "client.ext.' + name + '": {}',
-'    });',
+'    imports["client-plugins"].register("' + name + '", __dirname, register);',
 '};'].join("\n");
 
     console.log(file)
@@ -46,17 +46,12 @@ function ext(pkg, name) {
 
 function package(pkg, name) {
     var json = {
-        "name": "cloud9.client.ext." + name,
+        "name": "ext." + name,
         "version": "0.0.1",
         "main": name + "-ext.js",
         "private": true,
-
-        "dependencies": {
-        },
-
         "plugin": {
-            "provides": ["client.ext." + name],
-            "consumes": ["ide"]
+            "consumes": ["client-plugins"]
         }
     }
     console.log(pkg + "/package.json", JSON.stringify(json, null, 4))

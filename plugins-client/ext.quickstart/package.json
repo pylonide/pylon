@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.quickstart",
+    "name": "ext.quickstart",
     "version": "0.0.1",
     "main": "quickstart-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.quickstart"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

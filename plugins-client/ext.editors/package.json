@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.editors",
+    "name": "ext.editors",
     "version": "0.0.1",
     "main": "editors-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.editors"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

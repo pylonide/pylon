@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.undo",
+    "name": "ext.undo",
     "version": "0.0.1",
     "main": "undo-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.undo"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

@@ -1,15 +1,11 @@
 {
-    "name": "cloud9.client.ext.quickwatch",
+    "name": "ext.quickwatch",
     "version": "0.0.1",
     "main": "quickwatch-ext.js",
     "private": true,
-    "dependencies": {},
     "plugin": {
-        "provides": [
-            "client.ext.quickwatch"
-        ],
         "consumes": [
-            "ide"
+            "client-plugins"
         ]
     }
 }

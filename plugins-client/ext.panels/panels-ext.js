@@ -1,7 +1,3 @@
 module.exports = function setup(options, imports, register) {
-    imports.ide.registerClientPlugin("panels", __dirname + "/panels");
-
-    register(null, {
-        "client.ext.panels": {}
-    });
+    imports["client-plugins"].register("panels", __dirname, register);
 };
