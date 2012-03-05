@@ -4,6 +4,9 @@
     "main": "closeconfirmation-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.closeconfirmation"
+        ],
         "consumes": [
             "client-plugins"
         ]

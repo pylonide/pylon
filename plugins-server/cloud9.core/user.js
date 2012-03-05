@@ -2,13 +2,8 @@ var util = require("util");
 var c9util = require("./util");
 var EventEmitter = require("events").EventEmitter;
 
-var User = function (uid, permissions, data) {
+var User = module.exports = function (uid, permissions, data) {
     EventEmitter.call(this);
-
-    // TODO deprecated
-    Object.defineProperty(this, "name",
-       {get: function() { console.log("DEPRECATED: name use uid"); console.trace(); return uid; }}
-    );
 
     this.uid = uid;
     this.permissions = permissions;
@@ -23,13 +18,13 @@ util.inherits(User, EventEmitter);
 User.OWNER_PERMISSIONS = {
     client_exclude: "",
     server_exclude: "",
-    dav: "rw"
+    fs: "rw"
 };
 
 User.COLLABORATOR_PERMISSIONS = {
     client_exclude: "",
     server_exclude: "git",
-    dav: "rw"
+    fs: "rw"
 };
 
 User.VISITOR_PERMISSIONS = {
@@ -54,7 +49,7 @@ User.VISITOR_PERMISSIONS = {
         "shell",
         "runvm"
     ].join("|"),
-    dav: "ro"
+    fs: "ro"
 };
 
 (function() {
@@ -151,5 +146,3 @@ User.VISITOR_PERMISSIONS = {
     };
 
 }).call(User.prototype);
-
-module.exports = User;

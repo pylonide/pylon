@@ -4,6 +4,9 @@
     "main": "noderunner-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.noderunner"
+        ],
         "consumes": [
             "client-plugins"
         ]

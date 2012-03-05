@@ -4,6 +4,9 @@
     "main": "console-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.console"
+        ],
         "consumes": [
             "client-plugins"
         ]

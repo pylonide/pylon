@@ -4,6 +4,9 @@
     "main": "docs-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.docs"
+        ],
         "consumes": [
             "client-plugins"
         ]

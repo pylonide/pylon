@@ -4,6 +4,9 @@
     "main": "save-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.save"
+        ],
         "consumes": [
             "client-plugins"
         ]

@@ -4,6 +4,9 @@
     "main": "zen-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.zen"
+        ],
         "consumes": [
             "client-plugins"
         ]

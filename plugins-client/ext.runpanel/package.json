@@ -4,6 +4,9 @@
     "main": "runpanel-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.runpanel"
+        ],
         "consumes": [
             "client-plugins"
         ]

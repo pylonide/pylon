@@ -4,6 +4,9 @@
     "main": "gotoline-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.gotoline"
+        ],
         "consumes": [
             "client-plugins"
         ]

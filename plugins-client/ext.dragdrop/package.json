@@ -4,6 +4,9 @@
     "main": "dragdrop-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.dragdrop"
+        ],
         "consumes": [
             "client-plugins"
         ]

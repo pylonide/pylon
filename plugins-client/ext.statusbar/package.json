@@ -4,6 +4,9 @@
     "main": "statusbar-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.statusbar"
+        ],
         "consumes": [
             "client-plugins"
         ]

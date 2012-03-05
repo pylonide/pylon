@@ -4,6 +4,9 @@
     "main": "gotofile-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.gotofile"
+        ],
         "consumes": [
             "client-plugins"
         ]

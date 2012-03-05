@@ -4,6 +4,9 @@
     "main": "ftp-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.ftp"
+        ],
         "consumes": [
             "client-plugins"
         ]

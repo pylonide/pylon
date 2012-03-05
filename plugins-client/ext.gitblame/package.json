@@ -4,6 +4,9 @@
     "main": "gitblame-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.gitblame"
+        ],
         "consumes": [
             "client-plugins"
         ]

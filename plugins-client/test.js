@@ -1,5 +1,3 @@
-
-
 var fs = require("fs");
 
 var dirs = fs.readdirSync(__dirname).filter(function(dir) {
@@ -28,7 +26,7 @@ dirs.forEach(function(dir) {
     //console.log("mv %s/%s/* %s", pkg, name, pkg)
     //console.log("rm -rf %s/%s", pkg, name)
       
-    //package(pkg, name);
+    package(pkg, name);
     ext(pkg, name)
     //console.log(name, dest)
 })
@@ -37,7 +35,10 @@ function ext(pkg, name) {
     console.log(pkg, name)
     var file = [
 'module.exports = function setup(options, imports, register) {',
-'    imports["client-plugins"].register("' + name + '", __dirname, register);',
+'    imports["client-plugins"].register("' + name + '", __dirname);',
+'    register(null, {',
+'        "ext.' + name + '": {}',
+'    })',
 '};'].join("\n");
 
     console.log(file)
@@ -51,6 +52,7 @@ function package(pkg, name) {
         "main": name + "-ext.js",
         "private": true,
         "plugin": {
+            "provides": ["ext." + name],
             "consumes": ["client-plugins"]
         }
     }

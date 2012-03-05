@@ -12,8 +12,10 @@ var util = require("util");
 var Plugin = require("../cloud9.core/plugin");
 
 var name = "watcher";
+var DAV;
 
 module.exports = function setup(options, imports, register) {
+    DAV = imports.dav.getServer();
     imports.ide.register(name, WatcherPlugin, register);
 };
 
@@ -24,7 +26,7 @@ var IGNORE_TIMEOUT = 50,
 var WatcherPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
-    ide.davServer.plugins['watcher'] = function (handler) {
+    DAV.plugins['watcher'] = function (handler) {
         handler.addEventListener('beforeWriteContent', function (e, uri) {
             var path = handler.server.tree.basePath + '/' + uri;
 

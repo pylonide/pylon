@@ -4,8 +4,12 @@
     "main": "settings-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.settings"
+        ],
         "consumes": [
-            "client-plugins"
+            "client-plugins",
+            "ext.panels"
         ]
     }
 }

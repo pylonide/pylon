@@ -4,6 +4,9 @@
     "main": "guidedtour-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.guidedtour"
+        ],
         "consumes": [
             "client-plugins"
         ]

@@ -6,14 +6,13 @@ module.exports = function startup(options, imports, register) {
 
     register(null, {
         "client-plugins": {
-            register: function(name, path, callback) {
+            register: function(name, path) {
                 log.info("IDE CLIENT PLUGIN: ", name, path);
                 clientPlugins.push("ext/" + name + "/" + name);
                 imports.static.addStatics([{
                     path: path,
                     mount: "/ext/" + name
                 }]);
-                callback();
             }
         }
     });

@@ -4,6 +4,9 @@
     "main": "searchinfiles-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.searchinfiles"
+        ],
         "consumes": [
             "client-plugins"
         ]

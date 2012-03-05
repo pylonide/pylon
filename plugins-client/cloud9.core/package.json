@@ -11,7 +11,11 @@
         "provides": ["client.cloud9"],
         "consumes": [
             "static",
-            "client.apf"
+            "client.apf",
+
+            "ext.filesystem",
+            "ext.editors",
+            "ext.settings"
         ]
     }
 }

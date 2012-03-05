@@ -4,6 +4,9 @@
     "main": "richtext-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.richtext"
+        ],
         "consumes": [
             "client-plugins"
         ]

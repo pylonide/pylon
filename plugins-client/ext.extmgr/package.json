@@ -4,6 +4,9 @@
     "main": "extmgr-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.extmgr"
+        ],
         "consumes": [
             "client-plugins"
         ]

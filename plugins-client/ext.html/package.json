@@ -4,6 +4,9 @@
     "main": "html-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.html"
+        ],
         "consumes": [
             "client-plugins"
         ]

@@ -4,6 +4,9 @@
     "main": "dockpanel-ext.js",
     "private": true,
     "plugin": {
+        "provides": [
+            "ext.dockpanel"
+        ],
         "consumes": [
             "client-plugins"
         ]
