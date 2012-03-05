@@ -52,8 +52,6 @@ var createItem = module.exports.test.createItem = function(line, ide) {
     var davPrefix = ide.davPrefix;
     var wsRe = new RegExp(escRegExp(workspaceDir) + "\\/([^:]*)(:\\d+)(:\\d+)*", "g");
 
-    line = apf.escapeXML(line);
-
     if ((line.search(RE_relwsp) !== -1) || (line.search(wsRe) !== -1)) {
         var html = "<a href='#' data-wsp='" + davPrefix + "/$1,$2,$3'>___$1$2$3</a>";
         line = line
@@ -63,6 +61,20 @@ var createItem = module.exports.test.createItem = function(line, ide) {
     else if (line.search(RE_URL) !== -1) {
         line = line.replace(RE_URL, "<a href='$1' target='_blank'>$1</a>");
     }
+    
+    // escape HTML/ XML, but preserve the links:
+    var links = [];
+    var replacer = "###$#$#$##0";
+    line = line.replace(/(<a.*?a>)/gi, function(m) {
+        links.push(m);
+        return replacer;
+    });
+    
+    line = apf.escapeXML(line);
+    
+    line = line.replace(replacer, function() {
+        return links.shift();
+    });
     
     var open = 0;
     line = line
