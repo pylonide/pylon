@@ -37,10 +37,10 @@ util.inherits(Permission, jsDAV_ServerPlugin);
         if (!permissions)
             return e.next();
 
-        if (this.READ_METHODS[method] && permissions.dav.indexOf("r") > -1)
+        if (this.READ_METHODS[method] && permissions.indexOf("r") > -1)
             return e.next();
 
-        if (this.WRITE_METHODS[method] && permissions.dav.indexOf("w") > -1)
+        if (this.WRITE_METHODS[method] && permissions.indexOf("w") > -1)
             return e.next();
 
         this.handler.httpResponse.writeHead(403);
