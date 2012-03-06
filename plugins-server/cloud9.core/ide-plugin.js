@@ -13,10 +13,24 @@ module.exports = function setup(options, imports, register) {
     var log = imports.log;
     var hub = imports.hub;
     var connect = imports.connect;
-    var http = imports.http;
-    var session = imports.session;
 
     var serverPlugins = {};
+    var serverOptions = {
+        workspaceDir: options.projectDir,
+        davPrefix: "/workspace",
+        baseUrl: "",
+        debug: false,
+        staticUrl: options.staticUrl || "/static",
+        workspaceId: options.workspaceId,
+        name: options.name || options.workspaceId,
+        version: options.version || null,
+        requirejsConfig: {
+            baseUrl: "/static/",
+            paths: imports.static.getRequireJsPaths()
+        },
+        plugins: options.clientPlugins || []
+    };
+    var ide = new IdeServer(serverOptions);
 
     register(null, {
         ide: {
@@ -24,32 +38,15 @@ module.exports = function setup(options, imports, register) {
                 log.info("IDE SERVER PLUGIN: ", name);
                 serverPlugins[name] = plugin;
                 callback();
+            },
+            getServer: function() {
+                return ide;
             }
         }
     });
 
     hub.on("containersDone", function() {
-
-        var serverOptions = {
-            workspaceDir: options.projectDir,
-            davPrefix: "/workspace",
-            baseUrl: "",
-            debug: false,
-            staticUrl: options.staticUrl || "/static",
-            workspaceId: options.workspaceId,
-            name: options.name || options.workspaceId,
-            version: options.version || null,
-            requirejsConfig: {
-                baseUrl: "/static/",
-                paths: imports.static.getRequireJsPaths()
-            },
-            plugins: options.clientPlugins || []
-        };
-
-        var server = http.getServer();
-        var ide = new IdeServer(serverOptions, serverPlugins);
-        initSocketIo(server, session, ide);
-
+        ide.init(serverPlugins);
         connect.use(function(req, res, next) {
             if (!req.session.uid)
                 req.session.uid = "owner_" + req.sessionID;
@@ -61,33 +58,3 @@ module.exports = function setup(options, imports, register) {
         log.info("IDE server initialized");
     });
 };
-
-function initSocketIo(server, session, ide) {
-    var socketIo = IO.listen(server);
-    socketIo.enable("browser client minification");
-    socketIo.set("log level", 1);
-    socketIo.set("close timeout", 7);
-    socketIo.set("heartbeat timeout", 2.5);
-    socketIo.set("heartbeat interval", 5);
-    socketIo.set("polling duration", 5);
-    socketIo.sockets.on("connection", function(client) {
-        client.on("message", function(data) {
-            var message = data;
-            if (typeof data == "string") {
-                try {
-                    message = JSON.parse(data);
-                } catch(e) {
-                    return;
-                }
-            }
-            if (message.command === "attach") {
-                session.get(message.sessionId, function(err, session) {
-                    if (err || !session || !session.uid)
-                        return;
-
-                    ide.addClientConnection(session.uid, client, data);
-                });
-            }
-        });
-    });
-}
