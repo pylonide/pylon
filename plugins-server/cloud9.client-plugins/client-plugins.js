@@ -13,6 +13,10 @@ module.exports = function startup(options, imports, register) {
                     path: path,
                     mount: "/ext/" + name
                 }]);
+            },
+            registerPackage: function(name, path) {
+                log.info("BUNDLED IDE CLIENT PLUGIN: ", name, path);
+                imports.sourcemint.addPackage(name, path);
             }
         }
     });

@@ -22,6 +22,9 @@ module.exports = {
                 port: process.env.PORT || 3131,
                 host: "localhost"
             }, {
+                packagePath: __dirname + "/../plugins-server/cloud9.sourcemint",
+                prefix: "/static/bundles"
+            }, {
                 packagePath: __dirname + "/../plugins-server/cloud9.static",
                 prefix: "/static"
             },

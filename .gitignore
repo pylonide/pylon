@@ -8,6 +8,7 @@ Thumbs.db
 /nbproject/
 build/
 .*.gz
+.sourcemint/
 
 plugins/cloud9.core/node_modules/
 plugins/cloud9.connect/node_modules/

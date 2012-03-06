@@ -16,7 +16,9 @@
         "gnu-tools": "0.0.x",
         "v8debug": "0.1.x",
         "treehugger": "0.0.x",
-        "ace": "0.2.x"
+        "ace": "0.2.x",
+        "sourcemint-loader-js": "0.x",
+        "sourcemint-platform-nodejs": "0.x"
     },
 
     "repository" : {
