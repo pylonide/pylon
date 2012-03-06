@@ -15,7 +15,7 @@ var Workspace = require("./workspace");
 var EventEmitter = require("events").EventEmitter;
 var c9util = require("./util");
 
-var Ide = module.exports = function(options, exts) {
+var Ide = module.exports = function(options) {
     EventEmitter.call(this);
 
     assert(options.workspaceId, "option 'workspaceId' is required");
@@ -48,15 +48,6 @@ var Ide = module.exports = function(options, exts) {
     this.$users = {};
     this.workspace = new Workspace(this);
 
-    this.workspace.createPlugins(exts);
-    var statePlugin = this.workspace.getExt("state");
-    if (statePlugin) {
-        statePlugin.on("statechange", function(state) {
-            state.workspaceDir = this.workspace.workspaceDir;
-            state.davPrefix =  this.ide.davPrefix;
-        });
-    }
-
     var _self = this;
     this.router = connect.router(function(app) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
@@ -73,6 +64,17 @@ var Ide = module.exports = function(options, exts) {
 util.inherits(Ide, EventEmitter);
 
 (function () {
+
+    this.init = function(exts) {
+        this.workspace.createPlugins(exts);
+        var statePlugin = this.workspace.getExt("state");
+        if (statePlugin) {
+            statePlugin.on("statechange", function(state) {
+                state.workspaceDir = this.workspace.workspaceDir;
+                state.davPrefix =  this.ide.davPrefix;
+            });
+        }
+    };
 
     this.handle = function(req, res, next) {
         this.router(req, res, next);

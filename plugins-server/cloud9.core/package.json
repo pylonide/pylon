@@ -14,10 +14,7 @@
             "log",
             "hub",
             "connect",
-            "http",
             "static",
-            "session",
-
             "client.cloud9"
         ]
     }

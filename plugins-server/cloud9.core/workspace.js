@@ -4,8 +4,6 @@ var Workspace = module.exports = function(ide) {
     this.ide = ide;
     this.workspaceId  = ide.options.workspaceId;
     this.workspaceDir = ide.options.workspaceDir;
-
-    this.init();
 };
 
 (function() {
