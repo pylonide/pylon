@@ -40,8 +40,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         "tab7": {hint: "navigate to the seventh tab", msg: "Switching to tab 7."},
         "tab8": {hint: "navigate to the eighth tab", msg: "Switching to tab 8."},
         "tab9": {hint: "navigate to the ninth tab", msg: "Switching to tab 9."},
-        // See note below about tab10
-        //"tab0": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
+        "tab10": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
         "revealtab": {hint: "reveal current tab in the file tree"},
         "nexttab": {hint: "navigate to the next tab in the stack of accessed tabs"},
         "previoustab": {hint: "navigate to the previous tab in the stack of accessed tabs"}
@@ -437,14 +436,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     tab7: function() {return this.showTab(7);},
     tab8: function() {return this.showTab(8);},
     tab9: function() {return this.showTab(9);},
-    // This is terribly stupid but I cannot remove it because
-    // the intention is for it to be tab10, but cannot because
-    // the popup hint blocks "enter" from working on tab1 if
-    // tab10 also exists. Either way this must be commented
-    // out for now
-    //tab0: function() {return this.showTab(10);},
+    tab10: function() {return this.showTab(10);},
 
     showTab: function(nr) {
+        // Convert to index-based
+        nr--;
         var pages = tabEditors.getPages();
         if (!pages[nr])
             return false;

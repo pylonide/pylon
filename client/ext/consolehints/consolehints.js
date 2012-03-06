@@ -145,8 +145,13 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 Console.keyEvents[keyCode] = function(target) {
                     if (winHints.style.display === "none" && previousKey)
                         previousKey(target);
-                    else
+                    else {
                         _self[redefinedKeys[keyCode]].call(_self);
+                        // Detect if the user is hitting enter and if so,
+                        // send the keypress to the console
+                        if (keyCode === "13" && previousKey)
+                            previousKey(target);
+                    }
                 };
             });
         };
@@ -283,6 +288,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 break;
             }
         }
+        
+        return false;
     },
     selectUp: function() {
         var newHint = selectedHint - 1;
