@@ -48,6 +48,18 @@ var Workspace = module.exports = function(config) {
                 return;
             }
         }
+        
+        var message = args[1];
+        var fromCLI = message && message.origin && message.origin === "client_console";
+        if (fromCLI) {
+            user.broadcast(JSON.stringify({
+                type   : "result",
+                subtype: "servercommandunrecognized",
+                body   : "Command `" + message.command + "` not recognized."
+            }));
+        }
+
+        return;
     };
 
     this.getExt = function(name) {
