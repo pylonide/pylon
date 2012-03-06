@@ -1,0 +1,17 @@
+{
+    "name": "cloud9.session.memory",
+    "version": "0.0.1",
+    "main": "session-ext.js",
+    "private": true,
+
+    "dependencies": {
+        "connect": "1.8.x"
+    },
+
+    "plugin": {
+        "provides": ["session"],
+        "consumes": [
+            "connect"
+        ]
+    }
+}
