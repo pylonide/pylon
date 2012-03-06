@@ -434,6 +434,7 @@ module.exports = ext.register("ext/console/console", {
         if (shouldShow) {
             cfg = {
                 height: this.height,
+                minheight: 150,
                 dbgVisibleMethod: "show",
                 chkExpandedMethod: "check",
                 animFrom: 65,
@@ -447,6 +448,7 @@ module.exports = ext.register("ext/console/console", {
         else {
             cfg = {
                 height: 41,
+                minheight: 0,
                 dbgVisibleMethod: "hide",
                 chkExpandedMethod: "uncheck",
                 animFrom: this.height,
@@ -467,7 +469,7 @@ module.exports = ext.register("ext/console/console", {
             winDbgConsole.height = cfg.height + 1;
             winDbgConsole.setAttribute("height", cfg.height);
             winDbgConsole.previousSibling[cfg.dbgVisibleMethod]();
-
+            winDbgConsole.$ext.style.minHeight = cfg.minheight + "px";
             apf.layout.forceResize();
 
             settings.model.setQueryValue("auto/console/@expanded", shouldShow);
