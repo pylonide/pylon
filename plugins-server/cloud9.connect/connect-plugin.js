@@ -44,6 +44,7 @@ exports.createServer = function(routes) {
     var app;
 
     var server = connect()
+        .use(connect.cookieParser())
         .use(connect.router(function(app_) {
             app = app_;
         }));

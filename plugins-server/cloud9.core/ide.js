@@ -12,11 +12,8 @@ var Workspace = require("./workspace");
 var EventEmitter = require("events").EventEmitter;
 var c9util = require("./util");
 
-var Ide = module.exports = function(options, httpServer, exts, socket) {
+var Ide = module.exports = function(options, exts) {
     EventEmitter.call(this);
-
-    this.httpServer = httpServer;
-    this.socket = socket;
 
     this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
 
@@ -304,14 +301,10 @@ Ide.DEFAULT_BUNDLED_PLUGINS = [
 
     this.onUserCountChange = function() {
         this.emit("userCountChange", Object.keys(this.$users).length);
-
-        // TODO remove
-        this.emit("clientCountChange", Object.keys(this.$users).length);
     };
 
     this.broadcast = function(msg, scope) {
         try {
-            // TODO check permissions
             for (var username in this.$users) {
                 var user = this.$users[username];
                 user.broadcast(msg, scope);
@@ -325,8 +318,6 @@ Ide.DEFAULT_BUNDLED_PLUGINS = [
     };
 
     this.sendToUser = function(username, msg) {
-        //for (var u in this.$users)
-        //    console.log("IDE USER", this.$users[u].uid, this.$users[u].clients);
         this.$users[username] && this.$users[username].broadcast(msg);
     };
 

@@ -1,6 +1,5 @@
 var assert = require("assert");
 var IO = require("socket.io");
-var Connect = require("connect");
 
 var IdeServer = require("./ide");
 var User = require("./user");
@@ -15,6 +14,7 @@ module.exports = function setup(options, imports, register) {
     var hub = imports.hub;
     var connect = imports.connect;
     var http = imports.http;
+    var session = imports.session;
 
     var serverPlugins = {};
 
@@ -29,15 +29,6 @@ module.exports = function setup(options, imports, register) {
     });
 
     hub.on("containersDone", function() {
-
-        connect.use(Connect.cookieParser());
-
-        var sessionStore = new Connect.session.MemoryStore({ reapInterval: -1 });
-        connect.use(Connect.session({
-            store: sessionStore,
-            key: "cloud9.sid",
-            secret: "1234"
-        }));
 
         var serverOptions = {
             workspaceDir: options.projectDir,
@@ -56,8 +47,8 @@ module.exports = function setup(options, imports, register) {
         };
 
         var server = http.getServer();
-        var ide = new IdeServer(serverOptions, server, serverPlugins);
-        initSocketIo(server, sessionStore, ide);
+        var ide = new IdeServer(serverOptions, serverPlugins);
+        initSocketIo(server, session, ide);
 
         connect.use(function(req, res, next) {
             if (!req.session.uid)
@@ -71,7 +62,7 @@ module.exports = function setup(options, imports, register) {
     });
 };
 
-function initSocketIo(server, sessionStore, ide) {
+function initSocketIo(server, session, ide) {
     var socketIo = IO.listen(server);
     socketIo.enable("browser client minification");
     socketIo.set("log level", 1);
@@ -90,7 +81,7 @@ function initSocketIo(server, sessionStore, ide) {
                 }
             }
             if (message.command === "attach") {
-                sessionStore.get(message.sessionId, function(err, session) {
+                session.get(message.sessionId, function(err, session) {
                     if (err || !session || !session.uid)
                         return;
 

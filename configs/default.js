@@ -108,6 +108,7 @@ module.exports = {
                 mountDir: projectDir,
                 urlPrefix: fsUrl
             },
+            __dirname + "/../plugins-server/cloud9.session.memory",
             __dirname + "/../plugins-server/cloud9.permissions",
             __dirname + "/../plugins-server/cloud9.client-plugins",
             __dirname + "/../plugins-server/cloud9.log",
