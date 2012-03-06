@@ -433,14 +433,15 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     tab7: function() {return this.showTab(7);},
     tab8: function() {return this.showTab(8);},
     tab9: function() {return this.showTab(9);},
-    tab0: function() {return this.showTab(10);},
 
     showTab: function(nr) {
-        var item = this.nodes[(nr - 1) + this.menuOffset];
-        if (item && item.relPage) {
-            tabEditors.set(item.relPage);
+        var pages = tabEditors.getPages();
+        if (!pages[nr]) {
             return false;
         }
+        
+        tabEditors.set(pages[nr]);
+        return false;
     },
 
     /**
