@@ -263,6 +263,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     // ignore is the page that shouldn't be closed, null to close all tabs
     closeallbutme: function(ignore, callback) {
+        // if ignore isn't a page instance then fallback to current page
+        if (!(ignore instanceof apf.page)) {
+            ignore = null;
+        }
+        
         ignore = ignore || tabEditors.getPage();
         this.changedPages = [];
         this.unchangedPages = [];
