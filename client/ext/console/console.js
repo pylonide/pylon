@@ -160,8 +160,11 @@ module.exports = ext.register("ext/console/console", {
     },
 
     clear: function() {
-        if (txtOutput)
-            txtOutput.clear();
+        if (txtConsole) {
+            txtConsole.clear();
+        }
+        
+        return false;
     },
 
     switchconsole : function() {
