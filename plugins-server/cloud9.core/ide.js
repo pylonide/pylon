@@ -45,6 +45,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         context: options.context || null,
         db: options.db || null,
         plugins: options.plugins || Ide.DEFAULT_PLUGINS,
+        bundledPlugins: options.bundledPlugins || Ide.DEFAULT_BUNDLED_PLUGINS,
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
@@ -70,6 +71,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
 
 util.inherits(Ide, EventEmitter);
 
+// TODO: This should be populated as client plugins are loaded in architect backend.
 Ide.DEFAULT_PLUGINS = [
     "ext/filesystem/filesystem",
     "ext/settings/settings",
@@ -132,6 +134,11 @@ Ide.DEFAULT_PLUGINS = [
     //"ext/acebugs/acebugs"
 ];
 
+// TODO: This should be populated as client plugins are loaded in architect backend.
+Ide.DEFAULT_BUNDLED_PLUGINS = [
+    "helloworld"
+];
+
 (function () {
 
     this.handle = function(req, res, next) {
@@ -168,10 +175,13 @@ Ide.DEFAULT_PLUGINS = [
 
             var permissions = _self.getPermissions(req);
             var plugins = c9util.arrayToMap(_self.options.plugins);
+            var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
 
             var client_exclude = c9util.arrayToMap(permissions.client_exclude.split("|"));
             for (plugin in client_exclude)
                 delete plugins[plugin];
+
+            // TODO: Exclude applicable bundledPlugins
 
             var client_include = c9util.arrayToMap((permissions.client_include || "").split("|"));
             for (plugin in client_include)
@@ -190,6 +200,7 @@ Ide.DEFAULT_PLUGINS = [
                 sessionId: req.sessionID, // set by connect
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),
+                bundledPlugins: Object.keys(bundledPlugins),
                 readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",

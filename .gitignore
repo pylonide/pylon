@@ -18,6 +18,7 @@ aut.js
 helloworld.js
 .*.gz
 .c9revisions
+.sourcemint/
 plugins/cloud9.core/node_modules/
 plugins/cloud9.connect/node_modules/
 plugins/cloud9.ide.run-node/node_modules/

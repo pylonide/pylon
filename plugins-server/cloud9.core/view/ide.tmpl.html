@@ -10,8 +10,9 @@
 
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/style/style.css" />
 
-        <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
+        <script type="text/javascript" src="[%staticUrl%]/bundles/loader.js"></script>
+        <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         [%scripts%]
         <script type="text/javascript">
         //<![CDATA[
@@ -57,6 +58,8 @@
                     //loader.animateLoader(20);
                     require(list, function(ide, ext, util){
                         var plugins = <%plugins%>;
+                        var bundledPlugins = <%bundledPlugins%>;
+
                         //loader.animateLoader(50);
                         apf.addEventListener("load", function(){
                             //Load extensions
@@ -65,6 +68,14 @@
                                 ide.dispatchEvent("extload", {modules: plugins});
                                 ide.addEventListener("$event.extload", function(cb){
                                     cb();
+                                });
+                            });
+                            //Load sourcemint bundles
+                            require.supports = sourcemint.supports;
+                            require.bundle = sourcemint.bundle;
+                            bundledPlugins.each(function(plugin) {
+                                sourcemint.sandbox("{host}[%staticUrl%]/bundles/" + plugin + ".js", function(sandbox) {
+                                    sandbox.main();
                                 });
                             });
                         });

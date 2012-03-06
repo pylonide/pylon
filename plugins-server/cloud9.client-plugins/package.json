@@ -12,7 +12,8 @@
         "provides": ["client-plugins"],
         "consumes": [
             "static",
-            "log"
+            "log",
+            "sourcemint"
         ]
     }
 }

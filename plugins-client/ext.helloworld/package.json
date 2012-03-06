@@ -1,0 +1,14 @@
+{
+    "name": "ext.helloworld",
+    "version": "0.0.1",
+    "main": "helloworld-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.helloworld"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}
