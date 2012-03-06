@@ -64,6 +64,18 @@ var Ide = module.exports = function(options, exts) {
             state.davPrefix =  this.ide.davPrefix;
         });
     }
+
+    var _self = this;
+    this.router = connect.router(function(app) {
+        app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
+            _self.$serveIndex(req, res, next);
+        });
+
+        app.get(/^\/\$reconnect$/, function(req, res, next) {
+            res.writeHead(200);
+            res.end(req.sessionID);
+        });
+    });
 };
 
 util.inherits(Ide, EventEmitter);
@@ -139,24 +151,7 @@ Ide.DEFAULT_BUNDLED_PLUGINS = [
 (function () {
 
     this.handle = function(req, res, next) {
-        var path = Url.parse(req.url).pathname;
-
-        this.indexRe = this.indexRe || new RegExp("^" + c9util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
-        this.reconnectRe = this.reconnectRe || new RegExp("^" + c9util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
-
-        if (path.match(this.indexRe)) {
-            if (req.method !== "GET")
-                return next();
-            this.$serveIndex(req, res, next);
-        }
-        else if (path.match(this.reconnectRe)) {
-            if (req.method !== "GET")
-                return next();
-            res.writeHead(200);
-            res.end(req.sessionID);
-        } else {
-            next();
-        }
+        this.router(req, res, next);
     };
 
     this.$serveIndex = function(req, res, next) {
