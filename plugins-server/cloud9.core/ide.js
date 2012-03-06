@@ -10,7 +10,6 @@ var connect = require("connect");
 var User = require("./user");
 var fs = require("fs");
 var util = require("util");
-var Url = require("url");
 var template = require("./template");
 var Workspace = require("./workspace");
 var EventEmitter = require("events").EventEmitter;
@@ -19,19 +18,12 @@ var c9util = require("./util");
 var Ide = module.exports = function(options, exts) {
     EventEmitter.call(this);
 
+    assert(options.workspaceId, "option 'workspaceId' is required");
     assert(options.workspaceDir, "option 'workspaceDir' is required");
+    assert(options.requirejsConfig, "option 'requirejsConfig' is required");
     assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
-    var requirejsConfig = options.requirejsConfig || {
-        baseUrl: "/static/",
-        paths: {
-            "ace": staticUrl + "/support/ace/lib/ace",
-            "debug": staticUrl + "/support/lib-v8debug/lib/v8debug",
-            "treehugger": staticUrl + "/support/treehugger/lib/treehugger"
-        },
-        waitSeconds: 30
-    };
 
     this.workspaceDir = options.workspaceDir;
 
@@ -43,12 +35,10 @@ var Ide = module.exports = function(options, exts) {
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         debug: options.debug === true,
         staticUrl: staticUrl,
-        workspaceId: options.workspaceId || "ide",
-        context: options.context || null,
-        db: options.db || null,
+        workspaceId: options.workspaceId,
         plugins: options.plugins || [],
         bundledPlugins: options.bundledPlugins || [],
-        requirejsConfig: requirejsConfig,
+        requirejsConfig: options.requirejsConfig,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
@@ -56,9 +46,7 @@ var Ide = module.exports = function(options, exts) {
     };
 
     this.$users = {};
-    this.nodeCmd = process.argv[0];
-
-    this.workspace = new Workspace({ ide: this });
+    this.workspace = new Workspace(this);
 
     this.workspace.createPlugins(exts);
     var statePlugin = this.workspace.getExt("state");

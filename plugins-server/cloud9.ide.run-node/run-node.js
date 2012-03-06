@@ -162,7 +162,7 @@ util.inherits(NodeRuntimePlugin, Plugin);
                    return _self.$error("cwd does not exist: " + message.cwd, 3, message);
                 // lets check what we need to run
                 var args = (message.preArgs || []).concat(file).concat(message.args || []);
-                _self.$runProc(_self.ide.nodeCmd, args, cwd, message.env || {}, message.debug || false);
+                _self.$runProc(process.execPath, args, cwd, message.env || {}, message.debug || false);
            });
         });
     };
