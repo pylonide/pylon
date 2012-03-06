@@ -3,6 +3,7 @@
         <a:item id="mnuAbout" onclick="require('ext/help/help').showAbout();">About</a:item>
         <a:divider />
         <a:item id="mnuDocumentation" onclick="window.open('http://support.cloud9ide.com/forums')">Documentation</a:item>
+        <a:item id="mnuChangelog" onclick="window.open('http://c9.io/site/tag/changelog-2/')">Changelog</a:item>
         <a:item id="mnuQuickStart" onclick="require('ext/quickstart/quickstart').launchQS();">Quick Start</a:item>
         <a:item id="mnuGuidedTour" onclick="require('ext/guidedtour/guidedtour').launchGT();">Take a Guided Tour</a:item>
         <a:divider />
