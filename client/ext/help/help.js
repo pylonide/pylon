@@ -96,6 +96,25 @@ module.exports = ext.register("ext/help/help", {
             })),
             mnuWindows
         );
+        
+        var suffix = "";
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', "http://c9.io/site/?json=get_tag_posts&tag_slug=changelog-2", false);
+            xhr.send(null);
+            if (xhr.status === 200) {
+                var blogJSON = JSON.parse(xhr.responseText);
+                var latestDate = jsonBlog.posts[0].date;
+                suffix = latestDate.split(" ")[0].replace(/-/g, ".");
+            } // otherwise, leave suffix off anyway
+        } catch (e) {
+            /* you're probably doing this from localhost, which won't
+               let you make a call to a different domain (c9.io); this resolves
+               XMLHttpRequest cannot load...Origin http://127.0.0.1:3000 is 
+               not allowed by Access-Control-Allow-Origin. */
+        }
+
+        mnuChangelog.caption + " " + suffix;
     },
     
     showAbout : function() {
