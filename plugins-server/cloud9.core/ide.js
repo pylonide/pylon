@@ -49,7 +49,6 @@ var Ide = module.exports = function(options, exts) {
         plugins: options.plugins || [],
         bundledPlugins: options.bundledPlugins || [],
         requirejsConfig: requirejsConfig,
-        offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
@@ -133,7 +132,6 @@ util.inherits(Ide, EventEmitter);
                 readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
-                offlineManifest: _self.options.offlineManifest,
                 scripts: _self.options.debug ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version
