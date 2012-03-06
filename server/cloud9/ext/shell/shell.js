@@ -25,6 +25,11 @@ sys.inherits(ShellPlugin, Plugin);
     "use strict";
 
     this.command = function(user, message, client) {
+        if (message.origin === "client_console" && !this[message.command]) {
+            this.sendResult(0, "servercommandunrecognized", "Command `" + message.command + "` not recognized.");
+            return false;
+        }
+
         if (!this[message.command]) {
             return false;
         }

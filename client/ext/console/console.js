@@ -119,6 +119,10 @@ module.exports = ext.register("ext/console/console", {
                 this.write("Working directory changed.");
             }
         },
+        servercommandunrecognized : function(message) {
+            Logger.log(message.body);
+            Logger.log("", "divider");
+        },
         error: function(message) {
             Logger.log(message.body);
             Logger.log("", "divider");
@@ -220,7 +224,8 @@ module.exports = ext.register("ext/console/console", {
                 command: cmd,
                 argv: argv,
                 line: line,
-                cwd: this.getCwd()
+                cwd: this.getCwd(),
+                origin: "client_console"
             };
 
             if (cmd.trim() === "npm")
