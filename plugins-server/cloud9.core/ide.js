@@ -46,8 +46,8 @@ var Ide = module.exports = function(options, exts) {
         workspaceId: options.workspaceId || "ide",
         context: options.context || null,
         db: options.db || null,
-        plugins: options.plugins || Ide.DEFAULT_PLUGINS,
-        bundledPlugins: options.bundledPlugins || Ide.DEFAULT_BUNDLED_PLUGINS,
+        plugins: options.plugins || [],
+        bundledPlugins: options.bundledPlugins || [],
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
@@ -84,74 +84,6 @@ var Ide = module.exports = function(options, exts) {
 };
 
 util.inherits(Ide, EventEmitter);
-
-// TODO: This should be populated as client plugins are loaded in architect backend.
-Ide.DEFAULT_PLUGINS = [
-    "ext/filesystem/filesystem",
-    "ext/settings/settings",
-    "ext/editors/editors",
-    //"ext/connect/connect",
-    "ext/themes/themes",
-    "ext/themes_default/themes_default",
-    "ext/panels/panels",
-    "ext/dockpanel/dockpanel",
-    "ext/openfiles/openfiles",
-    "ext/tree/tree",
-    "ext/save/save",
-    "ext/recentfiles/recentfiles",
-    "ext/gotofile/gotofile",
-    "ext/newresource/newresource",
-    "ext/undo/undo",
-    "ext/clipboard/clipboard",
-    "ext/searchinfiles/searchinfiles",
-    "ext/searchreplace/searchreplace",
-    "ext/quickwatch/quickwatch",
-    "ext/quicksearch/quicksearch",
-    "ext/gotoline/gotoline",
-    "ext/html/html",
-    "ext/help/help",
-    //"ext/ftp/ftp",
-    "ext/code/code",
-    "ext/statusbar/statusbar",
-    "ext/imgview/imgview",
-    //"ext/preview/preview",
-    "ext/extmgr/extmgr",
-    //"ext/run/run", //Add location rule
-    "ext/runpanel/runpanel", //Add location rule
-    "ext/debugger/debugger", //Add location rule
-    "ext/noderunner/noderunner", //Add location rule
-    "ext/console/console",
-    "ext/consolehints/consolehints",
-    "ext/tabbehaviors/tabbehaviors",
-    "ext/tabsessions/tabsessions",
-    "ext/keybindings/keybindings",
-    "ext/keybindings_default/keybindings_default",
-    "ext/watcher/watcher",
-    "ext/dragdrop/dragdrop",
-    "ext/beautify/beautify",
-    "ext/offline/offline",
-    "ext/stripws/stripws",
-    "ext/testpanel/testpanel",
-    "ext/nodeunit/nodeunit",
-    "ext/zen/zen",
-    "ext/codecomplete/codecomplete",
-    //"ext/autosave/autosave",
-    "ext/vim/vim",
-    "ext/guidedtour/guidedtour",
-    "ext/quickstart/quickstart",
-    "ext/jslanguage/jslanguage",
-    "ext/autotest/autotest",
-    "ext/tabsessions/tabsessions",
-    "ext/closeconfirmation/closeconfirmation",
-    "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker"
-    //"ext/acebugs/acebugs"
-];
-
-// TODO: This should be populated as client plugins are loaded in architect backend.
-Ide.DEFAULT_BUNDLED_PLUGINS = [
-    "helloworld"
-];
 
 (function () {
 
@@ -325,4 +257,3 @@ Ide.DEFAULT_BUNDLED_PLUGINS = [
         this.workspace.dispose(callback);
     };
 }).call(Ide.prototype);
-
