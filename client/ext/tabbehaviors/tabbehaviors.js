@@ -249,13 +249,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
         });
     },
-
+    
     closetab: function(page) {
-        if (!page)
-            page = tabEditors.getPage();
-
-        if (page)
-            tabEditors.remove(page);
+        var page = tabEditors.getPage();
+        tabEditors.remove(page);
         return false;
     },
 
