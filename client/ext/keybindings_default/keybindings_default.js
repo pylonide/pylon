@@ -134,6 +134,7 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
     keybindings: function() {
         ext.initExtension(this);
         winKeyBindings.show();
+        return false;
     },
 
     enable : function(){

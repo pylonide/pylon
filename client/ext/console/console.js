@@ -148,11 +148,25 @@ module.exports = ext.register("ext/console/console", {
                 .join("\n"),
             null, null, ide
         );
+
+        return false;
     },
 
     clear: function() {
-        if (txtOutput)
-            txtOutput.clear();
+        switch(tabConsole.activepage) {
+            case "output":
+                if (txtOutput)
+                    txtOutput.clear();
+                break;
+            case "console":
+                if(txtConsole)
+                    txtConsole.clear();
+                break;
+            default:
+                break;
+        }
+
+        return false;
     },
 
     switchconsole : function() {
@@ -165,6 +179,8 @@ module.exports = ext.register("ext/console/console", {
         else {
             txtConsoleInput.focus()
         }
+
+        return false;
     },
 
     showOutput: function() {

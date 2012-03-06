@@ -43,12 +43,14 @@ module.exports = ext.register("ext/undo/undo", {
         var _tabPage;
         if(_tabPage = tabEditors.getPage())
             _tabPage.$at.undo();
+        return false;
     },
 
     redo: function() {
         var _tabPage;
         if(_tabPage = tabEditors.getPage())
             _tabPage.$at.redo();
+        return false;
     },
 
     enable : function(){

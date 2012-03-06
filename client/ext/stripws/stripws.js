@@ -97,6 +97,7 @@ module.exports = ext.register("ext/stripws/stripws", {
 
     stripws: function() {
         strip();
+        return false;
     },
 
     enable: function () {

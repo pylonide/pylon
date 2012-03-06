@@ -100,7 +100,7 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     showsettings: function(e){
-        panels.initPanel(this);
+        panels.activate(this);
         this.enable();
         return false;
     },

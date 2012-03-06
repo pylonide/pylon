@@ -40,7 +40,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         "tab7": {hint: "navigate to the seventh tab", msg: "Switching to tab 7."},
         "tab8": {hint: "navigate to the eighth tab", msg: "Switching to tab 8."},
         "tab9": {hint: "navigate to the ninth tab", msg: "Switching to tab 9."},
-        "tab0": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
+        // See note below about tab10
+        //"tab0": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
         "revealtab": {hint: "reveal current tab in the file tree"},
         "nexttab": {hint: "navigate to the next tab in the stack of accessed tabs"},
         "previoustab": {hint: "navigate to the previous tab in the stack of accessed tabs"}
@@ -250,22 +251,23 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
     },
 
-    closetab: function(page) {
-        if (!page)
-            page = tabEditors.getPage();
-
-        if (page)
-            tabEditors.remove(page);
+    closetab: function() {
+        var page = tabEditors.getPage();
+        tabEditors.remove(page);
         return false;
     },
 
     closealltabs: function(callback) {
         callback = typeof callback == "function" ? callback : null;
         this.closeallbutme(1, callback);
+        return false;
     },
 
     // ignore is the page that shouldn't be closed, null to close all tabs
     closeallbutme: function(ignore, callback) {
+        // Detect if this is coming from the CLI
+        if (typeof ignore === "object" && ignore.origin === "client_console")
+            ignore = null;
         ignore = ignore || tabEditors.getPage();
         this.changedPages = [];
         this.unchangedPages = [];
@@ -316,6 +318,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                     callback();
             });
         }
+        
+        return false;
     },
 
     closeUnchangedPages : function(callback) {
@@ -369,6 +373,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             return this.nexttab();
 
         tabEditors.set(next);
+        return false;
     },
 
     previoustab : function(){
@@ -383,6 +388,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             return this.previoustab();
 
         tabEditors.set(next);
+        return false;
     },
 
     gototabright: function() {
@@ -400,7 +406,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             curr    = tabs.getPage(),
             currIdx = pages.indexOf(curr);
         if (!curr || pages.length == 1)
-            return;
+            return false;
         var idx = currIdx + (bRight ? 1 : -1);
         if (idx < 0)
             idx = pages.length - 1;
@@ -414,7 +420,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             pages: pages
         });
         if (res === false)
-            return;
+            return false;
         if (typeof res == "number")
             idx = res;
 
@@ -431,14 +437,19 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     tab7: function() {return this.showTab(7);},
     tab8: function() {return this.showTab(8);},
     tab9: function() {return this.showTab(9);},
-    tab0: function() {return this.showTab(10);},
+    // This is terribly stupid but I cannot remove it because
+    // the intention is for it to be tab10, but cannot because
+    // the popup hint blocks "enter" from working on tab1 if
+    // tab10 also exists. Either way this must be commented
+    // out for now
+    //tab0: function() {return this.showTab(10);},
 
     showTab: function(nr) {
-        var item = this.nodes[(nr - 1) + this.menuOffset];
-        if (item && item.relPage) {
-            tabEditors.set(item.relPage);
+        var pages = tabEditors.getPages();
+        if (!pages[nr])
             return false;
-        }
+        tabEditors.set(pages[nr]);
+        return false;
     },
 
     /**
@@ -455,6 +466,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             return false;
 
         this.revealfile(page.$doc.getNode());
+        return false;
     },
 
     revealfile : function(docNode) {

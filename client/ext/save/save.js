@@ -183,6 +183,7 @@ module.exports = ext.register("ext/save/save", {
 
     reverttosaved : function(){
         ide.dispatchEvent("reload", {doc : tabEditors.getPage().$doc});
+        return false;
     },
 
     saveall : function(){
@@ -234,21 +235,21 @@ module.exports = ext.register("ext/save/save", {
             page = tabEditors.getPage();
 
         if (!page)
-            return;
+            return false;
 
         var doc  = page.$doc;
         var node = doc.getNode();
         var path = node.getAttribute("path");
 
         if (node.getAttribute("debug"))
-            return;
+            return false;
 
         if (ide.dispatchEvent("beforefilesave", {node: node, doc: doc }) === false)
-            return;
+            return false;
 
         if (node.getAttribute("newfile")){
             this.saveas(page, callback);
-            return;
+            return false;
         }
 
         if (callback) {
@@ -264,7 +265,7 @@ module.exports = ext.register("ext/save/save", {
         var saving = parseInt(node.getAttribute("saving"), 10);
         if (saving) {
             this.saveBuffer[path] = page;
-            return;
+            return false;
         }
 
         apf.xmldb.setAttribute(node, "saving", "1");
@@ -403,11 +404,11 @@ module.exports = ext.register("ext/save/save", {
             page = tabEditors.getPage();
 
         if (!page)
-            return;
+            return false;
 
         var path = page ? page.$model.data.getAttribute("path") : false;
         if (!path)
-            return;
+            return false;
 
         ext.initExtension(this);
 
@@ -425,6 +426,8 @@ module.exports = ext.register("ext/save/save", {
         txtSaveAs.setValue(fooPath.pop());
         lblPath.setProperty('caption', fooPath.join('/') + '/');
         winSaveAs.show();
+
+        return false;
     },
 
     // Called by the UI 'confirm' button in winSaveAs.
