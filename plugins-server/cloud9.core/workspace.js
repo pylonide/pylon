@@ -1,20 +1,14 @@
 var util = require("./util");
 
-var Workspace = module.exports = function(config) {
-    if (config)
-        for (var prop in config)
-            this[prop] = config[prop];
-    else
-        throw new Error("No parameters were passed to Workspace.");
+var Workspace = module.exports = function(ide) {
+    this.ide = ide;
+    this.workspaceId  = ide.options.workspaceId;
+    this.workspaceDir = ide.options.workspaceDir;
 
     this.init();
 };
 
 (function() {
-    this.init = function() {
-        this.workspaceId  = this.ide.options.workspaceId;
-        this.workspaceDir = this.ide.options.workspaceDir;
-    };
 
     this.createPlugins = function (plugins) {
         this.plugins = {};
