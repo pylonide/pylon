@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="winDbgConsole" height="41" minheight="150">
+    <a:bar id="winDbgConsole" height="41" minheight2="150">
         <a:vbox anchors="0 0 0 0">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
