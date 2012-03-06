@@ -143,7 +143,7 @@ module.exports = ext.register("ext/console/console", {
         var _self = this;
 
         Logger.logNodeStream(
-            words
+            words.sort()
                 .map(function(w) { return w + tabs + _self.allCommands[w].hint; })
                 .join("\n"),
             null, null, ide
