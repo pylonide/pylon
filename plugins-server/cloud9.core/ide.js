@@ -2,7 +2,11 @@
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var Async = require("asyncjs");
+
+"use strict";
+
+var assert = require("assert");
+var connect = require("connect");
 var User = require("./user");
 var fs = require("fs");
 var util = require("util");
@@ -15,9 +19,9 @@ var c9util = require("./util");
 var Ide = module.exports = function(options, exts) {
     EventEmitter.call(this);
 
-    this.workspaceDir = Async.abspath(options.workspaceDir).replace(/\/+$/, "");
+    assert(options.workspaceDir, "option 'workspaceDir' is required");
+    assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
-    var baseUrl = (options.baseUrl || "").replace(/\/+$/, "");
     var staticUrl = options.staticUrl || "/static";
     var requirejsConfig = options.requirejsConfig || {
         baseUrl: "/static/",
@@ -29,13 +33,14 @@ var Ide = module.exports = function(options, exts) {
         waitSeconds: 30
     };
 
+    this.workspaceDir = options.workspaceDir;
+
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
         socketIoUrl: options.socketIoUrl || "socket.io",
-        davPrefix: options.davPrefix || (baseUrl + "/workspace"),
+        davPrefix: options.davPrefix,
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
-        baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId || "ide",

@@ -85,12 +85,10 @@ var Workspace = module.exports = function(config) {
             count += 1;
             this.plugins[name].dispose(function() {
                 count -= 1;
-                if (count == 0)
+                if (count === 0)
                     callback();
             });
         }
-
-        //this.ide.davServer.unmount();
     };
 
 }).call(Workspace.prototype);
