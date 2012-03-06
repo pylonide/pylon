@@ -91,6 +91,7 @@ module.exports = ext.register("ext/console/console", {
     height : 200,
     hidden : true,
     nodes : [],
+    minHeight : 150,
 
     autoOpen : true,
     excludeParent : true,
@@ -429,7 +430,8 @@ module.exports = ext.register("ext/console/console", {
 
         if (this.$control)
             this.$control.stop();
-
+        
+        var _self = this;
         var cfg;
         if (shouldShow) {
             cfg = {
@@ -437,7 +439,7 @@ module.exports = ext.register("ext/console/console", {
                 dbgVisibleMethod: "show",
                 chkExpandedMethod: "check",
                 animFrom: 65,
-                animTo: this.height,
+                animTo: this.height > this.minHeight ? this.height : this.minHeight,
                 animTween: "easeOutQuint"
             };
 
@@ -449,7 +451,7 @@ module.exports = ext.register("ext/console/console", {
                 height: 41,
                 dbgVisibleMethod: "hide",
                 chkExpandedMethod: "uncheck",
-                animFrom: this.height,
+                animFrom: this.height > this.minHeight ? this.height : this.minHeight,
                 animTo: 65,
                 animTween: "easeInOutCubic"
             };
@@ -458,16 +460,18 @@ module.exports = ext.register("ext/console/console", {
                 this.restore();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
+            winDbgConsole.$ext.style.minHeight = 0;
         }
 
         var finish = function() {
             if (!shouldShow)
                 tabConsole.hide();
+            else
+                winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
 
             winDbgConsole.height = cfg.height + 1;
             winDbgConsole.setAttribute("height", cfg.height);
             winDbgConsole.previousSibling[cfg.dbgVisibleMethod]();
-
             apf.layout.forceResize();
 
             settings.model.setQueryValue("auto/console/@expanded", shouldShow);
