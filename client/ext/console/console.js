@@ -91,7 +91,7 @@ module.exports = ext.register("ext/console/console", {
     height : 200,
     hidden : true,
     nodes : [],
-    minheight : 150,
+    minHeight : 150,
 
     autoOpen : true,
     excludeParent : true,
@@ -430,16 +430,16 @@ module.exports = ext.register("ext/console/console", {
 
         if (this.$control)
             this.$control.stop();
-
+        
+        var _self = this;
         var cfg;
         if (shouldShow) {
             cfg = {
                 height: this.height,
-                minheight: this.minheight,
                 dbgVisibleMethod: "show",
                 chkExpandedMethod: "check",
                 animFrom: 65,
-                animTo: this.height > this.minheight ? this.height : this.minheight,
+                animTo: this.height > this.minHeight ? this.height : this.minHeight,
                 animTween: "easeOutQuint"
             };
 
@@ -449,10 +449,9 @@ module.exports = ext.register("ext/console/console", {
         else {
             cfg = {
                 height: 41,
-                minheight: 0,
                 dbgVisibleMethod: "hide",
                 chkExpandedMethod: "uncheck",
-                animFrom: this.height > this.minheight ? this.height : this.minheight,
+                animFrom: this.height > this.minHeight ? this.height : this.minHeight,
                 animTo: 65,
                 animTween: "easeInOutCubic"
             };
@@ -461,14 +460,14 @@ module.exports = ext.register("ext/console/console", {
                 this.restore();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
-            winDbgConsole.$ext.style.minHeight = cfg.minheight + "px";
+            winDbgConsole.$ext.style.minHeight = 0;
         }
 
         var finish = function() {
             if (!shouldShow)
                 tabConsole.hide();
             else
-                winDbgConsole.$ext.style.minHeight = cfg.minheight + "px";
+                winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
 
             winDbgConsole.height = cfg.height + 1;
             winDbgConsole.setAttribute("height", cfg.height);
