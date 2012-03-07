@@ -368,7 +368,7 @@ apf.DataAction = function(){
             newMultiple = [];
             for (var k = multiple.length - 1; k >= 0; k--) {
                 newMultiple.unshift({
-                    xmlActionNode : rule && rule[4],
+                    xmlActionNode : rule,
                     amlNode       : this,
                     selNode       : multiple[k],
                     xmlNode       : multiple[k]
