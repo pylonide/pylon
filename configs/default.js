@@ -28,6 +28,7 @@ module.exports = {
                 packagePath: __dirname + "/../plugins-server/cloud9.static",
                 prefix: "/static"
             },
+            __dirname + "/../plugins-server/cloud9.alive",
 
 
             // Client libraries
