@@ -58,16 +58,16 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         this.btnFind.onclick = this.execFind.bind(this);
 
         var _self = this;
-        winSearchInFiles.onclose = function() {
+        
+        winSearchInFiles.onhide = function() {
             ceEditor.focus();
+            trFiles.removeEventListener("afterselect", _self.setSearchSelection);
         };
         winSearchInFiles.onshow = function() {
-            // get selected node in tree and set it as selection
-            var name = _self.getSelectedTreeNode().getAttribute("name");
-            if (name.length > 25)
-                name = name.substr(0, 22) + "...";
-            rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
+            trFiles.addEventListener("afterselect", _self.setSearchSelection);
+            _self.setSearchSelection();
         };
+        
         trSFHbox.addEventListener("afterrender", function(){
             trSFResult.addEventListener("afterselect", function(e) {
                 var path,
@@ -91,7 +91,15 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         });
         //ideConsole.show();
     },
-
+    
+    setSearchSelection: function(){
+        // get selected node in tree and set it as selection
+        var name = require("ext/searchinfiles/searchinfiles").getSelectedTreeNode().getAttribute("name");
+        if (name.length > 25)
+            name = name.substr(0, 22) + "...";
+        rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
+    },
+    
     getSelectedTreeNode: function() {
         var node = self["trFiles"] ? trFiles.selected : require("ext/filesystem/filesystem").model.queryNode("folder[1]");
         if (!node)
