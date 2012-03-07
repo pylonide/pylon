@@ -108,7 +108,7 @@ module.exports = ext.register("ext/zen/zen", {
         }));
 
         // @TODO adjust position based on scrollbar width
-        if (!(apf.isChrome && apf.versionChrome >= 14) && !(apf.isSafari && apf.versionSafari >= 5))
+        //if (!(apf.isChrome && apf.versionChrome >= 14) && !(apf.isSafari && apf.versionSafari >= 5))
             btnZenFullscreen.setAttribute("right", "26");
 
         if (apf.isWin)

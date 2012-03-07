@@ -605,6 +605,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.hotitems[keyId] = [pages[i].$tabMenu];
             if (pages[i].$tabMenu && this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                 pages[i].$tabMenu.setAttribute("hotkey", this.commands[keyId].hotkey);
+            else
+                pages[i].$tabMenu.removeAttribute("hotkey");
         }
     },
 
