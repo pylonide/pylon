@@ -165,6 +165,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                                 file = apf.xmldb.appendChild(node, file);
                                 trFiles.select(file);
                                 trFiles.startRename();
+                                trFiles.slideOpen(null, node, true);
                             }
                         }
 
