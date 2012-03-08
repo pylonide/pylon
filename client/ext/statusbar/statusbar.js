@@ -77,13 +77,17 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             else
                 lblInsertActive.hide();
         });
+    },
+
+    init : function(){
+        var _self = this;
 
         tabEditors.addEventListener("afterswitch", function() {
             if (_self.$changeEvent)
                 _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
 
             setTimeout(function() {
-                if(editors.currentEditor.ceEditor) {
+                if (editors.currentEditor.ceEditor) {
                     _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                     _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
                         if (typeof lblSelectionLength === "undefined")
@@ -105,7 +109,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
 
         tabEditors.addEventListener("resize", function() {
-            if (ceEditor && ceEditor.$editor) {
+            if (typeof ceEditor != "undefined" && ceEditor.$editor) {
                 var cw = ceEditor.$editor.renderer.scroller.clientWidth;
                 var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
                 var bottom = _self.edgeDistance;
@@ -122,10 +126,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 }, 50);
             }
         });
-    },
-
-    init : function(){
-        var _self = this;
+        
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
