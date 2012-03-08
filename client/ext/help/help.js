@@ -100,7 +100,7 @@ module.exports = ext.register("ext/help/help", {
         var suffix = "";
         try {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', "http://c9.io/site/?json=get_tag_posts&tag_slug=changelog-2", false);
+            xhr.open('GET', "http://c9.io/site/?json=get_tag_posts&tag_slug=changelog", false);
             xhr.send(null);
             if (xhr.status === 200) {
                 var blogJSON = JSON.parse(xhr.responseText);
