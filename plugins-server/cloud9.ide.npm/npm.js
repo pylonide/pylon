@@ -39,24 +39,6 @@ util.inherits(NpmPlugin, Plugin);
         if (cmd !== "npm")
             return false;
 
-        if (message.argv.indexOf("config") != -1) {
-            return this.sendResult(0, message.command, {
-                code: 1,
-                argv: message.argv,
-                err: null,
-                out: "Sorry, you're now allowed to change the npm config on our servers"
-            });
-        }
-
-        if (message.argv.indexOf("--") != -1) {
-            return this.sendResult(0, message.command, {
-                code: 1,
-                argv: message.argv,
-                err: null,
-                out: "Sorry, you're now allowed to use that setting for npm on our servers"
-            });
-        }
-
         var self = this;
         this.pm.spawn("npm", {
             args: message.argv.slice(1),
