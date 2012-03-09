@@ -70,6 +70,10 @@ Via git (or downloaded tarball):
 
     $ git clone git://github.com/ajaxorg/cloud9.git
 
+Update submodules after cloning:
+
+    $ git submodule update --init --recursive
+
 Via [npm](http://github.com/isaacs/npm):
 
     $ npm install cloud9

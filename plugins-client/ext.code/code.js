@@ -321,6 +321,7 @@ module.exports = ext.register("ext/code/code", {
                   .attr("wraplimitmin", "")
                   .attr("wraplimitmax", "")
                   .attr("gutter", "true")
+                  .attr("folding", "true")
                   .attr("highlightselectedword", "true")
                   .attr("autohidehorscrollbar", "true").node();
 

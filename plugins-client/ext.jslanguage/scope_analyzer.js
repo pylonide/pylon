@@ -348,7 +348,7 @@ handler.analyze = function(doc, ast) {
                         });
                     }
                     else {
-                        scope[b.x.value].addUse(node);
+                        scope[b.x.value].addUse(node[0]);
                     }
                     analyze(scope, b.e);
                     return this;
