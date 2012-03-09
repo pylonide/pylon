@@ -63,8 +63,6 @@ exports.errorHandler = function() {
                 if (e)
                     return next(e);
                 
-                console.log(err.message);
-                
                 html = html
                     .toString('utf8')
                     .replace(/\<%errormsg%\>/g, err.message || err);
