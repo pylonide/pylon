@@ -15,7 +15,8 @@
             "hub",
             "connect",
             "static",
-            "client.cloud9"
+            "client.cloud9",
+            "workspace-permissions"
         ]
     }
 }
