@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.run.npm",
+    "version": "0.0.1",
+
+    "main": "./npm.js",
+    "private": true,
+
+    "plugin": {
+        "provides": [
+            "run-npm"
+        ],
+        "consumes": [
+            "process-manager"
+        ]
+    }
+}
