@@ -1,5 +1,4 @@
 var assert = require("assert");
-var IO = require("socket.io");
 
 var IdeServer = require("./ide");
 var User = require("./user");
@@ -13,6 +12,7 @@ module.exports = function setup(options, imports, register) {
     var log = imports.log;
     var hub = imports.hub;
     var connect = imports.connect;
+    var permissions = imports["workspace-permissions"];
 
     var serverPlugins = {};
     var serverOptions = {
@@ -54,8 +54,13 @@ module.exports = function setup(options, imports, register) {
             if (!req.session.uid)
                 req.session.uid = "owner_" + req.sessionID;
 
-            ide.addUser(req.session.uid, User.OWNER_PERMISSIONS);
-            ide.handle(req, res, next);
+            permissions.getPermissions(req.session.uid, function(err, perm) {
+                if (err)
+                    return next(err);
+
+                ide.addUser(req.session.uid, perm);
+                ide.handle(req, res, next);
+            })
         });
 
         log.info("IDE server initialized");
