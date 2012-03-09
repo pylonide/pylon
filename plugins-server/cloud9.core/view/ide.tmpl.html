@@ -73,11 +73,22 @@
                             //Load sourcemint bundles
                             require.supports = sourcemint.supports;
                             require.bundle = sourcemint.bundle;
+                            var bundledPluginsWorking = false;
                             bundledPlugins.each(function(plugin) {
                                 sourcemint.sandbox("{host}[%staticUrl%]/bundles/" + plugin + ".js", function(sandbox) {
-                                    sandbox.main();
+                                    if (plugin === "helloworld") {
+                                        bundledPluginsWorking = sandbox.main();
+                                    } else {
+                                        sandbox.main();
+                                    }
                                 });
                             });
+                            // TODO: Disable test when deploying to production.
+                            setTimeout(function() {
+                                if (bundledPluginsWorking !== "WORKING") {
+                                    throw new Error("Sourcemint bundled plugins not working!");
+                                }
+                            }, 5000);
                         });
                     });
                     preloaderImgs();

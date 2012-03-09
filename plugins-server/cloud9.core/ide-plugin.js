@@ -28,7 +28,10 @@ module.exports = function setup(options, imports, register) {
             baseUrl: "/static/",
             paths: imports.static.getRequireJsPaths()
         },
-        plugins: options.clientPlugins || []
+        plugins: options.clientPlugins || [],
+        bundledPlugins: [
+            "helloworld"
+        ]
     };
     var ide = new IdeServer(serverOptions);
 
