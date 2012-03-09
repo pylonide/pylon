@@ -5,47 +5,38 @@ var util = require("util");
 var Plugin = require("../cloud9.core/plugin");
 var c9util = require("../cloud9.core/util");
 
-var name = "git";
+var name = "npm";
 var ProcessManager;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
-    imports.ide.register(name, GitPlugin, register);
+    imports.ide.register(name, NpmPlugin, register);
 };
 
-var GitPlugin = function(ide, workspace) {
+var NpmPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
     this.pm = ProcessManager;
     this.workspaceId = workspace.workspaceId;
-    this.channel = this.workspaceId + "::git";
-
     this.hooks = ["command"];
-    this.name = "git";
-
-    this.gitEnv = {
-        GIT_ASKPASS: "/bin/echo",
-        EDITOR: "",
-        GIT_EDITOR: ""
-    };
+    this.name = name;
 };
 
-util.inherits(GitPlugin, Plugin);
+util.inherits(NpmPlugin, Plugin);
 
 (function() {
 
     this.init = function() {
         var self = this;
-        this.pm.on(this.channel, function(msg) {
+        this.pm.on(this.workspaceId + "::npm", function(msg) {
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
     };
 
     this.command = function (user, message, client) {
-        var self = this;
-        var cmd = message.command ? message.command.toLowerCase() : "";
+        var cmd = (message.command || "").toLowerCase();
 
-        if (cmd !== "git")
+        if (cmd !== "npm")
             return false;
 
         if (message.argv.indexOf("config") != -1) {
@@ -53,19 +44,25 @@ util.inherits(GitPlugin, Plugin);
                 code: 1,
                 argv: message.argv,
                 err: null,
-                out: "Sorry, you're now allowed to change the Git config on our servers"
+                out: "Sorry, you're now allowed to change the npm config on our servers"
             });
         }
 
-        if (typeof message.protocol == "undefined")
-            message.protocol = "client";
+        if (message.argv.indexOf("--") != -1) {
+            return this.sendResult(0, message.command, {
+                code: 1,
+                argv: message.argv,
+                err: null,
+                out: "Sorry, you're now allowed to use that setting for npm on our servers"
+            });
+        }
 
-        this.pm.spawn("shell", {
-            command: "git",
+        var self = this;
+        this.pm.spawn("npm", {
             args: message.argv.slice(1),
             cwd: message.cwd,
-            env: this.gitEnv,
-        }, this.channel, function(err, pid) {
+            nodeVersion: message.version
+        }, this.workspaceId + "::npm", function(err, pid) {
             if (err)
                 self.error(err, 1, message, client);
         });
@@ -73,38 +70,39 @@ util.inherits(GitPlugin, Plugin);
         return true;
     };
 
-    var githelp     = null;
+    var npmhelp = null;
     var commandsMap = {
-            "default": {
-                "commands": {
-                    "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
-                }
+        "default": {
+            "commands": {
+                "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
             }
-        };
+        }
+    };
 
     this.$commandHints = function(commands, message, callback) {
         var self = this;
 
-        if (!githelp) {
-            githelp = {};
-            this.pm.exec("shell", {
-                command: "git",
+        if (!npmhelp) {
+            this.pm.exec("npm", {
                 args: [],
-                cwd: message.cwd,
-                env: this.gitEnv
-            }, function(code, out, err) {
+                cwd: message.cwd
+            }, function(code, err, out) {
                 if (!out && err)
                     out = err;
 
                 if (!out)
                     return callback();
 
-                githelp = {"git": {
-                    "hint": "the stupid content tracker",
+                npmhelp = {"npm": {
+                    "hint": "node package manager",
                     "commands": {}
                 }};
-                out.replace(/[\s]{3,4}([\w]+)[\s]+(.*)\n/gi, function(m, sub, hint) {
-                    githelp.git.commands[sub] = self.augmentCommand(sub, {"hint": hint});
+
+                /*
+                where <command> is one of:
+                */
+                out.replace(/[\n\s]*([\w]*)\,/g, function(m, sub) {
+                    npmhelp.npm.commands[sub] = self.augmentCommand(sub, {"hint": "npm '" + sub + "'"});
                 });
                 onfinish();
             }, null, null);
@@ -114,7 +112,7 @@ util.inherits(GitPlugin, Plugin);
         }
 
         function onfinish() {
-            c9util.extend(commands, githelp);
+            c9util.extend(commands, npmhelp);
             callback();
         }
     };
@@ -129,4 +127,4 @@ util.inherits(GitPlugin, Plugin);
         callback();
     };
 
-}).call(GitPlugin.prototype);
+}).call(NpmPlugin.prototype);

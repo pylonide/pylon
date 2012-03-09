@@ -3,10 +3,13 @@
     "version": "0.0.1",
 
     "main": "./hg.js",
+    "private": true,
 
     "plugin": {
         "consumes": [
-            "ide"
+            "ide",
+            "process-manager",
+            "run-shell"
         ]
     }
 }
