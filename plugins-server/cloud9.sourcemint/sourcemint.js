@@ -19,7 +19,7 @@ module.exports = function startup(options, imports, register) {
     register(null, {
         "sourcemint": {
             addPackage: function(name, path) {
-                var route = new RegExp("^" + prefix.replace(/\//g, "\\/") + "\\/" + name + "(?:\.js)?(\/.*)?$");
+                var route = new RegExp("^" + prefix.replace(/\//g, "\\/") + "\\/" + name + "(?:\.js)?(\\/.*)?$");
                 imports.connect.addRoute("get", route, bundler.hoist(path, {
                     packageIdHashSeed: "c9os"
                 }));

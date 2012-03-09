@@ -50,7 +50,18 @@ exports.createServer = function(routes) {
         }));
 
     server.addRoute = function(method, route, handler) {
+        if (typeof route === "string") {
+            if (/^\^/.test(route)) {
+                throw new Error("String-based route '" + route + "' may not begin with '^'! '^' is automatically prefixed!");
+            }
+            var m = route.match(/(\\?)(\/)/);
+            if (m && !m[1]) {
+                throw new Error("String-based route '" + route + "' contains un-escaped '/'! You must escape with '\\/'.");
+            }
+        }
         method = method.toLowerCase() || "get";
+        // TODO: Make logging this optional.
+        console.log("MOUNT", route);
         app[method](route, handler);
     };
     return server;
