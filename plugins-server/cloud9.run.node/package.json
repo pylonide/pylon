@@ -1,14 +1,15 @@
 {
-    "name": "cloud9.ide.state",
+    "name": "cloud9.run.node",
     "version": "0.0.1",
 
-    "main": "./state.js",
+    "main": "./node.js",
     "private": true,
 
     "plugin": {
-        "provides": ["ide.ext.state"],
+        "provides": [
+            "run-node"
+        ],
         "consumes": [
-            "ide",
             "process-manager"
         ]
     }

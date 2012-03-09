@@ -4,20 +4,32 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
-"use strict";
-
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
 var name = "state";
+var ProcessManager;
 
 module.exports = function setup(options, imports, register) {
-    imports.ide.register(name, StatePlugin, register);
+    ProcessManager = imports["process-manager"];
+
+    imports.ide.register(name, StatePlugin, function(err) {
+        if (err)
+            return register(err);
+
+        register(null, {
+            "ide.ext.state": {}
+        });
+    });
 };
 
 var StatePlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
+
+    this.pm = ProcessManager;
+
+    this.workspaceId = workspace.workspaceId;
+
     this.hooks = ["connect", "command"];
     this.name = name;
 };
@@ -36,19 +48,46 @@ util.inherits(StatePlugin, Plugin);
         // we need to be able to re-publish state when we request that
         // use: ide.send({ command: "state", action: "publish" })
         if (message && message.action && message.action === "publish") {
-            this.publishState();
+            this.publishState(message, client);
         }
 
         return true;
     };
 
-    this.publishState = function() {
-        var state = {
-            "type": "state"
-        };
-        this.emit("statechange", state);
+    this.publishState = function(message, client) {
+        var self = this;
+        this.getState(function(err, state) {
+            if (err)
+                return self.error(err, 1, message, client);
 
-        this.send(state, null, this.name);
+            self.send(state, null, self.name);
+        });
+    };
+
+    this.getState = function(callback) {
+        var self = this;
+        this.pm.ps(function(err, ps) {
+            if (err)
+                return callback(err);
+
+            var state = {
+                "type": "state"
+            };
+
+            for (var pid in ps) {
+                var processType = ps[pid].type;
+                if (processType == "node")
+                    state.processRunning = pid;
+                else if (processType == "node-debug") {
+                    state.processRunning = pid;
+                    state.debugClient = pid;
+                }
+            }
+
+            // give other plugins the chance to add to the state
+            self.emit("statechange", state);
+            callback(null, state);
+        });
     };
 
 }).call(StatePlugin.prototype);

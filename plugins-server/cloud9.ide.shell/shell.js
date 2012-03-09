@@ -1,28 +1,33 @@
 /**
  * Shell Module for the Cloud9 IDE
  *
- * @copyright 2011, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ * @copyright 2010, Ajax.org B.V.
  */
 
 "use strict";
 
 var util = require("util");
-var Plugin = require("../cloud9.core/plugin");
 var Fs = require("fs");
 var Path = require("path");
 var Async = require("asyncjs");
+
+var Plugin = require("../cloud9.core/plugin");
 var c9util = require("../cloud9.core/util");
 
 var name = "shell";
+var ProcessManager;
 
 module.exports = function setup(options, imports, register) {
+    ProcessManager = imports["process-manager"];
     imports.ide.register(name, ShellPlugin, register);
 };
 
 var ShellPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
-    this.workspaceDir = workspace.workspaceDir;
+
+    this.pm = ProcessManager;
+    this.workspaceId = workspace.workspaceId;
+    this.workspaceDir = ide.workspaceDir;
     this.hooks = ["command"];
     this.name = name;
 };
@@ -56,22 +61,21 @@ util.inherits(ShellPlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
-        if (!this[message.command]) {
+        if (!this["command-" + message.command])
             return false;
-        }
 
-        this[message.command](message);
+        this["command-" + message.command.toLowerCase()](message);
+
         return true;
     };
 
-    this["internal-autocomplete"] = function(message) {
+    this["command-internal-autocomplete"] = function(message) {
         var argv = [].concat(message.argv);
         var cmd = argv.shift();
-        var _self = this;
-        var isDirCmd = cmd === "cd" || cmd === "ls";
+        var self = this;
 
-        this.getListing(argv.pop(), message.cwd, isDirCmd, function(tail, matches) {
-            _self.sendResult(0, "internal-autocomplete", {
+        this.getListing(argv.pop(), message.cwd, (cmd == "cd" || cmd == "ls"), function(tail, matches) {
+            self.sendResult(0, "internal-autocomplete", {
                 matches: matches,
                 line   : message.line,
                 base   : tail,
@@ -82,12 +86,12 @@ util.inherits(ShellPlugin, Plugin);
         });
     };
 
-    this["internal-isfile"] = function(message) {
+    this["command-internal-isfile"] = function(message) {
         var file  = message.argv.pop();
         var path  = message.cwd || this.workspaceDir;
-        var _self = this;
+        var self = this;
 
-        path = Path.normalize(Path.join(path, file.replace(/^\//g, "")));
+        path = Path.normalize(path + "/" + file.replace(/^\//g, ""));
 
         if (path.indexOf(this.workspaceDir) === -1) {
             this.sendResult();
@@ -96,11 +100,10 @@ util.inherits(ShellPlugin, Plugin);
 
         Fs.stat(path, function(err, stat) {
             if (err) {
-                return _self.sendResult(0, "error",
+                return self.sendResult(0, "error",
                     err.toString().replace("Error: ENOENT, ", ""));
             }
-
-            _self.sendResult(0, "internal-isfile", {
+            self.sendResult(0, "internal-isfile", {
                 cwd: path,
                 isfile: (stat && !stat.isDirectory()),
                 sender: message.sender || "shell"
@@ -108,9 +111,9 @@ util.inherits(ShellPlugin, Plugin);
         });
     };
 
-    this.commandhints = function(message) {
-        var commands = {};
-        var _self = this;
+    this["command-commandhints"] = function(message) {
+        var commands = {},
+            _self    = this;
 
         Async.list(Object.keys(this.workspace.plugins))
              .each(function(sName, next) {
@@ -129,88 +132,74 @@ util.inherits(ShellPlugin, Plugin);
              });
     };
 
-    this.mv    =
-    this.pwd   =
-    this.mkdir =
-    this.rm    =
-    this.ls    = function(message) {
-        var _self = this;
-        this.spawnCommand(message.command, message.argv.slice(1), message.cwd, null, null, function(code, err, out) {
-            _self.sendResult(0, message.command, {
-                code: code,
-                argv: message.argv,
-                err: err,
-                out: out
+    this["command-mv"] =
+    this["command-mkdir"] =
+    this["command-rm"] =
+    this["command-pwd"] =
+    this["command-ls"]  = function(message) {
+        var self = this;
+        this.pm.exec("shell", {
+            command: message.command,
+            args: message.argv.slice(1),
+            cwd: message.cwd
+        }, function(code, out, err) {
+            self.sendResult(0, message.command, {
+                code    : code,
+                argv    : message.argv,
+                err     : err,
+                out     : out
             });
         });
     };
 
-    this.cd = function(message) {
-        var to    = message.argv.pop();
-        var path  = message.cwd || this.workspaceDir;
-        var _self = this;
+    this["command-cd"] = function(message) {
+        var to = message.argv.pop();
+        var path = message.cwd || this.workspaceDir;
+        var self = this;
 
-        path = Path.normalize(Path.join(path, to.replace(/^\//g, "")));
-        if (path.indexOf(this.workspaceDir) === -1) {
+        path = Path.normalize(path + "/" + to.replace(/^\//g, ""));
+
+        if (path.indexOf(this.workspaceDir) === -1)
             return this.sendResult();
-        }
 
         Fs.stat(path, function(err, stat) {
             if (err) {
-                return _self.sendResult(0, "error",
+                return self.sendResult(0, "error",
                     err.toString().replace("Error: ENOENT, ", ""));
             }
 
-            if (!stat.isDirectory()) {
-                return _self.sendResult(0, "error", "Not a directory.");
-            }
-            _self.sendResult(0, message.command, { cwd: path });
-        });
-    };
+            if (!stat.isDirectory())
+                return self.sendResult(0, "error", "Not a directory.");
 
-    this.bash = function(message) {
-        var _self = this;
-        message.argv.unshift("-c");
-        this.spawnCommand("sh", message.argv, message.cwd, null, null, function(code, err, out) {
-            _self.sendResult(0, message.command, {
-                code: code,
-                argv: message.argv,
-                err: err,
-                out: out
-            });
+            self.sendResult(0, message.command, {cwd: path});
         });
     };
 
     this.getListing = function(tail, path, dirmode, callback) {
-        tail = tail || "";
-        // Trim spaces on both sides of the tail, then split by spaces and take
-        // the last 'word'.
-        tail = tail.trim().split(/\s+/g).pop();
+        var matches = [];
+        tail = (tail || "")
+            .trim()
+            .split(/\s+/g)
+            .pop();
+
         if (tail.indexOf("/") > -1) {
-            // Replace slashes at the beginning of tail
-            path = path.replace(/\/+$/, "");
-            path = Path.join(path, tail);
-            tail = Path.basename(tail);
+            path = path.replace(/[\/]+$/, "") + "/" + tail.substr(0, tail.lastIndexOf("/")).replace(/^[\/]+/, "");
+            tail = tail.substr(tail.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");
         }
 
-        var matches = [];
-        Async.readdir(path)
-            .stat().each(
-                function(file, next) {
-                    var startsWithTail = file.name.indexOf(tail) === 0;
-                    var isDir = file.stat.isDirectory();
-
-                    if (startsWithTail && (!dirmode || isDir)) {
-                        matches.push(file.name + (isDir ? "/" : ""));
-                    }
-                    next();
-                }
-            )
-            .end(function() { callback(tail, matches); });
+        Async.readdir(path).stat().each(function(file, next) {
+            if (file.name.indexOf(tail) === 0 && (!dirmode || file.stat.isDirectory()))
+                matches.push(file.name + (file.stat.isDirectory() ? "/" : ""));
+            next();
+        })
+        .end(function() {
+            callback(tail, matches);
+        });
     };
 
     this.dispose = function(callback) {
-        // TODO kill all running processes! <-- WAT
+        // TODO kill all running processes!
         callback();
     };
+
 }).call(ShellPlugin.prototype);

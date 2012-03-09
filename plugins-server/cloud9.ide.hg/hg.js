@@ -1,53 +1,98 @@
-/**
- * Mercurial Shell Module for the Cloud9 IDE
- *
- * @copyright 2011, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- */
-
 "use strict";
+
+var util = require("util");
 
 var Plugin = require("../cloud9.core/plugin");
 var c9util = require("../cloud9.core/util");
-var util = require("util");
 
 var name = "hg";
+var ProcessManager;
 
 module.exports = function setup(options, imports, register) {
-    imports.ide.register(name, ShellHgPlugin, register);
+    ProcessManager = imports["process-manager"];
+    imports.ide.register(name, HgPlugin, register);
 };
 
-var ShellHgPlugin = function(ide, workspace) {
+var HgPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
-    this.hooks = ["command"];
-    this.name = "hg";
-    this.banned = ["serve"];
+
+    this.pm = ProcessManager;
+    this.workspaceId = workspace.workspaceId;
+    this.channel = this.workspaceId + "::hg";
+
+    this.hooks      = ["command"];
+    this.name       = name;
+    this.banned     = ["serve"];
 };
 
-util.inherits(ShellHgPlugin, Plugin);
+util.inherits(HgPlugin, Plugin);
 
 (function() {
-    var hghelp     = "";
-    var commandsMap = {
-        "default": {
-            "commands": {
-                "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
+
+    this.init = function() {
+        var self = this;
+        this.pm.on(this.channel, function(msg) {
+            self.ide.broadcast(JSON.stringify(msg), self.name);
+        });
+    };
+
+    this.command = function (user, message, client) {
+        var self = this;
+        var cmd = (message.command || "").toLowerCase();
+
+        if (cmd != "hg")
+            return false;
+
+        if (message.argv[1] == "commit" && message.argv[2] == "-m") {
+            if (message.argv[3].indexOf("\\n") > -1) {
+                message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
             }
         }
+
+        this.pm.spawn("shell", {
+            command: "hg",
+            args: message.argv.slice(1),
+            cwd: message.cwd
+        }, this.channel, function(err, pid) {
+            if (err)
+                self.error(err, 1, message, client);
+        });
+
+        return true;
     };
+
+    var hghelp     = null,
+        commandsMap = {
+            "default": {
+                "commands": {
+                    "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
+                }
+            }
+        };
 
     this.$commandHints = function(commands, message, callback) {
         var _self = this;
 
         if (!hghelp) {
-            this.spawnCommand("hg", null, message.cwd, null, null, function(code, err, out) {
+            hghelp = {};
+
+            this.pm.exec("shell", {
+                command: "hg",
+                args: [],
+                cwd: message.cwd
+            }, function(code, out, err) {
+                if (!out && err)
+                    out = err;
+
                 if (!out)
                     return callback();
 
-                hghelp = {"hg": {
-                    "hint": "mercural source control",
-                    "commands": {}
-                }};
+                hghelp = {
+                    "hg": {
+                        "hint": "mercurial source control",
+                        "commands": {}
+                    }
+                };
 
                 out.replace(/([\w]+)[\s]{3,5}([\w].+)\n/gi, function(m, sub, hint) {
                     if (_self.banned.indexOf(sub) > -1)
@@ -55,7 +100,7 @@ util.inherits(ShellHgPlugin, Plugin);
                     hghelp.hg.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
                 });
                 onfinish();
-            });
+            }, null, null);
         }
         else {
             onfinish();
@@ -72,62 +117,9 @@ util.inherits(ShellHgPlugin, Plugin);
         return c9util.extend(struct, map || {});
     };
 
-    this.command = function(user, message, client) {
-        if (message.command != "hg")
-            return false;
-
-        var _self = this;
-        var argv = message.argv || [];
-
-        // Here we want to ban some commands like serve
-        if (argv.slice(1).length > 0 && _self.banned.indexOf(argv.slice(1)[0]) > -1) {
-            _self.sendResult(0, message.command, {
-                code: 0,
-                argv: message.argv,
-                err: 'Command ' + argv.slice(1)[0] + ' is not available in Cloud9',
-                out: null
-            });
-            return false;
-        }
-
-        if (message.argv[1] == "commit" && message.argv[2] == "-m") {
-            if (message.argv[3].indexOf("\\n") > -1) {
-                message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
-            }
-        }
-
-        this.spawnCommand(message.command, argv.slice(1), message.cwd,
-            function(err) { // Error
-                _self.sendResult(0, message.command, {
-                    code: 0,
-                    argv: message.argv,
-                    err: err,
-                    out: null
-                });
-            },
-            function(out) { // Data
-                _self.sendResult(0, message.command, {
-                    code: 0,
-                    argv: message.argv,
-                    err: null,
-                    out: out
-                });
-            },
-            function(code, err, out) {
-                _self.sendResult(0, message.command, {
-                    code: code,
-                    argv: message.argv,
-                    err: null,
-                    out: null
-                });
-            });
-
-        return true;
-    };
-
     this.dispose = function(callback) {
         // TODO kill all running processes!
         callback();
     };
 
-}).call(ShellHgPlugin.prototype);
+}).call(HgPlugin.prototype);

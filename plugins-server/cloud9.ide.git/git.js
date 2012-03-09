@@ -1,33 +1,79 @@
-/**
- * Git Shell Module for the Cloud9 IDE
- *
- * @copyright 2010, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- */
-
 "use strict";
 
-var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
+
+var Plugin = require("../cloud9.core/plugin");
 var c9util = require("../cloud9.core/util");
 
 var name = "git";
+var ProcessManager;
 
 module.exports = function setup(options, imports, register) {
-    imports.ide.register(name, ShellGitPlugin, register);
+    ProcessManager = imports["process-manager"];
+    imports.ide.register(name, GitPlugin, register);
 };
 
-var ShellGitPlugin = function(ide, workspace) {
+var GitPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
+
+    this.pm = ProcessManager;
+    this.workspaceId = workspace.workspaceId;
+    this.channel = this.workspaceId + "::git";
+
     this.hooks = ["command"];
     this.name = "git";
+
+    this.gitEnv = {
+        GIT_ASKPASS: "/bin/echo",
+        EDITOR: "",
+        GIT_EDITOR: ""
+    };
 };
 
-util.inherits(ShellGitPlugin, Plugin);
+util.inherits(GitPlugin, Plugin);
 
 (function() {
-    var githelp     = "",
-        commandsMap = {
+
+    this.init = function() {
+        var self = this;
+        this.pm.on(this.channel, function(msg) {
+            self.ide.broadcast(JSON.stringify(msg), self.name);
+        });
+    };
+
+    this.command = function (user, message, client) {
+        var self = this;
+        var cmd = message.command ? message.command.toLowerCase() : "";
+
+        if (cmd !== "git")
+            return false;
+
+        if (typeof message.protocol == "undefined")
+            message.protocol = "client";
+
+        // git encourages newlines in commit messages; see also #678
+        // so if a \n is detected, treat them properly as newlines
+        if (message.argv[1] == "commit" && message.argv[2] == "-m") {
+            if (message.argv[3].indexOf("\\n") > -1) {
+                message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
+            }
+        }
+
+        this.pm.spawn("shell", {
+            command: "git",
+            args: message.argv.slice(1),
+            cwd: message.cwd,
+            env: this.gitEnv,
+        }, this.channel, function(err, pid) {
+            if (err)
+                self.error(err, 1, message, client);
+        });
+
+        return true;
+    };
+
+    var githelp     = null;
+    var commandsMap = {
             "default": {
                 "commands": {
                     "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
@@ -36,23 +82,31 @@ util.inherits(ShellGitPlugin, Plugin);
         };
 
     this.$commandHints = function(commands, message, callback) {
-        var _self = this;
+        var self = this;
 
         if (!githelp) {
-            this.spawnCommand("git", null, message.cwd, null, null, function(code, err, out) {
+            githelp = {};
+            this.pm.exec("shell", {
+                command: "git",
+                args: [],
+                cwd: message.cwd,
+                env: this.gitEnv
+            }, function(code, out, err) {
+                if (!out && err)
+                    out = err;
+
                 if (!out)
                     return callback();
 
                 githelp = {"git": {
-                    "hint": "Fast Version Control System",
+                    "hint": "the stupid content tracker",
                     "commands": {}
                 }};
-
                 out.replace(/[\s]{3,4}([\w]+)[\s]+(.*)\n/gi, function(m, sub, hint) {
-                    githelp.git.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
+                    githelp.git.commands[sub] = self.augmentCommand(sub, {"hint": hint});
                 });
                 onfinish();
-            });
+            }, null, null);
         }
         else {
             onfinish();
@@ -69,53 +123,9 @@ util.inherits(ShellGitPlugin, Plugin);
         return c9util.extend(struct, map || {});
     };
 
-    this.command = function(user, message, client) {
-        if (message.command != "git")
-            return false;
-
-        var _self = this;
-        var argv = message.argv || [];
-
-        // git encourages newlines in commit messages; see also #678
-        // so if a \n is detected, treat them properly as newlines
-        if (message.argv[1] == "commit" && message.argv[2] == "-m") {
-            if (message.argv[3].indexOf("\\n") > -1) {
-                message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
-            }
-        }
-
-        this.spawnCommand(message.command, argv.slice(1), message.cwd,
-            function(err) { // Error
-                _self.sendResult(0, message.command, {
-                    code: 0,
-                    argv: message.argv,
-                    err: err,
-                    out: null
-                });
-            },
-            function(out) { // Data
-                _self.sendResult(0, message.command, {
-                    code: 0,
-                    argv: message.argv,
-                    err: null,
-                    out: out
-                });
-            },
-            function(code, err, out) {
-                _self.sendResult(0, message.command, {
-                    code: code,
-                    argv: message.argv,
-                    err: null,
-                    out: null
-                });
-            });
-
-        return true;
-    };
-
     this.dispose = function(callback) {
         // TODO kill all running processes!
         callback();
     };
 
-}).call(ShellGitPlugin.prototype);
+}).call(GitPlugin.prototype);
