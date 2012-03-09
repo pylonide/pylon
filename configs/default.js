@@ -121,7 +121,10 @@ module.exports = {
             __dirname + "/../plugins-server/cloud9.permissions",
             {
                 packagePath: __dirname + "/../plugins-server/cloud9.client-plugins",
-                plugins: clientExtensions
+                plugins: clientExtensions,
+                bundles: {
+                    "helloworld": __dirname + "/../plugins-client/ext.helloworld"
+                }
             },
             __dirname + "/../plugins-server/cloud9.process-manager",
             __dirname + "/../plugins-server/cloud9.run.shell",
