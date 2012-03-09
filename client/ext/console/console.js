@@ -120,10 +120,22 @@ module.exports = ext.register("ext/console/console", {
                 this.write("Working directory changed.");
             }
         },
+        
         error: function(message) {
             Logger.log(message.body);
             Logger.log("", "divider");
         },
+        
+        /**
+         * Info does the same as error in this case
+         * but it's here for the future, we might want to distinguise these
+         * on colors or something...
+         */
+        info: function (message) {
+            Logger.log(message.body);
+            Logger.log("", "divider");
+        },
+        
         __default__: function(message) {
             var res = message.body;
             if (res) {
@@ -148,8 +160,11 @@ module.exports = ext.register("ext/console/console", {
     },
 
     clear: function() {
-        if (txtOutput)
-            txtOutput.clear();
+        if (txtConsole) {
+            txtConsole.clear();
+        }
+        
+        return false;
     },
 
     switchconsole : function() {
@@ -221,7 +236,11 @@ module.exports = ext.register("ext/console/console", {
                 command: cmd,
                 argv: argv,
                 line: line,
-                cwd: this.getCwd()
+                cwd: this.getCwd(),
+                // the requireshandling flag indicates that this message cannot
+                // be silently ignored by the server.
+                // An error event should be thrown if no plugin handles this message.
+                requireshandling: true
             };
 
             if (cmd.trim() === "npm")

@@ -210,7 +210,16 @@ module.exports = ext = {
                 if (oExt.commands[cmd].msg)
                     consoleExt.write(oExt.commands[cmd].msg);
             });
-            return oExt[cmd](data);
+            var res = oExt[cmd](data);
+            
+            // if the command specifies a return value, then pass that back
+            if (typeof res !== "undefined") {
+                return res;
+            }
+            
+            // otherwise respond with 'false'
+            // I would expected true here but soit; console.js checks explicitly for 'false'
+            return false;
         }
     }
 };
