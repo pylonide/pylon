@@ -99,22 +99,28 @@ module.exports = ext.register("ext/help/help", {
         
         var suffix = "";
         try {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', "http://c9.io/site/?json=get_tag_posts&tag_slug=changelog", false);
-            xhr.send(null);
-            if (xhr.status === 200) {
-                var blogJSON = JSON.parse(xhr.responseText);
+            var response = apf.ajax("http://c9.io/site/?json=get_tag_posts&tag_slug=changelog", {
+                               method      : "GET",
+                               contentType : "application/json",
+                               async       : false,
+                               data        : apf.serialize({
+                                 agent   : navigator.userAgent,
+                                 type    : "C9 SERVER EXCEPTION"
+                               })
+                           });
+            if (response !== undefined) {
+                var blogJSON = JSON.parse(response);
                 var latestDate = jsonBlog.posts[0].date;
-                suffix = latestDate.split(" ")[0].replace(/-/g, ".");
+                suffix =  " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")";
             } // otherwise, leave suffix off anyway
         } catch (e) {
             /* you're probably doing this from localhost, which won't
-               let you make a call to a different domain (c9.io); this resolves
+               let you make a call to a different domain (c9.io); this prevents:
                XMLHttpRequest cannot load...Origin http://127.0.0.1:3000 is 
                not allowed by Access-Control-Allow-Origin. */
         }
 
-        mnuChangelog.caption + " " + suffix;
+        mnuChangelog.caption += suffix;
     },
     
     showAbout : function() {
