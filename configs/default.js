@@ -113,7 +113,11 @@ module.exports = {
                 urlPrefix: fsUrl
             },
             __dirname + "/../plugins-server/cloud9.socket",
-            __dirname + "/../plugins-server/cloud9.session.memory",
+            {
+                packagePath: __dirname + "/../plugins-server/cloud9.session.memory",
+                key: "cloud9.sid",
+                secret: "1234"
+            },
             __dirname + "/../plugins-server/cloud9.permissions",
             {
                 packagePath: __dirname + "/../plugins-server/cloud9.client-plugins",
