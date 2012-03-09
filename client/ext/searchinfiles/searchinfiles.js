@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var editors = require("ext/editors/editors");
+var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
@@ -22,11 +23,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     alone    : true,
     offline  : false,
     markup   : markup,
-    skin     : {
-        id   : "searchinfiles",
-        data : skin,
-        "media-path" : ide.staticPrefix + "/ext/searchinfiles/images/"
-    },
+    skin     : {
+        id   : "searchinfiles",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/searchinfiles/images/"
+    },
     commands  : {
         "searchinfiles": {hint: "search for a string through all files in the current workspace"}
     },
@@ -92,16 +93,22 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         //ideConsole.show();
     },
     
-    setSearchSelection: function(){
+    setSearchSelection: function(e){
+        var selectedNode;
+        // If originating from an event
+        if (e && e.selected)
+            selectedNode = e.selected;
+        else
+            selectedNode = this.getSelectedTreeNode();
         // get selected node in tree and set it as selection
-        var name = require("ext/searchinfiles/searchinfiles").getSelectedTreeNode().getAttribute("name");
+        var name = selectedNode.getAttribute("name");
         if (name.length > 25)
             name = name.substr(0, 22) + "...";
         rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
     },
     
     getSelectedTreeNode: function() {
-        var node = self["trFiles"] ? trFiles.selected : require("ext/filesystem/filesystem").model.queryNode("folder[1]");
+        var node = self["trFiles"] ? trFiles.selected : fs.model.queryNode("folder[1]");
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder[1]");
         while (node.tagName != "folder")
