@@ -8,17 +8,22 @@
 
     "dependencies": {
         "architect": "0.0.x",
-        "connect": "1.8.x",
-        "asyncjs": "0.0.x",
+        
         "socket.io": "0.8.x",
         "socket.io-client": "0.8.x",
+        "connect": "1.8.x",
+        
+        "asyncjs": "~0.0.6",
         "jsDAV": "0.1.x",
         "gnu-tools": "0.0.x",
+        "sourcemint-loader-js": "0.x",
+        "sourcemint-platform-nodejs": "0.x",
+        "http-error": "~0.0.1",
+        "simple-template": "~0.0.1",
+        
         "v8debug": "0.1.x",
         "treehugger": "0.0.x",
-        "ace": "0.2.x",
-        "sourcemint-loader-js": "0.x",
-        "sourcemint-platform-nodejs": "0.x"
+        "ace": "0.2.x"
     },
 
     "repository" : {

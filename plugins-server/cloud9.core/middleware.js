@@ -1,4 +1,4 @@
-var error = require("./error");
+var error = require("http-error");
 var fs = require("fs");
 
 exports.errorHandler = function() {
