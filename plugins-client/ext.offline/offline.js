@@ -348,13 +348,18 @@ module.exports = ext.register("ext/offline/offline", {
 
         /**** Init ****/
 
-        ide.addEventListener("socketConnect", function() {
-            offline.goOnline();
-            ide.removeEventListener("socketConnect", arguments.callee);
-        });
-
         ide.addEventListener("extload", function() {
             offline.start();
+        });
+
+        ide.addEventListener("socketConnect", function() {
+            offline.goOnline();
+            // NOTE: We may get multiple `socketConnect` events during a session if conenction drops out and comes back.
+            // ide.removeEventListener("socketConnect", arguments.callee);
+        });
+
+        ide.addEventListener("socketDisconnect", function(){
+            offline.goOffline();
         });
 
         if (_self.offlineStartup)
