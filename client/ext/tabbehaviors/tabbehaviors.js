@@ -250,7 +250,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
     },
     
-    closetab: function(page) {
+    closetab: function() {
         var page = tabEditors.getPage();
         tabEditors.remove(page);
         return false;
