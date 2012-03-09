@@ -1,12 +1,15 @@
 var fs = require("fs");
 
-var clientExtensions = fs.readdirSync(__dirname + "/../plugins-client")
-    .filter(function(dir) {
-        return dir.indexOf("ext.") === 0;
-    })
-    .map(function(dir) {
-        return __dirname + "/../plugins-client/" + dir;
-    });
+var clientExtensions = {};
+var clientDirs = fs.readdirSync(__dirname + "/../plugins-client");
+for (var i = 0; i < clientDirs.length; i++) {
+    var dir = clientDirs[i];
+    if (dir.indexOf("ext.") !== 0)
+        continue;
+
+    var name = dir.split(".")[1];
+    clientExtensions[name] = __dirname + "/../plugins-client/" + dir;
+}
 
 var projectDir = __dirname + "/../";
 var fsUrl = "/workspace";
@@ -112,7 +115,10 @@ module.exports = {
             __dirname + "/../plugins-server/cloud9.socket",
             __dirname + "/../plugins-server/cloud9.session.memory",
             __dirname + "/../plugins-server/cloud9.permissions",
-            __dirname + "/../plugins-server/cloud9.client-plugins",
+            {
+                packagePath: __dirname + "/../plugins-server/cloud9.client-plugins",
+                plugins: clientExtensions
+            },
             __dirname + "/../plugins-server/cloud9.process-manager",
             __dirname + "/../plugins-server/cloud9.run.shell",
             __dirname + "/../plugins-server/cloud9.run.node",
@@ -131,7 +137,7 @@ module.exports = {
             __dirname + "/../plugins-server/cloud9.ide.shell",
             __dirname + "/../plugins-server/cloud9.ide.state",
             __dirname + "/../plugins-server/cloud9.ide.watcher"
-            ].concat(clientExtensions)
+            ]
         }
     }
 };
