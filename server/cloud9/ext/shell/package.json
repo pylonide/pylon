@@ -22,6 +22,12 @@
                 "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
             }
         },
+        "mkdir" : {
+            "hint": "create a directory",
+            "commands": {
+                "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
+            }
+        },
         "pwd": {"hint": "return working directory name"}
     }
 }

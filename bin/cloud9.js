@@ -39,6 +39,9 @@ if (options.config) {
 
 var version = options.version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
 
+if (options.ip === "all" || options.ip === "0.0.0.0")
+    options.ip = "";
+
 require("../server/cloud9").main(options);
 
 Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
@@ -65,10 +68,8 @@ Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
                               version " + version + "\n\
 Project root is: " + options.workspace);
 
-if (options.ip === "all" || options.ip === "0.0.0.0")
-    options.ip = "localhost";
 
-var url = "http://" + options.ip + ":" + options.port;
+var url = "http://" + (options.ip.length ? options.ip : "localhost") + ":" + options.port;
 if (options.action) {
     Sys.puts("Trying to start your browser in: " + url);
     options.action.push(url);
