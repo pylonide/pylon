@@ -35,12 +35,30 @@ var statusCodes = {
     415: "Unsupported Media Type",
     416: "Requested Range Not Satisfiable",
     417: "Expectation Failed",
+    420: "Enhance Your Calm",
+    422: "Unprocessable Entity",
+    423: "Locked",
+    424: "Failed Dependency",
+    425: "Unordered Collection",
+    426: "Upgrade Required",
+    428: "Precondition Required",
+    429: "Too Many Requests",
+    431: "Request Header Fields Too Large",
+    444: "No Response",
+    449: "Retry With",
+    499: "Client Closed Request",
     500: "Internal Server Error",
     501: "Not Implemented",
     502: "Bad Gateway",
     503: "Service Unavailable",
     504: "Gateway Timeout",
-    505: "HTTP Version Not Supported"
+    505: "HTTP Version Not Supported",
+    506: "Variant Also Negotiates",
+    507: "Insufficient Storage",
+    508: "Loop Detected",
+    509: "Bandwidth Limit Exceeded",
+    510: "Not Extended",
+    511: "Network Authentication Required"
 };
 
 for (var status in statusCodes) {
