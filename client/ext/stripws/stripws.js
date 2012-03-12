@@ -54,15 +54,24 @@ module.exports = ext.register("ext/stripws/stripws", {
 
     hook: function () {
         var self = this;
+        var menuItem = new apf.item({
+                            caption: "Strip Whitespace",
+                            onclick: function () {
+                                ext.initExtension(self);
+                                strip();
+                            }
+                        });
+        var menuItemClone = menuItem.cloneNode(true);
+
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(new apf.item({
-                caption: "Strip Whitespace",
-                onclick: function () {
-                    ext.initExtension(self);
-                    strip();
-                }
-            }))
+            ide.mnuEdit.appendChild(new apf.divider()),
+            ide.mnuEdit.appendChild(menuItem),
+            menuItemClone
         );
+
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            e.ext.addToolsItem(menuItemClone, 2);
+        });
 
         ide.addEventListener("beforefilesave", function(data) {
             var node =

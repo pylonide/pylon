@@ -40,7 +40,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         "tab7": {hint: "navigate to the seventh tab", msg: "Switching to tab 7."},
         "tab8": {hint: "navigate to the eighth tab", msg: "Switching to tab 8."},
         "tab9": {hint: "navigate to the ninth tab", msg: "Switching to tab 9."},
-        "tab0": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
+        "tab10": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
         "revealtab": {hint: "reveal current tab in the file tree"},
         "nexttab": {hint: "navigate to the next tab in the stack of accessed tabs"},
         "previoustab": {hint: "navigate to the previous tab in the stack of accessed tabs"}
@@ -79,6 +79,20 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             })),
+            mnuTabs.appendChild(new apf.item({
+                caption : "Close Tabs to the Right",
+                onclick : function() {
+                    _self.closealltotheright();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
+            mnuTabs.appendChild(new apf.item({
+                caption : "Close Tabs to the Left",
+                onclick : function() {
+                    _self.closealltotheleft();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            })),
             //mnuTabs.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuContextTabs",
@@ -104,18 +118,50 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         onclick : function() {
                             _self.closeallbutme(tabEditors.contextPage);
                         }
+                    }),
+                    new apf.item({
+                        caption : "Close Tabs to the Right",
+                        onclick : function() {
+                            _self.closealltotheright();
+                        }
+                    }),
+                    new apf.item({
+                        caption : "Close Tabs to the Left",
+                        onclick : function() {
+                            _self.closealltotheleft();
+                        }
                     })
                 ]
             }))
         );
-
+        
         this.hotitems.revealtab     = [this.nodes[0], mnuContextTabs.childNodes[0]];
         this.hotitems.closetab      = [this.nodes[1], mnuContextTabs.childNodes[1]];
         this.hotitems.closealltabs  = [this.nodes[2], mnuContextTabs.childNodes[2]];
         this.hotitems.closeallbutme = [this.nodes[3], mnuContextTabs.childNodes[3]];
-
+        this.hotitems.closealltotheright = [this.nodes[4], mnuContextTabs.childNodes[4]];
+        this.hotitems.closealltotheleftt = [this.nodes[5], mnuContextTabs.childNodes[5]];
+        
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
+        mnuContextTabs.addEventListener("prop.visible", function(e) {
+            var page = tabEditors.getPage();
+            var pages = tabEditors.getPages();
+            
+            // be optimistic, reset menu items to disabled
+            mnuContextTabs.childNodes[4].setAttribute('disabled', false);
+            mnuContextTabs.childNodes[5].setAttribute('disabled', false);
+                
+            // if last tab, remove "close to the right"
+            if (page.nextSibling.localName !== "page") {
+                mnuContextTabs.childNodes[4].setAttribute('disabled', true);
+            }
+            // if first tab, remove "close to the left"
+            else if (pages.indexOf(page) == 0) {
+                mnuContextTabs.childNodes[5].setAttribute('disabled', true);
+            }
+        });
+        
         tabEditors.addEventListener("close", function(e) {
             if (!e || !e.htmlEvent)
                 return;
@@ -203,13 +249,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
         });
     },
-
-    closetab: function(page) {
-        if (!page)
-            page = tabEditors.getPage();
-
-        if (page)
-            tabEditors.remove(page);
+    
+    closetab: function() {
+        var page = tabEditors.getPage();
+        tabEditors.remove(page);
         return false;
     },
 
@@ -220,6 +263,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     // ignore is the page that shouldn't be closed, null to close all tabs
     closeallbutme: function(ignore, callback) {
+        // if ignore isn't a page instance then fallback to current page
+        if (!(ignore instanceof apf.page)) {
+            ignore = null;
+        }
+        
         ignore = ignore || tabEditors.getPage();
         this.changedPages = [];
         this.unchangedPages = [];
@@ -231,8 +279,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
 
-            if (ignore && page == ignore)
+            if (ignore && (page == ignore || ignore.hasOwnProperty(i))) {
                 continue;
+            }
 
             if (page.$doc.getNode().getAttribute("changed") == "1") {
                 page.noAnim = true; // turn off animation on closing tab
@@ -282,6 +331,34 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             callback();
     },
 
+    closealltotheright : function() {
+        var page = tabEditors.getPage();
+        var pages = tabEditors.getPages();
+    
+        var currIdx = pages.indexOf(page);
+        var ignore = {};
+            
+        for (var j = 0; j <= currIdx; j++) {
+            ignore[j] = page;
+        }
+
+        this.closeallbutme(ignore);
+    },
+
+    closealltotheleft : function() {
+        var page = tabEditors.getPage();
+        var pages = tabEditors.getPages();
+    
+        var currIdx = pages.indexOf(page);
+        var ignore = {};
+            
+        for (var j = pages.length - 1; j >= currIdx; j--) {
+            ignore[j] = page;
+        }
+        
+        this.closeallbutme(ignore);
+    },
+    
     nexttab : function(){
         var n = this.accessed.length - this.$tabAccessCycle++;
         if (n < 0) {
@@ -356,14 +433,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     tab7: function() {return this.showTab(7);},
     tab8: function() {return this.showTab(8);},
     tab9: function() {return this.showTab(9);},
-    tab0: function() {return this.showTab(10);},
+    tab10: function() {return this.showTab(10);},
 
     showTab: function(nr) {
-        var item = this.nodes[(nr - 1) + this.menuOffset];
-        if (item && item.relPage) {
-            tabEditors.set(item.relPage);
+        // our indexes are 0 based an the number coming in is 1 based
+        nr--;
+        var pages = tabEditors.getPages();
+        if (!pages[nr]) {
             return false;
         }
+        
+        tabEditors.set(pages[nr]);
+        return false;
     },
 
     /**
@@ -437,19 +518,22 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         function scrollToFile() {
-            var htmlNode = apf.xmldb.getHtmlNode(trFiles.selected, trFiles);
-            var itemPos = apf.getAbsolutePosition(htmlNode, trFiles.$container);
-            var top = trFiles.$container.scrollTop;
-            var bottom = top + trFiles.$container.offsetHeight;
+            var tree = trFiles;
+            var htmlNode = apf.xmldb.getHtmlNode(tree.selected, tree);
+            if (!htmlNode)
+                return;
+            var itemPos = apf.getAbsolutePosition(htmlNode, tree.$container);
+            var top = tree.$container.scrollTop;
+            var bottom = top + tree.$container.offsetHeight;
 
             // No scrolling needed when item is between visible boundaries.
             if (itemPos[1] >= top && itemPos[1] <= bottom) {
                 return;
             }
             
-            var center = (trFiles.$container.offsetHeight / 2) | 0;
+            var center = (tree.$container.offsetHeight / 2) | 0;
             var newTop = itemPos[1] - center;
-            trFiles.$ext.scrollTop = newTop;
+            tree.$ext.scrollTop = newTop;
         }
     },
 
@@ -527,6 +611,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.hotitems[keyId] = [pages[i].$tabMenu];
             if (pages[i].$tabMenu && this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
                 pages[i].$tabMenu.setAttribute("hotkey", this.commands[keyId].hotkey);
+            else
+                pages[i].$tabMenu.removeAttribute("hotkey");
         }
     },
 

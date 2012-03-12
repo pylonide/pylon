@@ -108,7 +108,7 @@ module.exports = ext.register("ext/zen/zen", {
         }));
 
         // @TODO adjust position based on scrollbar width
-        if (!(apf.isChrome && apf.versionChrome >= 14) && !(apf.isSafari && apf.versionSafari >= 5))
+        //if (!(apf.isChrome && apf.versionChrome >= 14) && !(apf.isSafari && apf.versionSafari >= 5))
             btnZenFullscreen.setAttribute("right", "26");
 
         if (apf.isWin)
@@ -128,7 +128,7 @@ module.exports = ext.register("ext/zen/zen", {
     calculatePositions : function() {
         // Calculate the position
         var _self = this;
-        var height = (window.innerHeight-33) + "px";
+        var height = (window.innerHeight-32) + "px";
         tabEditors.parentNode.$ext.style.height = height;
         _self.animateZen.style.height = window.innerHeight + "px";
         var width = window.innerWidth * _self.initialWidth;

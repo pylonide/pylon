@@ -102,7 +102,10 @@ exports.main = function(options) {
     if (user)
         process.setuid(user);
 
-    server.listen(port, ip);
+    if (ip.length === 0)
+        server.listen(port);
+    else
+        server.listen(port, ip);
 };
 
 process.on("uncaughtException", function(e) {

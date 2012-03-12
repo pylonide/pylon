@@ -19,6 +19,7 @@ var settings = require("core/settings");
 var Logger = require("ext/console/logger");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
+var theme = require("text!ext/console/themes/arthur.css");
 
 // Some constants used throughout the plugin
 var RE_band = /^\s*!/;
@@ -86,10 +87,11 @@ module.exports = ext.register("ext/console/console", {
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
-    css    : css,
+    css    : css + theme,
     height : 200,
     hidden : true,
     nodes : [],
+    minHeight : 150,
 
     autoOpen : true,
     excludeParent : true,
@@ -118,10 +120,22 @@ module.exports = ext.register("ext/console/console", {
                 this.write("Working directory changed.");
             }
         },
+        
         error: function(message) {
             Logger.log(message.body);
             Logger.log("", "divider");
         },
+        
+        /**
+         * Info does the same as error in this case
+         * but it's here for the future, we might want to distinguise these
+         * on colors or something...
+         */
+        info: function (message) {
+            Logger.log(message.body);
+            Logger.log("", "divider");
+        },
+        
         __default__: function(message) {
             var res = message.body;
             if (res) {
@@ -138,7 +152,7 @@ module.exports = ext.register("ext/console/console", {
         var _self = this;
 
         Logger.logNodeStream(
-            words
+            words.sort()
                 .map(function(w) { return w + tabs + _self.allCommands[w].hint; })
                 .join("\n"),
             null, null, ide
@@ -146,8 +160,11 @@ module.exports = ext.register("ext/console/console", {
     },
 
     clear: function() {
-        if (txtOutput)
-            txtOutput.clear();
+        if (txtConsole) {
+            txtConsole.clear();
+        }
+        
+        return false;
     },
 
     switchconsole : function() {
@@ -219,7 +236,11 @@ module.exports = ext.register("ext/console/console", {
                 command: cmd,
                 argv: argv,
                 line: line,
-                cwd: this.getCwd()
+                cwd: this.getCwd(),
+                // the requireshandling flag indicates that this message cannot
+                // be silently ignored by the server.
+                // An error event should be thrown if no plugin handles this message.
+                requireshandling: true
             };
 
             if (cmd.trim() === "npm")
@@ -428,7 +449,8 @@ module.exports = ext.register("ext/console/console", {
 
         if (this.$control)
             this.$control.stop();
-
+        
+        var _self = this;
         var cfg;
         if (shouldShow) {
             cfg = {
@@ -436,7 +458,7 @@ module.exports = ext.register("ext/console/console", {
                 dbgVisibleMethod: "show",
                 chkExpandedMethod: "check",
                 animFrom: 65,
-                animTo: this.height,
+                animTo: this.height > this.minHeight ? this.height : this.minHeight,
                 animTween: "easeOutQuint"
             };
 
@@ -448,7 +470,7 @@ module.exports = ext.register("ext/console/console", {
                 height: 41,
                 dbgVisibleMethod: "hide",
                 chkExpandedMethod: "uncheck",
-                animFrom: this.height,
+                animFrom: this.height > this.minHeight ? this.height : this.minHeight,
                 animTo: 65,
                 animTween: "easeInOutCubic"
             };
@@ -457,16 +479,18 @@ module.exports = ext.register("ext/console/console", {
                 this.restore();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
+            winDbgConsole.$ext.style.minHeight = 0;
         }
 
         var finish = function() {
             if (!shouldShow)
                 tabConsole.hide();
+            else
+                winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
 
             winDbgConsole.height = cfg.height + 1;
             winDbgConsole.setAttribute("height", cfg.height);
             winDbgConsole.previousSibling[cfg.dbgVisibleMethod]();
-
             apf.layout.forceResize();
 
             settings.model.setQueryValue("auto/console/@expanded", shouldShow);

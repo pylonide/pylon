@@ -37,7 +37,7 @@ module.exports = ext.register("ext/save/save", {
         if (!self.tabEditors) return;
 
         var _self = this;
-
+        
         tabEditors.addEventListener("close", this.$close = function(e) {
             var at = e.page.$at;
             if (!at.undo_ptr)
@@ -47,11 +47,19 @@ module.exports = ext.register("ext/save/save", {
               || !at.undo_ptr && node.getAttribute("changed") == 1
               && e.page.$doc.getValue()) {
                 ext.initExtension(_self);
-
+                
+                var pages   = tabEditors.getPages(),
+                currIdx = pages.indexOf(e.page);
+                tabEditors.set(pages[currIdx].id); //jump to file
+                
+                var filename = node.getAttribute("path").replace(ide.workspaceDir, "").replace(ide.davPrefix, "");
+                
                 winCloseConfirm.page = e.page;
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
+                fileDesc.$ext.innerHTML =  "<h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div>";
+                
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
                         var f = function(resetUndo){
@@ -78,7 +86,7 @@ module.exports = ext.register("ext/save/save", {
 
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                 });
-
+                
                 btnYesAll.hide();
                 btnNoAll.hide();
 
@@ -138,7 +146,8 @@ module.exports = ext.register("ext/save/save", {
 
     init : function(amlNode){
         var _self = this;
-
+        this.fileDesc = winCloseConfirm.selectSingleNode("a:vbox");;
+        
         apf.importCssString((this.css || ""));
         winCloseConfirm.onafterrender = function(){
             btnYesAll.addEventListener("click", function(){

@@ -44,6 +44,10 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }))
         );
 
+        ide.addEventListener("gotoline", function() {
+            _self.gotoline(1);
+        });
+
         code.commandManager.addCommand({
             name: "gotoline",
             exec: function(editor) {

@@ -18,7 +18,7 @@ module.exports = ext.register("ext/panels/panels", {
     alone  : true,
     type   : ext.GENERAL, 
     markup : markup,
-    
+    minWidth: 150,
     nodes : [],
     panels : {},
     
@@ -120,6 +120,9 @@ module.exports = ext.register("ext/panels/panels", {
             var winExt = win.$altExt || win.$ext;
             var diff  = apf.getDiff(winExt);
             var zIndex = winExt.style.zIndex;
+            if(width < this.minWidth)
+                width = this.minWidth;
+            
             winExt.style.position = "absolute";
             winExt.style.zIndex = 1000;
             winExt.style.left = left + "px";
@@ -136,6 +139,7 @@ module.exports = ext.register("ext/panels/panels", {
                 );
             }
             else {
+                colLeft.$ext.style.minWidth = 0;
                 tweens.push(
                     {oHtml: winExt, type: "left", from: left, to: left - width},
                     {oHtml: colLeft.$ext, type: "width", from: width, to: 0}
@@ -190,6 +194,7 @@ module.exports = ext.register("ext/panels/panels", {
                     toWinExt.style.height =
                     toWinExt.style.width = "";
                     apf.setOpacity(toWinExt, 1);
+                    colLeft.$ext.style.minWidth = _self.minWidth + "px";
                 }
                 if (win) {
                     winExt.style.zIndex = zIndex;

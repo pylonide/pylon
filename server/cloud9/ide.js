@@ -113,6 +113,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/help/help",
     //"ext/ftp/ftp",
     "ext/code/code",
+    "ext/statusbar/statusbar",
     "ext/imgview/imgview",
     //"ext/preview/preview",
     "ext/extmgr/extmgr",
@@ -141,7 +142,10 @@ Ide.DEFAULT_PLUGINS = [
     "ext/quickstart/quickstart",
     "ext/jslanguage/jslanguage",
     "ext/autotest/autotest",
-    "ext/tabsessions/tabsessions"
+    "ext/tabsessions/tabsessions",
+    "ext/closeconfirmation/closeconfirmation",
+    "ext/codetools/codetools",
+    "ext/colorpicker/colorpicker"
     //"ext/acebugs/acebugs"
 ];
 
@@ -153,7 +157,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
         var path = Url.parse(req.url).pathname;
 
         this.indexRe = this.indexRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
-        this.reconnectRe = this.reconnectRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/reconnect$");
+        this.reconnectRe = this.reconnectRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
         this.workspaceRe = this.workspaceRe || new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
         if (path.match(this.indexRe)) {
@@ -209,9 +213,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
-            var aceScripts =
-                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/ace-uncompressed.js"></script>\n' +
-                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/mode-javascript.js"></script>'
+            var aceScripts = '<script type="text/javascript" data-ace-base="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n';
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,
@@ -332,10 +334,17 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
     };
 
     this.broadcast = function(msg, scope) {
-        // TODO check permissions
-        for (var username in this.$users) {
-            var user = this.$users[username];
-            user.broadcast(msg, scope);
+        try {
+            // TODO check permissions
+            for (var username in this.$users) {
+                var user = this.$users[username];
+                user.broadcast(msg, scope);
+            }
+        }
+        catch (e) {
+            var ex = new Error("Stack overflow just happened");
+            ex.original = e;
+            throw ex;
         }
     };
 

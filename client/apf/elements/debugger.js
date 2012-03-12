@@ -125,8 +125,9 @@ apf.dbg = module.exports = function(struct, tagName){
 
                     _self.$debugger.backtrace(backtraceModel, function() {
                         var frame = backtraceModel.queryNode("frame[1]");
-
-                        if (!_self.$allowAttaching(frame)) {
+                        var allowAttach = _self.$allowAttaching(frame);
+                        
+                        if (!allowAttach) {
                             _self.$debugger.continueScript();
                         }
                         else {
@@ -143,9 +144,23 @@ apf.dbg = module.exports = function(struct, tagName){
                         dbgImpl.addEventListener("changeRunning", _self.$onChangeRunning.bind(_self));
                         dbgImpl.addEventListener("break", _self.$onBreak.bind(_self));
                         dbgImpl.addEventListener("detach", _self.$onDetach.bind(_self));
-                        dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
-
-                        _self.setProperty("activeframe", frame);
+                        
+                        // monitor the first incoming event to verify whether it's allowed
+                        // to attach here
+                        var firstChangeFrame = function () {
+                            if (_self.$allowAttaching(_self.$debugger.getActiveFrame())) {
+                                _self.$onChangeFrame();
+                                // now bind to the real changeFrame method
+                                dbgImpl.addEventListener("changeFrame", _self.$onChangeFrame.bind(_self));
+                                dbgImpl.removeEventListener("changeFrame", firstChangeFrame);
+                            }
+                        };
+                        dbgImpl.addEventListener("changeFrame", firstChangeFrame);
+                        
+                        if (allowAttach) {
+                            _self.setProperty("activeframe", frame);
+                        }
+                        
                         _self.autoAttachComingIn = false;
                     });
                 });
@@ -202,29 +217,7 @@ apf.dbg = module.exports = function(struct, tagName){
     };
 
     this.$updateMarkerPrerequisite = function () {
-        var frame = this.activeframe;
-        if (!frame) {
-            return;
-        }
-
-        // when running node with 'debugbrk' it will auto break on the first line of executable code
-        // we don't want to really break here so we put this:
-        if (frame.getAttribute("name") === "anonymous(exports, require, module, __filename, __dirname)"
-                && frame.getAttribute("index") === "0" && frame.getAttribute("line") === "0") {
-
-            var fileNameNode = frame.selectSingleNode("//frame/vars/item[@name='__filename']");
-            var fileName = fileNameNode ? fileNameNode.getAttribute("value") : "";
-            var model = this.$mdlBreakpoints.data;
-
-            // is there a breakpoint on the exact same line and file? then continue
-            if (fileName && model && model.selectSingleNode("//breakpoints/breakpoint[@script='" + fileName + "' and @line=0]")) {
-                return frame;
-            }
-
-            return;
-        }
-
-        return frame;
+        return this.activeframe;
     };
     this.$onAfterCompile = function(e) {
         var id = e.script.getAttribute("id");
@@ -235,7 +228,17 @@ apf.dbg = module.exports = function(struct, tagName){
     };
 
     this.$onDetach = function() {
+        var _self = this;
+        
         if (this.$debugger) {
+            // destroy doesnt destroy the event listeners
+            // so do that by hand
+            Object.keys(_self.$debugger.$eventsStack).forEach(function (evname) { 
+                _self.$debugger.$eventsStack[evname].forEach(function (fn) {
+                    _self.$debugger.removeEventListener(evname, fn);
+                });
+            });
+            
             this.$debugger.destroy();
             this.$debugger = null;
         }
