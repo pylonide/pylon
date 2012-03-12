@@ -76,11 +76,33 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
         tabEditors.addEventListener("afterswitch", function() {
             _self.updateMap();
+            setTimeout(function() {
+                _self.setupChangeListener();
+            }, 200);
         });
 
         if (apf.isTrue(this.map_enabled)) {
             setTimeout(function() {
                 _self.show();
+            });
+        }
+
+        this.setupChangeListener();
+    },
+    
+    setupChangeListener : function() {
+        if (this.$changeEvent)
+            this.editorSession.removeEventListener("change", this.$changeEvent);
+
+        var _self = this;
+        if(editors.currentEditor.ceEditor) {
+            this.editorSession = editors.currentEditor.ceEditor.$editor.session;
+            this.editorSession.addEventListener("change", this.$changeEvent = function() {
+                if (_self.$updateTimer)
+                    clearTimeout(_self.$updateTimer);
+                _self.$updateTimer = setTimeout(function() {
+                    _self.updateMap();
+                }, 100);
             });
         }
     },

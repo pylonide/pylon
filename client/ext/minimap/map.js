@@ -119,7 +119,7 @@ var Map = (function() {
 
         c.addEventListener("mousedown", function(e) {
             var visorTop = _self.visorTop;
-            var mouseY = _self.mousedown = e.offsetY;
+            var mouseY = _self.mousedown = e.offsetY || e.layerY;
             _self.inVisor = (visorTop + _self.visorHeight > mouseY && mouseY > visorTop);
             if (_self.inVisor)
                 _self.visorDiff = mouseY - visorTop;
@@ -127,7 +127,7 @@ var Map = (function() {
 
         c.addEventListener("mousemove", function(e) {
             if (_self.mousedown !== false && _self.inVisor) {
-                _self.visorTop = e.offsetY - _self.visorDiff;
+                _self.visorTop = (e.offsetY || e.layerY) - _self.visorDiff;
                 _self.normal = _self.getNormal();
                 _self.render(true);
             }
@@ -135,7 +135,7 @@ var Map = (function() {
 
         document.addEventListener("mouseup", function(e) {
             if (!_self.inVisor && e.target === c) {
-                _self.visorTop = e.offsetY - (_self.visorHeight / 2);
+                _self.visorTop = (e.offsetY || e.layerY) - (_self.visorHeight / 2);
                 _self.normal = _self.getNormal();
                 _self.render(true);
             }
