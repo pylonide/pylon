@@ -42,7 +42,7 @@ var version = options.version = JSON.parse(Fs.readFileSync(__dirname + "/../pack
 if (options.ip === "all" || options.ip === "0.0.0.0")
     options.ip = "";
 
-require("cloud9").main(options);
+require("../server/cloud9").main(options);
 
 Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
                           _<iIIviiiiiiiiiillli<_.\n\
