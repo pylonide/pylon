@@ -70,7 +70,8 @@ Via git (or downloaded tarball):
 
     $ git clone git://github.com/ajaxorg/cloud9.git
 
-Update submodules after cloning:
+
+Try to run Cloud9 (bin/cloud9.sh). If this throws an error update submodules after cloning:
 
     $ git submodule update --init --recursive
 
