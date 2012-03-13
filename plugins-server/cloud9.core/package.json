@@ -16,7 +16,8 @@
             "connect",
             "static",
             "client.cloud9",
-            "workspace-permissions"
+            "workspace-permissions",
+            "sandbox"
         ]
     }
 }

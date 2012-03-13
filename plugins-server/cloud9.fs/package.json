@@ -18,7 +18,8 @@
         ],
         "consumes": [
             "connect",
-            "workspace-permissions"
+            "workspace-permissions",
+            "sandbox"
         ]
     }
 }

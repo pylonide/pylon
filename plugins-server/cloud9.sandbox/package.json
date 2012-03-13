@@ -1,0 +1,13 @@
+{
+    "name": "cloud9.run.sandbox",
+    "version": "0.0.1",
+
+    "main": "./sandbox-plugin.js",
+    "private": true,
+
+    "plugin": {
+        "provides": [
+            "sandbox"
+        ]
+    }
+}

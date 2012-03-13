@@ -10,7 +10,8 @@
             "run-npm"
         ],
         "consumes": [
-            "process-manager"
+            "process-manager",
+            "sandbox"
         ]
     }
 }

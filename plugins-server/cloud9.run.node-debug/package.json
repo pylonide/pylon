@@ -14,7 +14,8 @@
             "run-node-debug"
         ],
         "consumes": [
-            "process-manager"
+            "process-manager",
+            "sandbox"
         ]
     }
 }

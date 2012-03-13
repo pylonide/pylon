@@ -43,10 +43,13 @@ module.exports = {
 
             // server plugins
             {
-                packagePath: __dirname + "/../plugins-server/cloud9.core",
+                packagePath: __dirname + "/../plugins-server/cloud9.sandbox",
                 projectDir: projectDir,
-                fsUrl: fsUrl,
                 workspaceId: "Cloud9",
+                unixId: null
+            }, {
+                packagePath: __dirname + "/../plugins-server/cloud9.core",
+                fsUrl: fsUrl,
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",
@@ -109,7 +112,6 @@ module.exports = {
                 ]
             }, {
                 packagePath: __dirname + "/../plugins-server/cloud9.fs",
-                mountDir: projectDir,
                 urlPrefix: fsUrl
             },
             __dirname + "/../plugins-server/cloud9.socket",

@@ -9,7 +9,7 @@ var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
 var exports = module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
-    pm.addRunner("node", exports.factory(options.uid));
+    pm.addRunner("node", exports.factory(imports.sandbox.getUnixId()));
 
     register(null, {
         "run-node": {}
