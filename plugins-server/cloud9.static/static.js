@@ -6,7 +6,7 @@ module.exports = function startup(options, imports, register) {
     var prefix = options.prefix || "/static";
 
     var staticServer = connect.createServer();
-    imports.connect.use(prefix, staticServer)
+    imports.connect.useStart(prefix, staticServer)
 
     register(null, {
         "static": {
@@ -26,6 +26,10 @@ module.exports = function startup(options, imports, register) {
 
             getRequireJsPaths: function() {
                 return rjs;
+            },
+
+            getStaticPrefix: function() {
+                return prefix;
             }
         }
     });

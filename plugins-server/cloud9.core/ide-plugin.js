@@ -16,6 +16,7 @@ module.exports = function setup(options, imports, register) {
     var projectDir = sandbox.getProjectDir();
     var workspaceId = sandbox.getWorkspaceId();
     var baseUrl = options.baseUrl || "";
+    var staticPrefix = imports.static.getStaticPrefix();
 
     var serverPlugins = {};
     var serverOptions = {
@@ -23,18 +24,16 @@ module.exports = function setup(options, imports, register) {
         davPrefix: baseUrl + "/workspace",
         baseUrl: baseUrl,
         debug: false,
-        staticUrl: options.staticUrl || "/static",
+        staticUrl: staticPrefix,
         workspaceId: workspaceId,
         name: options.name || workspaceId,
         version: options.version || null,
         requirejsConfig: {
-            baseUrl: "/static/",
+            baseUrl: staticPrefix,
             paths: imports.static.getRequireJsPaths()
         },
         plugins: options.clientPlugins || [],
-        bundledPlugins: [
-            "helloworld"
-        ]
+        bundledPlugins: options.bundledPlugins || []
     };
     var ide = new IdeServer(serverOptions);
 
@@ -53,7 +52,7 @@ module.exports = function setup(options, imports, register) {
 
     hub.on("containersDone", function() {
         ide.init(serverPlugins);
-        connect.use(baseUrl, function(req, res, next) {
+        connect.useAuth(baseUrl, function(req, res, next) {
             if (!req.session.uid)
                 req.session.uid = "owner_" + req.sessionID;
 
@@ -68,7 +67,7 @@ module.exports = function setup(options, imports, register) {
                 ide.addUser(req.session.uid, perm);
                 ide.handle(req, res, next);
                 pause.resume();
-            })
+            });
         });
 
         log.info("IDE server initialized");

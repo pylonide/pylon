@@ -6,7 +6,7 @@ var jsDAV = require("jsdav");
 var DavPermission = require("./dav/permission");
 var gnutools = require("gnu-tools");
 
-var exports = module.exports = function setup(options, imports, register) {
+module.exports = function setup(options, imports, register) {
 
     assert(options.urlPrefix);
 
@@ -17,7 +17,7 @@ var exports = module.exports = function setup(options, imports, register) {
         node: mountDir,
         path: mountDir,
         mount: options.urlPrefix,
-        plugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
+        plugins: options.davPlugins,
         server: {},
         standalone: false
     };
@@ -28,7 +28,7 @@ var exports = module.exports = function setup(options, imports, register) {
     davServer.plugins["filelist"].FIND_CMD = gnutools.FIND_CMD;
     davServer.plugins["permission"] = DavPermission;
 
-    imports.connect.use(function(req, res, next) {
+    imports.connect.useAuth(function(req, res, next) {
         if (req.url.indexOf(options.urlPrefix) !== 0)
             return next();
 

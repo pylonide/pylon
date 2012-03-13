@@ -10,7 +10,7 @@ module.exports = function startup(options, imports, register) {
     var connect = imports.connect;
 
     var sessionStore = new MemoryStore({ reapInterval: -1 });
-    connect.use(Session({
+    connect.useSession(Session({
         store: sessionStore,
         key: options.key,
         secret: options.secret

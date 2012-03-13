@@ -41,8 +41,7 @@ var Ide = module.exports = function(options) {
         requirejsConfig: options.requirejsConfig,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
-        extra: options.extra,
-        remote: options.remote
+        extra: options.extra
     };
 
     this.$users = {};
