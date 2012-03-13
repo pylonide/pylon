@@ -1,10 +1,10 @@
 /**
  * Editor status bar for Cloud9 IDE
- * 
+ *
  * @TODO
- * 
+ *
  * Error icon from acebugs
- * 
+ *
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -14,6 +14,7 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
+var code = require("ext/code/code");
 var markup = require("text!ext/statusbar/statusbar.xml");
 var skin = require("text!ext/statusbar/skin.xml");
 
@@ -29,7 +30,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         "media-path" : ide.staticPrefix + "/style/images/",
         "icon-path"  : ide.staticPrefix + "/style/icons/"
     },
-    expanded: false,
+    deps     : [code],
+    expanded : false,
     nodes : [],
     toolItems: [],
     prefsItems: [],
@@ -88,7 +90,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
                         if (typeof lblSelectionLength === "undefined")
                             return;
-    
+
                         var range = ceEditor.$editor.getSelectionRange();
                         if (range.start.row != range.end.row || range.start.column != range.end.column) {
                             var doc = ceEditor.getDocument();
@@ -105,7 +107,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
 
         tabEditors.addEventListener("resize", function() {
-            if (ceEditor && ceEditor.$editor) {
+            if (window.ceEditor && ceEditor.$editor) {
                 var cw = ceEditor.$editor.renderer.scroller.clientWidth;
                 var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
                 var bottom = _self.edgeDistance;

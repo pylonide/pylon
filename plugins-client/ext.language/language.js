@@ -10,13 +10,11 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
-var noderunner = require("ext/noderunner/noderunner");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
-var liveInspect = require('ext/language/liveinspect');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
@@ -30,7 +28,7 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors, noderunner, code],
+    deps    : [editors, code],
     nodes   : [],
     alone   : true,
     markup  : markup,

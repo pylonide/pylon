@@ -476,6 +476,9 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     afterswitch : function(e) {
+        if (!window.ceEditor)
+            return;
+
         var page = e.nextPage;
         var fromHandler, toHandler = ext.extLut[page.type];
 
@@ -487,7 +490,7 @@ module.exports = ext.register("ext/editors/editors", {
                 fromHandler.disable();
             toHandler.enable();
         }
-        
+
         var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
         /*if (window.history.pushState) {
             var p = location.pathname.split("/");
@@ -499,10 +502,10 @@ module.exports = ext.register("ext/editors/editors", {
         apf.history.setHash("!" + path);
 
         toHandler.$itmEditor.select();
-        
+
         var fileExtension = (path || "").split(".").pop();
-        var editor = this.fileExtensions[fileExtension] 
-          && this.fileExtensions[fileExtension][0] 
+        var editor = this.fileExtensions[fileExtension]
+          && this.fileExtensions[fileExtension][0]
           || this.fileExtensions["default"];
 
         if (!editor) {
@@ -515,7 +518,7 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!editor.inited)
             this.initEditor(editor);
-        
+
         this.currentEditor = editor;
         editor.ceEditor.focus();
 
