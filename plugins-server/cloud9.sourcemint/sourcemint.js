@@ -4,7 +4,16 @@ var path = require("path"),
 
 module.exports = function startup(options, imports, register) {
 
+    var packages = options.packages || {};
     var prefix = (options.prefix || "/static/bundles");
+
+    for (var name in packages) {
+        var route = new RegExp("^" + prefix.replace(/\//g, "\\/") + "\\/" + name + "(?:\.js)?(\\/.*)?$");
+        console.log("MINT", route, packages[name])
+        imports.connect.addRoute("get", route, bundler.hoist(packages[name], {
+            packageIdHashSeed: "c9os"
+        }));
+    };
 
     // Serve the sourcemint loader file.
     var loaderStatic = connect.static(path.dirname(require.resolve("sourcemint-loader-js/package.json")));
@@ -17,13 +26,6 @@ module.exports = function startup(options, imports, register) {
     });
 
     register(null, {
-        "sourcemint": {
-            addPackage: function(name, path) {
-                var route = new RegExp("^" + prefix.replace(/\//g, "\\/") + "\\/" + name + "(?:\.js)?(\\/.*)?$");
-                imports.connect.addRoute("get", route, bundler.hoist(path, {
-                    packageIdHashSeed: "c9os"
-                }));
-            }
-        }
+        "sourcemint": {}
     });
 };
