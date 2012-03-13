@@ -13,7 +13,8 @@ module.exports = function setup(options, imports, register) {
 
     register(null, {
         "onDestruct": function(callback) {
-            pm.destroy(callback);
+            pm.destroy();
+            callback();
         },
         "process-manager": {
             on: eventEmitter.on.bind(eventEmitter),

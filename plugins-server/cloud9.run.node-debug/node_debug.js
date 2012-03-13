@@ -11,7 +11,7 @@ var NodeDebugProxy = require("./nodedebugproxy");
 
 var exports = module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
-    pm.addRunner("node-debug", exports.factory(options.uid));
+    pm.addRunner("node-debug", exports.factory(imports.sandbox.getUnixId()));
 
     register(null, {
         "run-node-debug": {}

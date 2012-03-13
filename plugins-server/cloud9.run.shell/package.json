@@ -10,7 +10,8 @@
             "run-shell"
         ],
         "consumes": [
-            "process-manager"
+            "process-manager",
+            "sandbox"
         ]
     }
 }

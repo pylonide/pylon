@@ -10,7 +10,8 @@
             "run-node"
         ],
         "consumes": [
-            "process-manager"
+            "process-manager",
+            "sandbox"
         ]
     }
 }
