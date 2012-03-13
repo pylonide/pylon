@@ -50,6 +50,9 @@ module.exports = {
             }, {
                 packagePath: __dirname + "/../plugins-server/cloud9.core",
                 fsUrl: fsUrl,
+                bundledPlugins: [
+                    "helloworld"
+                ],
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",
