@@ -1,7 +1,7 @@
 {
     "name": "ext.helloworld",
     "version": "0.0.1",
-    "main": "helloworld-ext.js",
+    "main": "helloworld.js",
     "private": true,
     "plugin": {
         "provides": [

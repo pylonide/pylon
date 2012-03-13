@@ -94,11 +94,13 @@ var Offline = module.exports = function(namespace, detectUrl){
         //else //Else we try to go online
             //this.goOnline();
         
-        this.startDetect();
+        // NOTE: We now call [this].goOffline() and [this].goOnline() externally triggered by socket.io state.
+        // this.startDetect();
     }
     
     /**** Offline Detection ****/
-    
+// NOTE: We now call [this].goOffline() and [this].goOnline() externally triggered by socket.io state.
+/*    
     this.isSiteAvailable = function(callback){
         var _self = this;
         
@@ -120,8 +122,10 @@ var Offline = module.exports = function(namespace, detectUrl){
             hideLogMessage : true
         });
     };
-    
+*/    
     this.startDetect = function(){
+// NOTE: We now call [this].goOffline() and [this].goOnline() externally triggered by socket.io state.
+/*        
         if (this.detectErrorHandler) //Detection already started
             return;
         
@@ -145,15 +149,19 @@ var Offline = module.exports = function(namespace, detectUrl){
         this.detectTimer = setInterval(function(){
             _self.isSiteAvailable();
         }, this.interval);
+*/        
     }
     
     this.stopDetect = function(){
-        clearInterval(this.detectTimer);
+// NOTE: We now call [this].goOffline() and [this].goOnline() externally triggered by socket.io state.
+/*        
+//        clearInterval(this.detectTimer);
         apf.removeEventListener("error", this.detectErrorHandler);
         
         //#ifdef __DEBUG
         apf.console.info("Stopped automatic detection of network state");
         //#endif
+*/
     }
     
     /**** Offline State Management ****/
