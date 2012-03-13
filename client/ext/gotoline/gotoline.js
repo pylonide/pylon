@@ -39,19 +39,19 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             mnuEdit.appendChild(new apf.item({
                 caption : "Go to Line...",
                 onclick : function(){
-                    _self.gotoline(1);
+                    _self.gotoline();
                 }
             }))
         );
 
         ide.addEventListener("gotoline", function() {
-            _self.gotoline(1);
+            _self.gotoline();
         });
 
         code.commandManager.addCommand({
             name: "gotoline",
-            exec: function(editor) {
-                _self.gotoline(1);
+            exec: function() {
+                _self.gotoline();
             }
         });
 
