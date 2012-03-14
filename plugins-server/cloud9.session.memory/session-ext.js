@@ -1,5 +1,3 @@
-var Session = require("connect").session;
-var MemoryStore = Session.MemoryStore;
 var assert = require("assert");
 
 module.exports = function startup(options, imports, register) {
@@ -8,6 +6,8 @@ module.exports = function startup(options, imports, register) {
     assert(options.secret, "option 'secret' is required");
 
     var connect = imports.connect;
+    var Session = connect.getModule().session;
+    var MemoryStore = Session.MemoryStore;
 
     var sessionStore = new MemoryStore({ reapInterval: -1 });
     connect.useSession(Session({
