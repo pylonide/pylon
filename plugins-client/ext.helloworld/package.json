@@ -3,12 +3,5 @@
     "version": "0.0.1",
     "main": "helloworld.js",
     "private": true,
-    "plugin": {
-        "provides": [
-            "ext.helloworld"
-        ],
-        "consumes": [
-            "client-plugins"
-        ]
-    }
+    "bundled": true
 }
