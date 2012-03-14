@@ -99,7 +99,8 @@ module.exports = ext.register("ext/help/help", {
         
         var suffix = "";
         try {
-            var response = apf.ajax("http://c9.io/site/?json=get_tag_posts&tag_slug=changelog", {
+            var blogURL = window.location.origin + "/site/?json=get_tag_posts&tag_slug=changelog";
+            var response = apf.ajax(blogURL, {
                                method      : "GET",
                                contentType : "application/json",
                                async       : false,
@@ -109,8 +110,9 @@ module.exports = ext.register("ext/help/help", {
                                })
                            });
             if (response !== undefined) {
-                var blogJSON = JSON.parse(response);
+                var jsonBlog = JSON.parse(response);
                 var latestDate = jsonBlog.posts[0].date;
+
                 suffix =  " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")";
             } // otherwise, leave suffix off anyway
         } catch (e) {
