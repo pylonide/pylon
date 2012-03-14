@@ -8,7 +8,12 @@
         <a:hbox height="23">
             <a:label id="lblInsertActive" caption="INS" visible="false" margin="2 3 0 3" />
             <a:label id="lblSelectionLength" visible="false" margin="2 3 0 3" />
-            <a:label caption="{ceEditor.line}:{ceEditor.col}" class="lbl_row_col" margin="2 6 0 3"/>
+            <a:label
+              caption = "{ceEditor.line}:{ceEditor.col}"
+              class   = "lbl_row_col"
+              margin  = "2 6 0 3"
+              onclick = "require('core/ide').dispatchEvent('gotoline')"
+            />
             <a:divider class="divider-status-bar" width="2" height="20" margin="1 0 1 0" />
             <a:button 
               skin    = "btn-expand-statusbar" 
