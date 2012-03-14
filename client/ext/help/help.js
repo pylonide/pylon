@@ -94,8 +94,9 @@ define(function(require, exports, module) {
                 margin: "1 0 0 0"
             })), mnuWindows);
 
-            try {
+            if (window.location.origin.indexOf("127.0.0.1") < 0) {                
                 var blogURL = window.location.origin + "/site/?json=get_tag_posts&tag_slug=changelog";
+    
                 var response = apf.ajax(blogURL, {
                     method: "GET",
                     contentType: "application/json",
@@ -109,18 +110,12 @@ define(function(require, exports, module) {
                             if (data !== undefined) {
                                 var jsonBlog = JSON.parse(data);
                                 var latestDate = jsonBlog.posts[0].date;
-    
+        
                                 mnuChangelog.setAttribute("caption", mnuChangelog.caption + " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
                             }
                         }
                     }
                 });
-            }
-            catch (e) {
-                /* you're probably doing this from localhost, which won't
-               let you make a call to a different domain (c9.io); this prevents:
-               XMLHttpRequest cannot load...Origin http://127.0.0.1:3000 is 
-               not allowed by Access-Control-Allow-Origin. */
             }
         },
 
