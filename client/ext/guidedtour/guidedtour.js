@@ -116,6 +116,15 @@ var jsonTourIde = {
         pos: "right",
         time: 5
     }, {
+        before: function() {
+
+        },
+        el: undefined,
+        div: "barIdeStatus",
+        desc: "This is the status bar. It shows your current line number and column position, and clicking on it lets you modify some visual aspects, like vim mode, line margins, and beautify options.",
+        pos: "left",
+        time: 4
+    }, {
         before: function(){
             wentToZen = true;
             zen.fadeZenButtonIn();
@@ -138,9 +147,10 @@ var jsonTourIde = {
                 zen.escapeFromZenMode();
                 document.getElementsByClassName("tgDialog")[0].style.display = "";
                 require("ext/guidedtour/guidedtour").stepForward();
+                zen.fadeZenButtonOut();
+                                
                 hlElement.style.visibility = "visible";
                 winTourText.show();
-                zen.fadeZenButtonOut();
             }, 2000);
         },
         time: 4,
@@ -526,7 +536,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourButtonDone.show();
     },
     
-    // These are common o02022perations we do for step
+    // These are common operations we do for each step
     // forwards and back, so we DRY
     commonStepOps: function(step){
         function getCurrentEl(){
@@ -537,12 +547,15 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                     step.el = step.el();
                 _self.currentEl = step.el;
             }
-            // AL of these fix issues with elements not being available when this plugin loads
+            // All of these fix issues with elements not being available when this plugin loads
             else if (step.div == "ceEditor"){
                 _self.currentEl = ceEditor;
             }
             else if (step.div == "expandedDbg") {
                 _self.currentEl = expandedDbg;
+            }
+            else if (step.div == "barIdeStatus") {
+                _self.currentEl = barIdeStatus;
             }
             else if (step.div !== undefined) {
                 if (step.node !== undefined) {

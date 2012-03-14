@@ -165,6 +165,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                                 file = apf.xmldb.appendChild(node, file);
                                 trFiles.select(file);
                                 trFiles.startRename();
+                                trFiles.slideOpen(null, node, true);
                             }
                         }
 
@@ -251,28 +252,16 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         }
         ide.dispatchEvent("updatefile", {
             path: path,
+            newPath: newPath,
             filename: name && name.input,
             xmlNode: node
         });
     },
 
     beforeMove: function(parent, node, tree) {
-        var path = node.getAttribute("path"),
-            page = tabEditors.getPage(path),
-            newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
-            //webdav = this.webdav;
-
-        // Check the newpath doesn't exists first
-        // if (tree.getModel().queryNode("//node()[@path=\""+ newpath +"\"]")) {
-        //             webdav.$undoFlag = true;
-        //             util.alert("Error", "Unable to move", "Couldn't move to this "
-        //               + "destination because there's already a node with the same name", function() {
-        //                 tree.getActionTracker().undo();
-        //                 tree.enable();
-        //             });
-        //             tree.enable();
-        //             return false;
-        //         }
+        var path = node.getAttribute("path");
+        var page = tabEditors.getPage(path);
+        var newpath = parent.getAttribute("path") + "/" + node.getAttribute("name");
 
         node.setAttribute("path", newpath);
         if (page)
@@ -281,8 +270,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var childNodes = node.childNodes;
         var length = childNodes.length;
 
-        for (var i = 0; i < length; ++i)
+        for (var i = 0; i < length; ++i) {
             this.beforeMove(node, childNodes[i]);
+        }
 
         ide.dispatchEvent("updatefile", {
             path: path,
@@ -297,9 +287,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         if (page)
             tabEditors.remove(page);
 
-        davProject.remove(path, false, function() {
-//            console.log("deleted", path);
-        });
+        davProject.remove(path, false, function() {});
     },
 
     /**** Init ****/
@@ -310,21 +298,26 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         var processing = {};
         this.model.addEventListener("update", function(e){
-            //resort on move, copy, rename, add
-            if (e.action == "attribute" || e.action == "add" || e.action == "move") {
+            // Resort on move, copy, rename, add
+            if (e.action === "attribute" || e.action === "add" || e.action === "move") {
                 var xmlNode = e.xmlNode, pNode = xmlNode.parentNode;
-                if (processing[xmlNode.getAttribute("a_id")])
+                if (processing[xmlNode.getAttribute("a_id")]) {
                     return;
+                }
                 processing[xmlNode.getAttribute("a_id")] = true;
 
                 var sort = new apf.Sort();
-                sort.set({xpath: "@name", method: "filesort"});
+                sort.set({
+                    xpath: "@name",
+                    method: "filesort"
+                });
                 var nodes = sort.apply(pNode.childNodes);
 
                 for (var i = 0, l = nodes.length; i < l; i++) {
                     if (nodes[i] == xmlNode) {
-                        if (xmlNode.nextSibling != nodes[i+1])
+                        if (xmlNode.nextSibling != nodes[i+1]) {
                             apf.xmldb.appendChild(pNode, xmlNode, nodes[i+1]);
+                        }
                         break;
                     }
                 }
@@ -462,11 +455,9 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
     },
 
-    enable : function(){
-    },
+    enable : function() {},
 
-    disable : function(){
-    },
+    disable : function() {},
 
     destroy : function(){
         this.webdav.destroy(true, true);

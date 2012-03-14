@@ -9,122 +9,148 @@
 
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
-var ext = require("core/ext");
-var markup = require("text!ext/help/help.xml");
-var css = require("text!ext/help/style.css");
-var skin = require("text!ext/help/skin.xml");
+    var ide = require("core/ide");
+    var ext = require("core/ext");
+    var markup = require("text!ext/help/help.xml");
+    var css = require("text!ext/help/style.css");
+    var skin = require("text!ext/help/skin.xml");
 
-module.exports = ext.register("ext/help/help", {
-    name   : "Help Menu",
-    dev    : "Cloud9 IDE, Inc.",
-    alone  : true,
-    type   : ext.GENERAL, 
-    nodes : [],
-    markup : markup,
-    css    : css,
-    panels : {},
-    skin    : {
-        id   : "help-skin",
-        data : skin,
-        "media-path" : "/static/ext/help/images/"
-    },
-    showingAll : true,
-    
-    initPanel : function(panelExt){
-        if (panelExt.panel) {
-            return;
-        }
-        
-        ext.initExtension(panelExt);
-        this.$setEvents(panelExt);
-        
-        var set = this.$settings && this.$settings[panelExt.path];
-        if (set)
-            this.setPanelSettings(panelExt, set);
-        
-        panelExt.panel.setAttribute("draggable", "false");
-    },
-    
-    register : function(panelExt){
-        var _self = this;
-        if (!panelExt.alwayson) {
-            panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
-                caption : panelExt.name,
-                type    : "check",
-                //checked : panelExt.visible || false,
-                checked : "{panelExt.visible}",
-                onclick : function(){
-                    _self.initPanel(panelExt);
-                    this.checked ? panelExt.enable() : panelExt.disable();
+    module.exports = ext.register("ext/help/help", {
+        name: "Help Menu",
+        dev: "Cloud9 IDE, Inc.",
+        alone: true,
+        type: ext.GENERAL,
+        nodes: [],
+        markup: markup,
+        css: css,
+        panels: {},
+        skin: {
+            id: "help-skin",
+            data: skin,
+            "media-path": "/static/ext/help/images/"
+        },
+        showingAll: true,
+
+        initPanel: function(panelExt) {
+            if (panelExt.panel) {
+                return;
+            }
+
+            ext.initExtension(panelExt);
+            this.$setEvents(panelExt);
+
+            var set = this.$settings && this.$settings[panelExt.path];
+            if (set) this.setPanelSettings(panelExt, set);
+
+            panelExt.panel.setAttribute("draggable", "false");
+        },
+
+        register: function(panelExt) {
+            var _self = this;
+            if (!panelExt.alwayson) {
+                panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
+                    caption: panelExt.name,
+                    type: "check",
+                    //checked : panelExt.visible || false,
+                    checked: "{panelExt.visible}",
+                    onclick: function() {
+                        _self.initPanel(panelExt);
+                        this.checked ? panelExt.enable() : panelExt.disable();
+                    }
+                }));
+            }
+
+            if (false && this.$settings && this.$settings[panelExt.path]) {
+                this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
+            }
+            else if (panelExt.visible) {
+                if (panelExt.skin) {
+                    setTimeout(function() {
+                        this.initPanel(panelExt);
+                    });
                 }
-            }));
-        }
-        
-        if (false && this.$settings && this.$settings[panelExt.path]) {
-            this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
-        }
-        else if (panelExt.visible) {
-            if (panelExt.skin) {
-                setTimeout(function(){
+                else {
                     this.initPanel(panelExt);
+                }
+            }
+
+            this.panels[panelExt.path] = panelExt;
+        },
+
+
+        unregister: function(panelExt) {
+            panelExt.mnuItem.destroy(true, true);
+            delete this.panels[panelExt.path];
+        },
+
+        init: function(amlNode) {
+            apf.importCssString((this.css || ""));
+
+            this.nodes.push(
+            barMenu.appendChild(new apf.button({
+                submenu: "mnuHelp",
+                caption: "Help",
+                skin: "c9-menu-btn",
+                margin: "1 0 0 0"
+            })), mnuWindows);
+
+            try {
+                var blogURL = window.location.origin + "/site/?json=get_tag_posts&tag_slug=changelog";
+                var response = apf.ajax(blogURL, {
+                    method: "GET",
+                    contentType: "application/json",
+                    async: true,
+                    data: apf.serialize({
+                        agent: navigator.userAgent,
+                        type: "C9 SERVER EXCEPTION"
+                    }),
+                    callback: function( data, state) {
+                        if (state == apf.SUCCESS) {
+                            if (data !== undefined) {
+                                var jsonBlog = JSON.parse(data);
+                                var latestDate = jsonBlog.posts[0].date;
+    
+                                mnuChangelog.setAttribute("caption", mnuChangelog.caption + " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
+                            }
+                        }
+                    }
                 });
             }
-            else {
-                this.initPanel(panelExt);
+            catch (e) {
+                /* you're probably doing this from localhost, which won't
+               let you make a call to a different domain (c9.io); this prevents:
+               XMLHttpRequest cannot load...Origin http://127.0.0.1:3000 is 
+               not allowed by Access-Control-Allow-Origin. */
             }
-        }
-        
-        this.panels[panelExt.path] = panelExt;
-    },
+        },
 
-    
-    unregister : function(panelExt){
-        panelExt.mnuItem.destroy(true, true);
-        delete this.panels[panelExt.path];
-    },
-    
-    init : function(amlNode) {
-        apf.importCssString((this.css || ""));
-        
-        this.nodes.push(
-            barMenu.appendChild(new apf.button({
-                submenu : "mnuHelp",
-                caption : "Help",
-                skin    : "c9-menu-btn",
-                margin  : "1 0 0 0"
-            })),
-            mnuWindows
-        );
-    },
-    
-    showAbout : function() {
-        aboutDialog.show();
-        document.getElementById("c9Version").innerHTML = "Version " + window.cloud9config.version;
-    },
-    
-    launchTwitter : function() {
-        alert("Let's go to Twitter!");
-    },
-    
-    enable : function(){
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-    
-    disable : function(){
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-    
-    destroy : function(){
-        this.nodes.each(function(item){
-            item.destroy(true, true);
-        });
-        this.nodes = [];
-    }
-});
+        showAbout: function() {
+            aboutDialog.show();
+            document.getElementById("c9Version").innerHTML = "Version " + window.cloud9config.version;
+        },
+
+        launchTwitter: function() {
+            alert("Let's go to Twitter!");
+        },
+
+        enable: function() {
+            this.nodes.each(function(item) {
+                item.enable();
+            });
+        },
+
+        disable: function() {
+            this.nodes.each(function(item) {
+                item.disable();
+            });
+        },
+
+        destroy: function() {
+            this.nodes.each(function(item) {
+                item.destroy(true, true);
+            });
+            this.nodes = [];
+        }
+    });
 
 });

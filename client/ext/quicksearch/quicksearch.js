@@ -22,11 +22,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    skin     : {
-        id   : "quicksearch",
-        data : skin,
-        "icon-path" : ide.staticPrefix + "/ext/quicksearch/icons/"
-    },
+    skin    : {
+        id  : "quicksearch",
+        data : skin,
+        "icon-path" : ide.staticPrefix + "/ext/quicksearch/icons/"
+    },
     markup  : markup,
     commands : {
         "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},
@@ -40,6 +40,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             msg: "Navigating to previous match."
         }
     },
+    defaultOffset : 30,
+    offsetWidth : 30,
     hotitems: {},
 
     nodes   : [],
@@ -53,6 +55,15 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             exec: function(env, args, request) {
                 _self.toggleDialog(1);
             }
+        });
+
+        ide.addEventListener("minimap.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateBarPosition();
         });
     },
 
@@ -100,6 +111,17 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(winQuickSearch);
+            
+        setTimeout(function() {
+            _self.updateBarPosition();
+        });
+    },
+
+    updateBarPosition : function() {
+        if (!window["winQuickSearch"])
+            return;
+
+        winQuickSearch.setAttribute("right", this.offsetWidth);
     },
 
     navigateList : function(type){
@@ -154,8 +176,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (oIter.parentNode && txtQuickSearch && txtQuickSearch.$button) {
                 width = oIter.parentNode.offsetWidth || 0;
                 txtQuickSearch.$button.style.right = width + "px";
-                buttonWidth = txtQuickSearch.$button.offsetWidth || 0;
-                txtQuickSearch.$input.parentNode.style.paddingRight = (width + buttonWidth + 10) + "px";
             }
         });
 
