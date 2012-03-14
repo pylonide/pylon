@@ -94,7 +94,6 @@ define(function(require, exports, module) {
                 margin: "1 0 0 0"
             })), mnuWindows);
 
-            var suffix = "";
             try {
                 var blogURL = window.location.origin + "/site/?json=get_tag_posts&tag_slug=changelog";
                 var response = apf.ajax(blogURL, {
@@ -108,10 +107,10 @@ define(function(require, exports, module) {
                     callback: function( data, state) {
                         if (state == apf.SUCCESS) {
                             if (data !== undefined) {
-                                var jsonBlog = JSON.parse(response);
+                                var jsonBlog = JSON.parse(data);
                                 var latestDate = jsonBlog.posts[0].date;
     
-                                suffix = " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")";
+                                mnuChangelog.setAttribute("caption", mnuChangelog.caption + " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
                             }
                         }
                     }
@@ -123,8 +122,6 @@ define(function(require, exports, module) {
                XMLHttpRequest cannot load...Origin http://127.0.0.1:3000 is 
                not allowed by Access-Control-Allow-Origin. */
             }
-
-            mnuChangelog.setAttribute("caption", mnuChangelog.caption + suffix);
         },
 
         showAbout: function() {
