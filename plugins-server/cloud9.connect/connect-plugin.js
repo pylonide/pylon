@@ -13,7 +13,11 @@ module.exports = function startup(options, imports, register) {
         "Auth",
         "Error"
     ];
-    var api = {};
+    var api = {
+        getModule: function() {
+            return connect;
+        }
+    };
     hookNames.forEach(function(name) {
         var hookServer = connect();
         server.use(hookServer);
