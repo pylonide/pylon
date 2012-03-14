@@ -33,7 +33,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     NODE_VERSION: "auto",
 
-    init : function(amlNode){
+    init : function(){
         var _self = this;
         ide.addEventListener("socketDisconnect", this.onDisconnect.bind(this));
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
@@ -62,7 +62,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         ide.addEventListener("loadsettings", function(e){
             _self.NODE_VERSION = e.model.queryValue("auto/node-version/@version") || "auto";
         });
-        //require('ext/settings/settings').model
     },
 
     $onDebugProcessActivate : function() {
@@ -103,7 +102,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 break;
 
             case "state":
-
                 stDebugProcessRunning.setProperty("active", message.debugClient || message.nodeDebugClient);
                 stProcessRunning.setProperty("active", message.processRunning || message.nodeProcessRunning || message.pythonProcessRunning);
                 dbgNode.setProperty("strip", message.workspaceDir + "/");
