@@ -26,7 +26,8 @@ module.exports = {
                 host: "localhost"
             }, {
                 packagePath: __dirname + "/../plugins-server/cloud9.sourcemint",
-                prefix: "/static/bundles"
+                prefix: "/static/bundles",
+                plugins: clientExtensions
             }, {
                 packagePath: __dirname + "/../plugins-server/cloud9.static",
                 prefix: "/static"
@@ -126,10 +127,7 @@ module.exports = {
             __dirname + "/../plugins-server/cloud9.permissions",
             {
                 packagePath: __dirname + "/../plugins-server/cloud9.client-plugins",
-                plugins: clientExtensions,
-                bundles: {
-                    "helloworld": __dirname + "/../plugins-client/ext.helloworld"
-                }
+                plugins: clientExtensions
             },
             __dirname + "/../plugins-server/cloud9.process-manager",
             __dirname + "/../plugins-server/cloud9.run.shell",
