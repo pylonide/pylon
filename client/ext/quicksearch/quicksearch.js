@@ -154,8 +154,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (oIter.parentNode && txtQuickSearch && txtQuickSearch.$button) {
                 width = oIter.parentNode.offsetWidth || 0;
                 txtQuickSearch.$button.style.right = width + "px";
-                buttonWidth = txtQuickSearch.$button.offsetWidth || 0;
-                txtQuickSearch.$input.parentNode.style.paddingRight = (width + buttonWidth + 10) + "px";
             }
         });
 
