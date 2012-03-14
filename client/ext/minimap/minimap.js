@@ -11,6 +11,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var Map = require("ext/minimap/map");
+var css = require("text!ext/minimap/style.css");
 
 return module.exports = ext.register("ext/minimap/minimap", {
     name  : "Minimap",
@@ -24,6 +25,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
     },
     nodes   : [],
     deps    : [editors],
+    css     : css,
     map_width : 165,
     map_enabled : false,
 
@@ -55,6 +57,8 @@ return module.exports = ext.register("ext/minimap/minimap", {
     init : function() {
         var _self = this;
 
+        apf.importCssString((this.css || ""));
+
         this.editor = ceEditor.$editor;
         this.panel = ceEditor.parentNode.appendChild(new apf.bar({
             id : "minimapPanel",
@@ -67,7 +71,10 @@ return module.exports = ext.register("ext/minimap/minimap", {
         this.panel.$ext.style.webkitTextSizeAdjust = "none";
         this.canvas = document.createElement("canvas");
         this.panel.$ext.appendChild(this.canvas);
-        this.map = new Map(this.editor, this.canvas);
+        this.visor = document.createElement("div");
+        this.visor.setAttribute("id", "minimapVisor");
+        this.panel.$ext.appendChild(this.visor);
+        this.map = new Map(this.editor, this.canvas, this.visor);
 
         tabPlaceholder.addEventListener("resize", function() {
             if (_self.panel.visible)

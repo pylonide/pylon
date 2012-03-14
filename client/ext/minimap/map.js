@@ -18,13 +18,6 @@ var LINE_HEIGHT = 4;
 var MARGIN_RIGHT = 2;
 
 var Map = (function() {
-    Map.createVisor = function(w, h) {
-        var visor = Map.createCanvas(w, h);
-        visor.ctx.fillStyle = "rgba(250, 250, 250, 0.2)";
-        visor.ctx.fillRect(0, 0, w, h);
-        return visor;
-    };
-
     Map.createCanvas = function(w, h) {
         var canvas = document.createElement("canvas");
         canvas.width = w;
@@ -63,7 +56,7 @@ var Map = (function() {
     };
 
     Map.prototype.refreshVisor = function(y) {
-        this.ctx.drawImage(this.visor.canvas, 0, y);
+        this.visor.style.top = y + "px";
     };
 
     Map.prototype.resize = function(w, h) {
@@ -75,7 +68,8 @@ var Map = (function() {
         }
         this.visibleLines = this.ace.$getVisibleRowCount();
         this.visorHeight = Map.toHeight(this.visibleLines);
-        this.visor = Map.createVisor(this.c.width, this.visorHeight);
+        this.visor.style.width = this.c.width + "px";
+        this.visor.style.height = this.visorHeight + "px";
         this.render();
     };
 
@@ -98,10 +92,11 @@ var Map = (function() {
         }
     };
 
-    function Map(ace, c) {
+    function Map(ace, c, visor) {
         var _self = this;
         this.ace = ace;
         this.c = c;
+        this.visor = visor;
         this.visibleLines = this.ace.$getVisibleRowCount();
         this.visorHeight = Map.toHeight(this.visibleLines);
         this.ctx = c.getContext("2d");
@@ -117,17 +112,16 @@ var Map = (function() {
 
         var session = this.ace.getSession();
 
-        c.addEventListener("mousedown", function(e) {
-            var visorTop = _self.visorTop;
-            var mouseY = _self.mousedown = e.offsetY || e.layerY;
-            _self.inVisor = (visorTop + _self.visorHeight > mouseY && mouseY > visorTop);
-            if (_self.inVisor)
-                _self.visorDiff = mouseY - visorTop;
+        visor.addEventListener("mousedown", function(e) {
+            _self.inVisor = true;
+            _self.visorDiff = e.offsetY || e.layerY;
+            _self.mousedown = _self.visorDiff + _self.visorTop;
+            _self.containerTop = apf.getAbsolutePosition(_self.c)[1];
         }, false);
 
-        c.addEventListener("mousemove", function(e) {
-            if (_self.mousedown !== false && _self.inVisor) {
-                _self.visorTop = (e.offsetY || e.layerY) - _self.visorDiff;
+        document.addEventListener("mousemove", function(e) {
+            if (_self.inVisor && _self.mousedown !== false) {
+                _self.visorTop = (e.pageY - _self.containerTop) - _self.visorDiff;
                 _self.normal = _self.getNormal();
                 _self.render(true);
             }
@@ -142,7 +136,6 @@ var Map = (function() {
             _self.mousedown = _self.inVisor = false;
         }, false);
 
-        this.visor = Map.createVisor(this.c.width, this.visorHeight);
         this.updateSource(session);
     }
 
