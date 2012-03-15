@@ -14,10 +14,12 @@ module.exports = function(lineBuffer) {
             argv[cursor] = "";
 
         if (/["'`]/.test(ch)) {
-            argv[cursor] += ch;
             if (currentQuote.length) {
                 if (currentQuote === ch)
                     currentQuote = "";
+                else {
+                    argv[cursor] += ch;
+                }
             }
             else {
                 currentQuote = ch;

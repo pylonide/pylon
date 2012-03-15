@@ -65,9 +65,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         
         var _self = this;
         
+<<<<<<< HEAD
         this.txtFind.$ext.cols = this.txtFind.cols;
         
         winSearchInFiles.onclose = function() {
+=======
+        winSearchInFiles.onhide = function() {
+>>>>>>> master
             ceEditor.focus();
             trFiles.removeEventListener("afterselect", _self.setSearchSelection);
         };

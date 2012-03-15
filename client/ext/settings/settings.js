@@ -99,8 +99,8 @@ module.exports = ext.register("ext/settings/settings", {
         this.nodes.push(winSettings);
     },
 
-    showsettings: function(e){
-        panels.initPanel(this);
+    showsettings: function(e) {
+        panels.activate(this);
         this.enable();
         return false;
     },

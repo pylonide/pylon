@@ -145,7 +145,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabsessions/tabsessions",
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker"
+    "ext/colorpicker/colorpicker",
+    "ext/minimap/minimap"
     //"ext/acebugs/acebugs"
 ];
 
