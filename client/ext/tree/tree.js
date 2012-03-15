@@ -31,6 +31,7 @@ module.exports = ext.register("ext/tree/tree", {
     deps             : [fs],
 
     currentSettings  : [],
+    loadedSettings   : 0,
     expandedList     : {},
     treeSelection    : { path : null, type : null },
     loading          : false,
@@ -57,21 +58,12 @@ module.exports = ext.register("ext/tree/tree", {
          */
         ide.addEventListener("init.ext/filesystem/filesystem", function(e) {
             _self.model = e.ext.model;
-            trFiles.setAttribute("model", e.ext.model);
 
-            // currentSettings is set after "loadsettings" is dispatched.
+            // loadedSettings is set after "loadsettings" is dispatched.
             // Thus if we have our model setup and we have the cached expanded
             // folders, then we can load the project tree
-            if (_self.currentSettings.length >= 1) {
-                // If we do not setTimeout for some irregularly long amount of
-                // time then the file tree is not fully set up to handle the
-                // operations we do in loadProjectTree. I do not know of a proper
-                // way to overcome this hack (it's not as simple as waiting for
-                // the tree to be initialized (i.e. after this.init() has finished)
-                setTimeout(function() {
-                    _self.loadProjectTree();
-                }, 1000);
-            }
+            if (_self.loadedSettings > 0 && _self.inited)
+                _self.onReady();
         });
 
         ide.addEventListener("loadsettings", function(e){
@@ -96,22 +88,17 @@ module.exports = ext.register("ext/tree/tree", {
                     _self.treeSelection.type = model.queryValue('auto/tree_selection/@type');
                 }
 
+                _self.loadedSettings = 1;
+
                 // Please see note above about waiting for both the model and
                 // the settings to be loaded before loading the project tree
-                if (_self.model) {
-                    setTimeout(function() {
-                        _self.loadProjectTree();
-                    }, 1000);
-                }
+                if (_self.model && _self.inited)
+                    _self.onReady();
             }
             else {
-                // If no settings were found, then we set the "get" attribute of
-                // the AML insert rule for the tree and expand the root. The
-                // "get" attr is originally empty by default so when we run
-                // this.loadProjectTree() the tree itself doesn't try to duplicate
-                // our actions
-                trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
-                trFiles.expandAll();
+                _self.loadedSettings = 2;
+                if (_self.model && _self.inited)
+                    _self.onReady();
             }
         });
 
@@ -184,6 +171,28 @@ module.exports = ext.register("ext/tree/tree", {
                 trFiles.add(xmlNode, parent);
             }
         });
+        
+        ext.initExtension(this);
+    },
+
+    onReady : function() {
+        var _self = this;
+        trFiles.setAttribute("model", this.model);
+        if(this.loadedSettings === 1) {
+            setTimeout(function() {
+                _self.loadProjectTree();
+            }, 1000);
+        }
+
+        // If no settings were found, then we set the "get" attribute of
+        // the AML insert rule for the tree and expand the root. The
+        // "get" attr is originally empty by default so when we run
+        // this.loadProjectTree() the tree itself doesn't try to duplicate
+        // our actions
+        else {
+            trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+            trFiles.expandAll();
+        }
     },
 
     init : function() {
@@ -215,6 +224,9 @@ module.exports = ext.register("ext/tree/tree", {
         }));
 
         this.setupTreeListeners();
+
+        if (_self.loadedSettings > 0 && _self.model)
+            _self.onReady();
     },
 
     /**
