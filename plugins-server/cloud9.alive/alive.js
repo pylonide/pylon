@@ -1,8 +1,7 @@
-var connect = require("connect");
 
 module.exports = function setup(options, imports, register) {
 
-    imports.connect.useStart(connect.router(function(app) {
+    imports.connect.useStart(imports.connect.getModule().router(function(app) {
         app.get(/^\/alive$/, function(req, res) {
 
             // TODO: Perform internal check to verify that process is still operating properly.
@@ -10,6 +9,6 @@ module.exports = function setup(options, imports, register) {
             res.end("OK");
         });
     }));
-
+    
     register(null, {});
 };

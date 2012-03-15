@@ -26,7 +26,8 @@ module.exports = {
                 host: "localhost"
             }, {
                 packagePath: __dirname + "/../plugins-server/cloud9.sourcemint",
-                prefix: "/static/bundles"
+                prefix: "/static/bundles",
+                plugins: clientExtensions
             }, {
                 packagePath: __dirname + "/../plugins-server/cloud9.static",
                 prefix: "/static"
@@ -118,19 +119,18 @@ module.exports = {
                 urlPrefix: fsUrl
             },
             __dirname + "/../plugins-server/cloud9.socket",
-            __dirname + "/../plugins-server/cloud9.session.memory",
             {
                 packagePath: __dirname + "/../plugins-server/cloud9.session",
                 key: "cloud9.sid",
                 secret: "1234"
+            }, {
+                packagePath: __dirname + "/../plugins-server/cloud9.session.file",
+                sessionsPath: __dirname + "/../.architect/sessions"
             },
-            __dirname + "/../plugins-server/cloud9.permissions",
+             __dirname + "/../plugins-server/cloud9.permissions",
             {
                 packagePath: __dirname + "/../plugins-server/cloud9.client-plugins",
-                plugins: clientExtensions,
-                bundles: {
-                    "helloworld": __dirname + "/../plugins-client/ext.helloworld"
-                }
+                plugins: clientExtensions
             },
             __dirname + "/../plugins-server/cloud9.process-manager",
             __dirname + "/../plugins-server/cloud9.run.shell",
