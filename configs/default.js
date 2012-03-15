@@ -132,6 +132,7 @@ module.exports = {
                 packagePath: __dirname + "/../plugins-server/cloud9.client-plugins",
                 plugins: clientExtensions
             },
+            __dirname + "/../plugins-server/cloud9.eventbus",
             __dirname + "/../plugins-server/cloud9.process-manager",
             __dirname + "/../plugins-server/cloud9.run.shell",
             __dirname + "/../plugins-server/cloud9.run.node",
