@@ -17,39 +17,39 @@ var fsUrl = "/workspace";
 module.exports = {
     name: "Cloud9",
     tmpdir: __dirname + "/../.architect",
+    basePath: __dirname + "/../plugins-server",
     containers: {
         master: {
             title: "Cloud9",
             plugins: [{
-                packagePath: __dirname + "/../plugins-server/cloud9.connect",
+                packagePath: "./cloud9.connect",
                 port: process.env.PORT || 3131,
                 host: "localhost"
             }, {
-                packagePath: __dirname + "/../plugins-server/cloud9.sourcemint",
+                packagePath: "./cloud9.sourcemint",
                 prefix: "/static/bundles",
                 plugins: clientExtensions
             }, {
-                packagePath: __dirname + "/../plugins-server/cloud9.static",
+                packagePath: "./cloud9.static",
                 prefix: "/static"
             },
-            __dirname + "/../plugins-server/cloud9.alive",
-
+            "./cloud9.alive",
 
             // Client libraries
-            __dirname + "/../plugins-client/cloud9.core",
-            __dirname + "/../plugins-client/lib.ace",
-            __dirname + "/../plugins-client/lib.apf",
-            __dirname + "/../plugins-client/lib.treehugger",
-            __dirname + "/../plugins-client/lib.v8debug",
+            "./../plugins-client/cloud9.core",
+            "./../plugins-client/lib.ace",
+            "./../plugins-client/lib.apf",
+            "./../plugins-client/lib.treehugger",
+            "./../plugins-client/lib.v8debug",
 
             // server plugins
             {
-                packagePath: __dirname + "/../plugins-server/cloud9.sandbox",
+                packagePath: "./cloud9.sandbox",
                 projectDir: projectDir,
                 workspaceId: "Cloud9",
                 unixId: null
             }, {
-                packagePath: __dirname + "/../plugins-server/cloud9.core",
+                packagePath: "./cloud9.core",
                 fsUrl: fsUrl,
                 bundledPlugins: [
                     "helloworld"
@@ -115,42 +115,42 @@ module.exports = {
                     //"ext/acebugs/acebugs"
                 ]
             }, {
-                packagePath: __dirname + "/../plugins-server/cloud9.fs",
+                packagePath: "./cloud9.fs",
                 urlPrefix: fsUrl
             },
-            __dirname + "/../plugins-server/cloud9.socket",
+            "./cloud9.socket",
             {
-                packagePath: __dirname + "/../plugins-server/cloud9.session",
+                packagePath: "./cloud9.session",
                 key: "cloud9.sid",
                 secret: "1234"
             }, {
-                packagePath: __dirname + "/../plugins-server/cloud9.session.file",
+                packagePath: "./cloud9.session.file",
                 sessionsPath: __dirname + "/../.architect/sessions"
             },
-             __dirname + "/../plugins-server/cloud9.permissions",
+             "./cloud9.permissions",
             {
-                packagePath: __dirname + "/../plugins-server/cloud9.client-plugins",
+                packagePath: "./cloud9.client-plugins",
                 plugins: clientExtensions
             },
-            __dirname + "/../plugins-server/cloud9.eventbus",
-            __dirname + "/../plugins-server/cloud9.process-manager",
-            __dirname + "/../plugins-server/cloud9.run.shell",
-            __dirname + "/../plugins-server/cloud9.run.node",
-            __dirname + "/../plugins-server/cloud9.run.node-debug",
-            __dirname + "/../plugins-server/cloud9.run.npm",
-            __dirname + "/../plugins-server/cloud9.log",
-            __dirname + "/../plugins-server/cloud9.ide.auth",
-            __dirname + "/../plugins-server/cloud9.ide.blame",
-            __dirname + "/../plugins-server/cloud9.ide.git",
-            __dirname + "/../plugins-server/cloud9.ide.gittools",
-            __dirname + "/../plugins-server/cloud9.ide.hg",
-            __dirname + "/../plugins-server/cloud9.ide.npm",
-            __dirname + "/../plugins-server/cloud9.ide.run-node",
-            __dirname + "/../plugins-server/cloud9.ide.run-python",
-            __dirname + "/../plugins-server/cloud9.ide.settings",
-            __dirname + "/../plugins-server/cloud9.ide.shell",
-            __dirname + "/../plugins-server/cloud9.ide.state",
-            __dirname + "/../plugins-server/cloud9.ide.watcher"
+            "./cloud9.eventbus",
+            "./cloud9.process-manager",
+            "./cloud9.run.shell",
+            "./cloud9.run.node",
+            "./cloud9.run.node-debug",
+            "./cloud9.run.npm",
+            "./cloud9.log",
+            "./cloud9.ide.auth",
+            "./cloud9.ide.blame",
+            "./cloud9.ide.git",
+            "./cloud9.ide.gittools",
+            "./cloud9.ide.hg",
+            "./cloud9.ide.npm",
+            "./cloud9.ide.run-node",
+            "./cloud9.ide.run-python",
+            "./cloud9.ide.settings",
+            "./cloud9.ide.shell",
+            "./cloud9.ide.state",
+            "./cloud9.ide.watcher"
             ]
         }
     }
