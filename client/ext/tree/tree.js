@@ -171,6 +171,8 @@ module.exports = ext.register("ext/tree/tree", {
                 trFiles.add(xmlNode, parent);
             }
         });
+        
+        ext.initExtension(this);
     },
 
     onReady : function() {
