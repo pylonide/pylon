@@ -41,7 +41,7 @@
           flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
+                <a:insert match="[folder]" get="" id="trFilesInsertRule" />
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                 <a:icon match="[folder|project]" value="folder.png" />
                 <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
