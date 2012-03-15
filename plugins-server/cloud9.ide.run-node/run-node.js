@@ -10,15 +10,18 @@ var util = require("util");
 
 var name = "node-runtime";
 var ProcessManager;
+var EventBus;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
+    EventBus = imports.eventbus;
     imports.ide.register(name, NodeRuntimePlugin, register);
 };
 
 var NodeRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
     this.pm = ProcessManager;
+    this.eventbus = EventBus;
     this.workspace = workspace;
     this.workspaceId = workspace.workspaceId;
 
@@ -34,7 +37,7 @@ util.inherits(NodeRuntimePlugin, Plugin);
 
     this.init = function() {
         var self = this;
-        this.pm.on(this.channel, function(msg) {
+        this.eventbus.on(this.channel, function(msg) {
             msg.type = msg.type.replace(/^node-debug-(start|data|exit)$/, "node-$1");
             var type = msg.type;
 

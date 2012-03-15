@@ -3,8 +3,7 @@ var IO = require("socket.io");
 module.exports = function setup(options, imports, register) {
 
     var ide = imports.ide.getServer();
-    var session = imports.session;
-    console.log("SESSION", session)
+    var sessionStore = imports["session-store"];
 
     var socketIo = IO.listen(imports.http.getServer());
     socketIo.enable("browser client minification");
@@ -25,7 +24,7 @@ module.exports = function setup(options, imports, register) {
                 }
             }
             if (message.command === "attach") {
-                session.get(message.sessionId, function(err, session) {
+                sessionStore.get(message.sessionId, function(err, session) {
                     if (err || !session || !session.uid)
                         return;
 

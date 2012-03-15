@@ -9,7 +9,8 @@
         "consumes": [
             "ide",
             "process-manager",
-            "run-npm"
+            "run-npm",
+            "eventbus"
         ]
     }
 }

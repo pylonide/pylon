@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.session.memory",
+    "name": "cloud9.session",
     "version": "0.0.1",
     "main": "session-ext.js",
     "private": true,
@@ -9,7 +9,10 @@
     },
 
     "plugin": {
-        "provides": ["session-store"],
-        "consumes": []
+        "provides": ["session"],
+        "consumes": [
+            "connect",
+            "session-store"
+        ]
     }
 }

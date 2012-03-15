@@ -13,7 +13,7 @@
         "consumes": [
             "http",
             "ide",
-            "session"
+            "session-store"
         ]
     }
 }

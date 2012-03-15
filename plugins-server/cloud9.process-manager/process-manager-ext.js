@@ -8,7 +8,7 @@ module.exports = function setup(options, imports, register) {
 
     var runners = {};
 
-    var eventEmitter = new EventEmitter();
+    var eventEmitter = imports.eventbus;
     var pm = new ProcessManager(runners, eventEmitter);
 
     register(null, {
@@ -17,7 +17,6 @@ module.exports = function setup(options, imports, register) {
             callback();
         },
         "process-manager": {
-            on: eventEmitter.on.bind(eventEmitter),
             ps: function(callback) {
                 callback(null, pm.ps());
             },
