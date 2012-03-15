@@ -291,6 +291,18 @@ module.exports = ext.register("ext/console/console", {
 
         return "[" + u + "@cloud9]:" + this.$cwd + "$" + ((" " + suffix) || "");
     },
+    
+    hook: function() {
+        var _self = this;
+        // Listen for new extension registrations to add to the
+        // hints
+        ide.addEventListener("ext.register", function(e){
+            if (e.ext.commands)
+                apf.extend(_self.allCommands, e.ext.commands);
+        });
+
+        ext.initExtension(this);
+    },
 
     init: function(amlNode){
         var _self = this;
