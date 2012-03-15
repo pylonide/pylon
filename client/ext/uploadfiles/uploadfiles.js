@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var css = require("text!ext/uploadfiles/uploadfiles.css");
 var markup = require("text!ext/uploadfiles/uploadfiles.xml");
 var fs   = require("ext/filesystem/filesystem");
 
@@ -17,6 +18,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     name        : "Upload Files",
     alone       : true,
     type        : ext.GENERAL,
+    css         : css,
     markup      : markup,
     deps        : [],
     offline     : false,
@@ -26,7 +28,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
     init : function(){
         var _self = this;
-
+        apf.importCssString(_self.css);
+        
         this.nodes.push(
             ide.mnuFile.appendChild(new apf.item({
                 caption : "Upload Files",
@@ -48,6 +51,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             }*/
             _self.startUpload(files);
         };
+        
+        vboxTreeContainer.appendChild(boxUploadActivity);
+        //trFiles.setAttribute("anchors", "0 0 " + lstUploadActivity.$ext.offsetHeight + " 0");
         
     },
 

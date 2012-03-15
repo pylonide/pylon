@@ -1,0 +1,25 @@
+.uploadactivity-header {
+    font-family: Arial;
+    font-size: 11px;
+    color: #606060;
+    text-shadow: #ffffff 0 1px 0;
+    line-height: 37px;
+    font-weight: bold;
+    text-indent: 10px;
+    height: 30px;
+    width: 100%;
+    background: url(/static/ext/uploadfiles/style/images/list_uploadactivity_header_bg.png) no-repeat 0 0;
+    background-size: 100% 30px;
+}
+
+.uploadDropArea {
+    height: 158px;
+    width: 335px;
+    background: url(/static/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 0;
+}
+
+.uploadText {
+    height: 41px;
+    width: 245px;
+    background: url(/static/ext/uploadfiles/style/images/dragdrop-here-text.png) no-repeat 0 0;
+}
