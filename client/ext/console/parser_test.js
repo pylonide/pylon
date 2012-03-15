@@ -20,7 +20,7 @@ define(function(require, exports, module) {
             next();
         },
         "test quoted cli": function(next) {
-            var expected = ["this", "\"is\"", "'a'", "`test`"];
+            var expected = ["this", "is", "a", "test"];
             assert.equal(parseLine("this \"is\" 'a' `test`").toString(), expected.toString());
             next();
         },
@@ -30,7 +30,7 @@ define(function(require, exports, module) {
             next();
         },
         "test quoted spaces cli": function(next) {
-            var expected = ["this", "\"is\"", "'a really awesome'", "`test`"];
+            var expected = ["this", "is", "a really awesome", "test"];
             assert.equal(parseLine("this \"is\" 'a really awesome' `test`").toString(), expected.toString());
             next();
         }

@@ -2896,7 +2896,7 @@ this.$actions=false;this.$startAction=function(name,xmlContext,fRollback){if(thi
 };this.$executeAction=function(atAction,args,action,xmlNode,noevent,contextNode,multiple){var rule=this.$actions&&this.$actions.getRule(action,xmlNode);
 if(!rule&&this.$actions&&apf.config.autoDisableActions&&"action|change".indexOf(action)==-1){apf.console.warn("Could not execute action '"+action+"'.               No valid action rule was found and auto-disable-actions is enabled");
 return false;}var newMultiple;if(multiple){newMultiple=[];for(var k=multiple.length-1;
-k>=0;k--){newMultiple.unshift({xmlActionNode:rule&&rule[4],amlNode:this,selNode:multiple[k],xmlNode:multiple[k]});
+k>=0;k--){newMultiple.unshift({xmlActionNode:rule,amlNode:this,selNode:multiple[k],xmlNode:multiple[k]});
 }}var ev=new apf.AmlEvent("before"+action.toLowerCase(),{action:atAction,args:args,xmlActionNode:rule,amlNode:this,selNode:contextNode,multiple:newMultiple||false});
 if(!noevent){if(this.dispatchEvent(ev.name,null,ev)===false){return false;}delete ev.currentTarget;
 }var at=this.getActionTracker();if(!at){return UndoObj;}var UndoObj=at.execute(ev);
