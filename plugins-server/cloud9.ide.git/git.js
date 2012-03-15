@@ -7,9 +7,11 @@ var c9util = require("../cloud9.core/util");
 
 var name = "git";
 var ProcessManager;
+var EventBus;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
+    EventBus = imports.eventbus;
     imports.ide.register(name, GitPlugin, register);
 };
 
@@ -17,6 +19,7 @@ var GitPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
     this.pm = ProcessManager;
+    this.eventbus = EventBus;
     this.workspaceId = workspace.workspaceId;
     this.channel = this.workspaceId + "::git";
 
@@ -36,7 +39,7 @@ util.inherits(GitPlugin, Plugin);
 
     this.init = function() {
         var self = this;
-        this.pm.on(this.channel, function(msg) {
+        this.eventbus.on(this.channel, function(msg) {
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
     };

@@ -8,9 +8,7 @@
     },
 
     "plugin": {
-        "provides": ["session"],
-        "consumes": [
-            "connect"
-        ]
+        "provides": ["session-store"],
+        "consumes": []
     }
 }

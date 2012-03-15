@@ -11,6 +11,9 @@
     "plugin": {
         "provides": [
             "process-manager"
+        ],
+        "consumes": [
+            "eventbus"
         ]
     }
 }

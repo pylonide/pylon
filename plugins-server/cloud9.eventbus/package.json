@@ -1,0 +1,13 @@
+{
+    "name": "cloud9.eventbus",
+    "version": "0.0.1",
+
+    "main": "./eventbus-plugin.js",
+    "private": true,
+
+    "plugin": {
+        "provides": [
+            "eventbus"
+        ]
+    }
+}

@@ -7,9 +7,11 @@ var c9util = require("../cloud9.core/util");
 
 var name = "npm";
 var ProcessManager;
+var EventBus;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
+    EventBus = imports.eventbus;
     imports.ide.register(name, NpmPlugin, register);
 };
 
@@ -17,6 +19,7 @@ var NpmPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
     this.pm = ProcessManager;
+    this.eventbus = EventBus;
     this.workspaceId = workspace.workspaceId;
     this.hooks = ["command"];
     this.name = name;
@@ -28,7 +31,7 @@ util.inherits(NpmPlugin, Plugin);
 
     this.init = function() {
         var self = this;
-        this.pm.on(this.workspaceId + "::npm", function(msg) {
+        this.eventbus.on(this.workspaceId + "::npm", function(msg) {
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
     };
