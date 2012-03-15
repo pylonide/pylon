@@ -20,8 +20,7 @@ module.exports = function startup(options, imports, register) {
 
     var sessionStore = new FileStore({
         basePath: options.sessionsPath,
-        // TODO: Implement session cleanup.
-        reapInterval: -1
+        reapInterval: 60 * 60 * 1000    // 1 hour
     });
     connect.useSession(Session({
         store: sessionStore,
@@ -39,8 +38,36 @@ module.exports = function startup(options, imports, register) {
 
 
 var FileStore = function(options) {
-  this.basePath = options.basePath;
-  this.reapInterval = options.reapInterval || -1;
+    var self = this;
+    self.basePath = options.basePath;
+    self.reapInterval = options.reapInterval || -1;
+    if (self.reapInterval > 0) {
+        setInterval(function() {
+            fs.readdir(self.basePath, function(err, files) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                files.forEach(function(file) {
+                    fs.readFile(self.basePath + "/" + file, function(err, data) {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        var sess = JSON.parse(data);
+                        var expires = (typeof sess.cookie.expires === 'string')
+                            ? new Date(sess.cookie.expires)
+                            : sess.cookie.expires;
+                        if (!expires || new Date < expires) {
+                            // session ok
+                        } else {
+                            self.destroy(file);
+                        }                      
+                    });
+                });
+            });
+        }, self.reapInterval);
+    }
 };
 FileStore.prototype.__proto__ = Store.prototype;
 FileStore.prototype.get = function(sid, fn){
@@ -98,15 +125,19 @@ FileStore.prototype.destroy = function(sid, fn){
   });
 };
 FileStore.prototype.all = function(fn){
-    throw new Error("NYI");
-/*        
-  var arr = []
-    , keys = Object.keys(this.sessions);
-  for (var i = 0, len = keys.length; i < len; ++i) {
-    arr.push(this.sessions[keys[i]]);
-  }
-  fn(null, arr);
-*/
+    var self = this;
+    fs.readdir(self.basePath, function(err, files) {
+        if (err) {
+            fn && fn(err);
+            return;
+        }
+        var arr = [];
+        files.forEach(function(file) {
+            // TODO: Make this async.
+            arr.push(JSON.parse(fs.readFileSync(self.basePath + "/" + file)));
+        });
+        fn && fn(arr);
+    });
 };
 FileStore.prototype.clear = function(fn){
     throw new Error("NYI");
