@@ -9,10 +9,15 @@ var killTree = require("./killtree").killTree;
 
 var exports = module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
-    pm.addRunner("shell", exports.factory(imports.sandbox.getUnixId()));
 
-    register(null, {
-        "run-shell": {}
+    imports.sandbox.getUnixId(function(err, unixId) {
+        if (err) return register(err);
+
+        pm.addRunner("shell", exports.factory(unixId));
+
+        register(null, {
+            "run-shell": {}
+        });
     });
 };
 

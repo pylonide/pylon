@@ -1,5 +1,6 @@
 var assert = require("assert");
 var utils = require("connect").utils;
+var error = require("http-error");
 
 var IdeServer = require("./ide");
 
@@ -13,48 +14,57 @@ module.exports = function setup(options, imports, register) {
     var permissions = imports["workspace-permissions"];
 
     var sandbox = imports.sandbox;
-    var projectDir = sandbox.getProjectDir();
-    var workspaceId = sandbox.getWorkspaceId();
     var baseUrl = options.baseUrl || "";
     var staticPrefix = imports.static.getStaticPrefix();
 
+    var ide;
     var serverPlugins = {};
-    var serverOptions = {
-        workspaceDir: projectDir,
-        davPrefix: baseUrl + "/workspace",
-        baseUrl: baseUrl,
-        debug: false,
-        staticUrl: staticPrefix,
-        workspaceId: workspaceId,
-        name: options.name || workspaceId,
-        version: options.version || null,
-        requirejsConfig: {
-            baseUrl: staticPrefix,
-            paths: imports.static.getRequireJsPaths()
-        },
-        plugins: options.clientPlugins || [],
-        bundledPlugins: options.bundledPlugins || []
-    };
-    var ide = new IdeServer(serverOptions);
 
-    register(null, {
-        ide: {
-            register: function(name, plugin, callback) {
-                log.info("IDE SERVER PLUGIN: ", name);
-                serverPlugins[name] = plugin;
-                callback();
-            },
-            getServer: function() {
-                return ide;
-            }
-        }
+    sandbox.getProjectDir(function(err, projectDir) {
+        if (err) return register(err);
+        sandbox.getWorkspaceId(function(err, workspaceId) {
+            if (err) return register(err);
+            init(projectDir, workspaceId);
+        });
     });
+
+    function init(projectDir, workspaceId) {
+        ide = new IdeServer({
+            workspaceDir: projectDir,
+            davPrefix: baseUrl + "/workspace",
+            baseUrl: baseUrl,
+            debug: false,
+            staticUrl: staticPrefix,
+            workspaceId: workspaceId,
+            name: options.name || workspaceId,
+            version: options.version || null,
+            requirejsConfig: {
+                baseUrl: staticPrefix,
+                paths: imports.static.getRequireJsPaths()
+            },
+            plugins: options.clientPlugins || [],
+            bundledPlugins: options.bundledPlugins || []
+        });
+
+        register(null, {
+            ide: {
+                register: function(name, plugin, callback) {
+                    log.info("IDE SERVER PLUGIN: ", name);
+                    serverPlugins[name] = plugin;
+                    callback();
+                },
+                getServer: function() {
+                    return ide;
+                }
+            }
+        });
+    }
 
     hub.on("containersDone", function() {
         ide.init(serverPlugins);
         connect.useAuth(baseUrl, function(req, res, next) {
             if (!req.session.uid)
-                req.session.uid = "owner_" + req.sessionID;
+                return next(new error.Unauthorized());
 
             var pause = utils.pause(req);
             permissions.getPermissions(req.session.uid, function(err, perm) {

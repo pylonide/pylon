@@ -9,14 +9,14 @@ module.exports = function(options, imports, register) {
 
     register(null, {
         sandbox: {
-            getProjectDir: function() {
-                return options.projectDir;
+            getProjectDir: function(callback) {
+                callback(null, options.projectDir);
             },
-            getWorkspaceId: function() {
-                return options.workspaceId;
+            getWorkspaceId: function(callback) {
+                callback(null, options.workspaceId);
             },
-            getUnixId: function() {
-                return options.unixId || null;
+            getUnixId: function(callback) {
+                callback(null, options.unixId || null);
             }
         }
     });
