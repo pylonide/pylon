@@ -79,7 +79,14 @@ FileStore.prototype.get = function(sid, fn){
                   fn && fn(err);
               }
               else {
-                  var sess = JSON.parse(data);
+                  var sess;
+                  try {
+                      sess = JSON.parse(data);
+                  } catch(e) {
+                      console.warn("Error '" + e + "' reading session: " + sid);
+                      self.destroy(sid, fn);
+                      return;
+                  }
                   var expires = (typeof sess.cookie.expires === 'string')
                       ? new Date(sess.cookie.expires)
                       : sess.cookie.expires;
@@ -98,6 +105,7 @@ FileStore.prototype.get = function(sid, fn){
 };
 FileStore.prototype.set = function(sid, sess, fn){
   var self = this;
+  // TODO: Write file to tmp and rename to avoid corrupted sessions when writing and reading overlaps.
   fs.writeFile(self.basePath + "/" + sid, JSON.stringify(sess), function(err) {
       if (err) {
           fn && fn(err);
