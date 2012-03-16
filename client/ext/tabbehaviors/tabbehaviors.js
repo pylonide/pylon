@@ -475,6 +475,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (!page)
             return false;
 
+        // Tell other extensions to exit their fullscreen mode (for ex. Zen)
+        // so this operation is visible
+        ide.dispatchEvent("exitfullscreen");
+
         this.revealfile(page.$doc.getNode());
     },
 
@@ -482,7 +486,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var path = docNode.getAttribute('path');
         var node = trFiles.queryNode('//file[@path="' + path + '"]');
 
-        require("ext/panels/panels").activate(require("ext/tree/tree"));
+        panels.activate(require("ext/tree/tree"));
 
         if (node) {
             trFiles.expandAndSelect(node);

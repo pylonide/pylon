@@ -131,6 +131,10 @@ module.exports = ext.register("ext/zen/zen", {
                 _self.calculatePositions();
             }
         });
+
+        ide.addEventListener("exitfullscreen", function() {
+            _self.escapeFromZenMode(false, true);
+        });
     },
 
     updateButtonPosition : function() {
@@ -238,7 +242,7 @@ module.exports = ext.register("ext/zen/zen", {
             shiftKey = e.htmlEvent.shiftKey;
 
         if (this.isFocused)
-            this.escapeFromZenMode(shiftKey);
+            this.escapeFromZenMode(shiftKey, false);
         else
             this.enterIntoZenMode(shiftKey);
     },
@@ -316,7 +320,6 @@ module.exports = ext.register("ext/zen/zen", {
                 setTimeout(function() {
                     if (self.ceEditor)
                         ceEditor.focus();
-                    apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
 
@@ -378,8 +381,12 @@ module.exports = ext.register("ext/zen/zen", {
      * non-fullscreen state
      *
      * @param {boolean} slow Whether to slow down the animation
+     * @param {boolean} fromExitEvent Whether the call came from an "exitfullscreen" event
      */
-    escapeFromZenMode : function(slow) {
+    escapeFromZenMode : function(slow, fromExitEvent) {
+        if (this.isFocused === false)
+            return;
+
         var _self = this;
 
         btnZenFullscreen.setAttribute("class", "notfull");
@@ -423,9 +430,8 @@ module.exports = ext.register("ext/zen/zen", {
                 tabEditors.parentNode.$ext.style.position = "absolute";
 
                 setTimeout(function() {
-                    if (self.ceEditor)
+                    if (self.ceEditor && fromExitEvent === false)
                         ceEditor.focus();
-                    apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
 
@@ -604,7 +610,7 @@ module.exports = ext.register("ext/zen/zen", {
 
     disable : function(){
         if (this.isFocused)
-            this.escapeFromZenMode();
+            this.escapeFromZenMode(false, false);
         btnZenFullscreen.hide();
         this.nodes.each(function(item){
             item.disable();
