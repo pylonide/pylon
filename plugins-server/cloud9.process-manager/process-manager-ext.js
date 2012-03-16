@@ -1,8 +1,6 @@
 "use strict";
 
 var ProcessManager = require("./process_manager");
-var EventEmitter = require("events").EventEmitter;
-
 
 module.exports = function setup(options, imports, register) {
 
@@ -31,7 +29,8 @@ module.exports = function setup(options, imports, register) {
             kill: pm.kill.bind(pm),
             addRunner: function(name, runner) {
                 runners[name] = runner;
-            }
+            },
+            execCommands: pm.execCommands.bind(pm)
         }
     });
 };

@@ -12,58 +12,67 @@ module.exports = function setup(options, imports, register) {
     assert(options.urlPrefix);
 
     var permissions = imports["workspace-permissions"];
-    var mountDir = path.normalize(imports.sandbox.getProjectDir());
+    
+    imports.sandbox.getProjectDir(function(err, projectDir) {
+        if (err) return register(err);
+        init(projectDir);
+    });
+    
+    function init(projectDir) {
 
-    var davOptions = {
-        node: mountDir,
-        path: mountDir,
-        mount: options.urlPrefix,
-        plugins: options.davPlugins,
-        server: {},
-        standalone: false
-    };
+        var mountDir = path.normalize(projectDir);
+        
+        var davOptions = {
+            node: mountDir,
+            path: mountDir,
+            mount: options.urlPrefix,
+            plugins: options.davPlugins,
+            server: {},
+            standalone: false
+        };
 
-    var filewatch = new DavFilewatch();
+        var filewatch = new DavFilewatch();
 
-    var davServer = jsDAV.mount(davOptions);
-    davServer.plugins["codesearch"].GREP_CMD = gnutools.GREP_CMD;
-    davServer.plugins["filesearch"].FIND_CMD = gnutools.FIND_CMD;
-    davServer.plugins["filelist"].FIND_CMD = gnutools.FIND_CMD;
-    davServer.plugins["permission"] = DavPermission;
-    davServer.plugins["filewatch"] = filewatch.getPlugin();
+        var davServer = jsDAV.mount(davOptions);
+        davServer.plugins["codesearch"].GREP_CMD = gnutools.GREP_CMD;
+        davServer.plugins["filesearch"].FIND_CMD = gnutools.FIND_CMD;
+        davServer.plugins["filelist"].FIND_CMD = gnutools.FIND_CMD;
+        davServer.plugins["permission"] = DavPermission;
+        davServer.plugins["filewatch"] = filewatch.getPlugin();
 
-    imports.connect.useAuth(function(req, res, next) {
-        if (req.url.indexOf(options.urlPrefix) !== 0)
-            return next();
+        imports.connect.useAuth(function(req, res, next) {
+            if (req.url.indexOf(options.urlPrefix) !== 0)
+                return next();
 
-        var pause = utils.pause(req);
-        permissions.getPermissions(req, function(err, permissions) {
-            if (err) {
-                next(err);
+            var pause = utils.pause(req);
+            permissions.getPermissions(req, function(err, permissions) {
+                if (err) {
+                    next(err);
+                    pause.resume();
+                    return;
+                }
+
+                davServer.permissions = permissions.fs;
+                davServer.exec(req, res);
                 pause.resume();
-                return;
-            }
-
-            davServer.permissions = permissions.fs;
-            davServer.exec(req, res);
-            pause.resume();
+            });
         });
-    });
 
-    register(null, {
-        "onDestruct": function(callback) {
-            davServer.unmount();
-            callback();
-        },
-        "dav": {
-            getServer: function() {
-                return davServer;
-            }
-        },
-        "fs": {
-            addListener: filewatch.on.bind(filewatch)
-        },
-        "codesearch": {},
-        "filesearch": {}
-    });
+        register(null, {
+            "onDestruct": function(callback) {
+                davServer.unmount();
+                callback();
+            },
+            "dav": {
+                getServer: function() {
+                    return davServer;
+                }
+            },
+            "fs": {
+                addListener: filewatch.on.bind(filewatch)
+            },
+            "codesearch": {},
+            "filesearch": {}
+        });
+    }
 };
