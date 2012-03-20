@@ -57,19 +57,21 @@
         </a:hbox>
     </a:window>
 
+    <!-- Added prerender here to speed up the loading. The query already has the data we need, we don't need to
+    render the results one by one (as we do, for example, with the Project Files tree -->
     <a:hbox id="trSFHbox" anchors="0 0 0 0" visible="false" render="runtime">
         <a:tree id        = "trSFResult"
           skinset         = "searchinfiles"
           border          = "0"
           visible         = "false"
-          each            = "[d:response[position() &lt; 50]|d:excerpt[position() &lt; 50]|d:maxreached|d:querydetail]"
+          prerender       = "false"
+          each            = "[d:response|d:excerpt|d:querydetail]"
           loading-message = "Searching..."
           style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
           autoselect      = "false">
             <a:model />
-            <a:caption match="[d:querydetail]">Search results for '{apf.htmlentities([@query])}'</a:caption>
+            <a:caption match="[d:querydetail]">{apf.htmlentities([@count])} matches for '{apf.htmlentities([@query])}' across {apf.htmlentities([@filecount])} files</a:caption>
             <a:caption match="[d:replacement]">Into '{apf.htmlentities([@replacement])}'</a:caption>
-            <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
             <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
         </a:tree>
