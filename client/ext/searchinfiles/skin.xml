@@ -37,7 +37,7 @@
   
       .searchtree DIV.minlast SPAN,
       .searchtree DIV.min SPAN{
-          background-image:url(images/search_collaps.png);
+          background-image:url(images/search_collapse.png);
       }
   
       .searchtree DIV{
@@ -46,8 +46,8 @@
           padding-left: 15px;
           overflow : hidden;
   
-          font-family: Tahoma, Arial, Arial;
-          font-size: 11px;
+          font-family: menlo,courier new,fixed,swiss,sans-serif;
+          font-size: 12px;
       }
   
 	  .searchtree .linenumber {

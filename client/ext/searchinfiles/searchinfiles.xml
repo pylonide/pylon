@@ -68,9 +68,10 @@
           each            = "[d:response|d:excerpt|d:querydetail]"
           loading-message = "Searching..."
           style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
-          autoselect      = "false">
+          autoselect      = "false"
+          class           = "console_text">
             <a:model />
-            <a:caption match="[d:querydetail]">{apf.htmlentities([@count])} matches for '{apf.htmlentities([@query])}' across {apf.htmlentities([@filecount])} files</a:caption>
+            <a:caption match="[d:querydetail]">{apf.htmlentities([@count])} {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in {apf.htmlentities([@filecount])} {apf.htmlentities([@filecount]) == 1 ? "file" : "files"}</a:caption>
             <a:caption match="[d:replacement]">Into '{apf.htmlentities([@replacement])}'</a:caption>
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
             <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
