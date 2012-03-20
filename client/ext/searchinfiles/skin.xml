@@ -7,7 +7,7 @@
           overflow: hidden;
           cursor : default;
           position : relative;
-          color: #EEE;
+          color: #666651;
           font-family : Arial;
           font-size : 12px;
       }
@@ -50,16 +50,22 @@
           font-size: 12px;
       }
   
+      .searchtree .responseHeader {
+	      color: #e6db70;
+	  }
+
 	  .searchtree .linenumber {
 	      width : 35px;
 	      display : inline;
 	      text-align : right;
 	      padding : 0 10px 0 4px;
+          color:    #ae81ff;
 	  }
 	  
 	  .searchtree .excerpt {
 	      margin : 0;
 	      display : inline-block;
+          color: #ffffff;
 	  }
 	  
 	  .searchtree .line{
