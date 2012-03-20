@@ -94,8 +94,8 @@ define(function(require, exports, module) {
                 margin: "1 0 0 0"
             })), mnuWindows);
 
-            if (window.location.origin.indexOf("c9.io") >= 0 || window.location.origin.indexOf("stage.io") >= 0) {                
-                var blogURL = window.location.origin + "/site/?json=get_tag_posts&tag_slug=changelog";
+            if (window.location.host.indexOf("c9.io") >= 0 || window.location.host.indexOf("stage.io") >= 0) {                
+                var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
     
                 var response = apf.ajax(blogURL, {
                     method: "GET",
