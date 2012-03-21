@@ -278,9 +278,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     // ignore is the page that shouldn't be closed, null to close all tabs
     closeallbutme: function(ignore, callback) {
-        // if ignore isn't a page instance then fallback to current page
+        // if ignore isn't a page instance, then fallback to current page
         if (!(ignore instanceof apf.page)) {
-            ignore = null;
+            ignore = (ignore.closeall === undefined) ? null : ignore; // oh, wait, it's an an object from closealltotheright/left
         }
         
         ignore = ignore || tabEditors.getPage();
@@ -357,6 +357,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             ignore[j] = page;
         }
 
+        ignore.closeall = true;
         this.closeallbutme(ignore);
     },
 
@@ -371,6 +372,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             ignore[j] = page;
         }
         
+        ignore.closeall = true;
         this.closeallbutme(ignore);
     },
     
