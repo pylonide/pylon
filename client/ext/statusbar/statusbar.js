@@ -95,21 +95,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
             setTimeout(function() {
                 if(editors.currentEditor.ceEditor) {
+                    _self.setSelectionLength();
+
                     _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                     _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
-                        if (typeof lblSelectionLength === "undefined")
-                            return;
-    
-                        var range = ceEditor.$editor.getSelectionRange();
-                        if (range.start.row != range.end.row || range.start.column != range.end.column) {
-                            var doc = ceEditor.getDocument();
-                            var value = doc.getTextRange(range);
-                            lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
-                            lblSelectionLength.show();
-                        } else {
-                            lblSelectionLength.setAttribute("caption", "");
-                            lblSelectionLength.hide();
-                        }
+                        _self.setSelectionLength();
                     });
                 }
             }, 200);
@@ -195,6 +185,22 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.insertBefore(menuItem, mnuStatusBarPrefs.childNodes[position]);
             else
                 mnuStatusBarPrefs.appendChild(menuItem);
+        }
+    },
+    
+    setSelectionLength : function() {
+        if (typeof lblSelectionLength === "undefined")
+            return;
+
+        var range = ceEditor.$editor.getSelectionRange();
+        if (range.start.row != range.end.row || range.start.column != range.end.column) {
+            var doc = ceEditor.getDocument();
+            var value = doc.getTextRange(range);
+            lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
+            lblSelectionLength.show();
+        } else {
+            lblSelectionLength.setAttribute("caption", "");
+            lblSelectionLength.hide();
         }
     },
 
