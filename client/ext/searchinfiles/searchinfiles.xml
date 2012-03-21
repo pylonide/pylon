@@ -65,17 +65,16 @@
           border          = "0"
           visible         = "false"
           prerender       = "false"
-          each            = "[d:response|d:excerpt|d:querydetail]"
+          each            = "[d:querydetail|d:response|d:excerpt]"
           loading-message = "Searching..."
           style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
           autoselect      = "false"
           class           = "console_text">
             <a:model />
-            <a:caption match="[d:querydetail]">{apf.htmlentities([@count])} {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in {apf.htmlentities([@filecount])} {apf.htmlentities([@filecount]) == 1 ? "file" : "files"}</a:caption>
-            <a:caption match="[d:replacement]">Into '{apf.htmlentities([@replacement])}'</a:caption>
+            <a:caption match="[d:querydetail]">{apf.htmlentities([@count])} {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in {apf.htmlentities([@filecount])} {apf.htmlentities([@filecount]) == 1 ? "file" : "files"} {apf.htmlentities([@replacement]).length &gt; 0 ? ", replaced as '" + apf.htmlentities([@replacement]) + "'" : ""}</a:caption>
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
             <a:css match="[d:response]" value="responseHeader" />
-            <a:caption match="[d:excerpt]"><div class="linenumber">[@line]:</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
+            <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
         </a:tree>
         <a:scrollbar
           id        = "sbSFResult"

@@ -217,12 +217,15 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var query = txtSFFind.value;
         options.query = query.replace(/\n/g, "\\n");
 
+        if (!_self.replaceAll) {
+            options.replacement = ""; // even if there's text in the "replace" field, don't send it when not replacing   
+        }
+        
         var findValueSanitized = query.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
         
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
-            var replaced = _self.replaceAll;
             _self.replaceAll = false; // reset
             
             if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10))
