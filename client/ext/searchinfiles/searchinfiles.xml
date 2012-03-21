@@ -75,7 +75,7 @@
             <a:caption match="[d:replacement]">Into '{apf.htmlentities([@replacement])}'</a:caption>
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
             <a:css match="[d:response]" value="responseHeader" />
-            <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div>:<pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
+            <a:caption match="[d:excerpt]"><div class="linenumber">[@line]:</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
         </a:tree>
         <a:scrollbar
           id        = "sbSFResult"

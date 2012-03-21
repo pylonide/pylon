@@ -45,7 +45,7 @@
           height: auto;
           padding-left: 15px;
           overflow : hidden;
-  
+          color: #ffffff;
           font-family: menlo,courier new,fixed,swiss,sans-serif;
           font-size: 12px;
       }
@@ -61,7 +61,7 @@
 	      padding : 0 10px 0 4px;
           color:    #ae81ff;
 	  }
-	  
+      
 	  .searchtree .excerpt {
 	      margin : 0;
 	      display : inline-block;
@@ -117,7 +117,7 @@
       }
   
       .searchtree .selected U{
-          background-color: #EEE;
+          background-color: #666666;
           color: black;
           -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
@@ -125,7 +125,6 @@
       }
   
       .searchtreeFocus .selected U, .tree .dragAppend U{
-          background-color: #DDD;
           color: black;
           -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
