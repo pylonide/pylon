@@ -21,6 +21,7 @@ var options = Parser.parse([
     {short: "a", long: "action", description: "Define an action to execute after the Cloud9 server is started.", value: true, def: null, parser: function(value) {
         return value.split(/\s+/g);
     }},
+    {short: "s", long: "silent", description: "Disable auto-open of the browser.", value: false},
     {short: "d", long: "debug", description: "Activate debug-mode.", def: false},
     {short: "u", long: "user", description: "Run child processes as a specific user.", value: true, def: false },
     {short: "g", long: "group", description: "Run child processes with a specific group.", value: true, def: false },
@@ -68,9 +69,8 @@ Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
                               version " + version + "\n\
 Project root is: " + options.workspace);
 
-
 var url = "http://" + (options.ip.length ? options.ip : "localhost") + ":" + options.port;
-if (options.action) {
+if ((typeof options.silent === "undefined" || options.silent === false) && options.action) {
     Sys.puts("Trying to start your browser in: " + url);
     options.action.push(url);
     require("child_process").spawn(options.action[0], options.action.slice(1));
