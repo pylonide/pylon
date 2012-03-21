@@ -84,7 +84,7 @@
                       disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
                   </a:hbox>
                   <a:hbox>
-                    <a:label width="100" skin="black_label">File path</a:label>
+                    <a:label width="100" skin="black_label">File Path</a:label>
                     <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
                     <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
                     

@@ -13,8 +13,10 @@ exports.findFreePort = function(start, end, hostname, callback) {
             if (port > end)
                 port = start;
 
-            if (port == pivot)
+            if (port == pivot) {
                 done("Could not find free port.");
+                return;
+            }
 
             next();
         });

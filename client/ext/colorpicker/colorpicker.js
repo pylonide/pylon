@@ -226,12 +226,26 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             _self.hideColorTooltips(e.editor);
         });
 
-        // hide all markers and the colorpicker upon tab-/ editorswitch
-        ide.addEventListener("beforeeditorswitch", function() {
+        function switchOrClose() {
             if (_self.menu && _self.menu.visible)
                 _self.menu.hide();
             else
                 _self.hideColorTooltips();
+        }
+        // hide all markers and the colorpicker upon tab-/ editorswitch
+        ide.addEventListener("beforeeditorswitch", function() {
+            switchOrClose();
+        });
+
+        ide.addEventListener("closefile", function(e) {
+            var currentPage = tabEditors.getPage();
+            if (currentPage) {
+                if (e.page.name === currentPage.name)
+                    switchOrClose();
+            }
+            else {
+                switchOrClose();
+            }
         });
     },
 

@@ -35,6 +35,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     prefsItems: [],
     horScrollAutoHide : "false",
     edgeDistance : 3,
+    offsetWidth : 0,
+
     hook : function(){
         var _self = this;
         ide.addEventListener("afteropenfile", this.$aofListener = function() {
@@ -78,47 +80,33 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 lblInsertActive.hide();
         });
 
+        ide.addEventListener("minimap.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = e.width;
+            else
+                _self.offsetWidth = 0;
+
+            _self.setPosition();
+        });
+
         tabEditors.addEventListener("afterswitch", function() {
             if (_self.$changeEvent)
                 _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
 
             setTimeout(function() {
-                _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
-                _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
-                    if (typeof lblSelectionLength === "undefined")
-                        return;
+                if(editors.currentEditor.ceEditor) {
+                    _self.setSelectionLength();
 
-                    var range = ceEditor.$editor.getSelectionRange();
-                    if (range.start.row != range.end.row || range.start.column != range.end.column) {
-                        var doc = ceEditor.getDocument();
-                        var value = doc.getTextRange(range);
-                        lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
-                        lblSelectionLength.show();
-                    } else {
-                        lblSelectionLength.setAttribute("caption", "");
-                        lblSelectionLength.hide();
-                    }
-                });
+                    _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
+                    _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
+                        _self.setSelectionLength();
+                    });
+                }
             }, 200);
         });
 
         tabEditors.addEventListener("resize", function() {
-            if (ceEditor && ceEditor.$editor) {
-                var cw = ceEditor.$editor.renderer.scroller.clientWidth;
-                var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
-                var bottom = _self.edgeDistance;
-                if (cw < sw || _self.horScrollAutoHide === "false")
-                    bottom += _self.sbWidth;
-
-                if (_self.$barMoveTimer)
-                    clearTimeout(_self.$barMoveTimer);
-                _self.$barMoveTimer = setTimeout(function() {
-                    if (typeof barIdeStatus !== "undefined") {
-                        barIdeStatus.setAttribute("bottom", bottom);
-                        barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance);
-                    }
-                }, 50);
-            }
+            _self.setPosition();
         });
     },
 
@@ -199,6 +187,22 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(menuItem);
         }
     },
+    
+    setSelectionLength : function() {
+        if (typeof lblSelectionLength === "undefined")
+            return;
+
+        var range = ceEditor.$editor.getSelectionRange();
+        if (range.start.row != range.end.row || range.start.column != range.end.column) {
+            var doc = ceEditor.getDocument();
+            var value = doc.getTextRange(range);
+            lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
+            lblSelectionLength.show();
+        } else {
+            lblSelectionLength.setAttribute("caption", "");
+            lblSelectionLength.hide();
+        }
+    },
 
     toggleStatusBar: function(){
         if(this.expanded) {
@@ -244,6 +248,26 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             apf.setStyleRule(".bar-status", "background-color", aceBg + ", 0.0)");
             apf.setStyleRule(".bar-status:hover", "background-color", aceBg + ", 0.95)");
         });
+    },
+
+    setPosition : function() {
+        if (ceEditor && ceEditor.$editor) {
+            var _self = this;
+            var cw = ceEditor.$editor.renderer.scroller.clientWidth;
+            var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
+            var bottom = this.edgeDistance;
+            if (cw < sw || this.horScrollAutoHide === "false")
+                bottom += this.sbWidth;
+
+            if (this.$barMoveTimer)
+                clearTimeout(this.$barMoveTimer);
+            this.$barMoveTimer = setTimeout(function() {
+                if (typeof barIdeStatus !== "undefined") {
+                    barIdeStatus.setAttribute("bottom", bottom);
+                    barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance + _self.offsetWidth);
+                }
+            }, 50);
+        }
     },
 
     enable : function(){

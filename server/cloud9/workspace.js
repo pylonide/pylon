@@ -48,6 +48,18 @@ var Workspace = module.exports = function(config) {
                 return;
             }
         }
+        
+        // if a message is sent with the requireshandling flag
+        // then the client wants to be notified via an error that there was
+        // no plugin suitable of handling this command
+        var message = args.length > 1 && args[1];
+        if (message && message.requireshandling === true) {
+            this.send({
+                type: "result",
+                subtype: "info",
+                body:  "Command '" + message.command + "' was not recognized"
+            }, message);
+        }
     };
 
     this.getExt = function(name) {
