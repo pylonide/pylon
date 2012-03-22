@@ -110,6 +110,39 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         }
     },
 
+    enableExt : function(path) {
+        ext.enableExt(path);
+
+        if (tabExtMgr.activepage === 0)
+            btnUserExtEnable.setAttribute("caption", "Disable");
+        else
+            btnDefaultExtEnable.setAttribute("caption", "Disable");
+    },
+
+    disableExt : function(path) {
+        ext.disableExt(path);
+
+        if (tabExtMgr.activepage === 0)
+            btnUserExtEnable.setAttribute("caption", "Enable");
+        else
+            btnDefaultExtEnable.setAttribute("caption", "Enable");
+    },
+
+    updateEnableBtnState : function() {
+        if (tabExtMgr.activepage === 0) {
+            if (dgExtUser.selected.getAttribute("enabled") === "1")
+                btnUserExtEnable.setAttribute("caption", "Disable");
+            else
+                btnUserExtEnable.setAttribute("caption", "Enable");
+        }
+        else {
+            if (dgExt.selected.getAttribute("enabled") === "1")
+                btnDefaultExtEnable.setAttribute("caption", "Disable");
+            else
+                btnDefaultExtEnable.setAttribute("caption", "Enable");
+        }
+    },
+
     enable : function(){
         if (!this.disabled) return;
         

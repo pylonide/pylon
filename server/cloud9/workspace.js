@@ -54,11 +54,11 @@ var Workspace = module.exports = function(config) {
         // no plugin suitable of handling this command
         var message = args.length > 1 && args[1];
         if (message && message.requireshandling === true) {
-            user.broadcast(JSON.stringify({
+            this.send({
                 type: "result",
                 subtype: "info",
                 body:  "Command '" + message.command + "' was not recognized"
-            }));
+            }, message);
         }
     };
 

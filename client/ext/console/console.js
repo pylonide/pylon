@@ -259,6 +259,8 @@ module.exports = ext.register("ext/console/console", {
 
     onMessage: function(e) {
         var message = e.message;
+        if (!message.type)
+            return;
         if (message.type === "node-data")
             return Logger.logNodeStream(message.data, message.stream, true, ide);
 
@@ -288,6 +290,18 @@ module.exports = ext.register("ext/console/console", {
             u = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
 
         return "[" + u + "@cloud9]:" + this.$cwd + "$" + ((" " + suffix) || "");
+    },
+    
+    hook: function() {
+        var _self = this;
+        // Listen for new extension registrations to add to the
+        // hints
+        ide.addEventListener("ext.register", function(e){
+            if (e.ext.commands)
+                apf.extend(_self.allCommands, e.ext.commands);
+        });
+
+        ext.initExtension(this);
     },
 
     init: function(amlNode){

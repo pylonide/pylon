@@ -19,11 +19,11 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    skin     : {
-        id   : "gotoline",
-        data : skin,
-        "media-path" : ide.staticPrefix + "/ext/gotoline/images/"
-    },
+    skin    : {
+        id  : "gotoline",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/gotoline/images/"
+    },
     markup  : markup,
     commands : {
         "gotoline": {hint: "enter a linenumber and jump to it in the active document"}
@@ -39,26 +39,26 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             mnuEdit.appendChild(new apf.item({
                 caption : "Go to Line...",
                 onclick : function(){
-                    _self.gotoline(1);
+                    _self.gotoline();
                 }
             }))
         );
 
         ide.addEventListener("gotoline", function() {
-            _self.gotoline(1);
+            _self.gotoline();
         });
 
         code.commandManager.addCommand({
             name: "gotoline",
-            exec: function(editor) {
-                _self.gotoline(1);
+            exec: function() {
+                _self.gotoline();
             }
         });
 
         this.hotitems.gotoline = [this.nodes[1]];
     },
 
-    init : function(amlNode) {
+    init : function() {
         var _self = this;
 
         lstLineNumber.addEventListener("afterchoose", function() {
@@ -86,7 +86,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 }
             }
             else if (e.keyCode == 27){
-                _self.gotoline(-1);
+                _self.hide();
+                ceEditor.focus();
             }
             else if (restricted.indexOf(e.keyCode) == -1)
                 txtLineNr.focus();
@@ -98,7 +99,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 return false;
             }
             else if (e.keyCode == 27){
-                _self.gotoline(-1);
+                _self.hide();
+                ceEditor.focus();
                 return false;
             }
             else if (e.keyCode == 40) {
@@ -115,70 +117,81 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
         winGotoLine.addEventListener("blur", function(e){
             if (!apf.isChildOf(winGotoLine, e.toElement))
-                _self.gotoline(-1);
+                _self.hide();
+        });
+        
+        txtLineNr.addEventListener("blur", function(e){
+            if (!apf.isChildOf(winGotoLine, e.toElement))
+                _self.hide();
+        });
+    },
+    
+    show : function() {
+        var editor = editors.currentEditor;
+        var ace = editor.ceEditor.$editor;
+        var aceHtml = editor.ceEditor.$ext;
+        var cursor = ace.getCursorPosition();
+
+        //Set the current line
+        txtLineNr.setValue(txtLineNr.getValue() || cursor.row + 1);
+
+        //Determine the position of the window
+        var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
+        var epos = apf.getAbsolutePosition(aceHtml);
+        var maxTop = aceHtml.offsetHeight - 100;
+
+        editor.ceEditor.parentNode.appendChild(winGotoLine);
+        winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1]));
+        winGotoLine.setAttribute("left", -60);
+
+        winGotoLine.show();
+        txtLineNr.focus();
+
+        //Animate
+        apf.tween.single(winGotoLine, {
+            type     : "left",
+            anim     : apf.tween.easeInOutCubic,
+            from     : -60,
+            to       : 0,
+            steps    : 8,
+            interval : 10,
+            control  : (this.control = {})
         });
     },
 
-    gotoline: function(force) {
+    hide : function() {
+        apf.tween.single(winGotoLine, {
+            type     : "left",
+            anim     : apf.tween.EASEOUT,
+            from     : winGotoLine.$ext.offsetLeft,
+            to       : -60,
+            steps    : 8,
+            interval : 10,
+            control  : (this.control = {}),
+            onfinish : function(){
+                winGotoLine.hide();
+            }
+        });
+    },
+
+    gotoline: function() {
         ext.initExtension(this);
 
         if (this.control && this.control.stop)
             this.control.stop();
 
         var editorPage = tabEditors.getPage();
-        if (!editorPage) return;
+        if (!editorPage)
+            return;
 
         var editor = editors.currentEditor;
         if (!editor || !editor.ceEditor)
             return;
 
-        if (!force && !winGotoLine.visible || force > 0) {
-            var ace = editor.ceEditor.$editor;
-            var aceHtml = editor.ceEditor.$ext;
-            var cursor = ace.getCursorPosition();
-
-            //Set the current line
-            txtLineNr.setValue(txtLineNr.getValue() || cursor.row + 1);
-
-            //Determine the position of the window
-            var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
-            var epos = apf.getAbsolutePosition(aceHtml);
-            var maxTop = aceHtml.offsetHeight - 100;
-
-            editor.ceEditor.parentNode.appendChild(winGotoLine);
-            winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1]));
-            winGotoLine.setAttribute("left", -60);
-
-            winGotoLine.show();
-            txtLineNr.focus();
-
-            //Animate
-            apf.tween.single(winGotoLine, {
-                type     : "left",
-                anim     : apf.tween.easeInOutCubic,
-                from     : -60,
-                to       : 0,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {})
-            });
-        }
-        else if (winGotoLine.visible) {
-            //Animate
-            apf.tween.single(winGotoLine, {
-                type     : "left",
-                anim     : apf.tween.EASEOUT,
-                from     : winGotoLine.$ext.offsetLeft,
-                to       : -60,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {}),
-                onfinish : function(){
-                    winGotoLine.hide();
-                    editor.ceEditor.focus();
-                }
-            });
-        }
+        if (!winGotoLine.visible)
+            this.show();
+        else
+            this.hide();
 
         return false;
     },

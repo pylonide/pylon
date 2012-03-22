@@ -403,6 +403,7 @@ module.exports = ext.register("ext/code/code", {
                 caption : "Length: {ceEditor.value.length}"
             })),
 
+            mnuView.appendChild(new apf.divider()),
             mnuView.appendChild(menuSyntaxHighlight)
         );
 

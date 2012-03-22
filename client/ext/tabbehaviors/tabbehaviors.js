@@ -101,35 +101,41 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         caption : "Reveal in File Tree",
                         onclick : function() {
                             _self.revealtab(tabEditors.contextPage);
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close Tab",
                         onclick : function() {
                             _self.closetab(tabEditors.contextPage);
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close All Tabs",
-                        onclick : this.closealltabs.bind(this)
+                        onclick : this.closealltabs.bind(this),
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close Other Tabs",
                         onclick : function() {
                             _self.closeallbutme(tabEditors.contextPage);
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close Tabs to the Right",
                         onclick : function() {
                             _self.closealltotheright();
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close Tabs to the Left",
                         onclick : function() {
                             _self.closealltotheleft();
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     })
                 ]
             }))
@@ -145,13 +151,22 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         mnuContextTabs.addEventListener("prop.visible", function(e) {
+            // If there are only 0 or 1 pages, disable both and return
+            if (tabEditors.getPages().length <= 1) {
+                mnuContextTabs.childNodes[3].setAttribute('disabled', true);
+                mnuContextTabs.childNodes[4].setAttribute('disabled', true);
+                mnuContextTabs.childNodes[5].setAttribute('disabled', true);
+                return;
+            }
+
             var page = tabEditors.getPage();
             var pages = tabEditors.getPages();
-            
+
             // be optimistic, reset menu items to disabled
+            mnuContextTabs.childNodes[3].setAttribute('disabled', false);
             mnuContextTabs.childNodes[4].setAttribute('disabled', false);
             mnuContextTabs.childNodes[5].setAttribute('disabled', false);
-                
+
             // if last tab, remove "close to the right"
             if (page.nextSibling.localName !== "page") {
                 mnuContextTabs.childNodes[4].setAttribute('disabled', true);
