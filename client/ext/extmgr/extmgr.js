@@ -110,8 +110,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         }
     },
 
-    registerExt : function(path) {
-        ext.register(path, require(path));
+    enableExt : function(path) {
+        ext.enableExt(path);
 
         if (tabExtMgr.activepage === 0)
             btnUserExtEnable.setAttribute("caption", "Disable");
@@ -119,8 +119,9 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             btnDefaultExtEnable.setAttribute("caption", "Disable");
     },
 
-    unregisterExt : function(path) {
-        ext.unregister(require(path));
+    disableExt : function(path) {
+        ext.disableExt(path);
+
         if (tabExtMgr.activepage === 0)
             btnUserExtEnable.setAttribute("caption", "Enable");
         else
