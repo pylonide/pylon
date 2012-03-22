@@ -377,6 +377,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
     
     nexttab : function(){
+        if (tabEditors.getPages().length === 1) {
+            return;
+        }
+        
         var n = this.accessed.length - this.$tabAccessCycle++;
         if (n < 0) {
             n = this.accessed.length - 1;
@@ -391,6 +395,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     previoustab : function(){
+        if (tabEditors.getPages().length === 1) {
+            return;
+        }
+        
         var n = this.accessed.length - --this.$tabAccessCycle;
         if (n ===  this.accessed.length) {
             n = 0;
