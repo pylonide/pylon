@@ -155,6 +155,7 @@ var contentTypes = {
     "cxx": "text/x-c",
     "h": "text/x-c",
     "hh": "text/x-c",
+    "hpp": "text/x-c",
     
     "bmp": "image",
     "djv": "image",
