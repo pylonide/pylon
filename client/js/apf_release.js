@@ -1445,8 +1445,8 @@ if(oHtml.nodeFunc>100){oHtml=oHtml.$ext;}if(remove){apf.setStyleClass(oHtml,"",[
 }};var onfinish=info.onfinish,onstop=info.onstop;info.onfinish=function(){resetAnim(remove,onfinish);
 };info.onstop=function(){resetAnim(!remove,onstop);};var result,newvalue,curvalue,j,isColor,style,rules,i,tweens={};
 for(i=0;i<document.styleSheets.length;i++){rules=document.styleSheets[i][apf.styleSheetRules];
-for(j=rules.length-1;j>=0;j--){var rule=rules[j];if(!rule.style||!rule.selectorText.match("."+className+"$")){continue;
-}for(style in rule.style){if(!rule.style[style]||cssProps.indexOf("|"+style+"|")==-1){continue;
+if(!rules||!rules.length){continue;}for(j=rules.length-1;j>=0;j--){var rule=rules[j];
+if(!rule.style||!rule.selectorText.match("."+className+"$")){continue;}for(style in rule.style){if(!rule.style[style]||cssProps.indexOf("|"+style+"|")==-1){continue;
 }if(style=="filter"){if(!rule.style[style].match(/opacity\=([\d\.]+)/)){continue;
 }newvalue=RegExp.$1;result=(apf.getStyleRecur(oHtml,style)||"").match(/opacity\=([\d\.]+)/);
 curvalue=result?RegExp.$1:100;isColor=false;if(newvalue==curvalue){if(remove){curvalue=100;

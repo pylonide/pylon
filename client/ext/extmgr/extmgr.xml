@@ -80,9 +80,9 @@
                   caption  = "Disable"
                   onclick  = "
                     if ([{dgExtUser.selected}::@enabled] == 1)
-                        require('ext/extmgr/extmgr').unregisterExt(dgExtUser.value);
+                        require('ext/extmgr/extmgr').disableExt(dgExtUser.value);
                     else
-                        require('ext/extmgr/extmgr').registerExt(dgExtUser.value);
+                        require('ext/extmgr/extmgr').enableExt(dgExtUser.value);
                   "
                 />
                 <a:button
@@ -100,9 +100,9 @@
                   disabled = "{!dgExt.selected}"
                   onclick  = "
                     if ([{dgExt.selected}::@enabled] == 1)
-                        require('ext/extmgr/extmgr').unregisterExt(dgExt.value);
+                        require('ext/extmgr/extmgr').disableExt(dgExt.value);
                     else
-                        require('ext/extmgr/extmgr').registerExt(dgExt.value);
+                        require('ext/extmgr/extmgr').enableExt(dgExt.value);
                   "
                 />
                 <a:button

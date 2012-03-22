@@ -57,7 +57,8 @@ exports.errorHandler = function() {
             err.defaultMessage = "Internal Server Error";
         }
 
-        var isXHR = req.headers["x-requested-with"] && req.headers["x-requested-with"].toLowerCase() == "xmlhttprequest";
+        var isXHR = req.url.indexOf("xhr=1") > -1 ||
+                (req.headers["x-requested-with"] && req.headers["x-requested-with"].toLowerCase() == "xmlhttprequest");
         if (!isXHR) {
             fs.readFile(__dirname + "/view/error.tmpl.html", "utf8", function(e, html) {
                 if (e)
