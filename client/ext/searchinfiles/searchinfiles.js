@@ -109,9 +109,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         else
             selectedNode = this.getSelectedTreeNode();
         // get selected node in tree and set it as selection
-        var name = selectedNode.getAttribute("name");
-        if (name.length > 25)
+        var filepath = selectedNode.getAttribute("path").split("/");
+        var name = filepath[filepath.length - 2];
+        
+        if (name.length > 25) {
             name = name.substr(0, 22) + "...";
+        }
+        
         rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
     },
     
