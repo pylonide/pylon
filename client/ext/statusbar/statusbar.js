@@ -79,6 +79,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             else
                 lblInsertActive.hide();
         });
+    },
+
+    init : function(){
+        var _self = this;
 
         ide.addEventListener("minimap.visibility", function(e) {
             if (e.visibility === "shown")
@@ -108,10 +112,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         tabEditors.addEventListener("resize", function() {
             _self.setPosition();
         });
-    },
-
-    init : function(){
-        var _self = this;
+        
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
@@ -251,7 +252,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     setPosition : function() {
-        if (ceEditor && ceEditor.$editor) {
+        if (typeof ceEditor != "undefined" && ceEditor.$editor) {
             var _self = this;
             var cw = ceEditor.$editor.renderer.scroller.clientWidth;
             var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
