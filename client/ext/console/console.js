@@ -259,6 +259,8 @@ module.exports = ext.register("ext/console/console", {
 
     onMessage: function(e) {
         var message = e.message;
+        if (!message.type)
+            return;
         if (message.type === "node-data")
             return Logger.logNodeStream(message.data, message.stream, true, ide);
 

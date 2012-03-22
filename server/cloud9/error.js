@@ -13,7 +13,15 @@ sys.inherits(exports.HttpError, Error);
     this.toString = function() {
         return this.message;
     };
-
+    
+    this.toJSON = function() {
+        return {
+            code: this.code,
+            status: this.defaultMessage,
+            message: this.message
+        };
+    };
+    
 }).call(exports.HttpError.prototype);
 
 

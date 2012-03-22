@@ -24,7 +24,7 @@ module.exports = ext.register("ext/save/save", {
     deps        : [fs],
     offline     : true,
 
-    commands     : {
+    commands    : {
         "quicksave": {hint: "save the currently active file to disk"},
         "saveas": {hint: "save the file to disk with a different filename"},
         "reverttosaved": {hint: "downgrade the currently active file to the last saved version"}
@@ -37,7 +37,7 @@ module.exports = ext.register("ext/save/save", {
         if (!self.tabEditors) return;
 
         var _self = this;
-        
+
         tabEditors.addEventListener("close", this.$close = function(e) {
             var at = e.page.$at;
             if (!at.undo_ptr)
@@ -47,19 +47,19 @@ module.exports = ext.register("ext/save/save", {
               || !at.undo_ptr && node.getAttribute("changed") == 1
               && e.page.$doc.getValue()) {
                 ext.initExtension(_self);
-                
+
                 var pages   = tabEditors.getPages(),
                 currIdx = pages.indexOf(e.page);
                 tabEditors.set(pages[currIdx].id); //jump to file
-                
+
                 var filename = node.getAttribute("path").replace(ide.workspaceDir, "").replace(ide.davPrefix, "");
-                
+
                 winCloseConfirm.page = e.page;
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
                 fileDesc.$ext.innerHTML =  "<h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div>";
-                
+
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
                         var f = function(resetUndo){
@@ -86,7 +86,7 @@ module.exports = ext.register("ext/save/save", {
 
                     winCloseConfirm.removeEventListener("hide", arguments.callee);
                 });
-                
+
                 btnYesAll.hide();
                 btnNoAll.hide();
 
@@ -145,9 +145,8 @@ module.exports = ext.register("ext/save/save", {
     },
 
     init : function(amlNode){
-        var _self = this;
         this.fileDesc = winCloseConfirm.selectSingleNode("a:vbox");;
-        
+
         apf.importCssString((this.css || ""));
         winCloseConfirm.onafterrender = function(){
             btnYesAll.addEventListener("click", function(){
@@ -186,10 +185,7 @@ module.exports = ext.register("ext/save/save", {
     },
 
     saveall : function(){
-        var pages = tabEditors.getPages();
-        for (var i = 0; i < pages.length; i++) {
-            this.quicksave(pages[i]);
-        }
+        tabEditors.getPages().forEach(this.quicksave, this);
     },
 
     saveAllInteractive : function(pages, callback){
@@ -229,7 +225,8 @@ module.exports = ext.register("ext/save/save", {
         });
     },
 
-    quicksave : function(page, callback) {
+    // `silentsave` indicates whether the saving of the file is forced by the user or not.
+    quicksave : function(page, callback, silentsave) {
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
@@ -252,7 +249,7 @@ module.exports = ext.register("ext/save/save", {
         }
 
         if (callback) {
-            ide.addEventListener("afterfilesave", function(e){
+            ide.addEventListener("afterfilesave", function(e) {
                 if (e.node == node) {
                     callback();
                     this.removeEventListener("afterfilesave", arguments.callee);
@@ -286,7 +283,14 @@ module.exports = ext.register("ext/save/save", {
             }
 
             panel.setAttribute("caption", "Saved file " + path);
-            ide.dispatchEvent("afterfilesave", {node: node, doc: doc, value: value});
+
+            ide.dispatchEvent("afterfilesave", {
+                node: node,
+                doc: doc,
+                value: value,
+                silentsave: silentsave
+            });
+
             ide.dispatchEvent("track_action", {
                 type: "save as filetype",
                 fileType: node.getAttribute("name").split(".").pop(),
@@ -371,7 +375,8 @@ module.exports = ext.register("ext/save/save", {
             ide.dispatchEvent("afterfilesave", {
                 node: node,
                 doc: doc,
-                value: value
+                value: value,
+                silentsave: false // It is a forced save, comes from UI
             });
         });
 
