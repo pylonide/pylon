@@ -54,8 +54,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         });
 
         ide.addEventListener("init.ext/tree/tree", function(){
-            _self.nodes.push(trFiles.$ext);
-            decorateNode(trFiles.$ext);
+            setTimeout(function(){
+                _self.nodes.push(trFiles.$ext);
+                decorateNode(trFiles.$ext);
+            }, 200);
         });
 
         ide.addEventListener("init.ext/uploadfiles/uploadfiles", function(){
@@ -275,6 +277,14 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     
     onLoad: function(file, e) {
         var node     = file.targetFolder;
+        
+        if (!node)
+            node = trFiles.xmlRoot.selectSingleNode("folder");
+        
+        while (node.getAttribute("type") != "folder" && node.tagName != "folder") {
+            node = node.parentNode;
+        }
+            
         var path     = node.getAttribute("path");
         var filename = file.name;
         var index    = 0;
@@ -282,10 +292,26 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
 
         function check(exists) {
             if (exists) {
+                util.confirm(
+                    "Are you sure?",
+                    "\"" + file.name + "\" already exists, do you want to replace it?",
+                    "A file or folder with the same name already exists. "
+                    + "Replacing it will overwrite it's current contents.",
+                    removeExisting);
+            }
+            else {
+                upload();
+            }
+            /*if (exists) {
                 filename = file.name + "." + index++;
                 fs.exists(path + "/" + filename, check);
             } else
-                upload();
+                upload();*/
+        }
+        
+        function removeExisting(){
+            apf.xmldb.removeNode(trFiles.queryNode('//file[@path="' + path + "/" + filename + '"]'));
+            fs.remove(path + "/" + filename, upload);
         }
         
         function upload() {

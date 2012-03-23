@@ -112,6 +112,7 @@ var contentTypes = {
     "cxx": "text/x-c",
     "h": "text/x-c",
     "hh": "text/x-c",
+    "hpp": "text/x-c",
 
     "cs": "text/x-csharp",
 
@@ -356,7 +357,8 @@ module.exports = ext.register("ext/code/code", {
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            if(typeof ceEditor != "undefined")
+                ceEditor.afterOpenFile(ceEditor.getSession());
         });
     },
 

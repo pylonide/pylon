@@ -517,7 +517,8 @@ module.exports = ext.register("ext/editors/editors", {
             this.initEditor(editor);
         
         this.currentEditor = editor;
-        editor.ceEditor.focus();
+        if(editor.ceEditor)
+            editor.ceEditor.focus();
 
         //toHandler.$rbEditor.select();
 
