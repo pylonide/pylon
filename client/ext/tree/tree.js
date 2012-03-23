@@ -190,7 +190,7 @@ module.exports = ext.register("ext/tree/tree", {
         // this.loadProjectTree() the tree itself doesn't try to duplicate
         // our actions
         else {
-            trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+            self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
             trFiles.expandAll();
         }
     },
@@ -470,7 +470,7 @@ module.exports = ext.register("ext/tree/tree", {
 
             // Now set the "get" attribute of the <a:insert> rule so the tree
             // knows to ask webdav for expanded folders' contents automatically
-            trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+            self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
 
             settings.save();
 
@@ -493,7 +493,7 @@ module.exports = ext.register("ext/tree/tree", {
         // Make sure the "get" attribute is empty so the file tree doesn't
         // think it's the one loading up all the data when loadProjectTree
         // expands folders
-        trFilesInsertRule.setAttribute("get", "");
+        self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "");
 
         ide.dispatchEvent("track_action", { type: "reloadtree" });
 

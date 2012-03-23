@@ -54,10 +54,16 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         });
 
         ide.addEventListener("init.ext/tree/tree", function(){
-            setTimeout(function(){
-                _self.nodes.push(trFiles.$ext);
-                decorateNode(trFiles.$ext);
-            }, 200);
+            var tree = trFiles.$ext;
+            
+            _self.nodes.push(tree);
+            
+            tree.addEventListener("dragenter", dragToTreeEnter, false);
+            tree.addEventListener("dragleave", dragToTreeLeave, false);
+            tree.addEventListener("drop", dragToTreeDrop, false);
+            tree.addEventListener("dragover", dragToTreeOver, false);
+            
+            tree.addEventListener("dragexit", noopHandler, false);
         });
 
         ide.addEventListener("init.ext/uploadfiles/uploadfiles", function(){
@@ -66,6 +72,47 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         });
 
         this.dragStateEvent = {"dragenter": dragEnter};
+        var lastHtmlTreeDropNode;
+        var lastTreeDropNode;
+        
+        function dragToTreeLeave(e) {
+            apf.stopEvent(e);
+            apf.setStyleClass(lastHtmlTreeDropNode, null, ["dragAppend"]);
+        }
+        
+        function dragToTreeEnter(e) {
+            apf.stopEvent(e);
+            //apf.setStyleClass(trFiles.$ext, "dragAppend");
+        }
+        
+        function dragToTreeOver(e) {
+            apf.stopEvent(e);
+            var targetHtmlNode = e.target;
+            var targetNode;
+            while(!targetHtmlNode.id && targetHtmlNode.tagName != 'div')
+                targetHtmlNode = targetHtmlNode.parentNode;
+
+            targetNode = apf.xmldb.findXmlNode(targetHtmlNode);
+            
+            if(!targetNode)
+                targetNode = trFiles.xmlRoot.selectSingleNode("folder");
+            
+            if (targetNode.getAttribute("type") != "folder" && targetNode.tagName != "folder") {
+                targetNode = targetNode.parentNode;
+                targetHtmlNode = apf.xmldb.findHtmlNode(targetNode, trFiles);
+            }
+                
+            lastHtmlTreeDropNode = targetHtmlNode;   
+            lastTreeDropNode = targetNode;
+            apf.setStyleClass(targetHtmlNode, "dragAppend");
+        }
+        
+        function dragToTreeDrop(e) {
+            trFiles.select(lastTreeDropNode);
+            dragToTreeLeave.call(this, e);
+            return _self.onBeforeDrop(e);
+        }
+        
         
         function dragLeave(e) {
             apf.stopEvent(e);

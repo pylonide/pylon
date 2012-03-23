@@ -9780,6 +9780,7 @@
         }
 
         .filemgr-dragtree,
+        .filemgr-tree .item-fix.dragAppend .item LABEL .caption,
         .filemgr-treeFocus .item-fix.selected .item LABEL .caption,
         .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption {
             color:white;
