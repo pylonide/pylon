@@ -21,8 +21,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     alone       : true,
     type        : ext.GENERAL,
     
-    nodes: [],
-        
+    nodes       : [],
+    
+    uploadQueue : [],
+    
     init: function() {
         var _self  = this;
 
@@ -50,7 +52,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             _self.nodes.push(tabEditors.$ext);
             decorateNode(tabEditors.$ext);
         });
-        
+
         ide.addEventListener("init.ext/tree/tree", function(){
             _self.nodes.push(trFiles.$ext);
             decorateNode(trFiles.$ext);
@@ -81,7 +83,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         function noopHandler(e) {
             apf.stopEvent(e);
         }
-        
+        /*
         this.StatusBar = {
             $init: function() {
                 if (!sbMain)
@@ -120,7 +122,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         };
             
         this.StatusBar.$init();
-        
+        */
         apf.addEventListener("http.uploadprogress", this.onProgress.bind(this));
     },
     
@@ -164,24 +166,92 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     },
     
     onDrop: function(e) {
-        var _self = this;
+        var node = trFiles.selected;
+        if (!node)
+            node = trFiles.xmlRoot.selectSingleNode("folder");
+            
+        if (node.getAttribute("type") != "folder" && node.tagName != "folder")
+            node = node.parentNode;
+        
         var dt = e.dataTransfer;
         var files = dt.files;
         
-        apf.asyncForEach(files, function(file, next) {
-            _self.StatusBar.start();
+        // hide upload window if visible
+        if (winUploadFiles.visible)
+            winUploadFiles.hide();
+            
+        // show upload activity list
+        boxUploadActivity.show();
+        
+        var file;
+        var sXml = "";
+        for (var i = 0, l = files.length; i < l; i++) {
+            file = files[i];
+            file.targetFolder = node;
+            
+            sXml = '<file name="' + file.name + '" />';
+            mdlUploadActivity.appendXml(sXml);
+            this.addToQueue(file);
+        }
+        
+        if (!this.uploadInProgress)
+            this.uploadNextFile();
+    },
+    
+    addToQueue: function(file) {
+        // add files in dirty state
+        var parent = file.targetFolder;
+        var path = parent.getAttribute("path");
+        var xmlNode = "<file type='fileupload'" +
+            " name='" + file.name + "'" +
+            " path='" + path + "/" + file.name + "'" +
+        "/>";
+        var treeNode = trFiles.add(xmlNode, parent);
+        
+        file.treeNode = treeNode;
+        
+        this.uploadQueue.push(file);
+    },
+    
+    removeFromQueue: function(name) {
+        var file;
+        for (var i = 0, l = this.uploadQueue.length; i < l; i++) {
+            file = this.uploadQueue[i];
+            if (file.name == name) {
+                this.uploadQueue.splice(i, 1);
+                apf.xmldb.removeNode(mdlUploadActivity.queryNode("file[@name='" + name + "']"));
+                apf.xmldb.removeNode(trFiles.getModel().data.selectSingleNode("//file[@name='" + name + "'][@type='fileupload']"));
+                break;
+            }
+        }
+    },
+    
+    uploadNextFile: function() {
+        var _self = this;
+        
+        this.currentFile = this.uploadQueue.shift();
+        
+        // check if there is a file to upload
+        if (this.currentFile) {
+            this.uploadInProgress = true;
+            if (this.hideUploadActivityTimeout) {
+                clearTimeout(this.hideUploadActivityTimeout);
+                this.hideUploadActivityTimeout = null;
+            }
+            
+            //_self.StatusBar.start();
             /** Chrome, Firefox */
             if (apf.hasFileApi) {
                 /** Processing ... */
                 var reader = new FileReader();
                 /** Init the reader event handlers */
-                reader.onloadend = _self.onLoad.bind(_self, file, next);
+                reader.onloadend = this.onLoad.bind(this, this.currentFile);
                 /** Begin the read operation */
-                reader.readAsBinaryString(file);
+                reader.readAsBinaryString(this.currentFile);
             }
             else {
                 /** Safari >= 5.0.2 and Safari < 6.0 */
-                _self.onLoad(file, next, _self.getFormData(file));
+                this.onLoad(this.currentFile, this.getFormData(this.currentFile));
                 /**
                  * @fixme Safari for Mac is buggy when sending XHR using FormData
                  * Problem in their source code causing sometimes `WebKitFormBoundary`
@@ -192,17 +262,19 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                  * @todo For safari 6.0 seems like FileReader will be present
                  */
             }
-        }, this.StatusBar.end);
+        }
+        // no files in queue, upload completed
+        else {
+            _self.uploadInProgress = false;
+            this.hideUploadActivityTimeout = setTimeout(function() {
+                mdlUploadActivity.load("<data />");
+                boxUploadActivity.hide();
+            }, 5000);
+        }
     },
     
-    onLoad: function(file, next, e) {
-        var node = trFiles.selected;
-        if (!node)
-            node = trFiles.xmlRoot.selectSingleNode("folder");
-            
-        if (node.getAttribute("type") != "folder" && node.tagName != "folder")
-            node = node.parentNode;
-            
+    onLoad: function(file, e) {
+        var node     = file.targetFolder;
         var path     = node.getAttribute("path");
         var filename = file.name;
         var index    = 0;
@@ -217,6 +289,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         }
         
         function upload() {
+            _self.currentFile = file;
             var data = e instanceof FormData ? e : e.target.result;
             var oBinary = {
                 filename: file.name,
@@ -229,7 +302,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             }*/
             
             fs.webdav.write(path + "/" + file.name, data, false, oBinary, complete);
-            _self.StatusBar.upload(file);
+            //_self.StatusBar.upload(file);
         }
         
         function complete(data, state, extra) {
@@ -241,30 +314,40 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                         + (state == apf.TIMEOUT
                             ? "The connection timed out."
                             : "The error reported was " + extra.message),
-                    next);
+                    _self.uploadNextFile);
             }
             
             /** Request successful */
             fs.webdav.exec("readdir", [path], function(data) {
                 if (data instanceof Error) {
                     // @todo: in case of error, show nice alert dialog.
-                    return next();
+                    return _self.uploadNextFile();
                 }
                 
                 var strXml = data.match(new RegExp(("(<file path='" + path +
                     "/" + filename + "'.*?>)").replace(/\//g, "\\/")));
                 
                 if(!strXml)
-                    next();
-                    
-                strXml = strXml[1]
-                var oXml = apf.xmldb.appendChild(node, apf.getXml(strXml));
+                    _self.uploadNextFile();
+ 
+                //strXml = strXml[1];
+                //var oXml = apf.xmldb.appendChild(node, apf.getXml(strXml));
 
-                trFiles.select(oXml);
+                // change file from uploading to file to regular file in tree
+                apf.xmldb.setAttribute(file.treeNode, "type", "file");
+                
+                //apf.xmldb.appendChild(node, apf.getXml(strXml));
+//                trFiles.select(oXml);
+                
+/* when open file?
                 if (file.size < MAX_OPENFILE_SIZE)
                     ide.dispatchEvent("openfile", {doc: ide.createDocument(oXml)});
-                
-                next();
+*/
+
+//                apf.xmldb.setAttribute(node, "progress", "100");
+                setTimeout(function() {
+                    _self.uploadNextFile();
+                }, 3000);
             });
         }
         
@@ -275,7 +358,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     onProgress: function(o) {
         var e = o.extra;
         var total = (e.loaded / e.total) * 100;
-        this.StatusBar.progress(total.toFixed());
+        
+        var node = mdlUploadActivity.queryNode("file[@name='" + this.currentFile.name + "']");
+        apf.xmldb.setAttribute(node, "progress", total);
+        //_self.StatusBar.progress(total.toFixed());
     },
     
     getFormData: function(file) {

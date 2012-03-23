@@ -23,21 +23,10 @@
     </a:window>
     
     <a:model id="mdlUploadActivity">
-        <data>
-            <file name="file1.txt" uploading="1" progress="90" />
-            <file name="file2.txt" />
-            <file name="file3.txt" />
-            <file name="file4.txt" />
-            <file name="file5.txt" />
-            <file name="file6.txt" />
-            <file name="file7.txt" />
-            <file name="file8.txt" />
-            <file name="file9.txt" />
-            <file name="file10.txt" />
-        </data>
+        <data />
     </a:model>
     
-    <a:vbox id="boxUploadActivity" height="100" visible="false">
+    <a:vbox id="boxUploadActivity" height="200" visible="false">
         <div class="uploadactivity-header">Upload Activity</div>
         <a:list id="lstUploadActivity"
             skin = "list-uploadactivity"
@@ -55,7 +44,7 @@
                     }
                     else {
                         <div class="uploadactivity-caption">[@name]</div>
-                        <div class="uploadactivity-delete" onclick="alert('todo')"></div>
+                        <div class="uploadactivity-delete" onclick="require('ext/dragdrop/dragdrop').removeFromQueue('{[@name]}')"></div>
                     }
                 ?></a:caption>
             </a:each>
