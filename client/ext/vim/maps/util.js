@@ -27,7 +27,7 @@ module.exports = {
                 cursor.style.backgroundColor = null;
                 cursor.style.opacity = null;
                 cursor.style.border = null;
-                cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
+                cursor.style.borderLeftColor = isDarkTheme ? "#eeeeee" : "#333333";
                 cursor.style.borderLeftStyle = "solid";
                 cursor.style.borderLeftWidth = "2px";
             }
