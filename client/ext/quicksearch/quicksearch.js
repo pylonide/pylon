@@ -100,19 +100,18 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
 
         txtQuickSearch.addEventListener("keyup", function(e){
-            if (txtQuickSearch.getValue().length >= 3) {
-                switch (true){
-                    case (e.keyCode >=48 && e.keyCode <= 90): 
-                    case (e.keyCode >=96 && e.keyCode <= 111):
-                    case (e.keyCode >=186 && e.keyCode <= 191):
-                    case (e.keyCode >=219 && e.keyCode <= 222):
-                        _self.execSearch(false, !!e.shiftKey);
-                        return false;
-                    default:
-                    break;
-                }
+            switch (true){
+                case (e.keyCode >=48 && e.keyCode <= 90): 
+                case (e.keyCode >=96 && e.keyCode <= 111):
+                case (e.keyCode >=186 && e.keyCode <= 191):
+                case (e.keyCode >=219 && e.keyCode <= 222):                
+                    _self.execSearch(false, !!e.shiftKey);
+                    return false;
+                
+                default:
+                  break;
             }
-        });
+        }); 
         
         winQuickSearch.addEventListener("blur", function(e){
             if (!apf.isChildOf(winQuickSearch, e.toElement))
