@@ -52,11 +52,25 @@ return module.exports = ext.register("ext/minimap/minimap", {
         ide.addEventListener("loadsettings", function(e) {
             _self.map_enabled = e.model.queryValue("editors/code/@minimap");
         });
+        
+        tabEditors.addEventListener("afterswitch", function(){
+            if(_self.initFail && !_self.initDone) {
+                setTimeout(function(){
+                        _self.initFail = false;
+                        _self.init();
+                }, 200);
+            }
+        });
     },
 
     init : function() {
         var _self = this;
-
+        
+        if(typeof ceEditor === "undefined") {
+            this.initFail = true;
+            return;
+        }
+        
         apf.importCssString((this.css || ""));
 
         this.editor = ceEditor.$editor;
@@ -95,6 +109,8 @@ return module.exports = ext.register("ext/minimap/minimap", {
         }
 
         this.setupChangeListener();
+        
+        this.initDone = true;
     },
     
     setupChangeListener : function() {

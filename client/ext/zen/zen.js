@@ -81,9 +81,24 @@ module.exports = ext.register("ext/zen/zen", {
 
             _self.updateButtonPosition();
         });
+        
+        tabEditors.addEventListener("afterswitch", function(){
+            if(_self.initFail && !_self.initDone) {
+                setTimeout(function(){
+                        _self.initFail = false;
+                        _self.init();
+                }, 200);
+            }
+        });
     },
 
     init : function(amlNode){
+        var _self = this;
+        if(typeof ceEditor === "undefined") {
+            this.initFail = true;
+            return;
+        }
+        
         // Create all the elements used here
         this.animateZen = document.createElement("div");
         this.animateZen.setAttribute("id", "animateZen");
@@ -125,12 +140,13 @@ module.exports = ext.register("ext/zen/zen", {
         this.animateZen = document.getElementById("animateZen");
         this.animateZenPosition = document.getElementById("animateZenPosition");
 
-        var _self = this;
         vbZen.addEventListener("resize", function(e) {
             if (_self.isFocused) {
                 _self.calculatePositions();
             }
         });
+        
+        this.initDone = true;
     },
 
     updateButtonPosition : function() {
@@ -139,7 +155,7 @@ module.exports = ext.register("ext/zen/zen", {
 
         // Extra safe default width
         var sbWidth = 20;
-        if (ceEditor && ceEditor.$editor)
+        if (ceEditor.$editor)
             sbWidth = ceEditor.$editor.renderer.scrollBar.width;
 
         btnZenFullscreen.setAttribute("right", sbWidth + this.offsetWidth);
