@@ -79,6 +79,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             else
                 lblInsertActive.hide();
         });
+    },
+
+    init : function(){
+        var _self = this;
 
         ide.addEventListener("minimap.visibility", function(e) {
             if (e.visibility === "shown")
@@ -99,21 +103,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     _self.init();
                 }
                 if(editors.currentEditor.ceEditor) {
+                    _self.setSelectionLength();
+
                     _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                     _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
-                        if (typeof lblSelectionLength === "undefined")
-                            return;
-    
-                        var range = ceEditor.$editor.getSelectionRange();
-                        if (range.start.row != range.end.row || range.start.column != range.end.column) {
-                            var doc = ceEditor.getDocument();
-                            var value = doc.getTextRange(range);
-                            lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
-                            lblSelectionLength.show();
-                        } else {
-                            lblSelectionLength.setAttribute("caption", "");
-                            lblSelectionLength.hide();
-                        }
+                        _self.setSelectionLength();
                     });
                 }
             }, 200);
@@ -207,6 +201,22 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(menuItem);
         }
     },
+    
+    setSelectionLength : function() {
+        if (typeof lblSelectionLength === "undefined")
+            return;
+
+        var range = ceEditor.$editor.getSelectionRange();
+        if (range.start.row != range.end.row || range.start.column != range.end.column) {
+            var doc = ceEditor.getDocument();
+            var value = doc.getTextRange(range);
+            lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
+            lblSelectionLength.show();
+        } else {
+            lblSelectionLength.setAttribute("caption", "");
+            lblSelectionLength.hide();
+        }
+    },
 
     toggleStatusBar: function(){
         if(this.expanded) {
@@ -255,7 +265,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     setPosition : function() {
-        if (typeof ceEditor !== "undefined" && ceEditor.$editor) {
+        if (typeof ceEditor != "undefined" && ceEditor.$editor) {
             var _self = this;
             var cw = ceEditor.$editor.renderer.scroller.clientWidth;
             var sw = ceEditor.$editor.renderer.scroller.scrollWidth;

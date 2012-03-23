@@ -112,6 +112,7 @@ var contentTypes = {
     "cxx": "text/x-c",
     "h": "text/x-c",
     "hh": "text/x-c",
+    "hpp": "text/x-c",
 
     "cs": "text/x-csharp",
 
