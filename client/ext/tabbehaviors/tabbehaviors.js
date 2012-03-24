@@ -280,7 +280,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     closeallbutme: function(ignore, callback) {
         // if ignore isn't a page instance, then fallback to current page
         if (!(ignore instanceof apf.page)) {
-            ignore = (ignore.closeall === undefined) ? null : ignore; // oh, wait, it's an an object from closealltotheright/left
+            //ignore = (ignore.closeall === undefined) ? null : ignore; // oh, wait, it's an an object from closealltotheright/left
+            ignore = null;
         }
         
         ignore = ignore || tabEditors.getPage();
