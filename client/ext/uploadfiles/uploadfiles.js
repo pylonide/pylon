@@ -11,7 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var css = require("text!ext/uploadfiles/uploadfiles.css");
 var markup = require("text!ext/uploadfiles/uploadfiles.xml");
-var fs   = require("ext/filesystem/filesystem");
+var dragdrop   = require("ext/dragdrop/dragdrop");
 
 module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     dev         : "Ajax.org",
@@ -49,10 +49,12 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             /*for (var i = 0, l = files.length; i < l; i++) {
                 filenames.push(files[i].fileName);
             }*/
-            _self.startUpload(files);
+            dragdrop.startUpload(files);
         };
         
-        vboxTreeContainer.appendChild(boxUploadActivity);
+        setTimeout(function() {
+            vboxTreeContainer.appendChild(boxUploadActivity);
+        }, 200);
         //trFiles.setAttribute("anchors", "0 0 " + lstUploadActivity.$ext.offsetHeight + " 0");
         
     },

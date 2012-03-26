@@ -52,6 +52,7 @@
                     <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                     <a:icon match="[folder|project]" value="folder.png" />
                     <a:icon match="[file[@type='fileupload']]" value="file-tree-load-spinner.gif" />
+                    <a:css match="[file[@type='fileupload']]" value="fileupload" />
                     <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
                 </a:each>
     

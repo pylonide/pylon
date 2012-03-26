@@ -9837,6 +9837,11 @@
             white-space: nowrap;
         }
 
+        .filemgr-tree .fileupload .item LABEL .caption {
+            color: #a6a6a6;
+            text-shadow : #ffffff 0px 1px 0px;
+        }
+        
         .filemgr-tree .loading .item {
             background : url(images/file-tree-load-spinner.gif) no-repeat 16px 1px;
         }

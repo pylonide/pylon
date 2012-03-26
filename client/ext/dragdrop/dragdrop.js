@@ -215,15 +215,25 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     },
     
     onDrop: function(e) {
+        var dt = e.dataTransfer;
+        var files = dt.files;
+        
+        this.startUpload(files);
+    },
+    
+    checkSelectableFile: function(event) {
+        if (event.selected && event.selected.getAttribute("type") == "fileupload") 
+            return false;
+    },
+    
+    startUpload: function(files) {
+        trFiles.addEventListener("beforeselect", this.checkSelectableFile);
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder");
             
         if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
-        
-        var dt = e.dataTransfer;
-        var files = dt.files;
         
         // hide upload window if visible
         if (winUploadFiles.visible)
@@ -268,10 +278,17 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             file = this.uploadQueue[i];
             if (file.name == name) {
                 this.uploadQueue.splice(i, 1);
-                apf.xmldb.removeNode(mdlUploadActivity.queryNode("file[@name='" + name + "']"));
-                apf.xmldb.removeNode(trFiles.getModel().data.selectSingleNode("//file[@name='" + name + "'][@type='fileupload']"));
+                this.removeCurrentUploadFile(name);
                 break;
             }
+        }
+    },
+    
+    removeCurrentUploadFile: function(name) {
+        apf.xmldb.removeNode(mdlUploadActivity.queryNode("file[@name='" + name + "']"));
+        apf.xmldb.removeNode(trFiles.getModel().data.selectSingleNode("//file[@name='" + name + "'][@type='fileupload']"));
+        if (!mdlUploadActivity.data.childNodes.length) {
+            boxUploadActivity.hide();
         }
     },
     
@@ -315,15 +332,20 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         // no files in queue, upload completed
         else {
             _self.uploadInProgress = false;
+            _self.existingOverwriteAll = false;
+            _self.existingSkipAll = false;
             this.hideUploadActivityTimeout = setTimeout(function() {
                 mdlUploadActivity.load("<data />");
                 boxUploadActivity.hide();
+                trFiles.removeEventListener("beforeselect", _self.checkSelectableFile);
             }, 5000);
         }
     },
     
     onLoad: function(file, e) {
         var node     = file.targetFolder;
+        this.currentFile = file;
+        this.currentFile.e = e;
         
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder");
@@ -339,15 +361,30 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
 
         function check(exists) {
             if (exists) {
+                if (_self.existingOverwriteAll) {
+                    upload();
+                }
+                else if (_self.existingSkipAll) {
+                    _self.removeCurrentUploadFile(filename);
+                    _self.uploadNextFile();
+                }
+                else {
+                    winUploadFileExists.show();
+                    uploadFileExistsMsg.$ext.innerHTML = "\"" + filename + "\" already exists, do you want to replace it?. Replacing it will overwrite it's current contents.";
+                }
+                
+                
+                /*
                 util.confirm(
                     "Are you sure?",
                     "\"" + file.name + "\" already exists, do you want to replace it?",
                     "A file or folder with the same name already exists. "
                     + "Replacing it will overwrite it's current contents.",
                     removeExisting);
+                */
             }
             else {
-                upload();
+                upload(file, e);
             }
             /*if (exists) {
                 filename = file.name + "." + index++;
@@ -356,13 +393,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 upload();*/
         }
         
-        function removeExisting(){
-            apf.xmldb.removeNode(trFiles.queryNode('//file[@path="' + path + "/" + filename + '"]'));
-            fs.remove(path + "/" + filename, upload);
-        }
-        
-        function upload() {
-            _self.currentFile = file;
+        function upload(file, e) {
+            file = file || _self.currentFile;
+            e = e instanceof ProgressEvent ? e : _self.currentFile.e;
+            
             var data = e instanceof FormData ? e : e.target.result;
             var oBinary = {
                 filename: file.name,
@@ -377,6 +411,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             fs.webdav.write(path + "/" + file.name, data, false, oBinary, complete);
             //_self.StatusBar.upload(file);
         }
+        _self.upload = upload;
         
         function complete(data, state, extra) {
             if (state != apf.SUCCESS) {
@@ -428,7 +463,32 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         fs.exists(path + "/" + file.name, check);
     },
     
+    skip: function() {
+        this.removeCurrentUploadFile(this.currentFile.name);
+        this.uploadNextFile();
+    },
+    
+    skipAll: function() {
+        this.existingSkipAll = true;
+        this.skip();
+    },
+    
+    overwrite: function() {
+        var node = this.currentFile.targetFolder;
+        var path     = node.getAttribute("path");
+        var filename = this.currentFile.name;
+        
+        apf.xmldb.removeNode(trFiles.queryNode('//file[@path="' + path + "/" + filename + '"]'));
+        fs.remove(path + "/" + filename, this.upload);
+    },
+    
+    overwriteAll: function() {
+        this.existingOverwriteAll = true;
+        this.overwrite();
+    },
+    
     onProgress: function(o) {
+        if(!this.currentFile) return;    
         var e = o.extra;
         var total = (e.loaded / e.total) * 100;
         
