@@ -121,6 +121,13 @@ app.configure('production', function(){
 });
 // *******************************************************
 ]]></item>
+            <item value="js" icon="page_white_code.png" caption="Node.js web server"><![CDATA[var http = require('http');
+http.createServer(function (req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('Hello World from Cloud9\n');
+}).listen(process.env.PORT);
+]]>
+            </item>
         </templates>
     </a:model>
 </a:application>
