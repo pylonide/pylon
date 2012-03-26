@@ -44,22 +44,29 @@ exports.staticProvider = function (root, mount) {
 exports.errorHandler = function() {
     return function(err, req, res, next) {
         if (!(err instanceof Error)) {
-            err = new error.InternalServerError(err.message || err.toString());
+            var msg;
+            if (err.message)
+                msg = err.message;
+            else
+                msg = JSON.stringify(err);
+            
+            err = new error.InternalServerError(msg);
         }
         else if (!(err instanceof error.HttpError)) {
             err.code = 500;
             err.defaultMessage = "Internal Server Error";
         }
 
-        var isXHR = req.parsedUrl.query.xhr || (req.headers["x-requested-with"] && req.headers["x-requested-with"].toLowerCase() == "xmlhttprequest");
+        var isXHR = req.url.indexOf("xhr=1") > -1 ||
+                (req.headers["x-requested-with"] && req.headers["x-requested-with"].toLowerCase() == "xmlhttprequest");
         if (!isXHR) {
             fs.readFile(__dirname + "/view/error.tmpl.html", "utf8", function(e, html) {
                 if (e)
                     return next(e);
-
+                
                 html = html
                     .toString('utf8')
-                    .replace(/\<%errormsg%\>/g, err.toString());
+                    .replace(/\<%errormsg%\>/g, err.message || err);
 
                 res.writeHead(err.code || 500, {"Content-Type": "text/html"});
                 return res.end(html);

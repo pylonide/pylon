@@ -120,10 +120,22 @@ module.exports = ext.register("ext/console/console", {
                 this.write("Working directory changed.");
             }
         },
+        
         error: function(message) {
             Logger.log(message.body);
             Logger.log("", "divider");
         },
+        
+        /**
+         * Info does the same as error in this case
+         * but it's here for the future, we might want to distinguise these
+         * on colors or something...
+         */
+        info: function (message) {
+            Logger.log(message.body);
+            Logger.log("", "divider");
+        },
+        
         __default__: function(message) {
             var res = message.body;
             if (res) {
@@ -148,8 +160,11 @@ module.exports = ext.register("ext/console/console", {
     },
 
     clear: function() {
-        if (txtOutput)
-            txtOutput.clear();
+        if (txtConsole) {
+            txtConsole.clear();
+        }
+        
+        return false;
     },
 
     switchconsole : function() {
@@ -221,7 +236,11 @@ module.exports = ext.register("ext/console/console", {
                 command: cmd,
                 argv: argv,
                 line: line,
-                cwd: this.getCwd()
+                cwd: this.getCwd(),
+                // the requireshandling flag indicates that this message cannot
+                // be silently ignored by the server.
+                // An error event should be thrown if no plugin handles this message.
+                requireshandling: true
             };
 
             if (cmd.trim() === "npm")
@@ -240,6 +259,8 @@ module.exports = ext.register("ext/console/console", {
 
     onMessage: function(e) {
         var message = e.message;
+        if (!message.type)
+            return;
         if (message.type === "node-data")
             return Logger.logNodeStream(message.data, message.stream, true, ide);
 
@@ -269,6 +290,18 @@ module.exports = ext.register("ext/console/console", {
             u = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
 
         return "[" + u + "@cloud9]:" + this.$cwd + "$" + ((" " + suffix) || "");
+    },
+    
+    hook: function() {
+        var _self = this;
+        // Listen for new extension registrations to add to the
+        // hints
+        ide.addEventListener("ext.register", function(e){
+            if (e.ext.commands)
+                apf.extend(_self.allCommands, e.ext.commands);
+        });
+
+        ext.initExtension(this);
     },
 
     init: function(amlNode){

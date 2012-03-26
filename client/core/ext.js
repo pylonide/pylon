@@ -193,6 +193,24 @@ module.exports = ext = {
         });
     },
 
+    enableExt : function(path) {
+        var ext = require(path);
+        if(!ext.enable)
+            return;
+
+        ext.enable();
+        mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+    },
+
+    disableExt : function(path) {
+        var ext = require(path);
+        if(!ext.disable)
+            return;
+
+        ext.disable();
+        mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 0);
+    },
+
     execCommand: function(cmd, data) {
         if (cmd)
             cmd = cmd.trim();
@@ -210,7 +228,16 @@ module.exports = ext = {
                 if (oExt.commands[cmd].msg)
                     consoleExt.write(oExt.commands[cmd].msg);
             });
-            return oExt[cmd](data);
+            var res = oExt[cmd](data);
+            
+            // if the command specifies a return value, then pass that back
+            if (typeof res !== "undefined") {
+                return res;
+            }
+            
+            // otherwise respond with 'false'
+            // I would expected true here but soit; console.js checks explicitly for 'false'
+            return false;
         }
     }
 };

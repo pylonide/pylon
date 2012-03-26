@@ -27,15 +27,17 @@ module.exports = ext.register("ext/zen/zen", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    skin     : {
-        id   : "zen",
-        data : skin,
-        "media-path" : ide.staticPrefix + "/style/images/",
+    skin     : {
+        id   : "zen",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/style/images/",
         "icon-path"  : ide.staticPrefix + "/style/icons/"
-    },
+    },
     isFocused : false,
     neverShown : true,
 
+    defaultOffset : 11,
+    offsetWidth : 11,
     initialWidth : 0.70,
 
     handleLeftMove : false,
@@ -69,6 +71,15 @@ module.exports = ext.register("ext/zen/zen", {
             var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/zen/text()");
             xmlSettings.nodeValue = _self.initialWidth;
             return true;
+        });
+
+        ide.addEventListener("minimap.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateButtonPosition();
         });
     },
 
@@ -107,12 +118,9 @@ module.exports = ext.register("ext/zen/zen", {
             visible: false
         }));
 
-        // @TODO adjust position based on scrollbar width
-        //if (!(apf.isChrome && apf.versionChrome >= 14) && !(apf.isSafari && apf.versionSafari >= 5))
-            btnZenFullscreen.setAttribute("right", "26");
-
-        if (apf.isWin)
-            btnZenFullscreen.setAttribute("right", "28");
+        setTimeout(function() {
+            _self.updateButtonPosition();
+        });
 
         this.animateZen = document.getElementById("animateZen");
         this.animateZenPosition = document.getElementById("animateZenPosition");
@@ -123,6 +131,18 @@ module.exports = ext.register("ext/zen/zen", {
                 _self.calculatePositions();
             }
         });
+    },
+
+    updateButtonPosition : function() {
+        if (!window["btnZenFullscreen"])
+            return;
+
+        // Extra safe default width
+        var sbWidth = 20;
+        if (ceEditor && ceEditor.$editor)
+            sbWidth = ceEditor.$editor.renderer.scrollBar.width;
+
+        btnZenFullscreen.setAttribute("right", sbWidth + this.offsetWidth);
     },
 
     calculatePositions : function() {

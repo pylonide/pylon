@@ -40,7 +40,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         "tab7": {hint: "navigate to the seventh tab", msg: "Switching to tab 7."},
         "tab8": {hint: "navigate to the eighth tab", msg: "Switching to tab 8."},
         "tab9": {hint: "navigate to the ninth tab", msg: "Switching to tab 9."},
-        "tab0": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
+        "tab10": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
         "revealtab": {hint: "reveal current tab in the file tree"},
         "nexttab": {hint: "navigate to the next tab in the stack of accessed tabs"},
         "previoustab": {hint: "navigate to the previous tab in the stack of accessed tabs"}
@@ -101,35 +101,41 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         caption : "Reveal in File Tree",
                         onclick : function() {
                             _self.revealtab(tabEditors.contextPage);
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close Tab",
                         onclick : function() {
                             _self.closetab(tabEditors.contextPage);
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close All Tabs",
-                        onclick : this.closealltabs.bind(this)
+                        onclick : this.closealltabs.bind(this),
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close Other Tabs",
                         onclick : function() {
                             _self.closeallbutme(tabEditors.contextPage);
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close Tabs to the Right",
                         onclick : function() {
                             _self.closealltotheright();
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     }),
                     new apf.item({
                         caption : "Close Tabs to the Left",
                         onclick : function() {
                             _self.closealltotheleft();
-                        }
+                        },
+                        disabled : "{!!!tabEditors.activepage}"
                     })
                 ]
             }))
@@ -145,13 +151,22 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         mnuContextTabs.addEventListener("prop.visible", function(e) {
+            // If there are only 0 or 1 pages, disable both and return
+            if (tabEditors.getPages().length <= 1) {
+                mnuContextTabs.childNodes[3].setAttribute('disabled', true);
+                mnuContextTabs.childNodes[4].setAttribute('disabled', true);
+                mnuContextTabs.childNodes[5].setAttribute('disabled', true);
+                return;
+            }
+
             var page = tabEditors.getPage();
             var pages = tabEditors.getPages();
-            
+
             // be optimistic, reset menu items to disabled
+            mnuContextTabs.childNodes[3].setAttribute('disabled', false);
             mnuContextTabs.childNodes[4].setAttribute('disabled', false);
             mnuContextTabs.childNodes[5].setAttribute('disabled', false);
-                
+
             // if last tab, remove "close to the right"
             if (page.nextSibling.localName !== "page") {
                 mnuContextTabs.childNodes[4].setAttribute('disabled', true);
@@ -249,13 +264,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
         });
     },
-
-    closetab: function(page) {
-        if (!page)
-            page = tabEditors.getPage();
-
-        if (page)
-            tabEditors.remove(page);
+    
+    closetab: function() {
+        var page = tabEditors.getPage();
+        tabEditors.remove(page);
         return false;
     },
 
@@ -266,6 +278,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     // ignore is the page that shouldn't be closed, null to close all tabs
     closeallbutme: function(ignore, callback) {
+        // if ignore isn't a page instance then fallback to current page
+        if (!(ignore instanceof apf.page)) {
+            ignore = null;
+        }
+        
         ignore = ignore || tabEditors.getPage();
         this.changedPages = [];
         this.unchangedPages = [];
@@ -431,14 +448,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     tab7: function() {return this.showTab(7);},
     tab8: function() {return this.showTab(8);},
     tab9: function() {return this.showTab(9);},
-    tab0: function() {return this.showTab(10);},
+    tab10: function() {return this.showTab(10);},
 
     showTab: function(nr) {
-        var item = this.nodes[(nr - 1) + this.menuOffset];
-        if (item && item.relPage) {
-            tabEditors.set(item.relPage);
+        // our indexes are 0 based an the number coming in is 1 based
+        nr--;
+        var pages = tabEditors.getPages();
+        if (!pages[nr]) {
             return false;
         }
+        
+        tabEditors.set(pages[nr]);
+        return false;
     },
 
     /**
