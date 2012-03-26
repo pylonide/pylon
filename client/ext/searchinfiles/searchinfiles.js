@@ -61,7 +61,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var _self = this;
         
         winSearchInFiles.onhide = function() {
-            ceEditor.focus();
+            if (typeof ceEditor != "undefined")
+                ceEditor.focus();
             trFiles.removeEventListener("afterselect", _self.setSearchSelection);
         };
         winSearchInFiles.onshow = function() {
