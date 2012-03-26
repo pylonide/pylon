@@ -34,12 +34,18 @@ var execAction = function(cmd, data) {
         argv: data.argv
     });
 
-    if (ext.execCommand(cmd, data) !== false) {
+    txtConsoleInput.disable();
+    
+    consoleSpinner.$ext.style.display = "block";
+    consoleSpinner.visible = true;
+        
+    setTimeout(function(){
+    //if (ext.execCommand(cmd, data) !== false) {    
         var commandEvt = "consolecommand." + cmd;
         var consoleEvt = "consolecommand";
         var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
         var consoleEvResult = ide.dispatchEvent(consoleEvt, { data: data });
-
+        
         if (commandEvResult !== false && consoleEvResult !== false) {
             if (!ide.onLine)
                 this.write("Cannot execute command. You are currently offline.");
@@ -52,6 +58,7 @@ var execAction = function(cmd, data) {
             return false;
         }
     }
+   // }, 5000);
     return true;
 };
 
@@ -281,6 +288,12 @@ module.exports = ext.register("ext/console/console", {
         else
             this.messages.__default__.call(this, message);
 
+        txtConsoleInput.setValue("");
+        txtConsoleInput.enable();
+        
+        consoleSpinner.$ext.style.display = "none";
+        consoleSpinner.visible = false;
+        
         ide.dispatchEvent("consoleresult." + message.subtype, { data: message.body });
     },
 
@@ -412,12 +425,9 @@ module.exports = ext.register("ext/console/console", {
             var newVal = cmdHistory.getNext();
             if (newVal)
                 input.setValue(newVal);
-            else
-                input.setValue("");
         };
         this.keyEvents[KEY_CR] = function(input) {
             _self.evalCmd(input.getValue());
-            input.setValue("");
         };
 
         apf.extend(this.allCommands, ext.commandsLut);

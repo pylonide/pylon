@@ -9070,7 +9070,7 @@
         }
 
         .tb_consoleDisabled .sbtb_middle INPUT {
-            color : #CCC;
+            color : #636363;
         }
 
         .tb_consoleDisabled .sbtb_middle{
