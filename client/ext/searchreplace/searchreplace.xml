@@ -12,7 +12,8 @@
         <a:vbox edge="15 10 20" padding="5">
             <a:hbox align="center">
                 <a:label width="75">Search</a:label>
-                <a:textbox id="txtFind" flex="1" focusselect="true" />
+                <a:textbox id="txtFind" flex="1" focusselect="true"/>
+                <div id="divSearchReplaceCount"><span class="searchIter" id="spanSearchReplaceIter">0</span><span class="searchTotal" id="spanSearchReplaceTotal">0</span></div>
             </a:hbox>
             <a:hbox id="barSingleReplace" align="center">
                 <a:label width="75">Replace With</a:label>
