@@ -325,7 +325,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         }
         
         
-        oIter.innerHTML = String(crtIdx++);
+        oIter.innerHTML = String(++crtIdx);
         oTotal.innerHTML = "of " + ranges.length;
     },
     
