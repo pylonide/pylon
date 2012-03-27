@@ -117,15 +117,12 @@
       }
   
       .searchtree .selected U{
-          background-color: #666666;
-          color: black;
           -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
           border-radius: 3px;
       }
   
       .searchtreeFocus .selected U, .tree .dragAppend U{
-          color: black;
           -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
           border-radius: 3px;
