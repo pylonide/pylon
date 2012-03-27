@@ -18,14 +18,14 @@ oop.inherits(ProxyDocument, Document);
     this.setDocument = function (newDocument) {
         if (this.doc == newDocument)
             return this.doc;
-            
+
         if (this.doc) {
             this.doc.removeEventListener("change", this.$onChange);
         }
-        
+
         this.doc = newDocument;
         this.doc.addEventListener("change", this.$onChange);
-        
+
         return this.doc;
     };
 
