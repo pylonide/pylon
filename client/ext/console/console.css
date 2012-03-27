@@ -3,6 +3,7 @@
 }
 .console_text div {
     padding: 2px 10px;
+    padding-left: 25px;
 }
 .cli_divider {
     display: block;
@@ -11,6 +12,10 @@
 }
 .console_text a:link, .console_text a:hover, .console_text a:active, .console_prompt {
     color: #86C2F6;
+    padding-left: 25px;
+}
+.console_text .console_prompt {
+    padding-left: 25px;   
 }
 .console_text a:visited {
     color: #909090;
@@ -18,7 +23,7 @@
 .console_text .console_prompt:last-of-type {
     background-image: url(http://a-cdn.apartmenttherapy.com/assets/google-reader-icon-47ebc2ad6b50f61daec777017c88befb.png);
     background-repeat: no-repeat;
-    background-position: -8px 0px;
+    background-position: -0px 0px;
 }
 
 .cmd_msg > span { float: left; }
