@@ -239,6 +239,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     },
     
     startUpload: function(files) {
+        // set number of files user wants to upload, used to check if we should 
+        // select and open the file on upload complete
+        this.numFilesUploaded = files.length;
+        
         trFiles.addEventListener("beforeselect", this.checkSelectableFile);
         var node = trFiles.selected;
         if (!node)
@@ -374,7 +378,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         function check(exists) {
             if (exists) {
                 if (_self.existingOverwriteAll) {
-                    upload();
+                    _self.overwrite();
                 }
                 else if (_self.existingSkipAll) {
                     _self.removeCurrentUploadFile(filename);
@@ -382,18 +386,16 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 }
                 else {
                     winUploadFileExists.show();
+                    if (_self.uploadQueue.length) {
+                        btnUploadOverwriteAll.show();
+                        btnUploadSkipAll.show();
+                    }
+                    else {
+                        btnUploadOverwriteAll.hide();
+                        btnUploadSkipAll.hide();
+                    }
                     uploadFileExistsMsg.$ext.innerHTML = "\"" + filename + "\" already exists, do you want to replace it?. Replacing it will overwrite it's current contents.";
                 }
-                
-                
-                /*
-                util.confirm(
-                    "Are you sure?",
-                    "\"" + file.name + "\" already exists, do you want to replace it?",
-                    "A file or folder with the same name already exists. "
-                    + "Replacing it will overwrite it's current contents.",
-                    removeExisting);
-                */
             }
             else {
                 upload(file, e);
@@ -450,23 +452,20 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 if(!strXml)
                     _self.uploadNextFile();
  
-                //strXml = strXml[1];
-                //var oXml = apf.xmldb.appendChild(node, apf.getXml(strXml));
-
                 // change file from uploading to file to regular file in tree
                 apf.xmldb.setAttribute(file.treeNode, "type", "file");
                 
                 //apf.xmldb.appendChild(node, apf.getXml(strXml));
-//                trFiles.select(oXml);
+                if (_self.numFilesUploaded == 1) {
+                    trFiles.select(file.treeNode);
                 
-/* when open file?
-                if (file.size < MAX_OPENFILE_SIZE)
-                    ide.dispatchEvent("openfile", {doc: ide.createDocument(oXml)});
-*/
+                    if (file.size < MAX_OPENFILE_SIZE)
+                        ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode)});
+                }
 
                 //setTimeout(function() {
                     _self.uploadNextFile();
-                //}, 3000);
+                //}, 1000);
             });
         }
         

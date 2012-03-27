@@ -68,11 +68,38 @@
         </a:vbox>
     
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnUploadOverwriteAll" skin="btn-default-css3" class="btn-green" onclick="winUploadFileExists.hide();require('ext/dragdrop/dragdrop').overwriteAll()">Overwrite all</a:button>
-            <a:button id="btnUploadSkipAll" skin="btn-default-css3" class="btn-red" onclick="winUploadFileExists.hide();require('ext/dragdrop/dragdrop').skipAll()">Skip all</a:button>
+            <a:button id="btnUploadOverwriteAll" 
+                skin="btn-default-css3" 
+                class="btn-green" 
+                onclick="
+                    winUploadFileExists.hide();
+                    require('ext/dragdrop/dragdrop').overwriteAll()
+                " 
+                visible="false">Overwrite all</a:button>
+            <a:button id="btnUploadSkipAll" 
+                skin="btn-default-css3" 
+                class="btn-red" 
+                onclick="
+                    winUploadFileExists.hide();
+                    require('ext/dragdrop/dragdrop').skipAll()
+                "
+                visible="false">Skip all</a:button>
             <a:filler/>
-            <a:button id="btnUploadOverwrite" default="3" skin="btn-default-css3" class="btn-green" onclick="winUploadFileExists.hide();require('ext/dragdrop/dragdrop').overwrite()">Overwrite</a:button>
-            <a:button id="btnUploadSkip" skin="btn-default-css3" class="btn-red" onclick="winUploadFileExists.hide();require('ext/dragdrop/dragdrop').skip()">Skip</a:button>
+            <a:button id="btnUploadOverwrite" 
+                default="3" 
+                skin="btn-default-css3" 
+                class="btn-green" 
+                onclick="
+                    winUploadFileExists.hide();
+                    require('ext/dragdrop/dragdrop').overwrite()
+                ">Overwrite</a:button>
+            <a:button id="btnUploadSkip" 
+                skin="btn-default-css3" 
+                class="btn-red" 
+                onclick="
+                    winUploadFileExists.hide();
+                    require('ext/dragdrop/dragdrop').skip()
+                ">Skip</a:button>
         </a:hbox>
     </a:window>
 </a:application>
