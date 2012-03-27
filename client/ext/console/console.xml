@@ -3,7 +3,6 @@
         <a:vbox anchors="0 0 0 0">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
-                    <a:button id="consoleSpinner" skin="btn_icon_only" icon="loader.gif" visible="false" margin="2 2 0 0" /> 
                     <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"
                       onclick  = "
                         if (tabConsole.activepagenr == 0)
@@ -33,7 +32,7 @@
                 </a:hbox>
                 <a:page id="pgConsole" caption="Console" name="console">
                     <a:text id="txtConsole"
-                      margin     = "3 0 0 0"
+                      margin     = "3 0 0 20"
                       anchors    = "0 17 0 0"
                       flex       = "1"
                       scrolldown = "true"

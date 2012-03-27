@@ -9,11 +9,17 @@
     border-top: 1px solid #444;
     margin: 6px 0 6px 0;
 }
-.console_text a:link, .console_text a:hover, .console_text a:active {
+.console_text a:link, .console_text a:hover, .console_text a:active, .console_prompt {
     color: #86C2F6;
 }
 .console_text a:visited {
     color: #909090;
 }
+.console_text .console_prompt:last-of-type {
+    background-image: url(http://a-cdn.apartmenttherapy.com/assets/google-reader-icon-47ebc2ad6b50f61daec777017c88befb.png);
+    background-repeat: no-repeat;
+    background-position: -8px 0px;
+}
+
 .cmd_msg > span { float: left; }
 .cmd_msg > span > span { margin:0 0 0 25px; }

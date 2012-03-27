@@ -36,11 +36,8 @@ var execAction = function(cmd, data) {
 
     txtConsoleInput.disable();
     
-    consoleSpinner.$ext.style.display = "block";
-    consoleSpinner.visible = true;
-        
     setTimeout(function(){
-    //if (ext.execCommand(cmd, data) !== false) {    
+    if (ext.execCommand(cmd, data) !== false) {    
         var commandEvt = "consolecommand." + cmd;
         var consoleEvt = "consolecommand";
         var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
@@ -58,7 +55,7 @@ var execAction = function(cmd, data) {
             return false;
         }
     }
-   // }, 5000);
+    }, 1500);
     return true;
 };
 
@@ -288,12 +285,9 @@ module.exports = ext.register("ext/console/console", {
         else
             this.messages.__default__.call(this, message);
 
-        txtConsoleInput.setValue("");
+        txtConsoleInput.setValue(""); // remove content from command line
         txtConsoleInput.enable();
-        
-        consoleSpinner.$ext.style.display = "none";
-        consoleSpinner.visible = false;
-        
+    
         ide.dispatchEvent("consoleresult." + message.subtype, { data: message.body });
     },
 

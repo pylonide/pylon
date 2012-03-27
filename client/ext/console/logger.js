@@ -190,7 +190,6 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
 
 var messages = {
     divider: "<span class='cli_divider'></span>",
-    prompt: "<span style='color:#86c2f6'>__MSG__</span>",
     command: "<span style='color:#86c2f6'><span>&gt;&gt;&gt;</span><div>__MSG__</div></span>"
 };
 
@@ -198,10 +197,6 @@ module.exports.log = function(msg, type, pre, post, useOutput) {
     msg = msg.toString().escapeHTML();
     if (!type)
         type = "log";
-
-    if (messages[type]) {
-        msg = messages[type].replace("__MSG__", msg);
-    }
 
     var out = getOutputElement(useOutput);
     var parentEl = out.element;
