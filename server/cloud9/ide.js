@@ -311,7 +311,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
         if (!user)
             return User.VISITOR_PERMISSIONS;
         else
-            return user.getPermissions();
+            return user.getPermissions() || User.VISITOR_PERMISSIONS;
     };
 
     this.hasUser = function(username) {
