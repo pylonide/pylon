@@ -9761,7 +9761,12 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
-
+        
+        .filemgr-tree .item-fix.dragAppend .label-content > LABEL {
+            background: url(images/tree_upload_icon.png) no-repeat 0 0 !important;
+            background-position: 3 0;
+        }
+        
         .filemgr-tree .item-fix.dragDenied {
 
         }

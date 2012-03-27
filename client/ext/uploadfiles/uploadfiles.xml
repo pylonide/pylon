@@ -2,6 +2,7 @@
     
     <a:window id="winUploadFiles"
       onshow  = "require('ext/uploadfiles/uploadfiles').onShow()"
+      onclose = "require('ext/uploadfiles/uploadfiles').onClose()"
       title   = "Upload Files"
       buttons = "close"
       skin    = "bk-window"
@@ -11,12 +12,13 @@
       width   = "354"
       kbclose = "true">
         <a:vbox edge="10" padding="5" align="center">
-            <a:vbox id="uploadDropArea" class="uploadDropArea" align="center" pack="center">
+            <a:vbox id="uploadDropArea" class="uploadDropArea" align="center" pack="center" padding="15">
                 <div class="uploadText"></div>
-                <input id="fileUploadSelect" type="file" multiple="multiple" />
+                <a:button id="fileUploadSelectBtn" skin="btn-default-css3">Select files to upload</a:button>
             </a:vbox>
             <div style="color: #838383">Your files will instantly start uploading to: <span id="uplTargetFolder"></span></div>
-        </a:vbox>    
+        </a:vbox>
+        <input id="fileUploadSelect" type="file" multiple="multiple" />
         <a:hbox padding="10" pack="end" edge="6 10 10">
             <a:button onclick="winUploadFiles.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>
@@ -33,8 +35,6 @@
             model = "mdlUploadActivity"
             flex="1"
             scrollbar = "sbShared 2 2 2"
-            onshow2='trFiles.setProperty("scrollbar", "sbShared 2 2 " + this.height);
-    sbShared.setProperty("bottom", this.height);'
         >
             <a:each match="[file]">
                 <a:caption><?lm

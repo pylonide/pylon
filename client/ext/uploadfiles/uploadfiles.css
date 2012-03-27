@@ -23,3 +23,12 @@
     width: 245px;
     background: url(/static/ext/uploadfiles/style/images/dragdrop-here-text.png) no-repeat 0 0;
 }
+
+#fileUploadSelect {
+    position: absolute;
+    top: 115px;
+    left: 86px;
+    width: 181px;
+    height: 24px;
+    opacity: 0;
+}

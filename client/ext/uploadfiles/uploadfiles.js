@@ -43,6 +43,22 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         this.filebrowser = fileUploadSelect.$ext;
         this.filebrowser.addEventListener('change', handleFileSelect, false);
         
+        fileUploadSelect.$ext.addEventListener("mouseover", function() {
+            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
+        });
+        
+        fileUploadSelect.$ext.addEventListener("mouseout", function() {
+            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3", ["btn-default-css3Over"]);
+        });
+        
+        fileUploadSelect.$ext.addEventListener("mousedown", function() {
+            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Down");
+        });
+        
+        fileUploadSelect.$ext.addEventListener("mouseup", function() {
+            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3", ["btn-default-css3Down"]);
+        });
+        
         function handleFileSelect(e){
             //var filenames = [];
             var files = e.target.files;
@@ -66,6 +82,13 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         }
         
         uplTargetFolder.$ext.innerHTML = this.getTargetFolder().getAttribute("name");
+        
+        // disable tabEditors dropzone for upload
+        tabEditors.$ext.disableDropbox = true;
+    },
+    
+    onClose : function() {
+        tabEditors.$ext.disableDropbox = false;
     },
     
     getTargetFolder : function(){

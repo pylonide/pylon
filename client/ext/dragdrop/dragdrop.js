@@ -13,7 +13,7 @@ var fs   = require("ext/filesystem/filesystem");
 
 var MAX_UPLOAD_SIZE = 52428800;
 var MAX_OPENFILE_SIZE = 2097152;
-var MAX_CONCURRENT_FILES = 10;
+var MAX_CONCURRENT_FILES = 20;
 
 module.exports = ext.register("ext/dragdrop/dragdrop", {
     dev         : "Ajax.org",
@@ -115,21 +115,33 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         
         
         function dragLeave(e) {
+            if (this.disableDropbox)
+                return;
+            
             apf.stopEvent(e);
             apf.setStyleClass(this, null, ["over"]);
         }
         
         function dragEnter(e) {
+            if (this.disableDropbox)
+                return;
+                
             apf.stopEvent(e);
             apf.setStyleClass(this.dropbox, "over");
         }
         
         function dragDrop(e) {
+            if (this.disableDropbox)
+                return;
+            
             dragLeave.call(this, e);
             return _self.onBeforeDrop(e);
         }
         
         function noopHandler(e) {
+            if (this.disableDropbox)
+                return;
+            
             apf.stopEvent(e);
         }
         /*
@@ -452,10 +464,9 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                     ide.dispatchEvent("openfile", {doc: ide.createDocument(oXml)});
 */
 
-//                apf.xmldb.setAttribute(node, "progress", "100");
-                setTimeout(function() {
+                //setTimeout(function() {
                     _self.uploadNextFile();
-                }, 3000);
+                //}, 3000);
             });
         }
         
