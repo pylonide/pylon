@@ -96,7 +96,8 @@ module.exports = ext.register("ext/watcher/watcher", {
                 );
                 btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
                 btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
-            } else if (changedPaths[path]) {
+            }
+            else if (changedPaths[path]) {
                 util.question(
                     "File changed, reload tab?",
                     path + " has been changed by another application.",
@@ -170,38 +171,45 @@ module.exports = ext.register("ext/watcher/watcher", {
 
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
 
-            if (expandedPaths[path])
+            // allow another plugin to change the watcher behavior
+            if (ide.dispatchEvent("beforewatcherchange", {
+                path: path
+            }) === false)
+                return;
+
+            if (expandedPaths[path]) {
                 return ide.dispatchEvent("treechange", {
                     path    : path,
                     files   : message.files
                 });
+            }
             if (!pages.some(function (page) {
                 return page.$model.data.getAttribute("path") == path;
             }))
                 return;
             switch (message.subtype) {
-            case "create":
-                break;
-            case "remove":
-                if (!removedPaths[path]) {
-                    removedPaths[path] = path;
-                    ++removedPathCount;
-                    checkPage();
-                    /*
-                    ide.dispatchEvent("treeremove", {
-                        path : path
-                    });
-                    */
-                }
-                break;
-            case "change":
-                if (!changedPaths[path] &&
-                    (new Date(message.lastmod).getTime() != new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime())) {
-                    changedPaths[path] = path;
-                    ++changedPathCount;
-                    checkPage();
-                }
-                break;
+                case "create":
+                    break;
+                case "remove":
+                    if (!removedPaths[path]) {
+                        removedPaths[path] = path;
+                        ++removedPathCount;
+                        checkPage();
+                        /*
+                        ide.dispatchEvent("treeremove", {
+                            path : path
+                        });
+                        */
+                    }
+                    break;
+                case "change":
+                    if (!changedPaths[path] &&
+                        (new Date(message.lastmod).getTime() != new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime())) {
+                        changedPaths[path] = path;
+                        ++changedPathCount;
+                        checkPage();
+                    }
+                    break;
             }
         });
 

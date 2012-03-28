@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -27,7 +27,7 @@ var skin = require("text!ext/colorpicker/skin.xml");
 /**
  * Creates an ACE range object that points to the start of the color (row, column)
  * and the end of the color (row, column) inside the document.
- * 
+ *
  * @param {Number} row
  * @param {Number} col
  * @param {String} line
@@ -72,7 +72,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     /**
      * Initializes the plugin; inserts markup and adds event listeners to different
      * areas of the UI.
-     * 
+     *
      * @type {void}
      */
     init: function() {
@@ -152,7 +152,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
      * and hook the event listeners of the codetools plugin.
      * The codetools plugin emits events when the user moves her mouse and we then
      * detect if the mouse pointer is hovering a color we recognize.
-     * 
+     *
      * @type {void}
      */
     hook: function() {
@@ -184,7 +184,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" 
+            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg"
               || e.amlEditor.syntax == "html" || (line && line.indexOf("<a:skin") > -1)))
                 return;
 
@@ -206,7 +206,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg" 
+            if (!(e.amlEditor.syntax == "css" || e.amlEditor.syntax == "svg"
               || e.amlEditor.syntax == "html" || (line && line.indexOf("<a:skin") > -1)))
                 return;
             //do not show anything when a selection is made...
@@ -252,7 +252,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     /**
      * Show a marker/ tooltip on top of the code that is a color of the format
      * we recognize.
-     * 
+     *
      * @param {Range} pos
      * @param {Editor} editor
      * @param {String} line
@@ -294,7 +294,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     /**
      * Hide all markers/ tooltips that are currently visible. Exceptions can be
      * provided via the [exceptions] argument.
-     * 
+     *
      * @param {Editor} editor
      * @param {Array} exceptions
      * @type {void}
@@ -321,7 +321,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
      * Parses any color string and returns an object with the type of color (hex,
      * rgb or hsb), the color object or string (in the case of hex) and the hex
      * representation of that color.
-     * 
+     *
      * @param {String} color
      * @type {Object}
      */
@@ -329,15 +329,15 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var ret = {
             orig: color
         };
-        
+
         if (typeof namedColors[color] != "undefined")
             color = apf.color.fixHex(namedColors[color].toString(16));
         var rgb = color.match(Regexes.isRgb);
         var hsb = color.match(Regexes.isHsl);
         if (rgb && rgb.length >= 3) {
             ret.rgb = apf.color.fixRGB({
-                r: rgb[1], 
-                g: rgb[2], 
+                r: rgb[1],
+                g: rgb[2],
                 b: rgb[3]
             });
             ret.hex = apf.color.RGBToHex(rgb);
@@ -362,7 +362,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
     /**
      * Show or hide the colorpicker, depending on its current state (visible or not).
-     * 
+     *
      * @param {Range} pos
      * @param {Editor} editor
      * @param {String} line
@@ -386,7 +386,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         apf.addEventListener("keydown", onKeyDown = function(e) {
             var a = _self.$activeColor;
 
-            if (!cp || !a || !cp.visible) 
+            if (!cp || !a || !cp.visible)
                 return;
 
             // when ESC is pressed, undo all changes made by the colorpicker
@@ -402,12 +402,12 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         ide.addEventListener("codetools.cursorchange", onCursorChange = function(e) {
             var a = _self.$activeColor;
 
-            if (!cp || !a || !cp.visible) 
+            if (!cp || !a || !cp.visible)
                 return;
 
-            var pos = e.pos;
+            var pos = e.pos.start;
             var range = a.marker[0];
-            if (pos.row < range.start.row || pos.row > range.end.row 
+            if (pos.row < range.start.row || pos.row > range.end.row
               || pos.column < range.start.column || pos.column > range.end.column)
                 menu.hide();
         });
@@ -415,7 +415,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         editor.addEventListener("mousewheel", onScroll = function(e) {
             var a = _self.$activeColor;
 
-            if (!cp || !a || !cp.visible) 
+            if (!cp || !a || !cp.visible)
                 return;
 
             menu.hide();
@@ -464,9 +464,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     },
 
     /**
-     * Scans the document for colors and generates the list as shown below the 
+     * Scans the document for colors and generates the list as shown below the
      * color picker for quick access to colors that are already in use.
-     * 
+     *
      * @param {Editor} editor
      * @type {void}
      */
@@ -485,20 +485,20 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var parsed;
         for (i = 0, l = Math.min(colors.length, 11); i < l; ++i) {
             parsed = this.parseColorString(colors[i]);
-            
-            out.push('<span class="color" style="background-color: #', parsed.hex, 
+
+            out.push('<span class="color" style="background-color: #', parsed.hex,
                 '" data-color="', parsed.hex, '" title="', parsed.orig, '">&nbsp;</span>');
         }
         this.colortools.innerHTML = "<span>Existing file colors:</span>" + out.join("");
     },
 
     /**
-     * When a color is picked in the colorpicker, this function is called. It 
+     * When a color is picked in the colorpicker, this function is called. It
      * updates the color value inside the ACE document with the newly picked color.
-     * Since the value change of the color picker is realtime and generates A LOT 
+     * Since the value change of the color picker is realtime and generates A LOT
      * of calls to this function, we filter the calls and only apply the change
      * when no color was picked for 200ms.
-     * 
+     *
      * @param {String} old
      * @param {String} color
      * @type {void}
@@ -529,7 +529,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         }
         else if (a.color.type == "rgb") {
             var m = a.current.match(Regexes.isRgb);
-            var regex = new RegExp("(rgba?)\\(\\s*" + m[1] + "\\s*,\\s*" + m[2] 
+            var regex = new RegExp("(rgba?)\\(\\s*" + m[1] + "\\s*,\\s*" + m[2]
                 + "\\s*,\\s*" + m[3] + "(\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)", "i");
             if (!line.match(regex))
                 return;
@@ -540,13 +540,13 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         }
         else if (a.color.type == "hsb") {
             var m = a.current.match(Regexes.isHsl);
-            var regex = new RegExp("hsl\\(\\s*" + m[1] + "\\s*,\\s*" + m[2] 
+            var regex = new RegExp("hsl\\(\\s*" + m[1] + "\\s*,\\s*" + m[2]
                 + "\\s*,\\s*" + m[3] + "\\s*\\)", "i");
             if (!line.match(regex))
                 return;
             var hsb = apf.color.hexToHSB(color);
             newLine = line.replace(regex, function() {
-                return (newColor = "hsl(" + parseInt(hsb.h, 10) + ", " 
+                return (newColor = "hsl(" + parseInt(hsb.h, 10) + ", "
                     + parseInt(hsb.s, 10) + "%, " + parseInt(hsb.b, 10) + "%)");
             });
         }
@@ -567,9 +567,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     /**
      * When the browser window is resized and the colorpicker menu is opened, the
      * position of the colorpicker has to be adjusted to the correct value.
-     * This function also takes window edges and menu arrow positioning into 
+     * This function also takes window edges and menu arrow positioning into
      * account.
-     * 
+     *
      * @param {Object} color
      * @type {void}
      */
@@ -600,12 +600,12 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var width = menu.$ext.offsetWidth + 10;
 
         var edgeY = (pOverflow == document.documentElement
-            ? (apf.isIE 
-                ? pOverflow.offsetHeight 
+            ? (apf.isIE
+                ? pOverflow.offsetHeight
                 : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
             : pOverflow.offsetHeight + pOverflow.scrollTop);
         var edgeX = (pOverflow == document.documentElement
-            ? (apf.isIE 
+            ? (apf.isIE
                 ? pOverflow.offsetWidth
                 : (window.innerWidth + window.pageXOffset)) + pOverflow.scrollLeft
             : pOverflow.offsetWidth + pOverflow.scrollLeft);

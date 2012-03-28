@@ -28,7 +28,7 @@ module.exports = ext.register("ext/codetools/codetools", {
 
     attachEditorEvents: function(amlEditor) {
         var editor = amlEditor.$editor;
-        var prevRow, prevCol, multiClickTimer;
+        var prevRow, prevCol, multiClickTimer, cursorTimer;
 
         editor.addEventListener("mousemove", function(e) {
             var pos = e.getDocumentPosition();
@@ -38,12 +38,14 @@ module.exports = ext.register("ext/codetools/codetools", {
             var evObj = {
                 amlEditor: amlEditor,
                 editor: editor,
+                target: e.domEvent.target || e.domEvent.srcElement,
                 pos: pos,
                 doc: doc
             };
 
             if (prevRow !== row) {
                 prevRow = row;
+                prevCol = col;
                 ide.dispatchEvent("codetools.rowchange", evObj);
                 // a row change is also considered a column change.
                 ide.dispatchEvent("codetools.columnchange", evObj);
@@ -85,26 +87,13 @@ module.exports = ext.register("ext/codetools/codetools", {
             });
         });
 
-        function cursorChange() {
-            var anchor = editor.session.selection.getSelectionLead();
+        function cursorChange(e) {
+            clearTimeout(cursorTimer);
+            cursorTimer = setTimeout(function() {
+                var lead = editor.session.selection.getSelectionLead();
+                var anchor = editor.session.selection.getSelectionAnchor();
 
-            ide.dispatchEvent("codetools.cursorchange", {
-                amlEditor: amlEditor,
-                editor: editor,
-                pos: {
-                    row: anchor.row,
-                    column: anchor.column
-                },
-                doc: editor.session.doc
-            });
-        }
-
-        function selectionChange() {
-            var lead = editor.session.selection.getSelectionLead();
-            var anchor = editor.session.selection.getSelectionAnchor();
-
-            if (anchor.row !== lead.row || Math.abs(anchor.column - lead.column) > 1) {
-                ide.dispatchEvent("codetools.selectionchange", {
+                var eventObj = {
                     amlEditor: amlEditor,
                     editor: editor,
                     pos: {
@@ -112,17 +101,26 @@ module.exports = ext.register("ext/codetools/codetools", {
                         end: anchor
                     },
                     doc: editor.session.doc
-                });
-            }
+                };
+
+                ide.dispatchEvent("codetools.cursorchange", eventObj);
+                if (e.type == "changeSelection")
+                    ide.dispatchEvent("codetools.selectionchange", eventObj);
+            });
         }
 
-        editor.addEventListener("changeSession", function(e) {
+        function sessionChange(e) {
             if (e.oldsession) {
                 e.oldsession.removeEventListener("changeCursor", cursorChange);
-                e.oldsession.removeEventListener("changeSelection", selectionChange);
+                e.oldsession.removeEventListener("changeSelection", cursorChange);
             }
             e.session.selection.addEventListener("changeCursor", cursorChange);
-            e.session.selection.addEventListener("changeSelection", selectionChange);
+            e.session.selection.addEventListener("changeSelection", cursorChange);
+        }
+
+        editor.addEventListener("changeSession", sessionChange);
+        sessionChange({
+            session: editor.session
         });
     },
 
