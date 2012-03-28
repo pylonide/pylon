@@ -542,11 +542,11 @@ var requirejs, require, define;
                     }
                 }
 
-                try {
+               // try {
                     ret = req.execCb(fullName, manager.callback, args, defined[fullName]);
-                } catch (e) {
-                    err = e;
-                }
+                //} catch (e) {
+                //    err = e;
+               // }
 
                 if (fullName) {
                     //If setting exports via "module" is in play,

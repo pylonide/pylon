@@ -92,7 +92,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
 sys.inherits(Ide, EventEmitter);
 
 Ide.DEFAULT_PLUGINS = [
-    "ext/packed"
+    //"ext/packed"
 ];
 
 exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];

@@ -12,7 +12,7 @@
 
         <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
-        [%scripts%]
+        <!-- [%scripts%] -->
         <script type="text/javascript">
         //<![CDATA[
 
@@ -49,25 +49,29 @@
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
                 apf.addEventListener("load", function(){
-                    var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/editors/editors"];
-                    if (VERSION == RELEASE)
-                        list.push("ace/editor");
+                    var list = ["ext/ace-uncompressed", "ext/packed"];//core/ide", "core/ext", "core/util", "core/settings"];//, "ext/editors/editors"];
+                    //if (VERSION == RELEASE)
+                        //list.push("ace/editor");
 
                     apf.IdeSettings = <%settingsXml%>
                     //loader.animateLoader(20);
                     require(list, function(ide, ext, util){
+                        var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
                         var plugins = <%plugins%>;
                         //loader.animateLoader(50);
-                        apf.addEventListener("load", function(){
-                            //Load extensions
-//                            loader.animateLoader(20);
-                            require(plugins, function(){
-                                ide.dispatchEvent("extload", {modules: plugins});
-                                ide.addEventListener("$event.extload", function(cb){
-                                    cb();
-                                });
+
+                        setTimeout(function(){
+                            apf.addEventListener("load", function(){
+                                //Load extensions
+    //                            loader.animateLoader(20);
+                                //require(plugins, function(){
+                                    ide.dispatchEvent("extload", {modules: plugins});
+                                    ide.addEventListener("$event.extload", function(cb){
+                                        cb();
+                                    });
+                                //});
                             });
-                        });
+                        }, 1000);
                     });
                     preloaderImgs();
                 });
