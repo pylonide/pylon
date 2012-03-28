@@ -92,67 +92,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
 sys.inherits(Ide, EventEmitter);
 
 Ide.DEFAULT_PLUGINS = [
-    "ext/dryice/ext"/*
-    "ext/autotest/autotest",
-    "ext/beautify/beautify",
-    "ext/clipboard/clipboard",
-    "ext/closeconfirmation/closeconfirmation",
-    "ext/code/code",
-    "ext/codecomplete/codecomplete",
-    "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker",
-    "ext/console/console",
-    "ext/consolehints/consolehints",
-    "ext/debugger/debugger", //Add location rule
-    "ext/dockpanel/dockpanel",
-    "ext/dragdrop/dragdrop",
-    "ext/editors/editors",
-    "ext/extmgr/extmgr",
-    "ext/filesystem/filesystem",
-    "ext/gotofile/gotofile",
-    "ext/gotoline/gotoline",
-    "ext/guidedtour/guidedtour",
-    "ext/help/help",
-    "ext/html/html",
-    "ext/imgview/imgview",
-    "ext/jslanguage/jslanguage",
-    "ext/keybindings/keybindings",
-    "ext/keybindings_default/keybindings_default",
-    "ext/minimap/minimap",
-    "ext/newresource/newresource",
-    "ext/noderunner/noderunner", //Add location rule
-    "ext/nodeunit/nodeunit",
-    "ext/offline/offline",
-    "ext/openfiles/openfiles",
-    "ext/panels/panels",
-    "ext/quicksearch/quicksearch",
-    "ext/quickstart/quickstart",
-    "ext/quickwatch/quickwatch",
-    "ext/recentfiles/recentfiles",
-    "ext/runpanel/runpanel", //Add location rule
-    "ext/save/save",
-    "ext/searchinfiles/searchinfiles",
-    "ext/searchreplace/searchreplace",
-    "ext/settings/settings",
-    "ext/statusbar/statusbar",
-    "ext/stripws/stripws",
-    "ext/tabbehaviors/tabbehaviors",
-    "ext/tabsessions/tabsessions",
-    "ext/tabsessions/tabsessions",
-    "ext/testpanel/testpanel",
-    "ext/themes/themes",
-    "ext/themes_default/themes_default",
-    "ext/tree/tree",
-    "ext/undo/undo",
-    "ext/vim/vim",
-    "ext/watcher/watcher",
-    "ext/zen/zen",*/
-    //"ext/acebugs/acebugs"
-    //"ext/autosave/autosave",
-    //"ext/connect/connect",
-    //"ext/ftp/ftp",
-    //"ext/preview/preview",
-    //"ext/run/run", //Add location rule
+    "ext/packed"
 ];
 
 exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
