@@ -391,8 +391,9 @@ apf.AmlElement = function(struct, tagName){
         }
         
         this.childNodes.length = 0;
-
-        this.$int.innerHTML = "<div class='loading'>loading...</div>";
+        
+        if(options.noLoadingMsg !== false)
+            this.$int.innerHTML = "<div class='loading'>loading...</div>";
 
         //Do an insertMarkup
         this.insertMarkup(amlDefNode, options);
