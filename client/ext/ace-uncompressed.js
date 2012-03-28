@@ -241,7 +241,7 @@ exportAce(ACE_NAMESPACE);
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/ace', ['require', 'exports', 'module' , 'ace/lib/fixoldbrowsers', 'ace/lib/dom', 'ace/lib/event', 'ace/editor', 'ace/edit_session', 'ace/undomanager', 'ace/virtual_renderer', 'ace/worker/worker_client', 'ace/theme/textmate'], function(require, exports, module) {
+define('ace/ace', ['require', 'exports', 'module' , 'ace/lib/fixoldbrowsers', 'ace/lib/dom', 'ace/lib/event', 'ace/editor', 'ace/edit_session', 'ace/undomanager', 'ace/virtual_renderer', 'ace/worker/worker', 'ace/worker/worker_client', 'ace/keyboard/hash_handler', 'ace/keyboard/state_handler', 'ace/lib/net', 'ace/placeholder', 'ace/theme/textmate'], function(require, exports, module) {
 "use strict";
 
 require("./lib/fixoldbrowsers");
@@ -254,7 +254,13 @@ var EditSession = require("./edit_session").EditSession;
 var UndoManager = require("./undomanager").UndoManager;
 var Renderer = require("./virtual_renderer").VirtualRenderer;
 
+// The following require()s are for inclusion in the built ace file
+require("./worker/worker");
 require("./worker/worker_client");
+require("./keyboard/hash_handler");
+require("./keyboard/state_handler");
+require("./lib/net");
+require("./placeholder");
 
 exports.edit = function(el) {
     if (typeof(el) == "string") {
@@ -1592,7 +1598,7 @@ exports.hasCssString = function(id, doc) {
 
     if (doc.createStyleSheet && (sheets = doc.styleSheets)) {
         while (index < sheets.length)
-            if (sheets[index++].title === id) return true;
+            if (sheets[index++].owningElement.id === id) return true;
     } else if ((sheets = doc.getElementsByTagName("style"))) {
         while (index < sheets.length)
             if (sheets[index++].id === id) return true;
@@ -1613,7 +1619,7 @@ exports.importCssString = function importCssString(cssText, id, doc) {
         style = doc.createStyleSheet();
         style.cssText = cssText;
         if (id)
-            style.title = id;
+            style.owningElement.id = id;
     } else {
         style = doc.createElementNS
             ? doc.createElementNS(XHTML_NS, "style")
@@ -1759,8 +1765,7 @@ exports.getParentWindow = function(document) {
     return document.defaultView || document.parentWindow;
 };
 
-});
-/* ***** BEGIN LICENSE BLOCK *****
+});/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -8879,7 +8884,7 @@ var Document = function(text) {
     };
 
     this.insert = function(position, text) {
-        if (text.length == 0)
+        if (!text || text.length === 0)
             return position;
 
         position = this.$clipPosition(position);
@@ -14005,6 +14010,146 @@ define("text!ace/css/editor.css", [], "@import url(//fonts.googleapis.com/css?fa
   "}\n" +
   "");
 
+define('ace/worker/worker', ['require', 'exports', 'module' ], function(require, exports, module) {
+"no use strict";
+
+var console = {
+    log: function(msg) {
+        postMessage({type: "log", data: msg});
+    }
+};
+var window = {
+    console: console
+};
+
+var normalizeModule = function(parentId, moduleName) {
+    // normalize plugin requires
+    if (moduleName.indexOf("!") !== -1) {
+        var chunks = moduleName.split("!");
+        return normalizeModule(parentId, chunks[0]) + "!" + normalizeModule(parentId, chunks[1]);
+    }
+    // normalize relative requires
+    if (moduleName.charAt(0) == ".") {
+        var base = parentId.split("/").slice(0, -1).join("/");
+        var moduleName = base + "/" + moduleName;
+        
+        while(moduleName.indexOf(".") !== -1 && previous != moduleName) {
+            var previous = moduleName;
+            var moduleName = moduleName.replace(/\/\.\//, "/").replace(/[^\/]+\/\.\.\//, "");
+        }
+    }
+    
+    return moduleName;
+};
+
+var require = function(parentId, id) {
+    var id = normalizeModule(parentId, id);
+    
+    var module = require.modules[id];
+    if (module) {
+        if (!module.initialized) {
+            module.exports = module.factory().exports;
+            module.initialized = true;
+        }
+        return module.exports;
+    }
+    
+    var chunks = id.split("/");
+    chunks[0] = require.tlns[chunks[0]] || chunks[0];
+    var path = chunks.join("/") + ".js";
+    
+    require.id = id;
+    importScripts(path);
+    return require(parentId, id);    
+};
+
+require.modules = {};
+require.tlns = {};
+
+var define = function(id, deps, factory) {
+    if (arguments.length == 2) {
+        factory = deps;
+    } else if (arguments.length == 1) {
+        factory = id;
+        id = require.id;
+    }
+
+    if (id.indexOf("text!") === 0) 
+        return;
+    
+    var req = function(deps, factory) {
+        return require(id, deps, factory);
+    };
+
+    require.modules[id] = {
+        factory: function() {
+            var module = {
+                exports: {}
+            };
+            var returnExports = factory(req, module.exports, module);
+            if (returnExports)
+                module.exports = returnExports;
+            return module;
+        }
+    };
+};
+
+function initBaseUrls(topLevelNamespaces) {
+    require.tlns = topLevelNamespaces;
+}
+
+function initSender() {
+
+    var EventEmitter = require(null, "ace/lib/event_emitter").EventEmitter;
+    var oop = require(null, "ace/lib/oop");
+    
+    var Sender = function() {};
+    
+    (function() {
+        
+        oop.implement(this, EventEmitter);
+                
+        this.callback = function(data, callbackId) {
+            postMessage({
+                type: "call",
+                id: callbackId,
+                data: data
+            });
+        };
+    
+        this.emit = function(name, data) {
+            postMessage({
+                type: "event",
+                name: name,
+                data: data
+            });
+        };
+        
+    }).call(Sender.prototype);
+    
+    return new Sender();
+}
+
+var main;
+var sender;
+
+onmessage = function(e) {
+    var msg = e.data;
+    if (msg.command) {
+        main[msg.command].apply(main, msg.args);
+    }
+    else if (msg.init) {        
+        initBaseUrls(msg.tlns);
+        require(null, "ace/lib/fixoldbrowsers");
+        sender = initSender();
+        var clazz = require(null, msg.module)[msg.classname];
+        main = new clazz(sender);
+    } 
+    else if (msg.event && sender) {
+        sender._emit(msg.event, msg.data);
+    }
+};
+});
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -14056,7 +14201,7 @@ var WorkerClient = function(topLevelNamespaces, packagedJs, mod, classname) {
         var base = this.$guessBasePath();
         this.$worker = new Worker(base + packagedJs);
     }
-    else {
+    else { 
         var workerUrl = this.$normalizePath(require.nameToUrl("ace/worker/worker", null, "_"));
         this.$worker = new Worker(workerUrl);
 
@@ -14207,271 +14352,6 @@ exports.WorkerClient = WorkerClient;
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Fabian Jakobs <fabian AT ajax DOT org>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
-
-define('ace/theme/textmate', ['require', 'exports', 'module' , 'ace/lib/dom'], function(require, exports, module) {
-"use strict";
-
-exports.isDark = false;
-exports.cssClass = "ace-tm";
-exports.cssText = ".ace-tm .ace_editor {\
-  border: 2px solid rgb(159, 159, 159);\
-}\
-\
-.ace-tm .ace_editor.ace_focus {\
-  border: 2px solid #327fbd;\
-}\
-\
-.ace-tm .ace_gutter {\
-  background: #e8e8e8;\
-  color: #333;\
-}\
-\
-.ace-tm .ace_print_margin {\
-  width: 1px;\
-  background: #e8e8e8;\
-}\
-\
-.ace-tm .ace_fold {\
-    background-color: #6B72E6;\
-}\
-\
-.ace-tm .ace_text-layer {\
-  cursor: text;\
-}\
-\
-.ace-tm .ace_cursor {\
-  border-left: 2px solid black;\
-}\
-\
-.ace-tm .ace_cursor.ace_overwrite {\
-  border-left: 0px;\
-  border-bottom: 1px solid black;\
-}\
-        \
-.ace-tm .ace_line .ace_invisible {\
-  color: rgb(191, 191, 191);\
-}\
-\
-.ace-tm .ace_line .ace_keyword {\
-  color: blue;\
-}\
-\
-.ace-tm .ace_line .ace_constant.ace_buildin {\
-  color: rgb(88, 72, 246);\
-}\
-\
-.ace-tm .ace_line .ace_constant.ace_language {\
-  color: rgb(88, 92, 246);\
-}\
-\
-.ace-tm .ace_line .ace_constant.ace_library {\
-  color: rgb(6, 150, 14);\
-}\
-\
-.ace-tm .ace_line .ace_invalid {\
-  background-color: rgb(153, 0, 0);\
-  color: white;\
-}\
-\
-.ace-tm .ace_line .ace_support.ace_function {\
-  color: rgb(60, 76, 114);\
-}\
-\
-.ace-tm .ace_line .ace_support.ace_constant {\
-  color: rgb(6, 150, 14);\
-}\
-\
-.ace-tm .ace_line .ace_support.ace_type,\
-.ace-tm .ace_line .ace_support.ace_class {\
-  color: rgb(109, 121, 222);\
-}\
-\
-.ace-tm .ace_line .ace_keyword.ace_operator {\
-  color: rgb(104, 118, 135);\
-}\
-\
-.ace-tm .ace_line .ace_string {\
-  color: rgb(3, 106, 7);\
-}\
-\
-.ace-tm .ace_line .ace_comment {\
-  color: rgb(76, 136, 107);\
-}\
-\
-.ace-tm .ace_line .ace_comment.ace_doc {\
-  color: rgb(0, 102, 255);\
-}\
-\
-.ace-tm .ace_line .ace_comment.ace_doc.ace_tag {\
-  color: rgb(128, 159, 191);\
-}\
-\
-.ace-tm .ace_line .ace_constant.ace_numeric {\
-  color: rgb(0, 0, 205);\
-}\
-\
-.ace-tm .ace_line .ace_variable {\
-  color: rgb(49, 132, 149);\
-}\
-\
-.ace-tm .ace_line .ace_xml_pe {\
-  color: rgb(104, 104, 91);\
-}\
-\
-.ace-tm .ace_entity.ace_name.ace_function {\
-  color: #0000A2;\
-}\
-\
-.ace-tm .ace_markup.ace_markupine {\
-    text-decoration:underline;\
-}\
-\
-.ace-tm .ace_markup.ace_heading {\
-  color: rgb(12, 7, 255);\
-}\
-\
-.ace-tm .ace_markup.ace_list {\
-  color:rgb(185, 6, 144);\
-}\
-\
-.ace-tm .ace_marker-layer .ace_selection {\
-  background: rgb(181, 213, 255);\
-}\
-\
-.ace-tm .ace_marker-layer .ace_step {\
-  background: rgb(252, 255, 0);\
-}\
-\
-.ace-tm .ace_marker-layer .ace_stack {\
-  background: rgb(164, 229, 101);\
-}\
-\
-.ace-tm .ace_marker-layer .ace_bracket {\
-  margin: -1px 0 0 -1px;\
-  border: 1px solid rgb(192, 192, 192);\
-}\
-\
-.ace-tm .ace_marker-layer .ace_active_line {\
-  background: rgba(0, 0, 0, 0.07);\
-}\
-\
-.ace-tm .ace_marker-layer .ace_selected_word {\
-  background: rgb(250, 250, 255);\
-  border: 1px solid rgb(200, 200, 250);\
-}\
-\
-.ace-tm .ace_meta.ace_tag {\
-  color:rgb(28, 2, 255);\
-}\
-\
-.ace-tm .ace_string.ace_regex {\
-  color: rgb(255, 0, 0)\
-}";
-
-var dom = require("../lib/dom");
-dom.importCssString(exports.cssText, exports.cssClass);
-});
-;
-
-/**
- * based on code from:
- * 
- * @license RequireJS text 0.25.0 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
- * Available via the MIT or new BSD license.
- * see: http://github.com/jrburke/requirejs for details
- */
-define("ace/lib/net", ['require', 'exports', 'module' ], function(require, exports, module) {
-"use strict";
-
-exports.get = function (url, callback) {
-    var xhr = exports.createXhr();
-    xhr.open('GET', url, true);
-    xhr.onreadystatechange = function (evt) {
-        //Do not explicitly handle errors, those should be
-        //visible via console output in the browser.
-        if (xhr.readyState === 4) {
-            callback(xhr.responseText);
-        }
-    };
-    xhr.send(null);
-};
-
-var progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
-
-exports.createXhr = function() {
-    //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
-    var xhr, i, progId;
-    if (typeof XMLHttpRequest !== "undefined") {
-        return new XMLHttpRequest();
-    } else {
-        for (i = 0; i < 3; i++) {
-            progId = progIds[i];
-            try {
-                xhr = new ActiveXObject(progId);
-            } catch (e) {}
-
-            if (xhr) {
-                progIds = [progId];  // so faster next time
-                break;
-            }
-        }
-    }
-
-    if (!xhr) {
-        throw new Error("createXhr(): XMLHttpRequest not available");
-    }
-
-    return xhr;
-};
-
-exports.loadScript = function(path, callback) {
-    var head = document.getElementsByTagName('head')[0];
-    var s = document.createElement('script');
-
-    s.src = path;
-    head.appendChild(s);
-    
-    s.onload = callback;
-};
-
-});
-
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
  * The Original Code is Mozilla Skywriter.
  *
  * The Initial Developer of the Original Code is
@@ -14497,7 +14377,7 @@ exports.loadScript = function(path, callback) {
  *
  * ***** END LICENSE BLOCK ***** */
 
-define("ace/keyboard/hash_handler", ['require', 'exports', 'module' ], function(require, exports, module) {
+define('ace/keyboard/hash_handler', ['require', 'exports', 'module' , 'ace/lib/keys'], function(require, exports, module) {
 "use strict";
 
 var keyUtil  = require("../lib/keys");
@@ -14576,222 +14456,6 @@ function HashHandler(config) {
 
 exports.HashHandler = HashHandler;
 });
-
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Ajax.org Code Editor (ACE).
- *
- * The Initial Developer of the Original Code is
- * Ajax.org B.V.
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *      Zef Hemel <zef@c9.io>
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
-define("ace/placeholder", ['require', 'exports', 'module' ], function(require, exports, module) {
-"use strict";
-
-var Range = require('./range').Range;
-var EventEmitter = require("./lib/event_emitter").EventEmitter;
-var oop = require("./lib/oop");
-
-var PlaceHolder = function(session, length, pos, others, mainClass, othersClass) {
-    var _self = this;
-    this.length = length;
-    this.session = session;
-    this.doc = session.getDocument();
-    this.mainClass = mainClass;
-    this.othersClass = othersClass;
-    this.$onUpdate = this.onUpdate.bind(this);
-    this.doc.on("change", this.$onUpdate);
-    this.$others = others;
-    
-    this.$onCursorChange = function() {
-        setTimeout(function() {
-            _self.onCursorChange();
-        });
-    };
-    
-    this.$pos = pos;
-    // Used for reset
-    this.$undoStackDepth = session.getUndoManager().$undoStack ? session.getUndoManager().$undoStack.length : -1;
-    this.setup();
-
-    session.selection.on("changeCursor", this.$onCursorChange);
-};
-
-(function() {
-
-    oop.implement(this, EventEmitter);
-
-    this.setup = function() {
-        var _self = this;
-        var doc = this.doc;
-        var session = this.session;
-        var pos = this.$pos;
-
-        this.pos = doc.createAnchor(pos.row, pos.column);
-        this.markerId = session.addMarker(new Range(pos.row, pos.column, pos.row, pos.column + this.length), this.mainClass, null, false);
-        this.pos.on("change", function(event) {
-            session.removeMarker(_self.markerId);
-            _self.markerId = session.addMarker(new Range(event.value.row, event.value.column, event.value.row, event.value.column+_self.length), _self.mainClass, null, false);
-        });
-        this.others = [];
-        this.$others.forEach(function(other) {
-            var anchor = doc.createAnchor(other.row, other.column);
-            _self.others.push(anchor);
-        });
-        session.setUndoSelect(false);
-    };
-    
-    this.showOtherMarkers = function() {
-        if(this.othersActive) return;
-        var session = this.session;
-        var _self = this;
-        this.othersActive = true;
-        this.others.forEach(function(anchor) {
-            anchor.markerId = session.addMarker(new Range(anchor.row, anchor.column, anchor.row, anchor.column+_self.length), _self.othersClass, null, false);
-            anchor.on("change", function(event) {
-                session.removeMarker(anchor.markerId);
-                anchor.markerId = session.addMarker(new Range(event.value.row, event.value.column, event.value.row, event.value.column+_self.length), _self.othersClass, null, false);
-            });
-        });
-    };
-    
-    this.hideOtherMarkers = function() {
-        if(!this.othersActive) return;
-        this.othersActive = false;
-        for (var i = 0; i < this.others.length; i++) {
-            this.session.removeMarker(this.others[i].markerId);
-        }
-    };
-
-    this.onUpdate = function(event) {
-        var delta = event.data;
-        var range = delta.range;
-        if(range.start.row !== range.end.row) return;
-        if(range.start.row !== this.pos.row) return;
-        if (this.$updating) return;
-        this.$updating = true;
-        var lengthDiff = delta.action === "insertText" ? range.end.column - range.start.column : range.start.column - range.end.column;
-        
-        if(range.start.column >= this.pos.column && range.start.column <= this.pos.column + this.length + 1) {
-            var distanceFromStart = range.start.column - this.pos.column;
-            this.length += lengthDiff;
-            if(!this.session.$fromUndo) {
-                if(delta.action === "insertText") {
-                    for (var i = this.others.length - 1; i >= 0; i--) {
-                        var otherPos = this.others[i];
-                        var newPos = {row: otherPos.row, column: otherPos.column + distanceFromStart};
-                        if(otherPos.row === range.start.row && range.start.column < otherPos.column)
-                            newPos.column += lengthDiff;
-                        this.doc.insert(newPos, delta.text);
-                    }
-                } else if(delta.action === "removeText") {
-                    for (var i = this.others.length - 1; i >= 0; i--) {
-                        var otherPos = this.others[i];
-                        var newPos = {row: otherPos.row, column: otherPos.column + distanceFromStart};
-                        if(otherPos.row === range.start.row && range.start.column < otherPos.column)
-                            newPos.column += lengthDiff;
-                        this.doc.remove(new Range(newPos.row, newPos.column, newPos.row, newPos.column - lengthDiff));
-                    }
-                }
-                // Special case: insert in beginning
-                if(range.start.column === this.pos.column && delta.action === "insertText") {
-                    setTimeout(function() {
-                        this.pos.setPosition(this.pos.row, this.pos.column - lengthDiff);
-                        for (var i = 0; i < this.others.length; i++) {
-                            var other = this.others[i];
-                            var newPos = {row: other.row, column: other.column - lengthDiff};
-                            if(other.row === range.start.row && range.start.column < other.column)
-                                newPos.column += lengthDiff;
-                            other.setPosition(newPos.row, newPos.column);
-                        }
-                    }.bind(this), 0);
-                }
-                else if(range.start.column === this.pos.column && delta.action === "removeText") {
-                    setTimeout(function() {
-                        for (var i = 0; i < this.others.length; i++) {
-                            var other = this.others[i];
-                            if(other.row === range.start.row && range.start.column < other.column) {
-                                other.setPosition(other.row, other.column - lengthDiff);
-                            }
-                        }
-                    }.bind(this), 0);
-                }
-            }
-            this.pos._emit("change", {value: this.pos});
-            for (var i = 0; i < this.others.length; i++) {
-                this.others[i]._emit("change", {value: this.others[i]});
-            }
-        }
-        this.$updating = false;
-    };
-    
-    this.onCursorChange = function(event) {
-        if (this.$updating) return;
-        var pos = this.session.selection.getCursor();
-        if(pos.row === this.pos.row && pos.column >= this.pos.column && pos.column <= this.pos.column + this.length) {
-            this.showOtherMarkers();
-            this._emit("cursorEnter", event);
-        } else {
-            this.hideOtherMarkers();
-            this._emit("cursorLeave", event);
-        }
-    };
-    
-    this.detach = function() {
-        this.session.removeMarker(this.markerId);
-        this.hideOtherMarkers();
-        this.doc.removeEventListener("change", this.$onUpdate);
-        this.session.selection.removeEventListener("changeCursor", this.$onCursorChange);
-        this.pos.detach();
-        for (var i = 0; i < this.others.length; i++) {
-            this.others[i].detach();
-        }
-        this.session.setUndoSelect(true);
-    };
-    
-    this.cancel = function() {
-        if(this.$undoStackDepth === -1)
-            throw Error("Canceling placeholders only supported with undo manager attached to session.");
-        var undoManager = this.session.getUndoManager();
-        var undosRequired = undoManager.$undoStack.length - this.$undoStackDepth;
-        for (var i = 0; i < undosRequired; i++) {
-            undoManager.undo(true);
-        }
-    };
-}).call(PlaceHolder.prototype);
-
-
-exports.PlaceHolder = PlaceHolder;
-});
-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -14829,7 +14493,7 @@ exports.PlaceHolder = PlaceHolder;
  *
  * ***** END LICENSE BLOCK ***** */
 
-define("ace/keyboard/state_handler", ['require', 'exports', 'module' ], function(require, exports, module) {
+define('ace/keyboard/state_handler', ['require', 'exports', 'module' ], function(require, exports, module) {
 "use strict";
 
 // If you're developing a new keymapping and want to get an idea what's going
@@ -15047,7 +14711,484 @@ exports.matchCharacterOnly = function(buffer, hashId, key, symbolicName) {
 
 exports.StateHandler = StateHandler;
 });
+/**
+ * based on code from:
+ * 
+ * @license RequireJS text 0.25.0 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
+ * Available via the MIT or new BSD license.
+ * see: http://github.com/jrburke/requirejs for details
+ */
+define('ace/lib/net', ['require', 'exports', 'module' ], function(require, exports, module) {
+"use strict";
 
+exports.get = function (url, callback) {
+    var xhr = exports.createXhr();
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function (evt) {
+        //Do not explicitly handle errors, those should be
+        //visible via console output in the browser.
+        if (xhr.readyState === 4) {
+            callback(xhr.responseText);
+        }
+    };
+    xhr.send(null);
+};
+
+var progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'];
+
+exports.createXhr = function() {
+    //Would love to dump the ActiveX crap in here. Need IE 6 to die first.
+    var xhr, i, progId;
+    if (typeof XMLHttpRequest !== "undefined") {
+        return new XMLHttpRequest();
+    } else {
+        for (i = 0; i < 3; i++) {
+            progId = progIds[i];
+            try {
+                xhr = new ActiveXObject(progId);
+            } catch (e) {}
+
+            if (xhr) {
+                progIds = [progId];  // so faster next time
+                break;
+            }
+        }
+    }
+
+    if (!xhr) {
+        throw new Error("createXhr(): XMLHttpRequest not available");
+    }
+
+    return xhr;
+};
+
+exports.loadScript = function(path, callback) {
+    var head = document.getElementsByTagName('head')[0];
+    var s = document.createElement('script');
+
+    s.src = path;
+    head.appendChild(s);
+    
+    s.onload = callback;
+};
+
+});/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Zef Hemel <zef@c9.io>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+define('ace/placeholder', ['require', 'exports', 'module' , 'ace/range', 'ace/lib/event_emitter', 'ace/lib/oop'], function(require, exports, module) {
+"use strict";
+
+var Range = require('./range').Range;
+var EventEmitter = require("./lib/event_emitter").EventEmitter;
+var oop = require("./lib/oop");
+
+var PlaceHolder = function(session, length, pos, others, mainClass, othersClass) {
+    var _self = this;
+    this.length = length;
+    this.session = session;
+    this.doc = session.getDocument();
+    this.mainClass = mainClass;
+    this.othersClass = othersClass;
+    this.$onUpdate = this.onUpdate.bind(this);
+    this.doc.on("change", this.$onUpdate);
+    this.$others = others;
+    
+    this.$onCursorChange = function() {
+        setTimeout(function() {
+            _self.onCursorChange();
+        });
+    };
+    
+    this.$pos = pos;
+    // Used for reset
+    var undoStack = session.getUndoManager().$undoStack || session.getUndoManager().$undostack || {length: -1};
+    this.$undoStackDepth =  undoStack.length;
+    this.setup();
+
+    session.selection.on("changeCursor", this.$onCursorChange);
+};
+
+(function() {
+
+    oop.implement(this, EventEmitter);
+
+    this.setup = function() {
+        var _self = this;
+        var doc = this.doc;
+        var session = this.session;
+        var pos = this.$pos;
+
+        this.pos = doc.createAnchor(pos.row, pos.column);
+        this.markerId = session.addMarker(new Range(pos.row, pos.column, pos.row, pos.column + this.length), this.mainClass, null, false);
+        this.pos.on("change", function(event) {
+            session.removeMarker(_self.markerId);
+            _self.markerId = session.addMarker(new Range(event.value.row, event.value.column, event.value.row, event.value.column+_self.length), _self.mainClass, null, false);
+        });
+        this.others = [];
+        this.$others.forEach(function(other) {
+            var anchor = doc.createAnchor(other.row, other.column);
+            _self.others.push(anchor);
+        });
+        session.setUndoSelect(false);
+    };
+    
+    this.showOtherMarkers = function() {
+        if(this.othersActive) return;
+        var session = this.session;
+        var _self = this;
+        this.othersActive = true;
+        this.others.forEach(function(anchor) {
+            anchor.markerId = session.addMarker(new Range(anchor.row, anchor.column, anchor.row, anchor.column+_self.length), _self.othersClass, null, false);
+            anchor.on("change", function(event) {
+                session.removeMarker(anchor.markerId);
+                anchor.markerId = session.addMarker(new Range(event.value.row, event.value.column, event.value.row, event.value.column+_self.length), _self.othersClass, null, false);
+            });
+        });
+    };
+    
+    this.hideOtherMarkers = function() {
+        if(!this.othersActive) return;
+        this.othersActive = false;
+        for (var i = 0; i < this.others.length; i++) {
+            this.session.removeMarker(this.others[i].markerId);
+        }
+    };
+
+    this.onUpdate = function(event) {
+        var delta = event.data;
+        var range = delta.range;
+        if(range.start.row !== range.end.row) return;
+        if(range.start.row !== this.pos.row) return;
+        if (this.$updating) return;
+        this.$updating = true;
+        var lengthDiff = delta.action === "insertText" ? range.end.column - range.start.column : range.start.column - range.end.column;
+        
+        if(range.start.column >= this.pos.column && range.start.column <= this.pos.column + this.length + 1) {
+            var distanceFromStart = range.start.column - this.pos.column;
+            this.length += lengthDiff;
+            if(!this.session.$fromUndo) {
+                if(delta.action === "insertText") {
+                    for (var i = this.others.length - 1; i >= 0; i--) {
+                        var otherPos = this.others[i];
+                        var newPos = {row: otherPos.row, column: otherPos.column + distanceFromStart};
+                        if(otherPos.row === range.start.row && range.start.column < otherPos.column)
+                            newPos.column += lengthDiff;
+                        this.doc.insert(newPos, delta.text);
+                    }
+                } else if(delta.action === "removeText") {
+                    for (var i = this.others.length - 1; i >= 0; i--) {
+                        var otherPos = this.others[i];
+                        var newPos = {row: otherPos.row, column: otherPos.column + distanceFromStart};
+                        if(otherPos.row === range.start.row && range.start.column < otherPos.column)
+                            newPos.column += lengthDiff;
+                        this.doc.remove(new Range(newPos.row, newPos.column, newPos.row, newPos.column - lengthDiff));
+                    }
+                }
+                // Special case: insert in beginning
+                if(range.start.column === this.pos.column && delta.action === "insertText") {
+                    setTimeout(function() {
+                        this.pos.setPosition(this.pos.row, this.pos.column - lengthDiff);
+                        for (var i = 0; i < this.others.length; i++) {
+                            var other = this.others[i];
+                            var newPos = {row: other.row, column: other.column - lengthDiff};
+                            if(other.row === range.start.row && range.start.column < other.column)
+                                newPos.column += lengthDiff;
+                            other.setPosition(newPos.row, newPos.column);
+                        }
+                    }.bind(this), 0);
+                }
+                else if(range.start.column === this.pos.column && delta.action === "removeText") {
+                    setTimeout(function() {
+                        for (var i = 0; i < this.others.length; i++) {
+                            var other = this.others[i];
+                            if(other.row === range.start.row && range.start.column < other.column) {
+                                other.setPosition(other.row, other.column - lengthDiff);
+                            }
+                        }
+                    }.bind(this), 0);
+                }
+            }
+            this.pos._emit("change", {value: this.pos});
+            for (var i = 0; i < this.others.length; i++) {
+                this.others[i]._emit("change", {value: this.others[i]});
+            }
+        }
+        this.$updating = false;
+    };
+    
+    this.onCursorChange = function(event) {
+        if (this.$updating) return;
+        var pos = this.session.selection.getCursor();
+        if(pos.row === this.pos.row && pos.column >= this.pos.column && pos.column <= this.pos.column + this.length) {
+            this.showOtherMarkers();
+            this._emit("cursorEnter", event);
+        } else {
+            this.hideOtherMarkers();
+            this._emit("cursorLeave", event);
+        }
+    };
+    
+    this.detach = function() {
+        this.session.removeMarker(this.markerId);
+        this.hideOtherMarkers();
+        this.doc.removeEventListener("change", this.$onUpdate);
+        this.session.selection.removeEventListener("changeCursor", this.$onCursorChange);
+        this.pos.detach();
+        for (var i = 0; i < this.others.length; i++) {
+            this.others[i].detach();
+        }
+        this.session.setUndoSelect(true);
+    };
+    
+    this.cancel = function() {
+        if(this.$undoStackDepth === -1)
+            throw Error("Canceling placeholders only supported with undo manager attached to session.");
+        var undoManager = this.session.getUndoManager();
+        var undosRequired = (undoManager.$undoStack || undoManager.$undostack).length - this.$undoStackDepth;
+        for (var i = 0; i < undosRequired; i++) {
+            undoManager.undo(true);
+        }
+    };
+}).call(PlaceHolder.prototype);
+
+
+exports.PlaceHolder = PlaceHolder;
+});
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Ajax.org Code Editor (ACE).
+ *
+ * The Initial Developer of the Original Code is
+ * Ajax.org B.V.
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Fabian Jakobs <fabian AT ajax DOT org>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+define('ace/theme/textmate', ['require', 'exports', 'module' , 'ace/lib/dom'], function(require, exports, module) {
+"use strict";
+
+exports.isDark = false;
+exports.cssClass = "ace-tm";
+exports.cssText = ".ace-tm .ace_editor {\
+  border: 2px solid rgb(159, 159, 159);\
+}\
+\
+.ace-tm .ace_editor.ace_focus {\
+  border: 2px solid #327fbd;\
+}\
+\
+.ace-tm .ace_gutter {\
+  background: #e8e8e8;\
+  color: #333;\
+}\
+\
+.ace-tm .ace_print_margin {\
+  width: 1px;\
+  background: #e8e8e8;\
+}\
+\
+.ace-tm .ace_fold {\
+    background-color: #6B72E6;\
+}\
+\
+.ace-tm .ace_text-layer {\
+  cursor: text;\
+}\
+\
+.ace-tm .ace_cursor {\
+  border-left: 2px solid black;\
+}\
+\
+.ace-tm .ace_cursor.ace_overwrite {\
+  border-left: 0px;\
+  border-bottom: 1px solid black;\
+}\
+        \
+.ace-tm .ace_line .ace_invisible {\
+  color: rgb(191, 191, 191);\
+}\
+\
+.ace-tm .ace_line .ace_storage,\
+.ace-tm .ace_line .ace_keyword {\
+  color: blue;\
+}\
+\
+.ace-tm .ace_line .ace_constant.ace_buildin {\
+  color: rgb(88, 72, 246);\
+}\
+\
+.ace-tm .ace_line .ace_constant.ace_language {\
+  color: rgb(88, 92, 246);\
+}\
+\
+.ace-tm .ace_line .ace_constant.ace_library {\
+  color: rgb(6, 150, 14);\
+}\
+\
+.ace-tm .ace_line .ace_invalid {\
+  background-color: rgb(153, 0, 0);\
+  color: white;\
+}\
+\
+.ace-tm .ace_line .ace_support.ace_function {\
+  color: rgb(60, 76, 114);\
+}\
+\
+.ace-tm .ace_line .ace_support.ace_constant {\
+  color: rgb(6, 150, 14);\
+}\
+\
+.ace-tm .ace_line .ace_support.ace_type,\
+.ace-tm .ace_line .ace_support.ace_class {\
+  color: rgb(109, 121, 222);\
+}\
+\
+.ace-tm .ace_line .ace_keyword.ace_operator {\
+  color: rgb(104, 118, 135);\
+}\
+\
+.ace-tm .ace_line .ace_string {\
+  color: rgb(3, 106, 7);\
+}\
+\
+.ace-tm .ace_line .ace_comment {\
+  color: rgb(76, 136, 107);\
+}\
+\
+.ace-tm .ace_line .ace_comment.ace_doc {\
+  color: rgb(0, 102, 255);\
+}\
+\
+.ace-tm .ace_line .ace_comment.ace_doc.ace_tag {\
+  color: rgb(128, 159, 191);\
+}\
+\
+.ace-tm .ace_line .ace_constant.ace_numeric {\
+  color: rgb(0, 0, 205);\
+}\
+\
+.ace-tm .ace_line .ace_variable {\
+  color: rgb(49, 132, 149);\
+}\
+\
+.ace-tm .ace_line .ace_xml_pe {\
+  color: rgb(104, 104, 91);\
+}\
+\
+.ace-tm .ace_entity.ace_name.ace_function {\
+  color: #0000A2;\
+}\
+\
+.ace-tm .ace_markup.ace_markupine {\
+    text-decoration:underline;\
+}\
+\
+.ace-tm .ace_markup.ace_heading {\
+  color: rgb(12, 7, 255);\
+}\
+\
+.ace-tm .ace_markup.ace_list {\
+  color:rgb(185, 6, 144);\
+}\
+\
+.ace-tm .ace_marker-layer .ace_selection {\
+  background: rgb(181, 213, 255);\
+}\
+\
+.ace-tm .ace_marker-layer .ace_step {\
+  background: rgb(252, 255, 0);\
+}\
+\
+.ace-tm .ace_marker-layer .ace_stack {\
+  background: rgb(164, 229, 101);\
+}\
+\
+.ace-tm .ace_marker-layer .ace_bracket {\
+  margin: -1px 0 0 -1px;\
+  border: 1px solid rgb(192, 192, 192);\
+}\
+\
+.ace-tm .ace_marker-layer .ace_active_line {\
+  background: rgba(0, 0, 0, 0.07);\
+}\
+\
+.ace-tm .ace_marker-layer .ace_selected_word {\
+  background: rgb(250, 250, 255);\
+  border: 1px solid rgb(200, 200, 250);\
+}\
+\
+.ace-tm .ace_meta.ace_tag {\
+  color:rgb(28, 2, 255);\
+}\
+\
+.ace-tm .ace_string.ace_regex {\
+  color: rgb(255, 0, 0)\
+}";
+
+var dom = require("../lib/dom");
+dom.importCssString(exports.cssText, exports.cssClass);
+});
+;
             (function() {
                 window.require(["ace/ace"], function(a) {
                     if (!window.ace)
@@ -15056,3 +15197,4 @@ exports.StateHandler = StateHandler;
                         ace[key] = a[key];
                 });
             })();
+        
