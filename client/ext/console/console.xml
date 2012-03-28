@@ -30,7 +30,9 @@
                       margin="1 0 0 1"
                       onclick="require('ext/console/console').hide()"/>
                 </a:hbox>
-                <a:page id="pgConsole" caption="Console" name="console">
+                <a:page id="pgConsole" caption="Console" name="console" class="console">
+                    <a:button id="btnConsoleSpinner" class="spinnerHolder" skin="btn_icon_only" margin="2 2 0 0"
+                      onclick  = "require('ext/console/console').cancel()"/>
                     <a:text id="txtConsole"
                       margin     = "3 0 0 20"
                       anchors    = "0 17 0 0"

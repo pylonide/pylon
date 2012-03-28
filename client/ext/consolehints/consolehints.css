@@ -16,7 +16,7 @@
     background: -webkit-gradient(linear,left bottom,left top,rgb(46,48,52),rgb(31,31,31));
     background: -moz-linear-gradient(center bottom,rgb(46,48,52),rgb(31,31,31));
     
-    height: 400px;
+    max-height: 400px;
     overflow-y: scroll;
 }
 

@@ -36,6 +36,12 @@ var execAction = function(cmd, data) {
 
     txtConsoleInput.disable();
     
+    var promptArr = txtConsole.$ext.getElementsByClassName("console_prompt");
+    var lastPrompt = promptArr[promptArr.length - 1];
+    btnConsoleSpinner.$ext.style.display = "block";
+    //btnConsoleSpinner.$ext.style.top = (pgConsole.$ext.offsetHeight - lastPrompt.offsetHeight - 7) + "px"; // set to the location of the prompt
+    btnConsoleSpinner.$ext.style.top = ((lastPrompt.offsetTop < pgConsole.$ext.offsetHeight) ? lastPrompt.offsetTop : (pgConsole.$ext.offsetHeight - txtConsoleInput.$ext.offsetHeight)) + "px"; // set to the location of the prompt
+    
     setTimeout(function(){
     if (ext.execCommand(cmd, data) !== false) {    
         var commandEvt = "consolecommand." + cmd;
@@ -55,7 +61,7 @@ var execAction = function(cmd, data) {
             return false;
         }
     }
-    }, 1500);
+    }, 4000);
     return true;
 };
 
@@ -161,12 +167,16 @@ module.exports = ext.register("ext/console/console", {
                 .join("\n"),
             null, null, ide
         );
+        
+        this.resetConsole();
     },
 
     clear: function() {
         if (txtConsole) {
             txtConsole.clear();
         }
+        
+        this.resetConsole();
         
         return false;
     },
@@ -261,6 +271,10 @@ module.exports = ext.register("ext/console/console", {
             this.keyEvents[code](e.currentTarget);
     },
 
+    cancel: function() {
+        
+    },
+    
     onMessage: function(e) {
         var message = e.message;
         if (!message.type)
@@ -285,12 +299,17 @@ module.exports = ext.register("ext/console/console", {
         else
             this.messages.__default__.call(this, message);
 
-        txtConsoleInput.setValue(""); // remove content from command line
-        txtConsoleInput.enable();
-    
+        this.resetConsole();
+        
         ide.dispatchEvent("consoleresult." + message.subtype, { data: message.body });
     },
 
+    resetConsole: function() {
+        txtConsoleInput.setValue(""); // remove content from command line
+        txtConsoleInput.enable();
+        btnConsoleSpinner.$ext.style.display = "none";
+    },
+    
     getPrompt: function(suffix) {
         var u = this.username;
         if (!u)
@@ -333,6 +352,8 @@ module.exports = ext.register("ext/console/console", {
             _self.clear();
         });
 
+        btnConsoleSpinner.$ext.style.display = "none"; // hide spinner
+        
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
