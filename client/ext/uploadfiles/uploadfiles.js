@@ -25,10 +25,31 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
     currentSettings : [],
     nodes       : [],
-
+    
     init : function(){
         var _self = this;
         apf.importCssString(_self.css);
+        
+        if(ide.infraEnv) {
+            this.nodes.push(
+                ide.mnuFile.appendChild(new apf.item({
+                    caption : "Download Project",
+                    onclick : function(){
+                        window.open("/api/project/download/zip/" + ide.projectName);
+                    }
+                })),
+                winFilesViewer.insertBefore(new apf.button({
+                    top: "-22",
+                    skin: "header-btn",
+                    right: "56",
+                    icon: "download-ico.png",
+                    onclick : function(){
+                        window.open("/api/project/download/zip/" + require("core/ide").projectName);
+                    }
+                }), btnTreeRefresh)
+            );
+            btnUploadFiles.setProperty("right", "81");
+        }
         
         this.nodes.push(
             ide.mnuFile.appendChild(new apf.item({

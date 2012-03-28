@@ -15,13 +15,13 @@
       modal    = "false"
       buttons  = "close"
       optimize = "true">
-        <a:button
+        <a:button id="btnUploadFiles"
           top="-22"
           skin="header-btn"
           right="56"
           icon="panel_upload.png"
           onclick="winUploadFiles.show()" />
-        <a:button
+        <a:button id="btnTreeRefresh"
           top="-22"
           skin="header-btn"
           right="29"
