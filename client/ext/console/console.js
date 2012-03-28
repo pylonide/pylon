@@ -42,7 +42,7 @@ var execAction = function(cmd, data) {
     //btnConsoleSpinner.$ext.style.top = (pgConsole.$ext.offsetHeight - lastPrompt.offsetHeight - 7) + "px"; // set to the location of the prompt
     btnConsoleSpinner.$ext.style.top = ((lastPrompt.offsetTop < pgConsole.$ext.offsetHeight) ? lastPrompt.offsetTop : (pgConsole.$ext.offsetHeight - txtConsoleInput.$ext.offsetHeight)) + "px"; // set to the location of the prompt
     
-    setTimeout(function(){
+    //setTimeout(function(){ for testing spinner
     if (ext.execCommand(cmd, data) !== false) {    
         var commandEvt = "consolecommand." + cmd;
         var consoleEvt = "consolecommand";
@@ -61,7 +61,7 @@ var execAction = function(cmd, data) {
             return false;
         }
     }
-    }, 4000);
+    //}, 4000);
     return true;
 };
 
