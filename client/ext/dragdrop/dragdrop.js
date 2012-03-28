@@ -74,10 +74,16 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         this.dragStateEvent = {"dragenter": dragEnter};
         var lastHtmlTreeDropNode;
         var lastTreeDropNode;
+        var hoverTimer;
+        var hoverTarget;
+        var lastScrollTo;
         
         function dragToTreeLeave(e) {
             apf.stopEvent(e);
             apf.setStyleClass(lastHtmlTreeDropNode, null, ["dragAppend"]);
+            if(hoverTimer)
+                clearTimeout(hoverTimer);
+            hoverTarget = null;
         }
         
         function dragToTreeEnter(e) {
@@ -87,8 +93,11 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         
         function dragToTreeOver(e) {
             apf.stopEvent(e);
+            
             var targetHtmlNode = e.target;
             var targetNode;
+            var actualTargetNode;
+            
             while(!targetHtmlNode.id && targetHtmlNode.tagName != 'div')
                 targetHtmlNode = targetHtmlNode.parentNode;
 
@@ -96,17 +105,70 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             
             if(!targetNode)
                 targetNode = trFiles.xmlRoot.selectSingleNode("folder");
+
+            actualTargetNode = targetNode;
             
-            if (targetNode.getAttribute("type") != "folder" && targetNode.tagName != "folder") {
+            if (targetNode.getAttribute("type") != "folder" 
+                && targetNode.tagName != "folder") {
                 targetNode = targetNode.parentNode;
                 targetHtmlNode = apf.xmldb.findHtmlNode(targetNode, trFiles);
             }
-                
+            
             lastHtmlTreeDropNode = targetHtmlNode;   
             lastTreeDropNode = targetNode;
             apf.setStyleClass(targetHtmlNode, "dragAppend");
+            
+            //this will expand the folder if you hover over it
+            if(hoverTarget != actualTargetNode 
+                && actualTargetNode.getAttribute("type") == "folder" 
+                && actualTargetNode.tagName == "folder") {
+                hoverTarget = actualTargetNode;
+                if(hoverTimer)
+                    clearTimeout(hoverTimer);
+                
+                hoverTimer = setTimeout(function(){
+                    trFiles.slideOpen(null, actualTargetNode, true);    
+                }, 1000);
+            }
+            
+            //this will scroll down or up the tree
+            var selHtml = apf.xmldb.getHtmlNode(actualTargetNode, trFiles);
+            var hoverElTopPos = apf.getAbsolutePosition(selHtml, trFiles.$container)[1];
+            //go down
+            if (hoverElTopPos + 25 > trFiles.$container.scrollTop + trFiles.$container.offsetHeight) {
+                scrollNode = findSiblingToScrollTo(actualTargetNode, "next");
+                if(scrollNode) {
+                    trFiles.scrollIntoView(scrollNode);
+                    
+                    if(hoverTimer)
+                        clearTimeout(hoverTimer);
+                }
+            }
+            //go up
+            else if (hoverElTopPos - 25 < trFiles.$container.scrollTop) {
+                scrollNode = findSiblingToScrollTo(actualTargetNode, "previous");
+                if(scrollNode) {
+                    trFiles.scrollIntoView(scrollNode, true);
+                    
+                    if(hoverTimer)
+                        clearTimeout(hoverTimer);
+                }
+            }
         }
         
+        function findSiblingToScrollTo(overNode, dir){
+            var scrollNode = overNode[dir == "next" ? "nextSibling" : "previousSibling"];
+            
+            while(!scrollNode) {
+                scrollNode = (scrollNode || overNode).parentNode;
+            }
+            
+            if(overNode == lastScrollTo && scrollNode[dir == "next" ? "nextSibling" : "previousSibling"])
+                scrollNode = scrollNode[dir == "next" ? "nextSibling" : "previousSibling"];
+            
+            return lastScrollTo = scrollNode[dir == "next" ? "nextSibling" : "previousSibling"] || scrollNode;;
+        }
+       
         function dragToTreeDrop(e) {
             trFiles.select(lastTreeDropNode);
             dragToTreeLeave.call(this, e);
