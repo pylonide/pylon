@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var Util = require("core/util");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var Search = require("ace/search").Search;
@@ -72,6 +73,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         txtQuickSearch.addEventListener("keydown", function(e){
             switch (e.keyCode){
+                case (e.keyCode == 8): // BACKSPACE
+                    break; // do nothing
                 case 13: //ENTER
                     _self.execSearch(false, !!e.shiftKey);
                     return false;
@@ -101,13 +104,18 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         txtQuickSearch.addEventListener("keyup", function(e){
             switch (true){
+                
+                // letters, numbers, slashes, brackets, quotations...
                 case (e.keyCode >=48 && e.keyCode <= 90): 
                 case (e.keyCode >=96 && e.keyCode <= 111):
                 case (e.keyCode >=186 && e.keyCode <= 191):
                 case (e.keyCode >=219 && e.keyCode <= 222):                
                     _self.execSearch(false, !!e.shiftKey);
                     return false;
-                
+                case (e.keyCode == 8): // BACKSPACE
+                    txtQuickSearch.setValue(txtQuickSearch.getValue().slice(0,-1));
+                   _self.execSearch(false, !!e.shiftKey, true);
+                    return false;
                 default:
                   break;
             }
@@ -285,8 +293,13 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     editor.ceEditor.focus();
                 }
             });
-        }
 
+            var ace = this.$getAce();
+            if (ace) {
+                ace.selection.clearSelection();
+            }
+        }
+        
         return false;
     },
 
@@ -294,13 +307,13 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         this.toggleDialog(1);
     },
 
-    execSearch: function(close, backwards) {
+    execSearch: function(close, backwards, wasDelete) {
         var ace = this.$getAce();
         if (!ace)
             return;
 
-        var txt = txtQuickSearch.getValue();
-        if (!txt)
+        var searchTxt = txtQuickSearch.getValue();
+        if (!searchTxt)
             return;
 
         var options = {
@@ -312,9 +325,36 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             scope: Search.ALL
         };
 
-        if (this.$crtSearch != txt)
-            this.$crtSearch = txt;
-        ace.find(txt, options);
+        if (this.$crtSearch != searchTxt)
+            this.$crtSearch = searchTxt;
+            
+        var highlightTxt = ace.session.getTextRange(ace.selection.getRange());
+        
+        // super ace bug ! if you're already highlighting some text, another find executes
+        // from the end of the cursor, not the start of your current highlight. thus,
+        // if the text is "copyright" and you execute a search for "c", followed immediately by
+        // "co", you'll never find the "co"--a search for "c" followed by a search for "o"
+        // DOES work, but doesn't highlight the content, so it's kind of lame.
+        // Let's just reset the cursor in the doc whilst waiting for an Ace fix, hm?
+
+        // we have a selection, that is the start of the current needle, but selection !== needle
+        if (!wasDelete) {
+            var highlightTxtReStart = new RegExp("^" + Util.escapeRegExp(highlightTxt), "i");
+        
+            if (highlightTxt != "" && Util.escapeRegExp(searchTxt).match(highlightTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) { 
+                ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - highlightTxt.length); 
+            }
+        } 
+        else { // we've deleted, do it backwards, & stay on the same highlighted term
+            var searchTxtReStart = new RegExp("^" + Util.escapeRegExp(searchTxt), "i");
+            
+            if (highlightTxt != "" && Util.escapeRegExp(highlightTxt).match(searchTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) { 
+                ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - searchTxt.length - 1); 
+            }
+        }
+
+        
+        ace.find(searchTxt, options);
         this.currentRange = ace.selection.getRange();
 
         var settings = require("ext/settings/settings");
@@ -322,9 +362,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var history = settings.model;
             var search = apf.createNodeFromXpath(history.data, "search");
 
-            if (!search.firstChild || search.firstChild.getAttribute("key") != txt) {
+            if (!search.firstChild || search.firstChild.getAttribute("key") != searchTxt) {
                 var keyEl = apf.getXml("<word />");
-                keyEl.setAttribute("key", txt);
+                keyEl.setAttribute("key", searchTxt);
                 apf.xmldb.appendChild(search, keyEl, search.firstChild);
             }
         }
