@@ -133,6 +133,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 if (value)
                     this.txtFind.setValue(value);
             }
+
+            ide.dispatchEvent("exitfullscreen");
             winSearchInFiles.show();
         }
         else {

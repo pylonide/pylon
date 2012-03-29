@@ -29,7 +29,7 @@ module.exports = {
 
         var nodes = [];
         this.refactorItem = new apf.item({
-            caption: "Rename variable",
+            caption: "Rename Variable",
             disabled: true,
             onclick: function() {
                 _self.renameVariable();
@@ -39,7 +39,7 @@ module.exports = {
         // There is a problem with APF setting the $disabled attribute of
         // a cloned menu item, so we have to create a second one ourselves
         this.refactorItemDup = new apf.item({
-            caption: "Rename variable",
+            caption: "Rename Variable",
             disabled: true,
             onclick: function() {
                 _self.renameVariable();

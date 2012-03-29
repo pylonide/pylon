@@ -283,12 +283,15 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         return true;
     },
 
-    remove: function(path) {
+    remove: function(path, callback) {
         var page = tabEditors.getPage(path);
         if (page)
             tabEditors.remove(page);
-
-        davProject.remove(path, false, function() {});
+        
+        if(!callback)
+            callback = function() {};
+            
+        davProject.remove(path, false, callback);
     },
 
     /**** Init ****/
