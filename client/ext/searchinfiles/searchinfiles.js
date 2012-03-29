@@ -40,7 +40,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
     hook : function(){
         var _self = this;
-        
+
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
@@ -50,7 +50,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 }
             }))
         );
-    
+
         this.hotitems.searchinfiles = [this.nodes[1]];
     },
 
@@ -62,13 +62,15 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         this.txtReplace     = txtReplace;
         this.btnReplaceAll = btnReplaceAll;
         this.btnReplaceAll.onclick = this.execFind.bind(this, true);
-        
+
         var _self = this;
         
         this.txtFind.$ext.cols = this.txtFind.cols;
         
         winSearchInFiles.onclose = function() {
-            ceEditor.focus();
+            if (typeof ceEditor != "undefined") {
+                ceEditor.focus();
+            }
             trFiles.removeEventListener("afterselect", _self.setSearchSelection);
         };
         winSearchInFiles.onshow = function() {
@@ -143,6 +145,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 if (value)
                     this.txtFind.setValue(value);
             }
+
+            ide.dispatchEvent("exitfullscreen");
             winSearchInFiles.show();
         }
         else {
@@ -163,7 +167,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
     getOptions: function() {
         var _self = this;
-        
+
         var matchCase = "0";
         if (chkSFMatchCase.checked)
             matchCase = "1";
@@ -240,7 +244,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

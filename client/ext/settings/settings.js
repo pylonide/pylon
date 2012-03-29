@@ -124,7 +124,7 @@ module.exports = ext.register("ext/settings/settings", {
             pages[i].$at.undo(-1);
         }
     },
-
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
