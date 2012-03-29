@@ -193,6 +193,24 @@ module.exports = ext = {
         });
     },
 
+    enableExt : function(path) {
+        var ext = require(path);
+        if(!ext.enable)
+            return;
+
+        ext.enable();
+        mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+    },
+
+    disableExt : function(path) {
+        var ext = require(path);
+        if(!ext.disable)
+            return;
+
+        ext.disable();
+        mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 0);
+    },
+
     execCommand: function(cmd, data) {
         if (cmd)
             cmd = cmd.trim();

@@ -58,7 +58,7 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
-                fileDesc.$ext.innerHTML =  "<h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div>";
+                fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
 
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
@@ -145,7 +145,7 @@ module.exports = ext.register("ext/save/save", {
     },
 
     init : function(amlNode){
-        this.fileDesc = winCloseConfirm.selectSingleNode("a:vbox");;
+        this.fileDesc = winCloseConfirm.selectSingleNode("a:vbox");
 
         apf.importCssString((this.css || ""));
         winCloseConfirm.onafterrender = function(){
