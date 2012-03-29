@@ -18,8 +18,9 @@
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
       
       fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
-      wrapmode          = "[@wrapmode]"
-      wraplimitmin      = "80"
+      wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+      wrapmodeViewport  = "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
+      wraplimitmin      = "40"
       wraplimitmax      = "80"
       gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
       highlightselectedword = "[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]"
