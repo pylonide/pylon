@@ -295,6 +295,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$basePath = "";
     this.$guessBasePath = function() {
+        if (require.aceBaseUrl)
+            return require.aceBaseUrl;
+        
         if (this.$basePath)
             return this.$basePath;
 

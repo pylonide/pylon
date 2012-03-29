@@ -47,9 +47,12 @@
                 : "[%staticUrl%]/js/apf_" + VERSION + ".js";
 
             var config = <%requirejsConfig%>;
+
+            define.aceBaseUrl = "/static/js/worker";
+
             require(config, [apfLoc], function(){
                 apf.addEventListener("load", function(){
-                    var list = ["ext/ace-uncompressed", "ext/packed"];//core/ide", "core/ext", "core/util", "core/settings"];//, "ext/editors/editors"];
+                    var list = ["ext/ace-uncompressed"];//core/ide", "core/ext", "core/util", "core/settings"];//, "ext/editors/editors"];
                     //if (VERSION == RELEASE)
                         //list.push("ace/editor");
 

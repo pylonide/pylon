@@ -7,3 +7,4 @@ worker:
 	mkdir -p client/js/worker
 	./Makefile.dryice.js worker
 	cp support/ace/build/src/worker* client/js/worker
+	cp support/ace/build/src/mode-* client/js/worker

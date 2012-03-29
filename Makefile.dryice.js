@@ -16,7 +16,7 @@ function main(args) {
     }
 
     if (!target) {
-        console.log("--- Cloud9 DryIce Build Tool ---");
+        console.log("--- Cloud9 Dryice Build Tool ---");
         console.log("");
         console.log("Options:");
         console.log("  worker    build workers");
@@ -63,80 +63,6 @@ function worker(project) {
         ],
         filter: [ copy.filter.moduleDefines, filterTextPlugin ],
         dest: worker
-    });
-    copy({
-        source: [
-            {root: 'client/ext/autotest', include: /.*\.(js)$/ },
-            /*{root: 'client/ext/beautify', include: /.*\.(js)$/ },
-            {root: 'client/ext/beautify/res', include: /.*\.(js)$/ },
-            {root: 'client/ext/beautify/res/jsbeautify', include: /.*\.(js)$/ },*/
-            {root: 'client/ext/clipboard', include: /.*\.(js)$/ },
-            {root: 'client/ext/closeconfirmation', include: /.*\.(js)$/ },
-            {root: 'client/ext/code', include: /.*\.(js)$/ },
-            {root: 'client/ext/codecomplete', include: /.*\.(js)$/ },
-            {root: 'client/ext/codecomplete/snippets', include: /.*\.(js)$/ },
-            {root: 'client/ext/codetools', include: /.*\.(js)$/ },
-            {root: 'client/ext/colorpicker', include: /.*\.(js)$/ },
-            {root: 'client/ext/colorpicker/images', include: /.*\.(js)$/ },
-            {root: 'client/ext/console', include: /.*\.(js)$/ },
-            {root: 'client/ext/console/themes', include: /.*\.(js)$/ },
-            {root: 'client/ext/consolehints', include: /.*\.(js)$/ },
-            {root: 'client/ext/debugger', include: /.*\.(js)$/ },
-            {root: 'client/ext/dockpanel', include: /.*\.(js)$/ },
-            {root: 'client/ext/dragdrop', include: /.*\.(js)$/ },
-            {root: 'client/ext/editors', include: /.*\.(js)$/ },
-            {root: 'client/ext/extmgr', include: /.*\.(js)$/ },
-            {root: 'client/ext/filesystem', include: /.*\.(js)$/ },
-            {root: 'client/ext/gotofile', include: /.*\.(js)$/ },
-            {root: 'client/ext/gotoline', include: /.*\.(js)$/ },
-            {root: 'client/ext/gotoline/images', include: /.*\.(js)$/ },
-            {root: 'client/ext/guidedtour', include: /.*\.(js)$/ },
-            {root: 'client/ext/guidedtour/images', include: /.*\.(js)$/ },
-            {root: 'client/ext/help', include: /.*\.(js)$/ },
-            {root: 'client/ext/help/images', include: /.*\.(js)$/ },
-            {root: 'client/ext/html', include: /.*\.(js)$/ },
-            {root: 'client/ext/imgview', include: /.*\.(js)$/ },
-            {root: 'client/ext/jslanguage', include: /.*\.(js)$/ },
-            {root: 'client/ext/jslanguage/test', include: /.*\.(js)$/ },
-            {root: 'client/ext/keybindings', include: /.*\.(js)$/ },
-            {root: 'client/ext/keybindings_default', include: /.*\.(js)$/ },
-            {root: 'client/ext/keybindings_default/res', include: /.*\.(js)$/ },
-            {root: 'client/ext/minimap', include: /.*\.(js)$/ },
-            {root: 'client/ext/newresource', include: /.*\.(js)$/ },
-            {root: 'client/ext/noderunner', include: /.*\.(js)$/ },
-            {root: 'client/ext/nodeunit', include: /.*\.(js)$/ },
-            {root: 'client/ext/offline', include: /.*\.(js)$/ },
-            {root: 'client/ext/offline/src', include: /.*\.(js)$/ },
-            {root: 'client/ext/openfiles', include: /.*\.(js)$/ },
-            {root: 'client/ext/panels', include: /.*\.(js)$/ },
-            {root: 'client/ext/quicksearch', include: /.*\.(js)$/ },
-            {root: 'client/ext/quicksearch/icons', include: /.*\.(js)$/ },
-            {root: 'client/ext/quickstart', include: /.*\.(js)$/ },
-            {root: 'client/ext/quickstart/images', include: /.*\.(js)$/ },
-            {root: 'client/ext/quickwatch', include: /.*\.(js)$/ },
-            {root: 'client/ext/recentfiles', include: /.*\.(js)$/ },
-            {root: 'client/ext/runpanel', include: /.*\.(js)$/ },
-            {root: 'client/ext/save', include: /.*\.(js)$/ },
-            {root: 'client/ext/searchinfiles', include: /.*\.(js)$/ },
-            {root: 'client/ext/searchinfiles/images', include: /.*\.(js)$/ },
-            {root: 'client/ext/searchreplace', include: /.*\.(js)$/ },
-            {root: 'client/ext/settings', include: /.*\.(js)$/ },
-            {root: 'client/ext/settings/images', include: /.*\.(js)$/ },
-            {root: 'client/ext/statusbar', include: /.*\.(js)$/ },
-            {root: 'client/ext/stripws', include: /.*\.(js)$/ },
-            {root: 'client/ext/tabbehaviors', include: /.*\.(js)$/ },
-            {root: 'client/ext/tabsessions', include: /.*\.(js)$/ },
-            {root: 'client/ext/testpanel', include: /.*\.(js)$/ },
-            {root: 'client/ext/themes', include: /.*\.(js)$/ },
-            {root: 'client/ext/themes_default', include: /.*\.(js)$/ },
-            {root: 'client/ext/tree', include: /.*\.(js)$/ },
-            {root: 'client/ext/undo', include: /.*\.(js)$/ },
-            {root: 'client/ext/vim', include: /.*\.(js)$/ },
-            {root: 'client/ext/vim/maps', include: /.*\.(js)$/ },
-            {root: 'client/ext/watcher', include: /.*\.(js)$/ },
-            {root: 'client/ext/zen', include: /.*\.(js)$/ }
-        ],
-        dest: __dirname + "/client/ext/dryice/ext.js"
     });
     copy({
         source: [
