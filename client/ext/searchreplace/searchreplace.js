@@ -153,6 +153,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 if (value)
                     this.txtFind.setValue(value);
 
+                ide.dispatchEvent("exitfullscreen");
+
                 winSearchReplace.setAttribute("title", isReplace
                         ? "Search & Replace" : "Search");
                 winSearchReplace.show();
