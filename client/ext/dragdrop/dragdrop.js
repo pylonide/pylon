@@ -357,8 +357,6 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 file = files[i];
                 file.targetFolder = node;
                 
-                sXml = '<file name="' + file.name + '" />';
-                mdlUploadActivity.appendXml(sXml);
                 _self.addToQueue(file);
             }
             
@@ -371,13 +369,17 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         // add files in dirty state
         var parent = file.targetFolder;
         var path = parent.getAttribute("path");
+        
+        // add node to file tree
         var xmlNode = "<file type='fileupload'" +
             " name='" + file.name + "'" +
             " path='" + path + "/" + file.name + "'" +
         "/>";
-        var treeNode = trFiles.add(xmlNode, parent);
-
-        file.treeNode = treeNode;
+        file.treeNode = trFiles.add(xmlNode, parent);
+        
+        // add file to upload activity list
+        var queueNode = '<file name="' + file.name + '" />';
+        file.queueNode = mdlUploadActivity.appendXml(queueNode);
         
         this.uploadQueue.push(file);
     },
@@ -548,7 +550,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
  
                 // change file from uploading to file to regular file in tree
                 apf.xmldb.setAttribute(file.treeNode, "type", "file");
-                
+                setTimeout(function() {
+                    apf.xmldb.removeNode(file.queueNode);
+                }, 2000);
+
                 
                 //apf.xmldb.appendChild(node, apf.getXml(strXml));
                 /*
