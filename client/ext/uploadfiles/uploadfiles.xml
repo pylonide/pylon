@@ -12,13 +12,15 @@
       width   = "354"
       kbclose = "true">
         <a:vbox edge="10" padding="5" align="center">
-            <a:vbox id="uploadDropArea" class="uploadDropArea" align="center" pack="center" padding="15">
-                <div class="uploadText"></div>
+            <div id="uploadDropArea" class="uploadDropArea"></div>
+            <a:hbox class="uploadSelectButtons" padding="10" height="60" pack="center" align="center">
+                <div class="uploadOrText"></div>
                 <a:button id="fileUploadSelectBtn" skin="btn-default-css3">Select files to upload</a:button>
-            </a:vbox>
+            </a:hbox>
             <div style="color: #838383">Your files will instantly start uploading to: <span id="uplTargetFolder"></span></div>
         </a:vbox>
         <input id="fileUploadSelect" type="file" multiple="multiple" />
+        <!--input id="folderUploadSelect" type="file" webkitdirectory="" directory="" /-->
         <a:hbox padding="10" pack="end" edge="6 10 10">
             <a:button onclick="winUploadFiles.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>

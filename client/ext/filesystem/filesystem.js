@@ -59,7 +59,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             this.webdav.exists(path, callback);
     },
 
-    createFolder: function(name, tree) {
+    createFolder: function(name, tree, noRename, callback) {
         if (!tree) {
             tree = apf.document.activeElement;
             if (!tree || tree.localName != "tree")
@@ -109,7 +109,12 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             folder = apf.queryNode(node, "folder[@path='"+ path +"/"+ name +"']");
 
                             tree.select(folder);
-                            tree.startRename();
+                            
+                            if (!noRename)
+                                tree.startRename();
+                            
+                            if (callback)
+                                callback(folder);
                         });
                     });
                 }

@@ -63,7 +63,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         
         this.filebrowser = fileUploadSelect.$ext;
         this.filebrowser.addEventListener('change', handleFileSelect, false);
-        
+        /*
+        this.folderbrowser = folderUploadSelect.$ext;
+        this.folderbrowser.addEventListener('change', handleFileSelect, false);
+        */
         fileUploadSelect.$ext.addEventListener("mouseover", function() {
             apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
         });

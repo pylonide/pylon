@@ -45,7 +45,7 @@
               contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
               onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
               onbeforemove="this.disable();" autoselect="false"
-              flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
+              flex="1" scrollbar="sbShared 2 2 2"
             >
                 <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                     <a:insert match="[folder]" get="{davProject.readdir([@path])}" />

@@ -13,7 +13,7 @@ var fs   = require("ext/filesystem/filesystem");
 
 var MAX_UPLOAD_SIZE = 52428800;
 var MAX_OPENFILE_SIZE = 2097152;
-var MAX_CONCURRENT_FILES = 20;
+var MAX_CONCURRENT_FILES = 2000;
 
 module.exports = ext.register("ext/dragdrop/dragdrop", {
     dev         : "Ajax.org",
@@ -22,6 +22,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     type        : ext.GENERAL,
     
     nodes       : [],
+    deps        : [fs],
     
     uploadQueue : [],
     
@@ -67,8 +68,15 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         });
 
         ide.addEventListener("init.ext/uploadfiles/uploadfiles", function(){
-            _self.nodes.push(uploadDropArea.$ext);
-            decorateNode(uploadDropArea.$ext);
+            _self.nodes.push(uploadDropArea);
+            //decorateNode(uploadDropArea.$ext);
+
+            uploadDropArea.addEventListener("dragenter", dragEnter, false);
+            uploadDropArea.addEventListener("dragleave", dragLeave, false);
+            uploadDropArea.addEventListener("drop", dragDrop, false);
+            ["dragexit", "dragover"].forEach(function(e) {
+                uploadDropArea.addEventListener(e, noopHandler, false);
+            });
         });
 
         this.dragStateEvent = {"dragenter": dragEnter};
@@ -189,7 +197,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 return;
                 
             apf.stopEvent(e);
-            apf.setStyleClass(this.dropbox, "over");
+            apf.setStyleClass(this.dropbox || this, "over");
         }
         
         function dragDrop(e) {
@@ -291,7 +299,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     onDrop: function(e) {
         var dt = e.dataTransfer;
         var files = dt.files;
-        
+
         this.startUpload(files);
     },
     
@@ -301,8 +309,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
     },
     
     startUpload: function(files) {
-        // set number of files user wants to upload, used to check if we should 
-        // select and open the file on upload complete
+        var _self = this;
         this.numFilesUploaded = files.length;
         
         trFiles.addEventListener("beforeselect", this.checkSelectableFile);
@@ -320,19 +327,44 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         // show upload activity list
         boxUploadActivity.show();
         
-        var file;
-        var sXml = "";
-        for (var i = 0, l = files.length; i < l; i++) {
-            file = files[i];
-            file.targetFolder = node;
-            
-            sXml = '<file name="' + file.name + '" />';
-            mdlUploadActivity.appendXml(sXml);
-            this.addToQueue(file);
+        // check if a folder is uploaded and create that folder
+        var file = files[0];
+        var parts = file.webkitRelativePath && file.webkitRelativePath.split("/") ;
+        var newfolderName = parts.length ? parts[0] : "";
+        
+        // uploading a folder
+        if (newfolderName) {
+            // check if this folder already exists, if so upload to existing folder
+            var newfolderNode = trFiles.getModel().data.selectSingleNode("//folder[@path='" + node.getAttribute("path") + "/" + newfolderName + "']");
+            if (newfolderNode) {
+                next(newfolderNode);
+            }
+            // folder doesn't exists yet, create first
+            else {
+                fs.createFolder(newfolderName, trFiles, true, function(folder) {
+                    next(folder);
+                });
+            }
+        }
+        // uploading files
+        else {
+            next(node);
         }
         
-        if (!this.uploadInProgress)
-            this.uploadNextFile();
+        function next(node) {
+            var sXml = "";
+            for (var i = 0, l = files.length; i < l; i++) {
+                file = files[i];
+                file.targetFolder = node;
+                
+                sXml = '<file name="' + file.name + '" />';
+                mdlUploadActivity.appendXml(sXml);
+                _self.addToQueue(file);
+            }
+            
+            if (!this.uploadInProgress)
+                _self.uploadNextFile();
+        }
     },
     
     addToQueue: function(file) {
@@ -344,7 +376,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             " path='" + path + "/" + file.name + "'" +
         "/>";
         var treeNode = trFiles.add(xmlNode, parent);
-        
+
         file.treeNode = treeNode;
         
         this.uploadQueue.push(file);
@@ -483,7 +515,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 oBinary.filedataname = file.name;
                 oBinary.multipart = true;
             }*/
-            
+
             fs.webdav.write(path + "/" + file.name, data, false, oBinary, complete);
             //_self.StatusBar.upload(file);
         }
@@ -517,14 +549,16 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 // change file from uploading to file to regular file in tree
                 apf.xmldb.setAttribute(file.treeNode, "type", "file");
                 
+                
                 //apf.xmldb.appendChild(node, apf.getXml(strXml));
+                /*
                 if (_self.numFilesUploaded == 1) {
                     trFiles.select(file.treeNode);
                 
                     if (file.size < MAX_OPENFILE_SIZE)
                         ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode)});
                 }
-
+                */
                 //setTimeout(function() {
                     _self.uploadNextFile();
                 //}, 1000);

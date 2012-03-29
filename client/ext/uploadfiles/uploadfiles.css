@@ -13,22 +13,38 @@
 }
 
 .uploadDropArea {
-    height: 158px;
+    height: 95px;
     width: 335px;
     background: url(/static/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 0;
 }
 
-.uploadText {
-    height: 41px;
-    width: 245px;
-    background: url(/static/ext/uploadfiles/style/images/dragdrop-here-text.png) no-repeat 0 0;
+.uploadDropArea.over {
+    background: url(/static/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 -95px;
+}
+.uploadOrText {
+    height: 12px;
+    width: 18px;
+    background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-text.png) no-repeat 0 0;
 }
 
 #fileUploadSelect {
     position: absolute;
-    top: 115px;
-    left: 86px;
+    top: 132px;
+    left: 99px;
     width: 181px;
     height: 24px;
     opacity: 0;
+}
+
+#folderUploadSelect {
+    position: absolute;
+    top: 96px;
+    left: 172px;
+    width: 77px;
+    height: 24px;
+    opacity: 0;
+}
+
+.uploadSelectButtons div {
+    color: #ffffff;
 }

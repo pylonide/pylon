@@ -10332,7 +10332,7 @@
             }
             
             .list-uploadactivity .item.hover .uploadactivity-delete:hover {
-                background-position : 0 -13px;
+                background-position : 0 -14px;
             }
             
             .list-uploadactivity .item.hover .icon {
@@ -10352,11 +10352,11 @@
             }
 
             .list-uploadactivity .item .uploadactivity-delete {
-                width       : 12px;
-                height      : 13px;
+                width       : 13px;
+                height      : 14px;
                 position    : absolute;
-                top         : 5px;
-                right       : 11px;
+                top         : 4px;
+                right       : 12px;
                 background  : url(images/delete_btn.png) no-repeat 0 0;
                 cursor      : default;
                 display     : none;

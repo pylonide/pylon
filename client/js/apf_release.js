@@ -7260,8 +7260,9 @@ apf.aml.setElement("scrollbar",apf.scrollbar);apf.GuiElement.propHandlers.scroll
 var name=values[0];var top=values[1]||0;var right=values[2]||0;var bottom=values[3]||0;
 var _self=this;this.$sharedScrollbar=self[name]||false;function hasOnScroll(){return apf.isTrue(sb.getAttribute("showonscroll"));
 }var oHtml=this.$container||this.$int||this.$ext,timer,sb;var mouseMove;apf.addListener(oHtml,"mousemove",mouseMove=function(e){if(!_self.$sharedScrollbar){_self.$sharedScrollbar=self[name];
-}sb=_self.$sharedScrollbar;if(sb.$host!=_self){(_self.$ext==oHtml?_self.$ext.parentNode:_self.$ext).appendChild(sb.$ext);
-sb.setProperty("showonscroll",true);sb.$ext.style.display="block";sb.setAttribute("top",top);
+}sb=_self.$sharedScrollbar;if(sb.$host!=_self){var pNode=(_self.$ext==oHtml?_self.$ext.parentNode:_self.$ext);
+pNode.appendChild(sb.$ext);if(apf.getStyle(pNode,"position")=="static"){pNode.style.position="relative";
+}sb.setProperty("showonscroll",true);sb.$ext.style.display="block";sb.setAttribute("top",top);
 sb.setAttribute("right",right);sb.setAttribute("bottom",bottom);sb.setAttribute("for",_self);
 sb.$ext.style.display="none";sb.dragging=false;if(sb.$hideOnScrollControl){sb.$hideOnScrollControl.stop();
 }}if(hasOnScroll()){clearTimeout(timer);var pos=apf.getAbsolutePosition(oHtml);
