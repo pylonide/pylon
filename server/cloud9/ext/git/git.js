@@ -68,7 +68,7 @@ sys.inherits(ShellGitPlugin, Plugin);
         var argv = message.argv || [];
 
         // git encourages newlines in commit messages; see also #678
-        // so if a \n is detected, treat the whole commit message as a newline
+        // so if a \n is detected, treat them properly as newlines
         if (message.argv[1] == "commit" && message.argv[2] == "-m") {
             if (message.argv[3].indexOf("\\n") > -1) {
                 message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
