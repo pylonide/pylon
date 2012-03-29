@@ -53,6 +53,10 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         extra: options.extra,
         remote: options.remote
     };
+    // precalc regular expressions:
+    this.indexRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
+    this.reconnectRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
+    this.workspaceRe = new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
     this.$users = {};
     this.nodeCmd = process.argv[0];
@@ -155,11 +159,9 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 (function () {
 
     this.handle = function(req, res, next) {
-        var path = Url.parse(req.url).pathname;
-
-        this.indexRe = this.indexRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
-        this.reconnectRe = this.reconnectRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
-        this.workspaceRe = this.workspaceRe || new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
+        if (!req.parsedUrl)
+            req.parsedUrl = Url.parse(req.url);
+        var path = req.parsedUrl.pathname;
 
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
@@ -284,6 +286,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
             this.onUserCountChange();
             this.emit("userJoin", user);
         }
+        return user;
     };
 
     this.getUser = function(req) {

@@ -43,7 +43,7 @@ exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoa
 exports.removeInteractive = function (amlNode) {
     if (window.cloud9config.readonly == true)
         return false;
-    
+
     if (amlNode.confirmed == undefined)
         amlNode.confirmed = false;
     
@@ -52,9 +52,10 @@ exports.removeInteractive = function (amlNode) {
 
         function confirm(file) {
             var name = file.getAttribute("name");
+            var type = file.getAttribute("type");
             require("core/util").question(
-                "Remove file?",
-                "You are about to remove the file " + name,
+                "Confirm Remove",
+                "You are about to remove the " + type + " " + name,
                 "Do you want continue? (This change cannot be undone)",
                 function () { // Yes
                     amlNode.confirmed = true;
@@ -155,6 +156,7 @@ var contentTypes = {
     "cxx": "text/x-c",
     "h": "text/x-c",
     "hh": "text/x-c",
+    "hpp": "text/x-c",
     
     "bmp": "image",
     "djv": "image",
