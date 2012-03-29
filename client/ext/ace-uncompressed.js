@@ -14201,7 +14201,7 @@ var WorkerClient = function(topLevelNamespaces, packagedJs, mod, classname) {
         var base = this.$guessBasePath();
         this.$worker = new Worker(base + packagedJs);
     }
-    else { 
+    else {
         var workerUrl = this.$normalizePath(require.nameToUrl("ace/worker/worker", null, "_"));
         this.$worker = new Worker(workerUrl);
 
