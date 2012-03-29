@@ -1,5 +1,5 @@
 /**
- * Refactor Module for the Cloud9 IDE
+ * Clipboard Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -10,15 +10,18 @@ define(function(require, exports, module) {
 "use strict";
 
 var ext = require("core/ext");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/clipboard/clipboard", {
     dev    : "Ajax.org",
     name   : "Clipboard",
     alone  : true,
     type   : ext.GENERAL,
-
-    nodes : [],
-
+    
+    nodes  : [],
+    text   : "",
+    editor : null,
+    
     init : function(amlNode){
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
@@ -35,7 +38,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
                 onclick : this.paste
             }))
         );
-
+        
         /*this.hotitems = {
             "cut" : [this.nodes[1]],
             "copy" : [this.nodes[2]],
@@ -44,18 +47,41 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     cut: function() {
-        if (apf.document.activeElement == trFiles)
+        if (apf.document.activeElement == trFiles) {
             apf.clipboard.cutSelection(trFiles);
+        }
+        else {
+            if (this.editor == null) {
+                this.editor = editors.currentEditor.ceEditor.$editor;
+            }
+            this.text = this.editor.getCopyText();
+        }
     },
 
     copy: function() {
-        if (apf.document.activeElement == trFiles)
+        if (apf.document.activeElement == trFiles) {
             apf.clipboard.copySelection(trFiles);
+        }
+        else {
+            if (this.editor == null) {
+                this.editor = editors.currentEditor.ceEditor.$editor;
+            }
+            this.text = this.editor.getCopyText();
+        }
     },
 
     paste: function() {
-        if (apf.document.activeElement == trFiles)
+        if (apf.document.activeElement == trFiles) {
             apf.clipboard.pasteSelection(trFiles);
+        }
+        else {
+            if (this.editor == null) {
+                this.editor = editors.currentEditor.ceEditor.$editor;
+            }
+            if (this.text !== "") {
+                this.editor.insert(this.text);
+            }
+        }
     },
 
     enable : function(){

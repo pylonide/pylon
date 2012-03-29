@@ -35,6 +35,10 @@
         <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
         <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
         <a:divider />
+        <a:item onclick="{require('ext/code/code').cut()}">Cut</a:item>
+        <a:item onclick="{require('ext/code/code').copy()}">Copy</a:item>
+        <a:item onclick="{require('ext/code/code').paste()}">Paste</a:item>
+        <a:divider />
         <a:item 
           visible="{stDebugProcessRunning.active and !stRunning.active}"
           onclick="
