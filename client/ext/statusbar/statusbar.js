@@ -113,6 +113,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
         
+        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
+        wrapMode.addEventListener("click", function(e) {
+            if (e.currentTarget.checked) {
+                wrapModeViewport.enable(); 
+            }
+            else {
+                wrapModeViewport.disable();
+            }
+        });
+        
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
