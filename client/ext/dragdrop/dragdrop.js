@@ -148,7 +148,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 }
             }
             //go up
-            else if (hoverElTopPos - 25 < trFiles.$container.scrollTop) {
+            else if (trFiles.$container.scrollTop != 0 && hoverElTopPos - 25 < trFiles.$container.scrollTop) {
                 scrollNode = findSiblingToScrollTo(actualTargetNode, "previous");
                 if(scrollNode) {
                     trFiles.scrollIntoView(scrollNode, true);
