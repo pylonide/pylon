@@ -29,22 +29,19 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Cut",
-                onclick : function(){
-                    _self.which = "cut";
+                onclick : function() {
                     _self.cut();
                 }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Copy",
-                onclick : function(){
-                    _self.which = "copy";
+                onclick : function() { 
                     _self.copy();
                 }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Paste",
-                onclick : function(){
-                    _self.which = "paste";
+                onclick : function() { 
                     _self.paste();
                 }
         })));
