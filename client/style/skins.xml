@@ -9746,13 +9746,15 @@
         }
 
         .filemgr-dragtree .item .caption,
-        .filemgr-tree .item-fix.dragAppend .item {
+        .filemgr-tree .item-fix.dragAppend .item,
+        .filemgr-tree .item-fix.dragAppendUpload .item {
             color: white;
             margin-right: 5px;
         }
 
         .filemgr-dragtree .item .caption,
-        .filemgr-tree .item-fix.dragAppend .label-content {
+        .filemgr-tree .item-fix.dragAppend .label-content,
+        .filemgr-tree .item-fix.dragAppendUpload .label-content {
             -webkit-border-radius: 10px;
             -moz-border-radius: 10px;
             border-radius: 10px;
@@ -9762,7 +9764,7 @@
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
         
-        .filemgr-tree .item-fix.dragAppend .label-content > LABEL {
+        .filemgr-tree .item-fix.dragAppendUpload .label-content > LABEL {
             background: url(images/tree_upload_icon.png) no-repeat 0 0 !important;
             background-position: 3 0;
         }
@@ -9786,7 +9788,9 @@
 
         .filemgr-dragtree,
         .filemgr-tree .item-fix.dragAppend .item LABEL .caption,
+        .filemgr-tree .item-fix.dragAppendUpload .item LABEL .caption,
         .filemgr-treeFocus .item-fix.selected .item LABEL .caption,
+        .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption,
         .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption {
             color:white;
         }

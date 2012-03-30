@@ -83,7 +83,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         
         function dragToTreeLeave(e) {
             apf.stopEvent(e);
-            apf.setStyleClass(lastHtmlTreeDropNode, null, ["dragAppend"]);
+            apf.setStyleClass(lastHtmlTreeDropNode, null, ["dragAppendUpload"]);
             if(hoverTimer)
                 clearTimeout(hoverTimer);
             hoverTarget = null;
@@ -119,7 +119,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             
             lastHtmlTreeDropNode = targetHtmlNode;   
             lastTreeDropNode = targetNode;
-            apf.setStyleClass(targetHtmlNode, "dragAppend");
+            apf.setStyleClass(targetHtmlNode, "dragAppendUpload");
             
             //this will expand the folder if you hover over it
             if(hoverTarget != actualTargetNode 
@@ -136,25 +136,27 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             
             //this will scroll down or up the tree
             var selHtml = apf.xmldb.getHtmlNode(actualTargetNode, trFiles);
-            var hoverElTopPos = apf.getAbsolutePosition(selHtml, trFiles.$container)[1];
-            //go down
-            if (hoverElTopPos + 25 > trFiles.$container.scrollTop + trFiles.$container.offsetHeight) {
-                scrollNode = findSiblingToScrollTo(actualTargetNode, "next");
-                if(scrollNode) {
-                    trFiles.scrollIntoView(scrollNode);
-                    
-                    if(hoverTimer)
-                        clearTimeout(hoverTimer);
+            if(selHtml) {
+                var hoverElTopPos = apf.getAbsolutePosition(selHtml, trFiles.$container)[1];
+                //go down
+                if (hoverElTopPos + 25 > trFiles.$container.scrollTop + trFiles.$container.offsetHeight) {
+                    scrollNode = findSiblingToScrollTo(actualTargetNode, "next");
+                    if(scrollNode) {
+                        trFiles.scrollIntoView(scrollNode);
+                        
+                        if(hoverTimer)
+                            clearTimeout(hoverTimer);
+                    }
                 }
-            }
-            //go up
-            else if (trFiles.$container.scrollTop != 0 && hoverElTopPos - 25 < trFiles.$container.scrollTop) {
-                scrollNode = findSiblingToScrollTo(actualTargetNode, "previous");
-                if(scrollNode) {
-                    trFiles.scrollIntoView(scrollNode, true);
-                    
-                    if(hoverTimer)
-                        clearTimeout(hoverTimer);
+                //go up
+                else if (trFiles.$container.scrollTop != 0 && hoverElTopPos - 25 < trFiles.$container.scrollTop) {
+                    scrollNode = findSiblingToScrollTo(actualTargetNode, "previous");
+                    if(scrollNode) {
+                        trFiles.scrollIntoView(scrollNode, true);
+                        
+                        if(hoverTimer)
+                            clearTimeout(hoverTimer);
+                    }
                 }
             }
         }
