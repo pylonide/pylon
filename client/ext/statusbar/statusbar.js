@@ -116,9 +116,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         tabEditors.addEventListener("resize", function() {
             _self.setPosition();
         });
-    },
-
-    init : function(){        
+     
         if(typeof ceEditor === "undefined") {
             this.initFail = true;
             return;
