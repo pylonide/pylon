@@ -267,7 +267,10 @@ module.exports = ext.register("ext/tree/tree", {
             if (!node || node.tagName != "file" || this.selection.length > 1 ||
                 !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
-
+                    
+            node.setAttribute("path", node.getAttribute("path").replace(/'/g, "&apos;"));
+            node.setAttribute("name", node.getAttribute("name").replace(/'/g, "&apos;"));
+            
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
 

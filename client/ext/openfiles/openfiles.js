@@ -34,14 +34,14 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         ide.addEventListener("afteropenfile", function(e){
             var node = e.doc.getNode();
             if (node) {
-                if (!model.queryNode("//node()[@path='" + node.getAttribute("path") + "']"))
+                if (!model.queryNode("//node()[@path='" + node.getAttribute("path").replace(/'/g, "&apos;") + "']"))
                     model.appendXml(apf.getCleanCopy(node));
             }
         });
 
         ide.addEventListener("closefile", function(e){
             var node = e.xmlNode;
-            model.removeXml("//node()[@path='" + node.getAttribute("path") + "']");
+            model.removeXml("//node()[@path='" + node.getAttribute("path").replace(/'/g, "&apos;") + "']");
         });
 
         ide.addEventListener("updatefile", function(e){

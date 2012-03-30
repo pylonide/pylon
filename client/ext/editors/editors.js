@@ -594,7 +594,7 @@ module.exports = ext.register("ext/editors/editors", {
                             // if the file has been loaded from the tree
                             if (doc.getNode().getAttribute("newfile") != 1) {
                                 // databind the node from the tree to the document
-                                doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                                doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path.replace(/'/g, "&apos;") + "']"));
                             }
                             else {
                                 // if not? then keep it this way, but invoke setNode() anyway because
