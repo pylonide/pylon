@@ -46,7 +46,7 @@
                     }
                     else {
                         <div class="uploadactivity-caption">[@name]</div>
-                        <div class="uploadactivity-delete" onclick="require('ext/dragdrop/dragdrop').removeFromQueue('{[@name]}')"></div>
+                        <div class="uploadactivity-delete" onclick="require('ext/uploadfiles/uploadfiles').removeFromQueue('{[@name]}')"></div>
                     }
                 ?></a:caption>
             </a:each>
@@ -75,7 +75,7 @@
                 class="btn-green" 
                 onclick="
                     winUploadFileExists.hide();
-                    require('ext/dragdrop/dragdrop').overwriteAll()
+                    require('ext/uploadfiles/uploadfiles').overwriteAll()
                 " 
                 visible="false">Overwrite all</a:button>
             <a:button id="btnUploadSkipAll" 
@@ -83,7 +83,7 @@
                 class="btn-red" 
                 onclick="
                     winUploadFileExists.hide();
-                    require('ext/dragdrop/dragdrop').skipAll()
+                    require('ext/uploadfiles/uploadfiles').skipAll()
                 "
                 visible="false">Skip all</a:button>
             <a:filler/>
@@ -93,14 +93,14 @@
                 class="btn-green" 
                 onclick="
                     winUploadFileExists.hide();
-                    require('ext/dragdrop/dragdrop').overwrite()
+                    require('ext/uploadfiles/uploadfiles').overwrite()
                 ">Overwrite</a:button>
             <a:button id="btnUploadSkip" 
                 skin="btn-default-css3" 
                 class="btn-red" 
                 onclick="
                     winUploadFileExists.hide();
-                    require('ext/dragdrop/dragdrop').skip()
+                    require('ext/uploadfiles/uploadfiles').skip()
                 ">Skip</a:button>
         </a:hbox>
     </a:window>
