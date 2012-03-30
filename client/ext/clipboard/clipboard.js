@@ -21,8 +21,10 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     nodes  : [],
     text   : "",
     editor : null,
+    _self  : null,
     
-    init : function(amlNode){
+    hook : function () {
+        _self = this;
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
@@ -36,8 +38,11 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             mnuEdit.appendChild(new apf.item({
                 caption : "Paste",
                 onclick : this.paste
-            }))
-        );
+        })));
+    },
+    
+    init : function(amlNode){
+        
         
         /*this.hotitems = {
             "cut" : [this.nodes[1]],
@@ -58,32 +63,29 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
     },
 
-    copy: function() {
+    copy: function(ace) {
         if (apf.document.activeElement == trFiles) {
             apf.clipboard.copySelection(trFiles);
         }
         else {
-            if (this.editor == null) {
-                this.editor = editors.currentEditor.ceEditor.$editor;
-            }
-            this.text = this.editor.getCopyText();
+            var ace = _self.$getAce();
+            this.text = ace.getCopyText();
         }
     },
 
     paste: function() {
-        if (apf.document.activeElement == trFiles) {
-            apf.clipboard.pasteSelection(trFiles);
-        }
-        else {
-            if (this.editor == null) {
-                this.editor = editors.currentEditor.ceEditor.$editor;
-            }
-            if (this.text !== "") {
-                this.editor.insert(this.text);
-            }
-        }
+
     },
 
+    $getAce: function() {
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+
+        var ceEditor = editor.ceEditor;
+        return ceEditor.$editor;
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
