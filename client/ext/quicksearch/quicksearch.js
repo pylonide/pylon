@@ -73,8 +73,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         txtQuickSearch.addEventListener("keydown", function(e){
             switch (e.keyCode){
-                case (e.keyCode == 8): // BACKSPACE
-                    break; // do nothing
                 case 13: //ENTER
                     _self.execSearch(false, !!e.shiftKey);
                     return false;
@@ -113,7 +111,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     _self.execSearch(false, !!e.shiftKey);
                     return false;
                 case (e.keyCode == 8): // BACKSPACE
-                    txtQuickSearch.setValue(txtQuickSearch.getValue().slice(0,-1));
                    _self.execSearch(false, !!e.shiftKey, true);
                     return false;
                 default:
