@@ -290,7 +290,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
     };
 
     this.getUser = function(req) {
-        var uid = req.session.uid;
+        var uid = req.session.uid || req.session.anonid;
         if (!uid || !this.$users[uid])
             return null;
         else
