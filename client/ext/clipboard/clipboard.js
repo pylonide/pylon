@@ -20,35 +20,38 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     
     nodes  : [],
     text   : "",
-    editor : null,
-    _self  : null,
-    
-    hook : function () {
-        _self = this;
+    range  : null,
+ 
+    hook : function(){
+        var _self = this;
+        
         this.nodes.push(
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Cut",
-                onclick : this.cut
+                onclick : function(){
+                    _self.which = "cut";
+                    _self.cut();
+                }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Copy",
-                onclick : this.copy
+                onclick : function(){
+                    _self.which = "copy";
+                    _self.copy();
+                }
             })),
             mnuEdit.appendChild(new apf.item({
                 caption : "Paste",
-                onclick : this.paste
+                onclick : function(){
+                    _self.which = "paste";
+                    _self.paste();
+                }
         })));
     },
-    
-    init : function(amlNode){
-        
-        
-        /*this.hotitems = {
-            "cut" : [this.nodes[1]],
-            "copy" : [this.nodes[2]],
-            "paste" : [this.nodes[3]]
-        };*/
+
+    init : function (amlNode) {
+        // do nothing
     },
 
     cut: function() {
@@ -59,25 +62,53 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             if (this.editor == null) {
                 this.editor = editors.currentEditor.ceEditor.$editor;
             }
-            this.text = this.editor.getCopyText();
+            var ace = this.$getAce();
+            this.text = ace.getCopyText();
+            ace.remove(ace.getSelectionRange());
         }
     },
 
-    copy: function(ace) {
-        if (apf.document.activeElement == trFiles) {
+    copy: function() {
+       if (apf.document.activeElement == trFiles) {
             apf.clipboard.copySelection(trFiles);
         }
         else {
-            var ace = _self.$getAce();
+            var ace = this.$getAce();
             this.text = ace.getCopyText();
         }
     },
 
     paste: function() {
-
+       if (apf.document.activeElement == trFiles) {
+            apf.clipboard.pasteSelection(trFiles);
+        }
+        else {
+            var ace = this.$getAce();
+            ace.getSession().replace(ace.getSelectionRange(), this.text);
+        }
     },
 
-    $getAce: function() {
+    // seems to be some bug--once the context menu pops up, 
+    // ace selection disappears.
+    keepRange : function() {
+        var ace = this.$getAce();
+        this.range = ace.getSelectionRange();
+    },
+    
+    showRange : function() {
+        var _self = this;
+        setInterval(function() {
+            if (!mnuCtxEditor.visible) {
+                clearInterval(this);
+            }
+            else {
+                var ace = _self.$getAce();
+                ace.getSelection().setSelectionRange(_self.range);
+            }
+        }, 10);
+    },
+    
+    $getAce : function() {
         var editor = editors.currentEditor;
         if (!editor || !editor.ceEditor)
             return;
