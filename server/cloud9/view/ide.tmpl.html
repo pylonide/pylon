@@ -48,11 +48,11 @@
 
             var config = <%requirejsConfig%>;
 
-            define.aceBaseUrl = "/static/js/worker";
+            
 
             require(config, [apfLoc], function(){
                 apf.addEventListener("load", function(){
-                    var list = ["ext/ace-uncompressed"];//core/ide", "core/ext", "core/util", "core/settings"];//, "ext/editors/editors"];
+                    var list = ["ext/packed", "ext/ace-uncompressed"];
                     //if (VERSION == RELEASE)
                         //list.push("ace/editor");
 
@@ -76,6 +76,13 @@
                             });
                         }, 1000);
                     });
+
+                                            require(["ace/config"], function(config) {
+                            config.set("packaged", true);
+                            config.set("workerPath", "js/worker");
+                            config.set("modePath", "js/mode");
+                            config.set("themePath", "js/theme");
+                        });
                     preloaderImgs();
                 });
                 //if (apf.started)
