@@ -49,7 +49,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
             var path = e.path || node.getAttribute("path");
 
-            var fNode = model.queryNode("//node()[@path='" + path + "']");
+            var fNode = model.queryNode("//node()[@path='" + path.replace(/'/g, "&apos;") + "']");
             if (node && fNode) {
                 if (e.path)
                     fNode.setAttribute("path", node.getAttribute("path"));
