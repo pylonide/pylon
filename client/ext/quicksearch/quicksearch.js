@@ -100,21 +100,28 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             }
         });
 
-        txtQuickSearch.addEventListener("keyup", function(e){
-            switch (true){
-                
+        txtQuickSearch.addEventListener("keypress", function(e){
+     
+        }); 
+        
+        txtQuickSearch.addEventListener("keyup", function(e) {
+            switch (true) {
                 // letters, numbers, slashes, brackets, quotations...
                 case (e.keyCode >=48 && e.keyCode <= 90): 
                 case (e.keyCode >=96 && e.keyCode <= 111):
                 case (e.keyCode >=186 && e.keyCode <= 191):
-                case (e.keyCode >=219 && e.keyCode <= 222):                
+                case (e.keyCode >=219 && e.keyCode <= 222): 
                     _self.execSearch(false, !!e.shiftKey);
+                    break;
+            }
+            
+            switch (e.keycode) {
+                case 8:
+                    _self.execSearch(false, !!e.shiftKey, true);
                     return false;
-                case (e.keyCode == 8): // BACKSPACE
-                   _self.execSearch(false, !!e.shiftKey, true);
-                    return false;
-                default:
-                  break;
+                case 27:
+                    _self.toggleDialog(-1);
+                    break;
             }
         }); 
         
@@ -166,11 +173,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             txtQuickSearch.select();
             this.position = next;
         }
-    },
-
-    handleQuicksearchEscape : function(e) {
-        if (e.keyCode == 27)
-            this.toggleDialog(-1);
     },
 
     updateCounter: function() {
