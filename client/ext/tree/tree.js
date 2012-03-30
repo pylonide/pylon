@@ -276,7 +276,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return false;
 
             var args     = e.args[0].args,
-                filename = args[1].getAttribute("name");
+                filename = args[1].getAttribute("name").replace(/'/g, "&apos;");
 
             var count = 0;
             filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));

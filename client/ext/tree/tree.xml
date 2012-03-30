@@ -55,9 +55,9 @@
             <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
             <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename(escapeQuote([@name]), [@oldpath])}" />
             <a:move set="{require('ext/tree/tree').moveFile(escapeQuote([@path]), createPath([@path], [../@path]))}"/>
-            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove(escapeQuote([@path]))}"/>
             <a:copy match="[file|folder]" set="{
-                davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
+                davProject.copy(escapeQuote([@path]), createPath([@newname] || [@path], [../@path]))
             }" undo="{
                 alert('TODO!!');
             }"/>
