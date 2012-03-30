@@ -305,7 +305,12 @@ module.exports = ext.register("ext/tree/tree", {
 
             if(trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
-
+                
+            console.log(e.args[1].replace(/'/g, "&apos;"))
+            e.args[1] = e.args[1].replace(/'/g, "&apos;");
+            e.args[0].setAttribute("name", e.args[0].getAttribute("name").replace(/'/g, "&apos;"));
+            e.args[0].setAttribute("path", e.args[0].getAttribute("path").replace(/'/g, "&apos;"));
+            
             // check for a path with the same name, which is not allowed to rename to:
             var path = e.args[0].getAttribute("path"),
                 newpath = path.replace(/^(.*\/)[^\/]+$/, "$1" + e.args[1]).toLowerCase();
