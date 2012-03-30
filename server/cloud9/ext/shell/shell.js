@@ -113,7 +113,8 @@ sys.inherits(ShellPlugin, Plugin);
                  _self.sendResult(0, message.command, commands);
              });
     };
-
+    
+    this.mv    =
     this.pwd   =
     this.mkdir =
     this.rm    =
