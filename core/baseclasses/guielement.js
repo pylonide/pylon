@@ -413,8 +413,8 @@ apf.GuiElement = function(){
             //--#ifdef __WITH_CONTENTEDITABLE
             //@todo slow??
             var diff = apf.getDiff(this.$ext);
-            this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
-            this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
+            this.$ext.style.minWidth = Math.max(1, this.minwidth - diff[0]) + "px";
+            this.$ext.style.minHeight = Math.max(1, this.minheight - diff[1]) + "px";
             this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
             this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
             
