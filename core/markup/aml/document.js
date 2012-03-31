@@ -38,7 +38,9 @@
 apf.AmlDocument = function(){
     this.$prefixes      = {};
     this.$namespaceURIs = {};
+    // #ifdef __WITH_AMLCONFIGURATION
     this.domConfig      = new apf.AmlConfiguration();
+    // #endif
     
     this.$init();
 };

@@ -241,7 +241,7 @@ apf.storage.modules.flash = {
                 "Setting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
 
-        this.callMethod('put', key, apf.serialize(value), namespace);
+        this.callMethod('put', key, JSON.stringify(value), namespace);
     },
 
     putMultiple: function(keys, values, namespace){

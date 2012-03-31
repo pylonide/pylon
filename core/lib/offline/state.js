@@ -221,7 +221,7 @@ apf.offline.state = {
         
         apf.saveData(this.setInstruction, {
             ignoreOffline : true,
-            data          : apf.serialize(data),
+            data          : JSON.stringify(data),
             callback      : function(data, state, extra){
                 if (extra.tpModule.retryTimeout(extra, state, apf.offline) === true)
                     return true;

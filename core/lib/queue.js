@@ -68,9 +68,15 @@ apf.queue = {
     add : function(id, f){
         this.q[id] = f;
         if (!this.timer)
+            //#ifdef __WITH_ZERO_TIMEOUT
             this.timer = apf.setZeroTimeout(function(){
                 apf.queue.empty();
             });
+            /* #else
+            this.timer = apf.setTimeout(function(){
+                apf.queue.empty();
+            });
+            #endif */
     },
 
     remove : function(id){

@@ -421,7 +421,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             //#endif
 
             if (this.transport)
-                this.transport.sendUpdate(uri, apf.serialize(list));
+                this.transport.sendUpdate(uri, JSON.stringify(list));
             
             this.dispatchEvent("rdbsend", {
                 uri     : uri,
@@ -545,7 +545,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         else {
             oError = new Error(apf.formatErrorString(0, this,
                 "Remote Databinding Received", "Could not get XML node from \
-                 model with Xpath '" + xpath + "' for URI '" + oMessage.uri + "' " + apf.serialize(oMessage)));
+                 model with Xpath '" + xpath + "' for URI '" + oMessage.uri + "' " + JSON.stringify(oMessage)));
         }
         //#endif
 

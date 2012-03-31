@@ -51,7 +51,7 @@ apf.offline.queue = {
         //Check here for xml nodes in storeInfo??
         
         //Store http info
-        storage.put(len, apf.serialize(commInfo), namespace);
+        storage.put(len, JSON.stringify(commInfo), namespace);
         storage.put("length", ++len, namespace);
 
         /*
