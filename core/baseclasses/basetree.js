@@ -790,6 +790,7 @@ apf.BaseTree = function(){
             return;
 
         var rule       = this.$getBindRule("insert", xmlNode),
+            _self      = this,
             xmlContext = rule && rule.match
                 ? (rule.cmatch || rule.compile("match"))(xmlNode)
                 : xmlNode;
@@ -815,7 +816,16 @@ apf.BaseTree = function(){
                     xmlNode     : xmlContext,
                     insertPoint : xmlContext, 
                     amlNode     : this,
-                    callback    : callback
+                    callback    : function(data, state, extra){
+                        if (state != apf.SUCCESS) {
+                            _self.$setLoadStatus(xmlNode, "potential");
+                            _self.$removeLoading(xmlNode);
+                            _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 2, true);
+                        }
+                        
+                        if (callback)
+                            callback(data, state, extra);
+                    }
                 });
             }
             else {
