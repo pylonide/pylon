@@ -124,7 +124,7 @@ module.exports = ext.register("ext/tree/tree", {
                 }
             }
 
-            xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
+            xmlSettings.nodeValue = JSON.stringify(_self.currentSettings);
             _self.changed = false;
             return true;
         });

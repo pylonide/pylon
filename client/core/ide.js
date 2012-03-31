@@ -17,12 +17,9 @@ define(function(require, exports, module) {
 
     ide.start = function() {
         //Set references to global elements - aka extension points
-        //this.tbMain       = tbMain;
         this.mnuFile        = mnuFile;
         this.mnuEdit        = mnuEdit;
-        //this.barMenu      = barMenu;
         this.barTools       = barTools;
-        this.sbMain         = sbMain;
         this.vbMain         = vbMain;
 
         this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
@@ -40,7 +37,6 @@ define(function(require, exports, module) {
             this.mnuEdit        = mnuEdit;
             //this.barMenu      = barMenu;
             this.barTools       = barTools;
-            this.sbMain         = sbMain;
             this.vbMain         = vbMain;
 
         this.onLine         = false;
@@ -63,7 +59,7 @@ define(function(require, exports, module) {
                 apf.ajax("/debug", {
                     method      : "POST",
                     contentType : "application/json",
-                    data        : apf.serialize({
+                    data        : JSON.stringify({
                         agent       : navigator.userAgent,
                         type        : "General Javascript Error",
                         e           : [m, u, l],
@@ -78,7 +74,7 @@ define(function(require, exports, module) {
                 apf.ajax("/debug", {
                     method      : "POST",
                     contentType : "application/json",
-                    data        : apf.serialize({
+                    data        : JSON.stringify({
                         agent       : navigator.userAgent,
                         type        : "APF Error",
                         message     : e.message,

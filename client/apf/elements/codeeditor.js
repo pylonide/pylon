@@ -595,7 +595,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             _self.dispatchEvent("gutterdblclick", e);
         });
 
-        apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
+        // #ifdef __WITH_WINDOW_FOCUS
+        // apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
+        // #endif
     };
 
     this.$loadAml = function(){

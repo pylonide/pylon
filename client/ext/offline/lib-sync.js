@@ -32,14 +32,14 @@ var Sync = module.exports = function(namespace){
         //#endif
     
          this.items = {length: 0};
-         localStorage[this.namespace + ".syncitems"] = apf.serialize(this.items);
+         localStorage[this.namespace + ".syncitems"] = JSON.stringify(this.items);
     }
     
     this.add = function(id, syncItem){
         this.items[id] = syncItem;
         this.items.length++;
         
-        localStorage[this.namespace + ".syncitems"] = apf.serialize(this.items);
+        localStorage[this.namespace + ".syncitems"] = JSON.stringify(this.items);
         
         //@todo error handling
     }
@@ -63,12 +63,12 @@ var Sync = module.exports = function(namespace){
 
             if (!start) {
                 syncItems.length--;
-                localStorage[_self.namespace + ".syncitems"] = apf.serialize(syncItems); //Save state up to now
+                localStorage[_self.namespace + ".syncitems"] = JSON.stringify(syncItems); //Save state up to now
             }
             
             if (syncItems.length < 1) {
                 _self.items = {length: 0};
-                localStorage[_self.namespace + ".syncitems"] = apf.serialize(_self.items);
+                localStorage[_self.namespace + ".syncitems"] = JSON.stringify(_self.items);
                 
                 return -1;
             }

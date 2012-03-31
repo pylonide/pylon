@@ -38,15 +38,13 @@
 
             var config = <%requirejsConfig%>;
 
-
             require(config, function(){
-                //apf.addEventListener("load", function(){
+                apf.addEventListener("load", function(){
                     var list = ["build/packed"];
 
-                    
-                    require(list, function(ide, ext, util) {
-                        apf.IdeSettings = <%settingsXml%>
+                    apf.IdeSettings = <%settingsXml%>
      
+                    require(list, function(ide, ext, util){
                         var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
                         var plugins = <%plugins%>;
 
@@ -64,12 +62,9 @@
                          });
                     });
 
-                    
-                //});
+                    preloaderImgs();
+                });
             });
-
-            preloaderImgs();
-
             function preloaderImgs() {
                 var preloadImgs = [
                     "[%staticUrl%]/style/images/bg-overlay.png",

@@ -83,7 +83,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 else break;
             }
 
-            xmlSettings.nodeValue = apf.serialize(currentSettings);
+            xmlSettings.nodeValue = JSON.stringify(currentSettings);
             return true;
         });
 

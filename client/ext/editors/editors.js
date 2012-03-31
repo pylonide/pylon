@@ -688,7 +688,7 @@ module.exports = ext.register("ext/editors/editors", {
 
                     var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
-                        copy.setAttribute("state", apf.serialize(state));
+                        copy.setAttribute("state", JSON.stringify(state));
 
                     //@todo the second part of this if can be removed as soon
                     //as the collab team implements stored changed settings

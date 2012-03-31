@@ -1,4 +1,5 @@
 ({
+    optimize: "none",
     baseUrl: "./client",
     paths: {
         "text" : "../text", // plugin for pulling in text! files
@@ -9,7 +10,9 @@
         "apf"     : "apf"
     },
     include: [
+        "build/apf_release.js",
         "core/ide", "core/ext", "core/util", "core/settings",
+        "../support/ace/build/src/ace-uncompressed.js",
         "debug/Breakpoint",
         "debug/ChromeDebugMessageStream",
         "debug/WSChromeDebugMessageStream",
@@ -81,11 +84,10 @@
         "ext/minimap/minimap"
         //"ext/acebugs/acebugs"
     ],
-    out: "./client/ext/packed.js",
+    out: "./client/build/packed.js",
     inlineText: true,
     findNestedDependencies: true,
     optimizeAllPluginResources: false,
     useStrict: true,
-    wrap: true,
-    optimize: "none",
+    wrap: true
 })

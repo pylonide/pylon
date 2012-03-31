@@ -101,7 +101,7 @@ define(function(require, exports, module) {
                     method: "GET",
                     contentType: "application/json",
                     async: true,
-                    data: apf.serialize({
+                    data: JSON.stringify({
                         agent: navigator.userAgent,
                         type: "C9 SERVER EXCEPTION"
                     }),

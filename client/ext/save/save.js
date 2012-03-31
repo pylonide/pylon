@@ -266,8 +266,7 @@ module.exports = ext.register("ext/save/save", {
 
         apf.xmldb.setAttribute(node, "saving", "1");
 
-        var _self = this, panel = sbMain.firstChild;
-        panel.setAttribute("caption", "Saving file " + path);
+        var _self = this;
 
         var value = doc.getValue();
 
@@ -281,8 +280,6 @@ module.exports = ext.register("ext/save/save", {
                             ? "The connection timed out."
                             : "The error reported was " + extra.message));
             }
-
-            panel.setAttribute("caption", "Saved file " + path);
 
             ide.dispatchEvent("afterfilesave", {
                 node: node,
@@ -329,7 +326,6 @@ module.exports = ext.register("ext/save/save", {
         apf.xmldb.setAttribute(file, "saving", "1");
 
         var self = this;
-        var panel = sbMain.firstChild;
         var value = page.$doc.getValue();
         fs.saveFile(newPath, value, function(value, state, extra) {
             if (state != apf.SUCCESS) {
@@ -337,7 +333,6 @@ module.exports = ext.register("ext/save/save", {
                   "An error occurred while saving this document",
                   "Please see if your internet connection is available and try again.");
             }
-            panel.setAttribute("caption", "Saved file " + newPath);
 
             var model = page.$model;
             var node = model.getXml();

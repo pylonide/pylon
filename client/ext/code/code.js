@@ -374,7 +374,7 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.$editor.commands = this.commandManager;
 
         // preload common language modes
-        var noop = function() {};
+        var noop = function() {}; 
         ceEditor.getMode("javascript", noop);
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
@@ -393,16 +393,6 @@ module.exports = ext.register("ext/code/code", {
         });
 
         this.nodes.push(
-            //Add a panel to the statusbar showing whether the insert button is pressed
-            sbMain.appendChild(new apf.section({
-                caption : "{ceEditor.insert}"
-            })),
-
-            //Add a panel to the statusbar showing the length of the document
-            sbMain.appendChild(new apf.section({
-                caption : "Length: {ceEditor.value.length}"
-            })),
-
             mnuView.appendChild(new apf.divider()),
             mnuView.appendChild(menuSyntaxHighlight)
         );

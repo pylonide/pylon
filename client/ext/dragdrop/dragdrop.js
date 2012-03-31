@@ -79,45 +79,6 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             apf.stopEvent(e);
         }
         
-        this.StatusBar = {
-            $init: function() {
-                if (!sbMain)
-                    return;
-                
-                sbMain.firstChild.appendChild(
-                    new apf.progressbar({
-                        id: "pbMain",
-                        anchors: "0 0 0 5",
-                        //autohide: true
-                    })
-                );
-            },
-            start: function() {
-                if (!sbMain.visible)
-                    sbMain.show();
-            },
-            end: function() {
-                sbMain.hide();
-                
-                if (sbMain.childNodes)
-                    sbMain.childNodes[0].setAttribute("caption", "");
-            },
-            upload: function(file) {
-                if (sbMain.childNodes) {
-                    var caption = "Uploading file " + (file.name || "") + "(" + (file.type || "") + ")";
-                    sbMain.childNodes[0].setAttribute("caption", caption);
-                }
-                pbMain.clear();
-                pbMain.start();
-                
-            },
-            progress: function(value) {
-                pbMain.setValue(value);
-            }
-        };
-            
-        this.StatusBar.$init();
-        
         apf.addEventListener("http.uploadprogress", this.onProgress.bind(this));
     },
     

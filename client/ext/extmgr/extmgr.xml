@@ -79,7 +79,7 @@
                   disabled = "{!dgExtUser.selected}"
                   caption  = "Disable"
                   onclick  = "
-                    if ([{dgExtUser.selected}::@enabled] == 1)
+                    if (dgExtUser.selected.getAttribute('enabled') == 1)
                         require('ext/extmgr/extmgr').disableExt(dgExtUser.value);
                     else
                         require('ext/extmgr/extmgr').enableExt(dgExtUser.value);
@@ -99,7 +99,7 @@
                   caption  = "Disable"
                   disabled = "{!dgExt.selected}"
                   onclick  = "
-                    if ([{dgExt.selected}::@enabled] == 1)
+                    if (dgExtUser.selected.getAttribute('enabled') == 1)
                         require('ext/extmgr/extmgr').disableExt(dgExt.value);
                     else
                         require('ext/extmgr/extmgr').enableExt(dgExt.value);

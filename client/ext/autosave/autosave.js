@@ -166,9 +166,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         }
         apf.xmldb.setAttribute(node, "saving", "1");
 
-        var panel = sbMain.firstChild;
-        panel.setAttribute("caption", "Saving file " + path);
-
         var pathLeafs = path.split("/");
         var fileName = pathLeafs.pop();
         var dirName = pathLeafs.join("/");
@@ -181,8 +178,6 @@ module.exports = ext.register("ext/autosave/autosave", {
         fs.saveFile(bkpPath, value, function(data, state, extra) {
             if (state != apf.SUCCESS)
                 return;
-
-            panel.setAttribute("caption", "Auto-saved file " + path);
 
             apf.xmldb.removeAttribute(node, "saving");
             if (self.saveBuffer[path]) {

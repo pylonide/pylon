@@ -364,7 +364,7 @@ module.exports = ext.register("ext/panels/panels", {
             }
             
             if (changed) {
-                xmlSettings.nodeValue = apf.serialize(_self.$settings);
+                xmlSettings.nodeValue = JSON.stringify(_self.$settings);
                 return true;
             }
         });
