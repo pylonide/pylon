@@ -888,6 +888,9 @@ apf.actiontracker = function(struct, tagName){
             if (qItem)
                 this.$execstack.unshift(qItem);
 
+            if (!this.$execstack[0].undoObj.state)
+                this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this);
+
             return;
         }
 
