@@ -275,21 +275,34 @@ module.exports = ext.register("ext/tree/tree", {
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
 
-            var args     = e.args[0].args,
-                filename = args[1].getAttribute("name");
+            var changes = e.args;
+            for (var i = 0; i < changes.length; i++) {
+                var args     = e.args[i].args,
+                    filename = args[1].getAttribute("name");
 
-            var count = 0;
-            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
-            while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
-                filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
+                var count = 0;
+                filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
+                while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
+                    filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
+                }
+                args[1].setAttribute("newname", filename);
+
+                var node = args[1];
+                var nodes = node.childNodes;
+                while (nodes[0]) {
+                    node.removeChild(nodes[0]);
+                }
             }
-            args[1].setAttribute("newname", filename);
-
+            
             setTimeout(function () {
-                fs.beforeRename(args[1], null,
-                    args[0].getAttribute("path").replace(/[\/]+$/, "") +
-                    "/" + filename, true);
-                args[1].removeAttribute("newname");
+                for (var i = 0; i < changes.length; i++) {
+                    var args     = e.args[i].args,
+                        filename = args[1].getAttribute("newname");
+                    fs.beforeRename(args[1], null,
+                        args[0].getAttribute("path").replace(/[\/]+$/, "") +
+                          "/" + filename, true);
+                    args[1].removeAttribute("newname");
+                }
             });
         });
 
