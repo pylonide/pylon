@@ -71,7 +71,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     init : function(amlNode){
         var _self = this;
 
-        txtQuickSearch.addEventListener("keydown", function(e){
+        txtQuickSearch.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
                     _self.execSearch(false, !!e.shiftKey);
@@ -85,38 +85,33 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     return false;
                 case 38: //UP
                     _self.navigateList("prev");
-                break;
+                    break;
                 case 40: //DOWN
                     _self.navigateList("next");
-                break;
+                    break;
                 case 36: //HOME
                     if (!e.ctrlKey) return;
                     _self.navigateList("first");
-                break;
+                    break;
                 case 35: //END
                     if (!e.ctrlKey) return;
                     _self.navigateList("last");
-                break;
-            }
-        });
-
-        txtQuickSearch.addEventListener("keypress", function(e){
-     
-        }); 
-        
-        txtQuickSearch.addEventListener("keyup", function(e) {
-            switch (true) {
-                // letters, numbers, slashes, brackets, quotations...
-                case (e.keyCode >=48 && e.keyCode <= 90): 
-                case (e.keyCode >=96 && e.keyCode <= 111):
-                case (e.keyCode >=186 && e.keyCode <= 191):
-                case (e.keyCode >=219 && e.keyCode <= 222): 
-                    _self.execSearch(false, !!e.shiftKey);
+                    break;
+                default:
+                    if ((e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
+                        (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {
+                        // chillax, then fire--necessary for rapid key strokes
+                        setTimeout(function() {
+                            _self.execSearch(false, false);
+                        }, 20);  
+                    }
                     break;
             }
-            
-            switch (e.keycode) {
-                case 8:
+        });
+        
+        txtQuickSearch.addEventListener("keyup", function(e) {
+            switch (e.keyCode) {
+                case 8: // BACKSPACE
                     _self.execSearch(false, !!e.shiftKey, true);
                     return false;
                 case 27:
@@ -177,7 +172,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     updateCounter: function() {
         var ace = this.$getAce();
-        var width, buttonWidth;
+        var width;
 
         if (!oIter) {
             oIter  = document.getElementById("spanSearchIter");
@@ -336,26 +331,28 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         // DOES work, but doesn't highlight the content, so it's kind of lame.
         // Let's just reset the cursor in the doc whilst waiting for an Ace fix, hm?
 
-        // we have a selection, that is the start of the current needle, but selection !== needle
-        if (!wasDelete) {
-            var highlightTxtReStart = new RegExp("^" + Util.escapeRegExp(highlightTxt), "i");
-        
-            if (highlightTxt != "" && Util.escapeRegExp(searchTxt).match(highlightTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) { 
-                ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - highlightTxt.length); 
-            }
-        } 
-        else { // we've deleted, do it backwards, & stay on the same highlighted term
-            var searchTxtReStart = new RegExp("^" + Util.escapeRegExp(searchTxt), "i");
+        if (highlightTxt !== "") {
+            // we have a selection, that is the start of the current needle, but selection !== needle
+            if (!wasDelete) {
+                var highlightTxtReStart = new RegExp("^" + Util.escapeRegExp(highlightTxt), "i");
             
-            if (highlightTxt != "" && Util.escapeRegExp(highlightTxt).match(searchTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) { 
-                ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - searchTxt.length - 1); 
+                                                                            // if we're going backwards, reset the cursor anyway
+                if (searchTxt.match(highlightTxtReStart) && (options.backwards || searchTxt.toLowerCase() != highlightTxt.toLowerCase())) { 
+                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - highlightTxt.length); 
+                }
+            } 
+            else { // we've deleted a letter, so stay on the same highlighted term
+                var searchTxtReStart = new RegExp("^" + Util.escapeRegExp(searchTxt), "i");
+                
+                if (highlightTxt.match(searchTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) { 
+                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - searchTxt.length - 1); 
+                }
             }
         }
 
-        
         ace.find(searchTxt, options);
         this.currentRange = ace.selection.getRange();
-
+        
         var settings = require("ext/settings/settings");
         if (settings.model) {
             var history = settings.model;

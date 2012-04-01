@@ -236,7 +236,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             _self.replaceAll = false; // reset
             
             if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10))
-                return trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");;
+                return trSFResult.setAttribute("empty-message", "No matches for '" + findValueSanitized + "'");;
 
             _self.$model.load(data);
         });
