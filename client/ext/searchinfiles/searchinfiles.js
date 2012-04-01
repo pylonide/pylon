@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
+var Util = require("core/util");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
@@ -110,8 +110,17 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             selectedNode = e.selected;
         else
             selectedNode = this.getSelectedTreeNode();
+        
+        var filepath = selectedNode.getAttribute("path").split("/");     	
+        
+        var name = "";
         // get selected node in tree and set it as selection
-        var name = selectedNode.getAttribute("name");
+        if (selectedNode.getAttribute("type") == "folder") {
+            name = filepath[filepath.length - 1];
+        }
+        else if (selectedNode.getAttribute("type") == "file") {
+            name = filepath[filepath.length - 2];
+        }
         
         if (name.length > 25) {
             name = name.substr(0, 22) + "...";
@@ -133,7 +142,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         ext.initExtension(this);
 
         if (apf.isWin && (location.host.indexOf("localhost") > -1 || location.host.indexOf("127.0.0.1") > -1)) {
-            return util.alert("Search in Files", "Not Supported",
+            return Util.alert("Search in Files", "Not Supported",
                 "I'm sorry, searching through files is not yet supported on the Windows platform.");
         }
 
@@ -235,8 +244,23 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
             
-            if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10))
-                return trSFResult.setAttribute("empty-message", "No matches for '" + findValueSanitized + "'");;
+            if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10)) {
+                var optionsDesc = [];
+                if (Util.isTrue(options.casesensitive)) {
+                    optionsDesc.push("case sensitive");
+                }
+                if (Util.isTrue(options.regexp)) {
+                    optionsDesc.push("regexp");
+                }
+                
+                if (optionsDesc.length > 0) {
+                    optionsDesc = "(" + optionsDesc.join(", ") + ")";
+                }
+                else {
+                    optionsDesc = "";
+                }
+                return trSFResult.setAttribute("empty-message", "No matches for '" + findValueSanitized + "' " + optionsDesc);
+            }
 
             _self.$model.load(data);
         });
