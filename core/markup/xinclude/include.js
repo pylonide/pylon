@@ -57,8 +57,7 @@ apf.aml.setElement("include", apf.XiInclude);
         var domParser = this.ownerDocument.$domParser;
         if (!this.defer) {
             domParser.$pauseParsing.apply(domParser, 
-              this.$parseContext = domParser.$parseContext || [this.parentNode]);//.$shouldWait++;
-            //this.$parseContext = domParser.$parseContext || [this.parentNode];
+              this.$parseContext = domParser.$parseContext || [this.parentNode]);
         }
 
         //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
