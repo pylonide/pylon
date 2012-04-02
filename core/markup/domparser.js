@@ -37,20 +37,30 @@
  */
 apf.DOMParser = function(){};
 
-/*
-    @todo the shouldWait variable should be tree based and checked recursively up
-*/
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
     
     /* 
         @todo domParser needs to get a queue based on the parentNode that is 
-              waiting to be parsed. This will prevent collisions when multiple
-              parts of the document are altered at the same time.
+              waiting to be parsed. This will merely serve as an optimization
     */
     this.$shouldWait = 0;
-
+    this.$waitQueue  = []
+    
+    this.$isPaused = function(amlNode){
+        return this.$shouldWait > 0;
+    }
+    
+    this.$addParseState = function(amlNode, options){
+        this.$waitQueue.push([amlNode, options]);
+    }
+    
+    this.$pauseParsing = function(amlNode, options){
+        this.$addParseState(amlNode, options);
+        this.$shouldWait++;
+    }
+    
     // privates
     var RE     = [
             /\<\!(DOCTYPE|doctype)[^>]*>/,
@@ -236,9 +246,20 @@ apf.DOMParser.prototype = new (function(){
         if (this.$shouldWait && --this.$shouldWait != 0)
             return false;
 
-        if (!options)
-            options = {};
+        if (amlNode)
+            this.$addParseState(amlNode, options || {});
+
+        while(this.$waitQueue.length) {
+            var item = this.$waitQueue.shift();
+            this.$parseState(item[0], item[1]);
             
+            //@todo Check for shouldWait here?
+        }
+        
+        delete this.$parseContext;
+    }
+    
+    this.$parseState = function(amlNode, options) {
         this.$callCount++;
 
         if (amlNode.$parseOptions) {
@@ -282,8 +303,6 @@ apf.DOMParser.prototype = new (function(){
         
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
-
-        delete this.$parseContext;
     };
     
     this.$createNode = function(doc, nodeType, xmlNode, namespaceURI, nodeName, nodeValue){

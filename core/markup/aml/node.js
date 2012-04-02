@@ -426,7 +426,7 @@ apf.AmlNode = function(){
         }
 
         var doc = this.nodeType == this.NODE_DOCUMENT ? this : this.ownerDocument;
-        if (!doc || doc.$domParser.$shouldWait)
+        if (!doc || doc.$domParser.$isPaused(this))
             return amlNode;
 
         if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT)
