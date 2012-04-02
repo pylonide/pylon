@@ -254,8 +254,6 @@ apf.DOMParser.prototype = new (function(){
             var item = this.$waitQueue[uId];
             var parseAmlNode = apf.all[uId];
             
-            //if (apf.xmldb.isChildOf(amlNode, parseAmlNode, true) || 
-            
             delete this.$waitQueue[uId];
             console.log("domparser.js - continue: " + item.length);
             for (var i = 0; i < item.length; i++) {
