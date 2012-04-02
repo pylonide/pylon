@@ -75,7 +75,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             mnuTabs.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
                 onclick : function() {
-                    _self.closeallbutme();
+                    _self.closeallbutme(tabEditors.getPage());
                 },
                 disabled : "{!!!tabEditors.activepage}"
             })),
@@ -119,7 +119,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                     new apf.item({
                         caption : "Close Other Tabs",
                         onclick : function() {
-                            _self.closeallbutme(tabEditors.contextPage);
+                            _self.closeallbutme(tabEditors.getPage());
                         },
                         disabled : "{!!!tabEditors.activepage}"
                     }),
@@ -273,17 +273,20 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     closealltabs: function(callback) {
         callback = typeof callback == "function" ? callback : null;
-        this.closeallbutme(1, callback);
+        this.closeallbutme(false, callback);
     },
 
     // ignore is the page that shouldn't be closed, null to close all tabs
     closeallbutme: function(ignore, callback) {
         // if ignore isn't a page instance then fallback to current page
-        if (!(ignore instanceof apf.page)) {
+       /* if (!(ignore instanceof apf.page)) {
             ignore = null;
         }
         
-        ignore = ignore || tabEditors.getPage();
+        if(!ignore)
+            ignore = tabEditors.getPage();
+        */
+        
         this.changedPages = [];
         this.unchangedPages = [];
 
@@ -305,7 +308,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 page.addEventListener("aftersavedialogclosed", function(e) {
                     var curPage = _self.changedPages[0];
                     if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
-                        return
+                        return;
+                        
                     _self.changedPages.shift();
                     this.removeEventListener("aftersavedialogclosed", arguments.callee);
                     if (_self.changedPages.length == 0) {
@@ -325,7 +329,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }
 
         if (this.changedPages.length) {
-            tabEditors.remove(this.changedPages[0], null, true);
+            var page;
+            for (var i = 0, l = this.changedPages.length; i < l; i++) {
+                page = this.changedPages[i];
+                tabEditors.remove(this.changedPages[i], null, true);
+            }
+            
         }
         else {
             this.closeUnchangedPages(function() {
