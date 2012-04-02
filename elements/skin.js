@@ -104,7 +104,7 @@ apf.aml.setElement("skin", apf.skin);
         var defer = this.attributes.getNamedItem("defer");
         if (!defer || !apf.isTrue(defer.nodeValue)) {
             domParser.$pauseParsing.apply(domParser, 
-                domParser.$parseContext || [this.ownerDocument.documentElement]);
+                this.$parseContext = domParser.$parseContext || [this.ownerDocument.documentElement]);
         }
         
         //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
@@ -118,7 +118,7 @@ apf.aml.setElement("skin", apf.skin);
 
         if (!this.defer) {// && this.$parseContext
             var domParser = this.ownerDocument.$domParser;
-            domParser.$continueParsing();//.apply(domParser, this.$parseContext);
+            domParser.$continueParsing(this.$parseContext[0]);
         }
     }
     

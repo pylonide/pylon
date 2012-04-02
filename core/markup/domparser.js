@@ -45,21 +45,9 @@ apf.DOMParser.prototype = new (function(){
         @todo domParser needs to get a queue based on the parentNode that is 
               waiting to be parsed. This will merely serve as an optimization
     */
-    this.$shouldWait = 0;
-    this.$waitQueue  = []
-    
-    this.$isPaused = function(amlNode){
-        return this.$shouldWait > 0;
-    }
-    
-    this.$addParseState = function(amlNode, options){
-        this.$waitQueue.push([amlNode, options]);
-    }
-    
-    this.$pauseParsing = function(amlNode, options){
-        this.$addParseState(amlNode, options);
-        this.$shouldWait++;
-    }
+    //this.$shouldWait = 0;
+    this.$waitQueue  = {}
+    this.$callCount  = 0;
     
     // privates
     var RE     = [
@@ -156,6 +144,8 @@ apf.DOMParser.prototype = new (function(){
 
         //Set parse context
         this.$parseContext = [amlNode, options];
+        
+        this.$addParseState(amlNode, options || {});
 
         //First pass - Node creation
         var nodes, nodelist = {}, prios = [], _self = this;
@@ -226,7 +216,8 @@ apf.DOMParser.prototype = new (function(){
             }
         }
 
-        if (this.$shouldWait)
+        if (this.$waitQueue[amlNode.$uniqueId] 
+          && this.$waitQueue[amlNode.$uniqueId].$shouldWait)
             return (docFrag || doc);
 
         if (options.timeout) {
@@ -241,20 +232,45 @@ apf.DOMParser.prototype = new (function(){
         return (docFrag || doc);
     };
     
-    this.$callCount = 0;
+    this.$isPaused = function(amlNode){
+        return this.$waitQueue[amlNode.$uniqueId] && 
+          this.$waitQueue[amlNode.$uniqueId].$shouldWait > 0;
+    }
+    
+    this.$addParseState = function(amlNode, options){
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId] 
+            || (this.$waitQueue[amlNode.$uniqueId] = [])
+        waitQueue.pushUnique(options);
+        
+        return waitQueue;
+    }
+    
+    this.$pauseParsing = function(amlNode, options){
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId];
+        if (!waitQueue.$shouldWait) waitQueue.$shouldWait = 0;
+        waitQueue.$shouldWait++;
+    }
+    
     this.$continueParsing = function(amlNode, options){
-        if (this.$shouldWait && --this.$shouldWait != 0)
-            return false;
+        //if (!amlNode) debugger;
 
-        if (amlNode)
-            this.$addParseState(amlNode, options || {});
-
-        while(this.$waitQueue.length) {
-            var item = this.$waitQueue.shift();
-            this.$parseState(item[0], item[1]);
+        var uId  = amlNode.$uniqueId;
+        if (uId in this.$waitQueue) {
+            var item = this.$waitQueue[uId];
+            var parseAmlNode = apf.all[uId];
+            
+            //if (apf.xmldb.isChildOf(amlNode, parseAmlNode, true) || 
+            
+            delete this.$waitQueue[uId];
+            console.log("domparser.js - continue: " + item.length);
+            for (var i = 0; i < item.length; i++) {
+                this.$parseState(parseAmlNode, item[i]);
+            }
             
             //@todo Check for shouldWait here?
         }
+        else
+            this.$parseState(amlNode, options);
         
         delete this.$parseContext;
     }
@@ -288,7 +304,7 @@ apf.DOMParser.prototype = new (function(){
         (function _recur(nodes){
             var node, nNodes;
             for (var i = 0, l = nodes.length; i < l; i++) {
-                if (!(node = nodes[i]).$parsePrio && !node.$amlLoaded) {
+                if (!(node = nodes[i]).$amlLoaded) {
                     node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                 }
                 

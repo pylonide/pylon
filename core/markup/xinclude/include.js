@@ -56,7 +56,8 @@ apf.aml.setElement("include", apf.XiInclude);
         
         var domParser = this.ownerDocument.$domParser;
         if (!this.defer) {
-            domParser.$pauseParsing.apply(domParser, this.$parseContext = domParser.$parseContext || [this.parentNode]);//.$shouldWait++;
+            domParser.$pauseParsing.apply(domParser, 
+              this.$parseContext = domParser.$parseContext || [this.parentNode]);//.$shouldWait++;
             //this.$parseContext = domParser.$parseContext || [this.parentNode];
         }
 
@@ -110,7 +111,7 @@ apf.aml.setElement("include", apf.XiInclude);
                     o2.callback = function(){
                         if (cb)
                             cb.call(_self.ownerDocument);
-                        domParser.$continueParsing(); //.apply(domParser, _self.$parseContext);
+                        domParser.$continueParsing(_self.$parseContext[0]);
                     };
                 }
             }
@@ -119,7 +120,7 @@ apf.aml.setElement("include", apf.XiInclude);
         }
         else {
             if (!this.defer)
-                domParser.$continueParsing();//.apply(domParser, this.$parseContext);
+                domParser.$continueParsing(this.$parseContext[0]);
             
             done.call(this, xmlNode);
         }
