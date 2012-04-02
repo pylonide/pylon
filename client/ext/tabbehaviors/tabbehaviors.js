@@ -273,17 +273,22 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     closealltabs: function(callback) {
         callback = typeof callback == "function" ? callback : null;
-        this.closeallbutme(1, callback);
+
+        this.changedPages = [];
+        this.unchangedPages = [];
+        
+        var pages = tabEditors.getPages();
+        for (var i = 0, l = pages.length; i < l; i++) {
+            this.closepage(pages[i], callback);
+        }
+        
+        this.checkPageRender(callback);
     },
 
-    // ignore is the page that shouldn't be closed, null to close all tabs
     closeallbutme: function(ignore, callback) {
-        // if ignore isn't a page instance, then fallback to current page
+        // if ignore isn't a page instance, then fallback to current page, unless it's an object from closealltotheright/left
         if (!(ignore instanceof apf.page)) {
-            // wait, if it's an an object from closealltotheright/left, or closeall--keep it
-            if (ignore === undefined || (ignore != 1 && ignore.closeall === undefined)) {
-                ignore = tabEditors.getPage(); 
-            } 
+            ignore = (ignore !== undefined && ignore.closeall !== undefined) ? ignore : tabEditors.getPage();
         }
 
         this.changedPages = [];
@@ -299,33 +304,43 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (ignore && (page == ignore || ignore.hasOwnProperty(i))) {
                 continue;
             }
-
-            if (page.$doc.getNode().getAttribute("changed") == "1") {
-                page.noAnim = true; // turn off animation on closing tab
-                this.changedPages.push(page);
-
-                page.addEventListener("aftersavedialogclosed", function(e) {
-                    var curPage = _self.changedPages[0];
-                    if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
-                        return
-                    _self.changedPages.shift();
-                    this.removeEventListener("aftersavedialogclosed", arguments.callee);
-                    if (_self.changedPages.length == 0) {
-                        _self.closeUnchangedPages(function() {
-                            if (callback)
-                                callback();
-                        });
-                    }
-                    else {
-                        tabEditors.remove(_self.changedPages[0], null, true);
-                    }
-                });
-            }
             else {
-                this.unchangedPages.push(page);
+                this.closepage(page, callback);
             }
         }
 
+        this.checkPageRender(callback);
+    },
+
+    closepage : function(page, callback) {
+        var _self = this;
+        if (page.$doc.getNode().getAttribute("changed") == "1") {
+            page.noAnim = true; // turn off animation on closing tab
+            this.changedPages.push(page);
+
+            page.addEventListener("aftersavedialogclosed", function(e) {
+                var curPage = _self.changedPages[0];
+                if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
+                    return;
+                _self.changedPages.shift();
+                this.removeEventListener("aftersavedialogclosed", arguments.callee);
+                if (_self.changedPages.length == 0) {
+                    _self.closeUnchangedPages(function() {
+                        if (callback)
+                            callback();
+                    });
+                }
+                else {
+                    tabEditors.remove(_self.changedPages[0], null, true);
+                }
+            });
+        }
+        else {
+            this.unchangedPages.push(page);
+        }
+    },
+    
+    checkPageRender : function(callback) {
         if (this.changedPages.length) {
             tabEditors.remove(this.changedPages[0], null, true);
         }
@@ -336,7 +351,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         }
     },
-
+    
     closeUnchangedPages : function(callback) {
         var page;
         for (var i = 0, l = this.unchangedPages.length; i < l; i++) {
@@ -377,6 +392,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         ignore.closeall = true;
         this.closeallbutme(ignore);
     },
+    
+
     
     nexttab : function(){
         if (tabEditors.getPages().length === 1) {
