@@ -39,10 +39,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
     hook : function(){
         var _self = this;
-        ide.addEventListener("afteropenfile", this.$aofListener = function() {
-            ext.initExtension(_self);
-            ide.removeEventListener("afteropenfile", _self.$aofListener);
-        });
 
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/statusbar");
@@ -89,7 +85,17 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
 
-        tabEditors.addEventListener("afterswitch", function() {
+        tabEditors.addEventListener("afterswitch", function(e) {
+            if (e.nextPage.type === "ext/imgview/imgview")
+                return;
+
+            if (!_self.inited) {
+                // Wait a moment for the editor to get into place
+                setTimeout(function() {
+                    ext.initExtension(_self);
+                });
+            }
+
             if (_self.$changeEvent)
                 _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
 
@@ -111,6 +117,9 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     init : function(){
+        if (typeof ceEditor === "undefined")
+            return;
+
         var _self = this;
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
@@ -160,8 +169,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     lblInsertActive.show();
             }
         });
-
-        this.inited = true;
     },
 
     addToolsItem: function(menuItem, position){
