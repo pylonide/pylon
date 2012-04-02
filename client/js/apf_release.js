@@ -8115,7 +8115,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/lib/offline/queue.js)SIZE(7008)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8141,7 +8141,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/lib/offline/state.js)SIZE(7978)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8167,7 +8167,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9780)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10268,7 +10268,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(core/lib/queue.js)SIZE(3138)TIME(Fri, 30 Mar 2012 23:57:38 GMT)*/
+/*FILEHEAD(core/lib/queue.js)SIZE(2951)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10338,11 +10338,9 @@ apf.queue = {
     add : function(id, f){
         this.q[id] = f;
         if (!this.timer)
-            
             this.timer = apf.setZeroTimeout(function(){
                 apf.queue.empty();
             });
-            
     },
 
     remove : function(id){
@@ -13563,7 +13561,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10313)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13589,7 +13587,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/lib/storage/flash.js)SIZE(15458)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13615,7 +13613,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/lib/storage/gears.js)SIZE(12312)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13641,7 +13639,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/lib/storage/html5.js)SIZE(8228)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13667,7 +13665,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/lib/storage/memory.js)SIZE(10208)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13693,7 +13691,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Sat, 31 Mar 2012 00:39:28 GMT)*/
+/*FILEHEAD(core/lib/teleport/http.js)SIZE(36234)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15647,7 +15645,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(21964)TIME(Fri, 30 Mar 2012 22:51:39 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(21909)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16025,9 +16023,8 @@ apf.AmlElement = function(struct, tagName){
         }
         
         this.childNodes.length = 0;
-        
-        if(options.noLoadingMsg !== false)
-            this.$int.innerHTML = "<div class='loading'>loading...</div>";
+
+        this.$int.innerHTML = "<div class='loading'>loading...</div>";
 
         //Do an insertMarkup
         this.insertMarkup(amlDefNode, options);
@@ -16631,7 +16628,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Fri, 30 Mar 2012 23:36:21 GMT)*/
+/*FILEHEAD(core/markup/aml/document.js)SIZE(9454)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16673,9 +16670,7 @@ apf.AmlConfiguration = function(isPrototype){
 apf.AmlDocument = function(){
     this.$prefixes      = {};
     this.$namespaceURIs = {};
-    
     this.domConfig      = new apf.AmlConfiguration();
-    
     
     this.$init();
 };
@@ -18623,7 +18618,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34637)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19799,7 +19794,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33095)TIME(Sat, 31 Mar 2012 00:34:29 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33095)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20209,8 +20204,8 @@ apf.GuiElement = function(){
             //--#ifdef __WITH_CONTENTEDITABLE
             //@todo slow??
             var diff = apf.getDiff(this.$ext);
-            this.$ext.style.minWidth = Math.max(1, this.minwidth - diff[0]) + "px";
-            this.$ext.style.minHeight = Math.max(1, this.minheight - diff[1]) + "px";
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
+            this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
             this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
             this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
             
@@ -38604,7 +38599,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113263)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40864,7 +40859,7 @@ apf.lm_exec = new (function(){
                     ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
                     : "")) + '"' 
               + (options
-                ? ' options="' + JSON.stringify(options).escapeHTML()
+                ? ' options="' + apf.serialize(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
@@ -56930,7 +56925,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/remote.js)SIZE(20986)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(elements/remote.js)SIZE(20984)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57694,7 +57689,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(elements/scrollbar.js)SIZE(32190)TIME(Fri, 30 Mar 2012 22:51:39 GMT)*/
+/*FILEHEAD(elements/scrollbar.js)SIZE(31996)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58500,12 +58495,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             sb = _self.$sharedScrollbar;
             
             if (sb.$host != _self) {
-                var pNode = (_self.$ext == oHtml ? _self.$ext.parentNode : _self.$ext);
-                pNode.appendChild(sb.$ext);
-                
-                if (apf.getStyle(pNode, "position") == "static") 
-                    pNode.style.position = "relative";
-                    
+                (_self.$ext == oHtml ? _self.$ext.parentNode : _self.$ext).appendChild(sb.$ext);
                 sb.setProperty("showonscroll", true);
                 sb.$ext.style.display = "block";
                 sb.setAttribute("top", top);
@@ -65030,7 +65020,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(elements/xmpp.js)SIZE(101265)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65794,7 +65784,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Sat, 31 Mar 2012 00:38:57 GMT)*/
+/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3125)TIME(Sat, 31 Mar 2012 19:29:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

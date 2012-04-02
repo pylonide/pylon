@@ -10,7 +10,7 @@
         "apf"     : "apf"
     },
     include: [
-        "build/apf_release.js",
+        "js/apf_release.js",
         "core/ide", "core/ext", "core/util", "core/settings",
         "../support/ace/build/src/ace-uncompressed.js",
         "debug/Breakpoint",
