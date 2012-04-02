@@ -506,7 +506,7 @@ module.exports = ext.register("ext/console/console", {
         }
         else {
             cfg = {
-                height: 41,
+                height: 34,
                 dbgVisibleMethod: "hide",
                 chkExpandedMethod: "uncheck",
                 animFrom: this.height > this.minHeight ? this.height : this.minHeight,
