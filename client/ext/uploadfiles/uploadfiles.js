@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var css = require("text!ext/uploadfiles/uploadfiles.css");
 var markup = require("text!ext/uploadfiles/uploadfiles.xml");
 var dragdrop   = require("ext/dragdrop/dragdrop");
@@ -70,23 +71,23 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         
         this.filebrowser = fileUploadSelect.$ext;
         this.filebrowser.addEventListener('change', handleFileSelect, false);
-        /*
+        
         this.folderbrowser = folderUploadSelect.$ext;
         this.folderbrowser.addEventListener('change', handleFileSelect, false);
-        */
-        fileUploadSelect.$ext.addEventListener("mouseover", function() {
+        
+        this.filebrowser.addEventListener("mouseover", function() {
             apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
         });
         
-        fileUploadSelect.$ext.addEventListener("mouseout", function() {
+        this.filebrowser.addEventListener("mouseout", function() {
             apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3", ["btn-default-css3Over"]);
         });
         
-        fileUploadSelect.$ext.addEventListener("mousedown", function() {
+        this.filebrowser.addEventListener("mousedown", function() {
             apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Down");
         });
         
-        fileUploadSelect.$ext.addEventListener("mouseup", function() {
+        this.filebrowser.addEventListener("mouseup", function() {
             apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3", ["btn-default-css3Down"]);
         });
         
@@ -201,7 +202,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         // check if a folder is uploaded and create that folder
         var file = files[0];
         var parts = file.webkitRelativePath && file.webkitRelativePath.split("/") ;
-        var newfolderName = parts.length ? parts[0] : "";
+        var newfolderName = parts && parts.length ? parts[0] : "";
         
         // uploading a folder
         if (newfolderName) {
@@ -250,14 +251,17 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         trFiles.slideOpen(null, parent, true);
         
         // add node to file tree
+        var filepath = path + "/" + file.name;
         var xmlNode = "<file type='fileupload'" +
             " name='" + file.name + "'" +
-            " path='" + path + "/" + file.name + "'" +
+            " path='" + filepath + "'" +
         "/>";
-        file.treeNode = trFiles.add(xmlNode, parent);
         
+        trFiles.add(xmlNode, parent);
+        file.path = filepath;
         // add file to upload activity list
         var queueNode = '<file name="' + file.name + '" />';
+        
         file.queueNode = mdlUploadActivity.appendXml(queueNode);
         
         this.uploadQueue.push(file);
@@ -426,14 +430,17 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     _self.uploadNextFile();
  
                 // change file from uploading to file to regular file in tree
-                apf.xmldb.setAttribute(file.treeNode, "type", "file");
+                apf.xmldb.setAttribute(trFiles.getModel().queryNode("//file[@path='" + file.path + "']"), "type", "file");
+                
+                // remove file from upload activity lilst
+                /*
                 setTimeout(function() {
                     apf.xmldb.removeNode(file.queueNode);
                 }, 2000);
-
+                */
                 
-                //apf.xmldb.appendChild(node, apf.getXml(strXml));
                 /*
+                // open file functionality
                 if (_self.numFilesUploaded == 1) {
                     trFiles.select(file.treeNode);
                 
@@ -441,9 +448,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode)});
                 }
                 */
-                setTimeout(function() {
+                
+                //setTimeout(function() {
                     _self.uploadNextFile();
-                }, 2000);
+                //}, 2000);
             });
         }
         
@@ -479,7 +487,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if(!this.currentFile) return;    
         var e = o.extra;
         var total = (e.loaded / e.total) * 100;
-        var node = mdlUploadActivity.queryNode("file[@name='" + this.currentFile.name + "']");
+        var node = this.currentFile.queueNode;
         apf.xmldb.setAttribute(node, "progress", total);
     },
     

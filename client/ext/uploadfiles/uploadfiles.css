@@ -27,7 +27,13 @@
     background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-text.png) no-repeat 0 0;
 }
 
-#fileUploadSelect {
+.uploadOrSelectText {
+    height: 15px;
+    width: 77px;
+    background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-select-text.png) no-repeat 0 0;
+}
+
+#fileUploadSelect.uploadNoFolders {
     position: absolute;
     top: 132px;
     left: 99px;
@@ -36,11 +42,20 @@
     opacity: 0;
 }
 
+#fileUploadSelect.uploadWithFolders {
+    position: absolute;
+    top: 127px;
+    left: 35px;
+    width: 65px;
+    height: 24px;
+    opacity: 0;
+}
+
 #folderUploadSelect {
     position: absolute;
-    top: 96px;
-    left: 172px;
-    width: 77px;
+    top: 127px;
+    left: 188px;
+    width: 152px;
     height: 24px;
     opacity: 0;
 }

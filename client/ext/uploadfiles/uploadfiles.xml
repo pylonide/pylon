@@ -13,14 +13,21 @@
       kbclose = "true">
         <a:vbox edge="10" padding="5" align="center">
             <div id="uploadDropArea" class="uploadDropArea"></div>
-            <a:hbox class="uploadSelectButtons" padding="10" height="60" pack="center" align="center">
+            <a:hbox id="hboxUploadNoFolders" class="hboxUploadNoFolders uploadSelectButtons" padding="10" height="60" pack="center" align="center" visible="false">
                 <div class="uploadOrText"></div>
                 <a:button id="fileUploadSelectBtn" skin="btn-default-css3">Select files to upload</a:button>
             </a:hbox>
+            <a:hbox id="hboxUploadWithFolders" class="hboxUploadWithFolders uploadSelectButtons" padding="5" height="60" pack="center" align="center">
+                <div class="uploadOrSelectText"></div>
+                <a:button id="fileUploadSelectBtn" skin="btn-default-css3">files</a:button>
+                <div class="uploadOrText"></div>
+                <a:button id="fileUploadSelectBtn" skin="btn-default-css3">a complete folder</a:button>
+            </a:hbox>
             <div style="color: #838383">Your files will instantly start uploading to: <span id="uplTargetFolder"></span></div>
         </a:vbox>
-        <input id="fileUploadSelect" type="file" multiple="multiple" />
-        <!--input id="folderUploadSelect" type="file" webkitdirectory="" directory="" /-->
+        <input id="fileUploadSelect" type="file" multiple="multiple" class="uploadWithFolders" />
+        <input id="folderUploadSelect" type="file" webkitdirectory="" directory="" />
+        
         <a:hbox padding="10" pack="end" edge="6 10 10">
             <a:button onclick="winUploadFiles.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>
@@ -30,13 +37,13 @@
         <data />
     </a:model>
     
-    <a:vbox id="boxUploadActivity" height="200" visible="false">
-        <div class="uploadactivity-header">Upload Activity</div>
+    <a:vbox id="boxUploadActivity" visible="false">
+        <div class="uploadactivity-header" height="30">Upload Activity</div>
         <a:list id="lstUploadActivity"
             skin = "list-uploadactivity"
             model = "mdlUploadActivity"
-            flex="1"
-            scrollbar = "sbShared 2 2 2"
+            height="160"
+            scrollbar = "sbShared 32 2 2"
         >
             <a:each match="[file]">
                 <a:caption><?lm
