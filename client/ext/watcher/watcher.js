@@ -25,12 +25,12 @@ module.exports = ext.register("ext/watcher/watcher", {
     init : function() {
         // console.log("Initializing watcher");
 
-        var removedPaths        = {},
-            removedPathCount    = 0,
-            changedPaths        = {},
-            changedPathCount    = 0,
-            expandedPaths       = {},
-            _self               = this;
+        var removedPaths        = {};
+        var removedPathCount    = 0;
+        var changedPaths        = {};
+        var changedPathCount    = 0;
+        var expandedPaths       = {};
+        var _self               = this;
 
         function sendWatchFile(path) {
             ide.send({
@@ -171,12 +171,6 @@ module.exports = ext.register("ext/watcher/watcher", {
 
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
 
-            // allow another plugin to change the watcher behavior
-            if (ide.dispatchEvent("beforewatcherchange", {
-                path: path
-            }) === false)
-                return;
-
             if (expandedPaths[path]) {
                 return ide.dispatchEvent("treechange", {
                     path    : path,
@@ -187,9 +181,14 @@ module.exports = ext.register("ext/watcher/watcher", {
                 return page.$model.data.getAttribute("path") == path;
             }))
                 return;
+
+            // allow another plugin to change the watcher behavior
+            if (ide.dispatchEvent("beforewatcherchange", {
+                path: path
+            }) === false)
+                return;
+
             switch (message.subtype) {
-                case "create":
-                    break;
                 case "remove":
                     if (!removedPaths[path]) {
                         removedPaths[path] = path;
@@ -204,11 +203,14 @@ module.exports = ext.register("ext/watcher/watcher", {
                     break;
                 case "change":
                     if (!changedPaths[path] &&
-                        (new Date(message.lastmod).getTime() != new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime())) {
+                      (new Date(message.lastmod).getTime() != new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime())) {
                         changedPaths[path] = path;
                         ++changedPathCount;
                         checkPage();
                     }
+                    break;
+                case "create":
+                default:
                     break;
             }
         });
