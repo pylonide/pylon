@@ -170,7 +170,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         }
     },
 
-    updateCounter: function() {
+    updateCounter: function(backwards) {
         var ace = this.$getAce();
         var width;
 
@@ -201,23 +201,35 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             oTotal.innerHTML = "of 0";
             return;
         }
-        var crtIdx = -1;
-        var cur = this.currentRange;
-        if (cur) {
-            // sort ranges by position in the current document
-            ranges.sort(cur.compareRange.bind(cur));
-            var range;
-            var start = cur.start;
-            var end = cur.end;
-            for (var i = 0, l = ranges.length; i < l; ++i) {
-                range = ranges[i];
-                if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
-                    crtIdx = i;
-                    break;
+        
+        if (backwards) {
+            var newCount = oIter.innerHTML - 1;
+            if (newCount < 1) {
+                newCount = String(ranges.length);
+            }
+            
+            oIter.innerHTML = String(newCount); 
+        }
+        else {
+            var crtIdx = -1;
+            var cur = this.currentRange;
+            if (cur) {
+                // sort ranges by position in the current document
+                ranges.sort(cur.compareRange.bind(cur));
+                var range;
+                var start = cur.start;
+                var end = cur.end;
+                for (var i = 0, l = ranges.length; i < l; ++i) {
+                    range = ranges[i];
+                    if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
+                        crtIdx = i;
+                        break;
+                    }
                 }
             }
+            oIter.innerHTML = String(++crtIdx);
         }
-        oIter.innerHTML = String(++crtIdx);
+    
         oTotal.innerHTML = "of " + ranges.length;
     },
 
@@ -370,7 +382,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             editors.currentEditor.ceEditor.focus();
         }
 
-        this.updateCounter();
+        this.updateCounter(backwards);
     },
 
     find: function() {
