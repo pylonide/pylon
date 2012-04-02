@@ -289,39 +289,53 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         this.changedPages = [];
         this.unchangedPages = [];
+        this.unchangedNewPages = [];
 
         var page;
         var pages = tabEditors.getPages();
 
         var _self = this;
+        var node, at;
         for (var i = 0, l = pages.length; i < l; i++) {
             page = pages[i];
 
             if (ignore && (page == ignore || ignore.hasOwnProperty(i))) {
                 continue;
             }
-
-            if (page.$doc.getNode().getAttribute("changed") == "1") {
-                page.noAnim = true; // turn off animation on closing tab
-                this.changedPages.push(page);
-
-                page.addEventListener("aftersavedialogclosed", function(e) {
-                    var curPage = _self.changedPages[0];
-                    if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
-                        return;
-                        
-                    _self.changedPages.shift();
-                    this.removeEventListener("aftersavedialogclosed", arguments.callee);
-                    if (_self.changedPages.length == 0) {
-                        _self.closeUnchangedPages(function() {
-                            if (callback)
-                                callback();
-                        });
-                    }
-                    else {
-                        tabEditors.remove(_self.changedPages[0], null, true);
-                    }
-                });
+            
+            node = page.$doc.getNode();
+            if (node.getAttribute("changed") == "1") {
+                page.noAnim = true; // turn off animation on closing tab                
+                at = page.$at;
+                if (!at.undo_ptr)
+                    at.undo_ptr = at.$undostack[0];
+                
+                if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
+                  || !at.undo_ptr && node.getAttribute("changed") == 1
+                  && page.$doc.getValue()) {
+                      
+                    this.changedPages.push(page);
+                    page.addEventListener("aftersavedialogclosed", function(e) {
+                        var curPage = _self.changedPages[0];
+                        if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
+                            return;
+                            
+                        _self.changedPages.shift();
+                        this.removeEventListener("aftersavedialogclosed", arguments.callee);
+                        if (_self.changedPages.length == 0) {
+                            _self.closeUnchangedPages(function() {
+                                if (callback)
+                                    callback();
+                            });
+                        }
+                        else {
+                            tabEditors.remove(_self.changedPages[0], null, true);
+                        }
+                    });
+                }
+                else {
+                    this.unchangedNewPages.push(page);
+                }
             }
             else {
                 this.unchangedPages.push(page);
@@ -329,14 +343,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }
 
         if (this.changedPages.length) {
-            var page;
-            for (var i = 0, l = this.changedPages.length; i < l; i++) {
-                page = this.changedPages[i];
-                tabEditors.remove(this.changedPages[i], null, true);
-            }
-            
+            tabEditors.remove(this.changedPages[0], null, true);
         }
-        else {
+        
+        if (this.unchangedNewPages.length) {
+            var page;
+            for (var i = 0, l = this.unchangedNewPages.length; i < l; i++) {
+                page = this.unchangedNewPages[i];
+                tabEditors.remove(this.unchangedNewPages[i], null, true);
+            }
+        }
+        
+        if (this.unchangedPages.length) {
             this.closeUnchangedPages(function() {
                 if (callback)
                     callback();
