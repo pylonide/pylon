@@ -41,11 +41,6 @@ apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
     
-    /* 
-        @todo domParser needs to get a queue based on the parentNode that is 
-              waiting to be parsed. This will merely serve as an optimization
-    */
-    //this.$shouldWait = 0;
     this.$waitQueue  = {}
     this.$callCount  = 0;
     
@@ -252,10 +247,14 @@ apf.DOMParser.prototype = new (function(){
     }
     
     this.$continueParsing = function(amlNode, options){
+        //if (!amlNode) debugger;
+
         var uId  = amlNode.$uniqueId;
         if (uId in this.$waitQueue) {
             var item = this.$waitQueue[uId];
             var parseAmlNode = apf.all[uId];
+            
+            //if (apf.xmldb.isChildOf(amlNode, parseAmlNode, true) || 
             
             delete this.$waitQueue[uId];
             console.log("domparser.js - continue: " + item.length);
