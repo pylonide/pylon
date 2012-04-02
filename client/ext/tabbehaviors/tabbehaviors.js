@@ -75,7 +75,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             mnuTabs.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
                 onclick : function() {
-                    _self.closeallbutme();
+                    _self.closeallbutme(tabEditors.$activePage);
                 },
                 disabled : "{!!!tabEditors.activepage}"
             })),
@@ -119,7 +119,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                     new apf.item({
                         caption : "Close Other Tabs",
                         onclick : function() {
-                            _self.closeallbutme(tabEditors.contextPage);
+                            _self.closeallbutme(tabEditors.$activePage);
                         },
                         disabled : "{!!!tabEditors.activepage}"
                     }),
@@ -185,7 +185,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (e.shiftKey) { // Shift = close all
                 return _self.closealltabs();
             }
-            else if(e.altKey) { // Alt/ Option = close all but this
+            else if (e.altKey) { // Alt/ Option = close all but this
                 return _self.closeallbutme(page);
             }
         });
@@ -280,10 +280,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     closeallbutme: function(ignore, callback) {
         // if ignore isn't a page instance, then fallback to current page
         if (!(ignore instanceof apf.page)) {
-            ignore = null;
+            // wait, if it's an an object from closealltotheright/left, or closeall--keep it
+            if (ignore === undefined || (ignore != 1 && ignore.closeall === undefined)) {
+                ignore = tabEditors.getPage(); 
+            } 
         }
-        
-        ignore = ignore || tabEditors.getPage();
+
         this.changedPages = [];
         this.unchangedPages = [];
 
