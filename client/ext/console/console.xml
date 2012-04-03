@@ -74,9 +74,10 @@
 
             <a:hbox class="consoleInputBox" edge="1" padding="4" pack="end">
                 <a:textbox id="txtConsoleInput"
-                  margin    = "4 0 0"
-                  skin      = "tb_console"
-                  flex      = "1" />
+                  initial-message = 'Type "/?" for commands'
+                  margin          = "4 0 0"
+                  skin            = "tb_console"
+                  flex            = "1" />
                 <a:button id="btnCollapseConsole" skin="btn_console_open" icon="switch.png" state="true" height="31"
                     value = "{!!tabConsole.visible}"
                     onprop.value="try { require('ext/console/console')[event.value ? 'show' : 'hide'](); } catch(e) {} " />
