@@ -63,8 +63,10 @@ module.exports = function setup(options, imports, register) {
     hub.on("containersDone", function() {
         ide.init(serverPlugins);
         connect.useAuth(baseUrl, function(req, res, next) {
-            if (!req.session.uid)
-                return next(new error.Unauthorized());
+            if (!req.session.uid) {
+//                return next(new error.Unauthorized());
+                req.session.uid = "owner_" + req.sessionID;
+            }
 
             var pause = utils.pause(req);
             permissions.getPermissions(req.session.uid, function(err, perm) {
