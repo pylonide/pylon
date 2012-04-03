@@ -254,10 +254,8 @@ apf.DOMParser.prototype = new (function(){
         if (uId in this.$waitQueue) {
             var item = this.$waitQueue[uId];
             
-            if (item.$shouldWait && --item.$shouldWait) {
-                console.log(item.$shouldWait);
+            if (item.$shouldWait && --item.$shouldWait)
                 return false;
-            }
             
             var node = amlNode.parentNode;
             while (node && node.nodeType == 1) {
