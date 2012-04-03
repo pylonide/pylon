@@ -1,0 +1,3 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox class="underlined" label="Enable UI Animations" value="[general/@animateui]" skin="checkbox_grey" position="1000" />
+</a:application>

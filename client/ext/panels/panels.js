@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var markup = require("text!ext/panels/panels.xml");
+var markupSettings =  require("text!ext/panels/settings.xml");
 
 module.exports = ext.register("ext/panels/panels", {
     name   : "Panel Manager",
@@ -369,6 +370,8 @@ module.exports = ext.register("ext/panels/panels", {
             }
         });
         
+        // this sob has to come first, cannot do the following:
+        // require("ext/settings/settings").addSettings("General", markupSettings );
         ide.addEventListener("init.ext/settings/settings", function (e) {
             var heading = e.ext.getHeading("General");
             heading.appendChild(new apf.checkbox({
