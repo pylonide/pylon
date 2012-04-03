@@ -18,6 +18,8 @@ var markup = require("text!ext/quicksearch/quicksearch.xml");
 
 var oIter, oTotal;
 
+var MAX_LINES = 8000; // alter live search if lines > 8k--performance bug
+
 module.exports = ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
@@ -98,13 +100,17 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     _self.navigateList("last");
                     break;
                 default:
-                    if ((e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
-                        (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {
-                        // chillax, then fire--necessary for rapid key strokes
-                        setTimeout(function() {
-                            _self.execSearch(false, false);
-                        }, 20);  
+                    var ace = _self.$getAce();
+                    if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
+                        // fall back to break
                     }
+                    else if ((e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
+                            (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {       
+                            // chillax, then fire--necessary for rapid key strokes
+                            setTimeout(function() {
+                                _self.execSearch(false, false);
+                            }, 20);  
+                        }
                     break;
             }
         });
@@ -112,7 +118,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         txtQuickSearch.addEventListener("keyup", function(e) {
             switch (e.keyCode) {
                 case 8: // BACKSPACE
-                    _self.execSearch(false, !!e.shiftKey, true);
+                    if (ace.getSession().getDocument().getLength() > MAX_LINES && txtQuickSearch.getValue().length < 3) { 
+                        return false;
+                    }
+                    else {
+                        _self.execSearch(false, !!e.shiftKey, true);
+                    }
                     return false;
                 case 27:
                     _self.toggleDialog(-1);

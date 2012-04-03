@@ -15,7 +15,7 @@
                 <a:textarea id="txtSFFind" flex="1" focusselect="true" cols="70" />
             </a:hbox>
             <a:hbox align="center">
-                <a:label width="95">Extensions</a:label>
+                <a:label width="95">File Extensions</a:label>
                 <a:textbox id="ddSFPatterns" flex="1" focusselect="true" initial-message="*.*"/>
             </a:hbox>
             <a:hbox id="barReplace" align="center">

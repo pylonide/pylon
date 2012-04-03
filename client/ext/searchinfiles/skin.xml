@@ -25,7 +25,7 @@
       .searchtree SPAN{
           width: 15px;
           height: 18px;
-          background: no-repeat 3px 5px;
+          background: no-repeat 3px 4px;
           display: block;
           margin-left: -15px;
       }
@@ -113,7 +113,7 @@
   
       .searchtreeFocus .indicate U{
           border: 1px dotted #CCC;
-          padding: 1px 3px 1px 1px;
+          padding: 0px 3px 1px 1px;
       }
   
       .searchtree .selected U{

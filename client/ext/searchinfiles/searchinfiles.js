@@ -100,6 +100,16 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             });
         });
 
+        txtSFFind.addEventListener("keydown", function(e) {
+            switch (e.keyCode){
+                case 13: //ENTER
+                    if (!e.shiftKey) {
+                        _self.execFind(false);
+                        return false;
+                    }
+                    break;
+            }
+        });
         //ideConsole.show();
     },
     
