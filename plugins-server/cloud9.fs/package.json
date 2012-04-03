@@ -5,7 +5,7 @@
     "private": true,
 
     "dependencies": {
-        "jsDAV": "0.1.x",
+        "jsdav": "0.1.x",
         "gnu-tools": "0.0.x"
     },
 
