@@ -350,7 +350,7 @@ module.exports = ext.register("ext/save/save", {
                 doc.setNode(file);
             }
 
-            apf.xmldb.removeAttribute(node, "saving");
+            apf.xmldb.removeAttribute(file, "saving");
 
             if (self.saveBuffer[path]) {
                 delete self.saveBuffer[path];

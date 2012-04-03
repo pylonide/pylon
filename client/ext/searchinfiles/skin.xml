@@ -7,7 +7,7 @@
           overflow: hidden;
           cursor : default;
           position : relative;
-          color: #EEE;
+          color: #666651;
           font-family : Arial;
           font-size : 12px;
       }
@@ -37,7 +37,7 @@
   
       .searchtree DIV.minlast SPAN,
       .searchtree DIV.min SPAN{
-          background-image:url(images/search_collaps.png);
+          background-image:url(images/search_collapse.png);
       }
   
       .searchtree DIV{
@@ -45,21 +45,27 @@
           height: auto;
           padding-left: 15px;
           overflow : hidden;
-  
-          font-family: Tahoma, Arial, Arial;
-          font-size: 11px;
+          color: #ffffff;
+          font-family: menlo,courier new,fixed,swiss,sans-serif;
+          font-size: 12px;
       }
   
+      .searchtree .responseHeader {
+	      color: #e6db70;
+	  }
+
 	  .searchtree .linenumber {
 	      width : 35px;
 	      display : inline;
 	      text-align : right;
 	      padding : 0 10px 0 4px;
+          color:    #ae81ff;
 	  }
-	  
+      
 	  .searchtree .excerpt {
 	      margin : 0;
 	      display : inline-block;
+          color: #ffffff;
 	  }
 	  
 	  .searchtree .line{
@@ -111,16 +117,12 @@
       }
   
       .searchtree .selected U{
-          background-color: #EEE;
-          color: black;
           -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
           border-radius: 3px;
       }
   
       .searchtreeFocus .selected U, .tree .dragAppend U{
-          background-color: #DDD;
-          color: black;
           -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
           border-radius: 3px;
