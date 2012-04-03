@@ -7781,10 +7781,10 @@
 
         border-top: 1px solid #333333;
 
-        background: #303030;
-        background: -webkit-linear-gradient(top,#1e1e1e 0%,#303030 14px);
-        background:    -moz-linear-gradient(top,#1e1e1e 0%,#303030 14px);
-        background:         linear-gradient(top,#1e1e1e 0%,#303030 14px);
+        background-color: #303030;
+        background-image: -webkit-linear-gradient(top,#1e1e1e 0%, #2a2a2a 8px, #303030 13px, transparent 13px);
+        background-image:    -moz-linear-gradient(top,#1e1e1e 0%, #2a2a2a 8px, #303030 13px, transparent 13px);
+        background-image:         linear-gradient(top,#1e1e1e 0%, #2a2a2a 8px, #303030 13px, transparent 13px);
         -webkit-box-shadow: 0 -1px 0 0 #000;
            -moz-box-shadow: 0 -1px 0 0 #000;
                 box-shadow: 0 -1px 0 0 #000;
@@ -9037,7 +9037,7 @@
 
         .tb_console .sbtb_middle {
             border          : 1px solid #000;
-            background      : #eee;
+            background      : #e2e2e2;
             box-shadow      : inset 0 2px 3px 0 rgba(0,0,0,.5);
             color           : #202020;
             font-size       : 14px;
@@ -9047,6 +9047,11 @@
             padding         : 0 6px;
             outline         : none;
             text-overflow   : ellipsis;
+        }
+        .tb_consoleFocus .sbtb_middle,
+        .tb_consoleOver .sbtb_middle,
+        .tb_console .sbtb_middle:hover {
+            background      : #eee;
         }
 
         .topborder .sbtb_middle{
@@ -9060,19 +9065,26 @@
             color            : #303030;
             font-family      : "courier new",fixed,swiss,sans-serif;
             outline          : none;
-            font-weight      : bold;
             background-color : transparent;
             width: 100%;
             padding : 0;
-            text-shadow: 0 1px 0 0 #fff;
         }
 
         .tb_consoleInitial .sbtb_middle INPUT {
-            color : #777777;
+            color : #a3a3a3;
         }
 
+        .tb_consoleFocus .sbtb_middle input,
+        .tb_consoleOver .sbtb_middle input,
+        .tb_console .sbtb_middle:hover input {
+            color           : #202020;
+        }
+
+        .tb_consoleDisabled .sbtb_middle {
+            background      : #e2e2e2;
+        }
         .tb_consoleDisabled .sbtb_middle INPUT {
-            color : #636363;
+            color : #b3b3b3;
         }
 
         .tb_consoleDisabled .sbtb_middle{

@@ -331,6 +331,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     init: function(amlNode){
+
         var _self = this;
         this.panel = tabConsole;
         this.$cwd  = "/workspace"; // code smell
@@ -499,7 +500,7 @@ module.exports = ext.register("ext/console/console", {
                 height: this.height,
                 dbgVisibleMethod: "show",
                 chkExpandedMethod: "check",
-                animFrom: 65,
+                animFrom: this.height*0.95,
                 animTo: this.height > this.minHeight ? this.height : this.minHeight,
                 animTween: "easeOutQuint"
             };
