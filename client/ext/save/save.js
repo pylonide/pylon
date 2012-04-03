@@ -58,7 +58,9 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
-                fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
+                fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) +
+                    "?</h3><div>This file has unsaved changes. Your changes will be " +
+                    "lost if you don't save them.</div></div>", {"noLoadingMsg": false});
 
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
@@ -288,6 +290,7 @@ module.exports = ext.register("ext/save/save", {
                 node: node,
                 doc: doc,
                 value: value,
+                oldpath: path,
                 silentsave: silentsave
             });
 
@@ -361,10 +364,10 @@ module.exports = ext.register("ext/save/save", {
                 apf.xmldb.removeAttribute(file, "newfile");
                 apf.xmldb.removeAttribute(file, "changed");
                 var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
-                                    .replace(new RegExp("\/" + file.getAttribute("name")), "")
-                                    .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                    .replace(/\/node\(\)\[@name="workspace"\]/, "")
-                                    .replace(/\//, "");
+                                   .replace(new RegExp("\/" + file.getAttribute("name")), "")
+                                   .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                                   .replace(/\/node\(\)\[@name="workspace"\]/, "")
+                                   .replace(/\//, "");
                 if (xpath) {
                     var oNode  = trFiles.queryNode(xpath);
                     if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]'))
@@ -376,6 +379,7 @@ module.exports = ext.register("ext/save/save", {
                 node: node,
                 doc: doc,
                 value: value,
+                oldpath: path,
                 silentsave: false // It is a forced save, comes from UI
             });
         });
@@ -388,7 +392,7 @@ module.exports = ext.register("ext/save/save", {
     choosePath : function(path, select) {
         fs.list((path.match(/(.*)\/[^/]*/) || {})[1] || path, function (data, state, extra) {
             if (new RegExp("<folder.*" + path + ".*>").test(data)) {
-                path  = path.replace(new RegExp('\/' + cloud9config.davPrefix.split('/')[1]), '')
+                path  = path.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
                             .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                             .replace(/\/node\(\)\[@name="workspace"\]/, "")
                             .replace(/\//, "");
@@ -426,9 +430,9 @@ module.exports = ext.register("ext/save/save", {
             });
         }
 
-        var fooPath = path.split('/');
+        var fooPath = path.split("/");
         txtSaveAs.setValue(fooPath.pop());
-        lblPath.setProperty('caption', fooPath.join('/') + '/');
+        lblPath.setProperty("caption", fooPath.join("/") + "/");
         winSaveAs.show();
     },
 
@@ -437,7 +441,7 @@ module.exports = ext.register("ext/save/save", {
         page = page || tabEditors.getPage();
         var file = page.$model.data;
         var path = file.getAttribute("path");
-        var newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
+        var newPath = lblPath.getProperty("caption") + txtSaveAs.getValue();
 
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"), 10);
@@ -483,12 +487,12 @@ module.exports = ext.register("ext/save/save", {
         var _self = this;
         setTimeout(function(){
             var tabPage = tabEditors.getPage(),
-                path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
-                isNew   = tabPage.$model.data.getAttribute('newfile');
+                path    = tabPage ? tabPage.$model.data.getAttribute("path") : false,
+                isNew   = tabPage.$model.data.getAttribute("newfile");
             if(!isNew)
                 _self.choosePath(path);
             else
-                trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
+                trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode("//folder"));
         });
     },
 
