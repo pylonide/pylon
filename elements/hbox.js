@@ -710,7 +710,7 @@ apf.vbox = function(struct, tagName){
         }
         
         if (e.currentTarget.nodeType != 1 
-          || e.currentTarget.nodeFunct != apf.NODE_VISIBLE)
+          || e.currentTarget.nodeFunc != apf.NODE_VISIBLE)
             return;
 
         if (e.relatedNode == this && !e.$isMoveWithinParent) {

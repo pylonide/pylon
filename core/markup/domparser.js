@@ -251,7 +251,7 @@ apf.DOMParser.prototype = new (function(){
             amlNode = apf.document.documentElement;
             debugger;
         }
-        debugger;
+
         var uId  = amlNode.$uniqueId;
         if (uId in this.$waitQueue) {
             var item = this.$waitQueue[uId];
