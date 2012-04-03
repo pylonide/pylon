@@ -1,10 +1,10 @@
 /**
  * Editor status bar for Cloud9 IDE
- * 
+ *
  * @TODO
- * 
+ *
  * Error icon from acebugs
- * 
+ *
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -93,6 +93,15 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
 
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = e.width;
+            else
+                _self.offsetWidth = 0;
+
+            _self.setPosition();
+        });
+
         tabEditors.addEventListener("afterswitch", function() {
             if (_self.$changeEvent)
                 _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
@@ -118,23 +127,23 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
     },
 
-    init : function(){        
+    init : function(){
         if(typeof ceEditor === "undefined") {
             this.initFail = true;
             return;
         }
-        
+
         var _self = this;
         !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
         wrapMode.addEventListener("click", function(e) {
             if (e.currentTarget.checked) {
-                wrapModeViewport.enable(); 
+                wrapModeViewport.enable();
             }
             else {
                 wrapModeViewport.disable();
             }
         });
-        
+
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
@@ -183,7 +192,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     lblInsertActive.show();
             }
         });
-        
+
         this.initDone = true;
         this.inited = true;
     },
@@ -211,7 +220,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(menuItem);
         }
     },
-    
+
     setSelectionLength : function() {
         if (typeof lblSelectionLength === "undefined")
             return;

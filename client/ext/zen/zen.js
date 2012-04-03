@@ -81,7 +81,16 @@ module.exports = ext.register("ext/zen/zen", {
 
             _self.updateButtonPosition();
         });
-        
+
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateButtonPosition();
+        });
+
         tabEditors.addEventListener("afterswitch", function(){
             if(_self.initFail && !_self.initDone) {
                 setTimeout(function(){
@@ -98,7 +107,7 @@ module.exports = ext.register("ext/zen/zen", {
             this.initFail = true;
             return;
         }
-        
+
         // Create all the elements used here
         this.animateZen = document.createElement("div");
         this.animateZen.setAttribute("id", "animateZen");
@@ -149,7 +158,7 @@ module.exports = ext.register("ext/zen/zen", {
         ide.addEventListener("exitfullscreen", function() {
             _self.escapeFromZenMode(false, true);
         });
-        
+
         this.initDone = true;
     },
 
@@ -614,7 +623,7 @@ module.exports = ext.register("ext/zen/zen", {
                 onfinish : function(){
                 }
             });
-        } 
+        }
     },
 
     enable : function(){
