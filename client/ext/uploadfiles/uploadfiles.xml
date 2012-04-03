@@ -70,7 +70,8 @@
       buttons   = "close"
       width     = "512"
       skin      = "bk-window"
-      class     = "relative">
+      class     = "relative"
+      modal     = "false">
         <a:vbox padding="10" edge="15 20 25 20">
             <h3>File already exists</h3>
             <div id="uploadFileExistsMsg" class="alertMsg">Do you want to overwrite this file?</div>

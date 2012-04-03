@@ -33,6 +33,9 @@
     background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-select-text.png) no-repeat 0 0;
 }
 
+#fileUploadSelect {
+    z-index: 9999;
+}
 #fileUploadSelect.uploadNoFolders {
     position: absolute;
     top: 132px;
@@ -45,7 +48,7 @@
 #fileUploadSelect.uploadWithFolders {
     position: absolute;
     top: 127px;
-    left: 35px;
+    left: 94px;
     width: 65px;
     height: 24px;
     opacity: 0;

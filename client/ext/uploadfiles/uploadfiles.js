@@ -76,7 +76,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         this.folderbrowser.addEventListener('change', handleFileSelect, false);
         
         this.filebrowser.addEventListener("mouseover", function() {
-            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
+            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over", ["btn-default-css3"]);
         });
         
         this.filebrowser.addEventListener("mouseout", function() {
@@ -92,11 +92,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         });
         
         function handleFileSelect(e){
-            //var filenames = [];
             var files = e.target.files;
-            /*for (var i = 0, l = files.length; i < l; i++) {
-                filenames.push(files[i].fileName);
-            }*/
+            
             _self.startUpload(files);
         };
         
@@ -199,41 +196,76 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         // show upload activity list
         boxUploadActivity.show();
         
-        // check if a folder is uploaded and create that folder
-        var file = files[0];
-        var parts = file.webkitRelativePath && file.webkitRelativePath.split("/") ;
-        var newfolderName = parts && parts.length ? parts[0] : "";
         
-        // uploading a folder
-        if (newfolderName) {
-            // check if this folder already exists, if so upload to existing folder
-            var newfolderNode = trFiles.getModel().data.selectSingleNode("//folder[@path='" + node.getAttribute("path") + "/" + newfolderName + "']");
-            if (newfolderNode) {
-                next(newfolderNode);
-            }
-            // folder doesn't exists yet, create first
-            else {
-                fs.createFolder(newfolderName, trFiles, true, function(folder) {
-                    next(folder);
-                });
-            }
-        }
-        // uploading files
-        else {
-            next(node);
-        }
-        
-        function next(node) {
-            var sXml = "";
-            for (var i = 0, l = files.length; i < l; i++) {
-                file = files[i];
-                file.targetFolder = node;
-                
-                _self.addToQueue(file);
+        // loop through all files to create the upload queue and create subfolders
+        apf.asyncForEach(files, function(file, next) {
+            file.targetFolder = node;
+            
+            var folders = file.webkitRelativePath && file.webkitRelativePath.split("/");
+            folders.pop(); // remove filename from path
+            
+            if (!folders.length) {
+                addFile(file);
+                return next();
             }
             
-            if (!this.uploadInProgress)
-                _self.uploadNextFile();
+            // a folder is uploaded
+            else {
+                var targetPath = folders.join("/");
+                var nodePath = node.getAttribute("path");
+                var targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + nodePath + "/" + targetPath + "']");
+                
+                // check if folder with specified path already exists
+                if (targetFolder) {
+                    // this is a folder, no need to add to upload queue
+                    if (file.name == ".")
+                        return next();
+
+                    addFile(file, targetFolder);
+                    return next();
+                }
+                // target folder not created yet, create first
+                else {
+                    var subfolder;
+                    var currentPath = nodePath;
+                    apf.asyncForEach(folders, function(folder, next2) {
+                        currentPath += "/" + folder;
+                        subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + currentPath + "']");
+                        
+                        // subfolder is already created
+                        if (subfolder) {
+                            trFiles.select(subfolder);
+                            next2();
+                        }
+                        // subfolder does not exists, create first
+                        else {
+                            fs.createFolder(folder, trFiles, true, function(folder) {
+                                // check if there are subfolders to be created
+                                trFiles.select(folder);
+                                subfolder = folder;
+                                next2();
+                            });
+                        }
+                    }, function() {
+                        // this is a folder, no need to add to upload queue
+                        if (file.name == ".")
+                            return next();
+                            
+                        addFile(file, subfolder);
+                        next();
+                    });
+                }
+            }
+        }, function() {
+            if (!_self.uploadInProgress)
+            _self.uploadNextFile();
+        });
+        
+        // add a file to the upload queue 
+        function addFile(file, targetFolder) {
+            if (targetFolder)
+                file.targetFolder = targetFolder;
+            _self.addToQueue(file);
         }
     },
     
@@ -289,7 +321,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     uploadNextFile: function() {
         var _self = this;
-        
+
         this.currentFile = this.uploadQueue.shift();
         
         // check if there is a file to upload
