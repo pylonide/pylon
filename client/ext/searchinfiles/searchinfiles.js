@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
+var Util = require("core/util");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
@@ -22,6 +22,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     type     : ext.GENERAL,
     alone    : true,
     offline  : false,
+    replaceAll : false,
     markup   : markup,
     skin     : {
         id   : "searchinfiles",
@@ -56,13 +57,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     init : function(amlNode){
         this.txtFind       = txtSFFind;
         this.btnFind       = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
-        this.btnFind.onclick = this.execFind.bind(this);
+        this.btnFind.onclick = this.execFind.bind(this, false);
+        
+        this.txtReplace     = txtReplace;
+        this.btnReplaceAll = btnReplaceAll;
+        this.btnReplaceAll.onclick = this.execFind.bind(this, true);
 
         var _self = this;
         
-        winSearchInFiles.onhide = function() {
-            if (typeof ceEditor != "undefined")
+        this.txtFind.$ext.cols = this.txtFind.cols;
+        
+        winSearchInFiles.onclose = function() {
+            if (typeof ceEditor != "undefined") {
                 ceEditor.focus();
+            }
             trFiles.removeEventListener("afterselect", _self.setSearchSelection);
         };
         winSearchInFiles.onshow = function() {
@@ -91,6 +99,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
             });
         });
+
         //ideConsole.show();
     },
     
@@ -101,10 +110,22 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             selectedNode = e.selected;
         else
             selectedNode = this.getSelectedTreeNode();
+        
+        var filepath = selectedNode.getAttribute("path").split("/");     	
+        
+        var name = "";
         // get selected node in tree and set it as selection
-        var name = selectedNode.getAttribute("name");
-        if (name.length > 25)
+        if (selectedNode.getAttribute("type") == "folder") {
+            name = filepath[filepath.length - 1];
+        }
+        else if (selectedNode.getAttribute("type") == "file") {
+            name = filepath[filepath.length - 2];
+        }
+        
+        if (name.length > 25) {
             name = name.substr(0, 22) + "...";
+        }
+        
         rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
     },
     
@@ -121,12 +142,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         ext.initExtension(this);
 
         if (apf.isWin && (location.host.indexOf("localhost") > -1 || location.host.indexOf("127.0.0.1") > -1)) {
-            return util.alert("Search in Files", "Not Supported",
+            return Util.alert("Search in Files", "Not Supported",
                 "I'm sorry, searching through files is not yet supported on the Windows platform.");
         }
 
         if (!winSearchInFiles.visible || forceShow || this.$lastState != isReplace) {
-            //this.setupDialog(isReplace);
             var editor = editors.currentEditor;
             if (editor) {
                 var value  = editor.getDocument().getTextRange(editor.getSelection().getRange());
@@ -153,33 +173,31 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         return this.toggleDialog(false, true);
     },
 
-    setupDialog: function(isReplace) {
-        this.$lastState = isReplace;
-
-        // hide all 'replace' features
-        //this.barReplace.setProperty("visible", isReplace);
-        //this.btnReplace.setProperty("visible", isReplace);
-        //this.btnReplaceAll.setProperty("visible", isReplace);
-        return this;
-    },
-
     getOptions: function() {
+        var _self = this;
+
         var matchCase = "0";
         if (chkSFMatchCase.checked)
             matchCase = "1";
         var regex = "0";
         if (chkSFRegEx.checked)
             regex = "1";
+            
         return {
             query: txtSFFind.value,
+            needle: txtSFFind.value,
             pattern: ddSFPatterns.value,
             casesensitive: matchCase,
-            regexp: regex
+            regexp: regex,
+            replaceAll: _self.replaceAll ? "true" : "false",
+            replacement: txtReplace.value
         };
     },
 
-    execFind: function() {
+    execFind: function(replaceEnabled) {
         var _self = this;
+        _self.replaceAll = replaceEnabled;
+        
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
         ideConsole.show();
@@ -211,29 +229,43 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
             
-        var findValueSanitized = txtSFFind.value.trim().replace(/([\[\]\{\}])/g, "\\$1");
+        var options = this.getOptions();
+        var query = txtSFFind.value;
+        options.query = query.replace(/\n/g, "\\n");
+
+        if (!_self.replaceAll) {
+            options.replacement = ""; // even if there's text in the "replace" field, don't send it when not replacing   
+        }
+        
+        var findValueSanitized = query.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
-        davProject.report(node.getAttribute("path"), "codesearch", this.getOptions(), function(data, state, extra){
-            if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10))
-                return trSFResult.setAttribute("empty-message", "No results found for '" + findValueSanitized + "'");;
+        
+        davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
+            _self.replaceAll = false; // reset
+            
+            if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10)) {
+                var optionsDesc = [];
+                if (Util.isTrue(options.casesensitive)) {
+                    optionsDesc.push("case sensitive");
+                }
+                if (Util.isTrue(options.regexp)) {
+                    optionsDesc.push("regexp");
+                }
+                
+                if (optionsDesc.length > 0) {
+                    optionsDesc = "(" + optionsDesc.join(", ") + ")";
+                }
+                else {
+                    optionsDesc = "";
+                }
+                return trSFResult.setAttribute("empty-message", "No matches for '" + findValueSanitized + "' " + optionsDesc);
+            }
 
             _self.$model.load(data);
         });
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
-    },
-
-    replaceAll: function() {
-        return;
-        /*if (!this.editor)
-            this.setEditor();
-        if (!this.$editor)
-            return;
-        this.$crtSearch = null;
-        var options = this.getOptions();
-        this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
-        ide.dispatchEvent("track_action", {type: "replace"});*/
     },
 
     enable : function(){

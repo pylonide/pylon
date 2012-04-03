@@ -7,76 +7,21 @@
       class   = "relative"
       modal   = "false"
       center  = "true"
-      width   = "350"
+      width   = "450"
       kbclose = "true">
         <a:vbox edge="10" padding="5">
-            <a:hbox align="center">
+            <a:hbox>
                 <a:label width="95">Containing Text</a:label>
-                <a:textbox id="txtSFFind" flex="1" focusselect="true"/>
+                <a:textarea id="txtSFFind" flex="1" focusselect="true" cols="70" />
             </a:hbox>
             <a:hbox align="center">
-                <a:label width="95">Filename Patterns</a:label>
-                <a:dropdown id="ddSFPatterns" flex2="1" autoselect="true" maxitems="10" width="213" height="21">
-                    <a:item value="all">All known filetypes</a:item>
-                    <a:item value="actionscript">Actionscript files</a:item>
-                    <a:item value="ada">Ada files</a:item>
-                    <a:item value="asm">Assembler files</a:item>
-                    <a:item value="batch">Batch files</a:item>
-                    <a:item value="cc">C files</a:item>
-                    <a:item value="clojure">Clojure files</a:item>
-                    <a:item value="cfmx">Coldfusion files</a:item>
-                    <a:item value="coffee">Coffeescript files</a:item>
-                    <a:item value="cpp">C++ files</a:item>
-                    <a:item value="csharp">C# files</a:item>
-                    <a:item value="css">CSS files</a:item>
-                    <a:item value="elisp">ELisp files</a:item>
-                    <a:item value="erlang">Erlang files</a:item>
-                    <a:item value="fortran">Fortran files</a:item>
-                    <a:item value="groovy">Groovy files</a:item>
-                    <a:item value="haskell">Haskell files</a:item>
-                    <a:item value="hh">Header files</a:item>
-                    <a:item value="html">HTML files</a:item>
-                    <a:item value="java">Java files</a:item>
-                    <a:item value="js">Javascript files</a:item>
-                    <a:item value="json">JSON files</a:item>
-                    <a:item value="jsp">JSP files</a:item>
-                    <a:item value="latex">Latex files</a:item>
-                    <a:item value="lisp">Lisp files</a:item>
-                    <a:item value="lua">Lua files</a:item>
-                    <a:item value="make">Make files</a:item>
-                    <a:item value="markdown">Markdown files</a:item>
-                    <a:item value="mason">Mason files</a:item>
-                    <a:item value="objc">Obj-C files</a:item>
-                    <a:item value="objcpp">Obj-C++ files</a:item>
-                    <a:item value="ocaml">Ocaml files</a:item>
-                    <a:item value="parrot">Parrot files</a:item>
-                    <a:item value="perl">Perl files</a:item>
-                    <a:item value="php">PHP files</a:item>
-                    <a:item value="plone">Plone files</a:item>
-                    <a:item value="powershell">Powershell files</a:item>
-                    <a:item value="python">Python files</a:item>
-                    <a:item value="rake">Rake files</a:item>
-                    <a:item value="ruby">Ruby files</a:item>
-                    <a:item value="scala">Scala files</a:item>
-                    <a:item value="scheme">Scheme files</a:item>
-                    <a:item value="shell">Shell script files</a:item>
-                    <a:item value="smalltalk">Smalltalk files</a:item>
-                    <a:item value="sql">SQL files</a:item>
-                    <a:item value="tcl">TCL files</a:item>
-                    <a:item value="tex">Tex files</a:item>
-                    <a:item value="text">Text files</a:item>
-                    <a:item value="textile">Textile files</a:item>
-                    <a:item value="tt">TT files</a:item>
-                    <a:item value="vb">Visual Basic files</a:item>
-                    <a:item value="vim">Vim files</a:item>
-                    <a:item value="yaml">Yaml files</a:item>
-                    <a:item value="xml">XML files</a:item>
-                </a:dropdown>
+                <a:label width="95">Extensions</a:label>
+                <a:textbox id="ddSFPatterns" flex="1" focusselect="true" initial-message="*.*"/>
             </a:hbox>
-            <!--a:hbox id="barReplace" align="center">
-                <a:label width="75">Replace With</a:label>
+            <a:hbox id="barReplace" align="center">
+                <a:label width="95">Replace With</a:label>
                 <a:textbox id="txtReplace" flex="1" />
-            </a:hbox-->
+            </a:hbox>
             <a:hbox edge="10 0 5">
                 <a:fieldset flex="1" caption="Options" margin="0 0 1">
                     <a:checkbox id="chkSFMatchCase"
@@ -106,27 +51,31 @@
             </a:hbox>
         </a:vbox>
         <a:hbox padding="10" pack="end" edge="6 10 10">
-            <!--a:button id="btnReplace">Replace</a:button>
-            <a:button id="btnReplaceAll">Replace All</a:button-->
-            <a:button id="btnSFFind" default="2" class="btn-green" skin="btn-default-css3">Find</a:button>
+            <a:button id="btnReplaceAll" skin="btn-default-css3">Replace All</a:button>
+            <a:button id="btnSFFind" default="2" class="btn-green" skin="btn-default-css3">Find All</a:button>
             <a:button onclick="winSearchInFiles.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>
     </a:window>
 
+    <!-- Added prerender here to speed up the loading. The query already has the data we need, we don't need to
+    render the results one by one (as we do, for example, with the Project Files tree -->
     <a:hbox id="trSFHbox" anchors="0 0 0 0" visible="false" render="runtime">
         <a:tree id        = "trSFResult"
           skinset         = "searchinfiles"
           border          = "0"
           visible         = "false"
-          each            = "[d:response[position() &lt; 50]|d:excerpt[position() &lt; 50]|d:maxreached|d:querydetail]"
+          prerender       = "false"
+          each            = "[d:querydetail|d:maxreached|d:response|d:excerpt]"
           loading-message = "Searching..."
           style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
-          autoselect      = "false">
+          autoselect      = "false"
+          class           = "console_text">
             <a:model />
-            <a:caption match="[d:querydetail]">Search results for '{apf.htmlentities([@query])}'</a:caption>
-            <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
+            <a:caption match="[d:querydetail]">[@count] {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in [@filecount] {[@filecount] == 1 ? "file" : "files"}{[@replacement].length &gt; 0 ? ", replaced as '" + apf.htmlentities([@replacement]) + "'" : ""} [@options]</a:caption>
+            <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption> 
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
-            <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
+            <a:css match="[d:response]" value="responseHeader" />
+            <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>    
         </a:tree>
         <a:scrollbar
           id        = "sbSFResult"
