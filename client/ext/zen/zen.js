@@ -72,7 +72,16 @@ module.exports = ext.register("ext/zen/zen", {
 
             _self.updateButtonPosition();
         });
-        
+
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateButtonPosition();
+        });
+
         tabEditors.addEventListener("afterswitch", function(e){
             if (e.nextPage.type === "ext/imgview/imgview")
                 return;
@@ -602,7 +611,7 @@ module.exports = ext.register("ext/zen/zen", {
                 onfinish : function(){
                 }
             });
-        } 
+        }
     },
 
     enable : function(){

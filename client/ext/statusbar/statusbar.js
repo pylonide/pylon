@@ -1,10 +1,10 @@
 /**
  * Editor status bar for Cloud9 IDE
- * 
+ *
  * @TODO
- * 
+ *
  * Error icon from acebugs
- * 
+ *
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -85,6 +85,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
 
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateBarPosition();
+        });
+
+
         tabEditors.addEventListener("afterswitch", function(e) {
             if (e.nextPage.type === "ext/imgview/imgview")
                 return;
@@ -117,10 +127,29 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     init : function(){
+<<<<<<< HEAD
         if (typeof ceEditor === "undefined")
             return;
 
         var _self = this;
+=======
+        if(typeof ceEditor === "undefined") {
+            this.initFail = true;
+            return;
+        }
+
+        var _self = this;
+        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
+        wrapMode.addEventListener("click", function(e) {
+            if (e.currentTarget.checked) {
+                wrapModeViewport.enable();
+            }
+            else {
+                wrapModeViewport.disable();
+            }
+        });
+
+>>>>>>> 5149a8f... Make Zen, quick search, status bar and minimal play nice with revisions
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
@@ -169,6 +198,12 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     lblInsertActive.show();
             }
         });
+<<<<<<< HEAD
+=======
+
+        this.initDone = true;
+        this.inited = true;
+>>>>>>> 5149a8f... Make Zen, quick search, status bar and minimal play nice with revisions
     },
 
     addToolsItem: function(menuItem, position){
@@ -194,7 +229,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(menuItem);
         }
     },
-    
+
     setSelectionLength : function() {
         if (typeof lblSelectionLength === "undefined")
             return;

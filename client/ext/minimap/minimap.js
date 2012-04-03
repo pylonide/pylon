@@ -1,6 +1,6 @@
 /**
  * Minimap extension for Cloud9 IDE
- * 
+ *
  * @author Sergi Mansilla
  * @contributor Matt Pardee
  * @copyright 2012, Cloud9 IDE, Inc.
@@ -27,6 +27,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
     deps    : [editors],
     css     : css,
     map_width : 165,
+    offsetWidth: 0,
     map_enabled : false,
 
     hook : function() {
@@ -45,7 +46,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
         ide.addEventListener("afteropenfile", function() {
             ext.initExtension(_self);
-            
+
         });
 
         ide.addEventListener("loadsettings", function(e) {
@@ -76,6 +77,21 @@ return module.exports = ext.register("ext/minimap/minimap", {
                 afterSwitch();
             }
         });
+
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown") {
+                _self.offsetWidth += e.width;
+            }
+            else if (_self.offsetWidth > e.width) {
+                _self.offsetWidth -= e.width;
+            }
+            else {
+                _self.offsetWidth = 0;
+            }
+
+            if (_self.panel && _self.panel.visible)
+                _self.show();
+        });
     },
 
     init : function() {
@@ -91,7 +107,6 @@ return module.exports = ext.register("ext/minimap/minimap", {
             bottom : 0
         }));
 
-        this.panel.$ext.style.right = "0";
         this.panel.$ext.style.webkitTextSizeAdjust = "none";
         this.canvas = document.createElement("canvas");
         this.panel.$ext.appendChild(this.canvas);
@@ -144,7 +159,8 @@ return module.exports = ext.register("ext/minimap/minimap", {
     },
 
     show : function() {
-        this.editor.container.style.right = this.map_width + "px";
+        this.panel.$ext.style.right = this.offsetWidth + "px";
+        this.editor.container.style.right = this.map_width + this.offsetWidth + "px";
         this.panel.show();
         this.updateMap();
         this.map_enabled = true;
@@ -157,7 +173,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
     /**
      * Hide minimap
-     * 
+     *
      * @param {boolean} noSetMapEnabled Whether to set `map_enabled`
      * @see this.disable()
      */
