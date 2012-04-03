@@ -12,7 +12,7 @@
         <a:vbox edge="15 10 20" padding="5">
             <a:hbox align="center">
                 <a:label width="75">Search</a:label>
-                <a:textbox id="txtFind" flex="1" focusselect="true"/>
+                <a:textbox id="txtFind" flex="1" focusselect="true" />
             </a:hbox>
             <a:hbox id="barReplace" align="center">
                 <a:label width="75">Replace With</a:label>

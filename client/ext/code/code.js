@@ -357,7 +357,8 @@ module.exports = ext.register("ext/code/code", {
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            if(typeof ceEditor != "undefined")
+                ceEditor.afterOpenFile(ceEditor.getSession());
         });
     },
 
@@ -385,12 +386,6 @@ module.exports = ext.register("ext/code/code", {
             type    : "check",
             caption : "Show Invisibles",
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-        });
-
-        var menuWrapLines = new apf.item({
-            type    : "check",
-            caption : "Wrap Lines",
-            checked : "{ceEditor.wrapmode}"
         });
 
         this.nodes.push(
@@ -451,7 +446,6 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
-            e.ext.addPrefsItem(menuWrapLines.cloneNode(true), 1);
         });
 
         ide.addEventListener("keybindingschange", function(e) {

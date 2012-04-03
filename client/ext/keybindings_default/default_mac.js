@@ -90,8 +90,8 @@ return keys.onLoad({
             "tab8": "Command-8",
             "tab9": "Command-9",
             "revealtab": "Command-Shift-L",
-            "nexttab": "Command-Tab|Option-Tab",
-            "previoustab": "Command-Shift-Tab|Option-Shift-Tab"
+            "nexttab": "Option-Tab",
+            "previoustab": "Option-Shift-Tab"
         },
         "tabsessions" : {
             "savetabsession": "Command-Alt-S"
