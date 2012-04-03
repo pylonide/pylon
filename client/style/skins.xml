@@ -5961,6 +5961,10 @@
             overflow : hidden;
             height   : 33px;
             top      : -33px;
+            background    : url(images/bk-win-header.png)  repeat-x 0 0;
+            -moz-border-radius    : 6px 6px 0 0;
+            -webkit-border-radius : 6px 6px 0 0;
+            border-radius         : 6px 6px 0 0;
         }
 
         .bk-window.relative .bk-header {
@@ -5968,27 +5972,23 @@
         }
 
         .bk-window .bk-header .hcontent {
-            background    : url(images/bk-win-header.png)  repeat-x 0 0;
+            
             position      : relative;
-            overflow      : hidden;
+            /*overflow      : hidden;*/
             height        : 26px;
-            padding       : 8px 14px 0;
+            margin       : 8px 14px 0;
             font-family   : Arial;
             font-size     : 14px;
             line-height   : 16px;
             font-weight   : bold;
             color         : #ffffff;
             cursor        : default;
-
-            -moz-border-radius    : 6px 6px 0 0;
-            -webkit-border-radius : 6px 6px 0 0;
-            border-radius         : 6px 6px 0 0;
         }
 
         .bk-window .bk-header .hcontent .buttons {
             position: absolute;
-            right: 7px;
-            top: 9px;
+            right: -7px;
+            top: 1px;
         }
 
         .bk-window .bk-header .hcontent .buttons .close {
