@@ -156,7 +156,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     updateCounter: function() {
         var ace = this.$getAce();
-        var width, buttonWidth;
+        var width;
 
         if (!oIter) {
             oIter  = document.getElementById("spanSearchIter");
