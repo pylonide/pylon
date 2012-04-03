@@ -298,11 +298,7 @@ module.exports = ext.register("ext/code/code", {
     hook: function() {
         var _self = this;
 
-        //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading("Code Editor");
-            heading.insertMarkup(markupSettings);
-        });
+        require("ext/settings/settings").addSettings("Code Editor", markupSettings);
 
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
@@ -357,8 +353,7 @@ module.exports = ext.register("ext/code/code", {
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            if(typeof ceEditor != "undefined")
-                ceEditor.afterOpenFile(ceEditor.getSession());
+            ceEditor.afterOpenFile(ceEditor.getSession());
         });
     },
 
@@ -386,6 +381,12 @@ module.exports = ext.register("ext/code/code", {
             type    : "check",
             caption : "Show Invisibles",
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+        });
+
+        var menuWrapLines = new apf.item({
+            type    : "check",
+            caption : "Wrap Lines",
+            checked : "{ceEditor.wrapmode}"
         });
 
         this.nodes.push(
@@ -446,6 +447,7 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
+            e.ext.addPrefsItem(menuWrapLines.cloneNode(true), 1);
         });
 
         ide.addEventListener("keybindingschange", function(e) {
