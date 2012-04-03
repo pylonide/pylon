@@ -247,15 +247,31 @@ apf.DOMParser.prototype = new (function(){
     }
     
     this.$continueParsing = function(amlNode, options){
-        //if (!amlNode) debugger;
-
+        if (!amlNode) {
+            amlNode = apf.document.documentElement;
+            debugger;
+        }
+        debugger;
         var uId  = amlNode.$uniqueId;
         if (uId in this.$waitQueue) {
             var item = this.$waitQueue[uId];
+            
+            if (item.$shouldWait && --item.$shouldWait) {
+                console.log(item.$shouldWait);
+                return false;
+            }
+            
+            var node = amlNode.parentNode;
+            while (node && node.nodeType == 1) {
+                if (this.$waitQueue[node.$uniqueId] 
+                  && this.$waitQueue[node.$uniqueId].$shouldWait)
+                    return false;
+                node = node.parentNode;
+            }
+            
             var parseAmlNode = apf.all[uId];
             
             delete this.$waitQueue[uId];
-            console.log("domparser.js - continue: " + item.length);
             for (var i = 0; i < item.length; i++) {
                 this.$parseState(parseAmlNode, item[i]);
             }
@@ -263,7 +279,7 @@ apf.DOMParser.prototype = new (function(){
             //@todo Check for shouldWait here?
         }
         else
-            this.$parseState(amlNode, options);
+            this.$parseState(amlNode, options || {});
         
         delete this.$parseContext;
     }
