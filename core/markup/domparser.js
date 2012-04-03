@@ -247,10 +247,8 @@ apf.DOMParser.prototype = new (function(){
     }
     
     this.$continueParsing = function(amlNode, options){
-        if (!amlNode) {
+        if (!amlNode)
             amlNode = apf.document.documentElement;
-            debugger;
-        }
 
         var uId  = amlNode.$uniqueId;
         if (uId in this.$waitQueue) {
