@@ -66,7 +66,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.txtFind       = txtFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         this.txtReplace    = txtReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         //bars
-        this.barReplace    = barReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
+        this.barSingleReplace    = barSingleReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
         //buttons
         this.btnReplace    = btnReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[1]");
         this.btnReplace.onclick = this.replace.bind(this);
@@ -187,7 +187,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.position = 0;
 
         // hide all 'replace' features
-        this.barReplace.setProperty("visible", isReplace);
+        this.barSingleReplace.setProperty("visible", isReplace);
         this.btnReplace.setProperty("visible", isReplace);
         this.btnReplaceAll.setProperty("visible", isReplace);
         return this;
@@ -246,7 +246,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             this.setEditor();
         if (!this.$editor)
             return;
-        if (!this.barReplace.visible)
+        if (!this.barSingleReplace.visible)
             return;
         var options = this.getOptions();
         options.needle = this.txtFind.getValue();
