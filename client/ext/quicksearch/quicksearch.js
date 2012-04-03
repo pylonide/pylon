@@ -119,7 +119,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             switch (e.keyCode) {
                 case 8: // BACKSPACE
                     if (ace.getSession().getDocument().getLength() > MAX_LINES && txtQuickSearch.getValue().length < 3) { 
-                        return false;
+                        // fall back to return
                     }
                     else {
                         _self.execSearch(false, !!e.shiftKey, true);
