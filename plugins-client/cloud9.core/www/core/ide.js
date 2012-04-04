@@ -160,6 +160,15 @@ define(function(require, exports, module) {
                 ide.dispatchEvent("socketConnect"); //This is called too often!!
             }
 
+            if (message.type === "error") {
+                // TODO: Don't display all errors?
+                util.alert(
+                    "Error on server",
+                    "Received following error from server:",
+                    JSON.stringify(message.message)
+                );
+            }
+            
             ide.dispatchEvent("socketMessage", {
                 message: message
             });
