@@ -141,7 +141,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception "
                         + (message.code || "") + "] " + message.message + "</div>");
 
-                    apf.ajax("/debug", {
+                    apf.ajax("/api/debug", {
                         method      : "POST",
                         contentType : "application/json",
                         data        : JSON.stringify({

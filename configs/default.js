@@ -34,6 +34,7 @@ module.exports = {
                 prefix: "/static"
             },
             "./cloud9.alive",
+            "./cloud9.debug",
 
             // Client libraries
             "./../plugins-client/cloud9.core",
