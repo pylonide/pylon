@@ -24,13 +24,17 @@ module.exports = function setup(options, imports, register) {
         if (err) return register(err);
         sandbox.getWorkspaceId(function(err, workspaceId) {
             if (err) return register(err);
-            init(projectDir, workspaceId);
+            sandbox.getSettingsPath(function(err, settingsPath) {
+                if (err) return register(err);
+                init(projectDir, workspaceId, settingsPath);
+            });
         });
     });
 
-    function init(projectDir, workspaceId) {
+    function init(projectDir, workspaceId, settingsPath) {
         ide = new IdeServer({
             workspaceDir: projectDir,
+            settingsPath: settingsPath,
             davPrefix: baseUrl + "/workspace",
             baseUrl: baseUrl,
             debug: false,
