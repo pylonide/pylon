@@ -107,6 +107,9 @@ apf.GuiElement = function(){
     this.$focussable = apf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
     this.visible     = 2; //default value;
     
+    this.minwidth    = 1;
+    this.minheight   = 1;
+    
     /*this.minwidth   = 5;
     this.minheight  = 5;
     this.maxwidth   = 10000;
@@ -413,8 +416,8 @@ apf.GuiElement = function(){
             //--#ifdef __WITH_CONTENTEDITABLE
             //@todo slow??
             var diff = apf.getDiff(this.$ext);
-            this.$ext.style.minWidth = Math.max(1, this.minwidth - diff[0]) + "px";
-            this.$ext.style.minHeight = Math.max(1, this.minheight - diff[1]) + "px";
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
+            this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
             this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
             this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
             

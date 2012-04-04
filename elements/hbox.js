@@ -57,6 +57,9 @@ apf.vbox = function(struct, tagName){
 };
 
 (function(){
+    this.minwidth    = 0;
+    this.minheight   = 0;
+    
     /**** Properties and Attributes ****/
 
     this.$focussable = false;
@@ -193,7 +196,7 @@ apf.vbox = function(struct, tagName){
                         ? (isInFixed ? "1px" : "auto")
                         : (apf.isWebkit && input[node.$ext.tagName] 
                             ? "100%" 
-                            : (apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
+                            : (false && apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
                                 ? "0px"
                                 : "auto"));//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
