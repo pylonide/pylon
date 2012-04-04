@@ -96,20 +96,12 @@ var Map = (function() {
         this.ace = ace;
         this.c = c;
         this.visor = visor;
-        this.visibleLines = this.ace.$getVisibleRowCount();
-        this.visorHeight = Map.toHeight(this.visibleLines);
         this.ctx = c.getContext("2d");
         this.ctx.fillStyle = "#000";
         this.ctx.fillRect(0, 0, this.c.width, this.c.height);
         this.visorTop = 0;
         this.inVisor = false;
         this.mousedown = false;
-
-        var session = this.ace.getSession();
-
-        this.enableListeners();
-
-        this.updateSource(session);
     }
 
     Map.prototype.enableListeners = function() {
