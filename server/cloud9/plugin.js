@@ -77,6 +77,10 @@ sys.inherits(Plugin, events.EventEmitter);
         return child;
     };
 
+    this.canShutdown = function() {
+        return true;
+    };
+
     this.dispose = function(callback) {
         callback();
     };

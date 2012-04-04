@@ -358,6 +358,10 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
         this.$users[username] && this.$users[username].broadcast(msg);
     };
 
+    this.canShutdown = function() {
+        return this.workspace.canShutdown();
+    };
+
     this.dispose = function(callback) {
         this.workspace.dispose(callback);
     };
