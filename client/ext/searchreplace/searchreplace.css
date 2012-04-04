@@ -27,3 +27,7 @@
     margin: 0;
     padding: 0 5px 0 2px;
 }
+
+.tb_textbox.searchTxt .sbtb_middle input {
+    width: 255px;
+}
