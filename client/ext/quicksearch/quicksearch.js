@@ -118,7 +118,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         txtQuickSearch.addEventListener("keyup", function(e) {
             switch (e.keyCode) {
                 case 8: // BACKSPACE
-                    if (ace.getSession().getDocument().getLength() > MAX_LINES && txtQuickSearch.getValue().length < 3) { 
+                    var ace = _self.$getAce();
+                    if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
                         // fall back to return
                     }
                     else {
@@ -401,7 +402,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         return false;
     },
 
-    findnext: function() {
+    findnext: function(e) { // apparently, CMD + G executes a search; 
+        if (e !== 1) {      // halt that by forcing this method to come from a click
+            return;
+        }
+        
         var ace = this.$getAce();
         if (!ace)
             return;
@@ -412,14 +417,18 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         return false;
     },
 
-    findprevious: function() {
+    findprevious: function(e) {
+        if (e !== 1) {
+            return;
+        }
+        
         var ace = this.$getAce();
         if (!ace)
             return;
 
         ace.findPrevious();
         this.currentRange = ace.selection.getRange();
-        this.updateCounter();
+        this.updateCounter(true);
         return false;
     },
 
