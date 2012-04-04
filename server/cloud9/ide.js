@@ -211,9 +211,10 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                 delete plugins[plugin];
 
             var client_include = util.arrayToMap((permissions.client_include || "").split("|"));
-            for (plugin in client_include)
+            for (plugin in client_include) {
                 if (plugin)
                     plugins[plugin] = 1;
+            }
 
             var staticUrl = _self.options.staticUrl;
             var aceScripts = '<script type="text/javascript" data-ace-base="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n';
