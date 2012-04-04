@@ -13,7 +13,7 @@ module.exports = {
     model : new apf.model(),
 
     save : function(){
-        if (!ide.inited)
+        if (!ide.inited || !this.model.data)
             return;
 
         var _self = this;
@@ -78,7 +78,7 @@ module.exports = {
     },
 
     $loadsettings : function(cb){
-        cb({model : require('core/settings').model});
+        cb({model : require("core/settings").model});
     },
 
     /**
@@ -88,21 +88,19 @@ module.exports = {
      * - LocalStorage (saved for use when starting in offline mode only)
      */
     init : function(){
-        var xml, _self = this;
-        var resetSettings = location.href.indexOf('reset=1') > -1;
+        var xml;
+        var resetSettings = location.href.indexOf("reset=1") > -1;
         var sIdent = this.sIdent = "cloud9.settings." + ide.workspaceId;
+        var _self = this;
 
         if (resetSettings)
             xml = template;
-
         // Load from local storage
         else if (localStorage[sIdent])
             xml = localStorage[sIdent];
-
         // Load from template
         else if (!apf.IdeSettings || apf.IdeSettings == "defaults")
             xml = template
-
         // Load from parsed settings in the index file
         else if (apf.IdeSettings)
             xml = apf.IdeSettings;
@@ -115,41 +113,51 @@ module.exports = {
                         settings = template;
 
                     _self.load(settings);
+                    initEvents();
 
                     ide.removeEventListener("socketMessage", arguments.callee);
                 }
             });
 
-            if (ide.onLine === true)
+            if (ide.onLine === true) {
                 ide.send({command: "settings", action: "get"});
+            }
+            else {
+                ide.addEventListener("afteronline", function() {
+                    ide.send({command: "settings", action: "get"});
+                });
+            }
             return;
         }
 
         this.load(xml);
+        initEvents();
 
         /**** Events ****/
-
-        var checkSave = function() {
+        function checkSave() {
             if (ide.dispatchEvent("savesettings", {
                 model : _self.model
             }) === true)
                 _self.saveToFile();
-        };
-        this.$timer = setInterval(checkSave, 60000);
+        }
 
-        apf.addEventListener("exit", checkSave);
+        function initEvents() {
+            _self.$timer = setInterval(checkSave, 60000);
 
-        ide.addEventListener("afteronline", function(){
-            _self.saveToFile(); //Save to file
+            apf.addEventListener("exit", checkSave);
 
-            localStorage[sIdent] = null;
-            delete localStorage[sIdent];
-        });
+            ide.addEventListener("afteronline", function(){
+                _self.saveToFile(); //Save to file
 
-        ide.addEventListener("afteroffline", function(){
-            if (_self.loaded)
-                _self.saveToFile(); //Save in local storage
-        });
+                localStorage[sIdent] = null;
+                delete localStorage[sIdent];
+            });
+
+            ide.addEventListener("afteroffline", function(){
+                if (_self.loaded)
+                    _self.saveToFile(); //Save in local storage
+            });
+        }
     }
 };
 
