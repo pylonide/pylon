@@ -173,7 +173,6 @@ return module.exports = ext.register("ext/minimap/minimap", {
         if (!noSetMapEnabled)
             this.map_enabled = false;
 
-
         ide.dispatchEvent("minimap.visibility", {
             visibility: "hidden"
         });
@@ -204,6 +203,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
         this.nodes.each(function(item) {
             return item.destroy();
         });
+        this.hide();
         this.nodes = [];
         this.map.destroy();
         this.map = null;

@@ -151,6 +151,8 @@ var Map = (function() {
     };
 
     Map.prototype.updateSource = function(session) {
+        this.visibleLines = this.ace.$getVisibleRowCount();
+        this.visorHeight = Map.toHeight(this.visibleLines);
         this.lines = session.getLines(0, session.getLength() - 1);
         this.actualHeight = Map.toHeight(this.lines.length);
         this.codeCanvas = Map.storeCanvas(this.c.width, this.actualHeight, this.lines);
