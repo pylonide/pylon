@@ -101,6 +101,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             else if (e.keyCode == 27){
                 _self.hide();
                 ceEditor.focus();
+                
+                if (_self.$originalLine) {
+                    _self.execGotoLine(_self.$originalLine, true);
+                    delete _self.$originalLine;
+                }
+                
                 return false;
             }
             else if (e.keyCode == 40) {
@@ -111,7 +117,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                     lstLineNumber.focus();
                 }
             }
-            else if ((e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
+            else if (!e.ctrlKey && !e.metaKey && (e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
                 return false;
             
             setTimeout(function(){
@@ -147,7 +153,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var maxTop = aceHtml.offsetHeight - 100;
 
         editor.ceEditor.parentNode.appendChild(winGotoLine);
-        winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1]));
+        winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1] - 5));
         winGotoLine.setAttribute("left", -60);
 
         winGotoLine.show();
@@ -216,25 +222,29 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         ace.gotoLine(line);
 
         if (preview) {
-            
             var editor = editors.currentEditor;
             var ace = editor.ceEditor.$editor;
             var cursor = ace.getCursorPosition();
             var aceHtml = editor.ceEditor.$ext;
             
+            var firstLine = ace.renderer.textToScreenCoordinates(0, 0).pageY;
             var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
-            var half = aceHtml.offsetHeight / 2;
+            var half = aceHtml.offsetHeight / 2; //ceEditor.$editor.renderer.$size.scrollerHeight / 2; //
+            var lineHeight = ceEditor.$editor.renderer.lineHeight;
 
             //@todo how do I calculate the absolute position of the row?
-
-            if (ace.isRowFullyVisible(cursor.row)) {
+            var top;
+            if (pos.pageY - firstLine < half) {
+                top = Math.max(0, pos.pageY - firstLine - 5);
+            }
+            else if (ace.isRowFullyVisible(cursor.row)) {
                 //Determine the position of the window
                 var epos = apf.getAbsolutePosition(aceHtml);
                 var maxTop = aceHtml.offsetHeight - 100;
-                var top = Math.min(maxTop, pos.pageY - epos[1]);
+                top = Math.min(maxTop, pos.pageY - epos[1] - 5);
             }
             else {
-                var top = half;
+                top = half - 5 - lineHeight;
             }
 
             //Animate
