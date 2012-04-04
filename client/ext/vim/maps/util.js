@@ -21,15 +21,9 @@ module.exports = {
             // Switch editor to insert mode
             editor.unsetStyle('insert-mode');
 
-            var cursor = document.getElementsByClassName("ace_cursor")[0];
+            var cursor = document.getElementsByClassName("ace_cursor")[0]; // fall back to ace theme
             if (cursor) {
-                cursor.style.display = null;
-                cursor.style.backgroundColor = null;
-                cursor.style.opacity = null;
-                cursor.style.border = null;
-                cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
-                cursor.style.borderLeftStyle = "solid";
-                cursor.style.borderLeftWidth = "2px";
+                cursor.removeAttribute("style");
             }
 
             editor.setOverwrite(false);
