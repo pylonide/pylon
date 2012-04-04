@@ -28,7 +28,23 @@ module.exports = function setup(options, imports, register) {
                     if (err || !session || !session.uid)
                         return;
 
-                    ide.addClientConnection(session.uid, client, data);
+                    // If we don't have a user instance for our session.uid in the ide
+                    // we need to create one. This happens when the server runtime restarts
+                    // and the browser tries to reconnect with previous session.
+                    if (!ide.getUser({
+                        session: session
+                    })) {
+                        imports.ide.initUserAndProceed(session.uid, function(err) {
+                            if (err) {
+                                next(err);
+                                return;
+                            }
+                            ide.addClientConnection(session.uid, client, data);
+                        });
+                    }
+                    else {
+                        ide.addClientConnection(session.uid, client, data);
+                    }
                 });
             }
         });
