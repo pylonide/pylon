@@ -102,12 +102,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
-
-            var path = e.path
-                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                        .replace(/\[@name="workspace"\]/, "")
-                        .replace(/\//, "");
+            var path = "//folder[@path='" + e.path.replace(/\/$/, "") + "']";
             var parent = trFiles.getModel().data.selectSingleNode(path);
+
             if (!parent)
                 return;
 

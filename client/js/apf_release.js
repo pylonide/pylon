@@ -1717,8 +1717,8 @@ for(j=0,l2=nodes.length;j<l2;j++){nodes[j].dispatchEvent("DOMNodeInsertedIntoDoc
 waitQueue.pushUnique(options);return waitQueue;};this.$pauseParsing=function(amlNode,options){var waitQueue=this.$waitQueue[amlNode.$uniqueId];
 if(!waitQueue.$shouldWait){waitQueue.$shouldWait=0;}waitQueue.$shouldWait++;};this.$continueParsing=function(amlNode,options){if(!amlNode){amlNode=apf.document.documentElement;
 }var uId=amlNode.$uniqueId;if(uId in this.$waitQueue){var item=this.$waitQueue[uId];
-if(item.$shouldWait&&--item.$shouldWait){console.log(item.$shouldWait);return false;
-}var node=amlNode.parentNode;while(node&&node.nodeType==1){if(this.$waitQueue[node.$uniqueId]&&this.$waitQueue[node.$uniqueId].$shouldWait){return false;
+if(item.$shouldWait&&--item.$shouldWait){return false;}var node=amlNode.parentNode;
+while(node&&node.nodeType==1){if(this.$waitQueue[node.$uniqueId]&&this.$waitQueue[node.$uniqueId].$shouldWait){return false;
 }node=node.parentNode;}var parseAmlNode=apf.all[uId];delete this.$waitQueue[uId];
 for(var i=0;i<item.length;i++){this.$parseState(parseAmlNode,item[i]);}}else{this.$parseState(amlNode,options||{});
 }delete this.$parseContext;};this.$parseState=function(amlNode,options){this.$callCount++;
