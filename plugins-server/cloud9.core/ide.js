@@ -54,11 +54,6 @@ var Ide = module.exports = function(options) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
             _self.$serveIndex(req, res, next);
         });
-
-        app.get(/^\/\$reconnect$/, function(req, res, next) {
-            res.writeHead(200);
-            res.end(req.sessionID);
-        });
     });
 };
 
