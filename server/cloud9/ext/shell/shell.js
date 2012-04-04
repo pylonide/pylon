@@ -126,7 +126,7 @@ sys.inherits(ShellPlugin, Plugin);
                 argv: message.argv,
                 err: err,
                 out: out
-            });
+            }, message.mid);
         });
     };
 
@@ -137,19 +137,19 @@ sys.inherits(ShellPlugin, Plugin);
 
         path = Path.normalize(Path.join(path, to.replace(/^\//g, "")));
         if (path.indexOf(this.workspaceDir) === -1) {
-            return this.sendResult();
+            return this.sendResult(null, null, null, message.mid);
         }
 
         Fs.stat(path, function(err, stat) {
             if (err) {
                 return _self.sendResult(0, "error",
-                    err.toString().replace("Error: ENOENT, ", ""));
+                    err.toString().replace("Error: ENOENT, ", ""), message.mid);
             }
 
             if (!stat.isDirectory()) {
-                return _self.sendResult(0, "error", "Not a directory.");
+                return _self.sendResult(0, "error", "Not a directory.", message.mid);
             }
-            _self.sendResult(0, message.command, { cwd: path });
+            _self.sendResult(0, message.command, { cwd: path }, message.mid);
         });
     };
 

@@ -77,7 +77,7 @@ sys.inherits(ShellHgPlugin, Plugin);
                 argv: message.argv,
                 err: 'Command ' + argv.slice(1)[0] + ' is not available in Cloud9',
                 out: null
-            });
+            }, message.mid);
             return false;
         }
 
@@ -94,23 +94,23 @@ sys.inherits(ShellHgPlugin, Plugin);
                     argv: message.argv,
                     err: err,
                     out: null
-                });
-            }, 
+                }, message.mid);
+            },
             function(out) { // Data
                 _self.sendResult(0, message.command, {
                     code: 0,
                     argv: message.argv,
                     err: null,
                     out: out
-                });
-            }, 
+                }, message.mid);
+            },
             function(code, err, out) {
                 _self.sendResult(0, message.command, {
                     code: code,
                     argv: message.argv,
                     err: null,
                     out: null
-                });
+                }, message.mid);
             });
 
         return true;

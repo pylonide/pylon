@@ -19,11 +19,12 @@ sys.inherits(Plugin, events.EventEmitter);
         return this.hooks || [];
     };
 
-    this.sendResult = function(sid, type, msg) {
+    this.sendResult = function(sid, type, msg, mid) {
         var error = {
             type   : "result",
             subtype: type || "error",
             sid    : sid  || 0,
+            mid    : mid  || 0,
             body   : msg  || "Access denied."
         };
 

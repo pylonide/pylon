@@ -91,7 +91,7 @@ sys.inherits(GitToolsPlugin, Plugin);
                             argv: message.argv,
                             err: err ? err : "No git root found for file",
                             out: null
-                        });
+                        }, message.mid);
 
             switch (message.subcommand) {
                 case "blame":
@@ -130,7 +130,7 @@ sys.inherits(GitToolsPlugin, Plugin);
                     gitcommand: gitCommand,
                     file: message.file,
                     out: null
-                });
+                }, message.mid);
             },
             function(out) { }, // Data
             function(code, err, out) { // Exit
@@ -140,7 +140,7 @@ sys.inherits(GitToolsPlugin, Plugin);
                     gitcommand: gitCommand,
                     file: message.file,
                     out: out
-                });
+                }, message.mid);
             }
         );
     };
@@ -158,7 +158,7 @@ sys.inherits(GitToolsPlugin, Plugin);
                     gitcommand: gitCommand,
                     file: message.file,
                     out: null
-                });
+                }, message.mid);
             },
             function(out) { }, // Data
             function(code, err, out) { // Exit
@@ -168,7 +168,7 @@ sys.inherits(GitToolsPlugin, Plugin);
                     gitcommand: gitCommand,
                     file: message.file,
                     out: out
-                });
+                }, message.mid);
             }
         );
     };
@@ -187,7 +187,7 @@ sys.inherits(GitToolsPlugin, Plugin);
                     hash: hash,
                     file: message.file,
                     out: null
-                });
+                }, message.mid);
             },
             function(out) { }, // Data
             function(code, err, out) { // Exit
@@ -198,7 +198,7 @@ sys.inherits(GitToolsPlugin, Plugin);
                     hash: hash,
                     file: message.file,
                     out: out
-                });
+                }, message.mid);
             }
         );
     };

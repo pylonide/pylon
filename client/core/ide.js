@@ -11,6 +11,8 @@ define(function(require, exports, module) {
 
     var ide = new apf.Class().$init();
 
+    var socketMsgId = 0;
+
     ide.createDocument = function(node, value){
         return new Document(node, value);
     };
@@ -236,11 +238,12 @@ define(function(require, exports, module) {
 
     ide.$msgQueue = [];
     ide.addEventListener("socketConnect", function() {
+        var _self = this;
         while(ide.$msgQueue.length) {
             var q = ide.$msgQueue;
             ide.$msgQueue = [];
             q.forEach(function(msg) {
-                ide.socket.json.send(msg);
+                _self.send(msg);
             });
         }
     });
@@ -251,7 +254,16 @@ define(function(require, exports, module) {
             return;
         }
 
+        // Track the message with a unique ID
+        if (typeof msg === "object") {
+            socketMsgId++;
+            msg.mid = socketMsgId;
+        }
+
         ide.socket.json.send(msg);
+
+        // Return the message ID so the callee can track returning messages
+        return socketMsgId;
     };
 
     ide.getActivePageModel = function() {

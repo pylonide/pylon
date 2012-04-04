@@ -82,7 +82,7 @@ sys.inherits(ShellGitPlugin, Plugin);
                     argv: message.argv,
                     err: err,
                     out: null
-                });
+                }, message.mid);
             },
             function(out) { // Data
                 _self.sendResult(0, message.command, {
@@ -90,7 +90,7 @@ sys.inherits(ShellGitPlugin, Plugin);
                     argv: message.argv,
                     err: null,
                     out: out
-                });
+                }, message.mid);
             },
             function(code, err, out) {
                 _self.sendResult(0, message.command, {
@@ -98,7 +98,7 @@ sys.inherits(ShellGitPlugin, Plugin);
                     argv: message.argv,
                     err: null,
                     out: null
-                });
+                }, message.mid);
             });
 
         return true;
