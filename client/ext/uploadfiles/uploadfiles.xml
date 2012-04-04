@@ -1,0 +1,78 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    
+    <a:window id="winUploadFiles"
+      onshow  = "require('ext/uploadfiles/uploadfiles').onShow()"
+      title   = "Upload Files"
+      buttons = "close"
+      skin    = "bk-window"
+      class   = "relative dark-bg"
+      modal   = "false"
+      center  = "true"
+      width   = "354"
+      kbclose = "true">
+        <a:vbox edge="10" padding="5" align="center">
+            <a:vbox id="uploadDropArea" class="uploadDropArea" align="center" pack="center">
+                <div class="uploadText"></div>
+                <input id="fileUploadSelect" type="file" multiple="multiple" />
+            </a:vbox>
+            <div style="color: #838383">Your files will instantly start uploading to: <span id="uplTargetFolder"></span></div>
+        </a:vbox>    
+        <a:hbox padding="10" pack="end" edge="6 10 10">
+            <a:button onclick="winUploadFiles.hide()" skin="btn-default-css3">Close</a:button>
+        </a:hbox>
+    </a:window>
+    
+    <a:model id="mdlUploadActivity">
+        <data />
+    </a:model>
+    
+    <a:vbox id="boxUploadActivity" height="200" visible="false">
+        <div class="uploadactivity-header">Upload Activity</div>
+        <a:list id="lstUploadActivity"
+            skin = "list-uploadactivity"
+            model = "mdlUploadActivity"
+            flex="1"
+            scrollbar = "sbShared 2 2 2"
+            onshow2='trFiles.setProperty("scrollbar", "sbShared 2 2 " + this.height);
+    sbShared.setProperty("bottom", this.height);'
+        >
+            <a:each match="[file]">
+                <a:caption><?lm
+                    if ([@progress]) {
+                        <div class="uploadactivity-caption bold">[@name]</div>
+                        <div class="uploadactivity-progress">[@progress]%</div>
+                    }
+                    else {
+                        <div class="uploadactivity-caption">[@name]</div>
+                        <div class="uploadactivity-delete" onclick="require('ext/dragdrop/dragdrop').removeFromQueue('{[@name]}')"></div>
+                    }
+                ?></a:caption>
+            </a:each>
+        </a:list>
+    </a:vbox>
+    
+    <a:window
+      id        = "winUploadFileExists"
+      title     = "File already exists"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "512"
+      skin      = "bk-window"
+      class     = "relative">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3>File already exists</h3>
+            <div id="uploadFileExistsMsg" class="alertMsg">Do you want to overwrite this file?</div>
+        </a:vbox>
+    
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnUploadOverwriteAll" skin="btn-default-css3" class="btn-green" onclick="winUploadFileExists.hide();require('ext/dragdrop/dragdrop').overwriteAll()">Overwrite all</a:button>
+            <a:button id="btnUploadSkipAll" skin="btn-default-css3" class="btn-red" onclick="winUploadFileExists.hide();require('ext/dragdrop/dragdrop').skipAll()">Skip all</a:button>
+            <a:filler/>
+            <a:button id="btnUploadOverwrite" default="3" skin="btn-default-css3" class="btn-green" onclick="winUploadFileExists.hide();require('ext/dragdrop/dragdrop').overwrite()">Overwrite</a:button>
+            <a:button id="btnUploadSkip" skin="btn-default-css3" class="btn-red" onclick="winUploadFileExists.hide();require('ext/dragdrop/dragdrop').skip()">Skip</a:button>
+        </a:hbox>
+    </a:window>
+</a:application>

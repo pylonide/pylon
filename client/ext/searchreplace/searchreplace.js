@@ -13,13 +13,17 @@ var util = require("core/util");
 var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
+var css = require("text!ext/searchreplace/searchreplace.css");
 var markup = require("text!ext/searchreplace/searchreplace.xml");
+
+var oIter, oTotal;
 
 module.exports = ext.register("ext/searchreplace/searchreplace", {
     name    : "Searchreplace",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
+    css     : css,
     markup  : markup,
     commands : {
         "search": {hint: "search for a string inside the active document"},
@@ -27,6 +31,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
     hotitems: {},
 
+    currentRange: null,
+    
     nodes   : [],
 
     hook : function(){
@@ -62,6 +68,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
     init : function(amlNode){
         var _self = this;
+        apf.importCssString(_self.css);
         
         this.txtFind       = txtFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         this.txtReplace    = txtReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
@@ -162,6 +169,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                         ? "Search & Replace" : "Search");
                 winSearchReplace.show();
             }
+            this.updateCounter();
         }
         else
             winSearchReplace.hide();
@@ -221,7 +229,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         if (!txt)
             return;
         var options = this.getOptions();
-        
+
         if (this.$crtSearch != txt) {
             this.$crtSearch = txt;
             // structure of the options:
@@ -234,11 +242,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             //     regExp: false
             // }
             this.$editor.find(txt, options);
+            this.currentRange = this.$editor.selection.getRange();
         }
         else {
             this.$editor.find(txt, options);
+            this.currentRange = this.$editor.selection.getRange();
         }
         chkSearchSelection.setAttribute("checked", false);
+        this.updateCounter();
     },
 
     replace: function() {
@@ -270,12 +281,74 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var line = cursor.row;
         
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
-        
+        this.updateCounter();
         this.$editor.gotoLine(line); // replaceAll jumps you elsewhere; go back to where you were
-        
+ 
         ide.dispatchEvent("track_action", {type: "replace"});
     },
 
+    updateCounter: function() {
+        var ace = this.$getAce();
+        var width, buttonWidth;
+
+        if (!oIter) {
+            oIter  = document.getElementById("spanSearchReplaceIter");
+            oTotal = document.getElementById("spanSearchReplaceTotal");
+        }
+/*
+        if (oIter.parentNode) {
+            if (!ace || !winQuickSearch.visible) {
+                oIter.parentNode.style.width = "0px";
+                return;
+            }
+            else
+                oIter.parentNode.style.width = "auto";
+        }
+
+        setTimeout(function() {
+            if (oIter.parentNode && txtQuickSearch && txtQuickSearch.$button) {
+                width = oIter.parentNode.offsetWidth || 0;
+                txtQuickSearch.$button.style.right = width + "px";
+            }
+        });
+*/
+        var ranges = ace.$search.findAll(ace.getSession());
+        if (!ranges || !ranges.length) {
+            oIter.innerHTML = "0";
+            oTotal.innerHTML = "of 0";
+            return;
+        }
+        var crtIdx = -1;
+        var cur = this.currentRange;
+        if (cur) {
+            // sort ranges by position in the current document
+            ranges.sort(cur.compareRange.bind(cur));
+            var range;
+            var start = cur.start;
+            var end = cur.end;
+            for (var i = 0, l = ranges.length; i < l; ++i) {
+                range = ranges[i];
+                if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
+                    crtIdx = i;
+                    break;
+                }
+            }
+        }
+        
+        
+        oIter.innerHTML = String(++crtIdx);
+        oTotal.innerHTML = "of " + ranges.length;
+    },
+    
+    $getAce: function() {
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+
+        var ceEditor = editor.ceEditor;
+        return ceEditor.$editor;
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
