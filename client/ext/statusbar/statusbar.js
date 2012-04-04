@@ -39,10 +39,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
     hook : function(){
         var _self = this;
-        ide.addEventListener("afteropenfile", this.$aofListener = function() {
-            ext.initExtension(_self);
-            ide.removeEventListener("afteropenfile", _self.$aofListener);
-        });
 
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/statusbar");
@@ -79,10 +75,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             else
                 lblInsertActive.hide();
         });
-    },
-
-    init : function(){
-        var _self = this;
 
         ide.addEventListener("minimap.visibility", function(e) {
             if (e.visibility === "shown")
@@ -93,15 +85,21 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
 
-        tabEditors.addEventListener("afterswitch", function() {
+        tabEditors.addEventListener("afterswitch", function(e) {
+            if (e.nextPage.type === "ext/imgview/imgview")
+                return;
+
+            if (!_self.inited) {
+                // Wait a moment for the editor to get into place
+                setTimeout(function() {
+                    ext.initExtension(_self);
+                });
+            }
+
             if (_self.$changeEvent)
                 _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
 
             setTimeout(function() {
-                if(_self.initFail && !_self.initDone) {
-                    _self.initFail = false;
-                    _self.init();
-                }
                 if(editors.currentEditor.ceEditor) {
                     _self.setSelectionLength();
 
@@ -118,23 +116,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
     },
 
-    init : function(){        
-        if(typeof ceEditor === "undefined") {
-            this.initFail = true;
+    init : function(){
+        if (typeof ceEditor === "undefined")
             return;
-        }
-        
+
         var _self = this;
-        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
-        wrapMode.addEventListener("click", function(e) {
-            if (e.currentTarget.checked) {
-                wrapModeViewport.enable(); 
-            }
-            else {
-                wrapModeViewport.disable();
-            }
-        });
-        
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
@@ -183,9 +169,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     lblInsertActive.show();
             }
         });
-        
-        this.initDone = true;
-        this.inited = true;
     },
 
     addToolsItem: function(menuItem, position){
@@ -275,7 +258,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     setPosition : function() {
-        if (typeof ceEditor != "undefined" && ceEditor.$editor) {
+        if (ceEditor && ceEditor.$editor) {
             var _self = this;
             var cw = ceEditor.$editor.renderer.scroller.clientWidth;
             var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
