@@ -50,13 +50,19 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var path = e.path || node.getAttribute("path");
 
             var fNode = model.queryNode("//node()[@path='" + path.replace(/'/g, "&apos;") + "']");
-            if (node && fNode) {
+            var trNode = trFiles.queryNode("//node()[@path='" + path.replace(/'/g, "&apos;") + "']");
+            if (node && fNode && trNode) {
                 if (e.path)
-                    fNode.setAttribute("path", node.getAttribute("path"));
-                if (e.filename)
+                    apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
+                    apf.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
+                if (e.filename) {
                     apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
-                if (e.changed != undefined)
+                    apf.xmldb.setAttribute(trNode, "name", apf.getFilename(e.filename));
+                }
+                if (e.changed != undefined) {
                     apf.xmldb.setAttribute(fNode, "changed", e.changed);
+                    apf.xmldb.setAttribute(trNode, "changed", e.changed);
+                }
             }
         });
     },

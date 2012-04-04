@@ -1,11 +1,11 @@
 /**
- * Code Editor for the Cloud9 IDE
+ * File Tree for the Cloud9 IDE
  *
  * @TODO
  * - Save & load scroll position of tree
  * - Comment everything
  * 
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -21,7 +21,7 @@ var markup = require("text!ext/tree/tree.xml");
 
 module.exports = ext.register("ext/tree/tree", {
     name             : "Project Files",
-    dev              : "Ajax.org",
+    dev              : "Cloud9 IDE, Inc.",
     alone            : true,
     type             : ext.GENERAL,
     markup           : markup,
@@ -110,7 +110,7 @@ module.exports = ext.register("ext/tree/tree", {
             _self.currentSettings = [];
 
             var path, id;
-            
+
             // expandedList keeps an active record of all the expanded nodes
             // so that on each save this gets serialized into the auto/projecttree
             // settings node
@@ -389,7 +389,7 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     /**
-     * Loads the project tree based on currentSettings, which is an arry of
+     * Loads the project tree based on currentSettings, which is an array of
      * folders that were previously expanded, otherwise it contains only the
      * root identifier (i.e. ide.davPrefix)
      * 
@@ -399,7 +399,6 @@ module.exports = ext.register("ext/tree/tree", {
         this.loading = true;
 
         var currentSettings = this.currentSettings;
-        var len = currentSettings.length;
         var _self = this;
 
         /**
@@ -409,7 +408,7 @@ module.exports = ext.register("ext/tree/tree", {
          * @param number i The iterator for referencing currentSettings' elements
          */
         function getLoadPath(i) {
-            if (i >= len)
+            if (i >= currentSettings.length)
                 return onFinish();
 
             var path = currentSettings[i];
@@ -420,6 +419,13 @@ module.exports = ext.register("ext/tree/tree", {
             // check which one is available for us to use (and yes, realWebdav
             // can sometimes not be set on initial load)
             (davProject.realWebdav || davProject).readdir(path, function(data, state, extra) {
+                // Folder not found
+                if (extra.status === 404) {
+                    _self.changed = true;
+                    currentSettings.splice(i, 1);
+                    return getLoadPath(i);
+                }
+
                 // Strip the extra "/" that webDav adds on
                 var realPath = extra.url.substr(0, extra.url.length-1);
 
@@ -432,8 +438,11 @@ module.exports = ext.register("ext/tree/tree", {
                     parentNode = trFiles.queryNode('//folder[@path="' + realPath + '"]');
 
                 // Hmm? Folder deleted?
-                if (!parentNode)
-                    return getLoadPath(++i);
+                if (!parentNode) {
+                    _self.changed = true;
+                    currentSettings.splice(i, 1);
+                    return getLoadPath(i);
+                }
 
                 var dataXml = apf.getXml(data);
                 for (var x = 0, xmlLen = dataXml.childNodes.length; x < xmlLen; x++) {
