@@ -362,7 +362,10 @@ module.exports = ext.register("ext/console/console", {
         });
 
         tabConsole.addEventListener("afterswitch", function(e){
-            settings.model.setQueryValue("auto/console/@active", e.nextPage.name)
+            settings.model.setQueryValue("auto/console/@active", e.nextPage.name);
+            setTimeout(function(){
+                txtConsoleInput.focus();
+            });
         });
 
         winDbgConsole.previousSibling.addEventListener("dragdrop", function(e){

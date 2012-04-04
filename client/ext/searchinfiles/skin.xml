@@ -7,7 +7,7 @@
           overflow: hidden;
           cursor : default;
           position : relative;
-          color: #EEE;
+          color: #666651;
           font-family : Arial;
           font-size : 12px;
       }
@@ -25,7 +25,7 @@
       .searchtree SPAN{
           width: 15px;
           height: 18px;
-          background: no-repeat 3px 5px;
+          background: no-repeat 3px 4px;
           display: block;
           margin-left: -15px;
       }
@@ -37,7 +37,7 @@
   
       .searchtree DIV.minlast SPAN,
       .searchtree DIV.min SPAN{
-          background-image:url(images/search_collaps.png);
+          background-image:url(images/search_collapse.png);
       }
   
       .searchtree DIV{
@@ -45,21 +45,27 @@
           height: auto;
           padding-left: 15px;
           overflow : hidden;
-  
-          font-family: Tahoma, Arial, Arial;
-          font-size: 11px;
+          color: #ffffff;
+          font-family: menlo,courier new,fixed,swiss,sans-serif;
+          font-size: 12px;
       }
   
+      .searchtree .responseHeader {
+	      color: #e6db70;
+	  }
+
 	  .searchtree .linenumber {
 	      width : 35px;
 	      display : inline;
 	      text-align : right;
 	      padding : 0 10px 0 4px;
+          color:    #ae81ff;
 	  }
-	  
+      
 	  .searchtree .excerpt {
 	      margin : 0;
 	      display : inline-block;
+          color: #ffffff;
 	  }
 	  
 	  .searchtree .line{
@@ -105,22 +111,20 @@
           padding: 2px 4px 2px 2px;
       }
   
-      .searchtreeFocus .indicate U{
+      .searchtree blockquote .indicate U{
           border: 1px dotted #CCC;
-          padding: 1px 3px 1px 1px;
+          padding: 0px 3px 1px 1px;
       }
   
-      .searchtree .selected U{
-          background-color: #EEE;
-          color: black;
+      .searchtree .responseHeader.selected U{
           -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
           border-radius: 3px;
+          border: 1px dotted #CCC;
+          padding: 0px 3px 1px 1px;
       }
   
       .searchtreeFocus .selected U, .tree .dragAppend U{
-          background-color: #DDD;
-          color: black;
           -webkit-border-radius: 3px;
           -moz-border-radius: 3px;
           border-radius: 3px;

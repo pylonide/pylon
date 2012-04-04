@@ -46,20 +46,35 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
         ide.addEventListener("afteropenfile", function() {
             ext.initExtension(_self);
-            if (_self.editor)
-                _self.updateMap();
+            
         });
 
         ide.addEventListener("loadsettings", function(e) {
             _self.map_enabled = e.model.queryValue("editors/code/@minimap");
         });
 
-        tabEditors.addEventListener("afterswitch", function(){
-            if(_self.initFail && !_self.initDone) {
-                setTimeout(function(){
-                        _self.initFail = false;
-                        _self.init();
+        tabEditors.addEventListener("afterswitch", function(e){
+            if (e.nextPage.type === "ext/imgview/imgview")
+                return;
+
+            function afterSwitch() {
+                if (_self.editor)
+                    _self.updateMap();
+
+                setTimeout(function() {
+                    _self.setupChangeListener();
                 }, 200);
+            }
+
+            if (!_self.inited) {
+                // Wait a moment for the editor to get into place
+                setTimeout(function() {
+                    ext.initExtension(_self);
+                    afterSwitch();
+                });
+            }
+            else {
+                afterSwitch();
             }
         });
 
@@ -81,11 +96,6 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
     init : function() {
         var _self = this;
-
-        if(typeof ceEditor === "undefined") {
-            this.initFail = true;
-            return;
-        }
 
         apf.importCssString((this.css || ""));
 
@@ -110,13 +120,6 @@ return module.exports = ext.register("ext/minimap/minimap", {
                 _self.map.resize(_self.map_width, ceEditor.getHeight());
         });
 
-        tabEditors.addEventListener("afterswitch", function() {
-            _self.updateMap();
-            setTimeout(function() {
-                _self.setupChangeListener();
-            }, 200);
-        });
-
         if (apf.isTrue(this.map_enabled)) {
             setTimeout(function() {
                 _self.show();
@@ -124,7 +127,6 @@ return module.exports = ext.register("ext/minimap/minimap", {
         }
 
         this.setupChangeListener();
-        this.initDone = true;
     },
 
     setupChangeListener : function() {
