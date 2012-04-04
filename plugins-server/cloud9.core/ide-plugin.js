@@ -31,6 +31,17 @@ module.exports = function setup(options, imports, register) {
         });
     });
 
+    function initUserAndProceed(uid, callback) {
+        permissions.getPermissions(uid, function(err, perm) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            ide.addUser(uid, perm);
+            callback(null);
+        });
+    }
+
     function init(projectDir, workspaceId, settingsPath) {
         ide = new IdeServer({
             workspaceDir: projectDir,
@@ -59,7 +70,8 @@ module.exports = function setup(options, imports, register) {
                 },
                 getServer: function() {
                     return ide;
-                }
+                },
+                initUserAndProceed: initUserAndProceed
             }
         });
     }
@@ -67,20 +79,20 @@ module.exports = function setup(options, imports, register) {
     hub.on("containersDone", function() {
         ide.init(serverPlugins);
         connect.useAuth(baseUrl, function(req, res, next) {
+
             if (!req.session.uid) {
+                // TODO: We can put this back in once the local version has a login dialog.
 //                return next(new error.Unauthorized());
                 req.session.uid = "owner_" + req.sessionID;
             }
 
             var pause = utils.pause(req);
-            permissions.getPermissions(req.session.uid, function(err, perm) {
+            initUserAndProceed(req.session.uid, function(err) {
                 if (err) {
                     next(err);
                     pause.resume();
                     return;
                 }
-
-                ide.addUser(req.session.uid, perm);
                 ide.handle(req, res, next);
                 pause.resume();
             });
