@@ -717,9 +717,13 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("afterreload", function(e) {
-            var doc         = e.doc,
-                acesession  = doc.acesession,
-                sel         = acesession.getSelection();
+            var doc         = e.doc;
+            var acesession  = doc.acesession;
+            
+            if(!acesession)
+                return;
+                
+            var sel         = acesession.getSelection();
 
             sel.selectAll();
             acesession.getUndoManager().ignoreChange = true;

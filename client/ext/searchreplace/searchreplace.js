@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -29,7 +30,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         "searchreplace": {hint: "search for a string inside the active document and replace it"}
     },
     hotitems: {},
-    
+
     currentRange: null,
     
     nodes   : [],
@@ -72,7 +73,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.txtFind       = txtFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         this.txtReplace    = txtReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         //bars
-        this.barReplace    = barReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
+        this.barSingleReplace    = barSingleReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
         //buttons
         this.btnReplace    = btnReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[1]");
         this.btnReplace.onclick = this.replace.bind(this);
@@ -83,6 +84,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         winSearchReplace.onclose = function() {
             ceEditor.focus();
         }
+        
+        this.txtFind.$ext.cols = this.txtFind.cols;
         
         this.txtFind.addEventListener("keydown", function(e){
             switch (e.keyCode){
@@ -160,6 +163,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 if (value)
                     this.txtFind.setValue(value);
 
+                ide.dispatchEvent("exitfullscreen");
+
                 winSearchReplace.setAttribute("title", isReplace
                         ? "Search & Replace" : "Search");
                 winSearchReplace.show();
@@ -190,7 +195,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.position = 0;
 
         // hide all 'replace' features
-        this.barReplace.setProperty("visible", isReplace);
+        this.barSingleReplace.setProperty("visible", isReplace);
         this.btnReplace.setProperty("visible", isReplace);
         this.btnReplaceAll.setProperty("visible", isReplace);
         return this;
@@ -252,7 +257,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             this.setEditor();
         if (!this.$editor)
             return;
-        if (!this.barReplace.visible)
+        if (!this.barSingleReplace.visible)
             return;
         var options = this.getOptions();
         options.needle = this.txtFind.getValue();
@@ -271,11 +276,17 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.$crtSearch = null;
         var options = this.getOptions();
         options.needle = this.txtFind.getValue();
+        
+        var cursor = this.$editor.getCursorPosition();
+        var line = cursor.row;
+        
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
         this.updateCounter();
+        this.$editor.gotoLine(line); // replaceAll jumps you elsewhere; go back to where you were
+ 
         ide.dispatchEvent("track_action", {type: "replace"});
     },
-    
+
     updateCounter: function() {
         var ace = this.$getAce();
         var width, buttonWidth;

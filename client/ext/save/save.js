@@ -58,7 +58,7 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
-                fileDesc.insertMarkup("<div><h3>Save " +  "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>");
+                fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
 
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
@@ -350,7 +350,7 @@ module.exports = ext.register("ext/save/save", {
                 doc.setNode(file);
             }
 
-            apf.xmldb.removeAttribute(node, "saving");
+            apf.xmldb.removeAttribute(file, "saving");
 
             if (self.saveBuffer[path]) {
                 delete self.saveBuffer[path];

@@ -43,7 +43,7 @@ exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoa
 exports.removeInteractive = function (amlNode) {
     if (window.cloud9config.readonly == true)
         return false;
-    
+
     if (amlNode.confirmed == undefined)
         amlNode.confirmed = false;
     
@@ -52,9 +52,10 @@ exports.removeInteractive = function (amlNode) {
 
         function confirm(file) {
             var name = file.getAttribute("name");
+            var type = file.getAttribute("type");
             require("core/util").question(
-                "Remove file?",
-                "You are about to remove the file " + name,
+                "Confirm Remove",
+                "You are about to remove the " + type + " " + name,
                 "Do you want continue? (This change cannot be undone)",
                 function () { // Yes
                     amlNode.confirmed = true;
@@ -278,6 +279,41 @@ exports.escapeXml = function(str, noQuotes) {
             return "&#" + exports.xmlEntityMap[m] + ";";
         return a;
     });
+};
+
+// taken from http://xregexp.com/
+exports.escapeRegExp = function(str) {
+    return str.replace(/[-[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
+}
+
+/**
+ * Determines whether a string is true in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   true   The function returns true.
+ *   'true' The function returns true.
+ *   'on'   The function returns true.
+ *   1      The function returns true.
+ *   '1'    The function returns true.
+ * @return {Boolean} whether the string is considered to imply truth.
+ */
+exports.isTrue = function(c){
+    return (c === true || c === "true" || c === "on" || typeof c == "number" && c > 0 || c === "1");
+};
+
+/**
+ * Determines whether a string is false in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   false   The function returns true.
+ *   'false' The function returns true.
+ *   'off'   The function returns true.
+ *   0       The function returns true.
+ *   '0'     The function returns true.
+ * @return {Boolean} whether the string is considered to imply untruth.
+ */
+exports.isFalse = function(c){
+    return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
 };
 
 /*
