@@ -23,7 +23,7 @@ apf.__DATAACTION__ = 1 << 25;
 
 // #ifdef __WITH_DATAACTION
 /**
- * Baseclass adding data action features to this element. 
+ * Baseclass adding data action features to this element.
  */
 apf.DataAction = function(){
     this.$regbase = this.$regbase | apf.__DATAACTION__;
@@ -54,7 +54,7 @@ apf.DataAction = function(){
         }
         return tracker;
     };
- 
+
     //#ifdef __WITH_LOCKING
     this.$lock = {};
     //#endif
@@ -63,44 +63,44 @@ apf.DataAction = function(){
     this.$actions    = false;
 
     /**
-     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock} 
-     * is a mechanism for enforcing limits on access to a resource in a 
-     * multi-user environment. Locks are one way of enforcing concurrency 
-     * control policies. Ajax.org Platform (apf) has support for locking in 
-     * combination with {@link term.action action rules}. There are two 
+     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock}
+     * is a mechanism for enforcing limits on access to a resource in a
+     * multi-user environment. Locks are one way of enforcing concurrency
+     * control policies. Ajax.org Platform (apf) has support for locking in
+     * combination with {@link term.action action rules}. There are two
      * types of locks; pessimistic and optimistic locks. Descriptions below are
-     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}. 
+     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}.
      *
      * Optimistic:
-     * This allows multiple concurrent users access to the database whilst the 
-     * system keeps a copy of the initial-read made by each user. When a user 
-     * wants to update a record, the application determines whether another user 
-     * has changed the record since it was last read. The application does this 
-     * by comparing the initial-read held in memory to the database record to 
-     * verify any changes made to the record. Any discrepancies between the 
-     * initial-read and the database record violates concurrency rules and hence 
-     * causes the system to disregard any update request. An error message is 
-     * generated and the user is asked to start the update process again. 
-     * It improves database performance by reducing the amount of locking 
-     * required, thereby reducing the load on the database server. It works 
-     * efficiently with tables that require limited updates since no users are 
-     * locked out. However, some updates may fail. The downside is constant 
-     * update failures due to high volumes of update requests from multiple 
+     * This allows multiple concurrent users access to the database whilst the
+     * system keeps a copy of the initial-read made by each user. When a user
+     * wants to update a record, the application determines whether another user
+     * has changed the record since it was last read. The application does this
+     * by comparing the initial-read held in memory to the database record to
+     * verify any changes made to the record. Any discrepancies between the
+     * initial-read and the database record violates concurrency rules and hence
+     * causes the system to disregard any update request. An error message is
+     * generated and the user is asked to start the update process again.
+     * It improves database performance by reducing the amount of locking
+     * required, thereby reducing the load on the database server. It works
+     * efficiently with tables that require limited updates since no users are
+     * locked out. However, some updates may fail. The downside is constant
+     * update failures due to high volumes of update requests from multiple
      * concurrent users - it can be frustrating for users.
      *
-     * For optimistic locking apf can run as if there would be no locking. 
+     * For optimistic locking apf can run as if there would be no locking.
      * Changed data is sent to the server and is either successfully saved or
      * not. When the action isn't changed and the server returns an error code
-     * the {@link element.actiontracker actiontracker} <strong>automatically 
-     * reverts the change</strong>. 
+     * the {@link element.actiontracker actiontracker} <strong>automatically
+     * reverts the change</strong>.
      *
      * Pessimistic:
-     * This is whereby a user who reads a record with the intention of updating 
-     * it, places an exclusive lock on the record to prevent other users from 
-     * manipulating it. This means no one else can manipulate that record until 
-     * the user releases the lock. The downside is that users can be locked out 
-     * for a long time thereby causing frustration. 
-     * 
+     * This is whereby a user who reads a record with the intention of updating
+     * it, places an exclusive lock on the record to prevent other users from
+     * manipulating it. This means no one else can manipulate that record until
+     * the user releases the lock. The downside is that users can be locked out
+     * for a long time thereby causing frustration.
+     *
      * For pessimistic locking add the locking attribute to the {@link term.action action rules}
      * that need it. The following example shows a lock request for a rename
      * action on a file browser tree.
@@ -113,7 +113,7 @@ apf.DataAction = function(){
      *
      * MultiUser:
      * In multi user environments it can be handy
-     * to be signalled of changes by others within the application. For more 
+     * to be signalled of changes by others within the application. For more
      * information on this please look at {@link element.remote}.
      *
      * Remarks:
@@ -125,7 +125,7 @@ apf.DataAction = function(){
      * Note: APF understands the status codes specified in RFC4918 for the locking implementation
      *       {@link http://tools.ietf.org/html/rfc4918#section-9.10.6}
      */
-     
+
     /**
      *  Start the specified action, does optional locking and can be offline aware
      *  - or for optimistic locking it will record the timestamp (a setting
@@ -163,11 +163,11 @@ apf.DataAction = function(){
                     context was specified.");
             }
             else {
-                apf.console.warn("Tried starting new action but no '" + name 
+                apf.console.warn("Tried starting new action but no '" + name
                     + "' action rule was found.");
             }
             //#endif
-            
+
             return false;
         }
 
@@ -200,7 +200,7 @@ apf.DataAction = function(){
             var curLock = this.$lock[name] = {
                     start      : bHasOffline && !apf.offline.onLine
                                     ? apf.offline.offlineTime
-                                    : new Date().getISOTime(),
+                                    : new Date().toISOString(),
                     stopped    : false,
                     xmlContext : xmlContext,
                     instr      : lockInstruction,
@@ -215,28 +215,28 @@ apf.DataAction = function(){
               callback : function(data, state, extra){
                     if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
                         return extra.tpModule.retry(extra.id);
-    
+
                     if (state == apf.SUCCESS) {
                         _self.dispatchEvent("locksuccess", apf.extend({
                             state   : extra.status,
                             bubbles : true
                         }, extra));
-    
+
                         curLock.retrieved = true; //@todo Record timeout here... think of method
-    
+
                         //Action was apparently finished before the lock came in, cancelling lock
                         if (curLock.stopped)
                             _self.$stopAction(name, true, curLock);
-    
+
                         //That's it we're ready to go...
                     }
                     else {
                         if (curLock.stopped) //If the action has terminated we just let it go
                             return; //Do we want to take away the event from the developer??
-    
+
                         //Cancel the action, because we didnt get a lock
                         fRollback.call(_self, xmlContext);
-                        
+
                         _self.dispatchEvent("lockfailed", apf.extend({
                             state   : extra.status,
                             bubbles : true
@@ -351,18 +351,18 @@ apf.DataAction = function(){
 
         //Get Rules from Array
         var rule = this.$actions && this.$actions.getRule(action, xmlNode);
-        if (!rule && this.$actions && apf.config.autoDisableActions 
+        if (!rule && this.$actions && apf.config.autoDisableActions
           && "action|change".indexOf(action) == -1) {
             apf.console.warn("Could not execute action '" + action + "'. \
               No valid action rule was found and auto-disable-actions is enabled");
-            
+
             return false;
         }
-        
+
         //#ifdef __WITH_LOCKING
         var curLock = this.$stopAction(action);
         //#endif
-        
+
         var newMultiple;
         if (multiple) {
             newMultiple = [];
@@ -396,15 +396,15 @@ apf.DataAction = function(){
             //Allow the action and arguments to be changed by the event
             if (this.dispatchEvent(ev.name, null, ev) === false)
                 return false;
-            
+
             delete ev.currentTarget;
         }
 
         //Call ActionTracker and return ID of Action in Tracker
-        var at      = this.getActionTracker(); 
+        var at      = this.getActionTracker();
         if (!at)// This only happens at destruction of apf
             return UndoObj;
-        
+
         var UndoObj = at.execute(ev);
         ev.xmlNode = UndoObj.xmlNode;
         ev.undoObj = UndoObj;
@@ -430,7 +430,7 @@ apf.DataAction = function(){
      */
     this.$executeSingleValue = function(atName, setName, xmlNode, value, getArgList){
         var xpath, args, rule = this.$getBindRule(setName, xmlNode);
-        
+
         //recompile bindrule to create nodes
         if (!rule) {
             //#ifdef __DEBUG
@@ -448,15 +448,15 @@ apf.DataAction = function(){
         ["valuematch", "match", "value"].each(function(type){
             if (!rule[type] || compiled)
                 return;
-            
+
             compiled = rule["c" + type]; //cvaluematch || (rule.value ? rule.cvalue : rule.cmatch);
             if (!compiled)
                 compiled = rule.compile(type);
-            
+
             if (compiled.type != 3)
                 compiled = null;
         });
-        
+
         //#ifdef __DEBUG
         if (!compiled)
             throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make apf Error
@@ -465,12 +465,12 @@ apf.DataAction = function(){
         var atAction, model, node,
             sel        = compiled.xpaths, //get first xpath
             shouldLoad = false;
-        
+
         if (sel[0] == "#" || sel[1] == "#") {
             var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                 xpathmode: 5
             })))(xmlNode);
-            
+
             model = m.model && m.model.$isModel && m.model;
             if (model) {
                 node  = model.queryNode(m.xpath);
@@ -482,7 +482,7 @@ apf.DataAction = function(){
                 xmlNode = m.model;
             }
             else {
-                
+
             }
 
             sel[1] = m.xpath;
@@ -523,7 +523,7 @@ apf.DataAction = function(){
                 if (model) {
                     if (!model.data)
                         model.load("<data />");
-    
+
                     xpath   = (model.getXpathByAmlNode(this) || ".")
                         + (xpath && xpath != "." ? "/" + xpath : "");
                     xmlNode = model.data;
@@ -535,7 +535,7 @@ apf.DataAction = function(){
                     xmlNode = this.dataParent.parent.selected || this.dataParent.parent.xmlRoot;
                     if (!xmlNode)
                         return false;
-                    
+
                     xpath = (this.dataParent.xpath || ".")
                         + (xpath && xpath != "." ? "/" + xpath : "");
                     shouldLoad = true;
@@ -544,7 +544,7 @@ apf.DataAction = function(){
 
             args = [xmlNode, value, xpath];
         }
-        
+
         if (getArgList) {
             return {
                 action : atAction,
@@ -554,13 +554,13 @@ apf.DataAction = function(){
 
         //Use Action Tracker
         var result = this.$executeAction(atAction, args, atName, xmlNode);
-        
+
         if (shouldLoad)
             this.load(xmlNode.selectSingleNode(xpath));
-        
+
         return result;
     };
-    
+
     /**
      * Changes the value of this element.
      * @action
@@ -576,17 +576,17 @@ apf.DataAction = function(){
 
         // #ifdef __WITH_DATABINDING
         //Not databound
-        if (!this.xmlRoot && !this.$createModel || !(this.$mainBind == "value" 
-          && this.hasFeature(apf.__MULTISELECT__) 
-            ? this.$attrBindings["value"] 
+        if (!this.xmlRoot && !this.$createModel || !(this.$mainBind == "value"
+          && this.hasFeature(apf.__MULTISELECT__)
+            ? this.$attrBindings["value"]
             : this.$hasBindRule(this.$mainBind))) {
         // #endif
-            if (!force && value === this.value 
+            if (!force && value === this.value
               || this.dispatchEvent("beforechange", {value : value}) === false)
                 return false;
 
             //@todo in theory one could support actions
-            //@todo disabled below, because it gives unexpected behaviour when 
+            //@todo disabled below, because it gives unexpected behaviour when
             //form elements are used for layout and other UI alterations
             /*this.getActionTracker().execute({
                 action        : "setProperty",
@@ -598,23 +598,23 @@ apf.DataAction = function(){
             return this.dispatchEvent("afterchange", {value : value});
         // #ifdef __WITH_DATABINDING
         }
-        
-        var valueRule = this.$attrBindings["eachvalue"] && "eachvalue" 
+
+        var valueRule = this.$attrBindings["eachvalue"] && "eachvalue"
             || this.$bindings["value"] && "value"
             || this.$hasBindRule("caption") && "caption";
-          
-        if (value === (valueRule != "value" && (this.xmlRoot 
-          && this.$applyBindRule("value", this.xmlRoot, null, true)) 
+
+        if (value === (valueRule != "value" && (this.xmlRoot
+          && this.$applyBindRule("value", this.xmlRoot, null, true))
           || this.value))
             return false;
 
         this.$executeSingleValue("change", this.$mainBind, this.xmlRoot, value);
         // #endif
     };
-    
+
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("create-model", "actions");
-    
+
     /**
      * @attribute {Boolean} create-model whether the model this element connects
      * to is extended when the data pointed to does not exist. Defaults to true.
@@ -629,15 +629,15 @@ apf.DataAction = function(){
      *  <a:bar>
      *      <a:label>Name</a:label>
      *      <a:textbox value="[name]" required="true" />
-     * 
+     *
      *      <a:label>Address</a:label>
      *      <a:textarea value="[address]" />
-     * 
+     *
      *      <a:label>Country</a:label>
-     *      <a:dropdown 
-     *        value   = "[mdlForm::country]" 
-     *        model   = "countries.xml" 
-     *        each    = "[country]" 
+     *      <a:dropdown
+     *        value   = "[mdlForm::country]"
+     *        model   = "countries.xml"
+     *        each    = "[country]"
      *        caption = "[@name]" />
      *      <a:button action="submit">Submit</a:button>
      *  </a:bar>
@@ -646,9 +646,9 @@ apf.DataAction = function(){
     this.$propHandlers["create-model"] = function(value){
         this.$createModel = value;
     };
-    
+
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        if (typeof this["create-model"] == "undefined" 
+        if (typeof this["create-model"] == "undefined"
           && !this.$setInheritedAttribute("create-model")) {
             this.$createModel = true;
         }
