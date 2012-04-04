@@ -104,7 +104,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
                         // fall back to break
                     }
-                    else if ((e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
+                    else if (e.keyCode == 32 || (e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
                             (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {       
                             // chillax, then fire--necessary for rapid key strokes
                             setTimeout(function() {
