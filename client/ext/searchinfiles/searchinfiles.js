@@ -77,28 +77,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             trFiles.addEventListener("afterselect", _self.setSearchSelection);
             _self.setSearchSelection();
         };
-        
-        trSFHbox.addEventListener("afterrender", function(){
-            trSFResult.addEventListener("afterselect", function(e) {
-                var path,
-                    root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
-                    node = trSFResult.selected,
-                    line = 0,
-                    text = "";
-                if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
-                    return;
-                if (node.tagName == "d:excerpt") {
-                    path = node.parentNode.getAttribute("path");
-                    line = node.getAttribute("line");
-                    text = node.parentNode.getAttribute("query");
-                }
-                else {
-                    path = node.getAttribute("path");
-                    text = node.getAttribute("query");
-                }
-                editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
-            });
-        });
 
         txtSFFind.addEventListener("keydown", function(e) {
             switch (e.keyCode){
@@ -222,6 +200,25 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
+                trSFResult.addEventListener("afterselect", function(e) {
+                    var root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
+                        node = trSFResult.selected,
+                        line = 0,
+                        text = "",
+                        path;
+                    if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
+                        return;
+                    if (node.tagName == "d:excerpt") { // clicking on a line excerpt
+                        path = node.parentNode.getAttribute("path");
+                        line = node.getAttribute("line");
+                        text = node.parentNode.getAttribute("query");
+                    }
+                    else { // clicking on filename
+                        path = node.getAttribute("path");
+                    }
+                    
+                    editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
+                });
             });
 
             this.$panel.addEventListener("afterclose", function(){
