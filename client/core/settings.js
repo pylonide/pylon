@@ -28,11 +28,11 @@ module.exports = {
     saveToFile : function() {
         var data = this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "";
         if (ide.onLine) {
-            ide.send(JSON.stringify({
+            ide.send({
                 command: "settings",
                 action: "set",
                 settings: data
-            }));
+            });
             ide.dispatchEvent("track_action", {
                 type: "save settings",
                 settings: data
