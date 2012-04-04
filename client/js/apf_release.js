@@ -1717,13 +1717,8 @@ for(j=0,l2=nodes.length;j<l2;j++){nodes[j].dispatchEvent("DOMNodeInsertedIntoDoc
 waitQueue.pushUnique(options);return waitQueue;};this.$pauseParsing=function(amlNode,options){var waitQueue=this.$waitQueue[amlNode.$uniqueId];
 if(!waitQueue.$shouldWait){waitQueue.$shouldWait=0;}waitQueue.$shouldWait++;};this.$continueParsing=function(amlNode,options){if(!amlNode){amlNode=apf.document.documentElement;
 }var uId=amlNode.$uniqueId;if(uId in this.$waitQueue){var item=this.$waitQueue[uId];
-<<<<<<< HEAD
 if(item.$shouldWait&&--item.$shouldWait){return false;}var node=amlNode.parentNode;
 while(node&&node.nodeType==1){if(this.$waitQueue[node.$uniqueId]&&this.$waitQueue[node.$uniqueId].$shouldWait){return false;
-=======
-if(item.$shouldWait&&--item.$shouldWait){console.log(item.$shouldWait);return false;
-}var node=amlNode.parentNode;while(node&&node.nodeType==1){if(this.$waitQueue[node.$uniqueId]&&this.$waitQueue[node.$uniqueId].$shouldWait){return false;
->>>>>>> e7326c3... * Updated APF
 }node=node.parentNode;}var parseAmlNode=apf.all[uId];delete this.$waitQueue[uId];
 for(var i=0;i<item.length;i++){this.$parseState(parseAmlNode,item[i]);}}else{this.$parseState(amlNode,options||{});
 }delete this.$parseContext;};this.$parseState=function(amlNode,options){this.$callCount++;
@@ -2508,8 +2503,7 @@ return ostatus.match(re)?true:false;};this.insert=function(xmlNode,options){if(t
 }return apf.model.prototype.$insertFrom.call(this,xmlNode,options);}}var insertPoint=options.insertPoint||this.xmlRoot;
 if(this.dispatchEvent("beforeinsert",{xmlParentNode:insertPoint})===false){return false;
 }if(typeof options.copyAttributes=="undefined"){options.copyAttributes=true;}var newNode=apf.mergeXml(xmlNode,insertPoint,options);
-this.$isLoading=true;apf.xmldb.applyChanges("insert",insertPoint);this.$isLoading=false;
-if(this.selectable&&this.autoselect){if(this.xmlNode==newNode){this.$selectDefault(this.xmlNode);
+apf.xmldb.applyChanges("insert",insertPoint);if(this.selectable&&this.autoselect){if(this.xmlNode==newNode){this.$selectDefault(this.xmlNode);
 }}else{if(this.xmlNode==newNode){this.setProperty("root",this.xmlNode);}}if(this.$hasLoadStatus(insertPoint,"loading")){this.$setLoadStatus(insertPoint,"loaded");
 }this.dispatchEvent("afterinsert");};this.$booleanProperties["render-root"]=true;
 this.$supportedProperties.push("empty-message","loading-message","offline-message","render-root","smartbinding","bindings","actions");
@@ -2572,9 +2566,9 @@ for(var i=0;i<sNodes.length;i++){if(_self.$isTreeArch||_self.$withContainer){var
 var container=_self.$findContainer(htmlNode);htmlParent.appendChild(htmlNode);if(!apf.isChildOf(htmlNode,container,true)){htmlParent.appendChild(container);
 }sortNodes(sNodes[i],container);}else{htmlParent.appendChild(apf.xmldb.findHtmlNode(sNodes[i],_self));
 }}})(this.xmlRoot,this.$container);return options;};this.toggleSortOrder=function(){return this.resort({ascending:!this.$sort.get().ascending}).ascending;
-};this.getSortSettings=function(){return this.$sort.get();};this.$propHandlers.simpledata=function(value){if(value){this.getTraverseNodes=function(xmlNode){if(this.$sort&&!this.$isLoading){var nodes=apf.getArrayFromNodelist((xmlNode||this.xmlRoot).childNodes);
-return this.$sort.apply(nodes);}return(xmlNode||this.xmlRoot).childNodes;};this.getFirstTraverseNode=function(xmlNode){return this.getTraverseNodes()[0];
-};this.getLastTraverseNode=function(xmlNode){var nodes=this.getTraverseNodes();
+};this.getSortSettings=function(){return this.$sort.get();};this.$propHandlers.simpledata=function(value){if(value){this.getTraverseNodes=function(xmlNode){return(xmlNode||this.xmlRoot).childNodes;
+};this.getFirstTraverseNode=function(xmlNode){return(xmlNode||this.xmlRoot).childNodes[0];
+};this.getLastTraverseNode=function(xmlNode){var nodes=(xmlNode||this.xmlRoot).childNodes;
 return nodes[nodes.length-1];};this.getTraverseParent=function(xmlNode){if(!xmlNode.parentNode||xmlNode==this.xmlRoot){return false;
 }return xmlNode.parentNode;};}else{delete this.getTraverseNodes;delete this.getFirstTraverseNode;
 delete this.getLastTraverseNode;delete this.getTraverseParent;}};this.getTraverseNodes=function(xmlNode){if(this.$sort){var nodes=apf.getArrayFromNodelist((xmlNode||this.xmlRoot).selectNodes(this.each));
@@ -2606,10 +2600,9 @@ this.$empty.style.height=(lastHeight&&(!extH||extH=="auto")&&className!="empty")
 }var empty=this.$getLayoutNode("empty","caption",this.$empty);if(empty){apf.setNodeValue(empty,msg||"");
 }};this.$removeClearMessage=function(){if(!this.$empty){this.$empty=document.getElementById("empty"+this.$uniqueId);
 }if(this.$empty&&this.$empty.parentNode){this.$empty.parentNode.removeChild(this.$empty);
-}};this.$load=function(XMLRoot){apf.xmldb.addNodeListener(XMLRoot,this);this.$isLoading=true;
-var length=this.getTraverseNodes(XMLRoot).length;if(!this.renderRoot&&!length){return this.clear(null,null,true);
-}var nodes=this.$addNodes(XMLRoot,null,null,this.renderRoot,null,0,"load");this.$fill(nodes);
-this.$isLoading=false;if(this.selectable){if(this["default"]){this.select(this["default"]);
+}};this.$load=function(XMLRoot){apf.xmldb.addNodeListener(XMLRoot,this);var length=this.getTraverseNodes(XMLRoot).length;
+if(!this.renderRoot&&!length){return this.clear(null,null,true);}var nodes=this.$addNodes(XMLRoot,null,null,this.renderRoot,null,0,"load");
+this.$fill(nodes);if(this.selectable){if(this["default"]){this.select(this["default"]);
 }else{if(this.autoselect){if(!this.selected){if(this.renderRoot){this.select(XMLRoot,null,null,null,true);
 }else{if(nodes.length){this.$selectDefault(XMLRoot);}}}}else{this.clearSelection(true);
 var xmlNode=this.renderRoot?this.xmlRoot:this.getFirstTraverseNode();if(xmlNode){this.setCaret(xmlNode);
@@ -3601,11 +3594,10 @@ apf.insertHtmlNode(this.$getLayoutNode("loading"),container);}};this.$removeLoad
 }if(this.$timers){clearTimeout(this.$timers[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]);
 }var htmlNode=apf.xmldb.getHtmlNode(xmlNode,this);if(htmlNode){this.$getLayoutNode("item","container",htmlNode).innerHTML="";
 this.$setStyleClass(htmlNode,"",["loading"]);}};this.$extend=function(xmlNode,container,immediate,callback){if(!this.$hasLoadStatus(xmlNode,"potential")){return;
-}var rule=this.$getBindRule("insert",xmlNode),_self=this,xmlContext=rule&&rule.match?(rule.cmatch||rule.compile("match"))(xmlNode):xmlNode;
+}var rule=this.$getBindRule("insert",xmlNode),xmlContext=rule&&rule.match?(rule.cmatch||rule.compile("match"))(xmlNode):xmlNode;
 if(rule&&xmlContext){this.$setLoadStatus(xmlNode,"loading");var _self=this;(this.$timers||(this.$timers={}))[xmlNode.getAttribute(apf.xmldb.xmlIdTag)]=$setTimeout(function(){_self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode,_self),"loading");
-},100);if(rule.get){this.getModel().$insertFrom(rule.getAttribute("get"),{xmlNode:xmlContext,insertPoint:xmlContext,amlNode:this,callback:function(data,state,extra){if(state!=apf.SUCCESS){_self.$setLoadStatus(xmlNode,"potential");
-_self.$removeLoading(xmlNode);_self.slideToggle(apf.xmldb.getHtmlNode(xmlNode,_self),2,true);
-}if(callback){callback(data,state,extra);}}});}else{if(this.$applyBindRule("insert",xmlNode)){this.insert(data,{insertPoint:xmlContext});
+},100);if(rule.get){this.getModel().$insertFrom(rule.getAttribute("get"),{xmlNode:xmlContext,insertPoint:xmlContext,amlNode:this,callback:callback});
+}else{if(this.$applyBindRule("insert",xmlNode)){this.insert(data,{insertPoint:xmlContext});
 }}}else{if(!this.prerender){this.$setLoadStatus(xmlNode,"loaded");this.$removeLoading(xmlNode);
 xmlUpdateHandler.call(this,{action:"insert",xmlNode:xmlNode,result:this.$addNodes(xmlNode,container,true,null,null,null,"extend"),anim:!immediate});
 }}};function xmlUpdateHandler(e){if(e.action=="move-away"){this.$fixItem(e.xmlNode,apf.xmldb.findHtmlNode(e.xmlNode,this),true);
@@ -5212,9 +5204,9 @@ if(this.dispatchEvent("error",apf.extend({error:oError,state:state,bubbles:true}
 if(callback){callback();}}this.$queueNext(UndoObj,callback);};this.$addToQueue=function(UndoObj,undo,isGroup){if(!isGroup&&this.$execstack.length&&!UndoObj.state&&this.$execstack[this.$execstack.length-1].undoObj==UndoObj){this.$execstack.length--;
 return;}var idx,undoObj,qItem;if(isGroup){var undoObj,qItem=this.$execstack.shift();
 for(var i=0;i<UndoObj.length;i++){undoObj=UndoObj[i];this.$execstack.unshift({undoObj:(undoObj.tagName?undoObj:new apf.UndoData(undoObj,this)).preparse(undo,this),undo:undo});
-}if(qItem){this.$execstack.unshift(qItem);}if(!this.$execstack[0].undoObj.state){this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo,this);
-}return;}qItem={undoObj:UndoObj.preparse(undo,this),undo:undo};this.$execstack.push(qItem)-1;
-if(this.$execstack.length==1&&this.realtime){UndoObj.saveChange(undo,this);}};this.$queueNext=function(UndoObj,callback){if(!this.$execstack[0]||this.$execstack[0].undoObj!=UndoObj){throw new Error(apf.formatErrorString(0,this,"Executing Next                 action in queue","The execution stack was corrupted. This is                 a fatal error. The application should be restarted. You will                 lose all your changes. Please contact the administrator."));
+}if(qItem){this.$execstack.unshift(qItem);}return;}qItem={undoObj:UndoObj.preparse(undo,this),undo:undo};
+this.$execstack.push(qItem)-1;if(this.$execstack.length==1&&this.realtime){UndoObj.saveChange(undo,this);
+}};this.$queueNext=function(UndoObj,callback){if(!this.$execstack[0]||this.$execstack[0].undoObj!=UndoObj){throw new Error(apf.formatErrorString(0,this,"Executing Next                 action in queue","The execution stack was corrupted. This is                 a fatal error. The application should be restarted. You will                 lose all your changes. Please contact the administrator."));
 }UndoObj.state=null;var lastItem=this.$execstack.shift();if(!this.$execstack[0]||lastItem==this.$lastExecStackItem){return;
 }this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo,this,callback);};
 }).call(apf.actiontracker.prototype=new apf.AmlElement());apf.aml.setElement("actiontracker",apf.actiontracker);
@@ -7916,10 +7908,10 @@ for(ns in oPropsSet){for(i in oPropsSet[ns]){aOut.push("<D:prop>",oPropsSet[ns][
 }}aOut.push("</D:set>");}bHasProps=false;for(ns in oPropsDel){bHasProps=true;break;
 }if(bHasProps){aOut.push("<D:remove><D:prop>");for(ns in oPropsDel){for(i=0,j=oPropsDel[ns].length;
 i<j;i++){aOut.push("<",oPropsDel[ns][i],' xmlns="',ns,'"/>');}}aOut.push("</D:prop></D:remove>");
-}aOut.push("</D:propertyupdate>");return aOut.join("");}function parsePropertyPackets(oXml,state,extra,callback){var status=parseInt(extra.status,10);
+}aOut.push("</D:propertyupdate>");return aOut.join("");}function parsePropertyPackets(oXml,state,extra,callback){var status=parseInt(extra.status);
 if(status==403||status==401||!oXml){return callback?callback.call(this,null,state,extra):notAuth.call(this);
-}if(typeof oXml=="string"){oXml=apf.getXml(oXml);}var aResp=$xmlns(oXml,"response",apf.webdav.NS.D);
-var aOut=[];if(aResp.length){this.$regVar("authenticated",true);}var sPath;for(var sa=[],data,i=0,j=aResp.length;
+}if(typeof oXml=="string"){oXml=apf.getXml(oXml);}var aResp=$xmlns(oXml,"response",apf.webdav.NS.D),aOut=[];
+if(aResp.length){this.$regVar("authenticated",true);}var sPath;for(var sa=[],data,i=0,j=aResp.length;
 i<j;i++){sPath=decodeURIComponent($xmlns(aResp[i],"href",apf.webdav.NS.D)[0].firstChild.nodeValue);
 if(sPath===extra.url){continue;}parseItem.call(this,aResp[i],data={});if(data.data){sa.push({toString:function(){return this.v;
 },data:data.data,v:(data.data.type=="file"?1:0)+""+data.data.name.toLowerCase()});
@@ -7927,7 +7919,7 @@ if(sPath===extra.url){continue;}parseItem.call(this,aResp[i],data={});if(data.da
 }function parseItem(oNode,extra){var NS=apf.webdav.NS,sPath=decodeURIComponent($xmlns(oNode,"href",NS.D)[0].firstChild.nodeValue.replace(/[\\\/]+$/,"")),sName=sPath.split("/").pop(),bHidden=(sName.charAt(0)==".");
 if(!this.$showHidden&&bHidden){return"";}var t,oItem,sType=$xmlns(oNode,"collection",NS.D).length>0?"folder":"file",aCType=$xmlns(oNode,"getcontenttype",NS.D),aExec=$xmlns(oNode,"executable",NS.lp2);
 oItem=this.$fsCache[sPath]=apf.extend(this.$fsCache[sPath]||{},{path:sPath,type:sType,size:parseInt(sType=="file"?(t=$xmlns(oNode,"getcontentlength",NS.lp1)).length?t[0].firstChild.nodeValue:0:0),name:sName,contentType:(sType=="file"&&aCType.length?aCType[0].firstChild.nodeValue:""),creationDate:(t=$xmlns(oNode,"creationdate",NS.lp1)).length?t[0].firstChild.nodeValue:"",lastModified:(t=$xmlns(oNode,"getlastmodified",NS.lp1)).length?t[0].firstChild.nodeValue:"",etag:(t=$xmlns(oNode,"getetag",NS.lp1)).length?t[0].firstChild.nodeValue:"",lockable:($xmlns(oNode,"locktype",NS.D).length>0),executable:(aExec.length>0&&aExec[0].firstChild.nodeValue=="T")});
-if(extra){extra.data=oItem;}return oItem.xml="<"+sType+' path="'+apf.escapeXML(sPath)+'" type="'+sType+'" size="'+oItem.size+'" name="'+apf.escapeXML(oItem.name)+'" contenttype="'+oItem.contentType+'" modifieddate="'+oItem.lastModified+'" creationdate="'+oItem.creationDate+'" lockable="'+oItem.lockable.toString()+'" hidden="'+bHidden.toString()+'" executable="'+oItem.executable.toString()+'"/>';
+if(extra){extra.data=oItem;}return oItem.xml="<"+sType+" path='"+sPath+"'  type='"+sType+"' size='"+oItem.size+"' name='"+oItem.name+"' contenttype='"+oItem.contentType+"' modifieddate='"+oItem.lastModified+"' creationdate='"+oItem.creationDate+"' lockable='"+oItem.lockable.toString()+"' hidden='"+bHidden.toString()+"' executable='"+oItem.executable.toString()+"'/>";
 }this.exec=function(method,args,callback){var cb=function(data,state,extra){extra.originalArgs=args;
 if(typeof args[args.length-1]=="function"){args[args.length-1](data,state,extra);
 }callback&&callback(data,state,extra);};switch(method){case"login":case"authenticate":this.authenticate(args[0],args[1],cb);
