@@ -848,7 +848,7 @@ apf.model = function(struct, tagName){
                 return this.$loadFrom(xmlNode, options);
         }
 
-        if (this.ownerDocument && this.ownerDocument.$domParser.$shouldWait) {
+        if (this.ownerDocument && this.ownerDocument.$domParser.$isPaused(this)) {
             //if (!this.$queueLoading) {
                 var _self = this;
                 this.data = xmlNode; //@todo expirement //this.$copy = 
@@ -856,7 +856,7 @@ apf.model = function(struct, tagName){
                 
                 this.$queueLoading = true;
                 apf.queue.add("modelload" + this.$uniqueId, function(){
-                    if (_self.ownerDocument && _self.ownerDocument.$domParser.$shouldWait)
+                    if (_self.ownerDocument && _self.ownerDocument.$domParser.$isPaused(_self))
                         apf.queue.add("modelload" + _self.$uniqueId, arguments.callee);
                     else {
                         _self.load(xmlNode, options);
