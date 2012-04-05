@@ -72,7 +72,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     init : function(amlNode){
         var _self = this;
-
+        var ace;
+        
         txtQuickSearch.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
@@ -100,7 +101,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     _self.navigateList("last");
                     break;
                 default:
-                    var ace = _self.$getAce();
+                    ace = _self.$getAce();
                     if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
                         // fall back to break
                     }
@@ -116,6 +117,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
         
         txtQuickSearch.addEventListener("keyup", function(e) {
+            ace = _self.$getAce();
             switch (e.keyCode) {
                 case 8: // BACKSPACE
                     if (ace.getSession().getDocument().getLength() > MAX_LINES && txtQuickSearch.getValue().length < 3) { 
@@ -218,7 +220,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (newCount < 1) {
                 newCount = String(ranges.length);
             }
-            
             oIter.innerHTML = String(newCount); 
         }
         else {
@@ -226,7 +227,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var cur = this.currentRange;
             if (cur) {
                 // sort ranges by position in the current document
-                ranges.sort(cur.compareRange.bind(cur));
+                //ranges.sort(cur.compareRange.bind(cur));
                 var range;
                 var start = cur.start;
                 var end = cur.end;
@@ -238,7 +239,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     }
                 }
             }
-            oIter.innerHTML = String(crtIdx++);
+            oIter.innerHTML = String(++crtIdx);
         }
     
         oTotal.innerHTML = "of " + ranges.length;
@@ -419,7 +420,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         ace.findPrevious();
         this.currentRange = ace.selection.getRange();
-        this.updateCounter();
+        this.updateCounter(true);
         return false;
     },
 

@@ -323,7 +323,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var cur = this.currentRange;
         if (cur) {
             // sort ranges by position in the current document
-            ranges.sort(cur.compareRange.bind(cur));
+            //ranges.sort(cur.compareRange.bind(cur));
             var range;
             var start = cur.start;
             var end = cur.end;
@@ -337,7 +337,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         }
         
         
-        oIter.innerHTML = String(crtIdx++);
+        oIter.innerHTML = String(++crtIdx);
         oTotal.innerHTML = "of " + ranges.length;
     },
     
