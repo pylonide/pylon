@@ -1822,12 +1822,12 @@ var Document = function(text) {
     };
 
     this.insert = function(position, text) {
-        if (text.length == 0)
+        if (!text || text.length === 0)
             return position;
 
         position = this.$clipPosition(position);
 
-        if (this.getLength() <= 1)
+        if (this.getLength() >= 1)
             this.$detectNewLine(text);
 
         var lines = this.$split(text);

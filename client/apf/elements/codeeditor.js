@@ -125,8 +125,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
     this.$propHandlers["value"] = function(value){ //@todo apf3.0 add support for the range object as a value
-        var doc, key,
-            _self = this;
+        var doc, key;
+        var _self = this;
 
         if (this.caching)
             key = this.$getCacheKey(value);
@@ -164,6 +164,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.hasValue = true;
         }
 
+        if (!doc.$hasModeListener) {
+            doc.$hasModeListener = true;
+            doc.on("loadmode", function(e) {
+                _self.dispatchEvent("loadmode", e);
+            });
+        }
         doc.setMode(_self.getMode(_self.syntax));
 
         doc.setTabSize(parseInt(_self.tabsize, 10));
