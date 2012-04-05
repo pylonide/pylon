@@ -145,13 +145,13 @@ module.exports = ext.register("ext/watcher/watcher", {
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
             path = path.replace(/\/$/, "");
 
-            if (_self.expandedPaths[path])
+            if (_self.expandedPaths[path]) {
                 return ide.dispatchEvent("treechange", {
                     path    : path,
                     files   : message.files
                 });
             }
-            if (!pages.some(function (page) {
+            if (!pages.some(function(page) {
                 return page.$model.data.getAttribute("path") == path;
             }))
                 return;
