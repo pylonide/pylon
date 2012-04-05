@@ -13,44 +13,37 @@ var code = require("ext/code/code");
 var Editors = require("ext/editors/editors");
 var markup = require("text!ext/html/html.xml");
 
-var mimeTypes = [
-    "text/html",
-    "application/xhtml+xml",
-    "text/javascript",
-    "text/plain",
-    "application/xml"
+var previewExtensions = [
+    "htm", "html", "xhtml",
+    "conf", "log", "text", "txt",
+    "xml", "xsl"
 ];
 
 module.exports = ext.register("ext/html/html", {
-    name    : "HTML Editor",
-    dev     : "Ajax.org",
-    type    : ext.GENERAL,
-    alone   : true,
-    deps    : [code],
-    markup  : markup,
-    nodes   : [],
+    name  : "HTML Editor",
+    dev   : "Ajax.org",
+    type  : ext.GENERAL,
+    alone : true,
+    deps  : [code],
+    markup: markup,
+    nodes : [],
 
     hook : function(){
         var _self = this;
-        var tabs = tabEditors;
 
-        tabs.addEventListener("afterswitch", function(e){
-            if (e.nextPage) {
-            /*var ext = e.nextPage.id.split(".").pop();
-
-            if (ext == ".html" || ext == ".shtml"
-              || ext == ".js" || ext == ".txt"
-              || ext == ".xml") {*/
-                ext.initExtension(_self);
-                _self.enable();
-            /*}
-            else {
-                _self.disable();
-            }*/
-            }
-            else {
-                _self.disable();
-            }
+        tabEditors.addEventListener("afterswitch", function(e){
+            _self.afterSwitchOrOpen(e.nextPage);
+        });
+        ide.addEventListener("afteropenfile", function(e){
+            // Only listen for event from editors.js
+            if (e.editor && e.node.$model)
+                _self.afterSwitchOrOpen(e.node);
+        });
+        ide.addEventListener("updatefile", function(e) {
+            var page = tabEditors.getPage(e.newPath);
+            if (!page || !page.$active)
+                return;
+            _self.afterSwitchOrOpen(page);
         });
 
         tabs.addEventListener("DOMNodeRemoved", function(){
@@ -63,14 +56,29 @@ module.exports = ext.register("ext/html/html", {
         });
     },
 
+    afterSwitchOrOpen : function(node) {
+        var name = node.$model.data.getAttribute("name");
+        var fileExtension = name.split(".").pop();
+
+        if (previewExtensions.indexOf(fileExtension) > -1) {
+            ext.initExtension(this);
+            this.page = node;
+            this.enable();
+        }
+        else {
+            this.disable();
+        }
+    },
+
     init : function() {
         //Append the button bar to the main toolbar
         var nodes = barHtmlMode.childNodes;
         var node;
         for (var i = nodes.length - 1; i >= 0; i--) {
             node = ide.barTools.appendChild(nodes[0]);
-            if (node.nodeType != 1)
+            if (node.nodeType != 1) {
                 continue;
+            }
             this.nodes.push(node);
         }
 
@@ -114,5 +122,4 @@ module.exports = ext.register("ext/html/html", {
         this.nodes = [];
     }
 });
-
 });

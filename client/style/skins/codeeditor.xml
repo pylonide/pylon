@@ -53,7 +53,7 @@
         }
 
         .ace_text-layer {
-          font-family: Monaco, "Courier New", monospace;
+          font-family: Monaco, Menlo, Consolas, monospace;
           color: black;
         }
 

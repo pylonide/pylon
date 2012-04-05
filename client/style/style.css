@@ -4,7 +4,7 @@ HTML {
 }
 BODY {
     background-color : #fefefe;
-    font-family      : "Arial";
+    font-family      : Arial, Helvetica, sans-serif;
     color            : #222222;
     margin           : 0;
     padding          : 0 ;
@@ -38,7 +38,7 @@ BODY {
 .alertMsg {
     font-size   : 14px;
     color       : #333333;
-    font-family : Arial;
+    font-family : Arial, Helvetica, sans-serif;
     line-height : 16px;
 }
 

@@ -60,7 +60,7 @@ define(function(require, exports, module) {
             window.onerror = function(m, u, l) {
                 if (window.console)
                     console.log("An error occurred, the Cloud9 system admin has been notified.");
-                apf.ajax("/debug", {
+                apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
                     data        : apf.serialize({
@@ -75,7 +75,7 @@ define(function(require, exports, module) {
 
             //Catch all APF Routed errors
             apf.addEventListener("error", function(e){
-                apf.ajax("/debug", {
+                apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
                     data        : apf.serialize({
@@ -109,7 +109,7 @@ define(function(require, exports, module) {
         // fire up the socket connection:
         var options = {
             "remember transport": false,
-            transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
+            transports:  [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
             reconnect: false,
             resource: window.cloud9config.socketIoUrl,
             "connect timeout": 500,
@@ -139,7 +139,7 @@ define(function(require, exports, module) {
             // lost our session. Now we do an HTTP request to fetch the current
             // session ID and update the Cloud9 config with it. Also, re-attach
             // with the backend.
-            apf.ajax("/reconnect", {
+            apf.ajax((window.location.pathname + "/$reconnect").replace(/\/\//g, "/"), {
                 callback: function(data, state, extra) {
                     ide.sessionId = data;
                     ide.socketConnect();
@@ -162,12 +162,14 @@ define(function(require, exports, module) {
         };
 
         ide.socketMessage = function(message) {
-            try {
-                message = JSON.parse(message);
-            }
-            catch(e) {
-                window.console && console.error("Error parsing socket message", e, message);
-                return;
+            if (typeof message == "string") {
+                try {
+                    message = JSON.parse(message);
+                }
+                catch(e) {
+                    window.console && console.error("Error parsing socket message", e, "message:", message);
+                    return;
+                }
             }
 
             if (message.type == "attached")

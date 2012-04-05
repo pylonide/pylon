@@ -89,7 +89,7 @@ exports.main = function(options) {
     var sessionStore = new MemoryStore({ reapInterval: -1 });
     server.use(Connect.session({
         store: sessionStore,
-        key: "cloud9.sid"
+        key: "cloud9.sid." + port
     }));
 
     server.use(ideProvider(projectDir, server, sessionStore));
@@ -102,7 +102,10 @@ exports.main = function(options) {
     if (user)
         process.setuid(user);
 
-    server.listen(port, ip);
+    if (ip.length === 0)
+        server.listen(port);
+    else
+        server.listen(port, ip);
 };
 
 process.on("uncaughtException", function(e) {

@@ -501,7 +501,7 @@ module.exports = ext.register("ext/editors/editors", {
                 fromHandler.disable();
             toHandler.enable();
         }
-
+        
         var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
         /*if (window.history.pushState) {
             var p = location.pathname.split("/");
@@ -513,6 +513,27 @@ module.exports = ext.register("ext/editors/editors", {
         apf.history.setHash("!" + path);
         
         toHandler.$itmEditor.select();
+        
+        var fileExtension = (path || "").split(".").pop();
+        var editor = this.fileExtensions[fileExtension] 
+          && this.fileExtensions[fileExtension][0] 
+          || this.fileExtensions["default"];
+
+        if (!editor) {
+            util.alert(
+                "No editor is registered",
+                "Could not find an editor to display content",
+                "There is something wrong with the configuration of your IDE. No editor plugin is found.");
+            return;
+        }
+
+        if (!editor.inited)
+            this.initEditor(editor);
+        
+        this.currentEditor = editor;
+        if(editor.ceEditor)
+            editor.ceEditor.focus();
+
         //toHandler.$rbEditor.select();
 
         /*if (self.TESTING) {}
@@ -711,9 +732,13 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("afterreload", function(e) {
-            var doc         = e.doc,
-                acesession  = doc.acesession,
-                sel         = acesession.getSelection();
+            var doc         = e.doc;
+            var acesession  = doc.acesession;
+            
+            if(!acesession)
+                return;
+                
+            var sel         = acesession.getSelection();
 
             sel.selectAll();
             acesession.getUndoManager().ignoreChange = true;

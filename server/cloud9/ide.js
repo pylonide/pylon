@@ -53,6 +53,10 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         extra: options.extra,
         remote: options.remote
     };
+    // precalc regular expressions:
+    this.indexRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
+    this.reconnectRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
+    this.workspaceRe = new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
     this.$users = {};
     this.nodeCmd = process.argv[0];
@@ -146,7 +150,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabsessions/tabsessions",
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker"
+    "ext/colorpicker/colorpicker",
+    "ext/minimap/minimap"
     //"ext/acebugs/acebugs"
 ];
 
@@ -155,11 +160,9 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 (function () {
 
     this.handle = function(req, res, next) {
-        var path = Url.parse(req.url).pathname;
-
-        this.indexRe = this.indexRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
-        this.reconnectRe = this.reconnectRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/reconnect$");
-        this.workspaceRe = this.workspaceRe || new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
+        if (!req.parsedUrl)
+            req.parsedUrl = Url.parse(req.url);
+        var path = req.parsedUrl.pathname;
 
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
@@ -214,9 +217,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
-            var aceScripts =
-                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/ace-uncompressed.js"></script>\n' +
-                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/mode-javascript.js"></script>'
+            var aceScripts = '<script type="text/javascript" data-ace-base="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n';
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,
@@ -286,6 +287,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
             this.onUserCountChange();
             this.emit("userJoin", user);
         }
+        return user;
     };
 
     this.getUser = function(req) {
@@ -355,6 +357,10 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
         //for (var u in this.$users)
         //    console.log("IDE USER", this.$users[u].uid, this.$users[u].clients);
         this.$users[username] && this.$users[username].broadcast(msg);
+    };
+
+    this.canShutdown = function() {
+        return this.workspace.canShutdown();
     };
 
     this.dispose = function(callback) {

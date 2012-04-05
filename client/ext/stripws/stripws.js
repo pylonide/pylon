@@ -61,12 +61,18 @@ module.exports = ext.register("ext/stripws/stripws", {
                                 strip();
                             }
                         });
+        var menuItemClone = menuItem.cloneNode(true);
+
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(menuItem)
+            ide.mnuEdit.appendChild(new apf.divider()),
+            ide.mnuEdit.appendChild(menuItem),
+            menuItemClone
         );
-        
-        require("ext/statusbar/statusbar").addToolsItem(menuItem.cloneNode(true));
-        
+
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            e.ext.addToolsItem(menuItemClone, 2);
+        });
+
         ide.addEventListener("beforefilesave", function(data) {
             var node =
                 extSettings.model.data.selectSingleNode("editors/code/@stripws");

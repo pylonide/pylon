@@ -15,21 +15,10 @@ var Range = require("ace/range").Range;
 
 var origArrowTop;
 var Colors = {};
+
+var Regexes = require("ext/colorpicker/colorpicker_regex");
+
 var namedColors = apf.color.colorshex;
-var namedPart = Object.keys(namedColors).join("|");
-var ColorMatches = {
-    rgb: "rgba?\\(\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*,\\s*\\b([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\b\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)",
-    rgb_alt: "rgba?\\(\\s*\\b(\\d{1,2}|100)%\\s*,\\s*\\b(\\d{1,2}|100)%\\s*,\\s*\\b(\\d{1,2}|100)%\\s*(:?\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)",
-    hsl: "hsl\\(\\s*\\b([1-2][0-9][0-9]|360|3[0-5][0-9]|[1-9][0-9]|[0-9])\\b\\s*,\\s*\\b(\\d{1,2}|100)%\\s*,\\s*\\b(\\d{1,2}|100)%\\)"
-};
-var colorsRe = new RegExp("(#([0-9A-Fa-f]{3,6})\\b)"
-    + "|\\b(" + namedPart + ")\\b"
-    + "|(" + ColorMatches.rgb + ")"
-    + "|(" + ColorMatches.rgb_alt + ")"
-    + "|(" + ColorMatches.hsl + ")", "gi");
-var RGBRe = new RegExp("(?:" + ColorMatches.rgb + ")"
-    + "|(?:" + ColorMatches.rgb_alt + ")");
-var HSLRe = new RegExp(ColorMatches.hsl);
 
 var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
@@ -171,7 +160,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         // detect and return a list of colors found on a line from an ACE document.
         function detectColors(pos, line) {
-            var colors = line.match(colorsRe);
+            var colors = line.match(Regexes.isColor);
             if (!colors || !colors.length)
                 return [];
             var start, end;
@@ -237,12 +226,26 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             _self.hideColorTooltips(e.editor);
         });
 
-        // hide all markers and the colorpicker upon tab-/ editorswitch
-        ide.addEventListener("beforeeditorswitch", function() {
+        function switchOrClose() {
             if (_self.menu && _self.menu.visible)
                 _self.menu.hide();
             else
                 _self.hideColorTooltips();
+        }
+        // hide all markers and the colorpicker upon tab-/ editorswitch
+        ide.addEventListener("beforeeditorswitch", function() {
+            switchOrClose();
+        });
+
+        ide.addEventListener("closefile", function(e) {
+            var currentPage = tabEditors.getPage();
+            if (currentPage) {
+                if (e.page.name === currentPage.name)
+                    switchOrClose();
+            }
+            else {
+                switchOrClose();
+            }
         });
     },
 
@@ -329,8 +332,8 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         
         if (typeof namedColors[color] != "undefined")
             color = apf.color.fixHex(namedColors[color].toString(16));
-        var rgb = color.match(RGBRe);
-        var hsb = color.match(HSLRe);
+        var rgb = color.match(Regexes.isRgb);
+        var hsb = color.match(Regexes.isHsl);
         if (rgb && rgb.length >= 3) {
             ret.rgb = apf.color.fixRGB({
                 r: rgb[1], 
@@ -472,7 +475,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var m;
         var colors = [];
         for (var i = 0, l = lines.length; i < l; ++i) {
-            if (!(m = lines[i].match(colorsRe)))
+            if (!(m = lines[i].match(Regexes.isColor)))
                 continue;
             colors = colors.concat(m);
         }
@@ -525,7 +528,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             newColor = "#" + color;
         }
         else if (a.color.type == "rgb") {
-            var m = a.current.match(RGBRe);
+            var m = a.current.match(Regexes.isRgb);
             var regex = new RegExp("(rgba?)\\(\\s*" + m[1] + "\\s*,\\s*" + m[2] 
                 + "\\s*,\\s*" + m[3] + "(\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)", "i");
             if (!line.match(regex))
@@ -536,7 +539,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             });
         }
         else if (a.color.type == "hsb") {
-            var m = a.current.match(HSLRe);
+            var m = a.current.match(Regexes.isHsl);
             var regex = new RegExp("hsl\\(\\s*" + m[1] + "\\s*,\\s*" + m[2] 
                 + "\\s*,\\s*" + m[3] + "\\s*\\)", "i");
             if (!line.match(regex))

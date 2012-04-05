@@ -3,7 +3,6 @@
  *
  * @TODO
  * - Disabling the extension doesn't call the disable() function
- * - Exit zen mode when doing any keybinding operation (except openfiles, quicksearch, gotoline)
  * - While animating, disable ability to toggle zen mode (better: cancel and reverse the operation)
  *
  * @copyright 2011, Ajax.org B.V.
@@ -27,15 +26,17 @@ module.exports = ext.register("ext/zen/zen", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    skin     : {
-        id   : "zen",
-        data : skin,
-        "media-path" : ide.staticPrefix + "/style/images/",
+    skin     : {
+        id   : "zen",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/style/images/",
         "icon-path"  : ide.staticPrefix + "/style/icons/"
-    },
+    },
     isFocused : false,
     neverShown : true,
 
+    defaultOffset : 11,
+    offsetWidth : 11,
     initialWidth : 0.70,
 
     handleLeftMove : false,
@@ -50,14 +51,6 @@ module.exports = ext.register("ext/zen/zen", {
 
     hook : function(){
         var _self = this;
-        ide.addEventListener("openfile", function() {
-            if (_self.neverShown) {
-                setTimeout(function() {
-                    ext.initExtension(_self);
-                }, 1000);
-                _self.neverShown = false;
-            }
-        });
 
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/zen");
@@ -70,9 +63,32 @@ module.exports = ext.register("ext/zen/zen", {
             xmlSettings.nodeValue = _self.initialWidth;
             return true;
         });
+
+        ide.addEventListener("minimap.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateButtonPosition();
+        });
+        
+        tabEditors.addEventListener("afterswitch", function(e){
+            if (e.nextPage.type === "ext/imgview/imgview")
+                return;
+
+            if (!_self.inited) {
+                // Wait a moment for the editor to get into place
+                setTimeout(function() {
+                    ext.initExtension(_self);
+                });
+            }
+        });
     },
 
-    init : function(amlNode){
+    init : function(){
+        var _self = this;
+
         // Create all the elements used here
         this.animateZen = document.createElement("div");
         this.animateZen.setAttribute("id", "animateZen");
@@ -117,22 +133,34 @@ module.exports = ext.register("ext/zen/zen", {
             visible: false
         }));
 
-        // @TODO adjust position based on scrollbar width
-        if (!(apf.isChrome && apf.versionChrome >= 14) && !(apf.isSafari && apf.versionSafari >= 5))
-            btnZenFullscreen.setAttribute("right", "26");
-
-        if (apf.isWin)
-            btnZenFullscreen.setAttribute("right", "28");
+        setTimeout(function() {
+            _self.updateButtonPosition();
+        });
 
         this.animateZen = document.getElementById("animateZen");
         this.animateZenPosition = document.getElementById("animateZenPosition");
 
-        var _self = this;
         vbZen.addEventListener("resize", function(e) {
             if (_self.isFocused) {
                 _self.calculatePositions();
             }
         });
+
+        ide.addEventListener("exitfullscreen", function() {
+            _self.escapeFromZenMode(false, true);
+        });
+    },
+
+    updateButtonPosition : function() {
+        if (!window["btnZenFullscreen"])
+            return;
+
+        // Extra safe default width
+        var sbWidth = 20;
+        if (ceEditor.$editor)
+            sbWidth = ceEditor.$editor.renderer.scrollBar.width;
+
+        btnZenFullscreen.setAttribute("right", sbWidth + this.offsetWidth);
     },
 
     calculatePositions : function() {
@@ -228,7 +256,7 @@ module.exports = ext.register("ext/zen/zen", {
             shiftKey = e.htmlEvent.shiftKey;
 
         if (this.isFocused)
-            this.escapeFromZenMode(shiftKey);
+            this.escapeFromZenMode(shiftKey, false);
         else
             this.enterIntoZenMode(shiftKey);
     },
@@ -306,7 +334,6 @@ module.exports = ext.register("ext/zen/zen", {
                 setTimeout(function() {
                     if (editors.currentEditor && editors.currentEditor.amlEditor)
                         editors.currentEditor.amlEditor.focus();
-                    apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
 
@@ -368,8 +395,12 @@ module.exports = ext.register("ext/zen/zen", {
      * non-fullscreen state
      *
      * @param {boolean} slow Whether to slow down the animation
+     * @param {boolean} fromExitEvent Whether the call came from an "exitfullscreen" event
      */
-    escapeFromZenMode : function(slow) {
+    escapeFromZenMode : function(slow, fromExitEvent) {
+        if (this.isFocused === false)
+            return;
+
         var _self = this;
 
         btnZenFullscreen.setAttribute("class", "notfull");
@@ -413,9 +444,8 @@ module.exports = ext.register("ext/zen/zen", {
                 tabEditors.parentNode.$ext.style.position = "absolute";
 
                 setTimeout(function() {
-                    if (editors.currentEditor && editors.currentEditor.amlEditor)
+                    if (editors.currentEditor && editors.currentEditor.amlEditor && fromExitEvent === false)
                         editors.currentEditor.amlEditor.focus();
-                    apf.layout.forceResize(tabEditors.parentNode.$ext);
                 }, 100);
             });
 
@@ -594,7 +624,7 @@ module.exports = ext.register("ext/zen/zen", {
 
     disable : function(){
         if (this.isFocused)
-            this.escapeFromZenMode();
+            this.escapeFromZenMode(false, false);
         btnZenFullscreen.hide();
         this.nodes.each(function(item){
             item.disable();

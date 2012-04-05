@@ -49,7 +49,7 @@ module.exports = ext.register("ext/offline/offline", {
      */
     init : function(){
         var _self   = this;
-        var offline = this.offline = new Offline("cloud9", "/static/ext/offline/ping.txt");
+        var offline = this.offline = new Offline("cloud9", (window.location.pathname + "/$reconnect").replace(/\/\//g, "/"));
         var sync    = this.sync    = new Sync("cloud9");
 
         // preload the offline image programmatically:
@@ -114,10 +114,18 @@ module.exports = ext.register("ext/offline/offline", {
                 return false;
             }
         });
-
-        ide.addEventListener("afteronline", function(e){
+        
+        // make sure that ide.onLine is actual 1 here already
+        // because otherwise you'll run into timing issues, because some
+        // extensions do an additional check for ide.onLine !== 0 as well (like jsdav)
+        //
+        // if that extension handles the event faster than offline, you'll run into problemo's
+        ide.addEventListener("beforeonline", function () {
             stServerConnected.activate();
             ide.onLine = true;
+        });
+        
+        ide.addEventListener("afteronline", function(e){
             logobar.$ext.className = "c9-menu-bar";
 
             _self.bringExtensionsOnline();

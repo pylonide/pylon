@@ -1,14 +1,14 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:checkbox class="underlined" label="Enable JSHint"
+    <a:checkbox class="underlined" label="Enable JSHint Rules"
         checked="{[language/@jshint] != '' ? [language/@jshint] : 'true'}"
         value="[language/@jshint]" onclick="require('ext/language/language').setJSHint()" skin="checkbox_grey"/>
-    <a:checkbox class="underlined" label="Variable instance highlighting"
+    <a:checkbox class="underlined" label="Highlight Variable Instances"
         checked="{[language/@instanceHighlight] != '' ? [language/@instanceHighlight] : 'true'}"
         value="[language/@instanceHighlight]" onclick="require('ext/language/language').setInstanceHighlight()" skin="checkbox_grey"/>
-    <a:checkbox class="underlined" label="Mark undeclared variables"
+    <a:checkbox class="underlined" label="Mark Undeclared Variables"
         checked="{[language/@undeclaredVars] != '' ? [language/@undeclaredVars] : 'true'}"
         value="[language/@undeclaredVars]" onclick="require('ext/language/language').setUndeclaredVars()" skin="checkbox_grey"/>
-    <a:checkbox class="underlined" label="Mark unused function arguments"
+    <a:checkbox class="underlined" label="Mark Unused Function Arguments"
         checked="{[language/@unusedFunctionArgs] != '' ? [language/@unusedFunctionArgs] : 'true'}"
         value="[language/@unusedFunctionArgs]" onclick="require('ext/language/language').setUnusedFunctionArgs()" skin="checkbox_grey"/>
 </a:application>

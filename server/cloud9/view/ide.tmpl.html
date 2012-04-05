@@ -11,7 +11,7 @@
         <link rel="stylesheet" type="text/css" href="[%staticUrl%]/style/style.css" />
 
         <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
-        <script type="text/javascript" src="/static/require.js"></script>
+        <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
         [%scripts%]
         <script type="text/javascript">
         //<![CDATA[
@@ -135,21 +135,22 @@
         </div>
 
         <a:skin
-          src        = "/static/style/skins.xml"
+          src        = "[%staticUrl%]/style/skins.xml"
           media-path = "[%staticUrl%]/style/images/"
           icon-path  = "[%staticUrl%]/style/icons/" />
 
         <a:appsettings name="ide" debug="false"
-          disable-space       = "true"
-          auto-hide-loading   = "true"
-          allow-select        = "false"
-          allow-blur          = "true"
-          initdelay           = "false"
-          loaderAnimIndicator = "animatedLoader"
-          loaderWidth         = "300"
-          autoHideLoading     = "false"
-          storage             = "cookie"
-          baseurl             = "{apf.host ? apf.host : ''}" />
+          disable-space             = "true"
+          auto-hide-loading         = "true"
+          allow-select              = "false"
+          allow-blur                = "true"
+          initdelay                 = "false"
+          loaderAnimIndicator       = "animatedLoader"
+          loaderWidth               = "300"
+          autoHideLoading           = "false"
+          storage                   = "cookie"
+          baseurl                   = "{apf.host ? apf.host : ''}"
+          requested-with-getparam   = "xhr" />
 
         <!-- default model -->
         <a:model />
@@ -170,9 +171,9 @@
         <a:state id="stServerConnected" active="false" />
         <a:state id="stProcessRunning" active="false" />
 
-        <a:include src="/static/include/models.xml" />
-        <a:include src="/static/include/menus.xml" />
-        <a:include src="/static/include/windows.xml" />
+        <a:include src="[%staticUrl%]/include/models.xml" />
+        <a:include src="[%staticUrl%]/include/menus.xml" />
+        <a:include src="[%staticUrl%]/include/windows.xml" />
 
         <a:scrollbar
             id       = "sbShared"
@@ -208,7 +209,7 @@
                     <a:vbox id="navbar" class="black-menu-bar unselectable">
 
                     </a:vbox>
-                    <a:vbox id="colLeft" width="200" visible="false" />
+                    <a:vbox id="colLeft" width="200" minwidth="150" visible="false" />
                     <a:splitter width="0" id="splitterPanelLeft" />
                     <a:vbox id="colMiddle" flex="1" padding="3" />
                     <a:vbox id="colRight" padding="0">

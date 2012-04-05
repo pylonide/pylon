@@ -10,9 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels");
-var settings = require("ext/settings/settings");
 var markup = require("text!ext/openfiles/openfiles.xml");
-var fs = require("ext/filesystem/filesystem");
 
 module.exports = ext.register("ext/openfiles/openfiles", {
     name            : "Active Files",
@@ -52,13 +50,19 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var path = e.path || node.getAttribute("path");
 
             var fNode = model.queryNode("//node()[@path='" + path + "']");
-            if (node && fNode) {
-                if (e.path)
-                    fNode.setAttribute("path", node.getAttribute("path"));
-                if (e.filename)
+            var trNode = trFiles.queryNode("//node()[@path='" + path + "']");
+            if (node && fNode && trNode) {
+                if (e.path) 
+                    apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
+                    apf.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
+                if (e.filename) {
                     apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
-                if (e.changed != undefined)
+                    apf.xmldb.setAttribute(trNode, "name", apf.getFilename(e.filename));
+                }
+                if (e.changed != undefined) {
                     apf.xmldb.setAttribute(fNode, "changed", e.changed);
+                    apf.xmldb.setAttribute(trNode, "changed", e.changed);
+                }
             }
         });
     },
@@ -98,12 +102,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
-
-            var path = e.path
-                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                        .replace(/\[@name="workspace"\]/, "")
-                        .replace(/\//, "");
+            var path = "//folder[@path='" + e.path.replace(/\/$/, "") + "']";
             var parent = trFiles.getModel().data.selectSingleNode(path);
+
             if (!parent)
                 return;
 
@@ -127,8 +128,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
             path = parent.getAttribute("path");
 
-            for (var name in files) {
-                var file = files[name];
+            for (var filename in files) {
+                var file = files[filename];
 
                 var xmlNode = "<" + file.type +
                     " type='" + file.type + "'" +

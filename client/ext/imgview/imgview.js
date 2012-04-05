@@ -47,6 +47,10 @@ module.exports = ext.register("ext/imgview/imgview", {
             doc.isInited = true;
             doc.dispatchEvent("init");
         }
+        
+        var d = new Date();
+        var img = imgEditor.$ext.getElementsByTagName("img")[0];
+        img.setAttribute("src", img.getAttribute("src") + "?" + d.getTime())
     },
 
     hook : function() {},

@@ -147,7 +147,9 @@ module.exports = ext.register("ext/vim/vim", {
             onclick: function() { self.toggle(); }
         });
 
-        require("ext/statusbar/statusbar").addToolsItem(menuItem.cloneNode(true));
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            e.ext.addToolsItem(menuItem.cloneNode(true), 0);
+        });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.getHeading("Code Editor").appendChild(new apf.checkbox({

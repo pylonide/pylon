@@ -99,7 +99,7 @@ module.exports = ext.register("ext/settings/settings", {
         this.nodes.push(winSettings);
     },
 
-    showsettings: function(e){
+    showsettings: function(e) {
         panels.activate(this);
         this.enable();
         return false;
@@ -124,7 +124,7 @@ module.exports = ext.register("ext/settings/settings", {
             pages[i].$at.undo(-1);
         }
     },
-
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

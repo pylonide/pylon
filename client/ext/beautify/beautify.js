@@ -94,19 +94,21 @@ module.exports = ext.register("ext/beautify/beautify", {
             }
 
             setTimeout(function() {
-                _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
-                _self.editorSession.selection.addEventListener("changeSelection",
-                    _self.$selectionEvent = function(e) {
-                        if (typeof beautify_selection === "undefined")
-                            return;
-
-                        var range = ceEditor.$editor.getSelectionRange();
-                        if (range.start.row == range.end.row && range.start.column == range.end.column)
-                            beautify_selection.disable();
-                        else
-                            beautify_selection.enable();
-                    }
-                );
+                if(editors.currentEditor.ceEditor) {
+                    _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
+                    _self.editorSession.selection.addEventListener("changeSelection",
+                        _self.$selectionEvent = function(e) {
+                            if (typeof beautify_selection === "undefined")
+                                return;
+    
+                            var range = ceEditor.$editor.getSelectionRange();
+                            if (range.start.row == range.end.row && range.start.column == range.end.column)
+                                beautify_selection.disable();
+                            else
+                                beautify_selection.enable();
+                        }
+                    );
+                }
             }, 200);
         });
     },
@@ -124,7 +126,9 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         this.nodes.push(menuItem);
 
-        require("ext/statusbar/statusbar").addToolsItem(menuItem);
+        ide.addEventListener("init.ext/statusbar/statusbar", function(e) {
+            e.ext.addToolsItem(menuItem, 1);
+        });
 
         this.hotitems.beautify = [this.nodes[0]];
         code.commandManager.addCommand({

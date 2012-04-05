@@ -30,7 +30,7 @@ module.exports = {
 
         var nodes = [];
         this.refactorItem = new apf.item({
-            caption: "Rename variable",
+            caption: "Rename Variable",
             disabled: true,
             onclick: function() {
                 _self.renameVariable();
@@ -40,7 +40,7 @@ module.exports = {
         // There is a problem with APF setting the $disabled attribute of
         // a cloned menu item, so we have to create a second one ourselves
         this.refactorItemDup = new apf.item({
-            caption: "Rename variable",
+            caption: "Rename Variable",
             disabled: true,
             onclick: function() {
                 _self.renameVariable();
@@ -50,8 +50,11 @@ module.exports = {
         nodes.push(this.refactorItem, this.refactorItemDup);
 
         mnuEdit.appendChild(this.refactorItem);
-        require("ext/statusbar/statusbar").addToolsItem(new apf.divider());
-        require("ext/statusbar/statusbar").addToolsItem(this.refactorItemDup);
+
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            e.ext.addToolsItem(new apf.divider(), 3);
+            e.ext.addToolsItem(_self.refactorItemDup, 4);
+        });
 
         code.commandManager.addCommand({
             name: "renameVar",

@@ -16,11 +16,12 @@ if (parseInt(process.version.split(".")[1], 10) < 2) {
 
 var options = Parser.parse([
     {short: "w", long: "workspace", description: "Path to the workspace that will be loaded in Cloud9 (may be relative or absolute).", value: true, def: "." },
-    {short: "p", long: "port", parser: parseInt, description: "Port number where Cloud9 will serve from.", value: true, def: process.env.C9_PORT || 3000 },
+    {short: "p", long: "port", parser: parseInt, description: "Port number where Cloud9 will serve from.", value: true, def: process.env.PORT || 3000 },
     {short: "l", long: "ip", description: "IP address where Cloud9 will serve from.", value: true, def: process.env.C9_PORT ? "0.0.0.0" : "127.0.0.1" },
     {short: "a", long: "action", description: "Define an action to execute after the Cloud9 server is started.", value: true, def: null, parser: function(value) {
         return value.split(/\s+/g);
     }},
+    {short: "s", long: "silent", description: "Disable auto-open of the browser.", value: false},
     {short: "d", long: "debug", description: "Activate debug-mode.", def: false},
     {short: "u", long: "user", description: "Run child processes as a specific user.", value: true, def: false },
     {short: "g", long: "group", description: "Run child processes with a specific group.", value: true, def: false },
@@ -39,7 +40,10 @@ if (options.config) {
 
 var version = options.version = JSON.parse(Fs.readFileSync(__dirname + "/../package.json")).version;
 
-require("cloud9").main(options);
+if (options.ip === "all" || options.ip === "0.0.0.0")
+    options.ip = "";
+
+require("../server/cloud9").main(options);
 
 Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
                           _<iIIviiiiiiiiiillli<_.\n\
@@ -65,11 +69,8 @@ Sys.puts("\n\n                         .  ..__%|iiiiiii=>,..\n\
                               version " + version + "\n\
 Project root is: " + options.workspace);
 
-if (options.ip === "all" || options.ip === "0.0.0.0")
-    options.ip = "localhost";
-
-var url = "http://" + options.ip + ":" + options.port;
-if (options.action) {
+var url = "http://" + (options.ip.length ? options.ip : "localhost") + ":" + options.port;
+if ((typeof options.silent === "undefined" || options.silent === false) && options.action) {
     Sys.puts("Trying to start your browser in: " + url);
     options.action.push(url);
     require("child_process").spawn(options.action[0], options.action.slice(1));
