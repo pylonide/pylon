@@ -94,7 +94,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 disabled : "{!!!tabEditors.activepage}"
             })),
             //mnuTabs.appendChild(new apf.divider()),
-            apf.document.body.appendChild(new apf.menu({
+            apf.document.documentElement.appendChild(new apf.menu({
                 id : "mnuContextTabs",
                 childNodes : [
                     new apf.item({
@@ -147,8 +147,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.hotitems.closeallbutme = [this.nodes[3], mnuContextTabs.childNodes[3]];
         this.hotitems.closealltotheright = [this.nodes[4], mnuContextTabs.childNodes[4]];
         this.hotitems.closealltotheleftt = [this.nodes[5], mnuContextTabs.childNodes[5]];
-        
-        tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         mnuContextTabs.addEventListener("prop.visible", function(e) {
             // If there are only 0 or 1 pages, disable both and return
@@ -176,92 +174,96 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 mnuContextTabs.childNodes[5].setAttribute('disabled', true);
             }
         });
-        
-        tabEditors.addEventListener("close", function(e) {
-            if (!e || !e.htmlEvent)
-                return;
-            var page = e.page;
-            e = e.htmlEvent;
-            if (e.shiftKey) { // Shift = close all
-                return _self.closealltabs();
-            }
-            else if (e.altKey) { // Alt/ Option = close all but this
-                return _self.closeallbutme(page);
-            }
-        });
 
-        tabEditors.addEventListener("DOMNodeInserted", function(e) {
-            var page = e.currentTarget;
-            if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
-                return;
+        ide.addEventListener("init.ext/editors/editors", function(e) {
+            tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
-            if (e.$isMoveWithinParent) {
-                if (page.$tabMenu) {
-                    mnuTabs.insertBefore(page.$tabMenu,
-                        page.nextSibling ? page.nextSibling.$tabMenu : null);
-
-                    _self.updateState();
+            tabEditors.addEventListener("close", function(e) {
+                if (!e || !e.htmlEvent)
+                    return;
+                var page = e.page;
+                e = e.htmlEvent;
+                if (e.shiftKey) { // Shift = close all
+                    return _self.closealltabs();
                 }
-            }
-            else if (page.fake)
-                _self.addItem(page);
-        });
+                else if (e.altKey) { // Alt/ Option = close all but this
+                    return _self.closeallbutme(page);
+                }
+            });
 
-        tabEditors.addEventListener("DOMNodeRemoved", function(e) {
-            if (e.$doOnlyAdmin)
-                return;
+            tabEditors.addEventListener("DOMNodeInserted", function(e) {
+                var page = e.currentTarget;
+                if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
+                    return;
 
-            var page = e.currentTarget;
-            _self.removeItem(page);
+                if (e.$isMoveWithinParent) {
+                    if (page.$tabMenu) {
+                        mnuTabs.insertBefore(page.$tabMenu,
+                            page.nextSibling ? page.nextSibling.$tabMenu : null);
 
-            if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
-                return;
+                        _self.updateState();
+                    }
+                }
+                else if (page.fake)
+                    _self.addItem(page);
+            });
 
-            if (!e.$doOnlyAdmin)
-                _self.accessed.remove(page);
-        });
+            tabEditors.addEventListener("DOMNodeRemoved", function(e) {
+                if (e.$doOnlyAdmin)
+                    return;
 
-        var cycleKeyPressed, cycleKey = apf.isMac ? 18 : 17;
-        tabEditors.addEventListener("afterswitch", function(e) {
-            var page = e.nextPage;
+                var page = e.currentTarget;
+                _self.removeItem(page);
 
-            if (!cycleKeyPressed) {
-                _self.accessed.remove(page);
-                _self.accessed.push(page);
-            }
-        });
+                if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
+                    return;
 
-        tabEditors.addEventListener("close", function(e) {
-            if (tabEditors.getPage() == e.page)
-                this.nextTabInLine = _self.accessed[_self.accessed.length - _self.$tabAccessCycle];
-        });
+                if (!e.$doOnlyAdmin)
+                    _self.accessed.remove(page);
+            });
 
-        apf.addEventListener("keydown", function(eInfo) {
-            if (eInfo.keyCode == cycleKey)
-                cycleKeyPressed = true;
-        });
+            var cycleKeyPressed, cycleKey = apf.isMac ? 18 : 17;
+            tabEditors.addEventListener("afterswitch", function(e) {
+                var page = e.nextPage;
 
-        apf.addEventListener("keyup", function(eInfo) {
-            if (eInfo.keyCode == cycleKey && cycleKeyPressed) {
-                var page = tabEditors.getPage();
-                if (page) {
+                if (!cycleKeyPressed) {
                     _self.accessed.remove(page);
                     _self.accessed.push(page);
                 }
-                _self.$tabAccessCycle = 2;
-                cycleKeyPressed = false;
-            }
-        });
+            });
 
-        tabEditors.addEventListener("aftersavedialogcancel", function(e) {
-            if (!_self.changedPages)
-                return
+            tabEditors.addEventListener("close", function(e) {
+                if (tabEditors.getPage() == e.page)
+                    this.nextTabInLine = _self.accessed[_self.accessed.length - _self.$tabAccessCycle];
+            });
 
-            var i, l, page;
-            for (i = 0, l = _self.changedPages.length; i < l; i++) {
-                page = _self.changedPages[i];
-                page.removeEventListener("aftersavedialogclosed", arguments.callee);
-            }
+            apf.addEventListener("keydown", function(eInfo) {
+                if (eInfo.keyCode == cycleKey)
+                    cycleKeyPressed = true;
+            });
+
+            apf.addEventListener("keyup", function(eInfo) {
+                if (eInfo.keyCode == cycleKey && cycleKeyPressed) {
+                    var page = tabEditors.getPage();
+                    if (page) {
+                        _self.accessed.remove(page);
+                        _self.accessed.push(page);
+                    }
+                    _self.$tabAccessCycle = 2;
+                    cycleKeyPressed = false;
+                }
+            });
+
+            tabEditors.addEventListener("aftersavedialogcancel", function(e) {
+                if (!_self.changedPages)
+                    return
+
+                var i, l, page;
+                for (i = 0, l = _self.changedPages.length; i < l; i++) {
+                    page = _self.changedPages[i];
+                    page.removeEventListener("aftersavedialogclosed", arguments.callee);
+                }
+            });
         });
     },
     

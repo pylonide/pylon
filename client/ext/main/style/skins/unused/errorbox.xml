@@ -1,0 +1,97 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:errorbox name="errorbox">
+    <a:style><![CDATA[
+        .errorbox{
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+            cursor : default;
+
+            z-index: 100000;
+            position: absolute;
+            margin : 22px 0 0 16px;
+            width : 250px;
+        }
+
+        .errorbox .errorboxContent {
+            background: url(images/errorbox_backg.png) repeat-y top left;
+            width: 250px;
+        }
+
+        .errorbox .errorboxContent span{
+            background : transparent;
+        }
+
+        .errorbox .errorboxTop {
+            background: url("images/errorbox_top.png") no-repeat top left;
+            width: 250px;
+            height: 9px;
+        }
+
+        .errorbox .errorboxBottom {
+            background: url("images/errorbox_bottom.png") no-repeat top left;
+            width: 250px;
+            height: 16px;
+        }
+
+        .errorbox .errorboxTop div {
+            background: url("images/tooltip_arrow.png") no-repeat top left;
+            width: 19px;
+            height: 11px;
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            z-index: 10000000;
+        }
+
+        .errorbox .close {
+            width: 13px;
+            height: 13px;
+            background: url("images/close.png") no-repeat top left;
+            overflow: hidden;
+            cursor : default;
+            position : absolute;
+            right : 13px;
+            top : 6px;
+        }
+
+        .errorbox .close:hover{
+            background-position : 0 -13px;
+        }
+
+        .errorbox span{
+            display: block;
+            padding: 0 10px 4px 10px;
+
+        }
+
+        .errorbox strong{
+            display : block;
+            line-height: 13px;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 3px;
+            border: 0;
+        }
+
+        .rightbox{
+            margin-left : -205px;
+        }
+
+        .rightbox .errorboxTop div {
+            right : 20px;
+            left : auto;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="div[2]/span" close="div[1]/a">
+            <div class="errorbox">
+                <div class="errorboxTop"><div> </div><a class="close" href="javascript:void(0)" onclick="return false"> </a></div>
+                <div class="errorboxContent"><span> </span></div>
+                <div class="errorboxBottom"> </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:errorbox></a:skin>

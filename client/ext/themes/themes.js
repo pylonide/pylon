@@ -64,7 +64,7 @@ module.exports = ext.register("ext/themes/themes", {
 
         this.nodes.push(
             mnuView.appendChild(menuItem),
-            apf.document.body.appendChild(new apf.menu({
+            apf.document.documentElement.appendChild(new apf.menu({
                 id : "mnuThemes",
                 onitemclick : function(e){
                     _self.set(e.relatedNode.value);

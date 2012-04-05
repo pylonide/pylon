@@ -1,0 +1,115 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:text name="text">
+    <a:style><![CDATA[
+        .text{
+            font-family: "Lucida Grande", Verdana;
+            font-size: 8pt;
+            color: #333;
+            background : white;
+            overflow : auto;
+        }
+        .dockblank .text{
+            height : 100%;
+        }
+
+        .textEmpty{
+            font-size : 8pt;
+            font-weight : bold;
+            color : #ccc;
+            text-align : center;
+        }
+
+        .textFocus{
+        }
+
+        .console_text {
+            font-family : menlo,courier new,fixed,swiss,sans-serif;
+            background: none;
+            font-size : 12px;
+            margin : 3px 0 0 0;
+            padding : 7px 0 3px 0;
+            color : #eee;
+            overflow : hidden;
+        }    
+        
+        .console_text .item{
+            /*border-bottom : 1px solid #3F3F3F;*/
+            padding : 2px 10px;
+        }
+
+        .console_text .red {
+            color: #c93a40;
+        }
+        
+        .console_text .blue,
+        .console_text .item a:link,
+        .console_text .item a:hover,
+        .console_text .item a:active {
+            color: #86c2f6;
+        }
+        .console_text .gray, 
+        .console_text .item a:visited {
+            color: #909090;
+        }
+        .console_text .white {
+            color: #eeeeee;
+        }
+
+        .apf_console{
+            border : 1px solid #c3c3c3;
+            border-width : 0 1px 0 0;
+            font-size : 11px;
+            font-family : Monaco,"Courier New",monospace;
+        }
+
+        .apf_console .item{
+            min-height : 13px;
+            padding : 2px 2px 2px 2px;
+            line-height : 13px;
+            border-bottom : 1px solid #EEE;
+            word-wrap : break-word;
+        }
+
+        .apf_console .console_time{
+            background : url(resources/time.png) no-repeat 2px 2px;
+        }
+
+        .apf_console .console_log{
+            color : #eeeeee;
+            background : url(resources/bullet_green.png) no-repeat 2px 2px;
+        }
+
+        .apf_console .console_custom{
+            background : url(resources/bullet_green.png) no-repeat 2px 2px;
+        }
+
+        .apf_console .console_warn{
+            background : url(resources/error.png) no-repeat 2px 2px;
+            color      : green;
+        }
+
+        .apf_console .console_error{
+            background : url(resources/exclamation.png) no-repeat 2px 2px;
+            color      : #c93a40;
+        }
+
+        .apf_console .console_repeat{
+            background : url(resources/bullet_green.png) no-repeat 2px 2px;
+            color      : #909090;
+        }
+
+        .apf_console .item a{
+            text-decoration : none;
+        }
+        .apf_console .item a:hover{
+            text-decoration : underline;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="text"/>
+        </a:main>
+    </a:presentation>
+</a:text>
+</a:skin>

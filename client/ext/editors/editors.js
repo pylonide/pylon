@@ -148,7 +148,7 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
         
-        apf.document.body.appendChild(tab);
+        apf.document.documentElement.appendChild(tab);
 
         tabEditors.$buttons.appendChild(btn.$ext);
         tabEditors.addEventListener("DOMNodeInserted",function(e){
@@ -547,7 +547,7 @@ module.exports = ext.register("ext/editors/editors", {
                 tabEditors.set(page);
         });
         
-        apf.document.body.appendChild(new apf.menu({
+        apf.document.documentElement.appendChild(new apf.menu({
             id : "mnuEditors"
         }));
         

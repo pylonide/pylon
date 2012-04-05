@@ -3,6 +3,11 @@ apf:
 	../c9node/node-c9-builds/bin/node-darwin-v0.4.12 ../packager/package.js ../packager/projects/apf_cloud9.apr
 	cat ../packager/build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > client/js/apf_release.js
 
+# packages core
+core:
+	mkdir -p client/build
+	node r.js -o core.build.js
+
 # packages ext
 ext:
 	mkdir -p client/build
@@ -12,8 +17,9 @@ ext:
 worker:
 	mkdir -p client/build/worker
 	./Makefile.dryice.js worker
-	cp support/ace/build/src/worker* client/js/worker
-	node r.js -o name=./client/js/worker/worker.js out=./client/build/worker/worker.js baseUrl=.
+	#cp support/ace/build/src/worker* client/js/worker
+	cp support/ace/build/src/worker* client/build/worker/
+	node r.js -o name=./client/js/worker/worker.js out=./client/build/worker/worker.js baseUrl=. optimize=none
 
 # copies built ace modes
 mode:

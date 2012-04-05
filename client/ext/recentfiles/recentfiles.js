@@ -30,7 +30,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 submenu : "mnuRecent"
             }), ide.mnuFile.firstChild),
 
-            apf.document.body.appendChild(this.menu = new apf.menu({
+            apf.document.documentElement.appendChild(this.menu = new apf.menu({
                 id : "mnuRecent",
                 childNodes : [
                     this.divider = new apf.divider(),

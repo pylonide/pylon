@@ -1,0 +1,83 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:palette name="colorpicker">
+    <a:style><![CDATA[
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main viewer="blockquote" standard="div[1]" custom="div[2]">
+            <div class="palette">
+                <blockquote/>
+                <div class="standard"/>
+                <div class="custom"/>
+            </div>
+        </a:main>
+        <a:item background=".">
+            <span/>
+        </a:item>
+    </a:presentation>
+</a:palette>
+<a:palette name="palette">
+    <a:style><![CDATA[
+        .palette{
+            width: 143px;
+            height: 35px;
+            border: 1px solid black;
+            overflow: hidden;
+            background-color: white;
+            position: relative;
+        }
+
+        .palette blockquote{
+            border: 1px solid white;
+            background-color: red;
+            width: 33px;
+            height: 33px;
+            margin: 0;
+        }
+
+        .palette .standard{
+            width: 108px;
+            height: 22px;
+            border-left: 1px solid black;
+            position: absolute;
+            left: 35px;
+            top: 0;
+        }
+
+        .palette .custom{
+            border-left: 1px solid black;
+            height: 11px;
+            width: 108px;
+            padding-top: 2px;
+            position: absolute;
+            left: 35px;
+            top: 22px;
+        }
+
+        .palette .custom span{
+            border-width: 1px 1px 0 0;
+        }
+
+        .palette span{
+            border: 1px solid black;
+            border-width: 0 1px 1px 0;
+            width: 11px;
+            height: 10px;
+            background: white;
+            float: left;
+            overflow: hidden;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main viewer="blockquote" standard="div[1]" custom="div[2]">
+            <div class="palette">
+                <blockquote/>
+                <div class="standard"/>
+                <div class="custom"/>
+            </div>
+        </a:main>
+        <a:item background=".">
+            <span/>
+        </a:item>
+    </a:presentation>
+</a:palette></a:skin>

@@ -289,8 +289,8 @@ module.exports = ext.register("ext/panels/panels", {
         var _self = this;
         
         this.nodes.push(
-            this.group = apf.document.body.appendChild(new apf.group({
-                value : "[{req"+"uire('ext/settings/settings').model}::auto/panels/@active]"
+            this.group = apf.document.documentElement.appendChild(new apf.group({
+                value : "[{req"+"uire('core/settings').model}::auto/panels/@active]"
             })),
             
             barMenu.appendChild(new apf.button({

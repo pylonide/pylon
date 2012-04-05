@@ -28,7 +28,7 @@
                         </a:hbox>
                         <a:datagrid id = "dgExtUser"
                           flex       = "1"
-                          model      = "mdlExt"
+                          model      = "{require('core/ext').model}"
                           class      = "noscrollbar"
                           scrollbar  = "sbShared 20 2 2"
                           autoselect = "false"
@@ -49,7 +49,7 @@
                     <a:vbox anchors="10 10 10 10">
                         <a:datagrid id="dgExt"
                           flex       = "1"
-                          model      = "mdlExt"
+                          model      = "{require('core/ext').model}"
                           class      = "noscrollbar"
                           scrollbar  = "sbShared 20 2 2"
                           autoselect = "false"

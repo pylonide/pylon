@@ -426,7 +426,7 @@ module.exports = ext.register("ext/zen/zen", {
                 // Reset values
                 _self.resetTabEditorsParentStyles();
 
-                apf.document.body.appendChild(tabEditors.parentNode);
+                apf.document.documentElement.appendChild(tabEditors.parentNode);
 
                 editors.enableTabResizeEvent();
                 apf.layout.forceResize(tabEditors.parentNode.$ext);
@@ -448,7 +448,7 @@ module.exports = ext.register("ext/zen/zen", {
         else {
             this.resetTabEditorsParentStyles();
 
-            apf.document.body.appendChild(tabEditors.parentNode);
+            apf.document.documentElement.appendChild(tabEditors.parentNode);
 
             editors.enableTabResizeEvent();
             this.animateZen.style.display = "none";

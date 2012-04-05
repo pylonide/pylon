@@ -92,7 +92,7 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
     },
 
     init : function(amlNode){
-        apf.document.body.insertMarkup(markup);
+        apf.document.documentElement.insertMarkup(markup);
         
         var as = Array.prototype.slice.call(winKeyBindings.$ext.getElementsByTagName("a"));
         var _self = this;

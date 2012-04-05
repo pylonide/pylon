@@ -1,0 +1,96 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:slider name="slider">
+    <a:alias>range</a:alias>
+    <a:alias>horizontal</a:alias>
+
+    <a:style><![CDATA[
+        .slider {
+            background: url("images/bar_right.png") no-repeat top right;
+            height: 8px;
+            position: relative;
+
+            font-family : Tahoma, Arial;
+            font-size : 9px;
+            text-align : center;
+        }
+
+        .sliderDisabled {
+            background-position: right -8px;
+        }
+
+        .slider .left{
+            background: url("images/bar_left.png") no-repeat top left;
+            height: 8px;
+            overflow: hidden;
+            margin-right : 4px;
+        }
+
+        .sliderDisabled .left{
+            background-position: left -8px;
+        }
+
+        .sliderDisabled .filledbar {
+            background-position: 0 -8px;
+        }
+
+        .slider .grabber {
+            background: url("images/slider.png") no-repeat top left;
+            width: 20px;
+            height: 8px;
+            overflow: hidden;
+            position: absolute;
+            z-index : 10;
+        }
+
+        .sliderDisabled .grabber {
+            background-position: left -8px;
+        }
+
+        .slider u{
+            position : absolute;
+            background : #c3c3c3;
+            overflow : hidden;
+            height : 4px;
+            margin : 2px 0 0 0;
+            display : block;
+            width : 1px;
+            margin-left : 10px;
+        }
+
+        .slider .balloon {
+            background : url(images/ballon_middle.png) no-repeat top right;
+            height     : 16px;
+            padding    : 4px 8px 3px 1px;
+            overflow   : visible;
+            margin     : -32px 0 0 2px;
+            position   : absolute;
+            z-index    : 12000;
+            display    : none;
+        }
+
+        .slider .balloon .balleft {
+            width      : 3px;
+            background : url(images/ballon_left.png) no-repeat 0 0;
+            height     : 23px;
+            position   : absolute;
+            left       : -3px;
+            top        : 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main slider="div[1]" container="." status="div[3]/text()" markers="div[2]" direction="horizontal" balloon="div[3]" minheight="8" maxheight="8">
+            <div class="slider">
+                <div class="grabber"> </div>
+                <div class="left"> </div>
+                <div class="balloon">-
+                    <div class="balleft"> </div>
+                </div>
+            </div>
+        </a:main>
+        <marker>
+            <u> </u>
+        </marker>
+    </a:presentation>
+</a:slider>
+</a:skin>

@@ -1,0 +1,119 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:statusbar name="statusbar">
+    <a:style><![CDATA[
+        .statusbar {
+            border-top: 1px solid #b2b2b2;
+            overflow: hidden;
+            color: #333;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(222,224,227)),color-stop(1, rgb(239,241,244)));
+            background: -moz-linear-gradient(center bottom,rgb(222,224,227) 0%,rgb(239,241,244) 100%);
+            height: 21px;
+            width: 100%;
+            overflow: hidden;
+            padding: 0 0 0 0;
+        }
+
+        .statusbar .sbsection{
+            padding: 1px 5px 0 5px;
+
+            font-size: 11px;
+            font-family: Tahoma, Arial;
+            background: no-repeat 3px 1px;
+            height: 15px;
+            float: left;
+            margin : 2px 2px 0 0;
+
+            border-right: 1px solid #c3c3c3;
+            border-left: 1px solid #FFFFFF;
+
+            position : relative;
+            overflow : hidden;
+        }
+
+        .statusbar .sbsectionLast{
+            float: none;
+            margin: 2px 0 0 -2px;
+            border-right: 0;
+        }
+
+        .statusbar .sbsectionIcon{
+            padding-left: 23px
+        }
+
+        .windowMax .statusbar .corner {
+            display: none;
+        }
+
+        .statusbar .corner{
+            width: 13px;
+            height: 13px;
+            position: absolute;
+            right: 0;
+            top: 7px;
+            display: block;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." corner="span">
+            <div class="statusbar"><span class="corner"/></div>
+        </a:main>
+        <a:section icon="." caption="text()" container="." inherit="true">
+            <div class="sbsection"> </div>
+        </a:section>
+    </a:presentation>
+</a:statusbar>
+<a:statusbar name="status">
+    <a:style><![CDATA[
+        .statuscontainer{
+            margin: 8px 4px 0 0;
+            padding: 4px 0 0 8px;
+            width: 50px;
+            height: 50px;
+            float: left;
+        }
+
+        .statuscontainer span{
+            font-family: MS Sans Serif;
+            font-size: 8pt;
+            float: left;
+            margin-left: 4px;
+            cursor: default;
+            padding-right: 2px;
+            text-align: center;
+            width: 50px;
+            margin-top: 5px;
+        }
+
+        .statuscontainerFocus span{
+            margin: 4px 0 0 3px;
+            padding-right: 1px;
+            border: 1px dotted gray;
+        }
+
+        .scheckbox{
+            width: 32px;
+            height: 32px;
+            overflow: hidden;
+            margin: 0 3px 0 13px;
+
+            background: url(icons/icoOff.gif) no-repeat 50% 50%;
+        }
+
+        .statuscontainerDown .scheckbox{
+        }
+
+        .statuscontainerChecked .scheckbox{
+            background: url(icons/icoOn.gif) no-repeat 50% 50%;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="span/text()">
+            <div class="statuscontainer">
+                <div class="scheckbox"> </div>
+                <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:statusbar>
+</a:skin>

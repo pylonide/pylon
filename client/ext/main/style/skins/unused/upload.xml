@@ -1,0 +1,55 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:upload name="upload">
+    <a:style><![CDATA[
+        .upload{
+            /*border : 1px solid #dcdcdc;
+            padding : 2px;
+            font-family : Tahoma, Arial;
+            font-size : 11px;
+            color: #333;
+            height : 13px;*/
+        }
+
+        .upload form{
+            float: left;
+        }
+
+        .upload .fileinput{
+            -moz-user-focus: ignore;
+            opacity: 0.0;
+            filter: alpha(opacity: 0);
+            filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+
+            height: 22px;
+            margin: -5px 0pt 0pt -200px;
+            z-index: 1;
+            position: relative;
+
+            font-size: 9px;
+            font-family: MS Sans Serif;
+
+            cursor: hand;
+            cursor: pointer;
+        }
+
+        .upload iframe{
+            visibility: hidden;
+            width: 0;
+            height: 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label=".">
+            <div class="upload">
+
+            </div>
+        </a:main>
+        <a:form inp_file="input[1]" inp_uid="input[2]">
+            <form frameborder="0" method="post" action="" enctype="multipart/form-data">
+                <input class="fileinput" type="file" name="userfile"/>
+                <input type="hidden" name="uniqueid" value=""/>
+                <input type="hidden" name="AUTH" value="PA20080587%3Aefdb43212c72c2d140827876781c5489"/>
+            </form>
+        </a:form>
+    </a:presentation>
+</a:upload></a:skin>

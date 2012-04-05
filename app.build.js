@@ -2,7 +2,8 @@
     optimize: "none",
     baseUrl: "./client",
     paths: {
-        "text" : "../text", // plugin for pulling in text! files
+        "text" : "../text", // plugin for pulling in text! files,
+        "order" : "../order", // plugin for demanding order
         "ace": "empty:",//../support2/ace/lib/ace",
         "c9/ext" : "empty:",
         "debug" : "../support/lib-v8debug/lib/v8debug",
@@ -10,8 +11,13 @@
         "apf"     : "apf"
     },
     include: [
-        "js/apf_release.js",
-        "core/ide", "core/ext", "core/util", "core/settings",
+        //"js/apf_release.js",
+        "build/core.packed.js",
+        //"core/ide", 
+        //"core/ext", 
+        //"core/util",
+        //"core/settings",
+        //"ext/main/main",
         "../support/ace/build/src/ace-uncompressed.js",
         "debug/Breakpoint",
         "debug/ChromeDebugMessageStream",

@@ -1,0 +1,137 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml"><a:spinner name="spinner">
+    <a:style><![CDATA[
+        .spinner {
+            position  : relative;
+            height    : 19px;
+            margin    : 0;
+            padding   : 0;
+        }
+
+        .spinner .divfix {
+            display    : block;
+            position   : absolute;
+            text-align : right;
+            height     : 19px;
+            left       : 0;
+            right      : 19px;
+            margin     : 0;
+            z-index    : 9000;
+            padding    : 0;
+            border     : 0;
+        }
+
+        .spinner .divfix input {
+            outline             : none;
+            display             : block;
+            border-top          : 1px solid #b2b2b2;
+            border-left         : 1px solid #b2b2b2;
+            border-bottom       : 1px solid #b2b2b2;
+            border-right        : 0;
+            padding             : 1px 1px 2px 0;
+            position            : absolute;
+            text-align          : right;
+            left                : 0;
+            height              : 14px;
+            background-position : 0 0;
+            background-image    : url(images/spinner_body2.png);
+            color               : black;
+            font-family         : Tahoma, Arial;
+            font-size           : 11px;
+            width               : 100%;
+            margin              : 0;
+            z-index             : 10000;
+        }
+
+        .spinner .buttons {
+            display  : block;
+            width    : 18px;
+            height   : 19px;
+            position : absolute;
+            right    : 0;
+            z-index  : 11000;
+        }
+
+        .spinner .buttons .plus {
+            height              : 9px;
+            width               : 18px;
+            cursor              : default;
+            border-left         : 0;
+            border-right        : 1px solid #b2b2b2;
+            border-bottom       : 0;
+            border-top          : 1px solid #b2b2b2;
+            background-image    : url(images/spinner_plus.png);
+            background-position : 0 0;
+            margin              : 0;
+        }
+
+        .spinner .buttons .minus {
+            height              : 8px;
+            width               : 18px;
+            cursor              : default;
+            border-left         : 0;
+            border-right        : 1px solid #b2b2b2;
+            border-bottom       : 1px solid #b2b2b2;
+            border-top          : 0;
+            background-image    : url(images/spinner_minus.png);
+            background-position : 0 0;
+        }
+
+        .spinner .buttons .plusFocus {
+            background-position : 0 27px;
+            border-top          : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .minusFocus {
+            background-position : 0 24px;
+            border-bottom       : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .plusDown {
+            background-position : 0 9px;
+            border-top          : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .minusDown {
+            background-position : 0 8px;
+            border-bottom       : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .plusHover {
+            background-position : 0 18px;
+        }
+
+        .spinner .buttons .minusHover {
+            background-position : 0 16px;
+        }
+
+        .spinner .divfix .focus {
+            background-position : 0 17px;
+            border-top          : 1px solid #327fbd;
+            border-bottom       : 1px solid #327fbd;
+            border-left         : 1px solid #327fbd;
+            border-right        : 0;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isOpera"><![CDATA[
+        .spinner .divfix {
+            right : 20px;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main container="." input="div[2]/input" buttonplus="div/div[1]" buttonminus="div/div[2]" minwidth="35" minheight="19" maxheight="19">
+            <div class="spinner">
+                <div class="buttons">
+                    <div class="plus"> </div>
+                    <div class="minus"> </div>
+                </div>
+                <div class="divfix">
+                    <input type="text"/>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:spinner></a:skin>
