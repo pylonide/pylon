@@ -125,8 +125,6 @@ return module.exports = ext.register("ext/minimap/minimap", {
                 _self.show();
             });
         }
-
-        this.setupChangeListener();
     },
 
     setupChangeListener : function() {
@@ -159,8 +157,12 @@ return module.exports = ext.register("ext/minimap/minimap", {
     },
 
     show : function() {
+        this.setupChangeListener();
+        this.map.enableListeners();
+
         this.panel.$ext.style.right = this.offsetWidth + "px";
         this.editor.container.style.right = this.map_width + this.offsetWidth + "px";
+
         this.panel.show();
         this.updateMap();
         this.map_enabled = true;
@@ -178,6 +180,10 @@ return module.exports = ext.register("ext/minimap/minimap", {
      * @see this.disable()
      */
     hide : function(noSetMapEnabled) {
+        if (this.$changeEvent)
+            this.editorSession.removeEventListener("change", this.$changeEvent);
+        this.map.disableListeners();
+
         this.panel.hide();
         this.editor.container.style.right = "0";
 
@@ -214,6 +220,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
         this.nodes.each(function(item) {
             return item.destroy();
         });
+        this.hide();
         this.nodes = [];
         this.map.destroy();
         this.map = null;
