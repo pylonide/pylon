@@ -815,7 +815,7 @@ apf.MultiselectBinding = function(){
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.$isTreeArch 
               && pNode == this.xmlRoot) { //apf.isChildOf(this.xmlRoot, xmlNode)
-                parentHTMLNode = (this.$findContainer && parentHTMLNode
+                parentHTMLNode = (this.$findContainer && parentHTMLNode && parentHTMLNode.nodeType == 1
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.$container;
 

@@ -279,7 +279,8 @@ apf.Class.prototype = new (function(){
                 var domParser = this.ownerDocument.$domParser;
                 this.ownerDocument.documentElement.appendChild(this);
             #else*/
-                this.ownerDocument.$domParser.$continueParsing(this);
+                if (this.ownerDocument && this.ownerDocument.$domParser)
+                    this.ownerDocument.$domParser.$continueParsing(this);
                 
                 // #ifdef __WITH_QUEUE
                 apf.queue.empty();

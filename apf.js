@@ -91,7 +91,7 @@
  *   {String}         message   the error message.
  * @default_private
  */
-var apf = {
+ apf = {
     // Content Distribution Network URL:
     // #ifndef __WITH_CDN
     /**
