@@ -177,19 +177,26 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
                         _self.webdav.exec("create", [path, filename], function(data) {
                             _self.webdav.exec("readdir", [path], function(data) {
-                                if (data instanceof Error) {
+                                if (!data || data instanceof Error) {
                                     // @todo: should we display the error message in the Error object too?
                                     return util.alert("Error", "File '" + filename + "' could not be created",
                                         "An error occurred while creating a new file, please try again.");
                                 }
-
-                                var m = data.match(new RegExp(("(<file path='" + path +
-                                    "/" + filename + "'.*?>)").replace(/\//g, "\\/")))
-                                if (!m) {
+                                
+                                // parse xml
+                                var filesInDirXml = apf.getXml(data);
+                                
+                                // we expect the new created file in the directory listing
+                                var fullFilePath = path + "/" + filename;
+                                var nodes = filesInDirXml.selectNodes("//file[@path='" + fullFilePath + "']");
+                                
+                                // not found? display an error
+                                if (nodes.length === 0) {
                                     return util.alert("Error", "File '" + filename + "' could not be created",
                                         "An error occurred while creating a new file, please try again.");
                                 }
-                                file = apf.getXml(m[1]);
+                                
+                                file = nodes[0];
 
                                 both++;
                                 done();
