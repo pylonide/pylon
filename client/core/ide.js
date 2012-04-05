@@ -56,7 +56,7 @@ define(function(require, exports, module) {
             window.onerror = function(m, u, l) {
                 if (window.console)
                     console.log("An error occurred, the Cloud9 system admin has been notified.");
-                apf.ajax("/debug", {
+                apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
                     data        : JSON.stringify({
@@ -71,7 +71,7 @@ define(function(require, exports, module) {
 
             //Catch all APF Routed errors
             apf.addEventListener("error", function(e){
-                apf.ajax("/debug", {
+                apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
                     data        : JSON.stringify({

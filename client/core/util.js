@@ -285,6 +285,41 @@ exports.escapeXml = function(str, noQuotes) {
     });
 };
 
+// taken from http://xregexp.com/
+exports.escapeRegExp = function(str) {
+    return str.replace(/[-[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
+}
+
+/**
+ * Determines whether a string is true in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   true   The function returns true.
+ *   'true' The function returns true.
+ *   'on'   The function returns true.
+ *   1      The function returns true.
+ *   '1'    The function returns true.
+ * @return {Boolean} whether the string is considered to imply truth.
+ */
+exports.isTrue = function(c){
+    return (c === true || c === "true" || c === "on" || typeof c == "number" && c > 0 || c === "1");
+};
+
+/**
+ * Determines whether a string is false in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   false   The function returns true.
+ *   'false' The function returns true.
+ *   'off'   The function returns true.
+ *   0       The function returns true.
+ *   '0'     The function returns true.
+ * @return {Boolean} whether the string is considered to imply untruth.
+ */
+exports.isFalse = function(c){
+    return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
+};
+
 /*
  * JavaScript Linkify - v0.3 - 6/27/2009
  * http://benalman.com/projects/javascript-linkify/

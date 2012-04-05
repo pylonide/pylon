@@ -2943,7 +2943,7 @@
             position: relative;
             border: 1px solid #c3c3c3;
             background-color: white;
-            cursor: default;
+            /*cursor: default;*/
             overflow : hidden;
 
             font-family: Tahoma, Arial;
@@ -3061,19 +3061,21 @@
         .datagrid .records .row span{
             height : 18px;
             background : white no-repeat 0 50%;
+            border-right:1px solid #D6D6D6;
+            border-left : 1px solid white;
             /*border-bottom : 1px solid #d6d6d6;*/
         }
 
         .datagrid .records .row span u{
-            padding : 2px 3px 2px 4px;
+            padding : 2px 0 2px 0;
+            margin: 0 8px 0 4px;
             height : 15px;
             display : block;
             text-decoration : none;
             text-overflow : ellipsis;
             white-space : nowrap;
             overflow : hidden;
-            border-right:1px solid #D6D6D6;
-            border-left : 1px solid white;
+            cursor: default;
         }
 
         .with-noise .records .row span u {
@@ -3151,7 +3153,7 @@
             background-color : white;
             color : #333;
         }*/
-        .datagridFocus .records .selected span u{
+        .datagridFocus .records .selected span {
             border-left : 1px solid #8bc0ed;
         }
 
@@ -3401,7 +3403,7 @@
             position: relative;
             border: 1px solid #c3c3c3;
             background-color: white;
-            cursor: default;
+            /*cursor: default;*/
             overflow : hidden;
             font-family: Tahoma, Arial;
             font-size: 8pt;
@@ -5959,6 +5961,10 @@
             overflow : hidden;
             height   : 33px;
             top      : -33px;
+            background    : url(images/bk-win-header.png)  repeat-x 0 0;
+            -moz-border-radius    : 6px 6px 0 0;
+            -webkit-border-radius : 6px 6px 0 0;
+            border-radius         : 6px 6px 0 0;
         }
 
         .bk-window.relative .bk-header {
@@ -5966,27 +5972,23 @@
         }
 
         .bk-window .bk-header .hcontent {
-            background    : url(images/bk-win-header.png)  repeat-x 0 0;
+            
             position      : relative;
-            overflow      : hidden;
+            /*overflow      : hidden;*/
             height        : 26px;
-            padding       : 8px 14px 0;
+            margin       : 8px 14px 0;
             font-family   : Arial;
             font-size     : 14px;
             line-height   : 16px;
             font-weight   : bold;
             color         : #ffffff;
             cursor        : default;
-
-            -moz-border-radius    : 6px 6px 0 0;
-            -webkit-border-radius : 6px 6px 0 0;
-            border-radius         : 6px 6px 0 0;
         }
 
         .bk-window .bk-header .hcontent .buttons {
             position: absolute;
-            right: 7px;
-            top: 9px;
+            right: -7px;
+            top: 1px;
         }
 
         .bk-window .bk-header .hcontent .buttons .close {
@@ -9344,16 +9346,24 @@
 <a:textbox name="textarea">
     <a:style><![CDATA[
         .ta{
-            border: 1px solid #c3c3c3;
-            background: white url("images/textarea_background2.png") no-repeat top left;
-            /*background-attachment: fixed !important; background-attachment: scroll; */
-            color: #333;
-            padding: 6px;
-            font-family: Tahoma, Arial;
-            font-size: 8pt;
             overflow: auto;
-            outline: none;
             resize: none;
+            
+            padding: 2px 6px;
+            border: 1px solid #AFAFAF;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, white),color-stop(1, #EBEBEB));
+            background: -moz-linear-gradient(center bottom,white 50%,#EBEBEB 100%);
+            margin: 0;
+            text-overflow: ellipsis;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+            
+            font-size: 12px;
+            color: #333;
+            font-family: Arial;
+            outline: none;
+            background-color: transparent;
         }
 
         .taFocus{
@@ -9376,7 +9386,7 @@
 
     <a:presentation>
         <a:main input=".">
-            <textarea type="text" class="ta"/>
+            <textarea type="text" class="ta" />
         </a:main>
     </a:presentation>
 </a:textbox>
