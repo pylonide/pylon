@@ -88,13 +88,12 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
         ide.addEventListener("revisions.visibility", function(e) {
             if (e.visibility === "shown")
-                _self.offsetWidth = _self.defaultOffset + e.width;
+                _self.offsetWidth = e.width;
             else
-                _self.offsetWidth = _self.defaultOffset;
+                _self.offsetWidth = 0;
 
-            _self.updateBarPosition();
+            _self.setPosition();
         });
-
 
         tabEditors.addEventListener("afterswitch", function(e) {
             if (e.nextPage.type === "ext/imgview/imgview")
@@ -128,29 +127,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     init : function(){
-<<<<<<< HEAD
         if (typeof ceEditor === "undefined")
             return;
 
         var _self = this;
-=======
-        if(typeof ceEditor === "undefined") {
-            this.initFail = true;
-            return;
-        }
-
-        var _self = this;
-        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
-        wrapMode.addEventListener("click", function(e) {
-            if (e.currentTarget.checked) {
-                wrapModeViewport.enable();
-            }
-            else {
-                wrapModeViewport.disable();
-            }
-        });
-
->>>>>>> 5149a8f... Make Zen, quick search, status bar and minimal play nice with revisions
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
             editor.ceEditor.parentNode.appendChild(barIdeStatus);
@@ -177,16 +157,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(pItem.item);
         }
 
-        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();	
+        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
         wrapMode.addEventListener("click", function(e) {
-            if (e.currentTarget.checked) {    
-                wrapModeViewport.enable();     
+            if (e.currentTarget.checked) {
+                wrapModeViewport.enable();
              }
             else {
                 wrapModeViewport.disable();
-             }      
+             }
         });
-        
+
         var editor = ceEditor.$editor;
         var theme = editor && editor.getTheme() || "ace/theme/textmate";
         this.checkTheme(theme);
@@ -209,12 +189,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     lblInsertActive.show();
             }
         });
-<<<<<<< HEAD
-=======
-
-        this.initDone = true;
-        this.inited = true;
->>>>>>> 5149a8f... Make Zen, quick search, status bar and minimal play nice with revisions
     },
 
     addToolsItem: function(menuItem, position){
@@ -346,3 +320,4 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 });
 
 });
+
