@@ -210,7 +210,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
 
         var ranges = ace.$search.findAll(ace.getSession());
-        if (!ranges || !ranges.length) {
+        if (!ranges || !ranges.length || !txtQuickSearch.getValue()) {
             oIter.innerHTML = "0";
             oTotal.innerHTML = "of 0";
             return;
@@ -333,8 +333,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         var searchTxt = txtQuickSearch.getValue();
         if (!searchTxt)
-            return;
-
+            return this.updateCounter();
+        
         var options = {
             backwards: !!backwards,
             wrap: true,
