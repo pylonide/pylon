@@ -74,6 +74,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var _self = this;
         var ace;
         
+        txtQuickSearch.addEventListener("clear", function(e) {
+            _self.execSearch(false, false, true);
+        })
+        
         txtQuickSearch.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
@@ -332,8 +336,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             return;
 
         var searchTxt = txtQuickSearch.getValue();
-        if (!searchTxt)
-            return this.updateCounter();
+        //if (!searchTxt)
+          //  return this.updateCounter();
         
         var options = {
             backwards: !!backwards,
