@@ -133,7 +133,6 @@ module.exports = ext.register("ext/language/language", {
         // this will be handled by C9's worker
         ceEditor.addEventListener("loadmode", function(e) {
             if (e.name === "ace/mode/javascript") {
-                debugger;
                 e.mode.createWorker = function() {
                     return null;
                 };
