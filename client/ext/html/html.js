@@ -30,17 +30,20 @@ module.exports = ext.register("ext/html/html", {
 
     hook : function(){
         var _self = this;
+        var tabs = tabEditors;
 
-        tabEditors.addEventListener("afterswitch", function(e){
+        tabs.addEventListener("afterswitch", function(e){
             _self.afterSwitchOrOpen(e.nextPage);
         });
+
         ide.addEventListener("afteropenfile", function(e){
             // Only listen for event from editors.js
             if (e.editor && e.node.$model)
                 _self.afterSwitchOrOpen(e.node);
         });
+
         ide.addEventListener("updatefile", function(e) {
-            var page = tabEditors.getPage(e.newPath);
+            var page = tabs.getPage(e.newPath);
             if (!page || !page.$active)
                 return;
             _self.afterSwitchOrOpen(page);
