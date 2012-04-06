@@ -36,9 +36,9 @@
 #fileUploadSelect {
     z-index: 9999;
 }
-#fileUploadSelect.uploadNoFolders {
+#fileUploadSelect {
     position: absolute;
-    top: 132px;
+    top: 127px;
     left: 99px;
     width: 181px;
     height: 24px;

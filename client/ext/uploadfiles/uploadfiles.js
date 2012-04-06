@@ -12,7 +12,6 @@ var ext = require("core/ext");
 var util = require("core/util");
 var css = require("text!ext/uploadfiles/uploadfiles.css");
 var markup = require("text!ext/uploadfiles/uploadfiles.xml");
-var dragdrop   = require("ext/dragdrop/dragdrop");
 var fs   = require("ext/filesystem/filesystem");
 
 var MAX_UPLOAD_SIZE = 52428800;
@@ -28,7 +27,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     markup      : markup,
     deps        : [],
     offline     : false,
-
+    
     currentSettings : [],
     nodes       : [],
     
@@ -71,16 +70,16 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         
         this.filebrowser = fileUploadSelect.$ext;
         this.filebrowser.addEventListener('change', handleFileSelect, false);
-        
+        /*
         this.folderbrowser = folderUploadSelect.$ext;
         this.folderbrowser.addEventListener('change', handleFileSelect, false);
-        
+        */
         this.filebrowser.addEventListener("mouseover", function() {
-            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over", ["btn-default-css3"]);
+            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
         });
         
         this.filebrowser.addEventListener("mouseout", function() {
-            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3", ["btn-default-css3Over"]);
+            apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Over"]);
         });
         
         this.filebrowser.addEventListener("mousedown", function() {
@@ -88,7 +87,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         });
         
         this.filebrowser.addEventListener("mouseup", function() {
-            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3", ["btn-default-css3Down"]);
+            apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Down"]);
         });
         
         function handleFileSelect(e){
@@ -111,14 +110,17 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             return winUploadFiles.hide();
         }
         
-        uplTargetFolder.$ext.innerHTML = this.getTargetFolder().getAttribute("name");
+        this.setTargetFolder();
         
         // disable tabEditors dropzone for upload
         tabEditors.$ext.disableDropbox = true;
+        
+        trFiles.addEventListener("afterselect", this.setTargetFolder);
     },
     
     onClose : function() {
         tabEditors.$ext.disableDropbox = false;
+        trFiles.removeEventListener("afterselect", this.setTargetFolder);
     },
     
     getTargetFolder : function(){
@@ -129,6 +131,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             : trFiles.root.firstChild;
         
         return target;
+    },
+    
+    setTargetFolder: function() {
+        uplTargetFolder.$ext.innerHTML = require("ext/uploadfiles/uploadfiles").getTargetFolder().getAttribute("name");
     },
     
     /* upload functionality */
@@ -202,7 +208,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             file.targetFolder = node;
             
             var folders = file.webkitRelativePath && file.webkitRelativePath.split("/");
-            folders.pop(); // remove filename from path
             
             if (!folders.length) {
                 addFile(file);
@@ -211,6 +216,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             
             // a folder is uploaded
             else {
+                folders.pop(); // remove filename from path
+                
                 var targetPath = folders.join("/");
                 var nodePath = node.getAttribute("path");
                 var targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + nodePath + "/" + targetPath + "']");
@@ -410,11 +417,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             else {
                 upload(file, e);
             }
-            /*if (exists) {
-                filename = file.name + "." + index++;
-                fs.exists(path + "/" + filename, check);
-            } else
-                upload();*/
         }
         
         function upload(file, e) {
@@ -465,11 +467,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 apf.xmldb.setAttribute(trFiles.getModel().queryNode("//file[@path='" + file.path + "']"), "type", "file");
                 
                 // remove file from upload activity lilst
-                /*
                 setTimeout(function() {
                     apf.xmldb.removeNode(file.queueNode);
                 }, 2000);
-                */
                 
                 /*
                 // open file functionality
