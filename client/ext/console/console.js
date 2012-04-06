@@ -420,7 +420,10 @@ module.exports = ext.register("ext/console/console", {
                 input.setValue("");
         };
         this.keyEvents[KEY_CR] = function(input) {
-            _self.evalCmd(input.getValue());
+            var inputVal = input.getValue().trim();
+            if (inputVal === "/?")
+                return false;
+            _self.evalCmd(inputVal);
             input.setValue("");
         };
 
