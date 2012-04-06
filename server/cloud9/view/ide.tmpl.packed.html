@@ -46,6 +46,7 @@
                 projectName: <%projectName%>,
                 version: <%version%>,
                 staticUrl: <%staticUrl%>,
+                settings: <%settingsXml%>,
                 socketIoUrl: <%socketIoUrl%>
             };
 
@@ -55,50 +56,33 @@
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
 
-            var RELEASE = "release";
-            var DEBUG   = "debug";
-            var FILES   = "files";
-
-            var VERSION = window.cloud9config.debug ? FILES : RELEASE;
-
-            var apfLoc = VERSION == FILES
-                ? "[%staticUrl%]/support/apf/apf.js"
-                : "[%staticUrl%]/js/apf_" + VERSION + ".js";
-
             var config = <%requirejsConfig%>;
-            require(config, [apfLoc], function(){
-                //apf.addEventListener("load", function(){
-                    var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/editors/editors"];
-                    if (VERSION == RELEASE)
-                        list.push("ace/editor");
 
-                    apf.IdeSettings = <%settingsXml%>
-    
-                    require(list, function(ide, ext, util){
+            require(config, function(){
+                //apf.addEventListener("load", function(){
+                    var list = ["build/packed"];
+
+                    require(list, function(ide, ext, util) {
+                        var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
                         var plugins = <%plugins%>;
-                        
-                            //Load extensions
-                            ide.dispatchEvent("extload", {modules: plugins});
-                                ide.addEventListener("$event.extload", function(cb){
-                                    cb();
-                                });
+
+                        var aceConfig = require("ace/config");
+
+                        aceConfig.set("packaged", true);
+                        aceConfig.set("workerPath", "static/build/worker");
+                        aceConfig.set("modePath", "static/build/mode");
+                        aceConfig.set("themePath", "static/build/theme");
+
+                        // Load extensions
+                        ide.dispatchEvent("extload", {modules: plugins});
+                            ide.addEventListener("$event.extload", function(cb){
+                              cb();
+                         });
                     });
-                    preloaderImgs();
-                });
-            function preloaderImgs() {
-                var preloadImgs = [
-                    "[%staticUrl%]/style/images/bg-overlay.png",
-                    "[%staticUrl%]/style/images/cover-heaeder.png",
-                    "[%staticUrl%]/style/images/cover-logo.png"
-                ];
-                if (document.images) {
-                    var img;
-                    for(var i = 0; i < preloadImgs.length; i++) {
-                        img = new Image();
-                        img.src = preloadImgs[i];
-                    }
-                }
-            }
+
+                    
+                //});
+            });
         //]]>
         </script>
     </head>

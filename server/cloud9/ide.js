@@ -51,7 +51,8 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
-        remote: options.remote
+        remote: options.remote,
+        real: options.real
     };
     // precalc regular expressions:
     this.indexRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
@@ -91,9 +92,9 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
 
 sys.inherits(Ide, EventEmitter);
 
-Ide.DEFAULT_PLUGINS = [
-    //"ext/packed"
-];
+var exts = require("../../client/ext/all");
+
+Ide.DEFAULT_PLUGINS = exts;
 
 exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 
@@ -135,7 +136,9 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 
     this.$serveIndex = function(req, res, next) {
         var plugin, _self = this;
-        fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
+        var indexFile = _self.options.real === true ? __dirname + "/view/ide.tmpl.packed.html" : __dirname + "/view/ide.tmpl.html";
+
+        fs.readFile(indexFile, "utf8", function(err, index) {
             if (err)
                 return next(err);
 

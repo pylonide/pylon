@@ -1089,6 +1089,78 @@
     parseAppMarkup : function(docElement){
         var isEmptyDocument = false;
         
+        
+
+        
+
+        
+
+        
+        if (isEmptyDocument && document.documentElement.outerHTML
+          .split(">", 1)[0]
+          .indexOf(apf.ns.aml) == -1) {
+            
+            return false;
+        }
+
+        //Load current HTML document as 'second DOM'
+        if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
+            return apf.oHttp.get((apf.alternativeAml 
+              || document.body && document.body.getAttribute("xmlurl") 
+              || location.href).split(/#/)[0], {
+                
+                callback: function(xmlString, state, extra){
+                    if (state != apf.SUCCESS) {
+                        var oError = new Error(apf.formatErrorString(0, null,
+                            "Loading XML application data", "Could not load "
+                          + "XML from remote source: " + extra.message));
+
+                        if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
+                            return true;
+
+                        throw oError;
+                    }
+
+                    
+
+                    //@todo apf3.0 rewrite this flow
+                    var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
+                      .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ") //should be html2xmlentity conversion
+                    if (!apf.supportNamespaces)
+                        str = str.replace(/xmlns\=\"[^"]*\"/g, "");
+                    //var xmlNode = apf.getXmlDom(str);//apf.getAmlDocFromString(xmlString);
+
+                    if (self.ERROR_HAS_OCCURRED)
+                        return;
+
+                    //Clear Body
+                    if (apf.isIE)
+                        document.body.innerHTML ="";
+                    else {
+                        var nodes = document.body.childNodes;
+                        for (var i = nodes.length - 1; i >= 0; i--)
+                            nodes[i].parentNode.removeChild(nodes[i]);
+                    }
+
+                    
+                    document.documentElement.style.display = "block";
+                    document.body.style.display = "block"; //might wanna make this variable based on layout loading...
+                    
+
+                    apf.initialize(str);
+
+                }, ignoreOffline: true});
+        }
+        else {
+            
+            //might wanna make this variable based on layout loading...
+            document.body.style.display = "block";
+            
+
+            if (!self.ERROR_HAS_OCCURRED)
+                apf.initialize(docElement.outerHTML || docElement.xml);
+        }
+        
     },
     
     namespaces : {},

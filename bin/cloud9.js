@@ -22,6 +22,7 @@ var options = Parser.parse([
         return value.split(/\s+/g);
     }},
     {short: "s", long: "silent", description: "Disable auto-open of the browser.", value: false},
+    {short: "r", long: "real", description: "Runs the 'packed', deployed version of c9", value: false},
     {short: "d", long: "debug", description: "Activate debug-mode.", def: false},
     {short: "u", long: "user", description: "Run child processes as a specific user.", value: true, def: false },
     {short: "g", long: "group", description: "Run child processes with a specific group.", value: true, def: false },
