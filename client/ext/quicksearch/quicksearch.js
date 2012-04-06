@@ -72,7 +72,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     init : function(amlNode){
         var _self = this;
-
+        var ace;
+        
+        txtQuickSearch.addEventListener("clear", function(e) {
+            _self.execSearch(false, false, true);
+        })
+        
         txtQuickSearch.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
@@ -100,7 +105,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     _self.navigateList("last");
                     break;
                 default:
-                    var ace = _self.$getAce();
+                    ace = _self.$getAce();
                     if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
                         // fall back to break
                     }
@@ -116,6 +121,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
         
         txtQuickSearch.addEventListener("keyup", function(e) {
+            ace = _self.$getAce();
             switch (e.keyCode) {
                 case 8: // BACKSPACE
                     var ace = _self.$getAce();
@@ -208,7 +214,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
 
         var ranges = ace.$search.findAll(ace.getSession());
-        if (!ranges || !ranges.length) {
+        if (!ranges || !ranges.length || !txtQuickSearch.getValue()) {
             oIter.innerHTML = "0";
             oTotal.innerHTML = "of 0";
             return;
@@ -219,7 +225,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (newCount < 1) {
                 newCount = String(ranges.length);
             }
-            
             oIter.innerHTML = String(newCount); 
         }
         else {
@@ -227,7 +232,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var cur = this.currentRange;
             if (cur) {
                 // sort ranges by position in the current document
-                ranges.sort(cur.compareRange.bind(cur));
+                //ranges.sort(cur.compareRange.bind(cur));
                 var range;
                 var start = cur.start;
                 var end = cur.end;
@@ -331,9 +336,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             return;
 
         var searchTxt = txtQuickSearch.getValue();
-        if (!searchTxt)
-            return;
-
+        //if (!searchTxt)
+          //  return this.updateCounter();
+        
         var options = {
             backwards: !!backwards,
             wrap: true,
