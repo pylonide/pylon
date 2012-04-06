@@ -74,7 +74,7 @@ util.inherits(ShellPlugin, Plugin);
         var cmd = argv.shift();
         var self = this;
 
-        this.getListing(argv.pop(), message.cwd, (cmd == "cd" || cmd == "ls"), function(tail, matches) {
+        this.getListing(argv.pop(), message.cwd || this.workspaceDir, (cmd == "cd" || cmd == "ls"), function(tail, matches) {
             self.sendResult(0, "internal-autocomplete", {
                 matches: matches,
                 line   : message.line,
@@ -141,7 +141,7 @@ util.inherits(ShellPlugin, Plugin);
         this.pm.exec("shell", {
             command: message.command,
             args: message.argv.slice(1),
-            cwd: message.cwd
+            cwd: message.cwd || this.workspaceDir
         }, function(code, out, err) {
             self.sendResult(0, message.command, {
                 code    : code,
