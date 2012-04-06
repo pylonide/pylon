@@ -231,22 +231,29 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
             var half = aceHtml.offsetHeight / 2; //ceEditor.$editor.renderer.$size.scrollerHeight / 2; //
             var lineHeight = ceEditor.$editor.renderer.lineHeight;
-
-            //@todo how do I calculate the absolute position of the row?
+            var totalLines = ace.getSession().getLength();
+            var lastLine = ace.renderer.textToScreenCoordinates(totalLines, 0).pageY + lineHeight;
+            var maxTop = aceHtml.offsetHeight - winGotoLine.getHeight() - 10;
+            
             var top;
             if (pos.pageY - firstLine < half) {
                 top = Math.max(0, pos.pageY - firstLine - 5);
             }
+            else if (lastLine - pos.pageY < half) {
+                top = Math.min(maxTop, half + (half - (lastLine - pos.pageY)));
+            }
             else if (ace.isRowFullyVisible(cursor.row)) {
                 //Determine the position of the window
                 var epos = apf.getAbsolutePosition(aceHtml);
-                var maxTop = aceHtml.offsetHeight - 100;
                 top = Math.min(maxTop, pos.pageY - epos[1] - 5);
             }
             else {
                 top = half - 5 - lineHeight;
             }
 
+            if (this.lineControl)
+                this.lineControl.stop();
+    
             //Animate
             apf.tween.single(winGotoLine, {
                 type     : "top",
@@ -255,7 +262,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 to       : top,
                 steps    : 8,
                 interval : 10,
-                control  : (this.control = {})
+                control  : (this.lineControl = {})
             });
         }
         else {
