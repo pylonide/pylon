@@ -343,7 +343,7 @@ module.exports = ext.register("ext/tree/tree", {
         });
         
         trFiles.addEventListener("keyup", this.$keyup = function(e){
-            if(this.dragging > 0) {
+            if(this.dragging > 0 && e.keyCode == 27) {
                 apf.DragServer.stop();
             }
         });
