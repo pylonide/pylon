@@ -81,7 +81,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     init : function(amlNode){
         var _self = this;
-
+        var ace;
+        
+        txtQuickSearch.addEventListener("clear", function(e) {
+            _self.execSearch(false, false, true);
+        })
+        
         txtQuickSearch.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
@@ -109,11 +114,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     _self.navigateList("last");
                     break;
                 default:
-                    var ace = _self.$getAce();
+                    ace = _self.$getAce();
                     if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
                         // fall back to break
                     }
-                    else if ((e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
+                    else if (e.keyCode == 32 || (e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
                             (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {       
                             // chillax, then fire--necessary for rapid key strokes
                             setTimeout(function() {
@@ -125,9 +130,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
         
         txtQuickSearch.addEventListener("keyup", function(e) {
+            ace = _self.$getAce();
             switch (e.keyCode) {
                 case 8: // BACKSPACE
-                    if (ace.getSession().getDocument().getLength() > MAX_LINES && txtQuickSearch.getValue().length < 3) { 
+                    var ace = _self.$getAce();
+                    if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
                         // fall back to return
                     }
                     else {
@@ -216,7 +223,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
 
         var ranges = ace.$search.findAll(ace.getSession());
-        if (!ranges || !ranges.length) {
+        if (!ranges || !ranges.length || !txtQuickSearch.getValue()) {
             oIter.innerHTML = "0";
             oTotal.innerHTML = "of 0";
             return;
@@ -227,7 +234,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (newCount < 1) {
                 newCount = String(ranges.length);
             }
-            
             oIter.innerHTML = String(newCount); 
         }
         else {
@@ -235,7 +241,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var cur = this.currentRange;
             if (cur) {
                 // sort ranges by position in the current document
-                ranges.sort(cur.compareRange.bind(cur));
+                //ranges.sort(cur.compareRange.bind(cur));
                 var range;
                 var start = cur.start;
                 var end = cur.end;
@@ -339,9 +345,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             return;
 
         var searchTxt = txtQuickSearch.getValue();
-        if (!searchTxt)
-            return;
-
+        //if (!searchTxt)
+          //  return this.updateCounter();
+        
         var options = {
             backwards: !!backwards,
             wrap: true,
@@ -410,7 +416,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         return false;
     },
 
-    findnext: function() {
+    findnext: function(e) { // apparently, CMD + G executes a search; 
+        if (e !== 1) {      // halt that by forcing this method to come from a click
+            return;
+        }
+        
         var ace = this.$getAce();
         if (!ace)
             return;
@@ -421,14 +431,18 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         return false;
     },
 
-    findprevious: function() {
+    findprevious: function(e) {
+        if (e !== 1) {
+            return;
+        }
+        
         var ace = this.$getAce();
         if (!ace)
             return;
 
         ace.findPrevious();
         this.currentRange = ace.selection.getRange();
-        this.updateCounter();
+        this.updateCounter(true);
         return false;
     },
 

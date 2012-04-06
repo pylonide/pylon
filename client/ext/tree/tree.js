@@ -341,7 +341,13 @@ module.exports = ext.register("ext/tree/tree", {
                 }
             });
         });
-
+        
+        trFiles.addEventListener("keyup", this.$keyup = function(e){
+            if(this.dragging > 0 && e.keyCode == 27) {
+                apf.DragServer.stop();
+            }
+        });
+        
         trFiles.addEventListener("beforeadd", this.cancelWhenOffline);
         trFiles.addEventListener("renamestart", this.cancelWhenOffline);
         trFiles.addEventListener("beforeremove", this.cancelWhenOffline);
@@ -535,6 +541,7 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.removeEventListener("beforeremove", this.$cancelWhenOffline);
         trFiles.removeEventListener("dragstart", this.$cancelWhenOffline);
         trFiles.removeEventListener("dragdrop", this.$cancelWhenOffline);
+        trFiles.removeEventListener("keyup", this.$keyup);
 
         this.nodes.each(function(item){
             item.destroy(true, true);
