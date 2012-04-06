@@ -66,6 +66,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 mdlGoToFile.load("{davProject.report('" + ide.davPrefix //node.getAttribute("path")
                     + "', 'filesearch', {query: '" + txtGoToFile.value + "'})}");
                 ide.dispatchEvent("track_action", {type: "gotofile"});
+                return false;
             }
             else if (e.keyCode == 40 && dgGoToFile.length) {
                 var first = dgGoToFile.getFirstTraverseNode();
@@ -80,6 +81,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (e.keyCode == 38 && !e.shiftKey) {
                 if (this.selected == this.getFirstTraverseNode())
                     txtGoToFile.focus();
+            }
+            else if (e.keyCode == 13) {
+                _self.openFile();
+                return false;
             }
             else if (apf.isCharacter(e.keyCode)) {
                 txtGoToFile.focus();
