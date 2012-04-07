@@ -17,7 +17,6 @@ ext:
 worker:
 	mkdir -p client/build/worker
 	./Makefile.dryice.js worker
-	#cp support/ace/build/src/worker* client/js/worker
 	cp support/ace/build/src/worker* client/build/worker/
 	node r.js -o name=./client/js/worker/worker.js out=./client/build/worker/worker.js baseUrl=. optimize=none
 

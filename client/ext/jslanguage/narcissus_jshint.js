@@ -8,7 +8,7 @@ define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
-var parser = require("ace/narcissus/jsparse");
+var parser = require("ace/narcissus/parser");
 
 var handler = module.exports = Object.create(baseLanguageHandler);
 

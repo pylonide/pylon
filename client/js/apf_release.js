@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(95996)TIME(Wed, 04 Apr 2012 23:04:08 GMT)*/
+/*FILEHEAD(apf.js)SIZE(95996)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -99,6 +99,7 @@
  * @default_private
  */
  apf = {
+VERSION:'3.0beta',
     // Content Distribution Network URL:
     
     /**
@@ -1453,7 +1454,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(45673)TIME(Wed, 04 Apr 2012 22:38:01 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(45673)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19839,7 +19840,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33152)TIME(Wed, 04 Apr 2012 21:47:43 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33152)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23380,7 +23381,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Thu, 05 Apr 2012 00:55:57 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26652,7 +26653,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(26790)TIME(Wed, 04 Apr 2012 21:47:43 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(26790)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50281,7 +50282,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/hbox.js)SIZE(41632)TIME(Wed, 04 Apr 2012 21:47:43 GMT)*/
+/*FILEHEAD(elements/hbox.js)SIZE(41632)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55500,7 +55501,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/page.js)SIZE(27038)TIME(Wed, 04 Apr 2012 21:47:43 GMT)*/
+/*FILEHEAD(elements/page.js)SIZE(27038)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57007,7 +57008,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Wed, 04 Apr 2012 21:47:43 GMT)*/
+/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60531,7 +60532,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Wed, 04 Apr 2012 21:47:43 GMT)*/
+/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
