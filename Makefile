@@ -31,4 +31,4 @@ theme:
 	mkdir -p client/build/theme
 	cp `find support/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` client/build/theme
 
-package: apf ext worker mode theme
+package: apf core ext worker mode theme
