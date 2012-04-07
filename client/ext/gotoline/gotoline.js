@@ -230,8 +230,6 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             if (!animate)
                 return;
 
-            var editor = editors.currentEditor;
-            var ace = editor.ceEditor.$editor;
             var cursor = ace.getCursorPosition();
             var aceHtml = editor.ceEditor.$ext;
             

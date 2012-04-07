@@ -3061,14 +3061,11 @@
         .datagrid .records .row span{
             height : 18px;
             background : white no-repeat 0 50%;
-            border-right:1px solid #D6D6D6;
-            border-left : 1px solid white;
             /*border-bottom : 1px solid #d6d6d6;*/
         }
 
         .datagrid .records .row span u{
-            padding : 2px 0 2px 0;
-            margin: 0 8px 0 4px;
+            padding : 2px 3px 2px 4px;
             height : 15px;
             display : block;
             text-decoration : none;
@@ -3076,10 +3073,13 @@
             white-space : nowrap;
             overflow : hidden;
             cursor: default;
+            border-right:1px solid #D6D6D6;
+            border-left : 1px solid white;
         }
 
-        .with-noise .records .row span u {
-            border-left: 1px solid #D1D1D1;
+        .with-noise .records .row span {
+            border-left : 1px solid #D1D1D1;
+            margin-left : -1px;
         }
 
         .with-noise .records .row span {
@@ -3153,7 +3153,7 @@
             background-color : white;
             color : #333;
         }*/
-        .datagridFocus .records .selected span {
+        .datagridFocus .records .selected span u {
             border-left : 1px solid #8bc0ed;
         }
 
@@ -3415,7 +3415,7 @@
             position : absolute;
             top : 20px;
             left : 0;
-            right:0px;
+            right: -1px;
             height : 20px;
             z-index : 10;
             background-color : #e6e6e6;
