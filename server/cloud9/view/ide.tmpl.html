@@ -12,26 +12,7 @@
 
         <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
         <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
-        <script>
-            function preloaderImgs() {
-                var preloadImgs = [
-                    "[%staticUrl%]/ext/main/style/images/bg-overlay.png",
-                    "[%staticUrl%]/ext/main/style/images/cover-heaeder.png",
-                    "[%staticUrl%]/ext/main/style/images/cover-logo.png",
-                    "[%staticUrl%]/ext/main/style/images/panelBg.png",
-                    "[%staticUrl%]/ext/main/style/images/editor_tab.png",
-                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png"
-                ];
-                if (document.images) {
-                    var img;
-                    for(var i = 0; i < preloadImgs.length; i++) {
-                        img = new Image();
-                        img.src = preloadImgs[i];
-                    }
-                }
-            }
-            preloaderImgs();
-        </script>
+        [%scripts%]
         <script type="text/javascript">
         //<![CDATA[
 
@@ -67,29 +48,40 @@
 
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
-                //apf.addEventListener("load", function(){
+                apf.addEventListener("load", function(){
                     var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/editors/editors"];
                     if (VERSION == RELEASE)
                         list.push("ace/editor");
 
                     apf.IdeSettings = <%settingsXml%>
-    
+                    //loader.animateLoader(20);
                     require(list, function(ide, ext, util){
                         var plugins = <%plugins%>;
-                        
+                        //loader.animateLoader(50);
+                        apf.addEventListener("load", function(){
                             //Load extensions
-                            ide.dispatchEvent("extload", {modules: plugins});
+//                            loader.animateLoader(20);
+                            require(plugins, function(){
+                                ide.dispatchEvent("extload", {modules: plugins});
                                 ide.addEventListener("$event.extload", function(cb){
                                     cb();
                                 });
+                            });
+                        });
                     });
                     preloaderImgs();
                 });
+                //if (apf.started)
+                //    apf.onstart();
+            });
             function preloaderImgs() {
                 var preloadImgs = [
-                    "[%staticUrl%]/style/images/bg-overlay.png",
-                    "[%staticUrl%]/style/images/cover-heaeder.png",
-                    "[%staticUrl%]/style/images/cover-logo.png"
+                    "[%staticUrl%]/ext/main/style/images/bg-overlay.png",
+                    "[%staticUrl%]/ext/main/style/images/cover-heaeder.png",
+                    "[%staticUrl%]/ext/main/style/images/cover-logo.png",
+                    "[%staticUrl%]/ext/main/style/images/panelBg.png",
+                    "[%staticUrl%]/ext/main/style/images/editor_tab.png",
+                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png"
                 ];
                 if (document.images) {
                     var img;
