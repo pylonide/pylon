@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
+var settings = require("core/settings");
 var skin = require("text!ext/gotoline/skin.xml");
 var markup = require("text!ext/gotoline/gotoline.xml");
 
@@ -215,7 +216,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var editor = require('ext/editors/editors').currentEditor;
         if (!editor || !editor.ceEditor)
             return;
-
+        
         var ceEditor = editor.ceEditor;
         var ace      = ceEditor.$editor;
 
@@ -223,8 +224,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             line = parseInt(txtLineNr.getValue(), 10) || 0;
 
         ace.gotoLine(line);
-
+        
         if (preview) {
+            var animate = apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
+            if (!animate)
+                return;
+
             var editor = editors.currentEditor;
             var ace = editor.ceEditor.$editor;
             var cursor = ace.getCursorPosition();
