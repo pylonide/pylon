@@ -70,8 +70,11 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }
         });
         lstLineNumber.addEventListener("afterselect", function() {
-            if (this.selected)
-                txtLineNr.setValue(this.selected.getAttribute("nr"));
+            if (!this.selected)
+                return;
+            
+            txtLineNr.setValue(this.selected.getAttribute("nr"));
+            _self.execGotoLine(null, true);
         });
 
         var restricted = [38, 40, 36, 35];
@@ -119,7 +122,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }
             else if (!e.ctrlKey && !e.metaKey && (e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
                 return false;
-            
+
             setTimeout(function(){
                 _self.execGotoLine(null, true);
             });
