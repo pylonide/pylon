@@ -15,5 +15,4 @@ client/common
 support/packager/
 aut.js
 helloworld.js
-build/
 .*.gz
