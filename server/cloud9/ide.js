@@ -175,7 +175,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
                 offlineManifest: _self.options.offlineManifest,
-                scripts: _self.options.debug ? "" : aceScripts,
+                scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version
             };

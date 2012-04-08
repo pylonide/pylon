@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html [%offlineManifest%] xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+<html [%offlineManifest%] xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml"  skipParse="true">
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>[%projectName%] - Cloud9</title>
@@ -39,8 +39,7 @@
 
             var config = <%requirejsConfig%>;
 
-            require(config, function(){
-                //apf.addEventListener("load", function(){
+            require(config, function() {
                     var list = ["build/packed"];
 
                     require(list, function(ide, ext, util) {
@@ -56,14 +55,14 @@
 
                         // Load extensions
                         ide.dispatchEvent("extload", {modules: plugins});
-                            ide.addEventListener("$event.extload", function(cb){
-                              cb();
+                        ide.addEventListener("$event.extload", function(cb){
+                            cb();
                          });
                     });
 
                     preloaderImgs();
-                //});
             });
+
             function preloaderImgs() {
                 var preloadImgs = [
                     "[%staticUrl%]/ext/main/style/images/bg-overlay.png",

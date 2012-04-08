@@ -1,5 +1,5 @@
 ({
-    optimize: "none",
+    //optimize: "none",
     baseUrl: "./client",
     paths: {
         "text" : "../text", // plugin for pulling in text! files
@@ -9,17 +9,11 @@
         "treehugger" : "../support/treehugger/lib/treehugger",
         "apf"     : "apf"
     },
-    include: ["build/core.packed.js", "ext/main/main", "ext/all.js"],
+    include: ["build/core.packed", "ext/all"],
     out: "./client/build/packed.js",
     inlineText: true,
     findNestedDependencies: true,
     optimizeAllPluginResources: false,
     useStrict: true,
-    wrap: true,
-    onBuildRead: function (moduleName, path, contents) {
-        /*if (contents.indexOf("var extAll = module.exports = define"))
-            return "var extAll = define";
-        else
-           */ return contents;
-    }
+    wrap: true
 })
