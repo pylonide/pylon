@@ -9,7 +9,7 @@
         "treehugger" : "../support/treehugger/lib/treehugger",
         "apf"     : "apf"
     },
-    include: ["build/core.packed.js", "ext/all.js"],
+    include: ["build/core.packed.js", "ext/main/main", "ext/all.js"],
     out: "./client/build/packed.js",
     inlineText: true,
     findNestedDependencies: true,

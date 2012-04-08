@@ -4,7 +4,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(95996)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(apf.js)SIZE(95999)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -99,7 +99,7 @@
  *   {String}         message   the error message.
  * @default_private
  */
- apf = {
+var apf = {
 VERSION:'3.0beta',
     // Content Distribution Network URL:
     
@@ -1455,7 +1455,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(45673)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(45596)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1735,8 +1735,7 @@ apf.Class.prototype = new (function(){
             this.$pHtmlNode = struct.htmlNode;
             
             
-                if (this.ownerDocument && this.ownerDocument.$domParser)
-                    this.ownerDocument.$domParser.$continueParsing(this);
+                this.ownerDocument.$domParser.$continueParsing(this);
                 
                 
                 apf.queue.empty();
@@ -19841,7 +19840,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33152)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33095)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19951,9 +19950,6 @@ apf.GuiElement = function(){
     
     this.$focussable = apf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
     this.visible     = 2; //default value;
-    
-    this.minwidth    = 1;
-    this.minheight   = 1;
     
     /*this.minwidth   = 5;
     this.minheight  = 5;
@@ -20254,8 +20250,8 @@ apf.GuiElement = function(){
             //--#ifdef __WITH_CONTENTEDITABLE
             //@todo slow??
             var diff = apf.getDiff(this.$ext);
-            this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
-            this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
+            this.$ext.style.minWidth = Math.max(1, this.minwidth - diff[0]) + "px";
+            this.$ext.style.minHeight = Math.max(1, this.minheight - diff[1]) + "px";
             this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
             this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
             
@@ -23382,7 +23378,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47943)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24132,7 +24128,7 @@ apf.MultiselectBinding = function(){
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.$isTreeArch 
               && pNode == this.xmlRoot) { //apf.isChildOf(this.xmlRoot, xmlNode)
-                parentHTMLNode = (this.$findContainer && parentHTMLNode && parentHTMLNode.nodeType == 1
+                parentHTMLNode = (this.$findContainer && parentHTMLNode
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.$container;
 
@@ -26654,7 +26650,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(26790)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27106)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26681,7 +26677,7 @@ apf.__DATAACTION__ = 1 << 25;
 
 
 /**
- * Baseclass adding data action features to this element.
+ * Baseclass adding data action features to this element. 
  */
 apf.DataAction = function(){
     this.$regbase = this.$regbase | apf.__DATAACTION__;
@@ -26712,51 +26708,51 @@ apf.DataAction = function(){
         }
         return tracker;
     };
-
+ 
     
 
     this.$actionsLog = {};
     this.$actions    = false;
 
     /**
-     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock}
-     * is a mechanism for enforcing limits on access to a resource in a
-     * multi-user environment. Locks are one way of enforcing concurrency
-     * control policies. Ajax.org Platform (apf) has support for locking in
-     * combination with {@link term.action action rules}. There are two
+     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock} 
+     * is a mechanism for enforcing limits on access to a resource in a 
+     * multi-user environment. Locks are one way of enforcing concurrency 
+     * control policies. Ajax.org Platform (apf) has support for locking in 
+     * combination with {@link term.action action rules}. There are two 
      * types of locks; pessimistic and optimistic locks. Descriptions below are
-     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}.
+     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}. 
      *
      * Optimistic:
-     * This allows multiple concurrent users access to the database whilst the
-     * system keeps a copy of the initial-read made by each user. When a user
-     * wants to update a record, the application determines whether another user
-     * has changed the record since it was last read. The application does this
-     * by comparing the initial-read held in memory to the database record to
-     * verify any changes made to the record. Any discrepancies between the
-     * initial-read and the database record violates concurrency rules and hence
-     * causes the system to disregard any update request. An error message is
-     * generated and the user is asked to start the update process again.
-     * It improves database performance by reducing the amount of locking
-     * required, thereby reducing the load on the database server. It works
-     * efficiently with tables that require limited updates since no users are
-     * locked out. However, some updates may fail. The downside is constant
-     * update failures due to high volumes of update requests from multiple
+     * This allows multiple concurrent users access to the database whilst the 
+     * system keeps a copy of the initial-read made by each user. When a user 
+     * wants to update a record, the application determines whether another user 
+     * has changed the record since it was last read. The application does this 
+     * by comparing the initial-read held in memory to the database record to 
+     * verify any changes made to the record. Any discrepancies between the 
+     * initial-read and the database record violates concurrency rules and hence 
+     * causes the system to disregard any update request. An error message is 
+     * generated and the user is asked to start the update process again. 
+     * It improves database performance by reducing the amount of locking 
+     * required, thereby reducing the load on the database server. It works 
+     * efficiently with tables that require limited updates since no users are 
+     * locked out. However, some updates may fail. The downside is constant 
+     * update failures due to high volumes of update requests from multiple 
      * concurrent users - it can be frustrating for users.
      *
-     * For optimistic locking apf can run as if there would be no locking.
+     * For optimistic locking apf can run as if there would be no locking. 
      * Changed data is sent to the server and is either successfully saved or
      * not. When the action isn't changed and the server returns an error code
-     * the {@link element.actiontracker actiontracker} <strong>automatically
-     * reverts the change</strong>.
+     * the {@link element.actiontracker actiontracker} <strong>automatically 
+     * reverts the change</strong>. 
      *
      * Pessimistic:
-     * This is whereby a user who reads a record with the intention of updating
-     * it, places an exclusive lock on the record to prevent other users from
-     * manipulating it. This means no one else can manipulate that record until
-     * the user releases the lock. The downside is that users can be locked out
-     * for a long time thereby causing frustration.
-     *
+     * This is whereby a user who reads a record with the intention of updating 
+     * it, places an exclusive lock on the record to prevent other users from 
+     * manipulating it. This means no one else can manipulate that record until 
+     * the user releases the lock. The downside is that users can be locked out 
+     * for a long time thereby causing frustration. 
+     * 
      * For pessimistic locking add the locking attribute to the {@link term.action action rules}
      * that need it. The following example shows a lock request for a rename
      * action on a file browser tree.
@@ -26769,7 +26765,7 @@ apf.DataAction = function(){
      *
      * MultiUser:
      * In multi user environments it can be handy
-     * to be signalled of changes by others within the application. For more
+     * to be signalled of changes by others within the application. For more 
      * information on this please look at {@link element.remote}.
      *
      * Remarks:
@@ -26781,7 +26777,7 @@ apf.DataAction = function(){
      * Note: APF understands the status codes specified in RFC4918 for the locking implementation
      *       {@link http://tools.ietf.org/html/rfc4918#section-9.10.6}
      */
-
+     
     /**
      *  Start the specified action, does optional locking and can be offline aware
      *  - or for optimistic locking it will record the timestamp (a setting
@@ -26814,7 +26810,7 @@ apf.DataAction = function(){
         var actionRule = this.$actions && this.$actions.getRule(name, xmlContext);
         if (!actionRule && apf.config.autoDisableActions && this.$actions) {
             
-
+            
             return false;
         }
 
@@ -26880,16 +26876,16 @@ apf.DataAction = function(){
 
         //Get Rules from Array
         var rule = this.$actions && this.$actions.getRule(action, xmlNode);
-        if (!rule && this.$actions && apf.config.autoDisableActions
+        if (!rule && this.$actions && apf.config.autoDisableActions 
           && "action|change".indexOf(action) == -1) {
             apf.console.warn("Could not execute action '" + action + "'. \
               No valid action rule was found and auto-disable-actions is enabled");
-
+            
             return false;
         }
-
         
-
+        
+        
         var newMultiple;
         if (multiple) {
             newMultiple = [];
@@ -26919,15 +26915,15 @@ apf.DataAction = function(){
             //Allow the action and arguments to be changed by the event
             if (this.dispatchEvent(ev.name, null, ev) === false)
                 return false;
-
+            
             delete ev.currentTarget;
         }
 
         //Call ActionTracker and return ID of Action in Tracker
-        var at      = this.getActionTracker();
+        var at      = this.getActionTracker(); 
         if (!at)// This only happens at destruction of apf
             return UndoObj;
-
+        
         var UndoObj = at.execute(ev);
         ev.xmlNode = UndoObj.xmlNode;
         ev.undoObj = UndoObj;
@@ -26953,7 +26949,7 @@ apf.DataAction = function(){
      */
     this.$executeSingleValue = function(atName, setName, xmlNode, value, getArgList){
         var xpath, args, rule = this.$getBindRule(setName, xmlNode);
-
+        
         //recompile bindrule to create nodes
         if (!rule) {
             
@@ -26964,26 +26960,26 @@ apf.DataAction = function(){
         ["valuematch", "match", "value"].each(function(type){
             if (!rule[type] || compiled)
                 return;
-
+            
             compiled = rule["c" + type]; //cvaluematch || (rule.value ? rule.cvalue : rule.cmatch);
             if (!compiled)
                 compiled = rule.compile(type);
-
+            
             if (compiled.type != 3)
                 compiled = null;
         });
-
+        
         
 
         var atAction, model, node,
             sel        = compiled.xpaths, //get first xpath
             shouldLoad = false;
-
+        
         if (sel[0] == "#" || sel[1] == "#") {
             var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                 xpathmode: 5
             })))(xmlNode);
-
+            
             model = m.model && m.model.$isModel && m.model;
             if (model) {
                 node  = model.queryNode(m.xpath);
@@ -26995,7 +26991,7 @@ apf.DataAction = function(){
                 xmlNode = m.model;
             }
             else {
-
+                
             }
 
             sel[1] = m.xpath;
@@ -27036,7 +27032,7 @@ apf.DataAction = function(){
                 if (model) {
                     if (!model.data)
                         model.load("<data />");
-
+    
                     xpath   = (model.getXpathByAmlNode(this) || ".")
                         + (xpath && xpath != "." ? "/" + xpath : "");
                     xmlNode = model.data;
@@ -27048,7 +27044,7 @@ apf.DataAction = function(){
                     xmlNode = this.dataParent.parent.selected || this.dataParent.parent.xmlRoot;
                     if (!xmlNode)
                         return false;
-
+                    
                     xpath = (this.dataParent.xpath || ".")
                         + (xpath && xpath != "." ? "/" + xpath : "");
                     shouldLoad = true;
@@ -27057,7 +27053,7 @@ apf.DataAction = function(){
 
             args = [xmlNode, value, xpath];
         }
-
+        
         if (getArgList) {
             return {
                 action : atAction,
@@ -27067,13 +27063,13 @@ apf.DataAction = function(){
 
         //Use Action Tracker
         var result = this.$executeAction(atAction, args, atName, xmlNode);
-
+        
         if (shouldLoad)
             this.load(xmlNode.selectSingleNode(xpath));
-
+        
         return result;
     };
-
+    
     /**
      * Changes the value of this element.
      * @action
@@ -27089,17 +27085,17 @@ apf.DataAction = function(){
 
         
         //Not databound
-        if (!this.xmlRoot && !this.$createModel || !(this.$mainBind == "value"
-          && this.hasFeature(apf.__MULTISELECT__)
-            ? this.$attrBindings["value"]
+        if (!this.xmlRoot && !this.$createModel || !(this.$mainBind == "value" 
+          && this.hasFeature(apf.__MULTISELECT__) 
+            ? this.$attrBindings["value"] 
             : this.$hasBindRule(this.$mainBind))) {
         
-            if (!force && value === this.value
+            if (!force && value === this.value 
               || this.dispatchEvent("beforechange", {value : value}) === false)
                 return false;
 
             //@todo in theory one could support actions
-            //@todo disabled below, because it gives unexpected behaviour when
+            //@todo disabled below, because it gives unexpected behaviour when 
             //form elements are used for layout and other UI alterations
             /*this.getActionTracker().execute({
                 action        : "setProperty",
@@ -27111,23 +27107,23 @@ apf.DataAction = function(){
             return this.dispatchEvent("afterchange", {value : value});
         
         }
-
-        var valueRule = this.$attrBindings["eachvalue"] && "eachvalue"
+        
+        var valueRule = this.$attrBindings["eachvalue"] && "eachvalue" 
             || this.$bindings["value"] && "value"
             || this.$hasBindRule("caption") && "caption";
-
-        if (value === (valueRule != "value" && (this.xmlRoot
-          && this.$applyBindRule("value", this.xmlRoot, null, true))
+          
+        if (value === (valueRule != "value" && (this.xmlRoot 
+          && this.$applyBindRule("value", this.xmlRoot, null, true)) 
           || this.value))
             return false;
 
         this.$executeSingleValue("change", this.$mainBind, this.xmlRoot, value);
         
     };
-
+    
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("create-model", "actions");
-
+    
     /**
      * @attribute {Boolean} create-model whether the model this element connects
      * to is extended when the data pointed to does not exist. Defaults to true.
@@ -27142,15 +27138,15 @@ apf.DataAction = function(){
      *  <a:bar>
      *      <a:label>Name</a:label>
      *      <a:textbox value="[name]" required="true" />
-     *
+     * 
      *      <a:label>Address</a:label>
      *      <a:textarea value="[address]" />
-     *
+     * 
      *      <a:label>Country</a:label>
-     *      <a:dropdown
-     *        value   = "[mdlForm::country]"
-     *        model   = "countries.xml"
-     *        each    = "[country]"
+     *      <a:dropdown 
+     *        value   = "[mdlForm::country]" 
+     *        model   = "countries.xml" 
+     *        each    = "[country]" 
      *        caption = "[@name]" />
      *      <a:button action="submit">Submit</a:button>
      *  </a:bar>
@@ -27159,9 +27155,9 @@ apf.DataAction = function(){
     this.$propHandlers["create-model"] = function(value){
         this.$createModel = value;
     };
-
+    
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        if (typeof this["create-model"] == "undefined"
+        if (typeof this["create-model"] == "undefined" 
           && !this.$setInheritedAttribute("create-model")) {
             this.$createModel = true;
         }
@@ -50283,7 +50279,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/hbox.js)SIZE(41632)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(elements/hbox.js)SIZE(41566)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50344,9 +50340,6 @@ apf.vbox = function(struct, tagName){
 };
 
 (function(){
-    this.minwidth    = 0;
-    this.minheight   = 0;
-    
     /**** Properties and Attributes ****/
 
     this.$focussable = false;
@@ -50483,7 +50476,7 @@ apf.vbox = function(struct, tagName){
                         ? (isInFixed ? "1px" : "auto")
                         : (apf.isWebkit && input[node.$ext.tagName] 
                             ? "100%" 
-                            : (false && apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
+                            : (apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
                                 ? "0px"
                                 : "auto"));//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
@@ -55502,7 +55495,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/page.js)SIZE(27038)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(elements/page.js)SIZE(27023)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55615,12 +55608,12 @@ apf.page = function(struct, tagName){
                 
                 elBtnClose.addEventListener("mousedown", function(e){
                     apf.cancelBubble(e, apf.lookup(_self.$uniqueId));
-                }, false);
+                });
                 
                 elBtnClose.addEventListener("click", function(e){
                     var page = apf.lookup(_self.$uniqueId);
                      page.parentNode.remove(page, e);
-                }, false);
+                });
 
                 btncontainer.appendChild(elBtnClose);
             }
@@ -56254,7 +56247,6 @@ apf.page = function(struct, tagName){
 }).call(apf.page.prototype = new apf.Presentation());
 
 apf.aml.setElement("page", apf.page);
-
 
 
 
@@ -57009,7 +57001,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(elements/remote.js)SIZE(20986)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60533,7 +60525,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Sat, 07 Apr 2012 00:06:15 GMT)*/
+/*FILEHEAD(elements/splitter.js)SIZE(16587)TIME(Sun, 08 Apr 2012 06:34:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60567,9 +60559,6 @@ apf.splitter = function(struct, tagName){
 };
 
 (function() {
-    this.minwidth    = 0;
-    this.minheight   = 0;
-    
     this.$scale = 0; // 0 both, 1 left/top, 2 right/bottom 
     
     this.$focussable = false; // This object can get the focus
