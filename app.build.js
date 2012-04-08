@@ -9,7 +9,7 @@
         "treehugger" : "../support/treehugger/lib/treehugger",
         "apf"     : "apf"
     },
-    include: ["build/core.packed.js", "ext/all"],
+    include: ["build/core.packed.js", "ext/all.js"],
     out: "./client/build/packed.js",
     inlineText: true,
     findNestedDependencies: true,
@@ -17,9 +17,9 @@
     useStrict: true,
     wrap: true,
     onBuildRead: function (moduleName, path, contents) {
-        if (moduleName == "ext/all")
-            return "";
+        /*if (contents.indexOf("var extAll = module.exports = define"))
+            return "var extAll = define";
         else
-            return contents;
+           */ return contents;
     }
 })

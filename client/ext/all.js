@@ -1,4 +1,4 @@
-var extAll = module.exports = define([
+var extAll = define([
     "ext/main/main",
     "ext/filesystem/filesystem",
     "ext/settings/settings",
