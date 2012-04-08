@@ -1710,6 +1710,10 @@
     parseAppMarkup : function(docElement){
         var isEmptyDocument = false;
         
+        if (document.documentElement.getAttribute("skipParse") == "true") {
+            return;
+        }
+        
         //#ifdef __WITH_PARTIAL_AML_LOADING
         if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
           && document.documentElement.outerHTML.split(">", 1)[0]
