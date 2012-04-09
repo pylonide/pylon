@@ -123,9 +123,15 @@ apf.scrollbar = function(struct, tagName){
     }
     
     this.$getViewPort = function(oHtml){
+        if (this.$host.viewport)
+            return this.$host.viewport.limit;
+        
         return oHtml.tagName == "HTML" || oHtml.tagName == "BODY" ? apf[this.$windowSize]() : oHtml[this.$offsetSize];
     }
     this.$getScrollHeight = function(oHtml){
+        if (this.$host.viewport)
+            return this.$host.viewport.length;
+        
         //add margin + bottom padding
         return (apf.isIE && oHtml.lastChild 
             ? oHtml.lastChild[this.$offsetPos] 
@@ -140,13 +146,16 @@ apf.scrollbar = function(struct, tagName){
         if (!amlNode)
             return apf.console.warn("Scrollbar could not connect to amlNode");
         
-        if (amlNode.host)
-            amlNode = amlNode.host;
+//        if (amlNode.host)
+//            amlNode = amlNode.host;
 
-        if (!amlNode.nodeFunc && amlNode.style) {
+        if (!amlNode.nodeFunc && amlNode.style || amlNode.host) {
             this.$host = {
                 empty : true,
-                $int  : amlNode
+                $int  : amlNode.host 
+                    ? amlNode.host.$int || amlNode.host.$container
+                    : amlNode,
+                viewport : amlNode
             };
         }
         else {
@@ -183,18 +192,26 @@ apf.scrollbar = function(struct, tagName){
 
             var div = (_self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml));
             if (div) {
-                if (oHtml[_self.$scrollPos] == 0 && e.delta > 0) {
-                    if (_self.$lastScrollState === 0)
-                        return;
-                    setTimeout(function(){_self.$lastScrollState = 0;}, 300);
+                if (_self.$host.viewport) {
+                    var viewport = _self.$host.viewport;
+                    _self.$curValue = ((_self.$curValue * div) + (-1 * e.delta * viewport.limit / 10)) / div;
+                    //console.log(viewport.offset, viewport.limit, div, _self.$curValue);
                 }
-                else if (oHtml[_self.$scrollPos] == _self.$getScrollHeight(oHtml) - oHtml[_self.$offsetSize] && e.delta < 0) {
-                    if (_self.$lastScrollState === 1)
-                        return;
-                    setTimeout(function(){_self.$lastScrollState = 1;}, 300);
+                else {
+                    if (oHtml[_self.$scrollPos] == 0 && e.delta > 0) {
+                        if (_self.$lastScrollState === 0)
+                            return;
+                        setTimeout(function(){_self.$lastScrollState = 0;}, 300);
+                    }
+                    else if (oHtml[_self.$scrollPos] == _self.$getScrollHeight(oHtml) - oHtml[_self.$offsetSize] && e.delta < 0) {
+                        if (_self.$lastScrollState === 1)
+                            return;
+                        setTimeout(function(){_self.$lastScrollState = 1;}, 300);
+                    }
+                    delete _self.$lastScrollState;
+                    _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * Math.min(45, apf[_self.$getInner](oHtml)/10)) / div;
                 }
-                delete _self.$lastScrollState;
-                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * Math.min(45, apf[_self.$getInner](oHtml)/10)) / div;
+                
                 _self.setScroll(null, null, null, true);
                 e.preventDefault();
             }
@@ -233,29 +250,30 @@ apf.scrollbar = function(struct, tagName){
         else {
             if (!this.horizontal) {
                 apf.addEventListener("mousescroll", function(e){
-                    if (amlNode == e.target || (amlNode == document.documentElement && e.target == document.body))
+                    if (amlNode.host || amlNode == e.target || (amlNode == document.documentElement && e.target == document.body))
                         scrollFunc(e);
                 })
             }
         }
         
         var oHtml = _self.$getHtmlHost();
-        apf.addListener(oHtml, "scroll", function(){
-            if (_self.animating || !_self.$visible) 
-                return;
-            
-            if (!scrolling) {
-                var oHtml = _self.$getHtmlHost();
-                var m = _self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml);
-                var p = oHtml[_self.$scrollPos] / m;
-                if (Math.abs(_self.$curValue - p) > 1/m) {
-                    _self.$curValue = p;
-                    _self.setScroll(null, null, null, true);
+        if (!this.$host.viewport)
+            apf.addListener(oHtml, "scroll", function(){
+                if (_self.animating || !_self.$visible) 
+                    return;
+                
+                if (!scrolling) {
+                    var oHtml = _self.$getHtmlHost();
+                    var m = _self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml);
+                    var p = oHtml[_self.$scrollPos] / m;
+                    if (Math.abs(_self.$curValue - p) > 1/m) {
+                        _self.$curValue = p;
+                        _self.setScroll(null, null, null, true);
+                    }
+                    return false;
                 }
-                return false;
-            }
-            scrolling = false;
-        });
+                scrolling = false;
+            });
         
         if ("HTML|BODY".indexOf(oHtml.tagName) > -1) {
             var lastHeight = oHtml.scrollHeight;
@@ -408,7 +426,7 @@ apf.scrollbar = function(struct, tagName){
                     scrollPos    : to,
                     scrollSize   : this.$getScrollHeight(oHtml),
                     from         : from,
-                    pos          : this.pos
+                    pos          : this.$curValue //this.pos
                 });
         }
         
@@ -884,4 +902,44 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
         });
     }
 };
+
+apf.ViewPortAml = function(amlNode){
+    this.getScrollTop = function(){
+        
+    }
+    
+    this.getScrollLeft = function(){
+        
+    }
+    
+    this.getScrollHeight = function(){
+        
+    }
+    
+    this.getScrollWidth = function(){
+        
+    }
+    
+    this.getHeight = function(){
+        
+    }
+    
+    this.getWidth = function(){
+        
+    }
+    
+    this.setScrollTop = function(value){
+        
+    }
+    
+    this.setScrollLeft = function(value){
+        
+    }
+}
+
+apf.ViewPortHtml = function(){
+    
+}
+
+
 //#endif

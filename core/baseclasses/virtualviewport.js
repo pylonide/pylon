@@ -95,7 +95,7 @@ apf.VirtualViewport = function(){
             this.viewport.offset = 0;
             this.viewport.length = 0;
             this.viewport.resize(0);
-            this.viewport.sb.update();
+            this.viewport.sb.$update();
     
             this.$setClearMessage(this["empty-message"]);
         }
@@ -109,6 +109,7 @@ apf.VirtualViewport = function(){
     this.viewport = {
         offset : 0,
         limit  : 2,
+        initialLimit : 2,
         length : 0,
         sb     : new apf.scrollbar(),
         host   : this,
@@ -174,7 +175,7 @@ apf.VirtualViewport = function(){
             this.limit = limit;
             
             if (updateScrollbar)
-                this.sb.update(this.$container);
+                this.sb.$update(this.$container);
         },
         
         findNewLimit : function(scrollTop){
@@ -183,13 +184,13 @@ apf.VirtualViewport = function(){
             if (!scrollTop)
                 scrollTop = oHtml.scrollTop;
 
-            if (!_self.xmlRoot || oHtml.lastChild && oHtml.lastChild.style.display == "none")
+            if (!_self.xmlRoot || oHtml.lastElementChild && oHtml.lastElementChild.style.display == "none")
                 return;
 
             //Grow
-            if (!oHtml.lastChild || oHtml.lastChild.offsetTop + oHtml.lastChild.offsetHeight <= oHtml.offsetHeight + scrollTop) {
+            if (!oHtml.lastElementChild || oHtml.lastElementChild.offsetTop + oHtml.lastElementChild.offsetHeight <= oHtml.offsetHeight + scrollTop) {
                 var Lid, xmlNode, nodes, sel = _self.$getSelection();
-                while (this.limit < this.length - 1 && (!oHtml.lastChild || oHtml.lastChild.offsetTop + oHtml.lastChild.offsetHeight <= oHtml.offsetHeight + scrollTop)) {
+                while (this.limit < this.length - 1 && (!oHtml.lastElementChild || oHtml.lastElementChild.offsetTop + oHtml.lastElementChild.offsetHeight <= oHtml.offsetHeight + scrollTop)) {
                     this.limit++;
 
                     nodes = _self.getTraverseNodes();
@@ -202,15 +203,15 @@ apf.VirtualViewport = function(){
                     Lid = apf.xmldb.nodeConnect(_self.documentId, xmlNode, null, _self);
                     _self.$addEmpty(xmlNode, Lid, _self.xmlRoot, oHtml);
                     if (sel.indexOf(xmlNode) > -1)
-                        _self.$select(oHtml.lastChild);
+                        _self.$select(oHtml.lastElementChild);
                     else
-                        _self.$deselect(oHtml.lastChild);
+                        _self.$deselect(oHtml.lastElementChild);
                 }
             }
             //Shrink
-            else if (oHtml.lastChild && oHtml.lastChild.offsetTop > oHtml.offsetHeight + scrollTop) {
+            else if (oHtml.lastElementChild && oHtml.lastElementChild.offsetTop > oHtml.offsetHeight + scrollTop) {
                 var lastChild;
-                while (this.limit > 2 && (lastChild = oHtml.lastChild).offsetTop > oHtml.offsetHeight + scrollTop) {
+                while (this.limit > 2 && (lastChild = oHtml.lastElementChild).offsetTop > oHtml.offsetHeight + scrollTop) {
                     _self.$container.removeChild(lastChild);
                     this.limit--;
                 }
@@ -220,21 +221,34 @@ apf.VirtualViewport = function(){
                 this.initialLimit = this.limit;
         },
         
+        scrollIntoView : function(xmlNode, toBottom){
+            var htmlNode = apf.xmldb.findHtmlNode(xmlNode, _self);
+            if (htmlNode && htmlNode.offsetTop > 0 
+              && htmlNode.offsetTop + htmlNode.offsetHeight < _self.$container.offsetHeight)
+                return;
+            
+            var nr = apf.getChildNumber(xmlNode, 
+                apf.MultiselectBinding.prototype.getTraverseNodes.call(_self));
+            this.change(nr, null, true, false, toBottom);
+        },
+        
         /**
          *  @todo   This method should be optimized by checking if there is
          *          overlap between the new offset and the old one
          */
-        change : function(offset, limit, updateScrollbar, noScroll){
+        change : function(offset, limit, updateScrollbar, noScroll, toBottom){
             var offsetN;
             
             if (offset < 0) 
                 offset = 0;
             
-            if (offset > this.length - this.limit - 1) 
+            if (toBottom) 
+                offsetN = offset - this.limit + 1;
+            else if (offset > this.length - this.limit - 1) 
                 offsetN = Math.floor(this.length - this.limit - 1);
             else 
                 offsetN = Math.floor(offset);
-                
+            
             if (!limit)
                 limit = this.limit;
             
@@ -256,10 +270,10 @@ apf.VirtualViewport = function(){
             /*if (limit && this.limit != limit)
                 this.resize(limit, updateScrollbar);
             else */
-            if (updateScrollbar) {
-                this.sb.$curValue = this.offset / (this.length - this.limit - 1);
-                this.sb.updatePos();
-            }
+//            if (updateScrollbar) {
+//                this.sb.$curValue = this.offset / (this.length - this.limit - 1);
+//                this.sb.setScroll();//updatePos();
+//            }
 
             //this.viewport.prepare();
 
@@ -341,6 +355,7 @@ apf.VirtualViewport = function(){
                         xmlNode = nodes[j++];
                         apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
                         _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                        
                         if (sel.indexOf(xmlNode) > -1)
                             _self.$select(htmlNode);
                         else
@@ -348,9 +363,15 @@ apf.VirtualViewport = function(){
                     }
                 }
             }
+            
+            if (!_self.$selected && sel && sel.length)
+                _self.$selected = apf.xmldb.findHtmlNode(sel[0], _self);
 
             if (!noScroll) {
-                if (offset >= this.length - this.initialLimit) {
+                if (toBottom) {
+                    _self.$container.scrollTop = _self.$container.scrollHeight;
+                }
+                else if (offset >= this.length - this.initialLimit) {
                     diff = offset - (this.length - this.initialLimit) + 2;
                     _self.$container.scrollTop = (_self.$container.scrollHeight - _self.$container.offsetHeight) * (diff / 2);
                 }
@@ -360,8 +381,16 @@ apf.VirtualViewport = function(){
                     _self.$container.scrollTop = scrollTop;
                 }
                 
-                if (updateScrollbar)
-                    this.sb.update();
+                //if (updateScrollbar)
+                    //this.sb.$update();
+                
+                if (updateScrollbar) {
+                    //console.log(this.offset, _self.$container.scrollTop, _self.$container.scrollHeight, this.limit, this.length);
+                    //this.sb.$curValue = this.offset / (this.length - this.limit - 1) - 0.01;
+                    console.log((_self.$container.scrollTop / _self.$container.scrollHeight * this.limit))
+                    //console.log(this.sb.$curValue);
+                    //this.sb.setScroll();//updatePos();
+                }
                 
                 return;
             }
@@ -381,18 +410,21 @@ apf.VirtualViewport = function(){
     
     this.viewport.sb.parentNode = new apf.Class().$init();
     this.viewport.sb.parentNode.$container = this.$pHtmlNode;
+    this.viewport.sb.parentNode.$int = this.$pHtmlNode;
     this.viewport.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
     
     //this.$container.style.paddingLeft = this.viewport.sb.$ext.offsetWidth + "px";
     
     //this.viewport.sb.realtime = false;//!apf.isIE;
-    this.viewport.sb.attach(this.$container, this.viewport, function(timed, pos){
+    this.viewport.sb.attach(this.$container, this.viewport, function(e){
         var vp = _self.viewport;
-        
+        var timed = e.timed;
+        var pos = e.pos;
+
         if (vp.sb.realtime || !timed) {
-            var l = vp.length - vp.initialLimit;
+            var l = vp.length - vp.limit;
             if (l == 0)
-                _self.$container.scrollTop = pos * (_self.$container.scrollHeight - _self.$container.offsetHeight);
+                _self.$container.scrollTop = pos * (_self.$container.scrollHeight - apf.getHtmlInnerHeight(_self.$container));
             else 
                 vp.change(l * pos, vp.limit, false);
         }
@@ -418,7 +450,7 @@ apf.VirtualViewport = function(){
     //#ifdef __WITH_LAYOUT
     apf.layout.setRules(this.$container, "scrollbar", "\
         var s = apf.all[" + this.viewport.sb.$uniqueId + "];\
-        s.update();\
+        s.$update();\
     ", true);
     apf.layout.queue(this.$container);
     //#endif
@@ -495,7 +527,7 @@ apf.VirtualViewport = function(){
     this.$xmlUpdate = function(){
         this.viewport.cache  = null;
         this.viewport.length = this.xmlRoot.selectNodes(this.each).length; //@todo fix this for virtual length
-        this.viewport.sb.update(this.$container);
+        this.viewport.sb.$update(this.$container);
         this._xmlUpdate.apply(this, arguments);
     };
     
@@ -521,7 +553,7 @@ apf.VirtualViewport = function(){
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
         
-        this.viewport.sb.update(this.$container);
+        this.viewport.sb.$update(this.$container);
 
         //Build HTML
         //this.$fill(nodes);
@@ -674,7 +706,7 @@ apf.VirtualViewport = function(){
      *
      * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
      */
-    this.getTraverseNodes = function(xmlNode){
+    var getTraverseNodes = this.getTraverseNodes = function(xmlNode){
         if (!this.xmlRoot)
             return;
         
@@ -736,23 +768,29 @@ apf.VirtualViewport = function(){
         if (!count)
             count = 1;
 
+        this.getTraverseNodes = apf.MultiselectBinding.prototype.getTraverseNodes;
         var node = baseNTS.call(this, xmlNode, up, count);
-        if (node && node != xmlNode)
-            return node;
+        this.getTraverseNodes = getTraverseNodes;
+        
+        return node;
+        
+//        if (node && node != xmlNode)
+//            return node;
 
         //@todo treeArch support
-        var nodes = this.getTraverseNodes(), i = 0;
-        while (nodes[i] && nodes[i] != xmlNode)
-            i++;
+        //this.getTraverseNodes()
+//        var nodes = apf.MultiselectBinding.prototype.getTraverseNodes.call(_self), i = 0;
+//        while (nodes[i] && nodes[i] != xmlNode)
+//            i++;
 
-        if (up)
-            i = -1 * (nodes.length - i - 1);
+//        if (up)
+//            i = -1 * (nodes.length - i - 1);
 
-        this.viewport.change(Math.max(0, this.viewport.offset + i
-            + (up ? count : -1 * count)), null, true, true);
+//        this.viewport.change(Math.max(0, this.viewport.offset + i
+//            + (up ? count : -1 * count)), null, true, true);
             
-        nodes = this.getTraverseNodes();
-        return nodes[up ? nodes.length - 1 : 0];
+        //nodes = this.getTraverseNodes();
+//        return nodes[up ? nodes.length - 1 : 0];
     };
     
     //@todo keyboard handlers for pgup/pgdown should measure items instead of assuming fixed height
