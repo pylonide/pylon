@@ -106,354 +106,8 @@ apf.VirtualViewport = function(){
     };
 
     var _self = this;
-    this.viewport = {
-        offset : 0,
-        limit  : 2,
-        initialLimit : 2,
-        length : 0,
-        sb     : new apf.scrollbar(),
-        host   : this,
-        cache  : null,
-        
-        inited : false,
-        draw : function(){
-            this.inited = true;
-            var limit = this.limit; this.limit = 0;
-            this.resize(limit, true);
-        },
-        
-        redraw : function(){
-            this.change(this.offset);
-        },
-        
-        // set id's of xml to the viewport
-        prepare : function(){
-            if (!this.inited)
-                this.draw();
-            
-            var nodes = _self.getTraverseNodes();
-            if (!nodes)
-                return;
-            
-            var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
-                hNodes = _self.$container.childNodes;
-            for (var j = 0, i = 0, l = hNodes.length; i < l; i++) {
-                if (hNodes[i].nodeType != 1) continue;
-                
-                hNodes[i].style.display = (j >= nodes.length) ? "none" : "block"; //Will ruin tables & lists
-                
-                apf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
-                j++;
-            }
-        },
-        
-        /**
-         * @note This function only supports single dimension items (also no grid, like thumbnails)
-         */
-        resize : function(limit, updateScrollbar){
-            this.cache = null;
-
-            var i;
-            //Viewport shrinks
-            if (limit < this.limit) {
-                var nodes = _self.$container.childNodes;
-                for (i = nodes.length - 1; i >= 0; i--) {
-                    if (nodes[i].nodeType != 1) continue;
-                    _self.$container.removeChild(nodes[i]);
-                    if (--this.limit == limit) break;
-                }
-            }
-            //Viewport grows
-            else if (limit > this.limit) {
-                for (i = this.limit; i < limit; i++) {
-                    _self.$addEmpty(_self.emptyNode, "", _self.xmlRoot, _self.$container);
-                }
-            }
-            else
-                return;
-            
-            this.limit = limit;
-            
-            if (updateScrollbar)
-                this.sb.$update(this.$container);
-        },
-        
-        findNewLimit : function(scrollTop){
-            var oHtml = _self.$container;
-            
-            if (!scrollTop)
-                scrollTop = oHtml.scrollTop;
-
-            if (!_self.xmlRoot || oHtml.lastElementChild && oHtml.lastElementChild.style.display == "none")
-                return;
-
-            //Grow
-            if (!oHtml.lastElementChild || oHtml.lastElementChild.offsetTop + oHtml.lastElementChild.offsetHeight <= oHtml.offsetHeight + scrollTop) {
-                var Lid, xmlNode, nodes, sel = _self.$getSelection();
-                while (this.limit < this.length - 1 && (!oHtml.lastElementChild || oHtml.lastElementChild.offsetTop + oHtml.lastElementChild.offsetHeight <= oHtml.offsetHeight + scrollTop)) {
-                    this.limit++;
-
-                    nodes = _self.getTraverseNodes();
-                    if (nodes.length < this.limit) {
-                        this.limit = nodes.length;
-                        break;
-                    }
-
-                    xmlNode = nodes[nodes.length - 1];
-                    Lid = apf.xmldb.nodeConnect(_self.documentId, xmlNode, null, _self);
-                    _self.$addEmpty(xmlNode, Lid, _self.xmlRoot, oHtml);
-                    if (sel.indexOf(xmlNode) > -1)
-                        _self.$select(oHtml.lastElementChild);
-                    else
-                        _self.$deselect(oHtml.lastElementChild);
-                }
-            }
-            //Shrink
-            else if (oHtml.lastElementChild && oHtml.lastElementChild.offsetTop > oHtml.offsetHeight + scrollTop) {
-                var lastChild;
-                while (this.limit > 2 && (lastChild = oHtml.lastElementChild).offsetTop > oHtml.offsetHeight + scrollTop) {
-                    _self.$container.removeChild(lastChild);
-                    this.limit--;
-                }
-            }
-            
-            if (!this.initialLimit)
-                this.initialLimit = this.limit;
-        },
-        
-        scrollIntoView : function(xmlNode, toBottom){
-            var htmlNode = apf.xmldb.findHtmlNode(xmlNode, _self);
-            if (htmlNode && htmlNode.offsetTop > 0 
-              && htmlNode.offsetTop + htmlNode.offsetHeight < _self.$container.offsetHeight)
-                return;
-            
-            var nr = apf.getChildNumber(xmlNode, 
-                apf.MultiselectBinding.prototype.getTraverseNodes.call(_self));
-            this.change(nr, null, true, false, toBottom);
-        },
-        
-        /**
-         *  @todo   This method should be optimized by checking if there is
-         *          overlap between the new offset and the old one
-         */
-        change : function(offset, limit, updateScrollbar, noScroll, toBottom){
-            var offsetN;
-            
-            if (offset < 0) 
-                offset = 0;
-            
-            if (toBottom) 
-                offsetN = offset - this.limit + 1;
-            else if (offset > this.length - this.limit - 1) 
-                offsetN = Math.floor(this.length - this.limit - 1);
-            else 
-                offsetN = Math.floor(offset);
-            
-            if (!limit)
-                limit = this.limit;
-            
-            //var offsetN = Math.floor(offset);
-
-            this.cache   = null;
-            var diff     = offsetN - this.offset,
-                oldLimit = this.limit;
-            if (diff * diff >= this.limit*this.limit) //there is no overlap
-                diff = false;
-            this.offset = offsetN;
-            
-            if (diff > 0) { //get last node before resize
-                var lastNode = _self.$container.lastChild;
-                if (lastNode.nodeType != 1)
-                    lastNode = lastNode.previousSibling;
-            }
-            
-            /*if (limit && this.limit != limit)
-                this.resize(limit, updateScrollbar);
-            else */
-//            if (updateScrollbar) {
-//                this.sb.$curValue = this.offset / (this.length - this.limit - 1);
-//                this.sb.setScroll();//updatePos();
-//            }
-
-            //this.viewport.prepare();
-
-            //Traverse through XMLTree
-            //var nodes = this.$addNodes(this.xmlRoot, this.$container, null, this.renderRoot);
-            var nodes = _self.getTraverseNodes();
-            if (!nodes)
-                return;
-                
-            if (nodes.length < this.limit) {
-                if (offset > 0)
-                    alert("shouldnt get here");
-                else
-                    this.resize(nodes.length);
-            }
-
-            var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
-                hNodes = _self.$container.childNodes,
-                xmlNode, htmlNode, xmlPos, sel, len, j, i;
-
-            //remove nodes from the beginning
-            if (diff > 0) {
-                xmlPos = oldLimit - diff;
-                len    = hNodes.length,
-                sel    = _self.$getSelection();
-                for (j = 0, i = 0; j < diff && i < len; i++) {
-                    htmlNode = _self.$container.firstChild;
-                    if (htmlNode.nodeType == 1) {
-                        j++;
-                        xmlNode = nodes[xmlPos++];
-                        if (xmlNode) {
-                            apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
-                            _self.$updateNode(xmlNode, htmlNode);//, noModifier);
-                            if (sel.indexOf(xmlNode) > -1)
-                                _self.$select(htmlNode);
-                            else
-                                _self.$deselect(htmlNode);
-                            htmlNode.style.display = "block";
-                        }
-                        else {
-                            htmlNode.style.display = "none";
-                        }
-                    }
-                    
-                    _self.$container.appendChild(htmlNode);
-                }
-                
-                //var lastNode = nodes[oldLimit - diff - 1]
-            }
-            //remove nodes from the end
-            else if (diff < 0) {
-                diff = diff * -1;
-                xmlPos = 0; //should be adjusted for changing limit
-                sel    = _self.$getSelection();
-                for (j = 0, i = hNodes.length-1; j < diff && i >= 0; i++) {
-                    htmlNode = _self.$container.lastChild;
-                    if (htmlNode.nodeType == 1) {
-                        j++;
-                        xmlNode = nodes[xmlPos++];
-                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
-                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
-                        if (sel.indexOf(xmlNode) > -1)
-                            _self.$select(htmlNode);
-                        else
-                            _self.$deselect(htmlNode);
-                        htmlNode.style.display = "block";
-                    }
-                    
-                    _self.$container.insertBefore(htmlNode, _self.$container.firstChild);
-                }
-            }
-            //Recalc all nodes
-            else if (diff === false){
-                len = hNodes.length; 
-                sel = _self.$getSelection();
-                for (j = 0, i = 0; i < len; i++) {
-                    htmlNode = hNodes[i];
-                    if (htmlNode.nodeType == 1) {
-                        xmlNode = nodes[j++];
-                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
-                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
-                        
-                        if (sel.indexOf(xmlNode) > -1)
-                            _self.$select(htmlNode);
-                        else
-                            _self.$deselect(htmlNode);
-                    }
-                }
-            }
-            
-            if (!_self.$selected && sel && sel.length)
-                _self.$selected = apf.xmldb.findHtmlNode(sel[0], _self);
-
-            if (!noScroll) {
-                if (toBottom) {
-                    _self.$container.scrollTop = _self.$container.scrollHeight;
-                }
-                else if (offset >= this.length - this.initialLimit) {
-                    diff = offset - (this.length - this.initialLimit) + 2;
-                    _self.$container.scrollTop = (_self.$container.scrollHeight - _self.$container.offsetHeight) * (diff / 2);
-                }
-                else {
-                    var scrollTop = (offset % 1) * _self.$container.firstChild.offsetHeight;//(diff/limit) * _self.$container.offsetHeight;
-                    this.findNewLimit(scrollTop);
-                    _self.$container.scrollTop = scrollTop;
-                }
-                
-                //if (updateScrollbar)
-                    //this.sb.$update();
-                
-                if (updateScrollbar) {
-                    //console.log(this.offset, _self.$container.scrollTop, _self.$container.scrollHeight, this.limit, this.length);
-                    //this.sb.$curValue = this.offset / (this.length - this.limit - 1) - 0.01;
-                    console.log((_self.$container.scrollTop / _self.$container.scrollHeight * this.limit))
-                    //console.log(this.sb.$curValue);
-                    //this.sb.setScroll();//updatePos();
-                }
-                
-                return;
-            }
-        
-            //Build HTML
-            //_self.$fill(nodes);
-            
-            /*if (_self.$selected) {
-                _self.$deselect(_self.$selected);
-                _self.$selected = null;
-            }
-            
-            if (_self.selected && _self.$isInViewport(_self.selected))
-                _self.select(_self.selected);*/
-        }
-    };
+    this.viewport = new apf.ViewPortVirtual(this);
     
-    this.viewport.sb.parentNode = new apf.Class().$init();
-    this.viewport.sb.parentNode.$container = this.$pHtmlNode;
-    this.viewport.sb.parentNode.$int = this.$pHtmlNode;
-    this.viewport.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
-    
-    //this.$container.style.paddingLeft = this.viewport.sb.$ext.offsetWidth + "px";
-    
-    //this.viewport.sb.realtime = false;//!apf.isIE;
-    this.viewport.sb.attach(this.$container, this.viewport, function(e){
-        var vp = _self.viewport;
-        var timed = e.timed;
-        var pos = e.pos;
-
-        if (vp.sb.realtime || !timed) {
-            var l = vp.length - vp.limit;
-            if (l == 0)
-                _self.$container.scrollTop = pos * (_self.$container.scrollHeight - apf.getHtmlInnerHeight(_self.$container));
-            else 
-                vp.change(l * pos, vp.limit, false);
-        }
-        else {
-            clearTimeout(this.virtualVTimer);
-            this.virtualVTimer = $setTimeout(function(){
-                vp.change(Math.round((vp.length - vp.initialLimit) * pos), vp.limit, false);
-            }, 300);
-        }
-    });
-    
-    /* @todo
-     * - Fix bug in optimization
-     * - Fix flickering with larger viewport
-     * - Get templates to work
-     * - Firefox has problems with the scrollbar
-     * / Fix scrolling of items bigger than viewport (limit is too tight sometimes)
-     * - Improve pgup/pgdown
-     * - Fix multigrid lists (thumbnail)
-     * - Fix FF html conversion (insertHtmlNodes)
-     * - Optimize grow function to use fill
-     */
-    //#ifdef __WITH_LAYOUT
-    apf.layout.setRules(this.$container, "scrollbar", "\
-        var s = apf.all[" + this.viewport.sb.$uniqueId + "];\
-        s.$update();\
-    ", true);
-    apf.layout.queue(this.$container);
-    //#endif
     this.$isInViewport = function(xmlNode, struct){
         /*var marker = xmlNode.selectSingleNode("preceding-sibling::a_marker");
         var start = marker ? marker.getAttribute("end") : 0;
@@ -798,4 +452,397 @@ apf.VirtualViewport = function(){
     //Init
     this.caching = false; //for now, because the implications are unknown
 };
+
+apf.ViewPortVirtual = function(amlNode){
+    this.amlNode = amlNode;
+    
+    var _self = this;
+    apf.addEventListener("mousescroll", function(e){
+        if (_self.scrollbar.horizontal)
+            return;
+        
+        if (e.returnValue === false)
+            return;
+
+        var div = _self.getScrollHeight() - _self.getHeight();
+        if (div) {
+            _self.setScrollTop(_self.getScrollTop() 
+                + (-1 * e.delta * Math.min(45, _self.getHeight()/10)))
+            
+            e.preventDefault();
+        }
+    });
+    
+    apf.addListener(this.$getHtmlHost(), "scroll", function(){
+        _self.setScrollTop(_self.getScrollTop());
+    });
+    
+    amlNode.addEventListener("resize", function(){
+        _self.$findNewLimit();
+    });
+    
+    this.sb = new apf.scrollbar();
+    
+    this.sb.parentNode = new apf.Class().$init();
+    this.sb.parentNode.$container = amlNode.$pHtmlNode;
+    this.sb.parentNode.$int = amlNode.$pHtmlNode;
+    this.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
+    
+    this.sb.attach(this);
+    
+    /* @todo
+     * - Fix bug in optimization
+     * - Fix flickering with larger viewport
+     * - Get templates to work
+     * - Firefox has problems with the scrollbar
+     * / Fix scrolling of items bigger than viewport (limit is too tight sometimes)
+     * - Improve pgup/pgdown
+     * - Fix multigrid lists (thumbnail)
+     * - Fix FF html conversion (insertHtmlNodes)
+     * - Optimize grow function to use fill
+     */
+    //#ifdef __WITH_LAYOUT
+    apf.layout.setRules(amlNode.$container, "scrollbar", "\
+        var s = apf.all[" + _self.sb.$uniqueId + "];\
+        s.$update();\
+    ", true);
+    apf.layout.queue(amlNode.$container);
+    //#endif
+};
+
+(function(){
+    this.offset = 0;
+    this.limit  = 2;
+    this.length = 0;
+    this.host   = this;
+    this.cache  = null;
+    this.inited = false;
+    
+    this.setScrollbar = function(scrollbar, onscroll){
+       this.scrollbar = scrollbar;
+       
+       this.amlNode.addEventListener("scroll", onscroll);
+    }
+    
+    this.isVisible = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.offsetHeight || htmlNode.offsetWidth ? true : false;
+    }
+    
+    this.focus = function(){
+        if (this.amlNode.focus && this.amlNode.$isWindowContainer !== true)
+            this.amlNode.focus();
+    }
+    
+    this.getScrollTop = function(){
+        var htmlNode = this.$getHtmlHost();
+        return (this.offset * this.$getItemHeight()) + htmlNode.scrollTop;
+    }
+    
+    this.getScrollLeft = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.scrollLeft;
+    }
+    
+    this.getScrollHeight = function(){
+        return (this.length * this.$getItemHeight());
+    }
+    
+    this.getScrollWidth = function(){
+        var htmlNode = this.$getHtmlHost();
+        return (apf.isIE && htmlNode.lastChild 
+            ? htmlNode.lastChild.offsetLeft 
+                + htmlNode.lastChild.offsetWidth
+                + apf.getBox(apf.getStyle(htmlNode, "padding"))[1]
+                + (parseInt(apf.getStyle(htmlNode, "marginRight")) || 0)
+            : htmlNode.scrollWidth);
+    }
+    
+    this.getHeight = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.tagName == "HTML" || htmlNode.tagName == "BODY" 
+            ? apf.getWindowHeight() 
+            : apf.getHtmlInnerHeight(htmlNode);
+    }
+    
+    this.getWidth = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.tagName == "HTML" || htmlNode.tagName == "BODY" 
+            ? apf.getWindowHeight() 
+            : apf.getHtmlInnerWidth(htmlNode);
+    }
+    
+    this.setScrollTop = function(value, preventEvent){
+        var htmlNode = this.$getHtmlHost();
+        var itemHeight = this.$getItemHeight();
+
+        this.change(Math.floor(value / itemHeight));
+        
+        htmlNode.scrollTop = value - (this.offset * itemHeight);
+        
+        if (!preventEvent) {
+            this.amlNode.dispatchEvent("scroll", {
+                direction : "vertical",
+                viewport  : this,
+                scrollbar : this.scrollbar
+            });
+        }
+    }
+    
+    this.setScrollLeft = function(value, preventEvent){
+        var htmlNode = this.$getHtmlHost();
+        
+        htmlNode.scrollLeft = value;
+        
+        if (!preventEvent) {
+            this.amlNode.dispatchEvent("scroll", {
+                direction : "horizontal",
+                viewport  : this,
+                scrollbar : this.scrollbar
+            });
+        }
+    }
+    
+    this.scrollIntoView = function(xmlNode, toBottom){
+        var _self = this.amlNode;
+        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, _self);
+        if (htmlNode && htmlNode.offsetTop > 0 
+          && htmlNode.offsetTop + htmlNode.offsetHeight < _self.$container.offsetHeight)
+            return;
+        
+        var nr = apf.getChildNumber(xmlNode, 
+            apf.MultiselectBinding.prototype.getTraverseNodes.call(_self));
+        //this.change(nr, null, true, false, toBottom);
+        var itemHeight = this.$getItemHeight();
+        
+        this.setScrollTop(nr * itemHeight + (toBottom ? itemHeight - this.getHeight() : 0));
+    }
+    
+    /**** Private ****/
+    
+    //Assume all items have the same height;
+    //@todo this can be optimized by caching
+    this.$getItemHeight = function(){
+        if (!this.amlNode.each || !this.amlNode.xmlRoot)
+            return 1;
+
+        var htmlNode = apf.xmldb.findHtmlNode(this.amlNode.getTraverseNodes()[0], this.amlNode);
+        return htmlNode ? htmlNode.offsetHeight : 1;
+    }
+    
+    this.$getHtmlHost = function(){
+        var htmlNode = this.amlNode.$int || this.amlNode.$container;
+        return (htmlNode.tagName == "BODY" || htmlNode.tagName == "HTML" 
+            ? (apf.isSafari || apf.isChrome ? document.body : htmlNode.parentNode) 
+            : htmlNode);
+    }
+
+    /**** Implementation ****/
+
+    this.draw = function(){
+        this.inited = true;
+        var limit = this.limit; this.limit = 0;
+        this.resize(limit, true);
+    }
+    
+    this.redraw = function(){
+        this.change(this.offset, this.limit, true);
+    }
+    
+    // set id's of xml to the viewport
+    this.prepare = function(){
+        if (!this.inited)
+            this.draw();
+        
+        var _self = this.amlNode;
+        var nodes = _self.getTraverseNodes();
+        if (!nodes)
+            return;
+        
+        var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
+            hNodes = _self.$container.childNodes;
+        for (var j = 0, i = 0, l = hNodes.length; i < l; i++) {
+            if (hNodes[i].nodeType != 1) continue;
+            
+            hNodes[i].style.display = (j >= nodes.length) ? "none" : "block"; //Will ruin tables & lists
+            
+            apf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
+            j++;
+        }
+    }
+    
+    /**
+     * @note This function only supports single dimension items (also no grid, like thumbnails)
+     */
+    this.resize = function(limit, updateScrollbar){
+        this.cache = null;
+        
+        var _self = this.amlNode;
+        var i;
+        //Viewport shrinks
+        if (limit < this.limit) {
+            var nodes = _self.$container.childNodes;
+            for (i = nodes.length - 1; i >= 0; i--) {
+                if (nodes[i].nodeType != 1) continue;
+                _self.$container.removeChild(nodes[i]);
+                if (--this.limit == limit) break;
+            }
+        }
+        //Viewport grows
+        else if (limit > this.limit) {
+            for (i = this.limit; i < limit; i++) {
+                _self.$addEmpty(_self.emptyNode, "", _self.xmlRoot, _self.$container);
+            }
+        }
+        else
+            return;
+        
+        this.limit = limit;
+        
+        if (updateScrollbar)
+            this.sb.$update(this.$container);
+    }
+    
+    this.$findNewLimit = function(scrollTop){
+        var _self = this.amlNode;
+        var oHtml = _self.$container;
+        
+        if (!scrollTop)
+            scrollTop = oHtml.scrollTop;
+
+        if (!_self.xmlRoot || oHtml.lastElementChild && oHtml.lastElementChild.style.display == "none")
+            return;
+        
+        var limit = Math.ceil(this.getHeight() / this.$getItemHeight() + 2);
+        this.resize(limit);
+        this.redraw();
+    }
+    
+    /**
+     *  @todo   This method should be optimized by checking if there is
+     *          overlap between the new offset and the old one
+     */
+    this.change = function(offset, limit, force){
+        var offsetN;
+        var _self = this.amlNode;
+        
+        if (offset > this.length - this.limit - 1) 
+            offsetN = Math.floor(this.length - this.limit - 1);
+        else 
+            offsetN = Math.floor(offset);
+        
+        if (offsetN < 0) 
+            offsetN = 0;
+        
+        if (!limit)
+            limit = this.limit;
+        
+        var scrollTop = this.getScrollTop();
+        
+        this.cache   = null;
+        var diff     = offsetN - this.offset,
+            oldLimit = this.limit;
+        if (diff * diff >= this.limit*this.limit) //there is no overlap
+            diff = false;
+        this.offset = offsetN;
+        
+        if (diff > 0) { //get last node before resize
+            var lastNode = _self.$container.lastChild;
+            if (lastNode.nodeType != 1)
+                lastNode = lastNode.previousSibling;
+        }
+        
+        //Traverse through XMLTree
+        var nodes = _self.getTraverseNodes();
+        if (!nodes)
+            return;
+            
+        if (nodes.length < this.limit) {
+            if (offset > 0)
+                alert("shouldnt get here");
+            else
+                this.resize(nodes.length);
+        }
+
+        var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
+            hNodes = _self.$container.childNodes,
+            xmlNode, htmlNode, xmlPos, sel, len, j, i;
+
+        //remove nodes from the beginning
+        if (diff > 0) {
+            xmlPos = oldLimit - diff;
+            len    = hNodes.length,
+            sel    = _self.$getSelection();
+            for (j = 0, i = 0; j < diff && i < len; i++) {
+                htmlNode = _self.$container.firstChild;
+                if (htmlNode.nodeType == 1) {
+                    j++;
+                    xmlNode = nodes[xmlPos++];
+                    if (xmlNode) {
+                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                        if (sel.indexOf(xmlNode) > -1)
+                            _self.$select(htmlNode);
+                        else
+                            _self.$deselect(htmlNode);
+                        htmlNode.style.display = "block";
+                    }
+                    else {
+                        htmlNode.style.display = "none";
+                    }
+                }
+                
+                _self.$container.appendChild(htmlNode);
+            }
+        }
+        //remove nodes from the end
+        else if (diff < 0) {
+            diff = diff * -1;
+            xmlPos = 0; //should be adjusted for changing limit
+            sel    = _self.$getSelection();
+            for (j = 0, i = hNodes.length-1; j < diff && i >= 0; i++) {
+                htmlNode = _self.$container.lastChild;
+                if (htmlNode.nodeType == 1) {
+                    j++;
+                    xmlNode = nodes[xmlPos++];
+                    apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                    _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                    if (sel.indexOf(xmlNode) > -1)
+                        _self.$select(htmlNode);
+                    else
+                        _self.$deselect(htmlNode);
+                    htmlNode.style.display = "block";
+                }
+
+                _self.$container.insertBefore(htmlNode, _self.$container.firstChild);
+            }
+        }
+        //Recalc all nodes
+        else if (force || diff === false){
+            len = hNodes.length; 
+            sel = _self.$getSelection();
+            for (j = 0, i = 0; i < len; i++) {
+                htmlNode = hNodes[i];
+                if (htmlNode.nodeType == 1) {
+                    xmlNode = nodes[j++];
+                    apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                    _self.$updateNode(xmlNode, htmlNode);//, noModifier);
+                    
+                    if (sel.indexOf(xmlNode) > -1)
+                        _self.$select(htmlNode);
+                    else
+                        _self.$deselect(htmlNode);
+                }
+            }
+        }
+        
+        if (!_self.$selected && sel && sel.length)
+            _self.$selected = apf.xmldb.findHtmlNode(sel[0], _self);
+
+        var htmlNode = this.$getHtmlHost();
+        var itemHeight = this.$getItemHeight();
+        htmlNode.scrollTop = scrollTop - (this.offset * itemHeight);
+    }
+}).call(apf.ViewPortVirtual.prototype);
+
 // #endif
