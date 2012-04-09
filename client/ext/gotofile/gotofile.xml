@@ -2,12 +2,11 @@
     <a:bar id="winGoToFile"
       buttons   = "close" 
       width     = "500" 
-      height    = "300"
+      height    = "400"
       top       = "37"
       skin      = "basic"
       left      = "50%-250"
       resizable = "vertical"
-      visible   = "false"
       zindex    = "999999"
       style     = "
         background:#e8e8e8;
@@ -18,7 +17,7 @@
       onresize = "
         this.setAttribute('left', '50%-' + this.getWidth()/2);
       ">
-        <a:vbox edge="5" padding="5" anchors="0 0 0 0">
+        <a:vbox edge="0 5 5 5" padding="5" anchors="0 0 0 0">
             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
             <a:list id="dgGoToFile"
               flex      = "1" 
@@ -27,7 +26,6 @@
               scrollbar = "sbShared 2 2 2"
               model     = "mdlGoToFileSearch"
               viewport  = "virtual"
-              autoselect    = "false"
               multiselect   = "true"
               empty-message = "No search results">
                 <a:each match="[d:response/d:href]" />

@@ -62,7 +62,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     init : function() {
         var _self = this;
         
-        txtGoToFile.addEventListener("prop.visible", function(e){
+        winGoToFile.addEventListener("prop.visible", function(e){
             if (e.value) {
                 txtGoToFile.select();
                 txtGoToFile.focus();
@@ -81,24 +81,33 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 //            if (txtGoToFile.value == "")
 //                return;
 //
-//            if (e.keyCode == 13){
-//                _self.searchFor(txtGoToFile.value);
-//
-//                ide.dispatchEvent("track_action", {type: "gotofile"});
-//                return false;
-//            }
-            if (e.keyCode == 40 && dgGoToFile.length) {
-                var first = dgGoToFile.getFirstTraverseNode();
-                if (first) {
-                    dgGoToFile.select(first);
+            if (e.keyCode == 13){
+                _self.openFile();
+
+                ide.dispatchEvent("track_action", {type: "gotofile"});
+                return false;
+            }
+            else if (e.keyCode == 38 && dgGoToFile.viewport.length) {
+                if (dgGoToFile.selected == dgGoToFile.$cachedTraverseList[0])
+                    return;
+                
+                var prev = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected, false);
+                if (prev) {
+                    dgGoToFile.select(prev);
+                    dgGoToFile.focus();
+                }
+            }
+            else if (e.keyCode == 40 && dgGoToFile.viewport.length) {
+                var next = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected);
+                if (next) {
+                    dgGoToFile.select(next);
                     dgGoToFile.focus();
                 }
             }
         });
         
-        // The search implementation - to be improved
-        
         var lastSearch;
+        // The search implementation - to be improved
         txtGoToFile.addEventListener("afterchange", function(e){
             var keyword = txtGoToFile.value, klen = keyword.length;
             
@@ -158,7 +167,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             mdlGoToFileSearch.load(data);
             
             // See if there are open files that match the search results
-            // and select them if in the first displayed results
+            // and the first if in the displayed results
             
             var pages = tabEditors.getPages(), hash = {};
             for (var i = pages.length - 1; i >= 0; i--) {
@@ -178,7 +187,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         
         dgGoToFile.addEventListener("keydown", function(e) {
             if (e.keyCode == 38 && !e.shiftKey) {
-                if (this.selected == this.getFirstTraverseNode())
+                if (this.selected == this.$cachedTraverseList[0])
                     txtGoToFile.focus();
             }
             else if (e.keyCode == 13) {
@@ -191,6 +200,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }, true);
 
         dgGoToFile.addEventListener("afterchoose", function(e) {
+            _self.openFile();
+        });
+        
+        apf.addListener(dgGoToFile.$ext, "mouseup", function(e) {
             _self.openFile();
         });
         
@@ -253,15 +266,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }*/
     },
     
-    searchFor : function(keyword){
-        this.lastSearch = keyword;
-                
-//        mdlGoToFile.load("{davProject.report('" + ide.davPrefix 
-//            + "', 'filesearch', {query: '" + txtGoToFile.value + "'})}");
-
-        
-    },
-    
     openFile: function(){
         var nodes = dgGoToFile.getSelection();
         
@@ -269,6 +273,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             return false;
             
         winGoToFile.hide();
+        
+        txtGoToFile.change("");
+        
         for (var i = 0; i < nodes.length; i++) {
             var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
                 + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
