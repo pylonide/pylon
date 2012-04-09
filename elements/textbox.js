@@ -453,6 +453,14 @@ apf.textbox  = function(struct, tagName){
             //this.$clear();
             if (this.value) {
                 this.change("");
+                
+                this.dispatchEvent("keydown", {
+                    keyCode   : key,
+                    ctrlKey   : ctrlKey,
+                    shiftKey  : shiftKey,
+                    altKey    : altKey,
+                    htmlEvent : e});
+                
                 e.stopPropagation();
             }
             //this.focus({mouse:true});

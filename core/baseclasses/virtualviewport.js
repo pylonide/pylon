@@ -208,11 +208,12 @@ apf.VirtualViewport = function(){
         
         //Prepare viewport
         this.viewport.cache  = null;
+        this.viewport.offset = 0;
         this.viewport.length = this.$cachedTraverseList.length; //@todo fix this for virtual length
         if (this.viewport.length < this.viewport.limit)
             this.viewport.resize(this.viewport.length);
         this.viewport.prepare();
-        this.viewport.change(0);
+        //this.viewport.change(0);
         
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
@@ -244,6 +245,8 @@ apf.VirtualViewport = function(){
 
         if (this.$focussable)
             apf.window.hasFocus(this) ? this.$focus() : this.$blur();
+        
+        this.viewport.setScrollTop(0);
     };
     
     this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
@@ -706,15 +709,17 @@ apf.ViewPortVirtual = function(amlNode){
         
         var len    = nodes.length;
         var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
-            hNodes = _self.$container.childNodes;
+            hNodes = _self.$container.childNodes, hNode;
         for (var j = 0, i = 0, l = hNodes.length; i < l; i++) {
             if (hNodes[i].nodeType != 1) continue;
             
             if (j >= len)
                 hNodes[i].style.display = "none"; //Will ruin tables & lists
             else {
-                hNodes[i].style.display = "block"; //Will ruin tables & lists
-                apf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
+                hNode = hNodes[i];
+                _self.$deselect(hNode);
+                hNode.style.display = "block"; //Will ruin tables & lists
+                apf.xmldb.nodeConnect(docId, nodes[j], hNode, _self);
             }
             
             j++;
