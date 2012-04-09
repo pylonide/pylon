@@ -107,8 +107,14 @@ apf.scrollbar = function(struct, tagName){
     });
     
     this.attach = function(viewport){
-        if (viewport.nodeFunc)
-            viewport = new apf.ViewPortAml(viewport);
+        if (viewport.nodeFunc) {
+            // #ifdef __WITH_VIRTUALVIEWPORT
+            if (viewport.hasFeature(apf.__VIRTUALVIEWPORT__))
+                viewport = viewport.viewport;
+            else
+            // #endif
+                viewport = new apf.ViewPortAml(viewport);
+        }
         else if (viewport.style)
             viewport = new apf.ViewPortHtml(viewport);
         
@@ -122,10 +128,10 @@ apf.scrollbar = function(struct, tagName){
         var _self = this;
         
         this.$viewport = viewport;
-        this.$viewport.setScrollbar(this, function(){
+        this.$viewport.setScrollbar(this, function(e){
             _self.$update();
             
-            if (_self.showonscroll) {
+            if (_self.showonscroll && e.byUser) {
                 _self.scrolling = true;
                 
                 clearTimeout(_self.$hideOnScrollTimer);
@@ -304,6 +310,7 @@ apf.scrollbar = function(struct, tagName){
                 type : "fade",
                 from : 1,
                 to   : 0,
+                steps : 20,
                 onfinish : function(){
                     _self.$ext.style.display = "none";
                     apf.setOpacity(_self.$ext, 1);
@@ -605,6 +612,19 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             
             sb = _self.$sharedScrollbar;
             
+            if (!sb.$addedMouseOut) {
+                apf.addListener(sb.$ext, "mouseout", function(e){
+                    if (!hasOnScroll())
+                        return;
+
+                    if (apf.findHost(e.fromElement) == sb && apf.findHost(e.toElement) != sb) {
+                        clearTimeout(timer);
+                        hideScrollbar();
+                    }
+                });
+                sb.$addedMouseOut = true;
+            }
+            
             if (!sb.$viewport || sb.$viewport.amlNode != _self) {
                 var pNode = (_self.$ext == oHtml ? _self.$ext.parentNode : _self.$ext);
                 pNode.appendChild(sb.$ext);
@@ -620,6 +640,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                 sb.setAttribute("for", _self);
                 sb.$ext.style.display = "none";
                 sb.dragging = false;
+
                 if (sb.$hideOnScrollControl)
                     sb.$hideOnScrollControl.stop();
             }
@@ -627,8 +648,10 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             if (hasOnScroll()) {
                 clearTimeout(timer);
                 var pos = apf.getAbsolutePosition(oHtml);
-                var show = oHtml.offsetWidth - (e.clientX - pos[0]) < 25;
-                if (show && sb.$ext.style.display == "none" || !show && sb.$ext.style.display == "block") {
+                var rightPos = oHtml.offsetWidth - (e.clientX - pos[0]);
+                var show = rightPos < 25 && rightPos > right;
+                if (show && sb.$ext.style.display == "none" 
+                  || !show && sb.$ext.style.display == "block") {
                     if (show)
                         showScrollbar();
                     else
@@ -671,18 +694,11 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
         apf.addListener(oHtml, "mouseout", function(e){
             if (!hasOnScroll())
                 return;
-            
-            if (apf.findHost(e.relatedTarget) == sb) {
-                apf.addListener(sb.$ext, "mouseout", function(e){
-                    hideScrollbar();
-                    
-                    apf.removeListener(sb.$ext, "mouseout", arguments.callee);
-                });
-                return;
+
+            if (apf.findHost(e.toElement) != sb) {
+                clearTimeout(timer);
+                hideScrollbar();
             }
-            
-            clearTimeout(timer);
-            hideScrollbar();
         });
     }
 };
@@ -794,26 +810,28 @@ apf.ViewPortAml = function(amlNode){
             : apf.getHtmlInnerWidth(htmlNode);
     }
     
-    this.setScrollTop = function(value, preventEvent){
+    this.setScrollTop = function(value, preventEvent, byUser){
         var htmlNode = this.$getHtmlHost();
         htmlNode.scrollTop = value;
         
         if (!preventEvent) {
             this.amlNode.dispatchEvent("scroll", {
                 direction : "vertical",
+                byUser    : byUser,
                 viewport  : this,
                 scrollbar : this.scrollbar
             });
         }
     }
     
-    this.setScrollLeft = function(value, preventEvent){
+    this.setScrollLeft = function(value, preventEvent, byUser){
         var htmlNode = this.$getHtmlHost();
         htmlNode.scrollLeft = value;
         
         if (!preventEvent) {
             this.amlNode.dispatchEvent("scroll", {
                 direction : "horizontal",
+                byUser    : byUser,
                 viewport  : this,
                 scrollbar : this.scrollbar
             });
@@ -854,7 +872,7 @@ apf.ViewPortAml = function(amlNode){
             delete this.$lastScrollState;
             
             this.setScrollTop(this.getScrollTop()
-                + -1 * e.delta * Math.min(45, this.getHeight()/10));
+                + -1 * e.delta * Math.min(45, this.getHeight()/10), false, true);
             
             e.preventDefault();
         }

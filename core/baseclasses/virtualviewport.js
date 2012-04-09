@@ -207,7 +207,8 @@ apf.VirtualViewport = function(){
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
         
-        this.viewport.sb.$update(this.$container);
+        if (this.viewport.sb)
+            this.viewport.sb.$update(this.$container);
 
         //Build HTML
         //this.$fill(nodes);
@@ -467,7 +468,7 @@ apf.ViewPortVirtual = function(amlNode){
         var div = _self.getScrollHeight() - _self.getHeight();
         if (div) {
             _self.setScrollTop(_self.getScrollTop() 
-                + (-1 * e.delta * Math.min(45, _self.getHeight()/10)))
+                + (-1 * e.delta * Math.min(45, _self.getHeight()/10)), false, true)
             
             e.preventDefault();
         }
@@ -481,14 +482,16 @@ apf.ViewPortVirtual = function(amlNode){
         _self.$findNewLimit();
     });
     
-    this.sb = new apf.scrollbar();
-    
-    this.sb.parentNode = new apf.Class().$init();
-    this.sb.parentNode.$container = amlNode.$pHtmlNode;
-    this.sb.parentNode.$int = amlNode.$pHtmlNode;
-    this.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
-    
-    this.sb.attach(this);
+    if (!amlNode.scrollbar) {
+        this.sb = new apf.scrollbar();
+        
+        this.sb.parentNode = new apf.Class().$init();
+        this.sb.parentNode.$container = amlNode.$pHtmlNode;
+        this.sb.parentNode.$int = amlNode.$pHtmlNode;
+        this.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
+        
+        this.sb.attach(this);
+    }
     
     /* @todo
      * - Fix bug in optimization
@@ -502,11 +505,11 @@ apf.ViewPortVirtual = function(amlNode){
      * - Optimize grow function to use fill
      */
     //#ifdef __WITH_LAYOUT
-    apf.layout.setRules(amlNode.$container, "scrollbar", "\
-        var s = apf.all[" + _self.sb.$uniqueId + "];\
-        s.$update();\
-    ", true);
-    apf.layout.queue(amlNode.$container);
+//    apf.layout.setRules(amlNode.$container, "scrollbar", "\
+//        var s = apf.all[" + _self.sb.$uniqueId + "];\
+//        s.$update();\
+//    ", true);
+//    apf.layout.queue(amlNode.$container);
     //#endif
 };
 
@@ -545,7 +548,7 @@ apf.ViewPortVirtual = function(amlNode){
     }
     
     this.getScrollHeight = function(){
-        return (this.length * this.$getItemHeight());
+        return (this.length - 1) * this.$getItemHeight();
     }
     
     this.getScrollWidth = function(){
@@ -572,7 +575,7 @@ apf.ViewPortVirtual = function(amlNode){
             : apf.getHtmlInnerWidth(htmlNode);
     }
     
-    this.setScrollTop = function(value, preventEvent){
+    this.setScrollTop = function(value, preventEvent, byUser){
         var htmlNode = this.$getHtmlHost();
         var itemHeight = this.$getItemHeight();
 
@@ -583,13 +586,14 @@ apf.ViewPortVirtual = function(amlNode){
         if (!preventEvent) {
             this.amlNode.dispatchEvent("scroll", {
                 direction : "vertical",
+                byUser    : byUser,
                 viewport  : this,
                 scrollbar : this.scrollbar
             });
         }
     }
     
-    this.setScrollLeft = function(value, preventEvent){
+    this.setScrollLeft = function(value, preventEvent, byUser){
         var htmlNode = this.$getHtmlHost();
         
         htmlNode.scrollLeft = value;
@@ -597,6 +601,7 @@ apf.ViewPortVirtual = function(amlNode){
         if (!preventEvent) {
             this.amlNode.dispatchEvent("scroll", {
                 direction : "horizontal",
+                byUser    : byUser,
                 viewport  : this,
                 scrollbar : this.scrollbar
             });
@@ -699,7 +704,7 @@ apf.ViewPortVirtual = function(amlNode){
         
         this.limit = limit;
         
-        if (updateScrollbar)
+        if (updateScrollbar && this.sb)
             this.sb.$update(this.$container);
     }
     
