@@ -80,11 +80,6 @@ apf.VirtualViewport = function(){
         
     };
     
-    this.addEventListener("$load", function(){
-        if (!this.viewport.limit)
-            this.viewport.limit = 1;
-    });
-    
     this.clear = function(nomsg, do_event){
         if (this.clearSelection)
             this.clearSelection(!do_event);
@@ -199,12 +194,16 @@ apf.VirtualViewport = function(){
         
         this.$updateTraverseCache(XMLRoot, true);
         
-        if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
-            return this.clear("loading");
+        if (!this.renderRoot && !this.$cachedTraverseList.length)
+            return this.clear();
         
+        //this.$removeClearMessage();
+        
+        // #ifdef __ENABLE_VIRTUALDATASET
         //Initialize virtual dataset if load rule exists
         if (this.$hasBindRule("load"))
             this.$createVirtualDataset(XMLRoot);
+        // #endif
         
         //Prepare viewport
         this.viewport.cache  = null;
@@ -668,14 +667,11 @@ apf.ViewPortVirtual = function(amlNode){
             if (nodes.length) {
                 var htmlNode = apf.xmldb.findHtmlNode(nodes[0], this.amlNode);
                 if (htmlNode)
-                    return htmlNode.offsetHeight;
+                    return this.$lastItemHeight = htmlNode.offsetHeight;
             }
         }
         
-        var htmlNode = this.$getHtmlHost();
-        return htmlNode && htmlNode.firstElementChild 
-            ? htmlNode.firstElementChild.offsetHeight 
-            : 1000;
+        return this.$lastItemHeight || 1000;
     }
     
     this.$getHtmlHost = function(){
