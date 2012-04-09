@@ -89,13 +89,14 @@ apf.VirtualViewport = function(){
         if (this.clearSelection)
             this.clearSelection(!do_event);
 
-        this.documentId = this.xmlRoot = this.cacheId = null;
+        //this.documentId = this.xmlRoot = this.cacheId = null;
 
         if (!nomsg) {
             this.viewport.offset = 0;
             this.viewport.length = 0;
             this.viewport.resize(0);
-            this.viewport.sb.$update();
+            if (this.viewport.sb) 
+                this.viewport.sb.$update();
     
             this.$setClearMessage(this["empty-message"]);
         }
@@ -154,6 +155,8 @@ apf.VirtualViewport = function(){
         return this.getTraverseNodes(xmlNode)[0];
     };
     
+    // #ifdef __ENABLE_VIRTUALDATASET
+    
     /**
      * @private
      */
@@ -178,6 +181,8 @@ apf.VirtualViewport = function(){
         }
     };
     
+    // #endif
+    
     this.$xmlUpdate = function(){
         this.viewport.cache  = null;
         this.viewport.length = this.xmlRoot.selectNodes(this.each).length; //@todo fix this for virtual length
@@ -192,6 +197,8 @@ apf.VirtualViewport = function(){
         //Reserve here a set of nodeConnect id's and add them to our initial marker
         //Init virtual dataset here
         
+        this.$updateTraverseCache(XMLRoot, true);
+        
         if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
             return this.clear("loading");
         
@@ -201,15 +208,15 @@ apf.VirtualViewport = function(){
         
         //Prepare viewport
         this.viewport.cache  = null;
-        this.viewport.length = this.xmlRoot.selectNodes(this.each).length + 1; //@todo fix this for virtual length
+        this.viewport.length = this.$cachedTraverseList.length; //@todo fix this for virtual length
+        if (this.viewport.length < this.viewport.limit)
+            this.viewport.resize(this.viewport.length);
         this.viewport.prepare();
+        this.viewport.change(0);
         
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
         
-        if (this.viewport.sb)
-            this.viewport.sb.$update(this.$container);
-
         //Build HTML
         //this.$fill(nodes);
 
@@ -241,6 +248,8 @@ apf.VirtualViewport = function(){
     
     this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
     
+    // #ifdef __ENABLE_VIRTUALDATASET
+    
     /**
      * @example <a:load get="call:getCategory(start, length, ascending)" total="@total" />
      */
@@ -258,7 +267,8 @@ apf.VirtualViewport = function(){
                 throw new Error("Could not find model");
             
             if (!rule.getAttribute("total")) {
-                throw new Error(apf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <a:load total='xpath' />"))                
+                throw new Error(apf.formatErrorString(this, "Loading data", 
+                    "Error in load rule. Missing total xpath. Expecting <a:load total='xpath' />"));
             }
             //#endif
 
@@ -355,6 +365,15 @@ apf.VirtualViewport = function(){
         return list;
     }
     
+    // #endif
+    
+    this.$updateTraverseCache = function(xmlNode, force){
+        if (force || !this.$cachedTraverseList || this.$cachedTraverseList.name != this.each) {
+            this.$cachedTraverseList = (xmlNode || this.xmlRoot).selectNodes(this.each);
+            this.$cachedTraverseList.name = this.each;
+        }
+    }
+    
     /**
      * Retrieves a nodelist containing the {@link term.datanode data nodes} which are rendered by
      * this element (see each nodes, see {@link baseclass.multiselectbinding.binding.each}).
@@ -368,24 +387,31 @@ apf.VirtualViewport = function(){
         if (this.viewport.cache)
             return this.viewport.cache;
 
-        var start = this.viewport.offset + 1,
-            end   = start + this.viewport.limit;
-        
         //caching statement here
+        this.$updateTraverseCache(xmlNode);
 
+        var start = this.viewport.offset,
+            end   = Math.min(this.$cachedTraverseList.length, start + this.viewport.limit);
+        
+        // #ifdef __ENABLE_VIRTUALDATASET
         var markers = (xmlNode || this.xmlRoot).selectNodes("a_marker");
 
-        //Special case for fully loaded virtual dataset
         if (!markers.length) {
-            var list = (xmlNode || this.xmlRoot).selectNodes("("
-                + this.each + ")[position() >= " + start
-                + " and position() < " + (end) + "]");
+        //#endif
+            
+            //Special case for fully loaded virtual dataset
+            var list = [];
+            for (var i = start; i < end; i++) {
+                list.push(this.$cachedTraverseList[i]);
+            }
 
             //#ifdef __WITH_SORTING
             return this.$sort ? this.$sort.apply(list) : list;
             /* #else
             return list;
             #endif */
+        
+        // #ifdef __ENABLE_VIRTUALDATASET
         }
 
         for (var i = 0; i < markers.length; i++) {
@@ -414,6 +440,8 @@ apf.VirtualViewport = function(){
             else
                 return buildList(markers, -1, start, (xmlNode || this.xmlRoot));
         }
+        
+        // #endif
     };
     
     var baseNTS = this.getNextTraverseSelected;
@@ -459,7 +487,7 @@ apf.ViewPortVirtual = function(amlNode){
     
     var _self = this;
     apf.addEventListener("mousescroll", function(e){
-        if (_self.scrollbar.horizontal)
+        if (!_self.scrollbar || _self.scrollbar.horizontal)
             return;
         
         if (e.returnValue === false)
@@ -479,6 +507,10 @@ apf.ViewPortVirtual = function(amlNode){
     });
     
     amlNode.addEventListener("resize", function(){
+        _self.$findNewLimit();
+    });
+    
+    amlNode.addEventListener("afterload", function(){
         _self.$findNewLimit();
     });
     
@@ -548,7 +580,7 @@ apf.ViewPortVirtual = function(amlNode){
     }
     
     this.getScrollHeight = function(){
-        return (this.length - 1) * this.$getItemHeight();
+        return (this.length) * this.$getItemHeight();
     }
     
     this.getScrollWidth = function(){
@@ -611,13 +643,13 @@ apf.ViewPortVirtual = function(amlNode){
     this.scrollIntoView = function(xmlNode, toBottom){
         var _self = this.amlNode;
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, _self);
-        if (htmlNode && htmlNode.offsetTop > 0 
-          && htmlNode.offsetTop + htmlNode.offsetHeight < _self.$container.offsetHeight)
+        if (htmlNode && htmlNode.offsetTop - _self.$container.scrollTop > 0 
+          && htmlNode.offsetTop + htmlNode.offsetHeight 
+            - _self.$container.scrollTop < _self.$container.offsetHeight)
             return;
         
         var nr = apf.getChildNumber(xmlNode, 
             apf.MultiselectBinding.prototype.getTraverseNodes.call(_self));
-        //this.change(nr, null, true, false, toBottom);
         var itemHeight = this.$getItemHeight();
         
         this.setScrollTop(nr * itemHeight + (toBottom ? itemHeight - this.getHeight() : 0));
@@ -628,11 +660,19 @@ apf.ViewPortVirtual = function(amlNode){
     //Assume all items have the same height;
     //@todo this can be optimized by caching
     this.$getItemHeight = function(){
-        if (!this.amlNode.each || !this.amlNode.xmlRoot)
-            return 1;
-
-        var htmlNode = apf.xmldb.findHtmlNode(this.amlNode.getTraverseNodes()[0], this.amlNode);
-        return htmlNode ? htmlNode.offsetHeight : 1;
+        if (this.amlNode.each && this.amlNode.xmlRoot) {
+            var nodes = this.amlNode.getTraverseNodes();
+            if (nodes.length) {
+                var htmlNode = apf.xmldb.findHtmlNode(nodes[0], this.amlNode);
+                if (htmlNode)
+                    return htmlNode.offsetHeight;
+            }
+        }
+        
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode && htmlNode.firstElementChild 
+            ? htmlNode.firstElementChild.offsetHeight 
+            : 1000;
     }
     
     this.$getHtmlHost = function(){
@@ -664,14 +704,19 @@ apf.ViewPortVirtual = function(amlNode){
         if (!nodes)
             return;
         
+        var len    = nodes.length;
         var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
             hNodes = _self.$container.childNodes;
         for (var j = 0, i = 0, l = hNodes.length; i < l; i++) {
             if (hNodes[i].nodeType != 1) continue;
             
-            hNodes[i].style.display = (j >= nodes.length) ? "none" : "block"; //Will ruin tables & lists
+            if (j >= len)
+                hNodes[i].style.display = "none"; //Will ruin tables & lists
+            else {
+                hNodes[i].style.display = "block"; //Will ruin tables & lists
+                apf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
+            }
             
-            apf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
             j++;
         }
     }
@@ -709,18 +754,18 @@ apf.ViewPortVirtual = function(amlNode){
     }
     
     this.$findNewLimit = function(scrollTop){
-        var _self = this.amlNode;
-        var oHtml = _self.$container;
-        
-        if (!scrollTop)
-            scrollTop = oHtml.scrollTop;
-
-        if (!_self.xmlRoot || oHtml.lastElementChild && oHtml.lastElementChild.style.display == "none")
+        if (!this.amlNode.xmlRoot)
             return;
         
         var limit = Math.ceil(this.getHeight() / this.$getItemHeight() + 2);
-        this.resize(limit);
-        this.redraw();
+        if (this.amlNode.$cachedTraverseList 
+          && this.amlNode.$cachedTraverseList.length < limit)
+            limit = this.amlNode.$cachedTraverseList.length;
+        
+        if (limit != this.limit) {
+            this.resize(limit);
+            this.redraw();
+        }
     }
     
     /**
@@ -731,8 +776,8 @@ apf.ViewPortVirtual = function(amlNode){
         var offsetN;
         var _self = this.amlNode;
         
-        if (offset > this.length - this.limit - 1) 
-            offsetN = Math.floor(this.length - this.limit - 1);
+        if (offset > this.length - this.limit) 
+            offsetN = Math.floor(this.length - this.limit);
         else 
             offsetN = Math.floor(offset);
         
@@ -759,7 +804,7 @@ apf.ViewPortVirtual = function(amlNode){
         
         //Traverse through XMLTree
         var nodes = _self.getTraverseNodes();
-        if (!nodes)
+        if (!nodes || !nodes.length)
             return;
             
         if (nodes.length < this.limit) {

@@ -131,7 +131,7 @@ apf.scrollbar = function(struct, tagName){
         this.$viewport.setScrollbar(this, function(e){
             _self.$update();
             
-            if (_self.showonscroll && e.byUser) {
+            if (_self.showonscroll) { // && e.byUser) {
                 _self.scrolling = true;
                 
                 clearTimeout(_self.$hideOnScrollTimer);
@@ -231,7 +231,7 @@ apf.scrollbar = function(struct, tagName){
                 * this.$slideMaxSize)) - apf[this.$getDiff](this.$caret)) + "px";
             //if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
                 //this.$ext.style.display = "none";
-            
+
             this.position = viewport.getScrollTop() / (sz - vp);
 
             var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
@@ -601,7 +601,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
         this.$sharedScrollbar = self[name] || false;
         
         function hasOnScroll(){
-            return apf.isTrue(sb.getAttribute("showonscroll"));
+            return sb && apf.isTrue(sb.getAttribute("showonscroll"));
         }
         
         var oHtml = this.$container || this.$int || this.$ext, timer, sb;

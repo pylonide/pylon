@@ -101,7 +101,7 @@ apf.getChildNumber = function(node, fromList){
     if (!node) return -1;
 
     var p = node.parentNode, j = 0;
-    if (!p) return 0;
+    if (!p) return -1;
     if (!fromList)
         fromList = p.childNodes;
 
@@ -115,7 +115,7 @@ apf.getChildNumber = function(node, fromList){
             return j;
         j++;
     }
-    return j;
+    return -1;
 };
 
 /**
