@@ -4665,60 +4665,41 @@
 <a:list name="lineselect">
     <a:style><![CDATA[
         .lineselect{
-            overflow: auto;
-            position: relative;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
-            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
-            color: #333333;
-            border: 1px solid #afafaf;
-            margin: 0;
-            outline: none;
-            font-family: Tahoma, Arial;
-            font-size: 12px;
-            text-overflow: ellipsis;
-            -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
-            box-shadow: 0px 1px 0px #ffffff;
-
-            cursor: default;
+            
         }
-
-        .runconfig.lineselect {
-            border-color: #ffffff;
-            border-width: 1px 0 0;
+        
+        .searchresults {
+            
         }
-        .lineselect>.selected{
-            background-color: rgb(203, 205, 208);
-            color: black;
+        
+        .searchresults>div{
+            background : rgba(255,255,255,0.4);
+            color : #666;
+            padding : 2px 3px 4px 10px;
+            border-top : 1px solid rgba(255,255,255,0.8);
+            border-bottom : 1px solid rgba(0,0,0,0.1);
+            font-size : 11px;
         }
-        .lineselectFocus>.selected{
+        .searchresults>div>span{
+            font-size : 14px;
+            color : #333;
+            display : block;
+            padding : 2px;
+        }
+        .searchresults>div>span>strong{
+            color : #111;
+        }
+        .searchresults>div.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
             color : white;
         }
-
-        .runconfig.lineselect>.selected{
-            background-image: linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -o-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -moz-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -webkit-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -ms-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-
-            border-top: 1px solid #3783c4;
-            border-bottom: 1px solid #383838;
-
-            color : white;
+        .searchresults>div.selected>span{
+            color : #f1f1f1;
         }
-        .lineselect .empty, .lineselect .offline, .lineselect .loading{
-            text-align: center;
-            padding: 8px 0 0 5px;
-            color: #AAA;
-            font-weight : normal;
+        .searchresults>div.selected>span>strong{
+            color : #f6f6f6x;
         }
-        .lineselect>DIV{
-            padding: 2px 6px;
-        }
-
     ]]></a:style>
 
     <a:presentation>
@@ -6477,7 +6458,7 @@
 <a:scrollbar name="scrollbar">
     <a:style><![CDATA[
         .scrollbar{
-            height: 100px;
+            height: 200px;
             position: absolute;
             background: #D4D0C8 url(images/raster.gif);
             width: 16px;
@@ -9265,6 +9246,7 @@
             background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
             color: #333333;
             border: 1px solid #afafaf;
+            border-radius : 3px;
             margin: 0;
             outline: none;
             font-family: Tahoma, Arial;

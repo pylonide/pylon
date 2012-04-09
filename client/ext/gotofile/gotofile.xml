@@ -1,46 +1,44 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window id="winGoToFile"
-      title     = "Open File" 
+    <a:bar id="winGoToFile"
       buttons   = "close" 
-      modal     = "false" 
-      center    = "true" 
-      width     = "475" 
-      height    = "300"
-      resizable = "true"
-      kbclose   = "true"
-      skin      = "bk-window"
+      width     = "500" 
+      height    = "400"
+      top       = "39"
+      skin      = "basic"
+      left      = "50%-250"
+      resizable = "vertical"
+      visible   = "false"
       zindex    = "999999"
-      onshow    = "
-        txtGoToFile.select();
+      style     = "
+        background:#e8e8e8;
+        box-shadow:0 5px 7px rgba(0,0,0,0.5);
+        border:1px solid #bbb;
+        border-width:0 1px 1px 1px;
+      "
+      onresize = "
+        this.setAttribute('left', '50%-' + this.getWidth()/2);
       ">
-        <a:hbox edge="5">
-            <a:textbox id="txtGoToFile" realtime="true" flex="1" skin="searchbox_textbox" focusselect="true" />
-        </a:hbox>
-        <a:datagrid id="dgGoToFile"
-          anchors = "34 0 46 0"
-          border  = "1 0 0 0"
-          class   = "searchresults noscrollbar"
-          scrollbar = "sbShared 20 2 2"
-          model   = "mdlGoToFile"
-          each    = "[d:response/d:href]"
-          multiselect     = "true"
-          loading-message = "Searching Project..."
-          empty-message   = "No search results"
-          startcollapsed  = "false">
-            <a:column width="100" value="{apf.getFilename([text()])}" caption="Name" />
-            <a:column width="100%" caption="Path" value="[text()]" />
-        </a:datagrid>
-        <a:hbox edge="6 10 10" pack="end" bottom="0" right="0" left="0" padding="8">
-            <a:filler/>
-            <a:button onclick="winGoToFile.hide()" skin="btn-default-css3">Cancel</a:button>
-            <a:button 
-              default  = "2" 
-              skin     = "btn-default-css3" 
-              class    = "btn-green"
-              onclick  = "
-                require('ext/gotofile/gotofile').openFile();
-              ">Open</a:button>
-        </a:hbox>
+        <a:vbox edge="5" padding="5" anchors="0 0 0 0">
+            <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
+            <a:list id="dgGoToFile"
+              flex    = "1" 
+              autoselect = "false"
+              class   = "searchresults noscrollbar"
+              skin    = "lineselect"
+              scrollbar = "sbShared 20 2 2"
+              model   = "mdlGoToFile"
+              multiselect     = "true"
+              empty-message   = "No search results">
+                <a:each match="[d:response/d:href]" filter="{txtGoToFile.value}" filter-fields="text()" />
+                <a:caption><?lm
+                    <span>{
+                        var re = new RegExp("({txtGoToFile.value})", 'gi');
+                        apf.getFilename([text()]).replace(re, <strong>$1</strong>);
+                    }</span>
+                    [text()]
+                ?></a:caption>
+            </a:list>
+        </a:vbox>
         <a:model id="mdlGoToFile" />
-    </a:window>
+    </a:bar>
 </a:application>
