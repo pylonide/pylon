@@ -2,35 +2,49 @@
     <a:bar id="winGoToFile"
       buttons   = "close" 
       width     = "500" 
-      height    = "400"
-      top       = "37"
+      height2    = "400"
+      top2       = "37"
       skin      = "basic"
-      left      = "50%-250"
-      resizable = "vertical"
+      left2      = "50%-250"
+      resizable2 = "vertical"
+      minheight = "35"
+      maxheight = "400"
       zindex    = "999999"
       style     = "
         background:#e8e8e8;
         box-shadow:0 5px 7px rgba(0,0,0,0.5);
         border:1px solid #bbb;
         border-width:0 1px 1px 1px;
-      "
-      onresize = "
-        this.setAttribute('left', '50%-' + this.getWidth()/2);
+        position:absolute;
+        left:50%;
+        margin-left:-250px;
+        top : 37px;
       ">
-        <a:vbox edge="0 5 5 5" padding="5" anchors="0 0 0 0">
+        <a:vbox edge="0 5 5 5" padding="5" anchors2="0 0 0 0">
             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
             <a:list id="dgGoToFile"
-              flex      = "1" 
+              flex2      = "1" 
               class     = "searchresults noscrollbar"
               skin      = "lineselect"
-              scrollbar = "sbShared 2 2 2"
+              maxheight = "350"
+              scrollbar = "sbShared 32 7 7"
               model     = "mdlGoToFileSearch"
               viewport  = "virtual"
               multiselect   = "true"
-              empty-message = "No search results">
+              empty-message = "No files found that match '{txtGoToFile.value}'"
+              onafterload   = "
+                if (this.viewport.length &lt; 100) {
+                    var ht = Math.min(350, this.viewport.getScrollHeight());
+                    if (ht != this.height)
+                        this.setAttribute('height', ht);
+                }
+                else if (this.height != 350) {
+                    this.setAttribute('height', 350);
+                }
+              ">
                 <a:each match="[d:response/d:href]" />
                 <a:caption><?lm
-                    var re = new RegExp("({txtGoToFile.value})", 'gi');
+                    var re = new RegExp("({txtGoToFile.value})", 'i');
                     <span>{
                         (apf.getFilename([text()]) || "").replace(re, <strong>$1</strong>);
                     }</span>

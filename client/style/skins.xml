@@ -4669,7 +4669,7 @@
         }
         
         .searchresults {
-            
+            position : relative;
         }
         
         .searchresults>div{
@@ -4700,6 +4700,12 @@
         }
         .searchresults>div.selected>span>strong{
             color : #fff;
+        }
+        .searchresults .message{
+            border : 0;
+            padding : 3px;
+            text-align : center;
+            background : transparent;
         }
     ]]></a:style>
 

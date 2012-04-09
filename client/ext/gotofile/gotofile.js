@@ -93,14 +93,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 
                 var prev = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected, false);
                 if (prev) {
-                    dgGoToFile.select(prev);
+                    dgGoToFile.select(prev, e.ctrlKey, e.shiftKey);
                     dgGoToFile.focus();
                 }
             }
             else if (e.keyCode == 40 && dgGoToFile.viewport.length) {
                 var next = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected);
                 if (next) {
-                    dgGoToFile.select(next);
+                    dgGoToFile.select(next, e.ctrlKey, e.shiftKey);
                     dgGoToFile.focus();
                 }
             }
@@ -119,6 +119,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     data = apf.xmldb.cleanNode(mdlGoToFileSearch.data);
                 else
                     data = mdlGoToFile.data;
+                
+                if (!data.firstChild)
+                    return;
                 
                 var name, res = [], first = [], second = [], third = [];
                 var nodes = data.firstChild.childNodes;
@@ -148,6 +151,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                                 // Then anywhere in the filename
                                 else {
                                     third.push(nodes[i].xml);
+                                    continue;
                                 }
                             }
                         }
@@ -175,7 +179,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
             
             var nodes = dgGoToFile.getTraverseNodes();
-            for (var i = nodes.length - 3; i >= 0; i--) {
+            for (var i = Math.max(dgGoToFile.viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
                 if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
                     dgGoToFile.select(nodes[i]);
                     return;
@@ -199,10 +203,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         }, true);
 
-        dgGoToFile.addEventListener("afterchoose", function(e) {
-            _self.openFile();
-        });
-        
         apf.addListener(dgGoToFile.$ext, "mouseup", function(e) {
             _self.openFile();
         });
@@ -274,7 +274,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
         winGoToFile.hide();
         
-        txtGoToFile.change("");
+        //txtGoToFile.change("");
         
         for (var i = 0; i < nodes.length; i++) {
             var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
