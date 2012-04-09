@@ -4679,6 +4679,7 @@
             border-top : 1px solid rgba(255,255,255,0.8);
             border-bottom : 1px solid rgba(0,0,0,0.1);
             font-size : 11px;
+            white-space : nowrap;
         }
         .searchresults>div>span{
             font-size : 14px;
@@ -4698,7 +4699,7 @@
             color : #f1f1f1;
         }
         .searchresults>div.selected>span>strong{
-            color : #f6f6f6x;
+            color : #fff;
         }
     ]]></a:style>
 

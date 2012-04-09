@@ -70,27 +70,110 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
+        txtGoToFile.addEventListener("clear", function(e){
+            winGoToFile.hide();
+        });
+        
         txtGoToFile.addEventListener("keydown", function(e){
-            if (txtGoToFile.value == "") {
-                return;
-            }
-
-            if (e.keyCode == 13){
-                _self.searchFor(txtGoToFile.value);
-
-                ide.dispatchEvent("track_action", {type: "gotofile"});
-                return false;
-            }
-            else if (e.keyCode == 27) {
+            if (e.keyCode == 27)
                 winGoToFile.hide();
-            }
-            else if (e.keyCode == 40 && dgGoToFile.length) {
+            
+//            if (txtGoToFile.value == "")
+//                return;
+//
+//            if (e.keyCode == 13){
+//                _self.searchFor(txtGoToFile.value);
+//
+//                ide.dispatchEvent("track_action", {type: "gotofile"});
+//                return false;
+//            }
+            if (e.keyCode == 40 && dgGoToFile.length) {
                 var first = dgGoToFile.getFirstTraverseNode();
                 if (first) {
                     dgGoToFile.select(first);
                     dgGoToFile.focus();
                 }
             }
+        });
+        
+        // The search implementation - to be improved
+        
+        var lastSearch;
+        txtGoToFile.addEventListener("afterchange", function(e){
+            var keyword = txtGoToFile.value, klen = keyword.length;
+            
+            if (!keyword)
+                data = mdlGoToFile.data;
+            else {
+                // Optimization reusing smaller result if possible
+                if (keyword.indexOf(lastSearch) > -1)
+                    data = apf.xmldb.cleanNode(mdlGoToFileSearch.data);
+                else
+                    data = mdlGoToFile.data;
+                
+                var name, res = [], first = [], second = [], third = [];
+                var nodes = data.firstChild.childNodes;
+                for (var i = 0, l = nodes.length, j, k, q; i < l; i++) {
+                    name = nodes[i].firstChild.nodeValue;
+                    
+                    // We only add items that have the keyword in it's path
+                    if ((j = name.lastIndexOf(keyword)) > -1) {
+                        
+                        // We prioritize ones that have the name in the filename
+                        if (klen > 1 && j > (q = name.lastIndexOf("/"))) {
+                            k = name.lastIndexOf("/" + keyword);
+                            
+                            if (k > -1) {
+                                // We give first prio to full filename matches
+                                if (name.length == klen + 1 + k) {
+                                    first.push(nodes[i].xml);
+                                    continue;
+                                }
+                                
+                                // Then to matches from the start of the filename
+                                else if (k == q) {
+                                    second.push(nodes[i].xml);
+                                    continue;
+                                }
+                                
+                                // Then anywhere in the filename
+                                else {
+                                    third.push(nodes[i].xml);
+                                }
+                            }
+                        }
+                        
+                        // Then the rest
+                        res.push(nodes[i].xml);
+                    }
+                }
+
+                data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>" 
+                    + first.join("") + second.join("") + third.join("") 
+                    + res.join("") + "</d:response></d:multistatus>");
+            }
+            
+            lastSearch = keyword;
+            
+            mdlGoToFileSearch.load(data);
+            
+            // See if there are open files that match the search results
+            // and select them if in the first displayed results
+            
+            var pages = tabEditors.getPages(), hash = {};
+            for (var i = pages.length - 1; i >= 0; i--) {
+                hash[pages[i].id] = true;
+            }
+            
+            var nodes = dgGoToFile.getTraverseNodes();
+            for (var i = nodes.length - 3; i >= 0; i--) {
+                if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
+                    dgGoToFile.select(nodes[i]);
+                    return;
+                }
+            }
+            
+            dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
         });
         
         dgGoToFile.addEventListener("keydown", function(e) {
@@ -134,7 +217,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (state == apf.TIMEOUT)
                 return; //@todo
 
-            var re = new RegExp("^\.|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp");
+            var re = new RegExp("(^\\.)|\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp");
             var nodes = data.firstChild.childNodes;
             for (var i = nodes.length - 1; i >= 0; i--) {
                 if (re.test(nodes[i].firstChild.nodeValue))
@@ -147,6 +230,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.updateSearchResults();
             
             mdlGoToFile.load(data);
+            mdlGoToFileSearch.load(mdlGoToFile.data);
         });
     },
     

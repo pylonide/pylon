@@ -2,8 +2,8 @@
     <a:bar id="winGoToFile"
       buttons   = "close" 
       width     = "500" 
-      height    = "400"
-      top       = "39"
+      height    = "300"
+      top       = "37"
       skin      = "basic"
       left      = "50%-250"
       resizable = "vertical"
@@ -21,24 +21,26 @@
         <a:vbox edge="5" padding="5" anchors="0 0 0 0">
             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
             <a:list id="dgGoToFile"
-              flex    = "1" 
-              autoselect = "false"
-              class   = "searchresults noscrollbar"
-              skin    = "lineselect"
-              scrollbar = "sbShared 20 2 2"
-              model   = "mdlGoToFile"
-              multiselect     = "true"
-              empty-message   = "No search results">
-                <a:each match="[d:response/d:href]" filter="{txtGoToFile.value}" filter-fields="text()" />
+              flex      = "1" 
+              class     = "searchresults noscrollbar"
+              skin      = "lineselect"
+              scrollbar = "sbShared 2 2 2"
+              model     = "mdlGoToFileSearch"
+              viewport  = "virtual"
+              autoselect    = "false"
+              multiselect   = "true"
+              empty-message = "No search results">
+                <a:each match="[d:response/d:href]" />
                 <a:caption><?lm
+                    var re = new RegExp("({txtGoToFile.value})", 'gi');
                     <span>{
-                        var re = new RegExp("({txtGoToFile.value})", 'gi');
-                        apf.getFilename([text()]).replace(re, <strong>$1</strong>);
+                        (apf.getFilename([text()]) || "").replace(re, <strong>$1</strong>);
                     }</span>
-                    [text()]
+                    [text()].replace(re, <strong>$1</strong>);
                 ?></a:caption>
             </a:list>
         </a:vbox>
         <a:model id="mdlGoToFile" />
+        <a:model id="mdlGoToFileSearch" />
     </a:bar>
 </a:application>
