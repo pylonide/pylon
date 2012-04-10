@@ -86,9 +86,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (e.keyCode == 27)
                 winGoToFile.hide();
             
-//            if (txtGoToFile.value == "")
-//                return;
-//
             if (e.keyCode == 13){
                 _self.openFile();
 
@@ -114,9 +111,13 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        // The search implementation - to be improved
         txtGoToFile.addEventListener("afterchange", function(e){
             _self.filter(txtGoToFile.value);
+            
+            if (_self.dirty && txtGoToFile.value.length > 0) {
+                _self.dirty = false;
+                _self.updateFileCache();
+            }
         });
         
         dgGoToFile.addEventListener("keydown", function(e) {
@@ -144,7 +145,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var _self = this;
 
         //@todo create an allfiles plugin that plugins like gotofile can depend on
-        //@todo soon this protocol needs to be turned into a json protocol
         davProject.report(ide.davPrefix, 'filesearch', {query: ""}, //@todo filelist needs some fixing
           function(data, state, extra){
             if (state == apf.ERROR) {
@@ -169,35 +169,26 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     array.push(name);
             }
 
-            if (self.winGoToFile && winGoToFile.visible)
-                _self.updateSearchResults();
-            
             _self.arrayCache = array;
-            
             _self.modelCache.load(data);
-            _self.model.load(_self.modelCache.data);
+            
+            if (self.winGoToFile && winGoToFile.visible) {
+                var search = _self.lastSearch;
+                _self.lastSearch = null; //invalidate cache
+                _self.filter(search);
+            }
+            else
+                _self.model.load(_self.modelCache.data);
         });
     },
     
-    updateSearchResults : function(){
-        var data = this.modelCache.dat;
-        
-        /*var nodes = data.selectNodes("//d:href");
-        for (var node, i = 0; i < nodes.length; i++) {
-            node = nodes[i];
-
-            //@todo support for submodules
-            if (node.firstChild.nodeValue.match(/_test\.js$/)) {
-                var file = apf.getXml("<file />");
-                var path = ide.davPrefix + "/" + node.firstChild.nodeValue;
-                file.setAttribute("name", path.split("/").pop());
-                file.setAttribute("path", path);
-                file.setAttribute("type", "nodeunit");
-                apf.xmldb.appendChild(testpanel.findParent(path), file);
-            }
-        }*/
-    },
-    
+    /**
+     * Searches through the dataset
+     * 
+     * @todo There is much more sorting we can do. This function is now fast
+     *       enough to apply weighed searching. 
+     * 
+     */
     filter : function(keyword){
         var klen = keyword.length;
         
@@ -251,10 +242,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 }
             }
 
-            var glue = "</d:href><d:href>";
+            var start = "<d:href>";
+            var end   = "</d:href>";
+            var glue  = end + start;
             var results = cache.length 
-                ? "<d:href>" + first.join(glue) + second.join(glue) 
-                    + third.join(glue) + res.join(glue) + "</d:href>"
+                ? (first.length ? start + first.join(glue) + end : "")
+                  + (second.length ? start + second.join(glue) + end : "")
+                  + (third.length ? start + third.join(glue) + end : "")
+                  + (res.length ? start + res.join(glue) + end : "")
                 : "";
             data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
                 + results + "</d:response></d:multistatus>");
