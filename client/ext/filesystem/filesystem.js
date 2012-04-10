@@ -93,20 +93,27 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     tree.focus();
                     _self.webdav.exec("mkdir", [path, name], function(data) {
                         // @todo: in case of error, show nice alert dialog
-                        if (data instanceof Error)
+                        if (!data || data instanceof Error)
                             throw Error;
+                        
+                        // parse xml
+                        var nodesInDirXml = apf.getXml(data);
+                        // we expect the new created file in the directory listing
+                        var fullFolderPath = path + "/" + name;
+                        var folder = nodesInDirXml.selectSingleNode("//folder[@path='" + fullFolderPath + "']");
+                        // not found? display an error
 
-                        var strXml = data.match(new RegExp(("(<folder path='" + path
-                                + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
-
+                        if (!folder) {
+                             return util.alert("Error", "Folder '" + name + "' could not be created",
+                                 "An error occurred while creating a new folder, please try again.");
+                        }
                         tree.slideOpen(null, node, true, function(data, flag, extra){
-                            var folder;
                             // empty data means it didn't trigger <insert> binding,
                             // therefore the node was expanded already
                             if (!data)
-                                tree.add(apf.getXml(strXml), node);
+                                tree.add(folder, node);
 
-                            folder = apf.queryNode(node, "folder[@path='"+ path +"/"+ name +"']");
+                            folder = apf.queryNode(node, "folder[@path='"+ fullFolderPath +"']");
 
                             tree.select(folder);
                             tree.startRename();
