@@ -311,8 +311,10 @@ module.exports = ext.register("ext/console/console", {
         this.$cwd  = "/workspace"; // code smell
 
         apf.importCssString(this.css);
+        
         // Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole);
+        winDbgConsole.previousSibling.hide();
 
         stProcessRunning.addEventListener("activate", function() {
             _self.showOutput();
