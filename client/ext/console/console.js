@@ -34,6 +34,20 @@ var execAction = function(cmd, data) {
         argv: data.argv
     });
 
+    var promptArr = txtConsole.$ext.getElementsByClassName("console_prompt");
+    var lastPrompt = promptArr[promptArr.length - 1];
+    
+    btnConsoleSpinner.$ext.style.display = "block";
+    
+    // set spinner to the location of the last prompt
+    if (lastPrompt.offsetTop < pgConsole.$ext.offsetHeight) {
+        btnConsoleSpinner.$ext.style.top = lastPrompt.offsetTop + "px";
+    }
+    else {
+        btnConsoleSpinner.$ext.style.top = (pgConsole.$ext.offsetHeight - txtConsoleInput.$ext.offsetHeight) + "px";
+    }
+    
+    // setTimeout(function(){ // for testing spinning and killing
     if (ext.execCommand(cmd, data) !== false) {
         var commandEvt = "consolecommand." + cmd;
         var consoleEvt = "consolecommand";
@@ -52,6 +66,7 @@ var execAction = function(cmd, data) {
             return false;
         }
     }
+    //}, 4000);
     return true;
 };
 
@@ -281,6 +296,8 @@ module.exports = ext.register("ext/console/console", {
         else
             this.messages.__default__.call(this, message);
 
+        btnConsoleSpinner.$ext.style.display = "none";
+        
         ide.dispatchEvent("consoleresult." + message.subtype, { data: message.body });
     },
 
@@ -329,6 +346,8 @@ module.exports = ext.register("ext/console/console", {
             _self.clear();
         });
 
+        btnConsoleSpinner.$ext.style.display = "none"; // hide spinner
+        
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;

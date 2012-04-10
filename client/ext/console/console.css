@@ -2,7 +2,7 @@
     display:inline
 }
 .console_text div {
-    padding: 2px 10px;
+    padding: 2px 10px 0px 28px;
 }
 .cli_divider {
     display: block;
@@ -11,9 +11,36 @@
 }
 .console_text a:link, .console_text a:hover, .console_text a:active {
     color: #86C2F6;
+    padding-left: 25px;
+}
+.console_text .console_prompt {
+    padding-left: 25px;   
 }
 .console_text a:visited {
     color: #909090;
 }
+.console .spinnerHolder {
+    background-image: url(static/style/images/consoleSpinnerProcesses.gif);
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    top: 14px;
+    padding-top: 10px;
+}
+/*
+.console .spinnerHolder.btn_icon_onlyOver {
+    background-image: url(static/style/images/consoleActionCancel.png);
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    top: 14px;
+    padding-top: 0px;
+}
+
+.console .spinnerHolder.btn_icon_onlyDown {
+    background-image: url(static/style/images/consoleActionCancel.png);
+    background-repeat: no-repeat;
+    background-position: 0px -21px;
+    top: 14px;
+    padding-top: 0px;
+}*/
 .cmd_msg > span { float: left; }
 .cmd_msg > span > span { margin:0 0 0 25px; }
