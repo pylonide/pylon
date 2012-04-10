@@ -14,7 +14,7 @@ return keys.onLoad({
         "save" : {
             "quicksave": "Command-S",
             "saveas": "Command-Shift-S",
-	    "reverttosaved": "Command-Shift-Q"
+	        "reverttosaved": "Command-Shift-Q"
         },
         "undo" : {
             "undo": "Command-Z",
@@ -49,7 +49,8 @@ return keys.onLoad({
             "beautify": "Command-Shift-B"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R"
+            "refresh": "Command-Shift-R",
+            "gotofile": "Command-R"
         },
         "newresource": {
             "newfile": "Option-Shift-N",
@@ -62,11 +63,11 @@ return keys.onLoad({
             "findprevious": "Command-Shift-G"
         },
         "searchreplace" : {
-            "search": "Command-Shift-F",
-            "searchreplace": "Command-Shift-R"
+            //"search": "Command-Shift-F",
+            "searchreplace": "Option-Shift-F"
         },
         "searchinfiles" : {
-            "searchinfiles": "Alt-Shift-F"
+            "searchinfiles": "Command-Shift-F"
         },
         "formatjson" : {
             "format" : "Command-Shift-J"
@@ -107,7 +108,7 @@ return keys.onLoad({
             "findnext": "Command-G",
             "findprevious": "Command-Shift-G",
             "find": "Command-F",
-            "replace": "Command-Shift-R",
+            "replace": "Option-Shift-F",
             "undo": "Command-Z",
             "redo": "Command-Shift-Z|Command-Y",
             "overwrite": "Insert",
