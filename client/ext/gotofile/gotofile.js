@@ -219,7 +219,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             var nodes, data;
             
             // Optimization reusing smaller result if possible
-            if (keyword.indexOf(this.lastSearch) > -1)
+            if (this.lastSearch && keyword.indexOf(this.lastSearch) > -1)
                 nodes = this.arrayCacheLastSearch;
             else
                 nodes = this.arrayCache;
