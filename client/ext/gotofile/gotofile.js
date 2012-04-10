@@ -165,7 +165,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             while (node) {
                 if (re.test(name = node.firstChild.nodeValue)) {
                     node = (lnode = node).previousSibling;
-                    pNode.removeChild(lnode.nextSibling);
+                    pNode.removeChild(lnode);
                 }
                 else {
                     node = node.previousSibling;
