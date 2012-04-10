@@ -120,6 +120,9 @@ apf.scrollbar = function(struct, tagName){
         this.$attach(viewport);
     }
     
+    /**
+     * @todo detach
+     */
     this.$attach = function(viewport){
         if (!viewport)
             return apf.console.warn("Scrollbar could not connect to viewport");
@@ -127,28 +130,31 @@ apf.scrollbar = function(struct, tagName){
         var _self = this;
         
         this.$viewport = viewport;
-        this.$viewport.setScrollbar(this, function(e){
-            if (_self.$viewport != viewport)
-                return;
-            
-            _self.$update();
-            
-            if (_self.showonscroll) { // && e.byUser) {
-                _self.scrolling = true;
+        
+        if (this.$viewport.scrollbar != this) {
+            this.$viewport.setScrollbar(this, function(e){
+                if (_self.$viewport != viewport)
+                    return;
                 
-                clearTimeout(_self.$hideOnScrollTimer);
-                if (_self.$hideOnScrollControl)
-                    _self.$hideOnScrollControl.stop();
-                
-                apf.setOpacity(_self.$ext, 1);
-                !_self.visible ? _self.show() : _self.$ext.style.display = "block";
                 _self.$update();
                 
-                _self.$hideOnScrollTimer = _self.animHideScrollbar(500, function(){
-                    _self.scrolling = false;
-                });
-            }
-        });
+                if (_self.showonscroll) { // && e.byUser) {
+                    _self.scrolling = true;
+                    
+                    clearTimeout(_self.$hideOnScrollTimer);
+                    if (_self.$hideOnScrollControl)
+                        _self.$hideOnScrollControl.stop();
+                    
+                    apf.setOpacity(_self.$ext, 1);
+                    !_self.visible ? _self.show() : _self.$ext.style.display = "block";
+                    _self.$update();
+                    
+                    _self.$hideOnScrollTimer = _self.animHideScrollbar(500, function(){
+                        _self.scrolling = false;
+                    });
+                }
+            });
+        }
 
         this.$recalc();
         this.$update();
