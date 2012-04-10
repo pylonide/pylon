@@ -36,7 +36,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             mnuFile.insertBefore(new apf.item({
                 caption : "Open...",
                 onclick : function() {
-                    _self.toggleDialog(true);
+                    _self.toggleDialog(1);
                 }
             }), mnuFile.firstChild),
 
@@ -47,7 +47,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 tooltip : "Open...",
                 skin    : "c9-toolbarbutton",
                 onclick : function() {
-                    _self.toggleDialog(true);
+                    _self.toggleDialog(1);
                 }
             })),
             
@@ -78,15 +78,11 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        txtGoToFile.addEventListener("clear", function(e){
-            winGoToFile.hide();
-        });
-        
         txtGoToFile.addEventListener("keydown", function(e){
             if (e.keyCode == 27)
-                winGoToFile.hide();
+                _self.toggleDialog(-1);
             
-            if (e.keyCode == 13){
+            else if (e.keyCode == 13){
                 _self.openFile();
 
                 ide.dispatchEvent("track_action", {type: "gotofile"});
@@ -136,6 +132,21 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
         apf.addListener(dgGoToFile.$ext, "mouseup", function(e) {
             _self.openFile();
+        });
+        
+        winGoToFile.addEventListener("blur", function(e){
+            if (winGoToFile.visible && !apf.isChildOf(winGoToFile, e.toElement))
+                _self.toggleDialog(-1);
+        });
+        txtGoToFile.addEventListener("blur", function(e){
+            if (self.winGoToFile && winGoToFile.visible 
+              && !apf.isChildOf(winGoToFile, e.toElement))
+                _self.toggleDialog(-1);
+        });
+        
+        ide.addEventListener("closepopup", function(e){
+            if (e.element != _self)
+                _self.toggleDialog(-1, true);
         });
         
         this.nodes.push(winGoToFile);
@@ -294,7 +305,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         if (nodes.length == 0)
             return false;
             
-        winGoToFile.hide();
+        _self.toggleDialog(-1);
         
         //txtGoToFile.change("");
         
@@ -315,13 +326,41 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         return false;
     },
 
-    toggleDialog: function(forceShow) {
+    toggleDialog: function(force, noanim) {
         ext.initExtension(this);
 
-        if (!winGoToFile.visible || forceShow)
+        if (!force && !winGoToFile.visible || force > 0) {
+            if (winGoToFile.visible)
+                return;
+            
+            ide.dispatchEvent("closepopup", {element: this});
+            
             winGoToFile.show();
-        else
-            winGoToFile.hide();
+            apf.setOpacity(winGoToFile.$ext, 1);
+        }
+        else if (self.winGoToFile && winGoToFile.visible) {
+            if (!noanim) {
+                winGoToFile.visible = false;
+                
+                //Animate
+                apf.tween.single(winGoToFile, {
+                    type     : "fade",
+                    from     : 1,
+                    to       : 0,
+                    steps    : 5,
+                    interval : 0,
+                    control  : (this.control = {}),
+                    onfinish : function(){
+                        winGoToFile.visible = true;
+                        winGoToFile.hide();
+                    }
+                });
+            }
+            else {
+                winGoToFile.hide();
+            }
+        }
+
         return false;
     },
 

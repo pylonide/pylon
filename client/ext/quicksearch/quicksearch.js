@@ -139,12 +139,17 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         }); 
         
         winQuickSearch.addEventListener("blur", function(e){
-            if (!apf.isChildOf(winQuickSearch, e.toElement))
+            if (winQuickSearch.visible && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
         txtQuickSearch.addEventListener("blur", function(e){
-            if (!apf.isChildOf(winQuickSearch, e.toElement))
+            if (winQuickSearch.visible && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
+        });
+        
+        ide.addEventListener("closepopup", function(e){
+            if (e.element != _self)
+                _self.toggleDialog(-1, true);
         });
 
         var editor = editors.currentEditor;
@@ -250,7 +255,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         oTotal.innerHTML = "of " + ranges.length;
     },
 
-    toggleDialog: function(force) {
+    toggleDialog: function(force, noanim) {
         ext.initExtension(this);
 
         if (this.control && this.control.stop)
@@ -279,6 +284,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (value)
                 txtQuickSearch.setValue(value);
 
+            ide.dispatchEvent("closepopup", {element: this});
+
             winQuickSearch.$ext.style.top = "-30px";
             winQuickSearch.show();
             txtQuickSearch.focus();
@@ -299,35 +306,43 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             });
         }
         else if (winQuickSearch.visible) {
-            txtQuickSearch.focus();
-            txtQuickSearch.select();
+            if (!noanim) {
+                winQuickSearch.visible = false;
+                
+                txtQuickSearch.focus();
+                txtQuickSearch.select();
 
-            //Animate
-            apf.tween.single(winQuickSearch, {
-                type     : "top",
-                anim     : apf.tween.NORMAL,
-                from     : winQuickSearch.$ext.offsetTop,
-                to       : -30,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {}),
-                onfinish : function(){
-                    winQuickSearch.hide();
-                    editor.ceEditor.focus();
-                }
-            });
+                //Animate
+                apf.tween.single(winQuickSearch, {
+                    type     : "top",
+                    anim     : apf.tween.NORMAL,
+                    from     : winQuickSearch.$ext.offsetTop,
+                    to       : -30,
+                    steps    : 8,
+                    interval : 10,
+                    control  : (this.control = {}),
+                    onfinish : function(){
+                        winQuickSearch.visible = true;
+                        winQuickSearch.hide();
+                        
+                        editor.ceEditor.focus();
+                    }
+                });
+            }
+            else {
+                winQuickSearch.hide();
+            }
 
             var ace = this.$getAce();
-            if (ace) {
+            if (ace)
                 ace.selection.clearSelection();
-            }
         }
         
         return false;
     },
 
     quicksearch : function(){
-        this.toggleDialog(1);
+        this.toggleDialog();
     },
 
     execSearch: function(close, backwards, wasDelete) {
@@ -403,7 +418,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
 
     find: function() {
-        this.toggleDialog(1);
+        this.toggleDialog();
         return false;
     },
 
