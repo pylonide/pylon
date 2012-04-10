@@ -488,7 +488,7 @@ apf.ViewPortVirtual = function(amlNode){
     this.amlNode = amlNode;
     
     var _self = this;
-    apf.addEventListener("mousescroll", function(e){
+    this.amlNode.addEventListener("mousescroll", function(e){
         if (!_self.scrollbar || _self.scrollbar.horizontal)
             return;
         
