@@ -160,13 +160,17 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
             var re = new RegExp("(\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp)$|\/(\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|\.DS_Store)(?:\/|$)");
             var pNode = data.firstChild;
-            var nodes = pNode.childNodes;
+            var node  = pNode.lastChild, lnode;
             var array = [], name;
-            for (var i = nodes.length - 1; i >= 0; i--) {
-                if (re.test(name = nodes[i].firstChild.nodeValue))
-                    pNode.removeChild(nodes[i]);
-                else
+            while (node) {
+                if (re.test(name = node.firstChild.nodeValue)) {
+                    node = (lnode = node).previousSibling;
+                    pNode.removeChild(lnode.nextSibling);
+                }
+                else {
+                    node = node.previousSibling;
                     array.push(name);
+                }
             }
 
             _self.arrayCache = array;
