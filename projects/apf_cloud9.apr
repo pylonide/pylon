@@ -469,9 +469,9 @@
         <p:define name="__ENABLE_TEXTBOX_AUTOCOMPLETE" value="1" />
         <p:define name="__AMLSELECT" value="1" />
         <p:define name="__AMLLINESELECT" value="0" />
-        <p:define name="__AMLUPLOAD" value="1" />
+        <p:define name="__AMLUPLOAD" value="1" /-->
         <p:define name="__AMLPROGRESSBAR" value="1" />
-        <p:define name="__AMLMARKUPEDIT" value="0" />
+        <!--p:define name="__AMLMARKUPEDIT" value="0" />
         <p:define name="__AMLSLIDER" value="1" />
         <p:define name="__AMLSTYLE" value="1" />
         <p:define name="__WITH_XIFALLBACK" value="0" />
