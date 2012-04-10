@@ -272,16 +272,15 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
                 
                 // we expect the new created file in the directory listing
                 var fullFilePath = path + "/" + filename;
-                var nodes = filesInDirXml.selectNodes("//file[@path='" + fullFilePath + "']");
+                file = filesInDirXml.selectSingleNode("//file[@path='" + fullFilePath + "']");
                 
                 // not found? display an error
-                if (nodes.length === 0) {
+                if (!file) {
                     util.alert("Error", "File '" + filename + "' could not be created",
                         "An error occurred while creating a new file, please try again.");
                     return next();
                 }
                 
-                file = nodes[0];
                 var oXml = apf.xmldb.appendChild(node, file);
 
                 trFiles.select(oXml);
