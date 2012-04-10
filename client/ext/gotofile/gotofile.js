@@ -117,7 +117,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         
         dgGoToFile.addEventListener("keydown", function(e) {
-            if (e.keyCode == 38 && !e.shiftKey) {
+            if (e.keyCode == 27)
+                _self.toggleDialog(-1);
+            else if (e.keyCode == 38 && !e.shiftKey) {
                 if (this.selected == this.$cachedTraverseList[0])
                     txtGoToFile.focus();
             }

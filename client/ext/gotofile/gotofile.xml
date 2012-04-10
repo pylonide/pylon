@@ -6,6 +6,7 @@
       minheight = "35"
       maxheight = "400"
       zindex    = "999999"
+      visible   = "false"
       style     = "
         background:#e8e8e8;
         box-shadow:0 5px 7px rgba(0,0,0,0.5);
