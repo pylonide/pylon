@@ -7155,11 +7155,11 @@ if(!amlNode){throw new Error(apf.formatErrorString(0,_self,"Attaching scrollbar 
 }});this.attach=function(viewport){if(viewport.nodeFunc){if(viewport.hasFeature(apf.__VIRTUALVIEWPORT__)){viewport=viewport.viewport;
 }else{viewport=new apf.ViewPortAml(viewport);}}else{if(viewport.style){viewport=new apf.ViewPortHtml(viewport);
 }}this.$attach(viewport);};this.$attach=function(viewport){if(!viewport){return apf.console.warn("Scrollbar could not connect to viewport");
-}var _self=this;this.$viewport=viewport;this.$viewport.setScrollbar(this,function(e){_self.$update();
-if(_self.showonscroll){_self.scrolling=true;clearTimeout(_self.$hideOnScrollTimer);
+}var _self=this;this.$viewport=viewport;if(this.$viewport.scrollbar!=this){this.$viewport.setScrollbar(this,function(e){if(_self.$viewport!=viewport){return;
+}_self.$update();if(_self.showonscroll){_self.scrolling=true;clearTimeout(_self.$hideOnScrollTimer);
 if(_self.$hideOnScrollControl){_self.$hideOnScrollControl.stop();}apf.setOpacity(_self.$ext,1);
 !_self.visible?_self.show():_self.$ext.style.display="block";_self.$update();_self.$hideOnScrollTimer=_self.animHideScrollbar(500,function(){_self.scrolling=false;
-});}});this.$recalc();this.$update();return this;};this.$resize=function(){if(!this.$viewport||!this.$viewport.isVisible()){return;
+});}});}this.$recalc();this.$update();return this;};this.$resize=function(){if(!this.$viewport||!this.$viewport.isVisible()){return;
 }this.$recalc();this.$update();this.setScrollPosition(this.position,true);};this.$recalc=function(){this.$viewheight=this.$viewport.getHeight();
 this.$scrollSizeheight=this.$viewheight;this.$scrollSizeWait=0;this.$stepValue=(this.$viewheight/this.$scrollSizeheight)/20;
 this.$bigStepValue=this.$stepValue*3;this.$slideMaxSize=this.$caret.parentNode[this.$offsetSize]-(this.$btnDown?this.$btnDown[this.$offsetSize]:0)-(this.$btnUp?this.$btnUp[this.$offsetSize]:0);
