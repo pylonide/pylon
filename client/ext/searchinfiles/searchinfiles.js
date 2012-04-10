@@ -58,15 +58,15 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         this.txtFind       = txtSFFind;
         this.btnFind       = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.execFind.bind(this, false);
-        
+
         this.txtReplace     = txtReplace;
         this.btnReplaceAll = btnReplaceAll;
         this.btnReplaceAll.onclick = this.execFind.bind(this, true);
 
         var _self = this;
-        
+
         this.txtFind.$ext.cols = this.txtFind.cols;
-        
+
         winSearchInFiles.onclose = function() {
             if (typeof ceEditor != "undefined") {
                 ceEditor.focus();
@@ -77,32 +77,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             trFiles.addEventListener("afterselect", _self.setSearchSelection);
             _self.setSearchSelection();
         };
-        
-        trSFHbox.addEventListener("afterrender", function(){
-            trSFResult.addEventListener("afterselect", function(e) {
-                var path,
-                    root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
-                    node = trSFResult.selected,
-                    line = 0,
-                    text = "";
-                if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
-                    return;
-                if (node.tagName == "d:excerpt") {
-                    path = node.parentNode.getAttribute("path");
-                    line = node.getAttribute("line");
-                    text = node.parentNode.getAttribute("query");
-                }
-                else {
-                    path = node.getAttribute("path");
-                    text = node.getAttribute("query");
-                }
-                editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
-            });
-        });
 
+        txtSFFind.addEventListener("keydown", function(e) {
+            switch (e.keyCode){
+                case 13: //ENTER
+                    if (!e.shiftKey) {
+                        _self.execFind(false);
+                        return false;
+                    }
+                    break;
+            }
+        });
         //ideConsole.show();
     },
-    
+
     setSearchSelection: function(e){
         var selectedNode;
         // If originating from an event
@@ -110,9 +98,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             selectedNode = e.selected;
         else
             selectedNode = this.getSelectedTreeNode();
-        
-        var filepath = selectedNode.getAttribute("path").split("/");     	
-        
+
+        var filepath = selectedNode.getAttribute("path").split("/");
+
         var name = "";
         // get selected node in tree and set it as selection
         if (selectedNode.getAttribute("type") == "folder") {
@@ -121,14 +109,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         else if (selectedNode.getAttribute("type") == "file") {
             name = filepath[filepath.length - 2];
         }
-        
+
         if (name.length > 25) {
             name = name.substr(0, 22) + "...";
         }
-        
+
         rbSFSelection.setAttribute("label", "Selection ( " + name + " )");
     },
-    
+
     getSelectedTreeNode: function() {
         var node = self["trFiles"] ? trFiles.selected : fs.model.queryNode("folder[1]");
         if (!node)
@@ -182,7 +170,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var regex = "0";
         if (chkSFRegEx.checked)
             regex = "1";
-            
+
         return {
             query: txtSFFind.value,
             needle: txtSFFind.value,
@@ -197,7 +185,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     execFind: function(replaceEnabled) {
         var _self = this;
         _self.replaceAll = replaceEnabled;
-        
+
         winSearchInFiles.hide();
         // show the console (also used by the debugger):
         ideConsole.show();
@@ -212,6 +200,25 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             // make sure the tab is shown when results come in
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
+                trSFResult.addEventListener("afterselect", function(e) {
+                    var root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
+                        node = trSFResult.selected,
+                        line = 0,
+                        text = "",
+                        path;
+                    if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
+                        return;
+                    if (node.tagName == "d:excerpt") { // clicking on a line excerpt
+                        path = node.parentNode.getAttribute("path");
+                        line = node.getAttribute("line");
+                        text = node.parentNode.getAttribute("query");
+                    }
+                    else { // clicking on filename
+                        path = node.getAttribute("path");
+                    }
+
+                    editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
+                });
             });
 
             this.$panel.addEventListener("afterclose", function(){
@@ -228,23 +235,24 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var node = this.$currentScope = grpSFScope.value == "projects"
             ? trFiles.xmlRoot.selectSingleNode("folder[1]")
             : this.getSelectedTreeNode();
-            
+
         var options = this.getOptions();
         var query = txtSFFind.value;
         options.query = query.replace(/\n/g, "\\n");
 
         if (!_self.replaceAll) {
-            options.replacement = ""; // even if there's text in the "replace" field, don't send it when not replacing   
+            options.replacement = ""; // even if there's text in the "replace" field, don't send it when not replacing
         }
-        
+
         var findValueSanitized = query.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
-        
+
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
-            
-            if (state !== apf.SUCCESS || !parseInt(data.getAttribute("count"), 10)) {
+
+            var matches = parseInt(data.getAttribute("count"), 10);
+            if (state !== apf.SUCCESS || !matches) {
                 var optionsDesc = [];
                 if (Util.isTrue(options.casesensitive)) {
                     optionsDesc.push("case sensitive");
@@ -252,7 +260,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 if (Util.isTrue(options.regexp)) {
                     optionsDesc.push("regexp");
                 }
-                
+
                 if (optionsDesc.length > 0) {
                     optionsDesc = "(" + optionsDesc.join(", ") + ")";
                 }
@@ -261,6 +269,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 }
                 return trSFResult.setAttribute("empty-message", "No matches for '" + findValueSanitized + "' " + optionsDesc);
             }
+            else
+                _self.$panel.setAttribute("caption", _self.pageTitle + " (" + matches + ")");
 
             _self.$model.load(data);
         });

@@ -31,11 +31,12 @@
       readonly          = "{[@loading] or cloud9config.readonly or (location.host and window.stDebugProcessRunning and stDebugProcessRunning.active and [@scriptid])}"
     />
     
-    <a:menu id="mnuCtxEditor" render="runtime" onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
+    <a:menu id="mnuCtxEditor" render="runtime"onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
         <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
         <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
         <a:divider />
-        <a:item onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
+        <a:item 
+onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
         <a:item onclick="{require('ext/clipboard/clipboard').copy()}">Copy</a:item>
         <a:item onclick="{require('ext/clipboard/clipboard').paste()}">Paste</a:item>
         <a:divider />
@@ -62,6 +63,7 @@
         <a:item type="radio" value="text/x-java-source">Java</a:item>
         <a:item type="radio" value="application/javascript">JavaScript</a:item>
         <a:item type="radio" value="application/x-latex">Latex</a:item>
+        <a:item type="radio" value="application/x-sh">Shell Script</a:item>
         <a:item type="radio" value="text/x-lua">Lua</a:item>
         <a:item type="radio" value="text/x-markdown">Markdown</a:item>
         <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>

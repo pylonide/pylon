@@ -22,6 +22,10 @@ Darwin*)  echo  "OSX"
     support/node-builds-v4/node-darwin bin/cloud9.js "$@" -a open
     ;;
 
+FreeBSD*64*) echo "FreeBSD 64 bit"
+    support/node-builds-v4/node-freebsd64 bin/cloud9.js "$@" -a open
+    ;;
+
 CYGWIN*)  echo  "Cygwin"
     support/node-builds-v4/node-cygwin.exe bin/cloud9.js "$@" -a "cmd /c start"
     ;;
