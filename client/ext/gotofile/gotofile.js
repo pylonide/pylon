@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
+var settings = require('core/settings');
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -175,7 +176,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
              * Putting this in a worker won't help
              * An alternative solution would be to do this in parts of 10ms
              */
-            var re = new RegExp("(\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp)$|\/(\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|\.DS_Store)(?:\/|$)");
+            var showHiddenFiles = apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
+            var re = new RegExp(
+                (showHiddenFiles ? "" : "\\/\\.[^\\/]*$|") //Hidden Files
+                + "(?:\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp)$" //File Extensions
+                + "|\/(?:\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|\.DS_Store)(?:\/|$)" //File Names
+            );
             var pNode = data.firstChild;
             var node  = pNode.lastChild, lnode;
             var array = [], name;
