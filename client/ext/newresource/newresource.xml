@@ -29,7 +29,7 @@
                 btnFileTemplateSave.dispatchEvent('click');
       "/>
             <a:hbox pack="end" padding="7" edge="10">
-        <a:button id="btnFileTemplateSave" width="80" default="2"
+              <a:button id="btnFileTemplateSave" width="80" default="2"
                   class="btn-green" skin="btn-default-css3" caption="Create"
                   onclick="
                     require('ext/newresource/newresource').newfile(
@@ -38,17 +38,17 @@
                     );
                     winNewFileTemplate.hide();
                   "/>
-                <a:button id="btnFileTemplateCancel" skin="btn-default-css3" width="80"
+              <a:button id="btnFileTemplateCancel" skin="btn-default-css3" width="80"
                   onclick="winNewFileTemplate.hide()">Cancel</a:button>
-        </a:hbox>
+            </a:hbox>
         </a:vbox>
     </a:window>
 
     <a:model id="mdlFileTemplates">
         <templates>
-            <item value="txt" icon="page_white_text.png"caption="Text file"><![CDATA[]]></item>
-        <item value="js" icon="page_white_code.png"caption="JavaScript file"><![CDATA[]]></item>
-        <item value="js" icon="page_white_code.png" caption="Unit Test"><![CDATA["use strict";
+          <item value="txt" icon="page_white_text.png"caption="Text file"><![CDATA[]]></item>
+          <item value="js" icon="page_white_code.png"caption="JavaScript file"><![CDATA[]]></item>
+          <item value="js" icon="page_white_code.png" caption="Unit Test"><![CDATA["use strict";
 require("./support/paths");
 
 var assert = require("assert");
@@ -65,8 +65,8 @@ module.exports = {
 if (typeof module !== "undefined" && module === require.main) {
     require("asyncjs").test.testcase(module.exports).exec()
 }]]></item>
-            <item value="stest" icon="page_white_code.png" caption="Selenium Test"><![CDATA[{}]]></item>
-            <item value="coffee" icon="page_white_code.png"caption="CoffeeScript file"><![CDATA[]]></item>
+        <item value="stest" icon="page_white_code.png" caption="Selenium Test"><![CDATA[{}]]></item>
+        <item value="coffee" icon="page_white_code.png"caption="CoffeeScript file"><![CDATA[]]></item>
         <item value="html" icon="html.png"caption="HTML file"><![CDATA[<!DOCTYPE html>
 <html>
     <head>
@@ -84,9 +84,10 @@ if (typeof module !== "undefined" && module === require.main) {
         <item value="py" icon="script_code.png"caption="Python file"><![CDATA[]]></item>
         <item value="php" icon="page_white_php.png"caption="PHP file"><![CDATA[<?php
         ?>]]></item>
-            <item value="rb" icon="page_white_ruby.png"caption="Ruby file"><![CDATA[]]></item>
+        <item value="rb" icon="page_white_ruby.png"caption="Ruby file"><![CDATA[]]></item>
         <item value="mli" icon="page_white_code.png"caption="OCaml file"><![CDATA[]]></item>
         <item value="clj" icon="page_white_code.png"caption="Clojure file"><![CDATA[]]></item>
+        <item value="md" icon="page_white_text.png" caption="Markdown"><![CDATA[]]></item>
         <a:item value="java" icon="page_white_cup.png">Java file</a:item>
         <a:item value="scala" icon="page_white_cup.png">Scala file</a:item>
         <a:item value="groovy" icon="page_white_cup.png">Groovy file</a:item>

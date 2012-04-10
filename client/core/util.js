@@ -118,7 +118,7 @@ var SupportedIcons = {
     "text/cpp": 'page_white_cplusplus',
     "text/x-c": 'page_white_c',
     "text/x-csharp": 'page_white_csharp',
-    text/x-markdown": 'page_white_text',
+    "text/x-markdown": 'page_white_text',
     "text/x-java-source": 'page_white_cup',
     "text/x-groovy-source": 'page_white_cup',
     "text/x-scala-source": 'page_white_cup',
@@ -182,21 +182,34 @@ var contentTypes = {
     "xbm": "image",
     "xpm": "image",
 
-    "clj": "text/x-script.clojure",
-    "ml": "text/x-script.ocaml",
-    "mli": "text/x-script.ocaml",
-    "cfm": "text/x-coldfusion",
-    "sql": "text/x-sql",
-
-    "sh": "application/x-sh",
-    "bash": "application/x-sh"
-    
     "java": "text/x-java-source",
     "scala": "text/x-scala-source",
     "groovy": "text/x-groovy-source",
     "gsp": "text/x-gosu-source",
     "fan": "text/x-fantom-source"
+    "clj": "text/x-script.clojure",
     
+    "ml": "text/x-script.ocaml",
+    "mli": "text/x-script.ocaml",
+
+    "md": "text/x-markdown",
+    "markdown": "text/x-markdown",
+    "textile": "text/x-web-textile",
+    "latex": "application/x-latex",
+    "tex": "application/x-latex",
+    "ltx": "application/x-latex",
+     
+    "lua": "text/x-lua",
+
+    "pl": "text/x-script.perl",
+    "pm": "text/x-script.perl-module",
+
+    "ps1": "text/x-script.powershell",
+    "cfm": "text/x-coldfusion",
+    "sql": "text/x-sql",
+
+    "sh": "application/x-sh",
+    "bash": "application/x-sh"
 };
     
 exports.getFileIcon = function(xmlNode) {

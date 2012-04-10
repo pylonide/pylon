@@ -61,7 +61,6 @@ var SupportedModes = {
     "text/x-script.perl-module": "perl",
     "text/x-c": "c_cpp",
     "text/x-java-source": "java",
-    "text/x-groovy": "groovy",
     "text/x-csharp": "csharp",
     "text/x-script.coffeescript": "coffee",
     "text/x-markdown": "markdown",
@@ -216,7 +215,7 @@ module.exports = ext.register("ext/code/code", {
             return (SupportedModes[mime] || "text");
         }
 
-            return "text";
+        return "text";
     },
     
     getSelection : function(){
@@ -232,7 +231,7 @@ module.exports = ext.register("ext/code/code", {
     },
     
     setDocument : function(doc, actiontracker){
-            var _self = this;
+        var _self = this;
 
         if (!doc.acesession) {
             doc.isInited = doc.hasValue();
@@ -259,9 +258,9 @@ module.exports = ext.register("ext/code/code", {
                 if (this.editor != _self)
                     return;
 
-                if (!doc.isInited) 
+                if (!doc.isInited)
                     return e.value;
-                else 
+                else
                     return doc.acesession.getValue();
             });
             
@@ -289,7 +288,7 @@ module.exports = ext.register("ext/code/code", {
         var _self = this;
         
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e){
+        ide.addEventListener("init.ext/settings/settings", function(e) {
             var heading = e.ext.getHeading("Code Editor");
             heading.insertMarkup(markupSettings);
         });
@@ -323,7 +322,7 @@ module.exports = ext.register("ext/code/code", {
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
-            if (theme) 
+            if (theme)
                 require([theme], function() {});
             // pre load custom mime types
             _self.getCustomTypes(e.model);
@@ -439,7 +438,7 @@ module.exports = ext.register("ext/code/code", {
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
         });
 
-        ide.addEventListener("keybindingschange", function(e){
+        ide.addEventListener("keybindingschange", function(e) {
             if (typeof ceEditor == "undefined")
                 return;
                 
