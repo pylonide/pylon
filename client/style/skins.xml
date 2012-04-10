@@ -9246,7 +9246,7 @@
 
         .searchbox_textbox .sbtb_middle {
             height           : 19px;
-            padding          : 2px 25px 2px 25px;
+            padding          : 2px 25px 2px 4px;
 
 
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
@@ -9320,10 +9320,10 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="div[3]/input" button="div[4]">
+        <a:main input="div[2]/input" button="div[3]">
             <div class="searchbox_textbox">
                 <div class="sbtb_arrow"/>
-                <div class="sbtb_icon"/>
+                <!--div class="sbtb_icon"/-->
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>
