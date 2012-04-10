@@ -2505,7 +2505,7 @@ apf.xmpp = function(struct, tagName){
         var v = this.$serverVars;
         if (v["MAXPAUSE"] && this.connected && this.auth.toLowerCase() != "anonymous") {
             delete v[ROSTER];
-            apf.setcookie(COOKIE, apf.serialize(v) + "|" + (new Date()).valueOf()
+            apf.setcookie(COOKIE, JSON.stringify(v) + "|" + (new Date()).valueOf()
                 + "|" + this.resource + "|" + this.$RID);
             this.pause();
         }

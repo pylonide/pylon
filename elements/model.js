@@ -563,13 +563,19 @@ apf.model = function(struct, tagName){
      * Removes xmlNode from this model 
      */
     this.removeXml = function(xmlNode){
-        if (typeof xmlNode == "string")
-            var xmlNodes = this.data.selectNodes(xmlNode);
-        else if (!xmlNode.length)
+        if (!this.data) return;
+
+        var xmlNodes;
+        if (typeof xmlNode === "string") {
+            xmlNodes = this.data.selectNodes(xmlNode);
+        }
+        else if (!xmlNode.length) {
             xmlNodes = [xmlNode];
+        }
         
-        if (xmlNodes.length)
+        if (xmlNodes.length) {
             apf.xmldb.removeNodeList(xmlNodes);
+        }
     };
 
     /**
@@ -842,7 +848,7 @@ apf.model = function(struct, tagName){
                 return this.$loadFrom(xmlNode, options);
         }
 
-        if (this.ownerDocument && this.ownerDocument.$domParser.$shouldWait) {
+        if (this.ownerDocument && this.ownerDocument.$domParser.$isPaused(this)) {
             //if (!this.$queueLoading) {
                 var _self = this;
                 this.data = xmlNode; //@todo expirement //this.$copy = 
@@ -850,7 +856,7 @@ apf.model = function(struct, tagName){
                 
                 this.$queueLoading = true;
                 apf.queue.add("modelload" + this.$uniqueId, function(){
-                    if (_self.ownerDocument && _self.ownerDocument.$domParser.$shouldWait)
+                    if (_self.ownerDocument && _self.ownerDocument.$domParser.$isPaused(_self))
                         apf.queue.add("modelload" + _self.$uniqueId, arguments.callee);
                     else {
                         _self.load(xmlNode, options);

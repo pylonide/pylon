@@ -37,20 +37,13 @@
  */
 apf.DOMParser = function(){};
 
-/*
-    @todo the shouldWait variable should be tree based and checked recursively up
-*/
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
     
-    /* 
-        @todo domParser needs to get a queue based on the parentNode that is 
-              waiting to be parsed. This will prevent collisions when multiple
-              parts of the document are altered at the same time.
-    */
-    this.$shouldWait = 0;
-
+    this.$waitQueue  = {}
+    this.$callCount  = 0;
+    
     // privates
     var RE     = [
             /\<\!(DOCTYPE|doctype)[^>]*>/,
@@ -146,6 +139,8 @@ apf.DOMParser.prototype = new (function(){
 
         //Set parse context
         this.$parseContext = [amlNode, options];
+        
+        this.$addParseState(amlNode, options || {});
 
         //First pass - Node creation
         var nodes, nodelist = {}, prios = [], _self = this;
@@ -216,7 +211,8 @@ apf.DOMParser.prototype = new (function(){
             }
         }
 
-        if (this.$shouldWait)
+        if (this.$waitQueue[amlNode.$uniqueId] 
+          && this.$waitQueue[amlNode.$uniqueId].$shouldWait)
             return (docFrag || doc);
 
         if (options.timeout) {
@@ -231,14 +227,60 @@ apf.DOMParser.prototype = new (function(){
         return (docFrag || doc);
     };
     
-    this.$callCount = 0;
+    this.$isPaused = function(amlNode){
+        return this.$waitQueue[amlNode.$uniqueId] && 
+          this.$waitQueue[amlNode.$uniqueId].$shouldWait > 0;
+    }
+    
+    this.$addParseState = function(amlNode, options){
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId] 
+            || (this.$waitQueue[amlNode.$uniqueId] = [])
+        waitQueue.pushUnique(options);
+        
+        return waitQueue;
+    }
+    
+    this.$pauseParsing = function(amlNode, options){
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId];
+        if (!waitQueue.$shouldWait) waitQueue.$shouldWait = 0;
+        waitQueue.$shouldWait++;
+    }
+    
     this.$continueParsing = function(amlNode, options){
-        if (this.$shouldWait && --this.$shouldWait != 0)
-            return false;
+        if (!amlNode)
+            amlNode = apf.document.documentElement;
 
-        if (!options)
-            options = {};
+        var uId  = amlNode.$uniqueId;
+        if (uId in this.$waitQueue) {
+            var item = this.$waitQueue[uId];
             
+            if (item.$shouldWait && --item.$shouldWait)
+                return false;
+            
+            var node = amlNode.parentNode;
+            while (node && node.nodeType == 1) {
+                if (this.$waitQueue[node.$uniqueId] 
+                  && this.$waitQueue[node.$uniqueId].$shouldWait)
+                    return false;
+                node = node.parentNode;
+            }
+            
+            var parseAmlNode = apf.all[uId];
+            
+            delete this.$waitQueue[uId];
+            for (var i = 0; i < item.length; i++) {
+                this.$parseState(parseAmlNode, item[i]);
+            }
+            
+            //@todo Check for shouldWait here?
+        }
+        else
+            this.$parseState(amlNode, options || {});
+        
+        delete this.$parseContext;
+    }
+    
+    this.$parseState = function(amlNode, options) {
         this.$callCount++;
 
         if (amlNode.$parseOptions) {
@@ -267,7 +309,7 @@ apf.DOMParser.prototype = new (function(){
         (function _recur(nodes){
             var node, nNodes;
             for (var i = 0, l = nodes.length; i < l; i++) {
-                if (!(node = nodes[i]).$parsePrio && !node.$amlLoaded) {
+                if (!(node = nodes[i]).$amlLoaded) {
                     node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                 }
                 
@@ -282,8 +324,6 @@ apf.DOMParser.prototype = new (function(){
         
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
-
-        delete this.$parseContext;
     };
     
     this.$createNode = function(doc, nodeType, xmlNode, namespaceURI, nodeName, nodeValue){

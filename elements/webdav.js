@@ -32,7 +32,7 @@
  * Writing to a file with a WebDAV connector
  * <code>
  *  <a:webdav id="myWebDAV" url="http://my-webdav-server.com/dav_files/" />
- *     
+ *
  *  <a:script>
  *      // write the text 'bar' to a file on the server called 'foo.txt'
  *      myWebDAV.writeFile('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
@@ -202,7 +202,7 @@ apf.webdav = function(struct, tagName){
                 oHeaders = {};
             oHeaders["Content-type"] = "text/xml; charset=utf-8";
         }
-        
+
         var fHost = this["force-host"];
         if (fHost && sPath.indexOf(fHost) === -1)
             sPath = fHost.replace(/[\/]+$/, "") + "/" + sPath.replace(/^[\/]+/, "");
@@ -222,7 +222,7 @@ apf.webdav = function(struct, tagName){
                     else
                         throw oError;
                 }
-                
+
                 extra.headers = oHeaders;
 
                 var iStatus = parseInt(extra.status, 10);
@@ -334,7 +334,7 @@ apf.webdav = function(struct, tagName){
 
     /*
      * Wrapper function for generation WebDAV-specific Error reporting
-     * 
+     *
      * @param {String} sMsg Message that lists the error details
      * @type  {Error}
      * @private
@@ -376,7 +376,7 @@ apf.webdav = function(struct, tagName){
         catch (e) {
             authRequired = true;
         }
-        
+
         var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (authRequired) {
             auth.authRequired(callback);
@@ -405,7 +405,7 @@ apf.webdav = function(struct, tagName){
         var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (!auth)
             return;
-        
+
         this.doRequest(function(data, state, extra) {
             if (extra.status == 401)
                 return auth.authRequired();
@@ -420,7 +420,7 @@ apf.webdav = function(struct, tagName){
 
     /**
      * Unset all cached values.
-     * 
+     *
      * @type {void}
      */
     this.reset = function() {
@@ -431,11 +431,11 @@ apf.webdav = function(struct, tagName){
     };
 
     //------------ Filesystem operations ----------------//
-    
+
     /**
-     * Check whether a file or directory  exists on the remote filesystem and pass 
+     * Check whether a file or directory  exists on the remote filesystem and pass
      * that information to a callback function
-     * 
+     *
      * @param {String}   sPath    Path to the file or directory on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
@@ -449,7 +449,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Read the content of a file as plaintext and pass the data to a callback
      * function
-     * 
+     *
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
@@ -493,7 +493,7 @@ apf.webdav = function(struct, tagName){
 
     /**
      * Creates a new directory resource on the WebDAV server.
-     * 
+     *
      * @param {String}   sPath      Path of the new directory on the WebDAV server
      * @param {Boolean}  [bLock]    Whether to require a lock before copy
      * @param {Function} [callback] Function to execute when the request was successful
@@ -546,7 +546,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Write new contents (plaintext) to a file resource on the server, with or
      * without an existing lock on the resource.
-     * 
+     *
      * @param {String}   sPath     Path to the file on the WebDAV server
      * @param {String}   sContent  New content-body of the file
      * @param {Boolean}  [bLock]   Whether to require a lock before write
@@ -592,7 +592,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Copies a file or directory resource to any location on the same WebDAV
      * server.
-     * 
+     *
      * @param {String}   sFrom        Path to the file on the WebDAV server to be copied
      * @param {String}   sTo          New location to place the copy at
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
@@ -601,9 +601,9 @@ apf.webdav = function(struct, tagName){
      * @type  {void}
      */
     this.copy = function(sFrom, sTo, bOverwrite, bLock, callback) {
-        if (!sTo || sFrom == sTo) 
+        if (!sTo || sFrom == sTo)
             return (callback && callback("", apf.SUCCESS, {}));
-        
+
         if (bLock) {
             var oLock = this.lock(sFrom);
             if (!oLock.token)
@@ -623,7 +623,7 @@ apf.webdav = function(struct, tagName){
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sFrom);
             var iStatus = parseInt(extra.status, 10);
-            if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412 
+            if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
               || iStatus == 423 || iStatus == 424 || iStatus == 502
               || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to copy file '" + sFrom
@@ -647,7 +647,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Moves a file or directory resource to any location on the same WebDAV
      * server.
-     * 
+     *
      * @param {String}   sFrom        Path to the file on the WebDAV server to be moved
      * @param {String}   sTo          New location to move the resource to
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
@@ -657,9 +657,9 @@ apf.webdav = function(struct, tagName){
      */
     this.rename =
     this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
-        if (!sTo || sFrom == sTo) 
+        if (!sTo || sFrom == sTo)
             return (callback && callback("", apf.SUCCESS, {}));
-        
+
         if (bLock) {
             var oLock = this.lock(sFrom);
             if (!oLock.token)
@@ -703,7 +703,7 @@ apf.webdav = function(struct, tagName){
 
     /**
      * Removes an existing directory or file resource from the WebDAV server.
-     * 
+     *
      * @param {String}   sPath    Path to the resource to be removed from the WebDAV server
      * @param {Boolean}  [bLock]  Whether to require a lock before remove
      * @param {Function} callback Function to execute when the request was successful
@@ -833,7 +833,7 @@ apf.webdav = function(struct, tagName){
 
     /*
      * Add a new lock token/ object to the stack
-     * 
+     *
      * @path {String} sPath Path pointing to the resource on the server
      * @type {Object}
      * @private
@@ -850,7 +850,7 @@ apf.webdav = function(struct, tagName){
      * Handler function that registers a lock globally when a LOCK request was
      * successful. It parses all the info it received from the server response
      * and caches that info for reuse.
-     * 
+     *
      * @param {XmlDocument} data  Actual XML data, received from the server
      * @param {Number}      state Internal - APF defined - state of the request
      * @param {Object}      extra Simple object that contains additional request data
@@ -873,7 +873,7 @@ apf.webdav = function(struct, tagName){
               }) === false)
                 throw oError;
         }
-        
+
         var NS     = apf.webdav.NS,
             oOwner = $xmlns(data, "owner",     NS.ns0)[0],
             oToken = $xmlns(data, "locktoken", NS.D)[0];
@@ -890,7 +890,7 @@ apf.webdav = function(struct, tagName){
 
     /*
      * Removes a Lock token/ object from the stack.
-     * 
+     *
      * @param {String} sPath Path pointing to the resource on the server
      * @type  {void}
      * @private
@@ -906,7 +906,7 @@ apf.webdav = function(struct, tagName){
     /*
      * Update the stack of lock requests (NOT the stack of valid locks!) with a
      * new Lock, or an updated one (lifetime may have changed)
-     * 
+     *
      * @param {Object} oLock Object that contains specific info about the Lock
      * @param {String} sFunc Name of the function that requested the lock
      * @param {Array}  aArgs List of arguments that should get passed to that function when the lock is available
@@ -967,7 +967,7 @@ apf.webdav = function(struct, tagName){
      * Request the server to change and set properties of a specific resource
      * with different values.
      * @todo Untested functionality
-     * 
+     *
      * @param {String} sPath     Path pointing to the resource on the server
      * @param {Object} oPropsSet A mapping from namespace to a mapping of key/value pairs (where value is an *entitized* XML string)
      * @param {Object} oPropsDel A mapping from namespace to a list of names
@@ -976,7 +976,7 @@ apf.webdav = function(struct, tagName){
      */
     this.setProperties = function(sPath, oPropsSet, oPropsDel, sLock) {
         this.method = "PROPPATCH";
-        
+
         this.doRequest(function(data, state, extra) {
             // #ifdef __DEBUG
             apf.console.dir(data);
@@ -987,7 +987,7 @@ apf.webdav = function(struct, tagName){
 
     /*
      * create the XML for a PROPPATCH request.
-     * 
+     *
      * @param {Object} oPropsSet A mapping from namespace to a mapping of key/value pairs (where value is an *entitized* XML string)
      * @param {Object} oPropsDel A mapping from namespace to a list of names
      * @type  {String}
@@ -1029,7 +1029,7 @@ apf.webdav = function(struct, tagName){
     }
 
     /*
-     * Handler function that parses the response of a successful PROPFIND 
+     * Handler function that parses the response of a successful PROPFIND
      * request. It parses all the info it received from the server response
      * and caches that info for reuse.
      *
@@ -1047,21 +1047,21 @@ apf.webdav = function(struct, tagName){
 
         if (typeof oXml == "string")
             oXml = apf.getXml(oXml);
-        
-        var aResp = $xmlns(oXml, "response", apf.webdav.NS.D),
-            aOut = [];
+
+        var aResp = $xmlns(oXml, "response", apf.webdav.NS.D);
+        var aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
-            
+
         var sPath;
         for (var sa = [], data, i = 0, j = aResp.length; i < j; i++) {
             // Exclude requesting URL if it matches node's HREF (same node)
             sPath = decodeURIComponent($xmlns(aResp[i], "href", apf.webdav.NS.D)[0].firstChild.nodeValue);
             if (sPath === extra.url)
                 continue;
-                
+
             parseItem.call(this, aResp[i], data = {});
-            if (data.data) 
+            if (data.data) {
                 sa.push({
                     toString: function(){
                         return this.v;
@@ -1069,14 +1069,15 @@ apf.webdav = function(struct, tagName){
                     data : data.data,
                     v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name.toLowerCase()
                 });
+            }
         }
-        
+
         sa.sort();
-        
+
         for (var i = 0, l = sa.length; i < l; i++) {
             aOut.push(sa[i].data.xml);
         }
-        
+
 //        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
 //        for (var i = start, j = aResp.length; i < j; i++)
 //            aOut.push(parseItem.call(this, aResp[i]));
@@ -1085,9 +1086,9 @@ apf.webdav = function(struct, tagName){
     }
 
     /*
-     * Turn an XML WebDAV node that represents a resource and turn it into a 
+     * Turn an XML WebDAV node that represents a resource and turn it into a
      * reusable JS object, cache it so that it can be reused later.
-     * 
+     *
      * @param {XmlNode} oNode
      * @type  {String}
      * @private
@@ -1122,16 +1123,17 @@ apf.webdav = function(struct, tagName){
             lockable    : ($xmlns(oNode, "locktype", NS.D).length > 0),
             executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
         });
-        
+
         if (extra)
             extra.data = oItem;
-        
-        return oItem.xml = "<" + sType + " path='" + apf.escapeXML(sPath) + "'  type='" + sType
-            + "' size='" + oItem.size + "' name='" + apf.escapeXML(oItem.name) + "' contenttype='"
-            + oItem.contentType + "' modifieddate='" + oItem.lastModified + "' creationdate='" + oItem.creationDate
-            + "' lockable='" + oItem.lockable.toString() + "' hidden='"
-            + bHidden.toString() + "' executable='" + oItem.executable.toString()
-            + "'/>";
+
+        return oItem.xml = "<" + sType + " path=\"" + apf.escapeXML(sPath) +
+            "\" type=\"" + sType + "\" size=\"" + oItem.size + "\" name=\"" +
+            apf.escapeXML(oItem.name) + "\" contenttype=\"" + oItem.contentType +
+            "\" modifieddate=\"" + oItem.lastModified + "\" creationdate=\"" +
+            oItem.creationDate + "\" lockable=\"" + oItem.lockable.toString() +
+            "\" hidden=\"" + bHidden.toString() + "\" executable=\"" +
+            oItem.executable.toString() + "\"/>";
     }
 
     // #ifdef __WITH_DATA
@@ -1225,7 +1227,7 @@ apf.webdav = function(struct, tagName){
                 break;
         }
     };
-    
+
     // #endif
 }).call(apf.webdav.prototype = new apf.Teleport());
 

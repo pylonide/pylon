@@ -83,7 +83,7 @@ apf.offline.transactions = {
         var storage   = apf.offline.storage;
         var len       = parseInt(storage.get("length", namespace)) || 0;
         
-        storage.put(len, apf.serialize(type == "queue"
+        storage.put(len, JSON.stringify(type == "queue"
             ? {
                 undo    : qItem.undo,
                 undoObj : qItem.undoObj.$export()

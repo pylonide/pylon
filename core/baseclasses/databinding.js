@@ -849,9 +849,13 @@ apf.DataBinding = function(){
             options.copyAttributes = true;
             
         var newNode = apf.mergeXml(xmlNode, insertPoint, options);
+        
+        this.$isLoading = true; //Optimization for simpledata
 
         //Call __XMLUpdate on all listeners
         apf.xmldb.applyChanges("insert", insertPoint);
+        
+        this.$isLoading = false;
 
         //Select or propagate new data
         if (this.selectable && this.autoselect) {

@@ -804,7 +804,12 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             sb = _self.$sharedScrollbar;
             
             if (sb.$host != _self) {
-                (_self.$ext == oHtml ? _self.$ext.parentNode : _self.$ext).appendChild(sb.$ext);
+                var pNode = (_self.$ext == oHtml ? _self.$ext.parentNode : _self.$ext);
+                pNode.appendChild(sb.$ext);
+                
+                if (apf.getStyle(pNode, "position") == "static") 
+                    pNode.style.position = "relative";
+                    
                 sb.setProperty("showonscroll", true);
                 sb.$ext.style.display = "block";
                 sb.setAttribute("top", top);

@@ -56,8 +56,8 @@ apf.aml.setElement("include", apf.XiInclude);
         
         var domParser = this.ownerDocument.$domParser;
         if (!this.defer) {
-            domParser.$shouldWait++;
-            this.$parseContext = domParser.$parseContext || [this.parentNode];
+            domParser.$pauseParsing.apply(domParser, 
+              this.$parseContext = domParser.$parseContext || [this.parentNode]);
         }
 
         //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
@@ -104,13 +104,13 @@ apf.aml.setElement("include", apf.XiInclude);
                 };
 
                 //@todo this is wrong... probably based on load order of last include element. Please rearchitect parse continuation.
-                if (domParser.$continueParsing.apply(domParser, this.$parseContext) === false) {
+                if (domParser.$continueParsing(this.$parseContext[0]) === false) {
                     var o2  = (domParser.$parseContext[1] || (domParser.$parseContext[1] = {})),
                         cb2 = o.callback;
                     o2.callback = function(){
                         if (cb)
                             cb.call(_self.ownerDocument);
-                        domParser.$continueParsing.apply(domParser, _self.$parseContext);
+                        domParser.$continueParsing(_self.$parseContext[0]);
                     };
                 }
             }
@@ -119,7 +119,7 @@ apf.aml.setElement("include", apf.XiInclude);
         }
         else {
             if (!this.defer)
-                domParser.$continueParsing.apply(domParser, this.$parseContext);
+                domParser.$continueParsing(this.$parseContext[0]);
             
             done.call(this, xmlNode);
         }

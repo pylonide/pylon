@@ -183,7 +183,7 @@ apf.BaseTree = function(){
             _self.slideToggle(apf.xmldb.getHtmlNode(pNode, _self), 1, true);
         })(xmlNode) !== false)
             this.select(xmlNode);
-    }
+    };
     
     /**
      * Loads a list of folders
@@ -193,7 +193,7 @@ apf.BaseTree = function(){
     this.expandList = function (paths, onFinished) {
         var _self = this;
         var root = this.xmlRoot;
-            
+
         // recursive load function
         function expand(currentSelector, allSelectors) {
             // first expand the item passed in
@@ -210,7 +210,7 @@ apf.BaseTree = function(){
                     }
                     
                     // notify
-                    hasExpanded(currentSelector);
+                    hasExpanded();
                     
                     // when finished, find all the other selectors that start with the current selector
                     // plus a slash to make it really really sure
@@ -228,25 +228,25 @@ apf.BaseTree = function(){
                 callback();
             });
         }
-        
+
         // function to be called when an item has expanded, used to determine whether we finished
         var expandCount = 0;
-        function hasExpanded(selector) {
+        function hasExpanded() {
             // if we have expanded all items, invoke the callback
             if (++expandCount === paths.length) {
                 onFinished();
             }
         }
-        
+
         // find all rootNodes (nodes without a slash in them)
         var rootNodes = paths.filter(function (p) { return p.split("/").length === 1; });
-        
+
         // expand all root nodes, expand will recursively expand all child items
         rootNodes.forEach(function (node) {
             expand(node, paths);
         });
-    };    
-    
+    };
+
     /**
      * @notimplemented
      * @todo who's volunteering?
@@ -790,6 +790,7 @@ apf.BaseTree = function(){
             return;
 
         var rule       = this.$getBindRule("insert", xmlNode),
+            _self      = this,
             xmlContext = rule && rule.match
                 ? (rule.cmatch || rule.compile("match"))(xmlNode)
                 : xmlNode;
@@ -815,7 +816,16 @@ apf.BaseTree = function(){
                     xmlNode     : xmlContext,
                     insertPoint : xmlContext, 
                     amlNode     : this,
-                    callback    : callback
+                    callback    : function(data, state, extra){
+                        if (state != apf.SUCCESS) {
+                            _self.$setLoadStatus(xmlNode, "potential");
+                            _self.$removeLoading(xmlNode);
+                            _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 2, true);
+                        }
+                        
+                        if (callback)
+                            callback(data, state, extra);
+                    }
                 });
             }
             else {

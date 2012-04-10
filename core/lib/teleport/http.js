@@ -141,17 +141,10 @@ apf.http = function(){
      */
     this.saveCache = function(){
         // #ifdef __DEBUG
-        if (!apf.serialize)
-            throw new Error(apf.formatErrorString(1079, this,
-                "HTTP save cache",
-                "Could not find JSON library."));
-        // #endif
-
-        // #ifdef __DEBUG
         apf.console.info("[HTTP] Loading HTTP Cache", "teleport");
         // #endif
 
-        var strResult = apf.serialize(comm.cache);
+        var strResult = JSON.stringify(comm.cache);
         apf.storage.put("cache_" + this.name, strResult,
             apf.config.name + ".apf.http");
     };
@@ -408,41 +401,23 @@ apf.http = function(){
             }
             //#endif
             
-            // experimental for Firefox Cross Domain problem
-            // http://ubiquity-xforms.googlecode.com/svn/wiki/CrossDomainSubmissionDeployment.wiki
-            //#ifdef __DEBUG
-            //#ifndef __SUPPORT_GWT
-            try {
-                if (apf.isGecko)
-                    netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+            var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
+            if (requestedWithParam) {
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
+                    + requestedWithParam + "=1";
             }
-            catch (e) {
-            //#endif
-            //#endif
-                //Currently we don't support html5 cross domain access
-                if (apf.hasHtml5XDomain
-                  && httpUrl.match(/^http:\/\//)
-                  && !new apf.url(httpUrl).isSameLocation()) {
-                    throw new Error(apf.formatErrorString(0,
-                        this, "Communication error", "Url: " + httpUrl
-                            + "\nReason: Same origin policy in effect"));
-                  }
-            //#ifdef __DEBUG
-            //#ifndef __SUPPORT_GWT
-            }
-            //#endif
-            //#endif
-            //end experimental
 
             http.open(this.method || options.method || "GET", httpUrl, async);
 
             if (options.username) {
-                setRequestHeader("Authorization", "Basic " 
+                setRequestHeader("Authorization", "Basic "
                     + apf.crypto.Base64.encode(options.username + ":" + options.password))
             }
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
-            setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            if (!requestedWithParam)
+                setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
             if (!options.headers || !options.headers["Content-type"])
                 setRequestHeader("Content-type", options.contentType || this.contentType
                     || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
@@ -466,33 +441,6 @@ apf.http = function(){
 
         if (errorFound) {
             var useOtherXH = false;
-
-            //#ifdef __WITH_UNSAFE_XMLHTTP
-            if (self.XMLHttpRequestUnSafe) {
-                try {
-                    http = new XMLHttpRequestUnSafe();
-                    http.onreadystatechange = function(){
-                        if (!_self.queue[id] || http.readyState != 4)
-                            return;
-
-                        _self.receive(id);
-                    }
-                    http.open(this.method || options.method || "GET", (options.nocache
-                        ? apf.getNoCacheUrl(httpUrl)
-                        : httpUrl), async);
-
-                    setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                    if (!options.headers || !options.headers["Content-type"])
-                        setRequestHeader("Content-type", this.contentType
-                            || (this.useXML || options.useXML ? "text/xml" : "text/plain"));
-
-                    this.queue[id].http = http;
-                    options.async     = true; //force async
-                    useOtherXH        = true;
-                }
-                catch (e) {}
-            }
-            //#endif
 
             // Retry request by routing it
             if (!useOtherXH && this.autoroute && !autoroute) {

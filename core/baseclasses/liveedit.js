@@ -651,7 +651,7 @@ apf.LiveEdit = function() {
                 }
                 //Reference to class
                 else if (apf.namespaces[apf.ns.aml].elements[editor]) {
-                    var cacheId = apf.serialize(rule); //Using full element definition as cache id. @todo when should I clear this cache? - at least at destroy - same for propedit/datagrid
+                    var cacheId = JSON.stringify(rule); //Using full element definition as cache id. @todo when should I clear this cache? - at least at destroy - same for propedit/datagrid
                     if (!this.$editorCache)
                         this.$editorCache = {};
                     

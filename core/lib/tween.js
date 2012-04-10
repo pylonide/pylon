@@ -699,6 +699,8 @@ var ID        = "id",
             tweens = {};
         for (i = 0; i < document.styleSheets.length; i++) {
             rules = document.styleSheets[i][apf.styleSheetRules];
+            if (!rules || !rules.length)
+                continue;
             for (j = rules.length - 1; j >= 0; j--) {
                 var rule = rules[j];
 

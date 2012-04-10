@@ -91,7 +91,7 @@
  *   {String}         message   the error message.
  * @default_private
  */
-var apf = {
+ apf = {
     // Content Distribution Network URL:
     // #ifndef __WITH_CDN
     /**
@@ -440,7 +440,6 @@ var apf = {
 
         this.supportVML                = apf.isIE;
         this.supportSVG                = !apf.isIE || apf.isIE > 8;
-        this.hasHtml5XDomain           = apf.versionGecko >= 3.5;
         this.supportCanvas             = !!document.createElement("canvas").getContext;
         this.supportCanvasText         = !!(this.supportCanvas
             && typeof document.createElement("canvas").getContext("2d").fillText == "function")
@@ -1710,6 +1709,10 @@ var apf = {
      */
     parseAppMarkup : function(docElement){
         var isEmptyDocument = false;
+        
+        if (document.documentElement.getAttribute("skipParse") == "true") {
+            return;
+        }
         
         //#ifdef __WITH_PARTIAL_AML_LOADING
         if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
