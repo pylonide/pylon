@@ -650,6 +650,9 @@ apf.ViewPortVirtual = function(amlNode){
             - _self.$container.scrollTop < _self.$container.offsetHeight)
             return;
         
+        if (this.amlNode.$sharedScrollbarMove)
+            this.amlNode.$sharedScrollbarMove();
+        
         var nr = apf.getChildNumber(xmlNode, 
             apf.MultiselectBinding.prototype.getTraverseNodes.call(_self));
         var itemHeight = this.$getItemHeight();

@@ -653,8 +653,9 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                     sb.$hideOnScrollControl.stop();
             }
             
-            if (hasOnScroll()) {
+            if (hasOnScroll() && e) {
                 clearTimeout(timer);
+                
                 var pos = apf.getAbsolutePosition(oHtml);
                 var rightPos = oHtml.offsetWidth - (e.clientX - pos[0]);
                 var show = rightPos < 25 && rightPos > right;
@@ -669,6 +670,8 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                     sb.showonscroll = true;
             }
         });
+        
+        this.$sharedScrollbarMove = mouseMove;
         
         function showScrollbar(){
             sb.setProperty("showonscroll", false);
