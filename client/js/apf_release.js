@@ -6751,7 +6751,7 @@ this.$activateButton();});return;}if(this.parentNode&&this.parentNode.$hasButton
 }this.$btnControl={};this.$btnDown=function(oHtml,htmlEvent){if(this.disabled){return;
 }if(htmlEvent.button==2&&this.parentNode.contextmenu){this.parentNode.contextPage=this;
 return;}if(this.parentNode.dispatchEvent("tabselectclick",{page:this,htmlEvent:htmlEvent})===false){return;
-}this.$btnPressed=true;if(!this.parentNode.$order){$btnSet.call(this,oHtml);}else{if(this.parentNode.getPages().length>1){if(this.$btnControl[this.$uniqueId]){return;
+}this.$btnPressed=true;$btnSet.call(this,oHtml);if(this.parentNode.getPages().length>1){if(this.$btnControl[this.$uniqueId]){return;
 }this.$dragging=true;var pos=apf.getAbsolutePosition(this.$button,this.parentNode.$ext);
 var start=htmlEvent.clientX;var x=start-pos[0];var t=apf.getAbsolutePosition(this.$button)[1];
 oHtml.style.left=(oHtml.offsetLeft)+"px";oHtml.style.top=(oHtml.offsetTop)+"px";
@@ -6774,8 +6774,8 @@ var reorder=_self.nextSibling!=aml;_self.parentNode.insertBefore(_self,aml);div.
 if(reorder){_self.parentNode.dispatchEvent("reorder",{page:_self.localName!="page"?_self.parentNode.$activepage:_self});
 }delete _self.$btnControl[_self.$uniqueId];}});}else{oHtml.style.position=oHtml.style.zIndex=oHtml.style.top=oHtml.style.left="";
 div.parentNode.removeChild(div);}apf.removeListener(document,"mouseup",mUp);apf.removeListener(document,"mousemove",mMove);
-});}}};this.$btnUp=function(oHtml){this.parentNode.$setStyleClass(oHtml,"",["down"],true);
-if(this.disabled){return;}if(this.parentNode.$order&&this.$btnPressed){this.$dragging=false;
+});}};this.$btnUp=function(oHtml){this.parentNode.$setStyleClass(oHtml,"",["down"],true);
+if(this.disabled){return;}if(false&&this.parentNode.$order&&this.$btnPressed){this.$dragging=false;
 $btnSet.call(this,oHtml);}this.$btnPressed=false;this.parentNode.dispatchEvent("tabselectmouseup");
 };this.$btnOut=function(oHtml){this.parentNode.$setStyleClass(oHtml,"",["over"],true);
 this.canHaveChildren=true;this.$dragging=false;this.$btnPressed=false;};this.$canLeechSkin=true;
