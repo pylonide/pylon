@@ -28,7 +28,7 @@
               skin      = "lineselect"
               maxheight = "350"
               scrollbar = "sbShared 32 7 7"
-              model     = "mdlGoToFileSearch"
+              model     = "{require('ext/gotofile/gotofile').model}"
               viewport  = "virtual"
               multiselect   = "true"
               empty-message = "No files found that match '{txtGoToFile.value}'"
@@ -52,7 +52,5 @@
                 ?></a:caption>
             </a:list>
         </a:vbox>
-        <a:model id="mdlGoToFile" />
-        <a:model id="mdlGoToFileSearch" />
     </a:bar>
 </a:application>

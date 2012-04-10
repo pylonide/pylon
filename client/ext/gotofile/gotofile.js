@@ -49,12 +49,19 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
-            }))
+            })),
+            
+            this.model = new apf.model(),
+            this.modelCache = new apf.model()
         );
                 
         ide.addEventListener("init.ext/editors/editors", function(){
             _self.markupInsertionPoint = tabEditors;
             //tabEditors.appendChild(winGoToFile);
+        });
+        
+        ide.addEventListener("extload", function(){
+            _self.updateFileCache();
         });
 
         this.hotitems["gotofile"] = [this.nodes[0]];
@@ -113,13 +120,13 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             var keyword = txtGoToFile.value, klen = keyword.length;
             
             if (!keyword)
-                data = mdlGoToFile.data;
+                data = _self.modelCache.data;
             else {
                 // Optimization reusing smaller result if possible
                 if (keyword.indexOf(lastSearch) > -1)
-                    data = apf.xmldb.cleanNode(mdlGoToFileSearch.data);
+                    data = apf.xmldb.cleanNode(_self.model.data);
                 else
-                    data = mdlGoToFile.data;
+                    data = _self.modelCache.data;
                 
                 if (!data.firstChild)
                     return;
@@ -169,7 +176,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             lastSearch = keyword;
             
-            mdlGoToFileSearch.load(data);
+            _self.model.load(data);
             
             // See if there are open files that match the search results
             // and the first if in the displayed results
@@ -208,12 +215,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.openFile();
         });
         
-        this.fetchAllFiles();
-
         this.nodes.push(winGoToFile);
     },
     
-    fetchAllFiles : function(){
+    updateFileCache : function(){
         var _self = this;
 
         //@todo create an allfiles plugin that plugins like gotofile can depend on
@@ -231,25 +236,23 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (state == apf.TIMEOUT)
                 return; //@todo
 
-            var re = new RegExp("(^\\.)|\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp");
+            var re = new RegExp("(\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp)$|\/(\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|\.DS_Store)(?:\/|$)");
             var nodes = data.firstChild.childNodes;
             for (var i = nodes.length - 1; i >= 0; i--) {
                 if (re.test(nodes[i].firstChild.nodeValue))
                     nodes[i].parentNode.removeChild(nodes[i]);
             }
 
-            _self.cachedFileList = data;
-
-            if (winGoToFile.visible)
+            if (self.winGoToFile && winGoToFile.visible)
                 _self.updateSearchResults();
             
-            mdlGoToFile.load(data);
-            mdlGoToFileSearch.load(mdlGoToFile.data);
+            _self.modelCache.load(data);
+            _self.model.load(_self.modelCache.data);
         });
     },
     
     updateSearchResults : function(){
-        var data = this.cachedFileList;
+        var data = this.modelCache.dat;
         
         /*var nodes = data.selectNodes("//d:href");
         for (var node, i = 0; i < nodes.length; i++) {
@@ -306,13 +309,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
     enable : function(){
         this.nodes.each(function(item){
-            item.enable();
+            if (item.enable)
+                item.enable();
         });
     },
 
     disable : function(){
         this.nodes.each(function(item){
-            item.disable();
+            if (item.disable)
+                item.disable();
         });
     },
 
