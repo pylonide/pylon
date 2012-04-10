@@ -41,8 +41,7 @@ apf.AmlAttr = function(ownerElement, name, value){
     
     this.serialize = 
     this.toString  = function(){
-        return this.name + "=\"" + apf.xmlentities(String(this.value))
-            .replace(/</g, "&lt;").replace(/>/g, "&gt;") + "\"";
+        return this.name + "=\"" + apf.escapeXML(String(this.value)) + "\"";
     };
     
     //#ifndef __PACKAGED
