@@ -487,11 +487,12 @@ apf.page = function(struct, tagName){
         
         this.$btnPressed = true;
         
-        if (!this.parentNode.$order)
+        //if (!this.parentNode.$order)
             $btnSet.call(this, oHtml);
         //#ifdef __ENABLE_TAB_ORDER
         //@todo vertically stacked buttons
-        else if (this.parentNode.getPages().length > 1) {
+        //else
+        if (this.parentNode.getPages().length > 1) {
             if (this.$btnControl[this.$uniqueId])
                 return;
             
@@ -646,7 +647,7 @@ apf.page = function(struct, tagName){
         if (this.disabled) 
             return;
         
-        if (this.parentNode.$order && this.$btnPressed) {
+        if (false && this.parentNode.$order && this.$btnPressed) {
             this.$dragging = false;
             
             $btnSet.call(this, oHtml);

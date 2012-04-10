@@ -24,7 +24,6 @@
 //@todo: fix the stuff with all the uppercase variable and function names...wazzup?
 
 /**
- * This library needs to be refactored.
  * @constructor
  * @private
  */
