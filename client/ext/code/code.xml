@@ -16,7 +16,9 @@
       softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-      
+
+animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@animatedscroll]"
+
       fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
       wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
       wrapmodeViewport  = "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
@@ -25,17 +27,17 @@
       gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
       highlightselectedword = "[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]"
       autohidehorscrollbar  = "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]"
-      
+
       contextmenu       = "mnuCtxEditor"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
       readonly          = "{[@loading] or cloud9config.readonly or (location.host and window.stDebugProcessRunning and stDebugProcessRunning.active and [@scriptid])}"
     />
-    
+
     <a:menu id="mnuCtxEditor" render="runtime"onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
         <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
         <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
         <a:divider />
-        <a:item 
+        <a:item
 onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
         <a:item onclick="{require('ext/clipboard/clipboard').copy()}">Copy</a:item>
         <a:item onclick="{require('ext/clipboard/clipboard').paste()}">Paste</a:item>
@@ -48,7 +50,7 @@ onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
         <a:divider visible="{stDebugProcessRunning.active and !stRunning.active}" />
         <a:item onclick="ceEditor.$editor.getSelection().selectAll()">Select All</a:item>
     </a:menu>
-    
+
     <a:menu id="mnuSyntax">
         <a:item type="radio" value="auto">Auto-Select</a:item>
         <a:item type="radio" value="text/plain">Plain Text</a:item>

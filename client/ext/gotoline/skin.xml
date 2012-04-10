@@ -125,7 +125,7 @@
 
             .tbGotoline .sbtb_middle {
                 height           : 15px;
-                padding          : 2px 5px;
+                padding          : 2px 5px 2px 5px;
 
                 background-color: #ffffff;
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
@@ -134,7 +134,7 @@
                 border-top: 1px solid #fafafa;
                 margin: 0;
                 outline: none;
-                font-family: Tahoma;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Droid Sans Mono', 'Consolas', monospace;
                 font-size: 12px;
                 text-overflow: ellipsis;
                 -webkit-border-radius: 2px;
@@ -151,11 +151,11 @@
                 height           : 13px;
                 font-size        : 12px;
                 color            : #0471cf;
-                font-family      : Arial;
+                font-family      : 'Monaco', 'Menlo', 'Ubuntu Mono', 'Droid Sans Mono', 'Consolas', monospace;
                 outline          : none;
                 background-color : transparent;
                 width: 100%;
-                text-align: right;
+                text-align: center;
             }
 
             .tbGotolineInitial .sbtb_middle INPUT {

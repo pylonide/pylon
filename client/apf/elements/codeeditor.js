@@ -88,11 +88,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["folding"]                  = true;
     this.$booleanProperties["wrapmode"]                 = true;
     this.$booleanProperties["wrapmodeViewport"]         = true;
+    this.$booleanProperties["animatedscroll"]         = true;
     
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
-        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar",
+        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
         "behaviors", "folding");
 
     this.$getCacheKey = function(value) {
@@ -407,6 +408,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
     };
+    
+    this.$propHandlers["animatedscroll"] = function(value, prop, initial) {
+        this.$editor.setAnimatedScroll(value);
+    };
 
     this.$propHandlers["overwrite"] = function(value, prop, initial) {
         this.$editor.setOverwrite(value);
@@ -698,6 +703,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.softtabs = doc.getUseSoftTabs(); //true
         if (this.scrollspeed === undefined)
             this.scrollspeed = ed.getScrollSpeed();
+        if (this.animatedscroll === undefined)
+            this.animatedscroll = ed.getAnimatedScroll();
         if (this.selectstyle === undefined)
             this.selectstyle = ed.getSelectionStyle();//"line";
         if (this.activeline === undefined)
