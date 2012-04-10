@@ -176,7 +176,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
              * Putting this in a worker won't help
              * An alternative solution would be to do this in parts of 10ms
              */
-            var showHiddenFiles = apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
+            var showHiddenFiles = true;//apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
             var re = new RegExp(
                 (showHiddenFiles ? "" : "\\/\\.[^\\/]*$|") //Hidden Files
                 + "(?:\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp)$" //File Extensions
