@@ -138,7 +138,18 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.openFile();
         });
         
+        winGoToFile.addEventListener("blur", function(e){
+            if (!apf.isChildOf(winGoToFile, e.toElement))
+                _self.toggleDialog(-1);
+        });
+        txtGoToFile.addEventListener("blur", function(e){
+            if (!apf.isChildOf(winGoToFile, e.toElement))
+                _self.toggleDialog(-1);
+        });
+        
         this.nodes.push(winGoToFile);
+        
+
     },
     
     updateFileCache : function(){
@@ -294,7 +305,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         if (nodes.length == 0)
             return false;
             
-        winGoToFile.hide();
+        this.toggleDialog(-1);
         
         //txtGoToFile.change("");
         
@@ -318,10 +329,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     toggleDialog: function(forceShow) {
         ext.initExtension(this);
 
-        if (!winGoToFile.visible || forceShow)
+        if (!forceShow && !winQuickSearch.visible || forceShow > 0) {
             winGoToFile.show();
-        else
+            txtGoToFile.focus();
+            txtGoToFile.select();
+        }
+        else if (winGoToFile.visible) {
+            dgGoToFile.clearSelection();
             winGoToFile.hide();
+        }
+        
         return false;
     },
 
