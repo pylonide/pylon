@@ -361,6 +361,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     onfinish : function(){
                         winGoToFile.visible = true;
                         winGoToFile.hide();
+                        
+                        if (editors.currentEditor && editors.currentEditor.ceEditor)
+                            editors.currentEditor.ceEditor.focus();
                     }
                 });
             }
