@@ -307,7 +307,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         if (nodes.length == 0)
             return false;
             
-        _self.toggleDialog(-1);
+        this.toggleDialog(-1);
         
         //txtGoToFile.change("");
         
