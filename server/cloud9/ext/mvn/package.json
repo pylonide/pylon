@@ -1,0 +1,6 @@
+{
+    "name": "shell-mvn",
+    "description": "Runs apache maven.",
+    "version": "0.1",
+    "author": "Ben Tilford <bentilford@gmail.com>"
+}

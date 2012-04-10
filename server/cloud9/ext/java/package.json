@@ -1,0 +1,6 @@
+{
+    "name": "shell-java",
+    "description": "Runs java.",
+    "version": "0.1",
+    "author": "Ben Tilford <bentilford@gmail.com>"
+}

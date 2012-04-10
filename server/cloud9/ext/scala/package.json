@@ -1,0 +1,6 @@
+{
+    "name": "shell-scala",
+    "description": "Runs scala.",
+    "version": "0.1",
+    "author": "Ben Tilford <bentilford@gmail.com>"
+}

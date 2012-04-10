@@ -4,9 +4,9 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
+ 
 define(function(require, exports, module) {
-
+ 
 require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
@@ -26,12 +26,12 @@ var editors = require("ext/editors/editors");
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
     var q = undoObj.args;
-
+    
     if (!undoObj.initial) {
         undoObj.initial = true;
         return;
     }
-
+    
     if (undo)
         q[1].undoChanges(q[0]);
     else
@@ -67,13 +67,18 @@ var SupportedModes = {
     "text/x-markdown": "markdown",
     "text/x-web-textile": "textile",
     "text/x-script.ocaml": "ocaml",
-    "text/x-script.clojure": "clojure",
     "application/x-latex": "latex",
     "text/x-lua": "lua",
     "text/x-script.powershell": "powershell",
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
     "text/x-sql": "sql"
+    "text/x-script.clojure": "clojure",
+    "text/x-scala-source": "scala",
+    "text/x-groovy-source": "groovy",
+    "text/x-gosu-source": "gosu",
+    "text/x-fantom-source": "fan"
+    
 };
 
 var contentTypes = {
@@ -83,7 +88,7 @@ var contentTypes = {
     "less": "text/css",
     "scss": "text/x-scss",
     "sass": "text/x-sass",
-
+    
     "xml": "application/xml",
     "rdf": "application/rdf+xml",
     "rss": "application/rss+xml",
@@ -93,7 +98,7 @@ var contentTypes = {
     "atom": "application/atom+xml",
     "mathml": "application/mathml+xml",
     "mml": "application/mathml+xml",
-
+    
     "php": "application/x-httpd-php",
     "phtml": "application/x-httpd-php",
     "html": "text/html",
@@ -101,12 +106,12 @@ var contentTypes = {
     "coffee": "text/x-script.coffeescript",
     "*Cakefile": "text/x-script.coffeescript",
     "py": "text/x-script.python",
-
+    
     "ru": "text/x-script.ruby",
     "gemspec": "text/x-script.ruby",
     "rake": "text/x-script.ruby",
     "rb": "text/x-script.ruby",
-
+    
     "c": "text/x-c",
     "cc": "text/x-c",
     "cpp": "text/x-c",
@@ -114,7 +119,7 @@ var contentTypes = {
     "h": "text/x-c",
     "hh": "text/x-c",
     "hpp": "text/x-c",
-
+    
     "cs": "text/x-csharp",
 
     "java": "text/x-java-source",
@@ -123,26 +128,7 @@ var contentTypes = {
     "scala": "text/x-scala",
 
     "ml": "text/x-script.ocaml",
-    "mli": "text/x-script.ocaml",
-
-    "md": "text/x-markdown",
-    "markdown": "text/x-markdown",
-    "textile": "text/x-web-textile",
-    "latex": "application/x-latex",
-    "tex": "application/x-latex",
-    "ltx": "application/x-latex",
-
-    "lua": "text/x-lua",
-
-    "pl": "text/x-script.perl",
-    "pm": "text/x-script.perl-module",
-
-    "ps1": "text/x-script.powershell",
-    "cfm": "text/x-coldfusion",
-    "sql": "text/x-sql",
-
-    "sh": "application/x-sh",
-    "bash": "application/x-sh"
+    "mli": "text/x-script.ocaml"
 };
 
 module.exports = ext.register("ext/code/code", {
@@ -230,9 +216,9 @@ module.exports = ext.register("ext/code/code", {
             return (SupportedModes[mime] || "text");
         }
 
-        return "text";
+            return "text";
     },
-
+    
     getSelection : function(){
         if (typeof ceEditor == "undefined")
             return null;
@@ -244,18 +230,18 @@ module.exports = ext.register("ext/code/code", {
             return null;
         return ceEditor.getSession();
     },
-
+    
     setDocument : function(doc, actiontracker){
-        var _self = this;
+            var _self = this;
 
         if (!doc.acesession) {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
             doc.acesession = new EditSession(doc.acedoc);
             doc.acedoc = doc.acesession.getDocument();
-
+            
             doc.acesession.setUndoManager(actiontracker);
-
+            
             if (doc.isInited && doc.state)
                  _self.setState(doc, doc.state);
 
@@ -268,17 +254,17 @@ module.exports = ext.register("ext/code/code", {
                     _self.setState(doc, doc.state);
                 doc.isInited = true;
             });
-
+            
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self)
                     return;
 
-                if (!doc.isInited)
+                if (!doc.isInited) 
                     return e.value;
-                else
+                else 
                     return doc.acesession.getValue();
             });
-
+            
             doc.addEventListener("close", function(){
                 if (this.editor != _self)
                     return;
@@ -299,15 +285,15 @@ module.exports = ext.register("ext/code/code", {
         doc.editor = this;
     },
 
-    hook: function() {
+    hook : function() {
         var _self = this;
-
+        
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e) {
+        ide.addEventListener("init.ext/settings/settings", function(e){
             var heading = e.ext.getHeading("Code Editor");
             heading.insertMarkup(markupSettings);
         });
-
+        
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
             if (!model.queryNode("editors/code")) {
@@ -337,7 +323,7 @@ module.exports = ext.register("ext/code/code", {
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
-            if (theme)
+            if (theme) 
                 require([theme], function() {});
             // pre load custom mime types
             _self.getCustomTypes(e.model);
@@ -360,20 +346,20 @@ module.exports = ext.register("ext/code/code", {
                 e.doc.editor.ceEditor.afterOpenFile(e.doc.editor.ceEditor.getSession());
             }
         });
-
+        
         tabEditors.addEventListener("afterswitch", function(e) {
             if(typeof ceEditor != "undefined")
                 ceEditor.afterOpenFile(ceEditor.getSession());
         });
     },
 
-    init: function(amlPage) {
+    init : function(amlPage) {
         amlPage.appendChild(ceEditor);
         ceEditor.show();
-
+        
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = this.commandManager;
-
+                
         // preload common language modes
         var noop = function() {};
         ceEditor.getMode("javascript", noop);
@@ -453,10 +439,10 @@ module.exports = ext.register("ext/code/code", {
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
         });
 
-        ide.addEventListener("keybindingschange", function(e) {
+        ide.addEventListener("keybindingschange", function(e){
             if (typeof ceEditor == "undefined")
                 return;
-
+                
             var bindings = e.keybindings.code;
             ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
             // In case the `keybindingschange` event gets fired after other
