@@ -128,6 +128,9 @@ apf.scrollbar = function(struct, tagName){
         
         this.$viewport = viewport;
         this.$viewport.setScrollbar(this, function(e){
+            if (_self.$viewport != viewport)
+                return;
+            
             _self.$update();
             
             if (_self.showonscroll) { // && e.byUser) {
