@@ -31,7 +31,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     currentSettings : [],
     nodes       : [],
     
-    uploadQueue : [],
+    uploadQueue : [], // list of all files that are queued for upload
+    lockHideQueueItems: [], // list of completed downloads that still needs to be removed from the upload queue
     
     init : function(){
         var _self = this;
@@ -102,6 +103,22 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         //trFiles.setAttribute("anchors", "0 0 " + lstUploadActivity.$ext.offsetHeight + " 0");
         
         apf.addEventListener("http.uploadprogress", this.onProgress.bind(this));
+        
+        lstUploadActivity.$ext.addEventListener("mouseover", function(e) {
+            _self.lockHideQueue = true;
+            if (!apf.isChildOf(this, e.relatedTarget)) {
+                _self.lockHideQueue = true;
+            }
+        });
+        
+        lstUploadActivity.$ext.addEventListener("mouseout", function(e) {
+            if (apf.isChildOf(this, e.relatedTarget))
+                return;
+                
+            _self.lockHideQueue = false;
+            _self.clearCompletedUploads();
+
+        });
     },
 
     onShow : function(){
@@ -159,7 +176,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         /** Check total filesize of dropped files */
         for (var size = 0, i = 0, l = e.dataTransfer.files.length; i < l; ++i)
             size += e.dataTransfer.files[i].size;
-
+/* this checks the maximum upload size of all files combined
         if (size > MAX_UPLOAD_SIZE) {
             util.alert(
                 "Could not save document", "An error occurred while saving this document",
@@ -167,7 +184,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             return false;
         }
-        
+*/
         if (e.dataTransfer.files.length < 1)
             return false;
         
@@ -326,6 +343,23 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         }
     },
     
+    // remove queued items from upload activity list that are completed uploading but were not removed yet
+    // because user had his mousecursor on the list.
+    clearCompletedUploads: function() {
+        var _self = this;
+        var completedUploads = mdlUploadActivity.queryNodes("file[@progress='100']");
+        apf.asyncForEach(completedUploads, function(item, next) {
+            if (_self.lockHideQueue)
+                return;
+            setTimeout(function() {    
+                apf.xmldb.removeNode(item);
+                next();
+            }, 200);
+        }, function() {
+            
+        });
+    },
+    
     uploadNextFile: function() {
         var _self = this;
 
@@ -389,9 +423,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             
         var path     = node.getAttribute("path");
         var filename = file.name;
-        var index    = 0;
         var _self    = this;
-
+        apf.xmldb.setAttribute(file.queueNode, "progress", "0");
+        
         function check(exists) {
             if (exists) {
                 if (_self.existingOverwriteAll) {
@@ -468,7 +502,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 
                 // remove file from upload activity lilst
                 setTimeout(function() {
-                    apf.xmldb.removeNode(file.queueNode);
+                    if (!_self.lockHideQueue)
+                        apf.xmldb.removeNode(file.queueNode);
+                    else
+                        _self.lockHideQueueItems.push(file);
                 }, 2000);
                 
                 /*
