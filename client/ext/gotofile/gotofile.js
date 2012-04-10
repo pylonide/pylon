@@ -114,87 +114,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         });
         
-        var lastSearch;
         // The search implementation - to be improved
         txtGoToFile.addEventListener("afterchange", function(e){
-            var keyword = txtGoToFile.value, klen = keyword.length;
-            
-            if (!keyword)
-                data = _self.modelCache.data;
-            else {
-                // Optimization reusing smaller result if possible
-                if (keyword.indexOf(lastSearch) > -1)
-                    data = apf.xmldb.cleanNode(_self.model.data);
-                else
-                    data = _self.modelCache.data;
-                
-                if (!data.firstChild)
-                    return;
-                
-                var name, res = [], first = [], second = [], third = [];
-                var nodes = data.firstChild.childNodes;
-                for (var i = 0, l = nodes.length, j, k, q; i < l; i++) {
-                    name = nodes[i].firstChild.nodeValue;
-                    
-                    // We only add items that have the keyword in it's path
-                    if ((j = name.lastIndexOf(keyword)) > -1) {
-                        
-                        // We prioritize ones that have the name in the filename
-                        if (klen > 1 && j > (q = name.lastIndexOf("/"))) {
-                            k = name.lastIndexOf("/" + keyword);
-                            
-                            if (k > -1) {
-                                // We give first prio to full filename matches
-                                if (name.length == klen + 1 + k) {
-                                    first.push(nodes[i].xml);
-                                    continue;
-                                }
-                                
-                                // Then to matches from the start of the filename
-                                else if (k == q) {
-                                    second.push(nodes[i].xml);
-                                    continue;
-                                }
-                                
-                                // Then anywhere in the filename
-                                else {
-                                    third.push(nodes[i].xml);
-                                    continue;
-                                }
-                            }
-                        }
-                        
-                        // Then the rest
-                        res.push(nodes[i].xml);
-                    }
-                }
-
-                data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>" 
-                    + first.join("") + second.join("") + third.join("") 
-                    + res.join("") + "</d:response></d:multistatus>");
-            }
-            
-            lastSearch = keyword;
-            
-            _self.model.load(data);
-            
-            // See if there are open files that match the search results
-            // and the first if in the displayed results
-            
-            var pages = tabEditors.getPages(), hash = {};
-            for (var i = pages.length - 1; i >= 0; i--) {
-                hash[pages[i].id] = true;
-            }
-            
-            var nodes = dgGoToFile.getTraverseNodes();
-            for (var i = Math.max(dgGoToFile.viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
-                if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
-                    dgGoToFile.select(nodes[i]);
-                    return;
-                }
-            }
-            
-            dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
+            _self.filter(txtGoToFile.value);
         });
         
         dgGoToFile.addEventListener("keydown", function(e) {
@@ -237,14 +159,20 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 return; //@todo
 
             var re = new RegExp("(\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp)$|\/(\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|\.DS_Store)(?:\/|$)");
-            var nodes = data.firstChild.childNodes;
+            var pNode = data.firstChild;
+            var nodes = pNode.childNodes;
+            var array = [], name;
             for (var i = nodes.length - 1; i >= 0; i--) {
-                if (re.test(nodes[i].firstChild.nodeValue))
-                    nodes[i].parentNode.removeChild(nodes[i]);
+                if (re.test(name = nodes[i].firstChild.nodeValue))
+                    pNode.removeChild(nodes[i]);
+                else
+                    array.push(name);
             }
 
             if (self.winGoToFile && winGoToFile.visible)
                 _self.updateSearchResults();
+            
+            _self.arrayCache = array;
             
             _self.modelCache.load(data);
             _self.model.load(_self.modelCache.data);
@@ -268,6 +196,93 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 apf.xmldb.appendChild(testpanel.findParent(path), file);
             }
         }*/
+    },
+    
+    filter : function(keyword){
+        var klen = keyword.length;
+        
+        if (!keyword)
+            data = this.modelCache.data.cloneNode(true);
+        else {
+            var nodes, data;
+            
+            // Optimization reusing smaller result if possible
+            if (keyword.indexOf(this.lastSearch) > -1)
+                nodes = this.arrayCacheLastSearch;
+            else
+                nodes = this.arrayCache;
+            
+            var name, res = [], first = [], second = [], third = [], cache = [];
+            for (var i = 0, l = nodes.length, j, k, q; i < l; i++) {
+                name = nodes[i];
+                
+                // We only add items that have the keyword in it's path
+                if ((j = name.lastIndexOf(keyword)) > -1) {
+                    
+                    cache.push(name);
+                    
+                    // We prioritize ones that have the name in the filename
+                    if (klen > 1 && j > (q = name.lastIndexOf("/"))) {
+                        k = name.lastIndexOf("/" + keyword);
+                        
+                        if (k > -1) {
+                            // We give first prio to full filename matches
+                            if (name.length == klen + 1 + k) {
+                                first.push(name);
+                                continue;
+                            }
+                            
+                            // Then to matches from the start of the filename
+                            else if (k == q) {
+                                second.push(name);
+                                continue;
+                            }
+                            
+                            // Then anywhere in the filename
+                            else {
+                                third.push(name);
+                                continue;
+                            }
+                        }
+                    }
+                    
+                    // Then the rest
+                    res.push(name);
+                }
+            }
+
+            var glue = "</d:href><d:href>";
+            var results = cache.length 
+                ? "<d:href>" + first.join(glue) + second.join(glue) 
+                    + third.join(glue) + res.join(glue) + "</d:href>"
+                : "";
+            data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
+                + results + "</d:response></d:multistatus>");
+
+            this.arrayCacheLastSearch = cache;
+        }
+        
+        this.lastSearch = keyword;
+        
+        this.model.load(data);
+        
+        // See if there are open files that match the search results
+        // and the first if in the displayed results
+        
+        var pages = tabEditors.getPages(), hash = {};
+        for (var i = pages.length - 1; i >= 0; i--) {
+            hash[pages[i].id] = true;
+        }
+        
+        var nodes = dgGoToFile.getTraverseNodes();
+        for (var i = Math.max(dgGoToFile.viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
+            if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
+                dgGoToFile.select(nodes[i]);
+                return;
+            }
+        }
+        
+        dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
     },
     
     openFile: function(){
