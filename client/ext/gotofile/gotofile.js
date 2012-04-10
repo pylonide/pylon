@@ -158,6 +158,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (state == apf.TIMEOUT)
                 return; //@todo
 
+            /**
+             * Putting this in a worker won't help
+             * An alternative solution would be to do this in parts of 10ms
+             */
             var re = new RegExp("(\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp)$|\/(\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|\.DS_Store)(?:\/|$)");
             var pNode = data.firstChild;
             var node  = pNode.lastChild, lnode;
@@ -307,7 +311,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     gotofile : function(){
-        this.toggleDialog(true);
+        this.toggleDialog();
         return false;
     },
 
