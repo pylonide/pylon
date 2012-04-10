@@ -16,9 +16,7 @@
       softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-
-animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@animatedscroll]"
-
+      animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@animatedscroll]"
       fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
       wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
       wrapmodeViewport  = "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
@@ -37,8 +35,7 @@ animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@an
         <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
         <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
         <a:divider />
-        <a:item
-onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
+        <a:item onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
         <a:item onclick="{require('ext/clipboard/clipboard').copy()}">Copy</a:item>
         <a:item onclick="{require('ext/clipboard/clipboard').paste()}">Paste</a:item>
         <a:divider />
