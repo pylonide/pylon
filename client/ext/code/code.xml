@@ -56,6 +56,8 @@ animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@an
         <a:item type="radio" value="text/x-script.coffeescript">CoffeeScript</a:item>
         <a:item type="radio" value="text/x-coldfusion">Coldfusion</a:item>
         <a:item type="radio" value="text/css">CSS</a:item>
+        <a:item type="radio" value="text/x-fantom-source">Fantom</a:item>
+        <a:item type="radio" value="text/x-gosu-source">Gosu</a:item>
         <a:item type="radio" value="text/x-groovy">Groovy</a:item>
         <a:item type="radio" value="text/x-java-source">Java</a:item>
         <a:item type="radio" value="application/javascript">JavaScript</a:item>
@@ -75,10 +77,6 @@ animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@an
         <a:item type="radio" value="text/x-web-textile">Textile</a:item>
         <a:item type="radio" value="text/html">(X)HTML</a:item>
         <a:item type="radio" value="application/xml">XML</a:item>
-    <a:item type="radio" value="text/x-scala-source">Scala</a:item>
-        <a:item type="radio" value="text/x-groovy-source">Groovy</a:item>
-        <a:item type="radio" value="text/x-gosu-source">Gosu</a:item>
-        <a:item type="radio" value="text/x-fantom-source">Fantom</a:item>
         
         
     </a:menu>

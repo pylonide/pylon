@@ -87,7 +87,7 @@ if (typeof module !== "undefined" && module === require.main) {
             <item value="rb" icon="page_white_ruby.png"caption="Ruby file"><![CDATA[]]></item>
         <item value="mli" icon="page_white_code.png"caption="OCaml file"><![CDATA[]]></item>
         <item value="clj" icon="page_white_code.png"caption="Clojure file"><![CDATA[]]></item>
-<a:item value="java" icon="page_white_cup.png">Java file</a:item>
+        <a:item value="java" icon="page_white_cup.png">Java file</a:item>
         <a:item value="scala" icon="page_white_cup.png">Scala file</a:item>
         <a:item value="groovy" icon="page_white_cup.png">Groovy file</a:item>
         <a:item value="gsp" icon="page_white_cup.png">Gosu file</a:item>
