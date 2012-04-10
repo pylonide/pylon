@@ -46,8 +46,8 @@
 
     <a:model id="mdlFileTemplates">
         <templates>
-          <item value="txt" icon="page_white_text.png"caption="Text file"><![CDATA[]]></item>
-          <item value="js" icon="page_white_code.png"caption="JavaScript file"><![CDATA[]]></item>
+          <item value="txt" icon="page_white_text.png" caption="Text file"><![CDATA[]]></item>
+          <item value="js" icon="page_white_code.png" caption="JavaScript file"><![CDATA[]]></item>
           <item value="js" icon="page_white_code.png" caption="Unit Test"><![CDATA["use strict";
 require("./support/paths");
 
@@ -66,8 +66,8 @@ if (typeof module !== "undefined" && module === require.main) {
     require("asyncjs").test.testcase(module.exports).exec()
 }]]></item>
         <item value="stest" icon="page_white_code.png" caption="Selenium Test"><![CDATA[{}]]></item>
-        <item value="coffee" icon="page_white_code.png"caption="CoffeeScript file"><![CDATA[]]></item>
-        <item value="html" icon="html.png"caption="HTML file"><![CDATA[<!DOCTYPE html>
+        <item value="coffee" icon="page_white_code.png" caption="CoffeeScript file"><![CDATA[]]></item>
+        <item value="html" icon="html.png" caption="HTML file"><![CDATA[<!DOCTYPE html>
 <html>
     <head>
         <title> </title>
@@ -77,22 +77,23 @@ if (typeof module !== "undefined" && module === require.main) {
     </body>
 </html>
 ]]></item>
-        <item value="xml" icon="page_white_code_red.png"caption="XML file"><![CDATA[]]></item>
-        <item value="css" icon="css.png"caption="CSS file"><![CDATA[]]></item>
-        <item value="scss" icon="css.png"caption="SCSS file"><![CDATA[]]></item>
-        <item value="svg" icon="page_white_picture.png"caption="SVG file"><![CDATA[]]></item>
-        <item value="py" icon="script_code.png"caption="Python file"><![CDATA[]]></item>
-        <item value="php" icon="page_white_php.png"caption="PHP file"><![CDATA[<?php
+        <item value="xml" icon="page_white_code_red.png" caption="XML file"><![CDATA[]]></item>
+        <item value="css" icon="css.png" caption="CSS file"><![CDATA[]]></item>
+        <item value="scss" icon="css.png" caption="SCSS file"><![CDATA[]]></item>
+        <item value="svg" icon="page_white_picture.png" caption="SVG file"><![CDATA[]]></item>
+        <item value="py" icon="script_code.png" caption="Python file"><![CDATA[]]></item>
+        <item value="php" icon="page_white_php.png" caption="PHP file"><![CDATA[<?php
+
         ?>]]></item>
-        <item value="rb" icon="page_white_ruby.png"caption="Ruby file"><![CDATA[]]></item>
-        <item value="mli" icon="page_white_code.png"caption="OCaml file"><![CDATA[]]></item>
-        <item value="clj" icon="page_white_code.png"caption="Clojure file"><![CDATA[]]></item>
+        <item value="rb" icon="page_white_ruby.png" caption="Ruby file"><![CDATA[]]></item>
+        <item value="mli" icon="page_white_code.png" caption="OCaml file"><![CDATA[]]></item>
+        <item value="clj" icon="page_white_code.png" caption="Clojure file"><![CDATA[]]></item>
         <item value="md" icon="page_white_text.png" caption="Markdown"><![CDATA[]]></item>
-        <a:item value="java" icon="page_white_cup.png">Java file</a:item>
-        <a:item value="scala" icon="page_white_cup.png">Scala file</a:item>
-        <a:item value="groovy" icon="page_white_cup.png">Groovy file</a:item>
-        <a:item value="gsp" icon="page_white_cup.png">Gosu file</a:item>
-        <a:item value="fan" icon="page_white_cup.png">Fantom file</a:item>            <item value="md" icon="page_white_text.png" caption="Markdown"><![CDATA[]]></item>
+        <item value="java" icon="page_white_cup.png" caption="Java file"><![CDATA[]]></item>
+        <item value="scala" icon="page_white_cup.png" caption="Scala file"><![CDATA[]]></item>
+        <item value="groovy" icon="page_white_cup.png" caption="Groovy file"><![CDATA[]]></item>
+        <item value="gsp" icon="page_white_cup.png" caption="Gosu file"><![CDATA[]]></item>
+        <item value="fan" icon="page_white_cup.png" caption="Fantom file"><![CDATA[]]></item>            
             <item value="js" icon="page_white_code.png" caption="Express file"><![CDATA[// *******************************************************
 // expressjs template
 //
@@ -133,5 +134,5 @@ http.createServer(function (req, res) {
 ]]>
             </item>
         </templates>
-    </a:menu>
+    </a:model>
 </a:application>

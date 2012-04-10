@@ -186,7 +186,7 @@ var contentTypes = {
     "scala": "text/x-scala-source",
     "groovy": "text/x-groovy-source",
     "gsp": "text/x-gosu-source",
-    "fan": "text/x-fantom-source"
+    "fan": "text/x-fantom-source",
     "clj": "text/x-script.clojure",
     
     "ml": "text/x-script.ocaml",

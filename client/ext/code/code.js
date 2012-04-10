@@ -71,7 +71,7 @@ var SupportedModes = {
     "text/x-script.powershell": "powershell",
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
-    "text/x-sql": "sql"
+    "text/x-sql": "sql",
     "text/x-script.clojure": "clojure",
     "text/x-scala-source": "scala",
     "text/x-groovy-source": "groovy",
@@ -127,7 +127,26 @@ var contentTypes = {
     "scala": "text/x-scala",
 
     "ml": "text/x-script.ocaml",
-    "mli": "text/x-script.ocaml"
+    "mli": "text/x-script.ocaml",  
+
+    "md": "text/x-markdown",
+    "markdown": "text/x-markdown",
+    "textile": "text/x-web-textile",
+    "latex": "application/x-latex",
+    "tex": "application/x-latex",
+
+    "ltx": "application/x-latex",
+    "lua": "text/x-lua",
+
+    "pl": "text/x-script.perl",
+    "pm": "text/x-script.perl-module",
+
+    "ps1": "text/x-script.powershell",
+    "cfm": "text/x-coldfusion",
+    "sql": "text/x-sql",
+    
+    "sh": "application/x-sh",
+    "bash": "application/x-sh"
 };
 
 module.exports = ext.register("ext/code/code", {
