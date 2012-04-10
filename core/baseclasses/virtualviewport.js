@@ -245,7 +245,7 @@ apf.VirtualViewport = function(){
         if (this.$focussable)
             apf.window.hasFocus(this) ? this.$focus() : this.$blur();
         
-        this.viewport.setScrollTop(0);
+        this.viewport.setScrollTop(0, true);
     };
     
     this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
