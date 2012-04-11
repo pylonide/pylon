@@ -28,8 +28,8 @@ var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     this.hooks = ["disconnect", "command"];
     this.name = "watcher";
     this.filenames = {};
-    this.basePath  = ide.workspaceDir + "/";
-};
+    this.basePath  = ide.workspaceDir;
+}
 
 sys.inherits(cloud9WatcherPlugin, Plugin);
 
@@ -61,9 +61,9 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
             
         if (command != "watcher")
             return false;
-        
-        path = this.basePath + path;
-        
+            
+        path = this.basePath + (path ? "/" + path : "");
+            
         switch (type) {
             case "watchFile":
                 if (this.filenames[path]) 
@@ -95,7 +95,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             // TODO don't use sync calls
                             fs.readdirSync(path).forEach(function (file) {
                                 var stat = fs.statSync(path + "/" + file);
-    
+
                                 if (file.charAt(0) != '.') {
                                     files[file] = {
                                         type : stat.isDirectory() ? "folder" : "file",
@@ -120,7 +120,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                 return this.unwatchFile(path);
             default:
                 return false;
-        }
+            }
     };
     
     this.dispose = function(callback) {
