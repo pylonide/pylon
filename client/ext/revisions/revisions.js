@@ -691,12 +691,13 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     previewRevision: function(id, value, ranges) {
         var editor = ceEditor.$editor;
-        if (editor.getReadOnly() !== true) {
+        if (editor.getSession().previewRevision !== true) {
             this.realSession[this.$getDocPath()] = editor.getSession();
         }
 
         var doc = new ProxyDocument(new Document(value || ""));
         var newSession = new EditSession(doc, this.realSession[this.$getDocPath()].getMode());
+        newSession.previewRevision = true;
         editor.setSession(newSession);
         editor.setReadOnly(true);
 
