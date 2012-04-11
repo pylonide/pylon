@@ -347,7 +347,7 @@ module.exports = ext.register("ext/code/code", {
                 if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
                   && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
                   && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
-                    var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
+                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "").replace(/"/g, "&quot;") + '"]');
                     if (nodes.length) {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
                     }

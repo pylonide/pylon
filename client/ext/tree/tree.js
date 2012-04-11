@@ -239,7 +239,7 @@ module.exports = ext.register("ext/tree/tree", {
         // selection in the settings model
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             if (settings.model && settings.model.data && trFiles.selected) {
-                var nodePath          = trFiles.selected.getAttribute("path");
+                var nodePath          = trFiles.selected.getAttribute("path").replace(/"/g, "&quot;");
                 var nodeType          = trFiles.selected.getAttribute("type");
                 var settingsData      = settings.model.data;
                 var treeSelectionNode = settingsData.selectSingleNode("auto/tree_selection");
@@ -267,9 +267,6 @@ module.exports = ext.register("ext/tree/tree", {
             if (!node || node.tagName != "file" || this.selection.length > 1 ||
                 !ide.onLine && !ide.offlineFileSystemSupport) //ide.onLine can be removed after update apf
                     return;
-                    
-            node.setAttribute("path", node.getAttribute("path").replace(/'/g, "&apos;"));
-            node.setAttribute("name", node.getAttribute("name").replace(/'/g, "&apos;"));
             
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
@@ -279,11 +276,11 @@ module.exports = ext.register("ext/tree/tree", {
                 return false;
 
             var args     = e.args[0].args,
-                filename = args[1].getAttribute("name").replace(/'/g, "&apos;");
+                filename = args[1].getAttribute("name");
 
             var count = 0;
             filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
-            while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
+            while (args[0].selectSingleNode('node()[@name="' + filename.replace(/"/g, "&quot;") + '"]')) {
                 filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
             }
             args[1].setAttribute("newname", filename);
