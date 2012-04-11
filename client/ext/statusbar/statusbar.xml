@@ -50,7 +50,7 @@
       skin  = "menu-bk"
       sticky = "true">
       <a:item type="check" caption="Code Folding" checked="[{require('ext/settings/settings').model}::editors/code/@folding]" />
-      <a:item type="check" caption="Full Line Selection" checked="[{require('ext/settings/settings').model}::editors/code/@selectstyle]" values="line|text" />
+      <a:item id="itActiveline" type="check" caption="Full Line Selection" value="[{require('ext/settings/settings').model}::editors/code/@selectstyle]" values="line|text" />
       <a:item type="check" caption="Highlight Active Line" checked="[{require('ext/settings/settings').model}::editors/code/@activeline]" />
       <a:item type="check" caption="Show Gutter" checked="[{require('ext/settings/settings').model}::editors/code/@gutter]" />
       <a:item type="check" caption="Highlight Selected Word" checked="[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]" />
