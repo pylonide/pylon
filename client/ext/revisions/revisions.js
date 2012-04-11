@@ -177,7 +177,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         apf.ajax("/api/context/getemail", {
             method: "get",
             callback: function(data, state, extra) {
-                console.log(data, state, extra)
                 if (status === 200 && data) {
                     self.defaultUser = {
                         email: data

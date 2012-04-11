@@ -61,16 +61,17 @@ self.onmessage = function(e) {
             var processLine = function(line, row, type) {
                 extraCounter = extraCounter + 1;
                 str += startChar[type] + line + "\n";
-
                 if (type === "equal")
                     return;
 
                 var prev = ranges[ranges.length - 1];
-                if (prev && prev[4] === type) {
-                    if (prev[4] === type) {
-                        prev[2] = row + 1;
-                        prev[3] = 0;
-                    }
+                // If there is a previous non-neutral change and this change is
+                // of the same kind as the current one and the last line of the
+                // previous change is the line before the first line of the
+                // current one.
+                if (prev && prev[4] === type && (prev[2] === row)) {
+                    prev[2] = row + 1;
+                    prev[3] = 0;
                     return;
                 }
                 ranges.push([row, 0, row, 1, type]);
