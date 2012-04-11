@@ -62,7 +62,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
         if (command != "watcher")
             return false;
             
-            path = this.basePath + (path ? "/" + path : "");
+        path = this.basePath + (path ? "/" + path : "");
             
         switch (type) {
             case "watchFile":
