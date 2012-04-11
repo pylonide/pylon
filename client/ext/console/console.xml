@@ -74,7 +74,7 @@
 
             <a:hbox class="consoleInputBox" edge="1" padding="4" pack="end">
                 <a:textbox id="txtConsoleInput"
-                  initial-message = 'Type "/?" for commands'
+                  initial-message = 'Type "/?" to get a list of commands'
                   margin          = "4 0 0"
                   skin            = "tb_console"
                   flex            = "1" />
