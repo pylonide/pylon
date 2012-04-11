@@ -195,7 +195,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             if (self.winGoToFile && winGoToFile.visible && _self.lastSearch) {
                 var search = _self.lastSearch;
                 _self.lastSearch = null; //invalidate cache
+                var sel = dgGoToFile.getSelection();
                 _self.filter(search);
+                
+                if (sel.length < 100) {
+                    for (var i = 0, l = sel.length; i < l; i++) {
+                        dgGoToFile.select(dgGoToFile.queryNode("//d:href[text()='" 
+                            + sel[i].firstChild.nodeValue + "']"));
+                    }
+                }
             }
             else
                 _self.model.load(_self.modelCache.data);
