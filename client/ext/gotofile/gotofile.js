@@ -76,6 +76,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 txtGoToFile.select();
                 txtGoToFile.focus();
                 _self.dirty = true;
+                
+                if (_self.lastSearch) {
+                    var search = _self.lastSearch;
+                    _self.lastSearch = null; //invalidate cache
+                    _self.filter(search);
+                }
             }
         });
         
