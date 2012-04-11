@@ -43,6 +43,7 @@ var EditSession = require("ace/edit_session").EditSession;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
 var Range = require("ace/range").Range;
+var net = require("ace/lib/net");
 require("ace/lib/fixoldbrowsers");
 
 
@@ -87,11 +88,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["folding"]                  = true;
     this.$booleanProperties["wrapmode"]                 = true;
     this.$booleanProperties["wrapmodeViewport"]         = true;
-
+    this.$booleanProperties["animatedscroll"]         = true;
+    
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
-        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar",
+        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
         "behaviors", "folding");
 
     this.$getCacheKey = function(value) {
@@ -164,7 +166,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        doc.setMode(_self.getMode(_self.syntax));
+        _self.getMode(_self.syntax, function(mode) {
+            doc.setMode(mode);
+        });
 
         doc.setTabSize(parseInt(_self.tabsize, 10));
         doc.setUseSoftTabs(_self.softtabs);
@@ -286,15 +290,100 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.$propHandlers["syntax"] = function(value) {
-        this.$editor.getSession().setMode(this.getMode(value));
+        var _self = this;
+        this.getMode(value, function(mode) {
+            // the syntax could have changed while loading the mode
+            if (_self.syntax == value)
+                _self.$editor.getSession().setMode(mode);
+        });
     };
 
-    this.getMode = function(syntax) {
+    this.$modes = {};
+
+    this.$basePath = "";
+    this.$guessBasePath = function() {
+        if (this.$basePath)
+            return this.$basePath;
+
+        var scripts = document.getElementsByTagName("script");
+        for (var i=0; i<scripts.length; i++) {
+            var script = scripts[i];
+
+            var src = script.src || script.getAttribute("src");
+            if (!src)
+                continue;
+
+            var m = src.match(/^(?:(.*\/)ace\.js|(.*\/)ace(-uncompressed)?(-noconflict)?\.js)(?:\?|$)/);
+            if (m) {
+                this.$basePath = m[1] || m[2];
+                break;
+            }
+        }
+        return this.$basePath;
+    };
+
+    /**
+     * Looks up an object by ID from a cache. If the item is not in the cache it is
+     * created on demand using the factory function. Intermitted calls to the same
+     * id are pooled until the object is created
+     */
+    this._lazyCreate = function(id, cache, callbackStore, factory, callback) {
+        var item = cache[id];
+        if (item)
+            return callback(null, item);
+
+        if (callbackStore[id]) {
+            callbackStore[id].push(callback);
+            return;
+        }
+
+        callbackStore[id] = [callback];
+
+        factory(id, function(err, item) {
+            var callbacks = callbackStore[id];
+            delete callbackStore[id];
+
+            cache[id] = item;
+
+            callbacks.forEach(function(cb) {
+                cb(err, item);
+            });
+        });
+    };
+
+    this.$modeCallbacks = {};
+    this.getMode = function(syntax, callback) {
+        var _self = this;
+
         syntax = (syntax || "text").toLowerCase();
         if (syntax.indexOf("/") == -1)
             syntax = "ace/mode/" + syntax;
-        
-        return syntax;
+
+        this._lazyCreate(syntax, this.$modes, this.$modeCallbacks, function(syntax, callback) {
+            // load packaged version
+            if (define.packaged) {
+                var base = syntax.split("/").pop();
+                var fileName = _self.$guessBasePath() + "mode-" + base + ".js";
+                net.loadScript(fileName, afterPreload);
+            }
+            else
+                afterPreload();
+
+            function afterPreload() {
+                require([syntax], function(modeModule) {
+                    // #ifdef __DEBUG
+                    if (typeof modeModule.Mode != "function") {
+                        apf.console.error("Unkown syntax type: '" + syntax + "'");
+                        return callback("Unkown syntax type: '" + syntax + "'");
+                    }
+                    // #endif
+                    _self.$modes[syntax] = new modeModule.Mode();
+                    callback(null, _self.$modes[syntax]);
+                });
+            }
+        }, function(err, mode) {
+            callback(mode);
+        });
     };
 
     this.$propHandlers["activeline"] = function(value) {
@@ -318,6 +407,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
+    };
+    
+    this.$propHandlers["animatedscroll"] = function(value, prop, initial) {
+        this.$editor.setAnimatedScroll(value);
     };
 
     this.$propHandlers["overwrite"] = function(value, prop, initial) {
@@ -595,9 +688,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             _self.dispatchEvent("gutterdblclick", e);
         });
 
-        // #ifdef __WITH_WINDOW_FOCUS
-        // apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
-        // #endif
+        apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
     };
 
     this.$loadAml = function(){
@@ -612,6 +703,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.softtabs = doc.getUseSoftTabs(); //true
         if (this.scrollspeed === undefined)
             this.scrollspeed = ed.getScrollSpeed();
+        if (this.animatedscroll === undefined)
+            this.animatedscroll = ed.getAnimatedScroll();
         if (this.selectstyle === undefined)
             this.selectstyle = ed.getSelectionStyle();//"line";
         if (this.activeline === undefined)
