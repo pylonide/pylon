@@ -140,7 +140,6 @@ Ide.DEFAULT_PLUGINS = [
     "ext/nodeunit/nodeunit",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    //"ext/autosave/autosave",
     "ext/vim/vim",
     "ext/guidedtour/guidedtour",
     "ext/quickstart/quickstart",
@@ -150,7 +149,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
     "ext/colorpicker/colorpicker",
-    "ext/minimap/minimap"
+    "ext/minimap/minimap",
+    "ext/revisions/revisions"
     //"ext/acebugs/acebugs"
 ];
 

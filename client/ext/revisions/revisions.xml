@@ -1,0 +1,104 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:skin id="revisions"
+        src = "{require('ext/revisions/revisions').skin}"
+        media-path = "/static/ext/revisions/images/" />
+
+    <a:vbox id = "pgRevisions"
+        skinset = "revisions"
+        class = "revisionsHolder"
+        anchors="0 0 0 0">
+        <a:toolbar height = "20" class="topbar">
+          <a:hbox height = "20">
+              <span>File Revisions</span>
+              <a:button
+                  height = "20"
+                  onclick=" require('ext/revisions/revisions').hide() " />
+          </a:hbox>
+        </a:toolbar>
+        <a:hbox flex = "1">
+            <a:list
+              id          = "lstRevisions"
+              anchors     = "0 0 0 0"
+              model       = "{require('ext/revisions/revisions').model}"
+              multiselect = "false"
+              autoselect  = "false"
+              drag = "false"
+              drop = "false"
+              skin="revisions-list"
+              flex="1">
+                <a:each match="[revision]">
+                        <a:caption>
+                            <?lm
+                                 <div class="revision-icon">
+                                  {
+                                    if ([@restoring] != '') {
+                                        <div class="rev-restoration"></div>
+                                    }
+                                    else if ([@silentsave] != 'true') {
+                                            <span class="rev-usersave">U</span>
+                                          }
+                                          else {
+                                              <span class="rev-autosave">A</span>
+                                          }
+                                  }
+                                </div>
+                                <div class="revision-info">
+                                    <div class="revision-title">
+                                    {
+                                      [@name]
+                                    }
+                                    </div>
+                                    <ul class="contributors">
+                                      {
+                                        each([contributors/contributor]) {
+                                          <li>
+                                            <span class="coloredSquare" style=' color: {require("ext/revisions/revisions")
+                                            .getUserColorByEmail([@email])}'>&#9632;</span>
+                                            <span>[@email]</span>
+                                          </li>
+                                        }
+                                      }
+                                    </ul>
+                                    {
+                                      if ([@loading_preview] == 'true' or [@loading] == 'true') {
+                                          <button class="btnRecover" disabled="disabled"></button>
+                                      }
+                                      else {
+                                          <button class="btnRecover" onclick="require('ext/revisions/revisions').loadRevision([@id], 'apply')"></button>
+                                      }
+                                    }
+                                </div>
+                            ?>
+                        </a:caption>
+                </a:each>
+                <a:remove match="[revision]" />
+            </a:list>
+            <a:scrollbar
+              for      = "lstRevisions"
+              id       = "sbrevisions"
+              margin   = "2"
+              skin     = "sbios"
+              top      = "0"
+              right    = "0"
+              bottom   = "0"
+              width    = "7"
+              overflow = "auto"
+            />
+        </a:hbox>
+            <a:toolbar class="show-detailes" >
+                <a:bar height = "25">
+                    <a:hbox edge="4 5 5 5">
+                        <a:checkbox
+                            skin="checkbox_grey"
+                            top = "-25"
+                            right = "10"
+                            checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
+                            label   ="Show Details"
+                            onafterchange="
+                                require('ext/revisions/revisions').toggleListView()
+                        " />
+                    </a:hbox>
+                </a:bar>
+            </a:toolbar>
+        </a:vbox>
+</a:application>
