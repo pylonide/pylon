@@ -8177,7 +8177,7 @@
       container = "div"
       icon      = "div[1]/div"
       maxwidth  = "150"
-      minwidth  = "0">
+      minwidth  = "17">
         <div class="session_btn">
             <div class="tab_middle">
                 <div class="sessiontab_icon"> </div>
