@@ -720,7 +720,7 @@ module.exports = ext.register("ext/editors/editors", {
             var doc         = e.doc;
             var acesession  = doc.acesession;
             
-            if(!acesession)
+            if (!acesession)
                 return;
                 
             var sel         = acesession.getSelection();
@@ -734,6 +734,8 @@ module.exports = ext.register("ext/editors/editors", {
                 var editor = doc.$page.$editor;
                 editor.setState && editor.setState(doc, doc.state);
             }
+            
+            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
     },
 
