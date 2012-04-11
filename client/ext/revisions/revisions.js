@@ -159,13 +159,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onFileSaveFn = this.onFileSave.bind(this);
-        this.$onSwitchFileFn = this.onSwitchFile.bind(this);
 
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("socketMessage", this.$onMessageFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-        ide.addEventListener("editorswitch", this.$onSwitchFileFn);
 
         this.defaultUser = {
             email: null
@@ -177,7 +175,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         apf.ajax("/api/context/getemail", {
             method: "get",
             callback: function(data, state, extra) {
-                if (status === 200 && data) {
+                if (state === 200 && data) {
                     self.defaultUser = {
                         email: data
                     };
@@ -247,6 +245,12 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
 
+        this.$onSwitchFileFn = this.onSwitchFile.bind(this);
+        ide.addEventListener("editorswitch", this.$onSwitchFileFn);
+
+        this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
+        tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
+
         this.$setRevisionListClass();
     },
 
@@ -290,6 +294,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             // only for the first time and won't ever change.
             getOriginalContent: true
         });
+    },
+
+    onAfterSwitch: function(e) {
+        this.hide();
     },
 
     onCloseFile: function(data) {
@@ -959,7 +967,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         ceEditor.$editor.container.style.right = "0";
         this.panel.hide();
 
-        lstRevisions.clearSelection();
+        lstRevisions.clearSelection(); // Necessary?
         this.goToEditView();
 
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
