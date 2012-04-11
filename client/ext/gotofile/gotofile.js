@@ -180,7 +180,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
              * Putting this in a worker won't help
              * An alternative solution would be to do this in parts of 10ms
              */
-            var array = data.replace(/^\./, "").split("\n");
+            var array = data.replace(/^\./gm, "").split("\n");
             array.pop(); //remove trailing empty element;
             
             var start = "<d:href>";
@@ -192,7 +192,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.arrayCache = array;
             _self.modelCache.load(data);
             
-            if (self.winGoToFile && winGoToFile.visible) {
+            if (self.winGoToFile && winGoToFile.visible && _self.lastSearch) {
                 var search = _self.lastSearch;
                 _self.lastSearch = null; //invalidate cache
                 _self.filter(search);
