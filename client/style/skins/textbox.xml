@@ -53,21 +53,11 @@
             background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
             cursor : default;
         }
-
-        .tb_console .console_arrow {
-            background: url(images/console_arrow.png) no-repeat 0 0;
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 9px;
-            height: 14px;
-        }
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="div[2]/input">
+        <a:main input="div[1]/input">
             <div class="tb_console">
-                <div class="console_arrow"/>
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>
