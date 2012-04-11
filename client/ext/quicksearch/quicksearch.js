@@ -264,9 +264,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     toggleDialog: function(force, noanim) {
         ext.initExtension(this);
 
-        if (this.control && this.control.stop)
-            this.control.stop();
-
         var editorPage = tabEditors.getPage();
         if (!editorPage) return;
 
@@ -278,6 +275,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         if (!force && !winQuickSearch.visible || force > 0) {
             this.position = -1;
+            
+            if (this.control && this.control.stop)
+                this.control.stop();
 
             var sel   = editor.getSelection();
             var doc   = editor.getDocument();
@@ -312,6 +312,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             });
         }
         else if (winQuickSearch.visible) {
+            if (this.control && this.control.stop)
+                this.control.stop();
+            
             if (!noanim) {
                 winQuickSearch.visible = false;
                 
