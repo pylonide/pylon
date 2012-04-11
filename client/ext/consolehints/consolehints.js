@@ -220,8 +220,6 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         var index = cliValue.search(RE_lastWord);
         if (index !== -1) // If the command is partially there or not
             cliValue = cliValue.replace(RE_lastWord, cmdName);
-        else if (txtConsoleInput.getValue() == "/?")
-            cliValue = cmdName;
         else
             cliValue += cmdName;
 
