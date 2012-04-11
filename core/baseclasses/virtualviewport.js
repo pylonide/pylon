@@ -757,8 +757,8 @@ apf.ViewPortVirtual = function(amlNode){
             this.sb.$update(this.$container);
     }
     
-    this.$findNewLimit = function(scrollTop){
-        if (!this.amlNode.xmlRoot)
+    this.$findNewLimit = function(){
+        if (!this.amlNode.xmlRoot || !this.amlNode.$ext.offsetHeight)
             return;
         
         var limit = Math.ceil(this.getHeight() / this.$getItemHeight() + 2);

@@ -54,12 +54,13 @@ apf.xmldb = new (function(){
      * Clear XML document cache periodically when no model is referencing it
      */
     this.garbageCollect = function(){
-        var xmlNode, cache = apf.xmldb.$xmlDocLut, docId;
+        var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
         for (var i = 0, l = cache.length; i < l; i++) {
             xmlNode = cache[i]
             docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
+            model = apf.nameserver.get("model", docId);
             
-            if (apf.nameserver.get("model", docId).data != xmlNode) {
+            if (!model || model.data != xmlNode) {
                 cache[i] = null;
             }
         }
