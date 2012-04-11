@@ -57,6 +57,9 @@ apf.vbox = function(struct, tagName){
 };
 
 (function(){
+    this.minwidth    = 0;
+    this.minheight   = 0;
+    
     /**** Properties and Attributes ****/
 
     this.$focussable = false;
@@ -193,7 +196,7 @@ apf.vbox = function(struct, tagName){
                         ? (isInFixed ? "1px" : "auto")
                         : (apf.isWebkit && input[node.$ext.tagName] 
                             ? "100%" 
-                            : (apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
+                            : (false && apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
                                 ? "0px"
                                 : "auto"));//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
@@ -709,7 +712,8 @@ apf.vbox = function(struct, tagName){
             return;
         }
         
-        if (e.currentTarget.nodeType != 1)
+        if (e.currentTarget.nodeType != 1 
+          || e.currentTarget.nodeFunc != apf.NODE_VISIBLE)
             return;
 
         if (e.relatedNode == this && !e.$isMoveWithinParent) {
@@ -760,13 +764,13 @@ apf.vbox = function(struct, tagName){
             this.$ext.setAttribute("style", this.getAttribute("style"));
         this.$ext.className = this.localName;
 
-        this.$vbox    = this.localName == "vbox";
-        this.$int = apf.isGecko && !this.parentNode.$box || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
+        this.$vbox = this.localName == "vbox";
+        this.$int = apf.isGecko && !(this.parentNode && this.parentNode.$box) || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
         this.$ext.host = this;
         
-        if (apf.isGecko && !this.parentNode.$box) {
+        if (apf.isGecko && !(this.parentNode && this.parentNode.$box)) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
         }

@@ -93,7 +93,7 @@ apf.xmlrpc = function(){
             //<![CDATA[***your text here***]]>
             //return "<string><![CDATA[" + s.replace(/\]\]\>/g, "")
             //    .replace(/\<\!\[\CDATA\[/g, "") + "]]></string>";
-            return "<string><![CDATA[" + apf.xmlentities(s) + "]]></string>";
+            return "<string><![CDATA[" + apf.escapeXML(s) + "]]></string>";
             //var str = "<string>" + s.replace(/\&/g, "&amp;")
             //    .replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + "</string>";
         },

@@ -890,7 +890,8 @@ apf.actiontracker = function(struct, tagName){
             if (qItem)
                 this.$execstack.unshift(qItem);
 
-            //It's not necessary to call saveChange here.
+            if (!this.$execstack[0].undoObj.state)
+                this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this);
 
             return;
         }

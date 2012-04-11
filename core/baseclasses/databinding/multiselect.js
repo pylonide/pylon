@@ -187,15 +187,22 @@ apf.MultiselectBinding = function(){
     this.$propHandlers["simpledata"] = function(value){
         if (value) {
             this.getTraverseNodes = function(xmlNode){
+                //#ifdef __WITH_SORTING
+                if (this.$sort && !this.$isLoading) {
+                    var nodes = apf.getArrayFromNodelist((xmlNode || this.xmlRoot).childNodes);
+                    return this.$sort.apply(nodes);
+                }
+                //#endif
+                
                 return (xmlNode || this.xmlRoot).childNodes;
             };
         
             this.getFirstTraverseNode = function(xmlNode){
-                return (xmlNode || this.xmlRoot).childNodes[0];
+                return this.getTraverseNodes()[0];//(xmlNode || this.xmlRoot).childNodes[0];
             };
         
             this.getLastTraverseNode = function(xmlNode){
-                var nodes = (xmlNode || this.xmlRoot).childNodes;
+                var nodes = this.getTraverseNodes();//(xmlNode || this.xmlRoot).childNodes;
                 return nodes[nodes.length - 1];
             };
         
@@ -470,16 +477,21 @@ apf.MultiselectBinding = function(){
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         apf.xmldb.addNodeListener(XMLRoot, this);
+        
+        this.$isLoading = true;
 
         var length = this.getTraverseNodes(XMLRoot).length;
         if (!this.renderRoot && !length)
             return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
+
 
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, 0, "load");
 
         //Build HTML
         this.$fill(nodes);
+        
+        this.$isLoading = false;
 
         //Select First Child
         if (this.selectable) {
@@ -803,7 +815,7 @@ apf.MultiselectBinding = function(){
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.$isTreeArch 
               && pNode == this.xmlRoot) { //apf.isChildOf(this.xmlRoot, xmlNode)
-                parentHTMLNode = (this.$findContainer && parentHTMLNode
+                parentHTMLNode = (this.$findContainer && parentHTMLNode && parentHTMLNode.nodeType == 1
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.$container;
 

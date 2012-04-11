@@ -108,6 +108,7 @@ apf.popup = {
         var dp,
             popup  = o.content,
             moveUp = false,
+            moveLeft = false,
             fixed  = false;
 
         if (options.setZindex)
@@ -153,14 +154,14 @@ apf.popup = {
             if (moveUp) {
                 var value;
                 if (refNode)
-                    value = (pos[1] - (options.height || o.height || o.content.offsetHeight));
+                    value = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + 3;
                 else
                     value = (edgeY - (options.height || o.height || o.content.offsetHeight));
                 
                 popup.style.top = value < 0 ? y : value + "px";
             }
             else {
-                popup.style.top = y + "px"
+                popup.style.top = y + "px";
             }
             
             if (!options.noleft) {
@@ -172,15 +173,18 @@ apf.popup = {
                 moveLeft = options.autoCorrect && (x
                     + (options.width || o.width || o.content.offsetWidth))
                     > edgeX;
-                
+
                 if (moveLeft) {
                     var value;
-                    if (options.ref)
-                        value = (pos[0] - (options.width || o.width || o.content.offsetWidth));
-                    else
+                    if (options.ref) {
+                        value = (pos[0] - (options.width || o.width || o.content.offsetWidth))
+                                + (options.ref.offsetWidth);
+                    }
+                    else {
                         value = (edgeX - (options.width || o.width || o.content.offsetWidth) 
                                 - (parentMenu ? (parentMenu.width || parentMenu.content.offsetWidth) : 0));
-                    popup.style.left = value < 0 ? x : value + "px";
+                    }
+                    popup.style.left = value < 0 ? x : (value - 1) + "px";
                 }
                 else {
                     popup.style.left = x + "px";
@@ -202,6 +206,7 @@ apf.popup = {
         // set a className that specifies the direction, to help skins with
         // specific styling options.
         apf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
+        apf.setStyleClass(popup, moveLeft ? "moveleft" : "moveright", [moveLeft ? "moveright" : "moveleft"]);
         // #endif
 
         if (options.animate) {

@@ -118,12 +118,12 @@ apf.page = function(struct, tagName){
                 
                 elBtnClose.addEventListener("mousedown", function(e){
                     apf.cancelBubble(e, apf.lookup(_self.$uniqueId));
-                });
+                }, false);
                 
                 elBtnClose.addEventListener("click", function(e){
                     var page = apf.lookup(_self.$uniqueId);
                      page.parentNode.remove(page, e);
-                });
+                }, false);
 
                 btncontainer.appendChild(elBtnClose);
             }

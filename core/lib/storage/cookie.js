@@ -60,7 +60,7 @@ apf.storage.modules.cookie = {
         //#endif
         
         // serialize the value;
-        value = apf.serialize(value);
+        value = JSON.stringify(value);
         
         // store the value    
         apf.setcookie(namespace + "~" + key, value, 
@@ -205,7 +205,7 @@ apf.storage.modules.cookie = {
         
         // try to store the value    
         for (var i = 0; i < keys.length; i++) {
-            this.store[namespace][keys[i]] = apf.serialize(values[i]);
+            this.store[namespace][keys[i]] = JSON.stringify(values[i]);
         }
         
         return true;

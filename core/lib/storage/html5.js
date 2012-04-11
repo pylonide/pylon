@@ -59,7 +59,7 @@ apf.storage.modules.html5 = {
         key = this.getFullKey(key, namespace);
         
         // serialize the value;
-        value = apf.serialize(value);
+        value = JSON.stringify(value);
         
         // try to store the value
         try {
