@@ -218,11 +218,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      * 
      */
     filter : function(keyword){
-        var klen = keyword.length;
+        if (!this.modelCache.data) {
+            this.lastSearch = keyword;
+            return;
+        }
         
         if (!keyword)
             data = this.modelCache.data.cloneNode(true);
         else {
+            var klen = keyword.length;
             var nodes, data;
             
             // Optimization reusing smaller result if possible
