@@ -55,12 +55,12 @@ module.exports = ext.register("ext/stripws/stripws", {
     hook: function () {
         var self = this;
         var menuItem = new apf.item({
-                            caption: "Strip Whitespace",
-                            onclick: function () {
-                                ext.initExtension(self);
-                                strip();
-                            }
-                        });
+            caption: "Strip Whitespace",
+            onclick: function () {
+                ext.initExtension(self);
+                strip();
+            }
+        });
         var menuItemClone = menuItem.cloneNode(true);
 
         this.nodes.push(
@@ -70,7 +70,12 @@ module.exports = ext.register("ext/stripws/stripws", {
         );
 
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
-            e.ext.addToolsItem(menuItemClone, 2);
+            // Try/catch added here because somehow adding a disabled item to
+            // the statusbar throws.
+            try {
+                e.ext.addToolsItem(menuItemClone, 2);
+            }
+            catch (e) {}
         });
 
         ide.addEventListener("beforefilesave", function(data) {
@@ -80,18 +85,21 @@ module.exports = ext.register("ext/stripws/stripws", {
             // If the 'Strip whitespace on save' option is enabled, we strip
             // whitespaces from the node value just before the file is saved.
             if (node && node.firstChild && node.firstChild.nodeValue == "true") {
-                strip();
+                self.stripws();
             }
         });
 
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            var heading = e.ext.getHeading("General");
-            heading.appendChild(new apf.checkbox({
+        ide.addEventListener("init.ext/settings/settings", function(e) {
+            var settingsCb = new apf.checkbox({
                 "class" : "underlined",
                 skin  : "checkbox_grey",
                 value : "[editors/code/@stripws]",
                 label : "On Save, Strip Whitespace"
-            }))
+            });
+            self.nodes.push(settingsCb);
+
+            var heading = e.ext.getHeading("General");
+            heading.appendChild(settingsCb);
         });
     },
 
@@ -100,15 +108,19 @@ module.exports = ext.register("ext/stripws/stripws", {
     },
 
     enable: function () {
-        this.nodes.each(function (item) {
+        this.nodes.each(function(item) {
             item.enable();
         });
+
+        this.stripws = function() { strip(); };
     },
 
     disable: function () {
-        this.nodes.each(function (item) {
+        this.nodes.each(function(item) {
             item.disable();
         });
+
+        this.stripws = function() {};
     },
 
     destroy: function () {

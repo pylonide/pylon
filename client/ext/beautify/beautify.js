@@ -100,7 +100,7 @@ module.exports = ext.register("ext/beautify/beautify", {
                         _self.$selectionEvent = function(e) {
                             if (typeof beautify_selection === "undefined")
                                 return;
-    
+
                             var range = ceEditor.$editor.getSelectionRange();
                             if (range.start.row == range.end.row && range.start.column == range.end.column)
                                 beautify_selection.disable();
@@ -155,7 +155,7 @@ module.exports = ext.register("ext/beautify/beautify", {
                 model.setQueryValue("editors/code/@softtabs", "true");
             }
         });
-        
+
         ext.initExtension(this);
     },
 
@@ -163,12 +163,21 @@ module.exports = ext.register("ext/beautify/beautify", {
         this.nodes.each(function (item) {
             item.enable();
         });
+
+        if (this._beautify) {
+            this.beautify = this._beautify;
+        }
     },
 
     disable: function () {
         this.nodes.each(function (item) {
             item.disable();
         });
+
+        if (!this._beautify) {
+            this._beautify = this.beautify;
+        }
+        this.beautify = function(){};
     },
 
     destroy: function () {
