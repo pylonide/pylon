@@ -91,7 +91,7 @@
  *   {String}         message   the error message.
  * @default_private
  */
-var apf = {
+ apf = {
     // Content Distribution Network URL:
     // #ifndef __WITH_CDN
     /**
@@ -1709,6 +1709,10 @@ var apf = {
      */
     parseAppMarkup : function(docElement){
         var isEmptyDocument = false;
+        
+        if (document.documentElement.getAttribute("skipParse") == "true") {
+            return;
+        }
         
         //#ifdef __WITH_PARTIAL_AML_LOADING
         if (this.parseStrategy == 1 || !this.parseStrategy && !docElement

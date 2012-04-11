@@ -183,6 +183,8 @@ apf.offline = {
             });
         }
 
+        //@todo this code is deprecated
+        throw new Error("This code is deprecated");
         if (this.storage.asyncInit) {
             apf.document.$domParser.$shouldWait++; //@todo apf3.0 make this work again
             this.storage.ready(function(){

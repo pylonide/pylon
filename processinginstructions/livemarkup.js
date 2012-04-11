@@ -73,9 +73,9 @@ apf.LiveMarkupPi = function(){
             // #ifdef __WITH_XMLDIFF
             if (this.$useXmlDiff) {
                 var newXml = apf.getXml("<a:application xmlns:a='" 
-                    + apf.ns.apf + "'>" + apf.xmlentities(data) + "</a:application>", 
+                    + apf.ns.apf + "'>" + apf.escapeXML(data) + "</a:application>", 
                   null, 
-                  this.ownerDocument.$domParser.preserveWhiteSpace); //@todo apf3.0 slow, rethink xmlentities
+                  this.ownerDocument.$domParser.preserveWhiteSpace); //@todo apf3.0 slow, rethink escapeXML
                   
                 var oldXml = this.$data;
                 apf.xmlDiff(oldXml, newXml);

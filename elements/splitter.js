@@ -30,6 +30,9 @@ apf.splitter = function(struct, tagName){
 };
 
 (function() {
+    this.minwidth    = 0;
+    this.minheight   = 0;
+    
     this.$scale = 0; // 0 both, 1 left/top, 2 right/bottom 
     
     this.$focussable = false; // This object can get the focus

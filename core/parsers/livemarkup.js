@@ -2277,7 +2277,7 @@ apf.lm_exec = new (function(){
                     ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
                     : "")) + '"' 
               + (options
-                ? ' options="' + apf.serialize(options).escapeHTML()
+                ? ' options="' + JSON.stringify(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")

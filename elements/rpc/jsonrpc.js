@@ -90,7 +90,7 @@ apf.jsonrpc = function(){
         
         //Construct the XML-RPC message
         var message = "{'method':'" + functionName + "','params':"
-            + apf.serialize(args) + ",'id':" + this.id + "}";
+            + JSON.stringify(args) + ",'id':" + this.id + "}";
         return message;
     };
     

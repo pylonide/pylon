@@ -118,7 +118,7 @@ apf.storage.modules["gears.sql"] = {
                 "Invalid namespace given: " + namespace));
         //#endif
         
-        value = apf.serialize(value);
+        value = JSON.stringify(value);
         
         // try to store the value    
         try {
@@ -269,7 +269,7 @@ apf.storage.modules["gears.sql"] = {
             for(var i=0;i<keys.length;i++) {
                 // serialize the value;
                 // handle strings differently so they have better performance
-                var value = apf.serialize(values[i]);
+                var value = JSON.stringify(values[i]);
 
                 this.$sql.db.execute(stmt, [namespace, keys[i], value]);
             }

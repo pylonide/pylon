@@ -141,17 +141,10 @@ apf.http = function(){
      */
     this.saveCache = function(){
         // #ifdef __DEBUG
-        if (!apf.serialize)
-            throw new Error(apf.formatErrorString(1079, this,
-                "HTTP save cache",
-                "Could not find JSON library."));
-        // #endif
-
-        // #ifdef __DEBUG
         apf.console.info("[HTTP] Loading HTTP Cache", "teleport");
         // #endif
 
-        var strResult = apf.serialize(comm.cache);
+        var strResult = JSON.stringify(comm.cache);
         apf.storage.put("cache_" + this.name, strResult,
             apf.config.name + ".apf.http");
     };

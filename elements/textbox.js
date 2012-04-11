@@ -130,7 +130,7 @@ apf.textbox  = function(struct, tagName){
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
     this.$supportedProperties.push("value", "mask", "initial-message",
-        "focusselect", "realtime", "type");
+        "focusselect", "realtime", "type", "rows", "cols");
 
     /**
      * @attribute {String} value the text of this element
@@ -276,6 +276,30 @@ apf.textbox  = function(struct, tagName){
         } 
     };
 
+    /**
+     * @attribute {Number} rows the row length for a text area
+     */
+    this.$propHandlers["rows"] = function(value){
+        if (this.$input.tagName.toLowerCase() == "textarea" && value) {
+            this.setProperty("rows", value);
+            if (this.$ext) {
+                this.$ext.rows = value;
+            }
+        }
+    };
+
+    /**
+     * @attribute {Number} cols the column height for a text area
+     */
+    this.$propHandlers["cols"] = function(value){
+        if (this.$input.tagName.toLowerCase() == "textarea" && value) {
+            this.setProperty("cols", value);
+            if (this.$ext) {
+                this.$ext.cols = value;
+            }            
+        } 
+    };
+    
     /**
      * @attribute {Boolean} focusselect whether the text in this element is
      * selected when this element receives focus.
