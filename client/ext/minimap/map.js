@@ -93,33 +93,32 @@ var Map = (function() {
     };
 
     function Map(ace, c, visor) {
-        var _self = this;
         this.ace = ace;
         this.c = c;
         this.visor = visor;
-        this.visibleLines = this.ace.$getVisibleRowCount();
-        this.visorHeight = Map.toHeight(this.visibleLines);
         this.ctx = c.getContext("2d");
         this.ctx.fillStyle = "#000";
         this.ctx.fillRect(0, 0, this.c.width, this.c.height);
         this.visorTop = 0;
         this.inVisor = false;
         this.mousedown = false;
+    }
 
-        this.ace.renderer.scrollBar.addEventListener("scroll", function() {
+    Map.prototype.enableListeners = function() {
+        var _self = this;
+
+        this.ace.renderer.scrollBar.addEventListener("scroll", this.$scrollListener = function() {
             _self.afterScroll();
         });
 
-        var session = this.ace.getSession();
-
-        visor.addEventListener("mousedown", function(e) {
+        this.visor.addEventListener("mousedown", this.$visorMouseDown = function(e) {
             _self.inVisor = true;
             _self.visorDiff = e.offsetY || e.layerY;
             _self.mousedown = _self.visorDiff + _self.visorTop;
             _self.containerTop = apf.getAbsolutePosition(_self.c)[1];
         }, false);
 
-        document.addEventListener("mousemove", function(e) {
+        document.addEventListener("mousemove", this.$docMouseMove = function(e) {
             if (_self.inVisor && _self.mousedown !== false) {
                 _self.visorTop = (e.pageY - _self.containerTop) - _self.visorDiff;
                 _self.normal = _self.getNormal();
@@ -127,19 +126,33 @@ var Map = (function() {
             }
         }, false);
 
-        document.addEventListener("mouseup", function(e) {
-            if (!_self.inVisor && e.target === c) {
+        document.addEventListener("mouseup", this.$docMouseUp = function(e) {
+            if (!_self.inVisor && e.target === _self.c) {
                 _self.visorTop = (e.offsetY || e.layerY) - (_self.visorHeight / 2);
                 _self.normal = _self.getNormal();
                 _self.render(true);
             }
             _self.mousedown = _self.inVisor = false;
         }, false);
+    };
 
-        this.updateSource(session);
-    }
+    Map.prototype.disableListeners = function() {
+        if (this.$scrollListener)
+            this.ace.renderer.scrollBar.removeEventListener("scroll", this.$scrollListener);
+
+        if (this.$docMouseUp)
+            document.removeEventListener("mouseup", this.$docMouseUp);
+
+        if (this.$docMouseMove)
+            document.removeEventListener("mousemove", this.$docMouseMove);
+
+        if (this.$visorMouseDown)
+            this.visor.removeEventListener("mousedown", this.$visorMouseDown);
+    };
 
     Map.prototype.updateSource = function(session) {
+        this.visibleLines = this.ace.$getVisibleRowCount();
+        this.visorHeight = Map.toHeight(this.visibleLines);
         this.lines = session.getLines(0, session.getLength() - 1);
         this.actualHeight = Map.toHeight(this.lines.length);
         this.codeCanvas = Map.storeCanvas(this.c.width, this.actualHeight, this.lines);
@@ -188,10 +201,8 @@ var Map = (function() {
     Map.prototype.destroy = function() {
         this.lines = null;
         this.pixelData = null;
+        this.disableListeners();
         this.ctx.clearRect(0, 0, this.c.width, this.c.height);
-        this.c.removeEventListener("mousedown");
-        this.c.removeEventListener("mousemove");
-        this.c.removeEventListener("mouseup");
         this.c = this.ctx = this.ace = this.codeCanvas = null;
     };
 
