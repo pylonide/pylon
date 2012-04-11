@@ -7670,7 +7670,7 @@ this.multiline=true;};apf.email=function(struct,tagName){this.$init(tagName||"em
 this.$autoComplete=false;this.$childProperty="value";this.value="";this.readonly=false;
 this.$isTextInput=true;this.multiline=false;this.$booleanProperties.readonly=true;
 this.$booleanProperties.focusselect=true;this.$booleanProperties.realtime=true;
-this.$supportedProperties.push("value","mask","initial-message","focusselect","realtime","type","rows","cols");
+this.$booleanProperties.kbclear=true;this.$supportedProperties.push("value","mask","initial-message","focusselect","realtime","type","rows","cols","kbclear");
 this.$propHandlers.value=function(value,prop,force,initial){if(!this.$input||!initial&&this.getValue()==value){return;
 }if(!initial&&!value&&!this.hasFocus()){return this.$clear();}else{if(this.isHTMLBox){if(this.$input.innerHTML!=value){this.$input.innerHTML=value;
 }}else{if(this.$input.value!=value){this.$input.value=value;}}}if(!initial){apf.setStyleClass(this.$ext,"",[this.$baseCSSname+"Initial"]);
@@ -7703,7 +7703,7 @@ if(this["initial-message"]&&apf.document.activeElement!=this){this.$propHandlers
 apf.setStyleClass(this.$ext,this.$baseCSSname+"Initial");}else{this.$propHandlers.value.call(this,"");
 }if(!this.$input.tagName.toLowerCase().match(/input|textarea/i)){if(apf.hasMsRangeObject){try{var range=document.selection.createRange();
 range.moveStart("sentence",-1);range.select();}catch(e){}}}this.dispatchEvent("clear");
-});this.$keyHandler=function(key,ctrlKey,shiftKey,altKey,e){if(this.$button&&key==27){if(this.value){this.change("");
+});this.$keyHandler=function(key,ctrlKey,shiftKey,altKey,e){if(this.$button&&key==27&&this.kbclear){if(this.value){this.change("");
 this.dispatchEvent("keydown",{keyCode:key,ctrlKey:ctrlKey,shiftKey:shiftKey,altKey:altKey,htmlEvent:e});
 e.stopPropagation();}}};this.$registerElement=function(oNode){if(!oNode){return;
 }if(oNode.localName=="autocomplete"){this.$autoComplete=oNode;}};var fTimer;this.$focus=function(e){if(!this.$ext||this.$ext.disabled){return;
