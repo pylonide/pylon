@@ -34,8 +34,23 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     },
 
     readFile : function (path, callback){
-        if (this.webdav)
+        if (!this.webdav) return;
+        
+        var self = this;
+        
+        // in webdav.read, if ide.onLine === 0, it is calling callback immediately without content
+        // if we're not online, we'll add an event handler that listens to the socket connecting (or the ping or so)
+        if (!ide.onLine) {
+            var afterOnlineHandler = function () {
+                self.webdav.read(path, callback);
+                ide.removeEventListener("afteronline", afterOnlineHandler);
+            };
+            ide.addEventListener("afteronline", afterOnlineHandler);
+        }
+        else {
+            // otherwise just redirect it
             this.webdav.read(path, callback);
+        }
     },
 
     saveFile : function(path, data, callback) {
@@ -93,20 +108,27 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     tree.focus();
                     _self.webdav.exec("mkdir", [path, name], function(data) {
                         // @todo: in case of error, show nice alert dialog
-                        if (data instanceof Error)
+                        if (!data || data instanceof Error)
                             throw Error;
+                        
+                        // parse xml
+                        var nodesInDirXml = apf.getXml(data);
+                        // we expect the new created file in the directory listing
+                        var fullFolderPath = path + "/" + name;
+                        var folder = nodesInDirXml.selectSingleNode("//folder[@path='" + fullFolderPath + "']");
+                        // not found? display an error
 
-                        var strXml = data.match(new RegExp(("(<folder path='" + path
-                                + "/" + name + "'.*?>)").replace(/\//g, "\\/")))[1];
-
+                        if (!folder) {
+                             return util.alert("Error", "Folder '" + name + "' could not be created",
+                                 "An error occurred while creating a new folder, please try again.");
+                        }
                         tree.slideOpen(null, node, true, function(data, flag, extra){
-                            var folder;
                             // empty data means it didn't trigger <insert> binding,
                             // therefore the node was expanded already
                             if (!data)
-                                tree.add(apf.getXml(strXml), node);
+                                tree.add(folder, node);
 
-                            folder = apf.queryNode(node, "folder[@path='"+ path +"/"+ name +"']");
+                            folder = apf.queryNode(node, "folder[@path='"+ fullFolderPath +"']");
 
                             tree.select(folder);
                             tree.startRename();
@@ -404,13 +426,20 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     // verify if the request succeeded
                     if (state != apf.SUCCESS) {
                         // 404's should give a file not found, but what about others?
-                        if (extra.status == 404) {
-                            ide.dispatchEvent("filenotfound", {
-                                node : node,
-                                url  : extra.url,
-                                path : path
-                            });
+                        // for clarity we'll console.log some info; so it'll help us debug it
+                        // in case it would happen actually
+                        if (extra.status !== 404) {
+                            console.log("Opening file failed for", path, "server responded with", state, extra);
                         }
+                        
+                        // now invoke filenotfound every time
+                        // because we can't be sure about the state so force a close of the file tab
+                        // this will prevent things like empty files, etc.
+                        ide.dispatchEvent("filenotfound", {
+                            node : node,
+                            url  : extra.url,
+                            path : path
+                        });
                     }
                     else {
                         // populate the document
@@ -420,17 +449,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     }
                 };
                 
-                // if we're not online, we'll add an event handler that listens to the socket connecting (or the ping or so)
-                if (!ide.onLine) {
-                    var afterOnlineHandler = function () {
-                        fs.readFile(path, readfileCallback);
-                        ide.removeEventListener("afteronline", afterOnlineHandler);
-                    };
-                    ide.addEventListener("afteronline", afterOnlineHandler);
-                }
-                else {
-                    fs.readFile(path, readfileCallback);
-                }
+                // offline / online detection has been moved into fs.readFile instead
+                fs.readFile(path, readfileCallback);
             }
         });
 
