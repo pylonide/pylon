@@ -31,7 +31,7 @@
       readonly          = "{[@loading] or cloud9config.readonly or (location.host and window.stDebugProcessRunning and stDebugProcessRunning.active and [@scriptid])}"
     />
 
-    <a:menu id="mnuCtxEditor" render="runtime"onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
+    <a:menu id="mnuCtxEditor" render="runtime" onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
         <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
         <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
         <a:divider />
