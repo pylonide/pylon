@@ -36,7 +36,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
 (function() {
     this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
-        if (--this.filenames[filename] == 0) {
+        if (--this.filenames[filename] === 0) {
             delete this.filenames[filename];
             fs.unwatchFile(filename);
         }
@@ -50,11 +50,15 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
-        var filename, that, subtype, files;
+        var that, subtype, files;
 
         if (!message || message.command != "watcher") 
             return false;
-        with (message) {
+            
+        var command = message.command;
+        var path = message.path;
+        var type = message.type;
+            
             if (command != "watcher")
                 return false;
             
@@ -72,7 +76,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                         if (ignoredPaths[path]) {
                             clearTimeout(ignoreTimers[path]);
                             ignoreTimers[path] = setTimeout(function() {
-                                delete ignoreTimers[path]
+                                delete ignoreTimers[path];
                                 delete ignoredPaths[path];
                             }, IGNORE_TIMEOUT);
                             return;
@@ -117,11 +121,10 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
             default:
                 return false;
             }
-        }
     };
     
     this.dispose = function(callback) {
-        for (filename in this.filenames)
+        for (var filename in this.filenames)
             this.unwatchFile(this.filenames[filename]);
         callback();
     };

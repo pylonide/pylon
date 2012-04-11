@@ -517,7 +517,8 @@ module.exports = ext.register("ext/editors/editors", {
             this.initEditor(editor);
         
         this.currentEditor = editor;
-        editor.ceEditor.focus();
+        if(editor.ceEditor)
+            editor.ceEditor.focus();
 
         //toHandler.$rbEditor.select();
 
@@ -716,9 +717,13 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         ide.addEventListener("afterreload", function(e) {
-            var doc         = e.doc,
-                acesession  = doc.acesession,
-                sel         = acesession.getSelection();
+            var doc         = e.doc;
+            var acesession  = doc.acesession;
+            
+            if (!acesession)
+                return;
+                
+            var sel         = acesession.getSelection();
 
             sel.selectAll();
             acesession.getUndoManager().ignoreChange = true;
@@ -729,6 +734,8 @@ module.exports = ext.register("ext/editors/editors", {
                 var editor = doc.$page.$editor;
                 editor.setState && editor.setState(doc, doc.state);
             }
+            
+            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
     },
 

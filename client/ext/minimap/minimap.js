@@ -45,12 +45,36 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
         ide.addEventListener("afteropenfile", function() {
             ext.initExtension(_self);
-            if (_self.editor)
-                _self.updateMap();
+            
         });
 
         ide.addEventListener("loadsettings", function(e) {
             _self.map_enabled = e.model.queryValue("editors/code/@minimap");
+        });
+
+        tabEditors.addEventListener("afterswitch", function(e){
+            if (e.nextPage.type === "ext/imgview/imgview")
+                return;
+
+            function afterSwitch() {
+                if (_self.editor)
+                    _self.updateMap();
+
+                setTimeout(function() {
+                    _self.setupChangeListener();
+                }, 200);
+            }
+
+            if (!_self.inited) {
+                // Wait a moment for the editor to get into place
+                setTimeout(function() {
+                    ext.initExtension(_self);
+                    afterSwitch();
+                });
+            }
+            else {
+                afterSwitch();
+            }
         });
     },
 
@@ -81,22 +105,13 @@ return module.exports = ext.register("ext/minimap/minimap", {
                 _self.map.resize(_self.map_width, ceEditor.getHeight());
         });
 
-        tabEditors.addEventListener("afterswitch", function() {
-            _self.updateMap();
-            setTimeout(function() {
-                _self.setupChangeListener();
-            }, 200);
-        });
-
         if (apf.isTrue(this.map_enabled)) {
             setTimeout(function() {
                 _self.show();
             });
         }
-
-        this.setupChangeListener();
     },
-    
+
     setupChangeListener : function() {
         if (this.$changeEvent)
             this.editorSession.removeEventListener("change", this.$changeEvent);
@@ -127,6 +142,9 @@ return module.exports = ext.register("ext/minimap/minimap", {
     },
 
     show : function() {
+        this.setupChangeListener();
+        this.map.enableListeners();
+
         this.editor.container.style.right = this.map_width + "px";
         this.panel.show();
         this.updateMap();
@@ -145,6 +163,10 @@ return module.exports = ext.register("ext/minimap/minimap", {
      * @see this.disable()
      */
     hide : function(noSetMapEnabled) {
+        if (this.$changeEvent)
+            this.editorSession.removeEventListener("change", this.$changeEvent);
+        this.map.disableListeners();
+
         this.panel.hide();
         this.editor.container.style.right = "0";
 
@@ -181,6 +203,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
         this.nodes.each(function(item) {
             return item.destroy();
         });
+        this.hide();
         this.nodes = [];
         this.map.destroy();
         this.map = null;

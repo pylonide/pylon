@@ -87,11 +87,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["behaviors"]                = true;
     this.$booleanProperties["folding"]                  = true;
     this.$booleanProperties["wrapmode"]                 = true;
-
+    this.$booleanProperties["wrapmodeViewport"]         = true;
+    this.$booleanProperties["animatedscroll"]         = true;
+    
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
-        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar",
+        "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
         "behaviors", "folding");
 
     this.$getCacheKey = function(value) {
@@ -171,7 +173,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         doc.setTabSize(parseInt(_self.tabsize, 10));
         doc.setUseSoftTabs(_self.softtabs);
         doc.setUseWrapMode(_self.wrapmode);
-        doc.setWrapLimitRange(_self.wraplimitmin, _self.wraplimitmax);
+        if (_self.wrapmodeViewport) {
+            doc.setWrapLimitRange(_self.wraplimitmin, null);
+        }
+        else {
+           doc.setWrapLimitRange(_self.wraplimitmin, _self.printmargincolumn); 
+        }
         doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
 
         _self.$removeDocListeners && _self.$removeDocListeners();
@@ -393,10 +400,17 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["printmargincolumn"] = function(value, prop, initial) {
         this.$editor.setPrintMarginColumn(value);
+        if (!this.wrapmodeViewport) {
+            this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
+        }
     };
 
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
+    };
+    
+    this.$propHandlers["animatedscroll"] = function(value, prop, initial) {
+        this.$editor.setAnimatedScroll(value);
     };
 
     this.$propHandlers["overwrite"] = function(value, prop, initial) {
@@ -439,6 +453,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
     this.$propHandlers["wraplimitmax"] = function(value, prop, initial) {
         this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, value);
+    };
+    this.$propHandlers["wrapmodeViewport"] = function(value, prop, initial) {
+        if (value === true)
+            this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, null);
+        else {
+            this.$editor.getSession().setWrapLimitRange(this.wraplimitmin, this.printmargincolumn);
+        }
     };
     this.$propHandlers["highlightselectedword"] = function(value, prop, initial) {
         this.$editor.setHighlightSelectedWord(value);
@@ -682,6 +703,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.softtabs = doc.getUseSoftTabs(); //true
         if (this.scrollspeed === undefined)
             this.scrollspeed = ed.getScrollSpeed();
+        if (this.animatedscroll === undefined)
+            this.animatedscroll = ed.getAnimatedScroll();
         if (this.selectstyle === undefined)
             this.selectstyle = ed.getSelectionStyle();//"line";
         if (this.activeline === undefined)
@@ -701,7 +724,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.fontsize = 12;
         var wraplimit = doc.getWrapLimitRange();
         if (this.wraplimitmin === undefined)
-            this.wraplimitmin = wraplimit.min;
+            this.wraplimitmin = 40;
         if (this.wraplimitmax === undefined)
             this.wraplimitmax = wraplimit.max;
         if (this.wrapmode === undefined)

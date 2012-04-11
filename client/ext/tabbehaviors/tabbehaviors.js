@@ -75,7 +75,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             mnuTabs.appendChild(new apf.item({
                 caption : "Close All But Current Tab",
                 onclick : function() {
-                    _self.closeallbutme();
+                    _self.closeallbutme(tabEditors.$activePage);
                 },
                 disabled : "{!!!tabEditors.activepage}"
             })),
@@ -119,7 +119,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                     new apf.item({
                         caption : "Close Other Tabs",
                         onclick : function() {
-                            _self.closeallbutme(tabEditors.contextPage);
+                            _self.closeallbutme(tabEditors.$activePage);
                         },
                         disabled : "{!!!tabEditors.activepage}"
                     }),
@@ -185,7 +185,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (e.shiftKey) { // Shift = close all
                 return _self.closealltabs();
             }
-            else if(e.altKey) { // Alt/ Option = close all but this
+            else if (e.altKey) { // Alt/ Option = close all but this
                 return _self.closeallbutme(page);
             }
         });
@@ -273,17 +273,26 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     closealltabs: function(callback) {
         callback = typeof callback == "function" ? callback : null;
-        this.closeallbutme(1, callback);
-    },
 
-    // ignore is the page that shouldn't be closed, null to close all tabs
-    closeallbutme: function(ignore, callback) {
-        // if ignore isn't a page instance then fallback to current page
-        if (!(ignore instanceof apf.page)) {
-            ignore = null;
+        this.changedPages = [];
+        this.unchangedPages = [];
+        
+        var pages = tabEditors.getPages();
+        for (var i = 0, l = pages.length; i < l; i++) {
+            this.closepage(pages[i], callback);
         }
         
-        ignore = ignore || tabEditors.getPage();
+        this.checkPageRender(callback);
+    },
+
+    closeallbutme: function(ignore, callback) {
+        // if ignore isn't a page instance, then fallback to current page, unless it's an object from closealltotheright/left
+        if (!(ignore instanceof apf.page)) {
+            if (typeof ignore === "undefined" || typeof ignore.closeall === "undefined") {
+                ignore = tabEditors.getPage();
+            }
+        }
+
         this.changedPages = [];
         this.unchangedPages = [];
 
@@ -297,33 +306,43 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (ignore && (page == ignore || ignore.hasOwnProperty(i))) {
                 continue;
             }
-
-            if (page.$doc.getNode().getAttribute("changed") == "1") {
-                page.noAnim = true; // turn off animation on closing tab
-                this.changedPages.push(page);
-
-                page.addEventListener("aftersavedialogclosed", function(e) {
-                    var curPage = _self.changedPages[0];
-                    if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
-                        return
-                    _self.changedPages.shift();
-                    this.removeEventListener("aftersavedialogclosed", arguments.callee);
-                    if (_self.changedPages.length == 0) {
-                        _self.closeUnchangedPages(function() {
-                            if (callback)
-                                callback();
-                        });
-                    }
-                    else {
-                        tabEditors.remove(_self.changedPages[0], null, true);
-                    }
-                });
-            }
             else {
-                this.unchangedPages.push(page);
+                this.closepage(page, callback);
             }
         }
 
+        this.checkPageRender(callback);
+    },
+
+    closepage : function(page, callback) {
+        var _self = this;
+        if (page.$doc.getNode().getAttribute("changed") == "1") {
+            page.noAnim = true; // turn off animation on closing tab
+            this.changedPages.push(page);
+
+            page.addEventListener("aftersavedialogclosed", function(e) {
+                var curPage = _self.changedPages[0];
+                if (_self.changedPages.length && curPage.caption != e.currentTarget.caption)
+                    return;
+                _self.changedPages.shift();
+                this.removeEventListener("aftersavedialogclosed", arguments.callee);
+                if (_self.changedPages.length == 0) {
+                    _self.closeUnchangedPages(function() {
+                        if (callback)
+                            callback();
+                    });
+                }
+                else {
+                    tabEditors.remove(_self.changedPages[0], null, true);
+                }
+            });
+        }
+        else {
+            this.unchangedPages.push(page);
+        }
+    },
+    
+    checkPageRender : function(callback) {
         if (this.changedPages.length) {
             tabEditors.remove(this.changedPages[0], null, true);
         }
@@ -334,7 +353,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         }
     },
-
+    
     closeUnchangedPages : function(callback) {
         var page;
         for (var i = 0, l = this.unchangedPages.length; i < l; i++) {
@@ -357,6 +376,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             ignore[j] = page;
         }
 
+        ignore.closeall = true;
         this.closeallbutme(ignore);
     },
 
@@ -371,10 +391,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             ignore[j] = page;
         }
         
+        ignore.closeall = true;
         this.closeallbutme(ignore);
     },
     
+
+    
     nexttab : function(){
+        if (tabEditors.getPages().length === 1) {
+            return;
+        }
+        
         var n = this.accessed.length - this.$tabAccessCycle++;
         if (n < 0) {
             n = this.accessed.length - 1;
@@ -389,6 +416,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     previoustab : function(){
+        if (tabEditors.getPages().length === 1) {
+            return;
+        }
+        
         var n = this.accessed.length - --this.$tabAccessCycle;
         if (n ===  this.accessed.length) {
             n = 0;
@@ -475,6 +506,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (!page)
             return false;
 
+        // Tell other extensions to exit their fullscreen mode (for ex. Zen)
+        // so this operation is visible
+        ide.dispatchEvent("exitfullscreen");
+
         this.revealfile(page.$doc.getNode());
     },
 
@@ -482,7 +517,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var path = docNode.getAttribute('path');
         var node = trFiles.queryNode('//file[@path="' + path + '"]');
 
-        require("ext/panels/panels").activate(require("ext/tree/tree"));
+        panels.activate(require("ext/tree/tree"));
 
         if (node) {
             trFiles.expandAndSelect(node);

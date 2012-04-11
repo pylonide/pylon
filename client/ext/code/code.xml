@@ -16,25 +16,27 @@
       softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-      
+      animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@animatedscroll]"
+
       fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
-      wrapmode          = "[@wrapmode]"
-      wraplimitmin      = "80"
+      wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+      wrapmodeViewport  = "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
+      wraplimitmin      = "40"
       wraplimitmax      = "80"
       gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
       highlightselectedword = "[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]"
       autohidehorscrollbar  = "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]"
-      
+
       contextmenu       = "mnuCtxEditor"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
       readonly          = "{[@loading] or cloud9config.readonly or (location.host and window.stDebugProcessRunning and stDebugProcessRunning.active and [@scriptid])}"
     />
-    
+
     <a:menu id="mnuCtxEditor" render="runtime">
         <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
         <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
         <a:divider />
-        <a:item 
+        <a:item
           visible="{stDebugProcessRunning.active and !stRunning.active}"
           onclick="
             require('ext/quickwatch/quickwatch').toggleDialog(1, true);
@@ -42,7 +44,7 @@
         <a:divider visible="{stDebugProcessRunning.active and !stRunning.active}" />
         <a:item onclick="ceEditor.$editor.getSelection().selectAll()">Select All</a:item>
     </a:menu>
-    
+
     <a:menu id="mnuSyntax">
         <a:item type="radio" value="auto">Auto-Select</a:item>
         <a:item type="radio" value="text/plain">Plain Text</a:item>
@@ -57,6 +59,7 @@
         <a:item type="radio" value="text/x-java-source">Java</a:item>
         <a:item type="radio" value="application/javascript">JavaScript</a:item>
         <a:item type="radio" value="application/x-latex">Latex</a:item>
+        <a:item type="radio" value="application/x-sh">Shell Script</a:item>
         <a:item type="radio" value="text/x-lua">Lua</a:item>
         <a:item type="radio" value="text/x-markdown">Markdown</a:item>
         <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>

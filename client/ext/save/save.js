@@ -58,7 +58,7 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
-                fileDesc.insertMarkup("<div><h3>Save " +  "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>");
+                fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
 
                 winCloseConfirm.addEventListener("hide", function(){
                     if (winCloseConfirm.all != -100) {
@@ -184,8 +184,14 @@ module.exports = ext.register("ext/save/save", {
         ide.dispatchEvent("reload", {doc : tabEditors.getPage().$doc});
     },
 
-    saveall : function(){
-        tabEditors.getPages().forEach(this.quicksave, this);
+    saveall : function() {
+        // previous version of this function used
+        // .forEach(this.quicksave), but that also passes the index parameter (2nd one)
+        // of forEach to the quicksave function.
+        var self = this;
+        tabEditors.getPages().forEach(function (page) {
+            self.quicksave(page);
+        });
     },
 
     saveAllInteractive : function(pages, callback){
@@ -232,6 +238,10 @@ module.exports = ext.register("ext/save/save", {
 
         if (!page)
             return;
+            
+        if (typeof callback !== "function") {
+            callback = null;
+        }
 
         var doc  = page.$doc;
         var node = doc.getNode();
@@ -350,7 +360,7 @@ module.exports = ext.register("ext/save/save", {
                 doc.setNode(file);
             }
 
-            apf.xmldb.removeAttribute(node, "saving");
+            apf.xmldb.removeAttribute(file, "saving");
 
             if (self.saveBuffer[path]) {
                 delete self.saveBuffer[path];

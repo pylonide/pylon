@@ -27,6 +27,10 @@
                 background:-moz-linear-gradient(center bottom,rgb(232,232,232) 0%,rgb(227,227,227) 100%);
             }
             
+            .barQuickSearch .searchbox_textbox .sbtb_middle input {
+                width: 190px;
+            }
+            
             #divSearchCount {
                 position: absolute;
                 width: auto;

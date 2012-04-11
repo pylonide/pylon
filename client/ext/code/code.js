@@ -54,6 +54,7 @@ var SupportedModes = {
     "application/atom+xml": "xml",
     "application/mathml+xml": "xml",
     "application/x-httpd-php": "php",
+    "application/x-sh": "sh",
     "text/x-script.python": "python",
     "text/x-script.ruby": "ruby",
     "text/x-script.perl": "perl",
@@ -138,7 +139,10 @@ var contentTypes = {
 
     "ps1": "text/x-script.powershell",
     "cfm": "text/x-coldfusion",
-    "sql": "text/x-sql"
+    "sql": "text/x-sql",
+
+    "sh": "application/x-sh",
+    "bash": "application/x-sh"
 };
 
 module.exports = ext.register("ext/code/code", {
@@ -317,6 +321,7 @@ module.exports = ext.register("ext/code/code", {
                   .attr("softtabs", "true")
                   .attr("tabsize", "4")
                   .attr("scrollspeed", "2")
+                  .attr("animatedscroll", "true")
                   .attr("fontsize", "12")
                   .attr("wrapmode", "false")
                   .attr("wraplimitmin", "")
@@ -357,7 +362,8 @@ module.exports = ext.register("ext/code/code", {
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            if(typeof ceEditor != "undefined")
+                ceEditor.afterOpenFile(ceEditor.getSession());
         });
     },
 
@@ -385,12 +391,6 @@ module.exports = ext.register("ext/code/code", {
             type    : "check",
             caption : "Show Invisibles",
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-        });
-
-        var menuWrapLines = new apf.item({
-            type    : "check",
-            caption : "Wrap Lines",
-            checked : "{ceEditor.wrapmode}"
         });
 
         this.nodes.push(
@@ -451,7 +451,6 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
-            e.ext.addPrefsItem(menuWrapLines.cloneNode(true), 1);
         });
 
         ide.addEventListener("keybindingschange", function(e) {
