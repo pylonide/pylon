@@ -69,7 +69,7 @@ self.onmessage = function(e) {
                 // of the same kind as the current one and the last line of the
                 // previous change is the line before the first line of the
                 // current one.
-                if (prev && prev[4] === type && (prev[2] === row)) {
+                if (prev && prev[4] === type && (prev[2] === (row - 1))) {
                     prev[2] = row + 1;
                     prev[3] = 0;
                     return;
