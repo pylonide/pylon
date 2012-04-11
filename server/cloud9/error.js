@@ -9,7 +9,7 @@ exports.HttpError = function(message, code) {
 sys.inherits(exports.HttpError, Error);
 
 (function() {
-    
+
     this.toString = function() {
         return this.message;
     };
@@ -44,17 +44,19 @@ var statusCodes = {
     415: "Unsupported Media Type",
     416: "Requested Range Not Satisfiable",
     417: "Expectation Failed",
-    420: "Enhance Your Calm",
-    422: "Unprocessable Entity",
-    423: "Locked",
-    424: "Failed Dependency",
-    425: "Unordered Collection",
-    426: "Upgrade Required",
+    418: "Im a Teapot", // (RFC 2324) http://tools.ietf.org/html/rfc2324
+    420: "Enhance Your Calm", // Returned by the Twitter Search and Trends API when the client is being rate limited
+    422: "Unprocessable Entity", // (WebDAV) (RFC 4918)
+    423: "Locked", // (WebDAV) (RFC 4918)
+    424: "Failed Dependency", // (WebDAV) (RFC 4918)
+    425: "Unordered Collection", // (RFC 3648)
+    426: "Upgrade Required", // (RFC 2817)
     428: "Precondition Required",
-    429: "Too Many Requests",
+    429: "Too Many Requests", // Used for rate limiting
     431: "Request Header Fields Too Large",
-    444: "No Response",
-    449: "Retry With",
+    444: "No Response", // An nginx HTTP server extension. The server returns no information to the client and closes the connection (useful as a deterrent for malware).
+    449: "Retry With", // A Microsoft extension. The request should be retried after performing the appropriate action.
+    450: "Blocked By Windows Parental Controls",
     499: "Client Closed Request",
     500: "Internal Server Error",
     501: "Not Implemented",
@@ -72,19 +74,19 @@ var statusCodes = {
 
 for (var status in statusCodes) {
     var defaultMsg = statusCodes[status];
-    
+
     var error = (function(defaultMsg, status) {
         return function(msg) {
             this.defaultMessage = defaultMsg;
             exports.HttpError.call(this, msg || status + ": " + defaultMsg, status);
-            
+
             if (status >= 500)
                 Error.captureStackTrace(this, arguments.callee);
         };
     })(defaultMsg, status);
-    
+
     sys.inherits(error, exports.HttpError);
-    
+
     var className = toCamelCase(defaultMsg);
     exports[className] = error;
     exports[status] = error;
