@@ -59,12 +59,12 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
         var path = message.path;
         var type = message.type;
             
-            if (command != "watcher")
-                return false;
+        if (command != "watcher")
+            return false;
             
             path = this.basePath + (path ? "/" + path : "");
             
-            switch (type) {
+        switch (type) {
             case "watchFile":
                 if (this.filenames[path]) 
                     ++this.filenames[path]; // console.log("Already watching file " + path);
