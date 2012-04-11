@@ -159,7 +159,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var _self = this;
 
         //@todo create an allfiles plugin that plugins like gotofile can depend on
-        davProject.report(ide.davPrefix, 'filesearch', {query: ""}, //@todo filelist needs some fixing
+        davProject.report(ide.davPrefix, 'filelist', {
+            showHiddenFiles: "1" //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
+          }, 
           function(data, state, extra){
             if (state == apf.ERROR) {
                 if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
@@ -176,25 +178,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
              * Putting this in a worker won't help
              * An alternative solution would be to do this in parts of 10ms
              */
-            var showHiddenFiles = true;//apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
-            var re = new RegExp(
-                (showHiddenFiles ? "" : "\\/\\.[^\\/]*$|") //Hidden Files
-                + "(?:\\.gz|\\.bzr|\\.cdv|\\.dep|\\.dot|\\.nib|\\.plst|_darcs|_sgbak|autom4te\\.cache|cover_db|_build|\\.tmp)$" //File Extensions
-                + "|\/(?:\\.git|\\.hg|\\.pc|\\.svn|blib|CVS|RCS|SCCS|\.DS_Store)(?:\/|$)" //File Names
-            );
-            var pNode = data.firstChild;
-            var node  = pNode.lastChild, lnode;
-            var array = [], name;
-            while (node) {
-                if (re.test(name = node.firstChild.nodeValue)) {
-                    node = (lnode = node).previousSibling;
-                    pNode.removeChild(lnode);
-                }
-                else {
-                    node = node.previousSibling;
-                    array.push(name);
-                }
-            }
+            var array = data.replace(/^\./, "").split("\n");
+            array.pop(); //remove trailing empty element;
+            
+            var start = "<d:href>";
+            var end   = "</d:href>";
+            var glue  = end + start;
+            data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
+                + start + array.join(glue) + end + "</d:response></d:multistatus>");
 
             _self.arrayCache = array;
             _self.modelCache.load(data);
