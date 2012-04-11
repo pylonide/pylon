@@ -4673,6 +4673,7 @@
         }
         
         .searchresults>div{
+            background : rgba(255,255,255,0.4);   
             color : #666;
             padding : 2px 3px 4px 10px;
             border-top : 1px solid rgba(255,255,255,0.8);
@@ -4681,14 +4682,8 @@
             cursor : default;
             white-space : nowrap;
         }
-        .searchresults>div:nth-child(odd){
-            background : rgba(255,255,255,0.4);   
-        }
-        .searchresults>div:nth-child(even){
-            background : rgba(255,255,255,0.6)
-        }
         .searchresults>div:hover{
-            background : rgba(255,255,255,1);
+            background : rgba(255,255,255,0.6);
         }
         .searchresults>div>span{
             font-size : 14px;
