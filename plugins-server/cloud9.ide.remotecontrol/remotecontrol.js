@@ -28,13 +28,10 @@ module.exports = function setup(options, imports, register) {
 
                     ASSERT(selector === "*", "'selector' must be '*' for now!");
 
-                    // TODO: Remove timeout and buffer events until all client IDEs have finished initializing.
-                    setTimeout(function() {
-                        // TODO: Wait for all until triggering callback
-                        for (var workspace in plugins) {
-                            plugins[workspace].triggerAction(name, args);
-                        }
-                    }, 2000);
+                    // TODO: Wait for all until triggering callback
+                    for (var workspace in plugins) {
+                        plugins[workspace].triggerAction(name, args);
+                    }
 
                     callback(null);
                 }
