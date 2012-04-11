@@ -153,6 +153,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         
         this.nodes.push(winGoToFile);
+        
+
     },
     
     updateFileCache : function(){
