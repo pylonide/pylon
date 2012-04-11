@@ -188,6 +188,16 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     init: function() {
         var self = this;
+
+        ide.send({
+            command: "revisions",
+            subCommand: "getRevisionHistory",
+            path: self.$getDocPath(),
+            // Send over the original revision of the file as well. This is
+            // only for the first time and won't ever change.
+            getOriginalContent: true
+        });
+
         this.panel = ceEditor.parentNode.appendChild(new apf.bar({
             id: "revisionsPanel",
             visible: false,
@@ -282,6 +292,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onSwitchFile: function(e) {
         var self = this;
+
         // This is the wrong way to do it. We should assume than when switching
         // the revisions are already there.
         // We should cache the revisions for each file and destroy them when
