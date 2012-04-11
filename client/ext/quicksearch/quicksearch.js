@@ -296,7 +296,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
-
+            
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
@@ -307,6 +307,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 interval : 10,
                 control  : (this.control = {}),
                 onfinish : function() {
+                    divSearchCount.$ext.style.visibility = "";
                     _self.updateCounter();
                 }
             });
@@ -314,6 +315,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         else if (winQuickSearch.visible) {
             if (this.control && this.control.stop)
                 this.control.stop();
+                
+            divSearchCount.$ext.style.visibility = "hidden";
             
             if (!noanim) {
                 winQuickSearch.visible = false;
@@ -330,7 +333,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     steps    : 8,
                     interval : 10,
                     control  : (this.control = {}),
-                    onfinish : function(){
+                    onfinish : function(){    
                         winQuickSearch.visible = true;
                         winQuickSearch.hide();
                         
