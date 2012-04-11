@@ -9,6 +9,7 @@
 
     "plugin": {
         "consumes": [
+            "hub",
             "connect"
         ]
     }
