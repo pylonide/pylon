@@ -700,6 +700,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         editor.setSession(newSession);
         editor.setReadOnly(true);
 
+        var firstChange = 0;
+        if (ranges.length > 0) {
+            firstChange = ranges[0][0];
+        }
+
         ranges.forEach(function(range) {
             addCodeMarker(newSession, doc, range[4], {
                 fromRow: range[0],
@@ -708,6 +713,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 toCol: range[3]
             });
         });
+
+        editor.renderer.scrollToRow(firstChange - (editor.$getVisibleRowCount() / 2));
+        editor.selection.clearSelection()
 
         // Look for the node that references the revision we are loading and
         // update its state to loaded.
