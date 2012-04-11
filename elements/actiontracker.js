@@ -874,7 +874,9 @@ apf.actiontracker = function(struct, tagName){
 
         var idx, undoObj, qItem;
         // Add the item to the queue
-        if (isGroup) { //@todo currently no offline support for grouped actions
+        if (isGroup) { 
+            //@todo currently no offline support for grouped actions
+            //@todo Why not just pop()?
             var undoObj, qItem = this.$execstack.shift();
             for (var i = 0; i < UndoObj.length; i++) {
                 undoObj = UndoObj[i];
