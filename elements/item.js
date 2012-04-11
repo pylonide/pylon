@@ -73,7 +73,7 @@ apf.item  = function(struct, tagName){
 
     this.$supportedProperties.push("submenu", "value", "match", "group", "icon",
                                    "checked", "selected", "disabled", "caption", 
-                                   "type");
+                                   "type", "values");
 
     /**
      * @attribute {String} [submenu] the id of the menu that is shown
@@ -277,17 +277,28 @@ apf.item  = function(struct, tagName){
         apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
     }
     
-    this.$values = [1, 0];
     this.$propHandlers["values"] = function(value){
-        this.$values = value && value.split("|");
-    }
+        this.$values = typeof value == "string"
+            ? value.split("\|")
+            : (value || [1, 0]);
+
+        this.$propHandlers["value"].call(this, value);
+    };
     
     this.$propHandlers["value"] = function(value){
         if (this.type != "check")
             return;
         
-        this.setProperty("checked", this.$values.indexOf(value) == 0);
-    }
+        value = (typeof value == "string" ? value.trim() : value);
+        
+        if (this.$values) {
+            this.checked = (typeof value != "undefined" && value !== null
+                && value.toString() == this.$values[0].toString());
+        }
+        else {
+            this.checked = apf.isTrue(value);
+        }
+    };
     
     /**
      * @attribute {Boolean} checked whether the item is checked.
@@ -301,8 +312,15 @@ apf.item  = function(struct, tagName){
         else
             apf.setStyleClass(this.$ext, "", ["checked"]);
         
-        if (this.$values && this.$values[value ? 0 : 1] != this.value)
-            return this.setProperty("value", this.$values[value ? 0 : 1]);
+        if (!this.$values) {
+            if (this.getAttribute("values"))
+                this.$propHandlers["values"].call(this, this.getAttribute("values"));
+            //else
+                //this.$values = [true, false];
+        }
+        
+        if(this.$values && this.$values[value ? 0 : 1] != this.value)
+            this.setProperty("value", this.$values ? this.$values[value ? 0 : 1] : true);
     }
     
     this.select = function(){
@@ -310,10 +328,14 @@ apf.item  = function(struct, tagName){
     }
     
     this.check = function(){
-        this.setProperty("checked", true);
+        this.setProperty("value", this.$values
+            ? this.$values[0]
+            : true);
     }
     this.uncheck = function(){
-        this.setProperty("checked", false);
+        this.setProperty("value", this.$values
+            ? this.$values[1]
+            : false);
     }
     
     this.$check = function(){
