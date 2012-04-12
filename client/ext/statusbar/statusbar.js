@@ -280,7 +280,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     setPosition : function() {
-        if (ceEditor && ceEditor.$editor) {
+        if (self.ceEditor && ceEditor.$editor) {
             var _self = this;
             var cw = ceEditor.$editor.renderer.scroller.clientWidth;
             var sw = ceEditor.$editor.renderer.scroller.scrollWidth;

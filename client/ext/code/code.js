@@ -298,7 +298,7 @@ module.exports = ext.register("ext/code/code", {
 
         doc.editor = this;
     },
-
+    
     hook: function() {
         var _self = this;
 

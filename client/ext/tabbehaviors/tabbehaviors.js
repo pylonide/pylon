@@ -54,13 +54,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         this.nodes.push(
             mnuTabs.appendChild(new apf.item({
-                caption : "Reveal in File Tree",
-                onclick : function() {
-                    _self.revealtab(tabEditors.contextPage);
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            })),
-            mnuTabs.appendChild(new apf.item({
                 caption : "Close Tab",
                 onclick : function() {
                     _self.closetab(tabEditors.contextPage);
@@ -79,20 +72,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             })),
-            mnuTabs.appendChild(new apf.item({
-                caption : "Close Tabs to the Right",
-                onclick : function() {
-                    _self.closealltotheright();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            })),
-            mnuTabs.appendChild(new apf.item({
-                caption : "Close Tabs to the Left",
-                onclick : function() {
-                    _self.closealltotheleft();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            })),
             //mnuTabs.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuContextTabs",
@@ -104,6 +83,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         },
                         disabled : "{!!!tabEditors.activepage}"
                     }),
+                    new apf.divider(),
                     new apf.item({
                         caption : "Close Tab",
                         onclick : function() {
@@ -123,6 +103,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         },
                         disabled : "{!!!tabEditors.activepage}"
                     }),
+                    new apf.divider(),
                     new apf.item({
                         caption : "Close Tabs to the Right",
                         onclick : function() {
@@ -141,21 +122,21 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }))
         );
         
-        this.hotitems.revealtab     = [this.nodes[0], mnuContextTabs.childNodes[0]];
-        this.hotitems.closetab      = [this.nodes[1], mnuContextTabs.childNodes[1]];
-        this.hotitems.closealltabs  = [this.nodes[2], mnuContextTabs.childNodes[2]];
-        this.hotitems.closeallbutme = [this.nodes[3], mnuContextTabs.childNodes[3]];
-        this.hotitems.closealltotheright = [this.nodes[4], mnuContextTabs.childNodes[4]];
-        this.hotitems.closealltotheleftt = [this.nodes[5], mnuContextTabs.childNodes[5]];
+        this.hotitems.revealtab     = [mnuContextTabs.childNodes[0]];
+        this.hotitems.closetab      = [this.nodes[0], mnuContextTabs.childNodes[2]];
+        this.hotitems.closealltabs  = [this.nodes[1], mnuContextTabs.childNodes[3]];
+        this.hotitems.closeallbutme = [this.nodes[2], mnuContextTabs.childNodes[4]];
+        this.hotitems.closealltotheright = [mnuContextTabs.childNodes[6]];
+        this.hotitems.closealltotheleftt = [mnuContextTabs.childNodes[7]];
         
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         mnuContextTabs.addEventListener("prop.visible", function(e) {
             // If there are only 0 or 1 pages, disable both and return
             if (tabEditors.getPages().length <= 1) {
-                mnuContextTabs.childNodes[3].setAttribute('disabled', true);
                 mnuContextTabs.childNodes[4].setAttribute('disabled', true);
-                mnuContextTabs.childNodes[5].setAttribute('disabled', true);
+                mnuContextTabs.childNodes[6].setAttribute('disabled', true);
+                mnuContextTabs.childNodes[7].setAttribute('disabled', true);
                 return;
             }
 
@@ -163,17 +144,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var pages = tabEditors.getPages();
 
             // be optimistic, reset menu items to disabled
-            mnuContextTabs.childNodes[3].setAttribute('disabled', false);
             mnuContextTabs.childNodes[4].setAttribute('disabled', false);
-            mnuContextTabs.childNodes[5].setAttribute('disabled', false);
+            mnuContextTabs.childNodes[6].setAttribute('disabled', false);
+            mnuContextTabs.childNodes[7].setAttribute('disabled', false);
 
             // if last tab, remove "close to the right"
             if (page.nextSibling.localName !== "page") {
-                mnuContextTabs.childNodes[4].setAttribute('disabled', true);
+                mnuContextTabs.childNodes[6].setAttribute('disabled', true);
             }
             // if first tab, remove "close to the left"
             else if (pages.indexOf(page) == 0) {
-                mnuContextTabs.childNodes[5].setAttribute('disabled', true);
+                mnuContextTabs.childNodes[7].setAttribute('disabled', true);
             }
         });
         
@@ -394,8 +375,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         ignore.closeall = true;
         this.closeallbutme(ignore);
     },
-    
-
     
     nexttab : function(){
         if (tabEditors.getPages().length === 1) {
