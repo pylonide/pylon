@@ -39,8 +39,8 @@ return keys.onLoad({
             "stepout": "Shift-F11"
         },
         "zen": {
-            "zen": "Command-E",
-            "zenslow": "Shift-Command-E"
+            "zen": "Option-Z",
+            "zenslow": "Shift-Option-Z"
         },
         "gotoline": {
            "gotoline": "Command-L"
@@ -49,9 +49,8 @@ return keys.onLoad({
             "beautify": "Shift-Command-B"
         },
         "gotofile": {
-            "refresh": "Shift-Command-R",
             "_gotofilelegacy": "Option-Shift-R",
-            "gotofile": "Command-R"
+            "gotofile": "Command-E"
         },
         "newresource": {
             "newfile": "Option-Shift-N",
