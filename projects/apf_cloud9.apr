@@ -41,10 +41,11 @@
           group    = "ace"
           out      = "{cwd}/../../client/js/ace.js"
           filehead = "1" /-->
-        <p:compress
+        <!--p:compress
           cmd      = "yuicompressor"
           in       = "{cwd}/build/apf_release.js"
           out      = "{cwd}/build/apf_release.js" />
+-->
     </p:process>
 
     <p:files>

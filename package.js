@@ -46,5 +46,5 @@ function boot() {
         }
     }
     apf.ProcParser.parse(Fs.readFileSync(project, "utf8"));
-    setTimeout(function(){process.exit();}, 100);
+    setTimeout(function(){process.exit();}, 1000);
 }
