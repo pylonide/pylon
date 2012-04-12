@@ -128,7 +128,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "pgDebugNav", {
             menu : "Run Commands",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "ext/main/style/images/debugicons.png",
                 defaultState: { x: -6, y: -265 },
                 activeState: { x: -6, y: -265 }
             }
@@ -140,7 +140,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgCallStack", {
             menu : "Debugger/Call Stack",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "ext/main/style/images/debugicons.png",
                 defaultState: { x: -8, y: -47 },
                 activeState: { x: -8, y: -47 }
             }
@@ -152,7 +152,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbInteractive", {
             menu : "Debugger/Interactive",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "ext/main/style/images/debugicons.png",
                 defaultState: { x: -8, y: -130 },
                 activeState: { x: -8, y: -130 }
             }
@@ -164,7 +164,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgVariable", {
             menu : "Debugger/Variables",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "ext/main/style/images/debugicons.png",
                 defaultState: { x: -8, y: -174 },
                 activeState: { x: -8, y: -174 }
             }
@@ -186,7 +186,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         dock.register(name, "dbgBreakpoints", {
             menu : "Debugger/Breakpoints",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "ext/main/style/images/debugicons.png",
                 defaultState: { x: -8, y: -88 },
                 activeState: { x: -8, y: -88 }
             }
