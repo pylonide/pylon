@@ -636,7 +636,7 @@ apf.textbox  = function(struct, tagName){
         }
         
         if (this.$button) {
-            this.$button.onmousedown = function(){
+            this.$button.onmouseup = function(){
                 _self.$clear(); //@todo why are both needed for doc filter
                 _self.change(""); //@todo only this one should be needed
                 _self.focus({mouse:true});
