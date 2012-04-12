@@ -427,7 +427,7 @@ module.exports = ext.register("ext/editors/editors", {
         at.destroy();
 
         //If there are no more pages left, reset location
-        if (!tabEditors.getPage()) {
+        if (tabEditors.getPages().length == 1) {
             /*if (window.history.pushState) {
                 var p = location.pathname.split("/");
                 window.history.pushState(path, path, "/" + (p[1] || "") + "/" + (p[2] || ""));
@@ -435,7 +435,7 @@ module.exports = ext.register("ext/editors/editors", {
             else {
                 apf.history.setHash("");
             }*/
-            apf.history.setHash("");
+            //apf.history.setHash("");
         }
 
         //Destroy the app page if it has no application instance
