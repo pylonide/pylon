@@ -115,9 +115,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var ace = _self.$getAce();
             if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
                 // fall back to break
-            }
-            else if (e.keyCode == 32 || (e.keyCode >=35 && e.keyCode <= 40) || (e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
-                    (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {       
+            } // certain characters, but not cmd/ctrl/alt + a character
+            else if ( (!e.metaKey && !e.altKey && !e.ctrlKey) && (e.keyCode == 32 || (e.keyCode >=35 && e.keyCode <= 40) || (e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
+                    (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222))) {       
                     // chillax, then fire--necessary for rapid key strokes
                     setTimeout(function() {
                         _self.execSearch(false, false);
