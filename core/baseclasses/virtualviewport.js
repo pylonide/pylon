@@ -86,6 +86,15 @@ apf.VirtualViewport = function(){
 
         //this.documentId = this.xmlRoot = this.cacheId = null;
 
+        if (typeof nomsg == "string") {
+            var msgType = nomsg;
+            nomsg = false;
+            
+            //@todo apf3.0 please use attr. inheritance
+            if (!this[msgType + "-message"])
+                this.$setInheritedAttribute(msgType + "-message");
+        }
+
         if (!nomsg) {
             this.viewport.offset = 0;
             this.viewport.length = 0;
@@ -93,10 +102,14 @@ apf.VirtualViewport = function(){
             if (this.viewport.sb) 
                 this.viewport.sb.$update();
     
-            this.$setClearMessage(this["empty-message"]);
+            if (this.$setClearMessage) {
+                this.$setClearMessage(msgType 
+                  ? this[msgType + "-message"] 
+                  : this["empty-message"], msgType || "empty");
+            }
         }
         else if(this.$removeClearMessage)
-           this.$removeClearMessage();
+            this.$removeClearMessage();
         
         this.viewport.cache = null;
     };
@@ -513,7 +526,11 @@ apf.ViewPortVirtual = function(amlNode){
     });
     
     amlNode.addEventListener("afterload", function(){
+        var itemHeight = _self.$getItemHeight();
         _self.$findNewLimit();
+        
+        if (itemHeight == 1000)
+            _self.$findNewLimit();
     });
     
     if (!amlNode.scrollbar) {
