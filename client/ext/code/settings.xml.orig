@@ -1,0 +1,77 @@
+<<<<<<< HEAD
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox position="1000" class="underlined" label="Auto-pair Quotes, Brackets, etc." value="[editors/code/@behaviors]" skin="checkbox_grey" />
+    <a:checkbox position="2000" class="underlined" label="Code Folding" value="[editors/code/@folding]" skin="checkbox_grey" />
+    <a:checkbox position="3000" class="underlined" label="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" skin="checkbox_grey" />
+    <a:checkbox position="4000" class="underlined" label="Highlight Active Line" value="[editors/code/@activeline]" skin="checkbox_grey" />
+    <a:checkbox position="5000" class="underlined" id="cbsh"  label="Show Invisible Characters" value="[editors/code/@showinvisibles]" skin="checkbox_grey" />
+    <a:checkbox position="6000" class="underlined" label="Show Gutter" value="[editors/code/@gutter]" skin="checkbox_grey" />
+    <a:checkbox position="7000" class="underlined" label="Highlight Selected Word" value="[editors/code/@highlightselectedword]" skin="checkbox_grey" />
+    <a:checkbox position="8000" class="underlined" label="Auto-hide Horizontal Scrollbar" value="[editors/code/@autohidehorscrollbar]" skin="checkbox_grey" />
+     <!-- Vim mode is here -->
+    <a:hbox position="10000" edge="0 5 2 0" align="center" class="underlined">
+        <a:label flex="1">Font Size</a:label>
+        <a:spinner value="[editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" class="fixMargin2" margin="5 0 0" />
+    </a:hbox>
+    <a:hbox position="11000" edge="0 5 0 0" align="center" class="underlined2">
+        <a:checkbox label="Show Print Margin" value="[editors/code/@showprintmargin]" flex="1" skin="checkbox_grey"/>
+        <a:spinner value="[editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" class="fixMargin5" margin="5 0 0"  />
+    </a:hbox>
+    <!--a:hbox edge="0 5 0 0" class="underlined" align="center" padding="5">
+        <a:checkbox label="Wrap Mode" value="[editors/code/@wrapmode]"  flex="1" />
+        <a:spinner value="[editors/code/@wraplimitmin]" realtime="true" min="1" max="200" width="50" />
+        <a:spinner value="[editors/code/@wraplimitmax]" realtime="true" min="1" max="200" width="50" />
+    </a:hbox-->
+    <a:hbox position="12000" edge="0 5 0 0" align="center" class="underlined2">
+        <a:checkbox label="Soft Tabs" value="[editors/code/@softtabs]" style="margin-bottom:5px" flex="1" skin="checkbox_grey"/>
+        <a:spinner value="[editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" class="fixMargin5" margin="5 0 0" />
+    </a:hbox>
+    <a:hbox position="13000" edge="0 5 2 0" align="center" class="underlined">
+        <a:label flex="1">Mouse Scroll Speed</a:label>
+        <a:spinner value="[editors/code/@scrollspeed]" realtime="true" min="1" max="8" width="50" class="fixMargin5" margin="5 0 0" />
+    </a:hbox>
+    <a:hbox 
+     position="14000"
+edge="0 5 2 0" align="center" class="underlined">
+        <a:label flex="1">Newline Mode</a:label>
+        
+        <a:dropdown default="auto" value="[{require('ext/settings/settings').model}::editors/code/@newlinemode]" width="150" height="21">
+            <a:item value="auto">Auto</a:item>
+            <a:item value="windows">Windows (CRLF)</a:item>
+            <a:item value="unix">Unix (LF)</a:item>
+        </a:dropdown>
+    </a:hbox>
+=======
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox position="1000" class="underlined" label="Auto-pair Quotes, Brackets, etc." value="[editors/code/@behaviors]" skin="checkbox_grey" />
+    <a:checkbox position="2000" class="underlined" label="Code Folding" value="[editors/code/@folding]" skin="checkbox_grey" />
+    <a:checkbox position="3000" class="underlined" label="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" skin="checkbox_grey" />
+    <a:checkbox position="4000" class="underlined" label="Highlight Active Line" value="[editors/code/@activeline]" skin="checkbox_grey" />
+    <a:checkbox position="5000" class="underlined" id="cbsh"  label="Show Invisible Characters" value="[editors/code/@showinvisibles]" skin="checkbox_grey" />
+    <a:checkbox position="6000" class="underlined" label="Show Gutter" value="[editors/code/@gutter]" skin="checkbox_grey" />
+    <a:checkbox position="7000" class="underlined" label="Highlight Selected Word" value="[editors/code/@highlightselectedword]" skin="checkbox_grey" />
+    <a:checkbox position="8000" class="underlined" label="Auto-hide Horizontal Scrollbar" value="[editors/code/@autohidehorscrollbar]" skin="checkbox_grey" />
+    <a:checkbox position="8500" class="underlined" label="Animate Scrolling" value="[editors/code/@animatedscroll]" skin="checkbox_grey" />
+    <a:hbox position="9000" edge="0 5 2 0" align="center" class="underlined">
+        <a:label flex="1">Font Size</a:label>
+        <a:spinner value="[editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" class="fixMargin2" margin="5 0 0" />
+    </a:hbox>
+    <a:hbox position="10000" edge="0 5 0 0" align="center" class="underlined2">
+        <a:checkbox label="Show Print Margin" value="[editors/code/@showprintmargin]" flex="1" skin="checkbox_grey"/>
+        <a:spinner value="[editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" class="fixMargin5" margin="5 0 0"  />
+    </a:hbox>
+    <!--a:hbox edge="0 5 0 0" class="underlined" align="center" padding="5">
+        <a:checkbox label="Wrap Mode" value="[editors/code/@wrapmode]"  flex="1" />
+        <a:spinner value="[editors/code/@wraplimitmin]" realtime="true" min="1" max="200" width="50" />
+        <a:spinner value="[editors/code/@wraplimitmax]" realtime="true" min="1" max="200" width="50" />
+    </a:hbox-->
+    <a:hbox position="20000" edge="0 5 0 0" align="center" class="underlined2">
+        <a:checkbox label="Soft Tabs" value="[editors/code/@softtabs]" style="margin-bottom:5px" flex="1" skin="checkbox_grey"/>
+        <a:spinner value="[editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" class="fixMargin5" margin="5 0 0" />
+    </a:hbox>
+    <a:hbox position="30000" edge="0 5 2 0" align="center" class="underlined">
+        <a:label flex="1">Mouse Scroll Speed</a:label>
+        <a:spinner value="[editors/code/@scrollspeed]" realtime="true" min="1" max="8" width="50" class="fixMargin5" margin="5 0 0" />
+    </a:hbox>
+>>>>>>> af4762be9c8f687624fb28b15737f815b151868f
+</a:application>

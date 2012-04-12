@@ -130,17 +130,6 @@ module.exports = ext.register("ext/vim/vim", {
         });
 
         require("ext/settings/settings").addSettings("Code Editor", markupSettings);
-        
-        /*
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            e.ext.getHeading("Code Editor").appendChild(new apf.checkbox({
-                "class" : "underlined",
-                skin  : "checkbox_grey",
-                value : "[editors/code/@vimmode]",
-                label : "Vim mode",
-                onclick: function() { self.toggle(); }
-            }));
-        });*/
 
         var tryEnabling = function () {
             if (settings.model) {
