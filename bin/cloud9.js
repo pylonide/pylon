@@ -25,6 +25,7 @@ var options = Parser.parse([
     {short: "d", long: "debug", description: "Activate debug-mode.", def: false},
     {short: "u", long: "user", description: "Run child processes as a specific user.", value: true, def: false },
     {short: "g", long: "group", description: "Run child processes with a specific group.", value: true, def: false },
+    {short: "e", long: "exec", description: "Path to the node executable for debugging.", value: true, def: null},
     {short: "c", long: "config", description: "Load the configuration from a config file. Overrides command-line options.", value: true, def: null, parser: function(value) {
             var pref = ( value.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
             return require(pref + value.replace(".js", "")).Config;
