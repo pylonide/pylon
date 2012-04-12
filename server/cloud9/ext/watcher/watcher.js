@@ -30,8 +30,8 @@ var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     this.hooks = ["disconnect", "command"];
     this.name = "watcher";
     this.filenames = {};
-    this.basePath  = ide.workspaceDir + "/";
-};
+    this.basePath  = ide.workspaceDir;
+}
 
 sys.inherits(cloud9WatcherPlugin, Plugin);
 
@@ -64,7 +64,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
         if (command != "watcher")
             return false;
 
-        path = this.basePath + path;
+        path = this.basePath + (path ? "/" + path : "");
 
         switch (type) {
             case "watchFile":
@@ -127,7 +127,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                 return this.unwatchFile(path);
             default:
                 return false;
-        }
+            }
     };
 
     this.dispose = function(callback) {

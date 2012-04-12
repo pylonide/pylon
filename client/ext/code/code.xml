@@ -16,7 +16,7 @@
       softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-
+      animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@animatedscroll]"
       fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
       wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
       wrapmodeViewport  = "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
@@ -31,11 +31,15 @@
       readonly          = "{[@loading] or cloud9config.readonly or (location.host and window.stDebugProcessRunning and stDebugProcessRunning.active and [@scriptid])}"
     />
 
-    <a:menu id="mnuCtxEditor" render="runtime">
+    <a:menu id="mnuCtxEditor" render="runtime" onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
         <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
         <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
         <a:divider />
-        <a:item
+        <a:item onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
+        <a:item onclick="{require('ext/clipboard/clipboard').copy()}">Copy</a:item>
+        <a:item onclick="{require('ext/clipboard/clipboard').paste()}">Paste</a:item>
+        <a:divider />
+        <a:item 
           visible="{stDebugProcessRunning.active and !stRunning.active}"
           onclick="
             require('ext/quickwatch/quickwatch').toggleDialog(1, true);

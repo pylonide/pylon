@@ -72,10 +72,10 @@
           class           = "console_text">
             <a:model />
             <a:caption match="[d:querydetail]">[@count] {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in [@filecount] {[@filecount] == 1 ? "file" : "files"}{[@replacement].length &gt; 0 ? ", replaced as '" + apf.htmlentities([@replacement]) + "'" : ""} [@options]</a:caption>
-            <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption> 
+            <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
             <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
-            <a:css match="[d:response]" value="responseHeader" />
-            <a:caption match="[d:excerpt]"><div class="linenumber">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>    
+            <a:css match="[d:response]" value="term_ansi5Color" />
+            <a:caption match="[d:excerpt]"><div class="linenumber term_ansi6Color">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
         </a:tree>
         <a:scrollbar
           id        = "sbSFResult"
