@@ -4210,10 +4210,10 @@ i++){_self.$addEmpty(_self.emptyNode,"",_self.xmlRoot,_self.$container);}}else{r
 }if(limit!=this.limit){this.resize(limit);this.redraw();}};this.change=function(offset,limit,force){var offsetN;
 var _self=this.amlNode;if(offset>this.length-this.limit){offsetN=Math.floor(this.length-this.limit);
 }else{offsetN=Math.floor(offset);}if(offsetN<0){offsetN=0;}if(!limit){limit=this.limit;
-}force=apf.isGecko;var scrollTop=this.getScrollTop();this.cache=null;var diff=offsetN-this.offset,oldLimit=this.limit;
-if(diff*diff>=this.limit*this.limit){diff=false;}this.offset=offsetN;if(diff>0){var lastNode=_self.$container.lastChild;
-if(lastNode.nodeType!=1){lastNode=lastNode.previousSibling;}}var nodes=_self.getTraverseNodes();
-if(!nodes||!nodes.length){return;}if(nodes.length<this.limit){if(offset>0){alert("shouldnt get here");
+}if(!force){force=apf.isGecko;}var scrollTop=this.getScrollTop();this.cache=null;
+var diff=offsetN-this.offset,oldLimit=this.limit;if(diff*diff>=this.limit*this.limit){diff=false;
+}this.offset=offsetN;if(diff>0){var lastNode=_self.$container.lastChild;if(lastNode.nodeType!=1){lastNode=lastNode.previousSibling;
+}}var nodes=_self.getTraverseNodes();if(!nodes||!nodes.length){return;}if(nodes.length<this.limit){if(offset>0){alert("shouldnt get here");
 }else{this.resize(nodes.length);}}var docId=apf.xmldb.getXmlDocId(_self.xmlRoot),hNodes=_self.$container.childNodes,xmlNode,htmlNode,xmlPos,sel,len,j,i;
 if(diff>0){xmlPos=oldLimit-diff;len=hNodes.length,sel=_self.$getSelection();for(j=0,i=0;
 j<diff&&i<len;i++){htmlNode=_self.$container.firstChild;if(htmlNode.nodeType==1){j++;
