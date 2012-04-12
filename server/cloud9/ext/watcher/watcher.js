@@ -94,7 +94,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                         if (curr.isDirectory()) {
                             files = {};
 
-                            async.readdir(__dirname)
+                            async.readdir(path)
                                 .stat()
                                 .filter(function(file) {
                                     return file.name.charAt(0) != '.'
