@@ -4,14 +4,16 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var fs      = require("fs"),
-    sys     = require("sys"),
-    Plugin  = require("cloud9/plugin");
-   
+
+var fs      = require("fs");
+var sys     = require("sys");
+var Plugin  = require("cloud9/plugin");
+var async   = require("asyncjs");
+
 var IGNORE_TIMEOUT = 50,
     ignoredPaths = {},
     ignoreTimers = {};
- 
+
 var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
@@ -44,7 +46,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
     };
 
     this.disconnect = function() {
-        for (var filename in this.filenames) 
+        for (var filename in this.filenames)
             this.unwatchFile(filename);
         return true;
     };
@@ -52,21 +54,21 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
     this.command = function(user, message, client) {
         var that, subtype, files;
 
-        if (!message || message.command != "watcher") 
+        if (!message || message.command != "watcher")
             return false;
-            
+
         var command = message.command;
         var path = message.path;
         var type = message.type;
-            
+
         if (command != "watcher")
             return false;
-        
+
         path = this.basePath + path;
-        
+
         switch (type) {
             case "watchFile":
-                if (this.filenames[path]) 
+                if (this.filenames[path])
                     ++this.filenames[path]; // console.log("Already watching file " + path);
                 else {
                     // console.log("Watching file " + path);
@@ -85,33 +87,38 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             subtype = "create";
                         else if (curr.nlink == 0 && prev.nlink == 1)
                             subtype = "remove";
-                        else if (curr.mtime.toString() != prev.mtime.toString()) 
+                        else if (curr.mtime.toString() != prev.mtime.toString())
                             subtype = "change";
                         else
                             return;
                         if (curr.isDirectory()) {
                             files = {};
-                            
-                            // TODO don't use sync calls
-                            fs.readdirSync(path).forEach(function (file) {
-                                var stat = fs.statSync(path + "/" + file);
-    
-                                if (file.charAt(0) != '.') {
-                                    files[file] = {
-                                        type : stat.isDirectory() ? "folder" : "file",
-                                        name : file
+
+                            async.readdir(__dirname)
+                                .stat()
+                                .filter(function(file) {
+                                    return file.name.charAt(0) != '.'
+                                })
+                                .each(function(file) {
+                                    files[file.name] = {
+                                        type : file.stat.isDirectory() ? "folder" : "file",
+                                        name : file.name
                                     };
-                                }
-                            });
+                                })
+                                .end(function(err) {
+                                    if (err)
+                                        return;
+
+                                    that.send({
+                                        "type"      : "watcher",
+                                        "subtype"   : subtype,
+                                        "path"      : path,
+                                        "files"     : files,
+                                        "lastmod"   : curr.mtime
+                                    });
+                                    //console.log("Sent " + subtype + " notification for file " + path);
+                                });
                         }
-                        that.send({
-                            "type"      : "watcher",
-                            "subtype"   : subtype,
-                            "path"      : path,
-                            "files"     : files,
-                            "lastmod"   : curr.mtime
-                        });
-                        //console.log("Sent " + subtype + " notification for file " + path);
                     });
                     this.filenames[path] = 0;
                 }
@@ -122,11 +129,11 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                 return false;
         }
     };
-    
+
     this.dispose = function(callback) {
         for (var filename in this.filenames)
             this.unwatchFile(this.filenames[filename]);
         callback();
     };
-    
+
 }).call(cloud9WatcherPlugin.prototype);
