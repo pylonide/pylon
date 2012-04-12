@@ -321,7 +321,6 @@ module.exports = ext.register("ext/code/code", {
                   .attr("softtabs", "true")
                   .attr("tabsize", "4")
                   .attr("scrollspeed", "2")
-                  .attr("animatedscroll", "true")
                   .attr("fontsize", "12")
                   .attr("wrapmode", "false")
                   .attr("wraplimitmin", "")
@@ -335,6 +334,9 @@ module.exports = ext.register("ext/code/code", {
                 var editors = apf.createNodeFromXpath(model.data, "editors");
                 apf.xmldb.appendChild(editors, node);
             }
+            
+            if (!model.queryNode("editors/code/@animatedscroll"))
+                model.setQueryValue("editors/code/@animatedscroll", "true");
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
