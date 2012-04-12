@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var settings = require('core/settings');
+var search = require('ext/gotofile/search');
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -168,8 +169,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         
         this.nodes.push(winGoToFile);
-        
-
     },
     
     updateFileCache : function(){
@@ -233,6 +232,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      * 
      */
     filter : function(keyword){
+        var data;
+        
         if (!this.modelCache.data) {
             this.lastSearch = keyword;
             return;
@@ -241,66 +242,17 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         if (!keyword)
             data = this.modelCache.data.cloneNode(true);
         else {
-            var klen = keyword.length;
-            var nodes, data;
-            
+            var nodes;
+    
             // Optimization reusing smaller result if possible
             if (this.lastSearch && keyword.indexOf(this.lastSearch) > -1)
                 nodes = this.arrayCacheLastSearch;
             else
                 nodes = this.arrayCache;
             
-            var name, res = [], first = [], second = [], third = [], cache = [];
-            for (var i = 0, l = nodes.length, j, k, q; i < l; i++) {
-                name = nodes[i];
-                
-                // We only add items that have the keyword in it's path
-                if ((j = name.lastIndexOf(keyword)) > -1) {
-                    
-                    cache.push(name);
-                    
-                    // We prioritize ones that have the name in the filename
-                    if (klen > 1 && j > (q = name.lastIndexOf("/"))) {
-                        k = name.lastIndexOf("/" + keyword);
-                        
-                        if (k > -1) {
-                            // We give first prio to full filename matches
-                            if (name.length == klen + 1 + k) {
-                                first.push(name);
-                                continue;
-                            }
-                            
-                            // Then to matches from the start of the filename
-                            else if (k == q) {
-                                second.push(name);
-                                continue;
-                            }
-                            
-                            // Then anywhere in the filename
-                            else {
-                                third.push(name);
-                                continue;
-                            }
-                        }
-                    }
-                    
-                    // Then the rest
-                    res.push(name);
-                }
-            }
-
-            var start = "<d:href>";
-            var end   = "</d:href>";
-            var glue  = end + start;
-            var results = cache.length 
-                ? (first.length ? start + first.join(glue) + end : "")
-                  + (second.length ? start + second.join(glue) + end : "")
-                  + (third.length ? start + third.join(glue) + end : "")
-                  + (res.length ? start + res.join(glue) + end : "")
-                : "";
-            data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
-                + results + "</d:response></d:multistatus>");
-
+            var cache = [], xml = search(nodes, keyword, cache);
+            data = apf.getXml(xml);
+    
             this.arrayCacheLastSearch = cache;
         }
         
