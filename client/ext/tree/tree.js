@@ -44,13 +44,11 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
 
-        ide.addEventListener("init.ext/panels/panels", function(e) {
-            // Register this panel on the left-side panels
-            panels.register(this, {
-                position : 1000,
-                caption: "Project Files",
-                "class": "project_files"
-            });
+        // Register this panel on the left-side panels
+        panels.register(this, {
+            position : 1000,
+            caption: "Project Files",
+            "class": "project_files"
         });
 
         var _self = this;
