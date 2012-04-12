@@ -261,7 +261,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.closeTimer = setTimeout(function(){
             tabEditors.$waitForMouseOut = false;
             tabEditors.$scaleinit(null, "sync");
-        }, 1000);
+        }, 200);
     },
 
     closealltabs: function(callback) {
