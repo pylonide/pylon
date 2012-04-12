@@ -23,7 +23,7 @@ var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 
-var settings = require("text!ext/language/settings.xml");
+var markupSettings = require("text!ext/language/settings.xml");
 var extSettings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/language/language", {
@@ -81,10 +81,7 @@ module.exports = ext.register("ext/language/language", {
             callback({worker: worker});
         });
 
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            var heading = e.ext.getHeading("Language Support");
-            heading.insertMarkup(settings);
-        });
+        require("ext/settings/settings").addSettings("Language Support", markupSettings );
     },
 
     init : function() {

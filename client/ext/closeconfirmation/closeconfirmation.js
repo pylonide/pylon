@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("ext/settings/settings");
+var markupSettings =  require("text!ext/closeconfirmation/settings.xml");
 
 module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
     name    : "Confirm closing",
@@ -25,25 +26,9 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
     hook : function () {
         // when unloading the window
         window.onbeforeunload = this.onBeforeUnloadHandler;
-
-        var _self = this;
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            // this is the checkbox
-            var warnBeforeExiting = new apf.checkbox({
-                "class" : "underlined",
-                skin  : "checkbox_grey",
-                value : "[general/@confirmexit]",
-                label : "Warn before exiting"
-            });
-            
-            // find the 'General' section in the settings plugin
-            var heading = settings.getHeading("General");
-            heading.appendChild(warnBeforeExiting);
-    
-            // add the checkbox to the node list of the plugin
-            _self.nodes.push(warnBeforeExiting);
-        });
-
+ 
+        require("ext/settings/settings").addSettings("General", markupSettings );
+     
         // init extension
         ext.initExtension(this);
     },
