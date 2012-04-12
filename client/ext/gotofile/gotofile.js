@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
+var settings = require("core/settings");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -159,9 +160,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     updateFileCache : function(){
         var _self = this;
 
+        var hiddenFiles = apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
         //@todo create an allfiles plugin that plugins like gotofile can depend on
         davProject.report(ide.davPrefix, 'filelist', {
-            showHiddenFiles: "1" //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
+            showHiddenFiles: "0"
           }, 
           function(data, state, extra){
             if (state == apf.ERROR) {
