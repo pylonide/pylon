@@ -129,8 +129,9 @@ apf.textbox  = function(struct, tagName){
     this.$booleanProperties["readonly"]    = true;
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
+    this.$booleanProperties["kbclear"]     = true;
     this.$supportedProperties.push("value", "mask", "initial-message",
-        "focusselect", "realtime", "type", "rows", "cols");
+        "focusselect", "realtime", "type", "rows", "cols", "kbclear");
 
     /**
      * @attribute {String} value the text of this element
@@ -449,10 +450,18 @@ apf.textbox  = function(struct, tagName){
     });
 
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
-        if (this.$button && key == 27) {
+        if (this.$button && key == 27 && this.kbclear) {
             //this.$clear();
             if (this.value) {
                 this.change("");
+                
+                this.dispatchEvent("keydown", {
+                    keyCode   : key,
+                    ctrlKey   : ctrlKey,
+                    shiftKey  : shiftKey,
+                    altKey    : altKey,
+                    htmlEvent : e});
+                
                 e.stopPropagation();
             }
             //this.focus({mouse:true});
@@ -627,7 +636,7 @@ apf.textbox  = function(struct, tagName){
         }
         
         if (this.$button) {
-            this.$button.onmousedown = function(){
+            this.$button.onmouseup = function(){
                 _self.$clear(); //@todo why are both needed for doc filter
                 _self.change(""); //@todo only this one should be needed
                 _self.focus({mouse:true});

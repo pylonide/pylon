@@ -229,18 +229,26 @@ apf.BaseList = function(){
                 break;
             case 36:
                 //HOME
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) 
-                    this.viewport.change(0, null, true, true);
+                var node = this.getFirstTraverseNode();
+                
+                // #ifdef __WITH_VIRTUALVIEWPORT
+                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                    return this.viewport.scrollIntoView(node);
+                // #endif
                     
-                this.select(this.getFirstTraverseNode(), false, shiftKey);
+                this.select(node, false, shiftKey);
                 this.$container.scrollTop = 0;
                 break;
             case 35:
                 //END
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) 
-                    this.viewport.change(this.viewport.length, null, true, true);
+                var node = this.getLastTraverseNode();
                 
-                this.select(this.getLastTraverseNode(), false, shiftKey);
+                // #ifdef __WITH_VIRTUALVIEWPORT
+                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                    return this.viewport.scrollIntoView(node, true);
+                // #endif
+                
+                this.select(node, false, shiftKey);
                 this.$container.scrollTop = this.$container.scrollHeight;
                 break;
             case 107:
@@ -300,7 +308,12 @@ apf.BaseList = function(){
                     this.$setTempSelected (node, ctrlKey, shiftKey, true);
                 else
                     return;
-
+                
+                // #ifdef __WITH_VIRTUALVIEWPORT
+                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                    return this.viewport.scrollIntoView(node);
+                // #endif
+                
                 selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
@@ -354,6 +367,11 @@ apf.BaseList = function(){
                 else
                     return;
 
+                // #ifdef __WITH_VIRTUALVIEWPORT
+                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                    return this.viewport.scrollIntoView(node, true);
+                // #endif
+                
                 selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScroll ? 10 : 0)
@@ -388,7 +406,12 @@ apf.BaseList = function(){
                     this.$setTempSelected (node, ctrlKey, shiftKey, true);
                 else
                     return;
-
+                
+                // #ifdef __WITH_VIRTUALVIEWPORT
+                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                    return this.viewport.scrollIntoView(node);
+                // #endif
+                
                 selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
@@ -420,7 +443,12 @@ apf.BaseList = function(){
                     this.$setTempSelected (node, ctrlKey, shiftKey);
                 else
                     return;
-
+                
+                // #ifdef __WITH_VIRTUALVIEWPORT
+                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                    return this.viewport.scrollIntoView(node, true);
+                // #endif
+                
                 selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScrollY ? 10 : 0)

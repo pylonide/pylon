@@ -36,6 +36,8 @@
  * @default_private
  */
 apf.xmldb = new (function(){
+    var _self = this;
+    
     this.xmlDocTag    = "a_doc";
     this.xmlIdTag     = "a_id";
     this.xmlListenTag = "a_listen";
@@ -47,6 +49,26 @@ apf.xmldb = new (function(){
 
     var cleanRE       = /(?:a_doc|a_id|a_listen|a_loaded)=(?:"|')[^'"]+(?:"|')/g,
         whiteRE       = />[\s\n\r\t]+</g;
+        
+    /**
+     * Clear XML document cache periodically when no model is referencing it
+     */
+    this.garbageCollect = function(){
+        var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
+        for (var i = 0, l = cache.length; i < l; i++) {
+            xmlNode = cache[i]
+            docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
+            model = apf.nameserver.get("model", docId);
+            
+            if (!model || model.data != xmlNode) {
+                cache[i] = null;
+            }
+        }
+    }
+    if (window.setInterval)
+        setInterval(function(){
+            _self.garbageCollect();
+        }, 60000);
 
     /**
      * @private
