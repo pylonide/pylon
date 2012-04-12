@@ -94,7 +94,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
-        "behaviors", "folding");
+        "behaviors", "folding", "newlinemode");
 
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
@@ -127,8 +127,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
      * @todo apf3.0 check use of this.$propHandlers["value"].call
      */
     this.$propHandlers["value"] = function(value){ //@todo apf3.0 add support for the range object as a value
-        var doc, key,
-            _self = this;
+        var doc, key;
+        var _self = this;
 
         if (this.caching)
             key = this.$getCacheKey(value);
@@ -166,9 +166,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.hasValue = true;
         }
 
-        _self.getMode(_self.syntax, function(mode) {
-            doc.setMode(mode);
-        });
+        if (!doc.$hasModeListener) {
+            doc.$hasModeListener = true;
+            doc.on("loadmode", function(e) {
+                _self.dispatchEvent("loadmode", e);
+            });
+        }
+        doc.setMode(_self.getMode(_self.syntax));
 
         doc.setTabSize(parseInt(_self.tabsize, 10));
         doc.setUseSoftTabs(_self.softtabs);
@@ -180,6 +184,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
            doc.setWrapLimitRange(_self.wraplimitmin, _self.printmargincolumn); 
         }
         doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
+        doc.setNewLineMode(_self.newlinemode);
 
         _self.$removeDocListeners && _self.$removeDocListeners();
         _self.$removeDocListeners = _self.$addDocListeners(doc);
@@ -287,6 +292,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["theme"] = function(value) {
         this.$editor.setTheme(value);
+    };
+    
+    this.$propHandlers["newlinemode"] = function(value) {
+        this.$editor.getSession().setNewLineMode(value);
     };
 
     this.$propHandlers["syntax"] = function(value) {
@@ -688,7 +697,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             _self.dispatchEvent("gutterdblclick", e);
         });
 
-        apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
+        //apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
     };
 
     this.$loadAml = function(){
@@ -739,6 +748,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.behaviors = !ed.getBehavioursEnabled();
         if (this.folding === undefined)
             this.folding = true;
+        if (this.newlinemode == undefined)
+            this.newlinemode = "auto";
     };
 
 // #ifdef __WITH_DATABINDING

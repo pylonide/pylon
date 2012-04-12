@@ -240,7 +240,7 @@ module.exports = ext.register("ext/tree/tree", {
         // selection in the settings model
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             if (settings.model && settings.model.data && trFiles.selected) {
-                var nodePath          = trFiles.selected.getAttribute("path");
+                var nodePath          = trFiles.selected.getAttribute("path").replace(/"/g, "&quot;");
                 var nodeType          = trFiles.selected.getAttribute("type");
                 var settingsData      = settings.model.data;
                 var treeSelectionNode = settingsData.selectSingleNode("auto/tree_selection");
@@ -276,34 +276,21 @@ module.exports = ext.register("ext/tree/tree", {
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
 
-            var changes = e.args;
-            for (var i = 0; i < changes.length; i++) {
-                var args     = e.args[i].args,
-                    filename = args[1].getAttribute("name");
+            var args     = e.args[0].args,
+                filename = args[1].getAttribute("name");
 
-                var count = 0;
-                filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
-                while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
-                    filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
-                }
-                args[1].setAttribute("newname", filename);
-
-                var node = args[1];
-                var nodes = node.childNodes;
-                while (nodes[0]) {
-                    node.removeChild(nodes[0]);
-                }
+            var count = 0;
+            filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
+            while (args[0].selectSingleNode('node()[@name="' + filename.replace(/"/g, "&quot;") + '"]')) {
+                filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
             }
-            
+            args[1].setAttribute("newname", filename);
+
             setTimeout(function () {
-                for (var i = 0; i < changes.length; i++) {
-                    var args     = e.args[i].args,
-                        filename = args[1].getAttribute("newname");
-                    fs.beforeRename(args[1], null,
-                        args[0].getAttribute("path").replace(/[\/]+$/, "") +
-                          "/" + filename, true);
-                    args[1].removeAttribute("newname");
-                }
+                fs.beforeRename(args[1], null,
+                    args[0].getAttribute("path").replace(/[\/]+$/, "") +
+                    "/" + filename, true);
+                args[1].removeAttribute("newname");
             });
         });
 
@@ -355,7 +342,7 @@ module.exports = ext.register("ext/tree/tree", {
                 }
             });
         });
-        
+
         trFiles.addEventListener("keyup", this.$keyup = function(e){
             if(this.dragging > 0 && e.keyCode == 27) {
                 apf.DragServer.stop();

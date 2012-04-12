@@ -10,7 +10,7 @@ var Sync = module.exports = function(namespace){
     this.namespace = namespace;
     
     this.items = localStorage[this.namespace + ".syncitems"]
-        ? apf.unserialize(localStorage[this.namespace + ".syncitems"])
+        ? JSON.parse(localStorage[this.namespace + ".syncitems"])
         : {length: 100};
     
 };

@@ -1,7 +1,7 @@
 # packages apf
 apf:
-	../c9node/node-c9-builds/bin/node-darwin-v0.4.12 ../packager/package.js ../packager/projects/apf_cloud9.apr
-	cat ../packager/build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > client/js/apf_release.js
+	cd ../packager; ../cloud9/support/node-builds-v4/node-darwin package.js projects/apf_cloud9.apr
+	cd ../packager; cp build/apf_release.js ../cloud9/client/js/apf_release.js
 
 # packages core
 core:
