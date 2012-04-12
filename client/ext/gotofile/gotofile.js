@@ -213,9 +213,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     /**
      * Searches through the dataset
      * 
-     * @todo There is much more sorting we can do. This function is now fast
-     *       enough to apply weighed searching. 
-     * 
      */
     filter : function(keyword){
         var data;

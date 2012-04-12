@@ -7,6 +7,10 @@
 
 define(function(require, exports, module) {
 
+/**
+ * @todo There is much more sorting we can do. This function is now fast
+ *       enough to apply weighed searching. 
+ */
 module.exports = function(nodes, keyword, cache) {
     var klen = keyword.length;
     
@@ -22,7 +26,7 @@ module.exports = function(nodes, keyword, cache) {
             // We prioritize ones that have the name in the filename
             if (klen > 1 && j > (q = name.lastIndexOf("/"))) {
                 k = name.lastIndexOf("/" + keyword);
-                
+
                 if (k > -1) {
                     // We give first prio to full filename matches
                     if (name.length == klen + 1 + k) {
