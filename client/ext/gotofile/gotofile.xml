@@ -5,7 +5,7 @@
       skin      = "basic"
       minheight = "35"
       maxheight = "400"
-      zindex    = "999999"
+      zindex    = "99999"
       visible   = "false"
       style     = "
         background:#e8e8e8;
