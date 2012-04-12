@@ -54,13 +54,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         this.nodes.push(
             mnuTabs.appendChild(new apf.item({
-                caption : "Reveal in File Tree",
-                onclick : function() {
-                    _self.revealtab(tabEditors.contextPage);
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            })),
-            mnuTabs.appendChild(new apf.item({
                 caption : "Close Tab",
                 onclick : function() {
                     _self.closetab(tabEditors.contextPage);
@@ -79,20 +72,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             })),
-            mnuTabs.appendChild(new apf.item({
-                caption : "Close Tabs to the Right",
-                onclick : function() {
-                    _self.closealltotheright();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            })),
-            mnuTabs.appendChild(new apf.item({
-                caption : "Close Tabs to the Left",
-                onclick : function() {
-                    _self.closealltotheleft();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            })),
             //mnuTabs.appendChild(new apf.divider()),
             apf.document.body.appendChild(new apf.menu({
                 id : "mnuContextTabs",
@@ -104,6 +83,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         },
                         disabled : "{!!!tabEditors.activepage}"
                     }),
+                    new apf.divider(),
                     new apf.item({
                         caption : "Close Tab",
                         onclick : function() {
@@ -123,6 +103,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         },
                         disabled : "{!!!tabEditors.activepage}"
                     }),
+                    new apf.divider(),
                     new apf.item({
                         caption : "Close Tabs to the Right",
                         onclick : function() {
