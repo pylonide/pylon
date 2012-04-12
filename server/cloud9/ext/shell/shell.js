@@ -5,6 +5,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
+"use strict";
+
 var sys = require("sys");
 var Plugin = require("cloud9/plugin");
 var Fs = require("fs");
@@ -22,7 +24,30 @@ var ShellPlugin = module.exports = function(ide, workspace) {
 sys.inherits(ShellPlugin, Plugin);
 
 (function() {
-    "use strict";
+
+    this.metadata = {
+        "commands": {
+            "cd" : {
+                "hint": "change working directory",
+                "commands": {
+                    "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
+                }
+            },
+            "ls" : {
+                "hint": "list directory contents",
+                "commands": {
+                    "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
+                }
+            },
+            "rm" : {
+                "hint": "remove a file",
+                "commands": {
+                    "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
+                }
+            },
+            "pwd": {"hint": "return working directory name"}
+        }
+    };
 
     this.command = function(user, message, client) {
         if (!this[message.command]) {
@@ -84,29 +109,13 @@ sys.inherits(ShellPlugin, Plugin);
         Async.list(Object.keys(this.workspace.plugins))
              .each(function(sName, next) {
                  var oExt = _self.workspace.getExt(sName);
-                 if (oExt["$commandHints"]) {
-                     oExt["$commandHints"](commands, message, next);
+                 if (oExt.$commandHints) {
+                     oExt.$commandHints(commands, message, next);
                  }
                  else {
-                     (function(afterMeta) {
-                         if (!oExt.metadata) {
-                             Fs.readFile(Path.normalize(__dirname + "/../" + sName + "/package.json"), function(err, data) {
-                                 if (err) {
-                                     return next();
-                                 }
-                                 var o = JSON.parse(data);
-                                 oExt.metadata = o;
-                                 afterMeta();
-                             });
-                         }
-                         else {
-                             afterMeta();
-                         }
-                     })(function() {
-                         if (oExt.metadata && oExt.metadata.commands)
-                             util.extend(commands, oExt.metadata.commands);
-                         next();
-                     });
+                     if (oExt.metadata && oExt.metadata.commands)
+                         util.extend(commands, oExt.metadata.commands);
+                     next();
                  }
              })
              .end(function() {

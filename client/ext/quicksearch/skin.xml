@@ -31,6 +31,10 @@
                 width: 190px;
             }
             
+            .barQuickSearch .searchbox_textbox .sbtb_middle{
+                border-radius : 3px 0 0 3px;
+            }
+            
             #divSearchCount {
                 position: absolute;
                 width: auto;

@@ -40,8 +40,8 @@ return keys.onLoad({
             "stepout": "Shift-F11"
         },
         "zen": {
-            "zen": "Ctrl-E",
-            "zenslow": "Ctrl-Shift-E"
+            "zen": "Alt-E",
+            "zenslow": "Alt-Shift-E"
         },
         "gotoline": {
             "gotoline": "Ctrl-G"
@@ -50,7 +50,8 @@ return keys.onLoad({
             "beautify": "Ctrl-Shift-B"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R"
+            "_gotofilelegacy": "Alt-Shift-R",
+            "gotofile": "Ctrl-E"
         },
         "newresource": {
             "newfile": "Ctrl-N",
@@ -63,11 +64,11 @@ return keys.onLoad({
             "findprevious": "Ctrl-Shift-K"
         },
         "searchreplace" : {
-            "search": "Ctrl-Shift-F",
-            "searchreplace": "Ctrl-Shift-R"
+            //"search": "Ctrl-Shift-F",
+            "searchreplace": "Alt-Shift-F"
         },
         "searchinfiles" : {
-            "searchinfiles": "Alt-Shift-F"
+            "searchinfiles": "Ctrl-Shift-F"
         },
         "formatjson" : {
             "format" : "Ctrl-Shift-J"
@@ -109,7 +110,7 @@ return keys.onLoad({
             "findnext": "F3",
             "findprevious": "Shift-F3",
             "find": "Ctrl-F",
-            "replace": "Ctrl-Shift-R",
+            "replace": "Alt-Shift-F",
             "undo": "Ctrl-Z",
             "redo": "Ctrl-Shift-Z|Ctrl-Y",
             "overwrite": "Insert",

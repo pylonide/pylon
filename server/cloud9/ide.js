@@ -59,8 +59,9 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     this.workspaceRe = new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
     this.$users = {};
-    this.nodeCmd = process.argv[0];
-
+    
+    this.nodeCmd = options.exec || process.argv[0];
+    
     var davOptions = {
         node: this.options.mountDir,
         mount: this.options.davPrefix,
@@ -356,6 +357,10 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
         //for (var u in this.$users)
         //    console.log("IDE USER", this.$users[u].uid, this.$users[u].clients);
         this.$users[username] && this.$users[username].broadcast(msg);
+    };
+
+    this.canShutdown = function() {
+        return this.workspace.canShutdown();
     };
 
     this.dispose = function(callback) {

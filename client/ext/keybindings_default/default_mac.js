@@ -13,12 +13,12 @@ return keys.onLoad({
         },
         "save" : {
             "quicksave": "Command-S",
-            "saveas": "Command-Shift-S",
-	    "reverttosaved": "Command-Shift-Q"
+            "saveas": "Shift-Command-S",
+	        "reverttosaved": "Shift-Command-Q"
         },
         "undo" : {
             "undo": "Command-Z",
-            "redo": "Command-Shift-Z"
+            "redo": "Shift-Command-Z"
         },
         "clipboard" : {
             "cut": "Shift-Command-X",
@@ -39,17 +39,18 @@ return keys.onLoad({
             "stepout": "Shift-F11"
         },
         "zen": {
-            "zen": "Command-E",
-            "zenslow": "Command-Shift-E"
+            "zen": "Option-Z",
+            "zenslow": "Shift-Option-Z"
         },
         "gotoline": {
            "gotoline": "Command-L"
         },
         "beautify": {
-            "beautify": "Command-Shift-B"
+            "beautify": "Shift-Command-B"
         },
         "gotofile": {
-            "gotofile": "Alt-Shift-R"
+            "_gotofilelegacy": "Option-Shift-R",
+            "gotofile": "Command-E"
         },
         "newresource": {
             "newfile": "Option-Shift-N",
@@ -59,17 +60,17 @@ return keys.onLoad({
         "quicksearch": {
             "find": "Command-F",
             "findnext": "Command-G",
-            "findprevious": "Command-Shift-G"
+            "findprevious": "Shift-Command-G"
         },
         "searchreplace" : {
-            "search": "Command-Shift-F",
-            "searchreplace": "Command-Shift-R"
+            //"search": "Shift-Command-F",
+            "searchreplace": "Option-Command-F"
         },
         "searchinfiles" : {
-            "searchinfiles": "Alt-Shift-F"
+            "searchinfiles": "Shift-Command-F"
         },
         "formatjson" : {
-            "format" : "Command-Shift-J"
+            "format" : "Shift-Command-J"
         },
         "settings": {
             "showsettings": "Command-,"
@@ -77,7 +78,7 @@ return keys.onLoad({
         "tabbehaviors" : {
             "closetab": "Option-W",
             "closealltabs": "Option-Shift-W",
-            "closeallbutme": "Command-Option-W",
+            "closeallbutme": "Option-Command-W",
             "gototabright": "Command-]",
             "gototableft": "Command-[",
             "tab1": "Command-1",
@@ -89,7 +90,7 @@ return keys.onLoad({
             "tab7": "Command-7",
             "tab8": "Command-8",
             "tab9": "Command-9",
-            "revealtab": "Command-Shift-L",
+            "revealtab": "Shift-Command-L",
             "nexttab": "Option-Tab",
             "previoustab": "Option-Shift-Tab"
         },
@@ -97,41 +98,41 @@ return keys.onLoad({
             "savetabsession": "Command-Alt-S"
         },
         "splitview" : {
-            "mergetableft": "Command-Option-[",
-            "mergetabright": "Command-Option-]"
+            "mergetableft": "Option-Command-[",
+            "mergetabright": "Option-Command-]"
         },
         "code" : {
             "selectall": "Command-A",
             "removeline": "Command-D",
             "togglecomment": "Command-/",
             "findnext": "Command-G",
-            "findprevious": "Command-Shift-G",
+            "findprevious": "Shift-Command-G",
             "find": "Command-F",
-            "replace": "Command-Shift-R",
+            "replace": "Option-Shift-F",
             "undo": "Command-Z",
-            "redo": "Command-Shift-Z|Command-Y",
+            "redo": "Shift-Command-Z|Command-Y",
             "overwrite": "Insert",
-            "copylinesup": "Command-Option-Up",
+            "copylinesup": "Option-Command-Up",
             "movelinesup": "Option-Up",
-            "selecttostart": "Command-Shift-Up",
+            "selecttostart": "Shift-Command-Up",
             "gotostart": "Command-Home|Command-Up",
             "selectup": "Shift-Up",
             "golineup": "Up",
-            "copylinesdown": "Command-Option-Down",
+            "copylinesdown": "Option-Command-Down",
             "movelinesdown": "Option-Down",
-            "selecttoend": "Command-Shift-Down",
+            "selecttoend": "Shift-Command-Down",
             "gotoend": "Command-End|Command-Down",
             "selectdown": "Shift-Down",
             "golinedown": "Down",
             "selectwordleft": "Option-Shift-Left",
             "gotowordleft": "Option-Left",
-            "selecttolinestart": "Command-Shift-Left",
+            "selecttolinestart": "Shift-Command-Left",
             "gotolinestart": "Command-Left|Home",
             "selectleft": "Shift-Left",
             "gotoleft": "Left",
             "selectwordright": "Option-Shift-Right",
             "gotowordright": "Option-Right",
-            "selecttolineend": "Command-Shift-Right",
+            "selecttolineend": "Shift-Command-Right",
             "gotolineend": "Command-Right|End",
             "selectright": "Shift-Right",
             "gotoright": "Right",
@@ -150,7 +151,7 @@ return keys.onLoad({
         },
         "language": {
             "complete": "Ctrl-Space|Alt-Space",
-            "renameVar": "Command-Option-R"
+            "renameVar": "Option-Command-R"
         }
     }
 });
