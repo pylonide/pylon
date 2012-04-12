@@ -70,6 +70,7 @@ exports.main = function(options) {
             workspaceId: name,
             name: name,
             version: options.version,
+            real: options.real,
             exec: options.exec
         };
         var ide = new IdeServer(serverOptions, server, exts);

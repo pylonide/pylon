@@ -128,8 +128,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.hotitems.closeallbutme = [this.nodes[2], mnuContextTabs.childNodes[4]];
         this.hotitems.closealltotheright = [mnuContextTabs.childNodes[6]];
         this.hotitems.closealltotheleftt = [mnuContextTabs.childNodes[7]];
-        
-        tabEditors.setAttribute("contextmenu", "mnuContextTabs");
 
         mnuContextTabs.addEventListener("prop.visible", function(e) {
             // If there are only 0 or 1 pages, disable both and return

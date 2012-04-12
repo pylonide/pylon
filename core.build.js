@@ -34,13 +34,5 @@
     findNestedDependencies: true,
     optimizeAllPluginResources: false,
     useStrict: true,
-    wrap: true,
-    onBuildRead: function (moduleName, path, contents) {
-        if (moduleName == "js/apf_release") {
-            return contents;
-        }
-        else {
-            return contents;
-        }
-    }
+    wrap: true
 })
