@@ -808,7 +808,8 @@ apf.ViewPortVirtual = function(amlNode){
         if (!limit)
             limit = this.limit;
         
-        force = apf.isGecko;
+        if (!force)
+            force = apf.isGecko;
         
         var scrollTop = this.getScrollTop();
         
