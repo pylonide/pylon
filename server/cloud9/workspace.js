@@ -48,7 +48,7 @@ var Workspace = module.exports = function(config) {
                 return;
             }
         }
-        
+
         // if a message is sent with the requireshandling flag
         // then the client wants to be notified via an error that there was
         // no plugin suitable of handling this command
