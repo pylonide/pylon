@@ -329,6 +329,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 break;
             }
         }
+
+        if (this.$basePath == "") // this is the packaged version, and there's no ace script
+            return "/static/build/mode/"
+
         return this.$basePath;
     };
 
