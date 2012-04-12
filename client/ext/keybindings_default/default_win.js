@@ -51,6 +51,7 @@ return keys.onLoad({
         },
         "gotofile": {
             "refresh": "Ctrl-Shift-R",
+            "_gotofilelegacy": "Alt-Shift-R",
             "gotofile": "Ctrl-R"
         },
         "newresource": {

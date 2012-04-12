@@ -50,6 +50,7 @@ return keys.onLoad({
         },
         "gotofile": {
             "refresh": "Shift-Command-R",
+            "_gotofilelegacy": "Option-Shift-R",
             "gotofile": "Command-R"
         },
         "newresource": {

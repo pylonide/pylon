@@ -11,7 +11,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
-var settings = require('core/settings');
 var search = require('ext/gotofile/search');
 
 module.exports = ext.register("ext/gotofile/gotofile", {
@@ -24,6 +23,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     offline : false,
     commands : {
         "refresh": {hint: "Reload Cloud9 IDE"},
+        "_gotofilelegacy": {hint: "Legacy"},
         "gotofile": {hint: "search for a filename and jump to it"}
     },
     hotitems: {},
@@ -71,20 +71,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
     init : function() {
         var _self = this;
-        
-        winGoToFile.addEventListener("prop.visible", function(e){
-            if (e.value) {
-                txtGoToFile.select();
-                txtGoToFile.focus();
-                _self.dirty = true;
-                
-                if (_self.lastSearch) {
-                    var search = _self.lastSearch;
-                    _self.lastSearch = null; //invalidate cache
-                    _self.filter(search);
-                }
-            }
-        });
         
         txtGoToFile.addEventListener("keydown", function(e){
             if (e.keyCode == 27)
@@ -305,18 +291,56 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         this.toggleDialog();
         return false;
     },
+    
+    "_gotofilelegacy" : function(){
+        this.toggleDialog();
+        return false;
+    },
 
     toggleDialog: function(force, noanim) {
-        ext.initExtension(this);
-
-        if (!force && !winGoToFile.visible || force > 0) {
-            if (winGoToFile.visible)
+        if (!self.winGoToFile || !force && !winGoToFile.visible || force > 0) {
+            if (self.winGoToFile && winGoToFile.visible)
                 return;
             
-            ide.dispatchEvent("closepopup", {element: this});
+            ext.initExtension(this);
             
+            ide.dispatchEvent("closepopup", {element: this});
+
             winGoToFile.show();
-            apf.setOpacity(winGoToFile.$ext, 1);
+            
+            if (dgGoToFile.$model != this.model)
+                dgGoToFile.setModel(this.model);
+            
+            //Hide window until the list is loaded, unless we don't have data yet
+            if (!dgGoToFile.xmlRoot) {
+                if (this.modelCache.data) {
+                    apf.setOpacity(winGoToFile.$ext, 0);
+                    
+                    dgGoToFile.addEventListener("afterload", function(){
+                        apf.setOpacity(winGoToFile.$ext, 1);
+                        
+                        dgGoToFile.removeEventListener("afterload", arguments.callee);
+                    });
+                }
+                else {
+                    dgGoToFile.$setClearMessage(dgGoToFile["loading-message"], "loading");
+                    apf.setOpacity(winGoToFile.$ext, 1);
+                }
+            }
+            else {
+                apf.setOpacity(winGoToFile.$ext, 1);
+            }
+            
+            txtGoToFile.select();
+            txtGoToFile.focus();
+            this.dirty = true;
+            
+            // If we had a filter and new content, lets refilter
+            if (this.lastSearch) {
+                var search = this.lastSearch;
+                this.lastSearch = null; //invalidate cache
+                this.filter(search);
+            }
         }
         else if (self.winGoToFile && winGoToFile.visible) {
             if (!noanim) {

@@ -6,7 +6,6 @@
       minheight = "35"
       maxheight = "400"
       zindex    = "99999"
-      visible   = "false"
       style     = "
         background:#e8e8e8;
         box-shadow:0 5px 7px rgba(0,0,0,0.5);
@@ -25,9 +24,9 @@
               skin      = "lineselect"
               maxheight = "350"
               scrollbar = "sbShared 32 7 7"
-              model     = "{require('ext/gotofile/gotofile').model}"
               viewport  = "virtual"
               multiselect   = "true"
+              loading-message = "Loading file list. One moment please..."
               empty-message = "No files found that match '{txtGoToFile.value}'"
               onafterload   = "
                 if (this.viewport.length &lt; 100) {
