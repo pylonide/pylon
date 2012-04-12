@@ -10,47 +10,36 @@ module.exports = {
     currentMode: 'normal',
     insertMode: function(editor) {
         var _self = this;
-        var theme = editor && editor.getTheme() || "ace/theme/textmate";
 
         ide.dispatchEvent("vim.changeMode", { mode : "insert" });
 
-        require(["require", theme], function (require) {
-            var isDarkTheme = require(theme).isDark;
+        _self.currentMode = 'insert';
+        // Switch editor to insert mode
+        editor.unsetStyle('insert-mode');
 
-            _self.currentMode = 'insert';
-            // Switch editor to insert mode
-            editor.unsetStyle('insert-mode');
-
-            var cursors = document.getElementsByClassName("ace_cursor");
-            if (cursors && cursors.length) {
-                for (var i = 0, l = cursors.length; i < l; ++i) {
-                    cursors[i].style.display = null;
-                    cursors[i].style.backgroundColor = null;
-                    cursors[i].style.opacity = null;
-                    cursors[i].style.border = null;
-                    cursors[i].style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
-                    cursors[i].style.borderLeftStyle = "solid";
-                    cursors[i].style.borderLeftWidth = "2px";
-                }
+        var cursors = document.getElementsByClassName("ace_cursor");
+        if (cursors && cursors.length) {
+            for (var i = 0, l = cursors.length; i < l; ++i) {
+                cursors[i].removeAttribute("style"); // fall back to ace theme
             }
+        }
 
-            editor.setOverwrite(false);
-            editor.keyBinding.$data.buffer = "";
-            editor.keyBinding.$data.state = "insertMode";
-            _self.onVisualMode = false;
-            _self.onVisualLineMode = false;
-            if(_self.onInsertReplaySequence) {
-                // Ok, we're apparently replaying ("."), so let's do it
-                editor.commands.macro = _self.onInsertReplaySequence;
-                editor.commands.replay(editor);
-                _self.onInsertReplaySequence = null;
-                _self.normalMode(editor);
-            } else {
-                // Record any movements, insertions in insert mode
-                if(!editor.commands.recording)
-                    editor.commands.toggleRecording();
-            }
-        });
+        editor.setOverwrite(false);
+        editor.keyBinding.$data.buffer = "";
+        editor.keyBinding.$data.state = "insertMode";
+        _self.onVisualMode = false;
+        _self.onVisualLineMode = false;
+        if(_self.onInsertReplaySequence) {
+            // Ok, we're apparently replaying ("."), so let's do it
+            editor.commands.macro = _self.onInsertReplaySequence;
+            editor.commands.replay(editor);
+            _self.onInsertReplaySequence = null;
+            _self.normalMode(editor);
+        } else {
+            // Record any movements, insertions in insert mode
+            if(!editor.commands.recording)
+                editor.commands.toggleRecording();
+        }
     },
     normalMode: function(editor) {
         // Switch editor to normal mode

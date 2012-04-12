@@ -18,7 +18,9 @@ var markup = require("text!ext/quicksearch/quicksearch.xml");
 
 var oIter, oTotal;
 
-var MAX_LINES = 8000; // alter live search if lines > 8k--performance bug
+//N.B. the problem is with many occurences, so a single character search breaks it.
+var MAX_LINES = 20000; // alter live search if lines > 20k--performance bug
+var MAX_LINES_SOFT = 8000; // single character search prohibited
 
 module.exports = ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
@@ -72,14 +74,23 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     init : function(amlNode){
         var _self = this;
-
+        var ace;
+        
+        txtQuickSearch.addEventListener("clear", function(e) {
+            _self.execSearch(false, false, true);
+        })
+        
         txtQuickSearch.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
-                    _self.execSearch(false, !!e.shiftKey);
+                    _self.execSearch(false, !!e.shiftKey, null, true);
                     return false;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
+                    
+                    if (txtQuickSearch.getValue())
+                        _self.saveHistory(txtQuickSearch.getValue());
+                    
                     if (e.htmlEvent)
                         apf.stopEvent(e.htmlEvent);
                     else if (e.stop)
@@ -99,23 +110,24 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     if (!e.ctrlKey) return;
                     _self.navigateList("last");
                     break;
-                default:
-                    var ace = _self.$getAce();
-                    if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
-                        // fall back to break
-                    }
-                    else if (e.keyCode == 32 || (e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
-                            (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {       
-                            // chillax, then fire--necessary for rapid key strokes
-                            setTimeout(function() {
-                                _self.execSearch(false, false);
-                            }, 20);  
-                        }
-                    break;
             }
+            
+            var ace = _self.$getAce();
+            if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
+                // fall back to break
+            }
+            else if (e.keyCode == 32 || (e.keyCode >=35 && e.keyCode <= 40) || (e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
+                    (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {       
+                    // chillax, then fire--necessary for rapid key strokes
+                    setTimeout(function() {
+                        _self.execSearch(false, false);
+                    }, 20);  
+                }
+            return;
         });
         
         txtQuickSearch.addEventListener("keyup", function(e) {
+            ace = _self.$getAce();
             switch (e.keyCode) {
                 case 8: // BACKSPACE
                     var ace = _self.$getAce();
@@ -208,7 +220,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
 
         var ranges = ace.$search.findAll(ace.getSession());
-        if (!ranges || !ranges.length) {
+        if (!ranges || !ranges.length || !txtQuickSearch.getValue()) {
             oIter.innerHTML = "0";
             oTotal.innerHTML = "of 0";
             return;
@@ -219,7 +231,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (newCount < 1) {
                 newCount = String(ranges.length);
             }
-            
             oIter.innerHTML = String(newCount); 
         }
         else {
@@ -227,7 +238,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var cur = this.currentRange;
             if (cur) {
                 // sort ranges by position in the current document
-                ranges.sort(cur.compareRange.bind(cur));
+                //ranges.sort(cur.compareRange.bind(cur));
                 var range;
                 var start = cur.start;
                 var end = cur.end;
@@ -332,10 +343,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 }
             });
 
-            var ace = this.$getAce();
-            if (ace) {
-                ace.selection.clearSelection();
-            }
+            // I don't believe you want to remove selection after you've 
+            // found what you are looking for. Commented out
+            //var ace = this.$getAce();
+            //if (ace)
+            //    ace.selection.clearSelection();
         }
         
         return false;
@@ -345,15 +357,19 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         this.toggleDialog(1);
     },
 
-    execSearch: function(close, backwards, wasDelete) {
+    execSearch: function(close, backwards, wasDelete, save) {
         var ace = this.$getAce();
         if (!ace)
             return;
 
         var searchTxt = txtQuickSearch.getValue();
-        if (!searchTxt)
+            
+        if (searchTxt.length < 2 && ace.getSession().getDocument().getLength() > MAX_LINES_SOFT)
             return;
 
+        //if (!searchTxt)
+          //  return this.updateCounter();
+        
         var options = {
             backwards: !!backwards,
             wrap: true,
@@ -397,24 +413,30 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         ace.find(searchTxt, options);
         this.currentRange = ace.selection.getRange();
         
-        var settings = require("ext/settings/settings");
-        if (settings.model) {
-            var history = settings.model;
-            var search = apf.createNodeFromXpath(history.data, "search");
-
-            if (!search.firstChild || search.firstChild.getAttribute("key") != searchTxt) {
-                var keyEl = apf.getXml("<word />");
-                keyEl.setAttribute("key", searchTxt);
-                apf.xmldb.appendChild(search, keyEl, search.firstChild);
-            }
-        }
-
+        if (save)
+            this.saveHistory(searchTxt);
+        
         if (close) {
             winQuickSearch.hide();
             editors.currentEditor.amlEditor.focus();
         }
 
         this.updateCounter(backwards);
+    },
+    
+    saveHistory : function(searchTxt){
+        var settings = require("ext/settings/settings");
+        if (!settings.model)
+            return;
+            
+        var history = settings.model;
+        var search = apf.createNodeFromXpath(history.data, "search");
+
+        if (!search.firstChild || search.firstChild.getAttribute("key") != searchTxt) {
+            var keyEl = apf.getXml("<word />");
+            keyEl.setAttribute("key", searchTxt);
+            apf.xmldb.appendChild(search, keyEl, search.firstChild);
+        }
     },
 
     find: function() {

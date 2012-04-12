@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
+var settings = require("core/settings");
 var skin = require("text!ext/gotoline/skin.xml");
 var markup = require("text!ext/gotoline/gotoline.xml");
 
@@ -70,8 +71,11 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }
         });
         lstLineNumber.addEventListener("afterselect", function() {
-            if (this.selected)
-                txtLineNr.setValue(this.selected.getAttribute("nr"));
+            if (!this.selected)
+                return;
+            
+            txtLineNr.setValue(this.selected.getAttribute("nr"));
+            _self.execGotoLine(null, true);
         });
 
         var restricted = [38, 40, 36, 35];
@@ -101,6 +105,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             else if (e.keyCode == 27){
                 _self.hide();
                 ceEditor.focus();
+                
+                if (_self.$originalLine) {
+                    _self.execGotoLine(_self.$originalLine, true);
+                    delete _self.$originalLine;
+                }
+                
                 return false;
             }
             else if (e.keyCode == 40) {
@@ -111,8 +121,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                     lstLineNumber.focus();
                 }
             }
-            else if ((e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
+            else if (!e.ctrlKey && !e.metaKey && (e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
                 return false;
+
+            setTimeout(function(){
+                _self.execGotoLine(null, true);
+            });
         });
 
         winGotoLine.addEventListener("blur", function(e){
@@ -132,6 +146,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var aceHtml = editor.ceEditor.$ext;
         var cursor = ace.getCursorPosition();
 
+        this.$originalLine = cursor.row + 1;
+
         //Set the current line
         txtLineNr.setValue(txtLineNr.getValue() || cursor.row + 1);
 
@@ -141,7 +157,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var maxTop = aceHtml.offsetHeight - 100;
 
         editor.ceEditor.parentNode.appendChild(winGotoLine);
-        winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1]));
+        winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1] - 5));
         winGotoLine.setAttribute("left", -60);
 
         winGotoLine.show();
@@ -204,25 +220,74 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var amlEditor = editor.amlEditor;
         var ace       = amlEditor.$editor;
 
-        winGotoLine.hide();
-
         if (typeof line != "number")
             line = parseInt(txtLineNr.getValue(), 10) || 0;
 
-        var history = lstLineNumber.$model;
-        var gotoline, lineEl = history.queryNode("gotoline/line[@nr='" + line + "']");
-        if (lineEl)
-            gotoline = lineEl.parentNode;
-        else {
-            gotoline = apf.createNodeFromXpath(history.data, "gotoline");
-            lineEl   = apf.getXml("<line nr='" + line + "' />");
-        }
-
-        if (lineEl != gotoline.firstChild)
-            apf.xmldb.appendChild(gotoline, lineEl, gotoline.firstChild);
-
         ace.gotoLine(line);
-        amlEditor.focus();
+        
+        if (preview) {
+            var animate = apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
+            if (!animate)
+                return;
+
+            var cursor = ace.getCursorPosition();
+            var aceHtml = editor.ceEditor.$ext;
+            
+            var firstLine = ace.renderer.textToScreenCoordinates(0, 0).pageY;
+            var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
+            var half = aceHtml.offsetHeight / 2; //ceEditor.$editor.renderer.$size.scrollerHeight / 2; //
+            var lineHeight = ceEditor.$editor.renderer.lineHeight;
+            var totalLines = ace.getSession().getLength();
+            var lastLine = ace.renderer.textToScreenCoordinates(totalLines, 0).pageY + lineHeight;
+            var maxTop = aceHtml.offsetHeight - winGotoLine.getHeight() - 10;
+            
+            var top;
+            if (pos.pageY - firstLine < half) {
+                top = Math.max(0, pos.pageY - firstLine - 5);
+            }
+            else if (lastLine - pos.pageY < half) {
+                top = Math.min(maxTop, half + (half - (lastLine - pos.pageY)));
+            }
+            else if (ace.isRowFullyVisible(cursor.row)) {
+                //Determine the position of the window
+                var epos = apf.getAbsolutePosition(aceHtml);
+                top = Math.min(maxTop, pos.pageY - epos[1] - 5);
+            }
+            else {
+                top = half - 5 - lineHeight;
+            }
+
+            if (this.lineControl)
+                this.lineControl.stop();
+    
+            //Animate
+            apf.tween.single(winGotoLine, {
+                type     : "top",
+                anim     : apf.tween.easeInOutCubic,
+                from     : winGotoLine.getTop(),
+                to       : top,
+                steps    : 8,
+                interval : 10,
+                control  : (this.lineControl = {})
+            });
+        }
+        else {
+            winGotoLine.hide();
+
+            var history = lstLineNumber.$model;
+            var gotoline, lineEl = history.queryNode("gotoline/line[@nr='" + line + "']");
+            if (lineEl)
+                gotoline = lineEl.parentNode;
+            else {
+                gotoline = apf.createNodeFromXpath(history.data, "gotoline");
+                lineEl   = apf.getXml("<line nr='" + line + "' />");
+            }
+    
+            if (lineEl != gotoline.firstChild)
+                apf.xmldb.appendChild(gotoline, lineEl, gotoline.firstChild);
+                
+            amlEditor.focus();
+        }
     },
 
     enable : function(){

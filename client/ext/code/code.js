@@ -332,6 +332,7 @@ module.exports = ext.register("ext/code/code", {
                   .attr("softtabs", "true")
                   .attr("tabsize", "4")
                   .attr("scrollspeed", "2")
+                  .attr("animatedscroll", "true")
                   .attr("fontsize", "12")
                   .attr("wrapmode", "false")
                   .attr("wraplimitmin", "")
