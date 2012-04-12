@@ -18,7 +18,7 @@ var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var jsbeautify = require("ext/beautify/res/jsbeautify/jsbeautify-min");
-var settings = require("text!ext/beautify/settings.xml");
+var markupSettings = require("text!ext/beautify/settings.xml");
 var extSettings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/beautify/beautify", {
@@ -138,10 +138,7 @@ module.exports = ext.register("ext/beautify/beautify", {
             }
         });
 
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            var heading = e.ext.getHeading("JS Beautify");
-            heading.insertMarkup(settings);
-        });
+        require("ext/settings/settings").addSettings("JS Beautify", markupSettings );
 
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
