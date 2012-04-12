@@ -149,7 +149,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 _self.toggleDialog(-1);
         });
         txtQuickSearch.addEventListener("blur", function(e){
-            if (winQuickSearch.visible && !apf.isChildOf(winQuickSearch, e.toElement))
+            if (self.winQuickSearch && winQuickSearch.visible 
+              && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
         

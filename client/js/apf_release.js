@@ -7729,7 +7729,7 @@ this.$inputInitFix=this.$getLayoutNode("main","initialfix",this.$ext);if(this.ty
 }if(!apf.hasContentEditable&&"input|textarea".indexOf(this.$input.tagName.toLowerCase())==-1){var node=this.$input;
 this.$input=node.parentNode.insertBefore(document.createElement("textarea"),node);
 node.parentNode.removeChild(node);this.$input.className=node.className;if(this.$ext==node){this.$ext=this.$input;
-}}if(this.$button){this.$button.onmousedown=function(){_self.$clear();_self.change("");
+}}if(this.$button){this.$button.onmouseup=function(){_self.$clear();_self.change("");
 _self.focus({mouse:true});};}if(this.$input.tagName.toLowerCase()=="textarea"){this.addEventListener("focus",function(e){});
 }this.$input.onselectstart=function(e){if(!e){e=event;}e.cancelBubble=true;};this.$input.host=this;
 this.$input.onkeydown=function(e){e=e||window.event;if(this.host.disabled){e.returnValue=false;

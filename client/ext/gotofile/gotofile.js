@@ -103,6 +103,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 if (prev) {
                     dgGoToFile.select(prev, e.ctrlKey, e.shiftKey);
                     dgGoToFile.focus();
+                    e.preventDefault();
                 }
             }
             else if (e.keyCode == 40 && dgGoToFile.viewport.length) {
@@ -110,6 +111,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 if (next) {
                     dgGoToFile.select(next, e.ctrlKey, e.shiftKey);
                     dgGoToFile.focus();
+                    e.preventDefault();
                 }
             }
         });
@@ -142,6 +144,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             else if (apf.isCharacter(e.keyCode)) {
                 txtGoToFile.focus();
             }
+            
+            e.preventDefault();
         }, true);
 
         apf.addListener(dgGoToFile.$ext, "mouseup", function(e) {
