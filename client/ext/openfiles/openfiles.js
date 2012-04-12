@@ -34,25 +34,25 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         ide.addEventListener("afteropenfile", function(e){
             var node = e.doc.getNode();
             if (node) {
-                if (!model.queryNode("//node()[@path='" + node.getAttribute("path") + "']"))
+                if (!model.queryNode('//node()[@path="' + node.getAttribute("path").replace(/"/g, "&quot;") + '"]'))
                     model.appendXml(apf.getCleanCopy(node));
             }
         });
 
         ide.addEventListener("closefile", function(e){
             var node = e.xmlNode;
-            model.removeXml("//node()[@path='" + node.getAttribute("path") + "']");
+            model.removeXml('//node()[@path="' + node.getAttribute("path").replace(/"/g, "&quot;") + '"]');
         });
 
         ide.addEventListener("updatefile", function(e){
             var node = e.xmlNode;
 
-            var path = e.path || node.getAttribute("path");
+            var path = (e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
-            var fNode = model.queryNode("//node()[@path='" + path + "']");
-            var trNode = trFiles.queryNode("//node()[@path='" + path + "']");
+            var fNode = model.queryNode('//node()[@path="' + path + '"]');
+            var trNode = trFiles.queryNode('//node()[@path="' + path + '"]');
             if (node && fNode && trNode) {
-                if (e.path) 
+                if (e.path)
                     apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
                     apf.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
                 if (e.filename) {
@@ -102,12 +102,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         });
 
         ide.addEventListener("treechange", function(e) {
-
-            var path = e.path
-                        .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                        .replace(/\[@name="workspace"\]/, "")
-                        .replace(/\//, "");
+            var path = "//folder[@path='" + e.path.replace(/\/$/, "") + "']";
             var parent = trFiles.getModel().data.selectSingleNode(path);
+
             if (!parent)
                 return;
 

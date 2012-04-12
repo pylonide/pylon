@@ -50,7 +50,7 @@
       skin  = "menu-bk"
       sticky = "true">
       <a:item type="check" caption="Code Folding" checked="[{require('ext/settings/settings').model}::editors/code/@folding]" />
-      <a:item type="check" caption="Full Line Selection" checked="[{require('ext/settings/settings').model}::editors/code/@selectstyle]" values="line|text" />
+      <a:item type="check" caption="Full Line Selection" value="[{require('ext/settings/settings').model}::editors/code/@selectstyle]" values="line|text" />
       <a:item type="check" caption="Highlight Active Line" checked="[{require('ext/settings/settings').model}::editors/code/@activeline]" />
       <a:item type="check" caption="Show Gutter" checked="[{require('ext/settings/settings').model}::editors/code/@gutter]" />
       <a:item type="check" caption="Highlight Selected Word" checked="[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]" />
@@ -65,8 +65,10 @@
           <a:checkbox label="Show Print Margin" value="[{require('ext/settings/settings').model}::editors/code/@showprintmargin]" flex="1" skin="checkbox-menu" />
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" />
       </a:hbox>
-      <a:checkbox id="wrapMode" label="Wrap Lines" value="[{require('ext/settings/settings').model}::editors/code/@wrapmode]" flex="1" skin="checkbox-menu" />
-      <a:checkbox id="wrapModeViewport" edge="0 0 0 5" label="To Viewport" value="[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]" flex="1" skin="checkbox-menu" />
+      <a:hbox edge="0 5 2 0" align="center">
+        <a:checkbox id="wrapMode" label="Wrap Lines" value="[{require('ext/settings/settings').model}::editors/code/@wrapmode]" flex="1" skin="checkbox-menu" />    
+        <a:checkbox id="wrapModeViewport" edge="0 0 0 5" label="To Browser Width" value="[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]" flex="1" skin="checkbox-menu" />
+      </a:hbox>
       <a:hbox edge="0 5 2 0" align="center">
           <a:checkbox label="Soft Tabs" value="[{require('ext/settings/settings').model}::editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>
           <a:spinner value="[{require('ext/settings/settings').model}::editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />
