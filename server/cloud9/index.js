@@ -111,7 +111,8 @@ exports.main = function(options) {
 };
 
 process.on("uncaughtException", function(e) {
-    console.log("uncaught exception:");
+    console.log("uncaught exception: ");
+    console.log(e);
     console.log(e.stack + "");
 });
 

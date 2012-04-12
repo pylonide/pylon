@@ -3,13 +3,10 @@ apf:
 	cd ../packager; ../cloud9/support/node-builds-v4/node-darwin package.js projects/apf_cloud9.apr
 	cd ../packager; cp build/apf_release.js ../cloud9/client/js/apf_release.js
 
-# packages core
-core:
+# packages core, then ext
+ext:
 	mkdir -p client/build
 	node r.js -o core.build.js
-
-# packages ext
-ext:
 	mkdir -p client/build
 	node r.js -o app.build.js
 
@@ -30,4 +27,4 @@ theme:
 	mkdir -p client/build/theme
 	cp `find support/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` client/build/theme
 
-package: apf core ext worker mode theme
+package: apf ext worker mode theme
