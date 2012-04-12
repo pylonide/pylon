@@ -31,14 +31,14 @@
                     font-size: 12px;
                     line-height: 17px;
                     overflow: hidden;
-                    text-indent: 6px;
+                    text-indent: 11px;
                     text-transform: uppercase;
                     text-shadow: 0 1px 0 white;
                 }
                 .revisionsBar .topbar .btn {
                     cursor: pointer;
                     position: absolute;
-                    right: 0;
+                    right: 11px;
                     top: 0;
                 }
                 .revisionsBar .topbar .btn .left,
@@ -46,8 +46,15 @@
                     display: none
                 }
                 .revisionsBar .topbar .btn .lbl {
-                    background: url(images/close-btn.png) no-repeat 50% 0;
+                    background: url(images/close-btn.png) no-repeat 0 0;
+                    padding: 0;
                     width: 14px;
+                }
+                .revisionsBar .topbar .btn:hover .lbl {
+                    background-position: -14px 0;
+                }
+                .revisionsBar .topbar .btn:active .lbl {
+                    background-position: -28px 0;
                 }
             /* ------------------------------------------------------------------------------------------
              * Revision
@@ -59,7 +66,7 @@
                     display: block;
                     font-family: Helvetica, "Helvetica-neue", Arial, Tahoma;
                     font-size: 12px;
-                    padding: 13px 0;
+                    padding: 14px 0;
                     position: relative;
                 }
                 .revisions-list .revision:last-child {
@@ -81,10 +88,11 @@
                 .revision .revision-icon {
                     float: left;
                     text-align: right;
-                    width: 15px;
+                    width: 21px;
                 }
                 .revision.selected .revision-icon .rev-usersave,
                 .revision.selected .revision-icon .rev-autosave {
+                    color: white;
                     opacity: 0.85;
                 }
                 .revision .revision-icon .rev-usersave {
@@ -115,7 +123,7 @@
                 }
                 .revision .revision-info {
                     overflow: hidden;
-                    padding-left: 5px;
+                    padding-left: 11px;
                 }
                 .revision .revision-title {
                 }
@@ -125,8 +133,22 @@
                     font-weight: normal;
                     line-height: 130%;
                     list-style: none;
-                    margin: 0;
+                    margin: 6px 0 0;
                     padding: 0;
+                    color: #8d8d8d;
+                }
+                .revision.selected .contributors {
+                    color: #fff;
+                }
+                .revision.selected .contributors span {
+                    display: inline-block;
+                    height: 11px;
+                    line-height: 11px;
+                }
+                .revision .contributors .coloredSquare {
+                    overflow: hidden;
+                    text-indent: -9999px;
+                    width: 11px;
                 }
                 .revision .btnRecover {
                     height: 26px;
@@ -141,7 +163,7 @@
                     position: absolute;
                     top: 50%;
                     margin-top: -13px;
-                    right: 15px;
+                    right: 11px;
                     width: 28px;
                     height: 27px;
                     background: url(images/rev-green-arrow.png) no-repeat 50% 0;
@@ -150,9 +172,16 @@
                 }
 
 
+                @-webkit-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+                   @-moz-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+                        @keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
                 .revision .revision-info button[disabled] {
-                    opacity: 0.5;
+                    background: url(images/loading.png) no-repeat;
+                    -webkit-animation: loadingDots .7s linear 0s infinite normal;
+                       -moz-animation: loadingDots .7s linear 0s infinite normal;
+                            animation: loadingDots .7s linear 0s infinite normal;
                 }
+                
                 .revision.selected .revision-info button,
                 .revision.hover .revision-info button {
                     display: block;
@@ -166,6 +195,7 @@
                  .show-detailes {
                     border-top: 1px solid #ced5dd;
                     box-shadow: 0 1px 0 0 #fff inset;
+                    padding-bottom: 3px;
                  }
                  .show-detailes .subbar {
                     background: none;
@@ -244,10 +274,7 @@
 
 
 
-            .coloredSquare {
-                line-height: 130%;
-                font-size: 12pt;
-            }
+            
         ]]></a:style>
 
         <!--

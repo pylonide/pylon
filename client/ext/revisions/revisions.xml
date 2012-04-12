@@ -17,7 +17,7 @@
         </a:toolbar>
         <a:hbox flex = "1">
             <a:list
-              id          = "lstRevisions"
+              id          = "lstRevisions"v
               anchors     = "0 0 0 0"
               model       = "{require('ext/revisions/revisions').model}"
               multiselect = "false"
@@ -32,13 +32,13 @@
                                  <div class="revision-icon">
                                   {
                                     if ([@restoring] != '') {
-                                        <div class="rev-restoration"></div>
+                                        <div class="rev-restoration" title="Restored"></div>
                                     }
                                     else if ([@silentsave] != 'true') {
-                                            <span class="rev-usersave">U</span>
+                                            <span class="rev-usersave" title="Saved by user">U</span>
                                           }
                                           else {
-                                              <span class="rev-autosave">A</span>
+                                              <span class="rev-autosave" title="Autosave">A</span>
                                           }
                                   }
                                 </div>
@@ -50,6 +50,18 @@
                                     </div>
                                     <ul class="contributors">
                                       {
+                                        <li>
+                                          <span class="coloredSquare" style=' background-color: blue'>&#9632;</span>
+                                          <span>sergi</span>
+                                        </li>
+                                        <li>
+                                          <span class="coloredSquare" style=' background-color: red'>&#9632;</span>
+                                          <span>linh</span>
+                                        </li>
+                                        <li>
+                                          <span class="coloredSquare" style=' background-color: green'>&#9632;</span>
+                                          <span>fabian</span>
+                                        </li>
                                         each([contributors/contributor]) {
                                           <li>
                                             <span class="coloredSquare" style=' color: {require("ext/revisions/revisions")
