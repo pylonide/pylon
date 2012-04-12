@@ -249,8 +249,19 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     closetab: function() {
         var page = tabEditors.getPage();
         tabEditors.remove(page);
-        tabEditors.$scaleinit(null, "sync");
+        
+        this.resizeTabs();
+        
         return false;
+    },
+    
+    resizeTabs : function(){
+        clearTimeout(this.closeTimer);
+        
+        this.closeTimer = setTimeout(function(){
+            tabEditors.$waitForMouseOut = false;
+            tabEditors.$scaleinit(null, "sync");
+        }, 1000);
     },
 
     closealltabs: function(callback) {
@@ -292,6 +303,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.closepage(page, callback);
             }
         }
+        
+        this.resizeTabs();
 
         this.checkPageRender(callback);
     },
