@@ -1,9 +1,0 @@
-<<<<<<< HEAD
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:checkbox position="9000" class="underlined" label="Vim Mode" value="[editors/code/@vimmode]" skin="checkbox_grey" onclick="toggle()" />
-</a:application>
-=======
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:checkbox position="8100" class="underlined" label="Vim Mode" value="[editors/code/@vimmode]" skin="checkbox_grey" onclick="require('ext/vim/vim').toggle()" />
-</a:application>
->>>>>>> af4762be9c8f687624fb28b15737f815b151868f
