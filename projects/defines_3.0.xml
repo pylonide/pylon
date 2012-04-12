@@ -1108,6 +1108,7 @@
           short="Virtual viewport"
           desc="viewport"
           requires="__WITH_MULTISELECT" />
+	<p:define name="__ENABLE_VIRTUALDATASET" />
         <p:define name="__WITH_XFORMS"
           match=""
           short="XForms support"
