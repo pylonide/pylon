@@ -118,7 +118,15 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                                     });
                                     //console.log("Sent " + subtype + " notification for file " + path);
                                 });
-                        }
+                        } else
+                            that.send({
+                                "type"      : "watcher",
+                                "subtype"   : subtype,
+                                "path"      : path,
+                                "files"     : files,
+                                "lastmod"   : curr.mtime
+                            });
+
                     });
                     this.filenames[path] = 0;
                 }
