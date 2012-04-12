@@ -50,9 +50,8 @@ return keys.onLoad({
             "beautify": "Ctrl-Shift-B"
         },
         "gotofile": {
-            "refresh": "Ctrl-Shift-R",
             "_gotofilelegacy": "Alt-Shift-R",
-            "gotofile": "Ctrl-R"
+            "gotofile": "Ctrl-O"
         },
         "newresource": {
             "newfile": "Ctrl-N",
