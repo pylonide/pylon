@@ -295,7 +295,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
     
     this.$propHandlers["newlinemode"] = function(value) {
-        this.$editor.getSession().setNewLineMode(value);
+        this.newlinemode = value || "auto";
+        this.$editor.getSession().setNewLineMode(this.newlinemode);
     };
 
     this.$propHandlers["syntax"] = function(value) {
