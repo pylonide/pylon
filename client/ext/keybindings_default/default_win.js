@@ -40,8 +40,8 @@ return keys.onLoad({
             "stepout": "Shift-F11"
         },
         "zen": {
-            "zen": "Ctrl-E",
-            "zenslow": "Ctrl-Shift-E"
+            "zen": "Alt-E",
+            "zenslow": "Alt-Shift-E"
         },
         "gotoline": {
             "gotoline": "Ctrl-G"
@@ -50,9 +50,8 @@ return keys.onLoad({
             "beautify": "Ctrl-Shift-B"
         },
         "gotofile": {
-            "refresh": "Ctrl-Shift-R",
             "_gotofilelegacy": "Alt-Shift-R",
-            "gotofile": "Ctrl-R"
+            "gotofile": "Ctrl-E"
         },
         "newresource": {
             "newfile": "Ctrl-N",
