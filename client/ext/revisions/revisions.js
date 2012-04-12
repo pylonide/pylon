@@ -29,7 +29,7 @@ var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!ext/revisions/revisions.xml");
 var skin = require("text!ext/revisions/skin.xml");
 
-var BAR_WIDTH = 220;
+var BAR_WIDTH = 200;
 
 // Faster implementation of `Array.reduce` than the native ones in webkit,
 // chrome 18 and Firefox 12
@@ -691,18 +691,22 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     previewRevision: function(id, value, ranges) {
         var editor = ceEditor.$editor;
-        if (editor.getSession().previewRevision !== true) {
-            this.realSession[this.$getDocPath()] = editor.getSession();
+        var session = editor.getSession();
+        var path = this.$getDocPath();
+
+        if (session.previewRevision !== true) {
+            this.realSession[path] = session;
         }
 
         var doc = new ProxyDocument(new Document(value || ""));
-        var newSession = new EditSession(doc, this.realSession[this.$getDocPath()].getMode());
+        var newSession = new EditSession(doc, this.realSession[path].getMode());
         newSession.previewRevision = true;
         editor.setSession(newSession);
         editor.setReadOnly(true);
 
         var firstChange = 0;
         if (ranges.length > 0) {
+            // Retrieve the first row of the first change in the changeset.
             firstChange = ranges[0][0];
         }
 
@@ -715,6 +719,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         });
 
+        // Scroll to the first change, leaving it in the middle of the screen.
         editor.renderer.scrollToRow(firstChange - (editor.$getVisibleRowCount() / 2));
         editor.selection.clearSelection()
 

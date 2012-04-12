@@ -56,7 +56,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
         if (message.subCommand) {
             switch (message.subCommand) {
-                // Let the server save a revision. The client is requesting the 
+                // Let the server save a revision. The client is requesting the
                 // server to save a revision, and the server will figure out the
                 // diff. The client sends a few parameters to the server in the
                 // `message` object.
@@ -66,17 +66,17 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     }
                     this.enqueueDoc(user, message, client);
                     break;
-                    
-                // Directly save a revision. The revision has been precomputed 
-                // on the client as is merely passed to the server in order to 
+
+                // Directly save a revision. The revision has been precomputed
+                // on the client as is merely passed to the server in order to
                 // save it.
                 case "saveRevision":
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
                     }
-                    this.saveRevision(message.path, message.revision);
+                    this.saveRevision(message.path, message.revision, function() {});
                     break;
-                    
+
                 // The client requests the history of revisions for a particular
                 // document (indicated by `path`). The client might also want the
                 // original contents of that file (the ones where diffs are applied
@@ -100,10 +100,10 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         });
                     });
                     break;
-                    
+
                 // The client requests the original contents of a particular file.
-                // The original contents means the text of the document before 
-                // any diff was applied. 
+                // The original contents means the text of the document before
+                // any diff was applied.
                 case "getOriginalContent":
                     if (!message.path) {
                         return console.error("No revision path in the parameters");
@@ -278,30 +278,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
     };
 
     /**
-     * RevisionsPlugin#pushPatch(path, patch[, currentDoc])
-     * - path (String): Relative path for the file to get the document from.
-     * - patch (Object): Diff object containing the metadata of the revision.
-     * - currentDoc (String): The document is passed in a document object. If it
-     * is not there it will be retrieved, and in that case it will be a bit more
-     * expensive.
-     *
-     * Push a new revision into the stack and broadcast it to clients.
-     **/
-    this.pushPatch = function(path, patch, currentDoc) {
-        var self = this;
-        this.getRevisions(path, function(err, revObj) {
-            if (err)
-                return console.error("Couldn't retrieve revisions", err);
-
-            var doc = currentDoc || self.getCurrentDoc(path);
-            revObj.lastContent = doc;
-            revObj.revisions.push(patch);
-
-            self.broadcastRevisions.call(self, revObj);
-        });
-    };
-
-    /**
      * RevisionsPlugin#broadcastRevisions(revObj[, user])
      * - obj (Object): Object to be broadcasted.
      * - user (Object): Optional. Particular user to whom we want to broadcast
@@ -363,22 +339,22 @@ require("util").inherits(RevisionsPlugin, Plugin);
     this.saveQueue = function() {
         while (this.docQueue.length > 0) {
             var doc = this.docQueue.shift();
-            this.saveRevisionFromMsg(doc[0], doc[1]);
+            this.saveRevisionFromMsg(doc[0], doc[1], function() {});
         }
     };
 
-    this.saveRevisionFromMsg = function(user, message) {
+    this.saveRevisionFromMsg = function(user, message, callback) {
         var self = this;
         var path = message.path;
         var currentDoc = this.getCurrentDoc(path, message);
 
         this.getPreviousRevisionContent(path, function(err, previousRev) {
             if (err) {
-                return console.error(err);
+                return callback(err);
             }
 
             if (typeof currentDoc !== "string") {
-                return console.error("The contents for document '" + path + "' could not be retrieved");
+                return callback(new Error("The contents for document '" + path + "' could not be retrieved"))
             }
 
             var patch = Diff.patch_make(previousRev, currentDoc);
@@ -395,30 +371,55 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 revision.contributors = [user.data.email];
             }
 
-            self.pushPatch(path, revision, currentDoc);
-            self.saveToDisk(path);
+            self.pushPatch(path, revision, currentDoc, callback);
         });
     };
 
-    this.saveRevision = function(path, revision) {
-        this.pushPatch(path, revision, revision.lastContent);
-        this.saveToDisk(path);
+    this.saveRevision = function(path, revision, callback) {
+        this.pushPatch(path, revision, revision.lastContent, callback);
     };
 
-    this.saveToDisk = function(path) {
+    /**
+     * RevisionsPlugin#pushPatch(path, patch[, currentDoc])
+     * - path (String): Relative path for the file to get the document from.
+     * - patch (Object): Diff object containing the metadata of the revision.
+     * - currentDoc (String): The document is passed in a document object. If it
+     * is not there it will be retrieved, and in that case it will be a bit more
+     * expensive.
+     *
+     * Push a new revision into the stack and broadcast it to clients.
+     **/
+    this.pushPatch = function(path, patch, currentDoc, callback) {
+        var self = this;
+        this.getRevisions(path, function(err, revObj) {
+            if (err)
+                return callback(new Error("Couldn't retrieve revisions", err));
+
+            var doc = currentDoc || self.getCurrentDoc(path);
+            revObj.lastContent = doc;
+            revObj.revisions.push(patch);
+
+            self.broadcastRevisions.call(self, revObj);
+            self.saveToDisk(path, callback);
+        });
+    };
+
+    this.saveToDisk = function(path, callback) {
         var revisions = this.revisions;
         if (!path || !revisions[path]) {
-            return console.error("No path or no revision history in this filepath:", path);
+            return callback(new Error("No path or no revision history in this filepath: " + path));
         }
 
         var finalPath = PathUtils.getAbsolutePath.call(this, path) + "." + FILE_SUFFIX;
         Path.exists(finalPath, function(exists) {
             if (!exists)
-                return console.error("Backup file path doesn't exist:", finalPath);
+                return callback(new Error("Backup file path doesn't exist:" + finalPath));
 
             Fs.writeFile(finalPath, JSON.stringify(revisions[path]), function (err) {
                 if (err)
-                    console.error("Could not save backup file", finalPath);
+                    return callback(new Error("Could not save backup file" + finalPath));
+
+                callback(null, finalPath, revisions[path]);
             });
         });
     };
