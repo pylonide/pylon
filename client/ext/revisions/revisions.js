@@ -694,7 +694,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var session = editor.getSession();
         var path = this.$getDocPath();
 
-        if (session.previewRevision !== true) {
+        if (session.previewRevision !== true && !this.realSession[path]) {
             this.realSession[path] = session;
         }
 
@@ -992,7 +992,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ceEditor.$editor.container.style.right = "0";
         this.panel.hide();
 
-        lstRevisions.clearSelection(); // Necessary?
         this.goToEditView();
 
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
