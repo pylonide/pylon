@@ -124,8 +124,13 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         });
         
         dgGoToFile.addEventListener("keydown", function(e) {
-            if (e.keyCode == 27)
+            if (e.keyCode == 27) {
                 _self.toggleDialog(-1);
+            }
+            if (e.keyCode == 9) {
+                txtGoToFile.focus();
+                e.preventDefault();
+            }
             else if (e.keyCode == 38 && !e.shiftKey) {
                 if (this.selected == this.$cachedTraverseList[0])
                     txtGoToFile.focus();
@@ -331,7 +336,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         for (var i = 0; i < nodes.length; i++) {
             var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
                 + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
-            editors.showFile(path, 0, 0);
+            editors.showFile(path);
             ide.dispatchEvent("track_action", {type: "fileopen"});
         }
     },
