@@ -13,6 +13,7 @@ var markup = require("text!ext/settings/settings.xml");
 var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
 var settings = require("core/settings");
+var panelSettings =  require("text!ext/panels/settings.xml");
 
 module.exports = ext.register("ext/settings/settings", {
     name    : "Preferences",
@@ -97,6 +98,9 @@ module.exports = ext.register("ext/settings/settings", {
         colLeft.appendChild(winSettings);
         
         this.nodes.push(winSettings);
+
+        // this has to be done out here for some reason
+        this.addSettings("General",  panelSettings );
     },
 
     addSettings : function(group, markup) {

@@ -24,7 +24,7 @@ module.exports = ext.register("ext/panels/panels", {
     panels : {},
     
     currentPanel : null,
-    
+
     register : function(panelExt, options){
         var _self = this;
         
@@ -368,18 +368,6 @@ module.exports = ext.register("ext/panels/panels", {
                 xmlSettings.nodeValue = apf.serialize(_self.$settings);
                 return true;
             }
-        });
-        
-        // this sob has to come first, cannot do the following:
-        // require("ext/settings/settings").addSettings("General", markupSettings );
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            var heading = e.ext.getHeading("General");
-            heading.appendChild(new apf.checkbox({
-                "class" : "underlined",
-                value : "[general/@animateui]",
-                skin  : "checkbox_grey",
-                label : "Enable UI Animations"
-            }))
         });
     },
     
