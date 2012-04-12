@@ -249,6 +249,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     closetab: function() {
         var page = tabEditors.getPage();
         tabEditors.remove(page);
+        tabEditors.$scaleinit(null, "sync");
         return false;
     },
 
