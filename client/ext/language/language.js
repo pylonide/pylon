@@ -91,8 +91,10 @@ module.exports = ext.register("ext/language/language", {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
-        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+        if (!editors.currentEditor || !editors.currentEditor.ceEditor) {
             return;
+        }
+        
         this.editor = editors.currentEditor.ceEditor.$editor;
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
         this.editor.selection.on("changeCursor", this.$onCursorChange);
@@ -114,7 +116,7 @@ module.exports = ext.register("ext/language/language", {
             }, 100);
         });
 
-        this.editor.addEventListener("change", function(e) {
+        this.editor.on("change", function(e) {
             e.range = {
                 start: e.data.range.start,
                 end: e.data.range.end
@@ -129,10 +131,12 @@ module.exports = ext.register("ext/language/language", {
 
         // Monkeypatching ACE's JS mode to disable worker
         // this will be handled by C9's worker
-        ceEditor.getMode("javascript", function(mode) {
-            mode.createWorker = function() {
-                return null;
-            };
+        ceEditor.addEventListener("loadmode", function(e) {
+            if (e.name === "ace/mode/javascript") {
+                e.mode.createWorker = function() {
+                    return null;
+                };
+            }
         });
     },
 
