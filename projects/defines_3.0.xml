@@ -129,6 +129,7 @@
           match=""
           short=""
           desc="" />
+	<p:define name="__ENABLE_UIRECORDER_HOOK" />
         <!--p:define name="__JSPLITTER"
           match="a:splitter"
           short=""
