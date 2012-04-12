@@ -8,6 +8,7 @@ var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var RevisionsPlugin = require("./revisions");
 var rimraf = require("rimraf");
+var Diff_Match_Patch = require("./diff_match_patch");
 
 var BASE_URL = "/sergi/node_chat";
 
@@ -108,7 +109,7 @@ module.exports = testCase(
         });
     },
 
-    "test saving revision": function(test) {
+    "test saving revision from message": function(test) {
         test.expect(8);
 
         var fileName = __dirname + "/test_saving.txt";
@@ -137,6 +138,43 @@ module.exports = testCase(
                     test.equal(typeof revObj.revisions, "object");
                     test.equal(revObj.revisions.length, 1);
                     test.equal(revObj.originalContent, "ABCDEFGHI");
+                    test.equal(revObj.lastContent, "123456789");
+                    test.done();
+                }
+            );
+        });
+    },
+
+    "test saving revision": function(test) {
+        test.expect(8);
+
+        var fileName = __dirname + "/test_saving.txt";
+        var revPath = __dirname + "/.c9revisions";
+        var R = this.revisionsPlugin;
+
+        R.ide.broadcast = sinon.spy();
+
+        var patch = new Diff_Match_Patch().patch_make("SERGI", "123456789");
+        Fs.writeFile(fileName, "SERGI", function(err) {
+            test.equal(err, null);
+            R.saveRevision(
+                Path.basename(fileName),
+                {
+                    contributors: ["sergi@c9.io", "mike@c9.io"],
+                    patch: [patch],
+                    silentsave: true,
+                    restoring: false,
+                    ts: Date.now(),
+                    lastContent: "123456789",
+                    length: 9
+                } ,
+                function(err, path, revObj) {
+                    test.ok(err === null);
+                    test.ok(R.ide.broadcast.called);
+                    test.equal(path, revPath + "/test_saving.txt.c9save");
+                    test.equal(typeof revObj.revisions, "object");
+                    test.equal(revObj.revisions.length, 1);
+                    test.equal(revObj.originalContent, "SERGI");
                     test.equal(revObj.lastContent, "123456789");
                     test.done();
                 }

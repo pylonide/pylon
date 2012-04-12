@@ -367,7 +367,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
             };
 
             var contributors = message.contributors;
-            if ((!contributors || !contributors.length) && (user.data && user.data.email)) {
+            if ((!contributors || !contributors.length) && (user && user.data && user.data.email)) {
                 revision.contributors = [user.data.email];
             }
 
@@ -380,24 +380,24 @@ require("util").inherits(RevisionsPlugin, Plugin);
     };
 
     /**
-     * RevisionsPlugin#pushPatch(path, patch[, currentDoc])
+     * RevisionsPlugin#pushPatch(path, revision[, currentDoc], callback)
      * - path (String): Relative path for the file to get the document from.
-     * - patch (Object): Diff object containing the metadata of the revision.
+     * - revision (Object): Diff object containing the metadata of the revision.
      * - currentDoc (String): The document is passed in a document object. If it
      * is not there it will be retrieved, and in that case it will be a bit more
      * expensive.
      *
      * Push a new revision into the stack and broadcast it to clients.
      **/
-    this.pushPatch = function(path, patch, currentDoc, callback) {
+    this.pushPatch = function(path, revision, currentDoc, callback) {
         var self = this;
         this.getRevisions(path, function(err, revObj) {
             if (err)
-                return callback(new Error("Couldn't retrieve revisions", err));
+                return callback(new Error("Couldn't retrieve revisions for " + path));
 
             var doc = currentDoc || self.getCurrentDoc(path);
             revObj.lastContent = doc;
-            revObj.revisions.push(patch);
+            revObj.revisions.push(revision);
 
             self.broadcastRevisions.call(self, revObj);
             self.saveToDisk(path, callback);
