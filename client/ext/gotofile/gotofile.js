@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var settings = require('core/settings');
+var fs = require("ext/filesystem/filesystem");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -138,6 +139,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 txtGoToFile.focus();
             }
         }, true);
+        
+        dgGoToFile.addEventListener("afterselect", function(e){
+            fs.readFile(ide.davPrefix + e.selected.firstChild.nodeValue, function(data){
+                var curEditor = require("ext/editors/editors").currentEditor;
+                if (curEditor.ceEditor) 
+                    curEditor.preview(data);
+            });
+        });
 
         apf.addListener(dgGoToFile.$ext, "mouseup", function(e) {
             _self.openFile();

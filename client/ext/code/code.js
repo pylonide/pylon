@@ -299,6 +299,11 @@ module.exports = ext.register("ext/code/code", {
         doc.editor = this;
     },
     
+    preview : function(content){
+        var session = new EditSession(new ProxyDocument(new Document(content)));
+        ceEditor.setProperty("value", session);
+    },
+    
     hook: function() {
         var _self = this;
 
