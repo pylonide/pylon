@@ -328,10 +328,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 this.$basePath = m[1] || m[2];
                 break;
             }
-        }
 
-        if (this.$basePath == "") // this is the packaged version, and there's no ace script
-            return "/static/build/mode/"
+            m = src.match(/^(?:(.*\/)packed\.js(?:\?|$))/); // this is the packaged version, and there's no ace script
+            if (m) {
+                this.$basePath = m[1] + "mode/";
+                break;
+            }
+        }
 
         return this.$basePath;
     };
