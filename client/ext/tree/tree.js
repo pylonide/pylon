@@ -551,7 +551,7 @@ module.exports = ext.register("ext/tree/tree", {
     },
     
     show : function(e) {
-        if (!this.panel.visible) {
+        if (!this.panel || !this.panel.visible) {
             panels.activate(this);
             this.enable();
         }

@@ -13,7 +13,7 @@ var panels = require("ext/panels/panels");
 var markup = require("text!ext/openfiles/openfiles.xml");
 
 module.exports = ext.register("ext/openfiles/openfiles", {
-    name            : "Active Files",
+    name            : "Open Files",
     dev             : "Ajax.org",
     alone           : true,
     type            : ext.GENERAL,
@@ -50,6 +50,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         ide.addEventListener("updatefile", function(e){
             var node = e.xmlNode;
+            
+            if (!self.trFiles)
+                return;
 
             var path = (e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
@@ -147,7 +150,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
     
     show : function(e) {
-        if (!this.panel.visible) {
+        if (!this.panel || !this.panel.visible) {
             panels.activate(this);
             this.enable();
         }

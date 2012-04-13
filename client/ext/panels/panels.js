@@ -19,7 +19,7 @@ module.exports = ext.register("ext/panels/panels", {
     alone  : true,
     type   : ext.GENERAL, 
     markup : markup,
-    minWidth: 150,
+    minWidth: 110,
     nodes : [],
     panels : {},
     
