@@ -17,8 +17,6 @@ var Save = require("ext/save/save");
 var Util = require("ext/revisions/revisions_util");
 var settings = require("ext/settings/settings");
 
-require("ext/revisions/date.format");
-
 // Ace dependencies
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
@@ -33,7 +31,7 @@ var BAR_WIDTH = 200;
 
 // Faster implementation of `Array.reduce` than the native ones in webkit,
 // chrome 18 and Firefox 12
-Array.prototype.__reduce= function(func, initial) {
+Array.prototype.__reduce = function(func, initial) {
     var value, idx;
     if (initial !== null) {
         value = initial;
@@ -141,6 +139,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     compactRevisions: {},
     useCompactList: true,
     groupedRevisionIds: [],
+    docChangeListeners: {},
 
     toggle: function() {
         if (!this.panel) { return; }
@@ -289,9 +288,17 @@ module.exports = ext.register("ext/revisions/revisions", {
         var self = this;
         var doc = data.doc;
         // TODO: Unregister events on unloading file
-        (doc.acedoc || doc).addEventListener("change", function(e) {
-            self.onDocChange.call(self, e, doc);
-        });
+
+        // Add document change listeners to an array of functions so that we
+        // can clean up on disable plugin.
+        var path = doc.$page.name;
+        if (path && !this.docChangeListeners[path]) {
+            this.docChangeListeners[path] = function(e) {
+                self.onDocChange.call(self, e, doc);
+            };
+        }
+
+        (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
         ext.initExtension(this);
     },
 
@@ -316,10 +323,15 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.hide();
     },
 
-    onCloseFile: function(data) {
+    onCloseFile: function(e) {
         var path = this.$getDocPath();
         if (this.originalContents[path]) {
             delete this.originalContents[path];
+        }
+
+        var path = e.page.name;
+        if (path && this.docChangeListeners[path]) {
+            delete this.docChangeListeners[path];
         }
     },
 
@@ -515,7 +527,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         for (var i = timestamps.length - 1; i >= 0; i--) {
             var ts = timestamps[i];
             var rev = revisions[ts];
-            var friendlyDate = Util.localDate(ts).format("mmm d, h:MM TT", true);
+            var friendlyDate = Util.localDate(ts).toString("MMM d, h:mm tt");
             var restoring = rev.restoring || "";
 
             revsXML += "<revision " +
@@ -1036,24 +1048,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$enableEditingFeatures();
     },
 
-    enable : function() {
-        this.nodes.each(function(item){
-            item.enable();
-        });
-    },
-
-    disable : function() {
-        this.nodes.each(function(item){
-            item.disable();
-        });
-    },
-
-    destroy : function() {
-        if (this.saveInterval)
-            clearInterval(this.saveInterval);
-
+    disableEventListeners: function() {
         if (this.$onMessageFn) {
-            ide.removeListener("socketMessage", this.$onMessageFn);
+            ide.removeEventListener("socketMessage", this.$onMessageFn);
         }
 
         if (this.$onOpenFileFn) {
@@ -1075,6 +1072,94 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (this.$afterSelectFn) {
             lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
         }
+    },
+
+    enableEventListeners: function() {
+        if (this.$onMessageFn) {
+            ide.removeEventListener("socketMessage", this.$onMessageFn);
+            ide.addEventListener("socketMessage", this.$onMessageFn);
+        }
+
+        if (this.$onOpenFileFn) {
+            ide.removeEventListener("afteropenfile", this.$onOpenFileFn);
+            ide.addEventListener("afteropenfile", this.$onOpenFileFn);
+        }
+
+        if (this.$onCloseFileFn) {
+            ide.removeEventListener("closefile", this.$onCloseFileFn);
+            ide.addEventListener("closefile", this.$onCloseFileFn);
+        }
+
+        if (this.$onFileSaveFn) {
+            ide.removeEventListener("afterfilesave", this.$onFileSaveFn);
+            ide.addEventListener("afterfilesave", this.$onFileSaveFn);
+        }
+
+        if (this.$onSwitchFileFn) {
+            ide.removeEventListener("editorswitch", this.$onSwitchFileFn);
+            ide.addEventListener("editorswitch", this.$onSwitchFileFn);
+        }
+
+        if (this.$afterSelectFn) {
+            lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
+            lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
+        }
+    },
+
+    enable: function() {
+        this.nodes.each(function(item){
+            item.enable();
+        });
+
+        tabEditors.getPages().forEach(function(page) {
+            var listener = this.docChangeListeners[page.name];
+            if (listener) {
+                page.$doc.removeEventListener(listener);
+                if (page.$doc.acedoc) {
+                    page.$doc.acedoc.removeEventListener(listener);
+                }
+
+                (page.$doc.acedoc || page.$doc).addEventListener(listener);
+            }
+        }, this);
+
+        this.enableEventListeners();
+    },
+
+    disable: function() {
+        this.hide();
+        this.nodes.each(function(item){
+            item.disable();
+        });
+
+        tabEditors.getPages().forEach(function(page) {
+            var listener = this.docChangeListeners[page.name];
+            if (listener) {
+                page.$doc.removeEventListener(listener);
+                if (page.$doc.acedoc) {
+                    page.$doc.acedoc.removeEventListener(listener);
+                }
+            }
+        }, this);
+
+        this.disableEventListeners();
+    },
+
+    destroy : function() {
+        if (this.saveInterval)
+            clearInterval(this.saveInterval);
+
+        this.disableEventListeners();
+
+        tabEditors.getPages().forEach(function(page) {
+            var listener = this.docChangeListeners[page.name];
+            if (listener) {
+                page.$doc.removeEventListener(listener);
+                if (page.$doc.acedoc) {
+                    page.$doc.acedoc.removeEventListener(listener);
+                }
+            }
+        }, this);
 
         if (this.worker) {
             this.worker.terminate();
