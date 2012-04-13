@@ -13,6 +13,7 @@ var markup = require("text!ext/settings/settings.xml");
 var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
 var settings = require("core/settings");
+var panelSettings =  require("text!ext/panels/settings.xml");
 
 module.exports = ext.register("ext/settings/settings", {
     name    : "Preferences",
@@ -97,8 +98,83 @@ module.exports = ext.register("ext/settings/settings", {
         colLeft.appendChild(winSettings);
         
         this.nodes.push(winSettings);
+
+        // this has to be done out here for some reason
+        this.addSettings("General",  panelSettings );
     },
 
+    addSettings : function(group, markup) {
+        var _self = this;
+        ide.addEventListener("init.ext/settings/settings", function(e) {
+            var heading = e.ext.getHeading(group);
+            var last    = heading.lastChild;
+            
+            heading.insertMarkup(markup);
+            
+            if (!heading.$map)
+                heading.$map = {};
+            
+            var nodes = [];
+            
+            if (!last) {
+                last = heading.firstChild
+                nodes.push(last);
+            }
+            while (!last) {
+                nodes.push(last = last.nextSibling);
+            }
+            
+            if (nodes.length == 0) {
+                nodes = heading.childNodes;
+            }
+
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].nodeType == 1 && nodes[i].position) {
+                    heading.$map[nodes[i].position] = nodes[i];
+                    nextSibling = findNextSibling(nodes[i], heading);
+                    if (nextSibling !== undefined && nodes[i].nextSibling != nextSibling) 
+                        heading.insertBefore(nodes[i], nextSibling);
+                }
+            }
+            
+            function findNextSibling(node, heading){
+                var map = heading.$map, beforeNode, diff = 1000000;
+                for (var pos in map) {
+                    var d = pos - node.position;
+                    if (d > 0 && d < diff) {
+                        beforeNode = heading.$map[pos];
+                        diff = d;
+                    }
+                }
+                return beforeNode;
+            }
+        });
+        
+        /*ide.addEventListener("init.ext/settings/settings", function(e) {
+            var heading = e.ext.getHeading(group);
+            var newGroup = (_self.headings[group].childNodes.length == 0);
+            heading.insertMarkup(content || content.markup, {
+                callback : function(inserted) {
+                    if (!newGroup) {
+                        _self.headings[group].childNodes.sort(function compare(a,b) {
+                            if (typeof a.getAttribute === 'function' && typeof b.getAttribute === 'function') { // commented XML code doesn't have function, comes back as [#comment Node]
+                                if (a.getAttribute("position") < b.getAttribute("position")) {
+                                    return -1;
+                                }
+                                else if (a.getAttribute("position") > b.getAttribute("position")) {
+                                    return 1;
+                                }
+                                else {
+                                    return 0;
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        });*/
+    },
+        
     showsettings: function(e) {
         panels.activate(this);
         this.enable();
@@ -124,7 +200,7 @@ module.exports = ext.register("ext/settings/settings", {
             pages[i].$at.undo(-1);
         }
     },
-
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

@@ -165,12 +165,14 @@ define(function(require, exports, module) {
         };
 
         ide.socketMessage = function(message) {
-            try {
-                message = JSON.parse(message);
-            }
-            catch(e) {
-                window.console && console.error("Error parsing socket message", e, message);
-                return;
+            if (typeof message == "string") {
+                try {
+                    message = JSON.parse(message);
+                }
+                catch(e) {
+                    window.console && console.error("Error parsing socket message", e, "message:", message);
+                    return;
+                }
             }
 
             if (message.type == "attached") {

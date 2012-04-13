@@ -43,6 +43,9 @@ module.exports = ext.register("ext/imgview/imgview", {
     setDocument : function(doc, actiontracker){
         doc.session = doc.getNode().getAttribute("path");
         imgEditor.setProperty("value", doc.session);
+        
+        var d = new Date();
+        imgEditor.$ext.getElementsByTagName('img')[0].setAttribute('src', imgEditor.$ext.getElementsByTagName('img')[0].getAttribute('src') + '?' + d.getTime())
     },
 
     hook : function() {},

@@ -52,8 +52,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         });
         
         ide.addEventListener("init.ext/tree/tree", function(){
-            _self.nodes.push(trFiles.$ext);
-            decorateNode(trFiles.$ext);
+            setTimeout(function(){
+                _self.nodes.push(trFiles.$ext);
+                decorateNode(trFiles.$ext);
+            }, 200);
         });
         
         this.dragStateEvent = {"dragenter": dragEnter};
@@ -194,9 +196,10 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder");
-            
-        if (node.getAttribute("type") != "folder" && node.tagName != "folder")
+        
+        while (node.getAttribute("type") != "folder" && node.tagName != "folder") {
             node = node.parentNode;
+        }
             
         var path     = node.getAttribute("path");
         var filename = file.name;
@@ -205,10 +208,26 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
 
         function check(exists) {
             if (exists) {
+                util.confirm(
+                    "Are you sure?",
+                    "\"" + file.name + "\" already exists, do you want to replace it?",
+                    "A file or folder with the same name already exists. "
+                    + "Replacing it will overwrite it's current contents.",
+                    removeExisting);
+            }
+            else {
+                upload();
+            }
+            /*if (exists) {
                 filename = file.name + "." + index++;
                 fs.exists(path + "/" + filename, check);
             } else
-                upload();
+                upload();*/
+        }
+        
+        function removeExisting(){
+            apf.xmldb.removeNode(trFiles.queryNode('//file[@path="' + path + "/" + filename + '"]'));
+            fs.remove(path + "/" + filename, upload);
         }
         
         function upload() {
@@ -241,19 +260,28 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             
             /** Request successful */
             fs.webdav.exec("readdir", [path], function(data) {
-                if (data instanceof Error) {
-                    // @todo: in case of error, show nice alert dialog.
+                if (!data || data instanceof Error) {
+                    // @todo: should we display the error message in the Error object too?
+                    util.alert("Error", "File '" + filename + "' could not be created",
+                        "An error occurred while creating a new file, please try again.");
                     return next();
                 }
                 
-                var strXml = data.match(new RegExp(("(<file path='" + path +
-                    "/" + filename + "'.*?>)").replace(/\//g, "\\/")));
+                // parse xml
+                var filesInDirXml = apf.getXml(data);
                 
-                if(!strXml)
-                    next();
-                    
-                strXml = strXml[1]
-                var oXml = apf.xmldb.appendChild(node, apf.getXml(strXml));
+                // we expect the new created file in the directory listing
+                var fullFilePath = path + "/" + filename;
+                file = filesInDirXml.selectSingleNode("//file[@path='" + fullFilePath + "']");
+                
+                // not found? display an error
+                if (!file) {
+                    util.alert("Error", "File '" + filename + "' could not be created",
+                        "An error occurred while creating a new file, please try again.");
+                    return next();
+                }
+                
+                var oXml = apf.xmldb.appendChild(node, file);
 
                 trFiles.select(oXml);
                 if (file.size < MAX_OPENFILE_SIZE)

@@ -41,7 +41,7 @@
           flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
+                <a:insert match="[folder]" get="" id="trFilesInsertRule" />
                 <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                 <a:icon match="[folder|project]" value="folder.png" />
                 <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
@@ -74,13 +74,20 @@
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
+            <a:item match="[file|folder|project]" onclick="
+                var store = apf.clipboard.store;
+                apf.clipboard.copySelection(apf.activeElement);
+                apf.clipboard.pasteSelection(apf.activeElement);
+                apf.clipboard.store = store;
+            ">Duplicate</a:item>
+            <a:divider />
             <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.cutSelection(apf.activeElement);
             ">Cut</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.copySelection(apf.activeElement);
             ">Copy</a:item>
-            <a:item match="[folder|project]" disabled="{apf.clipboard.empty}" onclick="
+            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" onclick="
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />

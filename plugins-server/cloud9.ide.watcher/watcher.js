@@ -9,6 +9,7 @@
 
 var fs = require("fs");
 var util = require("util");
+var async   = require("asyncjs");
 var Plugin = require("../cloud9.core/plugin");
 
 var name = "watcher";
@@ -39,8 +40,8 @@ var WatcherPlugin = function(ide, workspace) {
     this.hooks = ["disconnect", "command"];
     this.name = name;
     this.filenames = {};
-    this.basePath  = ide.workspaceDir + "/";
-};
+    this.basePath  = ide.workspaceDir;
+}
 
 util.inherits(WatcherPlugin, Plugin);
 
@@ -73,7 +74,7 @@ util.inherits(WatcherPlugin, Plugin);
         if (command != "watcher")
             return false;
 
-        path = this.basePath + path;
+        path = this.basePath + (path ? "/" + path : "");
 
         switch (type) {
             case "watchFile":
@@ -103,26 +104,39 @@ util.inherits(WatcherPlugin, Plugin);
                         if (curr.isDirectory()) {
                             files = {};
 
-                            // TODO don't use sync calls
-                            fs.readdirSync(path).forEach(function (file) {
-                                var stat = fs.statSync(path + "/" + file);
-
-                                if (file.charAt(0) != '.') {
-                                    files[file] = {
-                                        type : stat.isDirectory() ? "folder" : "file",
-                                        name : file
+                            async.readdir(path)
+                                .stat()
+                                .filter(function(file) {
+                                    return file.name.charAt(0) != '.'
+                                })
+                                .each(function(file) {
+                                    files[file.name] = {
+                                        type : file.stat.isDirectory() ? "folder" : "file",
+                                        name : file.name
                                     };
-                                }
+                                })
+                                .end(function(err) {
+                                    if (err)
+                                        return;
+
+                                    that.send({
+                                        "type"      : "watcher",
+                                        "subtype"   : subtype,
+                                        "path"      : path,
+                                        "files"     : files,
+                                        "lastmod"   : curr.mtime
+                                    });
+                                    //console.log("Sent " + subtype + " notification for file " + path);
+                                });
+                        } else
+                            that.send({
+                                "type"      : "watcher",
+                                "subtype"   : subtype,
+                                "path"      : path,
+                                "files"     : files,
+                                "lastmod"   : curr.mtime
                             });
-                        }
-                        that.send({
-                            "type"      : "watcher",
-                            "subtype"   : subtype,
-                            "path"      : path,
-                            "files"     : files,
-                            "lastmod"   : curr.mtime
-                        });
-                        //console.log("Sent " + subtype + " notification for file " + path);
+
                     });
                     this.filenames[path] = 0;
                 }
@@ -131,7 +145,7 @@ util.inherits(WatcherPlugin, Plugin);
                 return this.unwatchFile(path);
             default:
                 return false;
-        }
+            }
     };
 
     this.dispose = function(callback) {

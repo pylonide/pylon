@@ -162,7 +162,7 @@ module.exports = ext = {
         //Load markup
         var markup = oExtension.markup;
         if (markup) 
-            apf.document.body.insertMarkup(markup);
+            (oExtension.markupInsertionPoint || apf.document.body).insertMarkup(markup);
 
         var deps = oExtension.deps;
         if (deps) {
@@ -191,6 +191,24 @@ module.exports = ext = {
         ide.addEventListener("$event.init." + oExtension.path, function(callback){
             callback.call(this, {ext : oExtension});
         });
+    },
+
+    enableExt : function(path) {
+        var ext = require(path);
+        if(!ext.enable)
+            return;
+
+        ext.enable();
+        mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+    },
+
+    disableExt : function(path) {
+        var ext = require(path);
+        if(!ext.disable)
+            return;
+
+        ext.disable();
+        mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 0);
     },
 
     execCommand: function(cmd, data) {

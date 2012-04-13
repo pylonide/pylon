@@ -54,6 +54,7 @@ var SupportedModes = {
     "application/atom+xml": "xml",
     "application/mathml+xml": "xml",
     "application/x-httpd-php": "php",
+    "application/x-sh": "sh",
     "text/x-script.python": "python",
     "text/x-script.ruby": "ruby",
     "text/x-script.perl": "perl",
@@ -112,6 +113,7 @@ var contentTypes = {
     "cxx": "text/x-c",
     "h": "text/x-c",
     "hh": "text/x-c",
+    "hpp": "text/x-c",
 
     "cs": "text/x-csharp",
 
@@ -137,7 +139,10 @@ var contentTypes = {
 
     "ps1": "text/x-script.powershell",
     "cfm": "text/x-coldfusion",
-    "sql": "text/x-sql"
+    "sql": "text/x-sql",
+
+    "sh": "application/x-sh",
+    "bash": "application/x-sh"
 };
 
 module.exports = ext.register("ext/code/code", {
@@ -293,15 +298,11 @@ module.exports = ext.register("ext/code/code", {
 
         doc.editor = this;
     },
-
+    
     hook: function() {
         var _self = this;
 
-        //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading("Code Editor");
-            heading.insertMarkup(markupSettings);
-        });
+        require("ext/settings/settings").addSettings("Code Editor", markupSettings);
 
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
@@ -322,12 +323,16 @@ module.exports = ext.register("ext/code/code", {
                   .attr("wraplimitmax", "")
                   .attr("gutter", "true")
                   .attr("folding", "true")
+                  .attr("newlinemode", "auto")
                   .attr("highlightselectedword", "true")
                   .attr("autohidehorscrollbar", "true").node();
 
                 var editors = apf.createNodeFromXpath(model.data, "editors");
                 apf.xmldb.appendChild(editors, node);
             }
+            
+            if (!model.queryNode("editors/code/@animatedscroll"))
+                model.setQueryValue("editors/code/@animatedscroll", "true");
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
@@ -346,7 +351,7 @@ module.exports = ext.register("ext/code/code", {
                 if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
                   && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
                   && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
-                    var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
+                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "").replace(/"/g, "&quot;") + '"]');
                     if (nodes.length) {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
                     }
@@ -403,6 +408,7 @@ module.exports = ext.register("ext/code/code", {
                 caption : "Length: {ceEditor.value.length}"
             })),
 
+            mnuView.appendChild(new apf.divider()),
             mnuView.appendChild(menuSyntaxHighlight)
         );
 

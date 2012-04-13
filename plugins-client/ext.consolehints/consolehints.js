@@ -91,6 +91,12 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             apf.addListener(winHints, "mousemove", mouseHandler.bind(_self));
             apf.addListener(winHints, "click", _self.click.bind(_self));
             
+            apf.addListener(document, "click", function(e){
+                var node = e.target;
+                if (node.parentNode != winHints || node != winHints)
+                    _self.hide();
+            });
+            
             Console.messages.commandhints = function(message) {
                 var cmds = message.body;
                 for (var cmd in cmds)
@@ -110,7 +116,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 });
             }, 1000);
             
-            txtConsoleInput.addEventListener("blur", function(e) { _self.hide(); });
+            //txtConsoleInput.addEventListener("blur", function(e) { _self.hide(); });
             txtConsoleInput.addEventListener("keyup", function(e) {
                 // Ignore up/down cursor arrows here
                 if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9) return;
@@ -122,6 +128,12 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                         _self.hide();
                     }
                 };
+
+                // dismiss on escape, else cliValue executes below
+                if (e.keyCode === 27) {
+                    _self.hide();
+                    return;
+                }
     
                 var cliValue = e.currentTarget.getValue();
                 if (cliValue)
@@ -217,7 +229,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         else
             cliValue += cmdName;
 
-        txtConsoleInput.setValue(cliValue);
+        txtConsoleInput.setValue(cliValue.replace("/?", ""));
         txtConsoleInput.focus();
 
         var input = txtConsoleInput.querySelector("input");

@@ -15,6 +15,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var code = require("ext/code/code");
+var settings = require("ext/settings/settings");
 var markup = require("text!ext/statusbar/statusbar.xml");
 var skin = require("text!ext/statusbar/skin.xml");
 
@@ -37,12 +38,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     prefsItems: [],
     horScrollAutoHide : "false",
     edgeDistance : 3,
+    offsetWidth : 0,
+
     hook : function(){
         var _self = this;
-        ide.addEventListener("afteropenfile", this.$aofListener = function() {
-            ext.initExtension(_self);
-            ide.removeEventListener("afteropenfile", _self.$aofListener);
-        });
 
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/statusbar");
@@ -80,53 +79,50 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 lblInsertActive.hide();
         });
 
-        tabEditors.addEventListener("afterswitch", function() {
+        ide.addEventListener("minimap.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = e.width;
+            else
+                _self.offsetWidth = 0;
+
+            _self.setPosition();
+        });
+
+        tabEditors.addEventListener("afterswitch", function(e) {
+            if (e.nextPage.type === "ext/imgview/imgview")
+                return;
+
+            if (!_self.inited) {
+                // Wait a moment for the editor to get into place
+                setTimeout(function() {
+                    ext.initExtension(_self);
+                });
+            }
+
             if (_self.$changeEvent)
                 _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
 
             setTimeout(function() {
                 if(editors.currentEditor.ceEditor) {
+                    _self.setSelectionLength();
+
                     _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                     _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
-                        if (typeof lblSelectionLength === "undefined")
-                            return;
-
-                        var range = ceEditor.$editor.getSelectionRange();
-                        if (range.start.row != range.end.row || range.start.column != range.end.column) {
-                            var doc = ceEditor.getDocument();
-                            var value = doc.getTextRange(range);
-                            lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
-                            lblSelectionLength.show();
-                        } else {
-                            lblSelectionLength.setAttribute("caption", "");
-                            lblSelectionLength.hide();
-                        }
+                        _self.setSelectionLength();
                     });
                 }
             }, 200);
         });
 
         tabEditors.addEventListener("resize", function() {
-            if (window.ceEditor && ceEditor.$editor) {
-                var cw = ceEditor.$editor.renderer.scroller.clientWidth;
-                var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
-                var bottom = _self.edgeDistance;
-                if (cw < sw || _self.horScrollAutoHide === "false")
-                    bottom += _self.sbWidth;
-
-                if (_self.$barMoveTimer)
-                    clearTimeout(_self.$barMoveTimer);
-                _self.$barMoveTimer = setTimeout(function() {
-                    if (typeof barIdeStatus !== "undefined") {
-                        barIdeStatus.setAttribute("bottom", bottom);
-                        barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance);
-                    }
-                }, 50);
-            }
+            _self.setPosition();
         });
     },
 
     init : function(){
+        if (typeof ceEditor === "undefined")
+            return;
+
         var _self = this;
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor) {
@@ -154,6 +150,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(pItem.item);
         }
 
+        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
+        wrapMode.addEventListener("click", function(e) {
+            if (e.currentTarget.checked) {
+                wrapModeViewport.enable();
+             }
+            else {
+                wrapModeViewport.disable();
+             }
+        });
+
         var editor = ceEditor.$editor;
         var theme = editor && editor.getTheme() || "ace/theme/textmate";
         this.checkTheme(theme);
@@ -176,8 +182,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     lblInsertActive.show();
             }
         });
-
-        this.inited = true;
     },
 
     addToolsItem: function(menuItem, position){
@@ -201,6 +205,22 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.insertBefore(menuItem, mnuStatusBarPrefs.childNodes[position]);
             else
                 mnuStatusBarPrefs.appendChild(menuItem);
+        }
+    },
+
+    setSelectionLength : function() {
+        if (typeof lblSelectionLength === "undefined")
+            return;
+
+        var range = ceEditor.$editor.getSelectionRange();
+        if (range.start.row != range.end.row || range.start.column != range.end.column) {
+            var doc = ceEditor.getDocument();
+            var value = doc.getTextRange(range);
+            lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
+            lblSelectionLength.show();
+        } else {
+            lblSelectionLength.setAttribute("caption", "");
+            lblSelectionLength.hide();
         }
     },
 
@@ -233,6 +253,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 interval : 5
             });
         }
+
+        settings.save();
     },
 
     checkTheme: function(theme){
@@ -248,6 +270,26 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             apf.setStyleRule(".bar-status", "background-color", aceBg + ", 0.0)");
             apf.setStyleRule(".bar-status:hover", "background-color", aceBg + ", 0.95)");
         });
+    },
+
+    setPosition : function() {
+        if (self.ceEditor && ceEditor.$editor) {
+            var _self = this;
+            var cw = ceEditor.$editor.renderer.scroller.clientWidth;
+            var sw = ceEditor.$editor.renderer.scroller.scrollWidth;
+            var bottom = this.edgeDistance;
+            if (cw < sw || this.horScrollAutoHide === "false")
+                bottom += this.sbWidth;
+
+            if (this.$barMoveTimer)
+                clearTimeout(this.$barMoveTimer);
+            this.$barMoveTimer = setTimeout(function() {
+                if (typeof barIdeStatus !== "undefined") {
+                    barIdeStatus.setAttribute("bottom", bottom);
+                    barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance + _self.offsetWidth);
+                }
+            }, 50);
+        }
     },
 
     enable : function(){

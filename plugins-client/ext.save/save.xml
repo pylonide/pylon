@@ -17,7 +17,7 @@
             btnSaveNo.dispatchEvent('click', {htmlEvent: {}});
         }
       ">
-        <a:vbox id="fileDesc" padding="10" margin-top="-15px" edge="5 20 25 20">
+        <a:vbox id="fileDesc" padding="10" edge="15 20 25 20">
             
         </a:vbox>
 
