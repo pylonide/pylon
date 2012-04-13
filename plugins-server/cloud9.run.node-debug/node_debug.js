@@ -79,7 +79,11 @@ function mixin(Class, Parent) {
         if (this.msgQueue.length) {
             for (var i = 0; i < this.msgQueue.length; i++) {
                 // console.log("SEND", this.msgQueue[i])
-                this.nodeDebugProxy.send(this.msgQueue[i]);
+                try {
+                    this.nodeDebugProxy.send(this.msgQueue[i]);
+                } catch(e) {
+                    console.log("Sending node debug message failed: " + e.message);
+                }
             }
         }
 

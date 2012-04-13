@@ -30,6 +30,7 @@ var ShellPlugin = function(ide, workspace) {
     this.workspaceDir = ide.workspaceDir;
     this.hooks = ["command"];
     this.name = name;
+    this.processCount = 0;
 };
 
 util.inherits(ShellPlugin, Plugin);
@@ -144,11 +145,13 @@ util.inherits(ShellPlugin, Plugin);
     this["command-pwd"] =
     this["command-ls"] = function(message) {
         var self = this;
+        this.processCount += 1;
         this.pm.exec("shell", {
             command: message.command,
             args: message.argv.slice(1),
             cwd: message.cwd || this.workspaceDir
         }, function(code, out, err) {
+            self.processCount -= 1;
             self.sendResult(0, message.command, {
                 code    : code,
                 argv    : message.argv,
@@ -203,9 +206,8 @@ util.inherits(ShellPlugin, Plugin);
         });
     };
 
-    this.dispose = function(callback) {
-        // TODO kill all running processes!
-        callback();
+    this.canShutdown = function() {
+        return this.processCount === 0;
     };
 
 }).call(ShellPlugin.prototype);
