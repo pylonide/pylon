@@ -134,6 +134,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/keybindings_default/keybindings_default",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
+    "ext/tools/tools",
     "ext/beautify/beautify",
     "ext/offline/offline",
     "ext/stripws/stripws",

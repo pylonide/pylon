@@ -32,7 +32,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
     expanded: false,
     nodes : [],
-    toolItems: [],
     prefsItems: [],
     horScrollAutoHide : "false",
     edgeDistance : 3,
@@ -42,13 +41,13 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         var _self = this;
 
         ide.addEventListener("loadsettings", function(e){
-            var strSettings = e.model.queryValue("auto/statusbar");
+            /*var strSettings = e.model.queryValue("auto/statusbar");
             if (strSettings === "true") {
                 if (_self.inited)
                     _self.toggleStatusBar();
                 else
                     _self.toggleOnInit = true;
-            }
+            }*/
 
             var codeSettings = e.model.queryNode("//editors/code");
             if (codeSettings && codeSettings.hasAttribute("autohidehorscrollbar")) {
@@ -132,14 +131,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
         hboxStatusBarSettings.$ext.style.overflow = "hidden";
 
-        for(var i = 0, l = this.toolItems.length; i < l; i++) {
-            var tItem = this.toolItems[i];
-            if (typeof tItem.pos === "number")
-                mnuStatusBarTools.insertBefore(tItem.item, mnuStatusBarPrefs.childNodes[tItem.pos]);
-            else
-                mnuStatusBarTools.appendChild(tItem.item);
-        }
-
         for(var i = 0, l = this.prefsItems.length; i < l; i++) {
             var pItem = this.prefsItems[i];
             if (typeof pItem.pos === "number")
@@ -162,8 +153,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         var theme = editor && editor.getTheme() || "ace/theme/textmate";
         this.checkTheme(theme);
 
-        if (this.toggleOnInit)
-            this.toggleStatusBar();
+//        if (this.toggleOnInit)
+//            this.toggleStatusBar();
 
         ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
             if (e.changed) {
@@ -180,18 +171,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     lblInsertActive.show();
             }
         });
-    },
-
-    addToolsItem: function(menuItem, position){
-        if(!self["mnuStatusBarTools"]) {
-            this.toolItems.push({ item : menuItem, pos : position });
-        }
-        else {
-            if (typeof position === "number")
-                mnuStatusBarTools.insertBefore(menuItem, mnuStatusBarTools.childNodes[position]);
-            else
-                mnuStatusBarTools.appendChild(menuItem);
-        }
     },
 
     addPrefsItem: function(menuItem, position){

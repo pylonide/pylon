@@ -9047,7 +9047,7 @@
             font-size       : 14px;
             height          : 20px;
             line-height     : 18px;
-            margin          : 1px 0 0 6px;
+            margin          : 1px 0 0 2px;
             padding         : 1px 4px 0px 4px;
             outline         : none;
             text-overflow   : ellipsis;

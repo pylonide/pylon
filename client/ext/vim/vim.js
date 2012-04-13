@@ -125,8 +125,8 @@ module.exports = ext.register("ext/vim/vim", {
             onclick: function() { self.toggle(); }
         });
 
-        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
-            e.ext.addToolsItem(menuItem.cloneNode(true), 0);
+        ide.addEventListener("init.ext/tools/tools", function (e) {
+            mnuTools.appendChild(menuItem.cloneNode(true));
         });
 
         require("ext/settings/settings").addSettings("Code Editor", markupSettings);

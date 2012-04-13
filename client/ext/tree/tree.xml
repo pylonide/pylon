@@ -77,7 +77,7 @@
             <a:item match="[file|folder|project]" onclick="
                 var store = apf.clipboard.store;
                 apf.clipboard.copySelection(apf.activeElement);
-                apf.clipboard.pasteSelection(apf.activeElement);
+                apf.clipboard.pasteSelection(apf.activeElement, apf.activeElement.selected.parentNode);
                 apf.clipboard.store = store;
             ">Duplicate</a:item>
             <a:divider />

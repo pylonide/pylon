@@ -92,7 +92,7 @@ module.exports = ext.register("ext/console/console", {
     hidden : true,
     nodes : [],
     minHeight : 150,
-    collapsedHeight : 34,
+    collapsedHeight : 30,
 
     autoOpen : true,
     excludeParent : true,
@@ -310,10 +310,12 @@ module.exports = ext.register("ext/console/console", {
     },
 
     init: function(amlNode){
-
         var _self = this;
+        
         this.panel = tabConsole;
         this.$cwd  = "/workspace"; // code smell
+        
+        _self.$collapsedHeight = _self.collapsedHeight;
 
         apf.importCssString(this.css);
         
@@ -400,14 +402,14 @@ module.exports = ext.register("ext/console/console", {
                 caption: "Hide Input Bar",
                 onclick : function() {
                     if (txtConsoleInput.parentNode.visible) {
-                        _self.collapsedHeight = 0;
+                        _self.$collapsedHeight = 0;
                         if (_self.hidden)
                             winDbgConsole.setAttribute("height", "0")
                         txtConsoleInput.parentNode.hide();
                         mnuItemInput.setAttribute("caption", "Show Input Bar");
                     }
                     else {
-                        _self.collapsedHeight = 34;
+                        _self.$collapsedHeight = _self.collapsedHeight;
                         if (_self.hidden)
                             winDbgConsole.setAttribute("height", "34px")
                         txtConsoleInput.parentNode.show();

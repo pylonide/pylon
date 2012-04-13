@@ -385,11 +385,6 @@ module.exports = ext.register("ext/code/code", {
 
         var _self = this;
 
-        var menuSyntaxHighlight = new apf.item({
-            caption : "Syntax",
-            submenu : "mnuSyntax"
-        });
-
         var menuShowInvisibles = new apf.item({
             type    : "check",
             caption : "Show Invisibles",
@@ -402,12 +397,34 @@ module.exports = ext.register("ext/code/code", {
                 caption : "{ceEditor.insert}"
             })),
 
-            //Add a panel to the statusbar showing the length of the document
-            sbMain.appendChild(new apf.section({
-                caption : "Length: {ceEditor.value.length}"
+            mnuView.appendChild(new apf.item({
+                caption : "Syntax",
+                submenu : "mnuSyntax"
             })),
-
-            mnuView.appendChild(menuSyntaxHighlight)
+            
+            mnuView.appendChild(new apf.item({
+                caption : "{apf.isTrue(this.gutter) ? 'Hide Gutter' : 'Show Gutter'}",
+                gutter  : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
+                onclick : function(){
+                    settings.model.setQueryValue("editors/code/@gutter", String(!apf.isTrue(this.gutter)));
+                }
+            })),
+            
+            mnuView.appendChild(new apf.divider()),
+            
+            mnuView.appendChild(new apf.item({
+                caption : "Wrap Lines",
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+            })),
+            
+            mnuView.appendChild(new apf.item({
+                caption  : "Wrap To Viewport",
+                disabled : "{!apf.isTrue(this.wrapmode)}",
+                wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
+                type     : "check",
+                checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
+            }))
         );
 
         mnuSyntax.onitemclick = function(e) {
