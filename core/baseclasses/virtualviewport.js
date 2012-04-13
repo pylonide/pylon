@@ -51,7 +51,7 @@ apf.VirtualViewport = function(){
             If viewport is too high either the render starting point is adjusted and
             a complete rerender is requested, or the last empty elements are hidden
         */
-        this.viewport.redraw();//very unoptimized
+        this.$viewport.redraw();//very unoptimized
     };
     
     this.$moveNode = function(xmlNode, htmlNode){
@@ -60,7 +60,7 @@ apf.VirtualViewport = function(){
             Do an add when moved to current viewport
             Do a redraw from the first of either when both in viewport
         */
-        this.viewport.redraw();//very unoptimized
+        this.$viewport.redraw();//very unoptimized
     };
     
     this.emptyNode = apf.xmldb.getXml("<empty />");
@@ -96,11 +96,11 @@ apf.VirtualViewport = function(){
         }
 
         if (!nomsg) {
-            this.viewport.offset = 0;
-            this.viewport.length = 0;
-            this.viewport.resize(0);
-            if (this.viewport.sb) 
-                this.viewport.sb.$update();
+            this.$viewport.offset = 0;
+            this.$viewport.length = 0;
+            this.$viewport.resize(0);
+            if (this.$viewport.sb) 
+                this.$viewport.sb.$update();
     
             if (this.$setClearMessage) {
                 this.$setClearMessage(msgType 
@@ -111,17 +111,21 @@ apf.VirtualViewport = function(){
         else if(this.$removeClearMessage)
             this.$removeClearMessage();
         
-        this.viewport.cache = null;
+        this.$viewport.cache = null;
     };
 
     var _self = this;
-    this.viewport = new apf.ViewPortVirtual(this);
+    this.$viewport = new apf.$viewportVirtual(this);
+    
+    this.getViewport = function(){
+        return this.$viewport;
+    }
     
     this.$isInViewport = function(xmlNode, struct){
         /*var marker = xmlNode.selectSingleNode("preceding-sibling::a_marker");
         var start = marker ? marker.getAttribute("end") : 0;
         
-        if(!struct && this.viewport.offset + this.viewport.limit < start + 1)
+        if(!struct && this.$viewport.offset + this.$viewport.limit < start + 1)
             return false;
         
         var position = start;
@@ -136,8 +140,8 @@ apf.VirtualViewport = function(){
         
         if(struct) struct.position = position;
         
-        if(this.viewport.offset > position 
-          || this.viewport.offset + this.viewport.limit < position)
+        if(this.$viewport.offset > position 
+          || this.$viewport.offset + this.$viewport.limit < position)
             return false;
         
         return true;*/
@@ -153,7 +157,7 @@ apf.VirtualViewport = function(){
     this.scrollTo = function(xmlNode, last){
         var sPos = {};
         this.$isInViewport(xmlNode, sPos);
-        this.viewport.change(sPos.position + (last ? this.viewport.limit - 1 : 0));
+        this.$viewport.change(sPos.position + (last ? this.$viewport.limit - 1 : 0));
     };
     
     /**
@@ -192,9 +196,9 @@ apf.VirtualViewport = function(){
     // #endif
     
     this.$xmlUpdate = function(){
-        this.viewport.cache  = null;
-        this.viewport.length = this.xmlRoot.selectNodes(this.each).length; //@todo fix this for virtual length
-        this.viewport.sb.$update(this.$container);
+        this.$viewport.cache  = null;
+        this.$viewport.length = this.xmlRoot.selectNodes(this.each).length; //@todo fix this for virtual length
+        this.$viewport.sb.$update(this.$container);
         this._xmlUpdate.apply(this, arguments);
     };
     
@@ -219,13 +223,13 @@ apf.VirtualViewport = function(){
         // #endif
         
         //Prepare viewport
-        this.viewport.cache  = null;
-        this.viewport.offset = 0;
-        this.viewport.length = this.$cachedTraverseList.length; //@todo fix this for virtual length
-        if (this.viewport.length < this.viewport.limit)
-            this.viewport.resize(this.viewport.length);
-        this.viewport.prepare();
-        //this.viewport.change(0);
+        this.$viewport.cache  = null;
+        this.$viewport.offset = 0;
+        this.$viewport.length = this.$cachedTraverseList.length; //@todo fix this for virtual length
+        if (this.$viewport.length < this.$viewport.limit)
+            this.$viewport.resize(this.$viewport.length);
+        this.$viewport.prepare();
+        //this.$viewport.change(0);
         
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
@@ -258,7 +262,7 @@ apf.VirtualViewport = function(){
         if (this.$focussable)
             apf.window.hasFocus(this) ? this.$focus() : this.$blur();
         
-        this.viewport.setScrollTop(0, true);
+        this.$viewport.setScrollTop(0, true);
     };
     
     this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
@@ -306,11 +310,11 @@ apf.VirtualViewport = function(){
                     var length = parseInt(apf.queryValue(xmlNode, 
                         rule.getAttribute("total")));
                     
-                    if (_self.viewport.length != length) {
-                        _self.viewport.length = length;
+                    if (_self.$viewport.length != length) {
+                        _self.$viewport.length = length;
                         
                         this.$createVirtualDataset(_self.xmlRoot, 
-                            _self.viewport.length, _self.documentId);
+                            _self.$viewport.length, _self.documentId);
                     }
                 }
             });
@@ -325,7 +329,7 @@ apf.VirtualViewport = function(){
     
     function buildList(markers, markerId, distance, xml) {
         var marker, nodes, start,
-            vlen = this.viewport.limit,
+            vlen = this.$viewport.limit,
             list = [];
         
         //Count from 0
@@ -376,7 +380,7 @@ apf.VirtualViewport = function(){
         } 
         while (list.length < vlen && marker);
         
-        _self.viewport.cache = list;
+        _self.$viewport.cache = list;
         return list;
     }
     
@@ -399,14 +403,14 @@ apf.VirtualViewport = function(){
         if (!this.xmlRoot)
             return;
         
-        if (this.viewport.cache)
-            return this.viewport.cache;
+        if (this.$viewport.cache)
+            return this.$viewport.cache;
 
         //caching statement here
         this.$updateTraverseCache(xmlNode);
 
-        var start = this.viewport.offset,
-            end   = Math.min(this.$cachedTraverseList.length, start + this.viewport.limit);
+        var start = this.$viewport.offset,
+            end   = Math.min(this.$cachedTraverseList.length, start + this.$viewport.limit);
         
         // #ifdef __ENABLE_VIRTUALDATASET
         var markers = (xmlNode || this.xmlRoot).selectNodes("a_marker");
@@ -484,7 +488,7 @@ apf.VirtualViewport = function(){
 //        if (up)
 //            i = -1 * (nodes.length - i - 1);
 
-//        this.viewport.change(Math.max(0, this.viewport.offset + i
+//        this.$viewport.change(Math.max(0, this.$viewport.offset + i
 //            + (up ? count : -1 * count)), null, true, true);
             
         //nodes = this.getTraverseNodes();
@@ -497,7 +501,7 @@ apf.VirtualViewport = function(){
     this.caching = false; //for now, because the implications are unknown
 };
 
-apf.ViewPortVirtual = function(amlNode){
+apf.$viewportVirtual = function(amlNode){
     this.amlNode = amlNode;
     
     var _self = this;
@@ -917,6 +921,6 @@ apf.ViewPortVirtual = function(amlNode){
         var itemHeight = this.$getItemHeight();
         htmlNode.scrollTop = scrollTop - (this.offset * itemHeight);
     }
-}).call(apf.ViewPortVirtual.prototype);
+}).call(apf.$viewportVirtual.prototype);
 
 // #endif

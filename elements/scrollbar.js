@@ -109,7 +109,7 @@ apf.scrollbar = function(struct, tagName){
         if (viewport.nodeFunc) {
             // #ifdef __WITH_VIRTUALVIEWPORT
             if (viewport.hasFeature(apf.__VIRTUALVIEWPORT__))
-                viewport = viewport.viewport;
+                viewport = viewport.$viewport;
             else
             // #endif
                 viewport = new apf.ViewPortAml(viewport);

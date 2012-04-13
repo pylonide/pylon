@@ -32,6 +32,9 @@ apf.divider = function(struct, tagName){
 (function() {
     this.$focussable = false;
 
+    this.minwidth = 0;
+    this.minheight = 0;
+
     this.implement(apf.ChildValue);
     this.$childProperty = "caption";
     
