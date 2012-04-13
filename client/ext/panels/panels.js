@@ -28,15 +28,6 @@ module.exports = ext.register("ext/panels/panels", {
     register : function(panelExt, options){
         var _self = this;
         
-        var beforePanel, diff = 1000000;
-        for (var path in this.panels) {
-            var d = this.panels[path].$panelPosition - options.position;
-            if (d > 0 && d < diff) {
-                beforePanel = this.panels[path];
-                diff = d;
-            }
-        }
-        
         panelExt.mnuItem = mnuSidebar.insertBefore(new apf.item({
             caption : panelExt.name,
             type    : "radio",
@@ -48,32 +39,8 @@ module.exports = ext.register("ext/panels/panels", {
             }
         }));
         
-        ide.addEventListener("init.ext/navbar/navbar", function(){
-            panelExt.button = navbar.insertBefore(new apf.button({
-                skin    : "mnubtn",
-                state   : "true",
-                //value   : "true",
-                "class" : options["class"],
-                caption : options.caption
-            }), beforePanel && beforePanel.button || navbar.firstChild);
-
-            //navbar.current = this;
-            panelExt.button.addEventListener("mousedown", function(e){
-                var value = this.value;
-                if (_self.currentPanel && (_self.currentPanel != panelExt || value) && value) {
-                    _self.deactivate(_self.currentPanel == panelExt, true);
-                    
-                    if (value) {
-                        if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
-                            colLeft.hide();
-                        return;
-                    }
-                }
-    
-                _self.activate(panelExt, true);
-            });
-            
-            panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
+        ide.addEventListener("init.ext/sidebar/sidebar", function(e){
+            e.ext.add(panelExt, options);
         });
         
         this.panels[panelExt.path] = panelExt;

@@ -9785,7 +9785,8 @@
 
         }
 
-        .filemgr-treeFocus .item-fix.selected {
+        .filemgr-treeFocus .item-fix.selected, 
+        .filemgr-tree.openfile .item-fix.selected{
             border-top:1px solid #3a9bec;
             border-bottom:1px solid #185f97;
             filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#2890e5', endColorstr='#1f82d2');
@@ -9796,7 +9797,8 @@
 
         .filemgr-dragtree,
         .filemgr-treeFocus .item-fix.selected .item LABEL .caption,
-        .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption {
+        .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption,
+        .filemgr-tree.openfile .item-fix.selected .item LABEL .caption{
             color:white;
         }
 

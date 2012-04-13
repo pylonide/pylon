@@ -27,29 +27,32 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     hook : function(){
         var _self = this;
         var reloadDgExt = true;
-        this.nodes.push(
-            mnuView.insertBefore(new apf.divider(), mnuView.firstChild),
-
-            mnuView.insertBefore(new apf.item({
-                caption : "Extension Manager...",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    winExt.show();
-
-                    // Hackity hackathon
-                    // @TODO the problem is apparently that APF does not
-                    // like to show the datagrid records when two datagrids are
-                    // bound to the same model && that one of the xpath selectors
-                    // used to filter the model, has no results
-                    setTimeout(function() {
-                        if (reloadDgExt) {
-                            dgExt.reload();
-                            reloadDgExt = false;
-                        }
-                    });
-                }
-            }), mnuView.firstChild)
-        );
+        
+        ide.addEventListener("init.ext/tools/tools", function(){
+            _self.nodes.push(
+                mnuTools.appendChild(new apf.divider()),
+    
+                mnuTools.insertBefore(new apf.item({
+                    caption : "Extension Manager...",
+                    onclick : function(){
+                        ext.initExtension(_self);
+                        winExt.show();
+    
+                        // Hackity hackathon
+                        // @TODO the problem is apparently that APF does not
+                        // like to show the datagrid records when two datagrids are
+                        // bound to the same model && that one of the xpath selectors
+                        // used to filter the model, has no results
+                        setTimeout(function() {
+                            if (reloadDgExt) {
+                                dgExt.reload();
+                                reloadDgExt = false;
+                            }
+                        });
+                    }
+                }))
+            );
+        });
 
         // Load up extensions the user added manually
         ide.addEventListener("loadsettings", function(e){

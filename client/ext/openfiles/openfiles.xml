@@ -40,6 +40,7 @@
           model       = "{require('ext/openfiles/openfiles').model}"
           border      = "0"
           scrollbar   = "sbShared 2 2 2"
+          class       = "openfile"
           multiselect = "true" 
           autoselect  = "false"
           skin        = "tree">

@@ -84,35 +84,51 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
             _self.setPosition();
         });
-
-        tabEditors.addEventListener("afterswitch", function(e) {
-            if (e.nextPage.type === "ext/imgview/imgview")
-                return;
-
-            if (!_self.inited) {
-                // Wait a moment for the editor to get into place
-                setTimeout(function() {
-                    ext.initExtension(_self);
-                });
+        
+        mnuView.appendChild(new apf.item({
+            caption: "Hide Status Bar",
+            onclick : function() {
+                if (barIdeStatus.visible) {
+                    barIdeStatus.hide();
+                    this.setAttribute("caption", "Show Status Bar");
+                }
+                else {
+                    barIdeStatus.show();
+                    this.setAttribute("caption", "Hide Status Bar");
+                }
             }
+        }))
 
-            if (_self.$changeEvent)
-                _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
-
-            setTimeout(function() {
-                if(editors.currentEditor.ceEditor) {
-                    _self.setSelectionLength();
-
-                    _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
-                    _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
-                        _self.setSelectionLength();
+        ide.addEventListener("init.ext/editors/editors", function(){
+            tabEditors.addEventListener("afterswitch", function(e) {
+                if (e.nextPage.type === "ext/imgview/imgview")
+                    return;
+    
+                if (!_self.inited) {
+                    // Wait a moment for the editor to get into place
+                    setTimeout(function() {
+                        ext.initExtension(_self);
                     });
                 }
-            }, 200);
-        });
-
-        tabEditors.addEventListener("resize", function() {
-            _self.setPosition();
+    
+                if (_self.$changeEvent)
+                    _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
+    
+                setTimeout(function() {
+                    if(editors.currentEditor.ceEditor) {
+                        _self.setSelectionLength();
+    
+                        _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
+                        _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
+                            _self.setSelectionLength();
+                        });
+                    }
+                }, 200);
+            });
+    
+            tabEditors.addEventListener("resize", function() {
+                _self.setPosition();
+            });
         });
     },
 
