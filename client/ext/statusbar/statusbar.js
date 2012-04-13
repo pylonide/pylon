@@ -1,10 +1,10 @@
 /**
  * Editor status bar for Cloud9 IDE
- * 
+ *
  * @TODO
- * 
+ *
  * Error icon from acebugs
- * 
+ *
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -107,6 +107,15 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
         
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = e.width;
+            else
+                _self.offsetWidth = 0;
+
+            _self.setPosition();
+        });
+        
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("afterswitch", function(e) {
                 if (e.nextPage.type === "ext/imgview/imgview")
@@ -201,7 +210,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(menuItem);
         }
     },
-    
+
     setSelectionLength : function() {
         if (typeof lblSelectionLength === "undefined")
             return;
@@ -307,3 +316,4 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 });
 
 });
+

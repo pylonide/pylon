@@ -56,12 +56,12 @@ module.exports = ext.register("ext/stripws/stripws", {
     hook: function () {
         var self = this;
         var menuItem = new apf.item({
-                            caption: "Strip Whitespace",
-                            onclick: function () {
-                                ext.initExtension(self);
-                                strip();
-                            }
-                        });
+            caption: "Strip Whitespace",
+            onclick: function () {
+                ext.initExtension(self);
+                strip();
+            }
+        });
 
         this.nodes.push(
             //ide.mnuEdit.appendChild(new apf.divider())
@@ -80,10 +80,10 @@ module.exports = ext.register("ext/stripws/stripws", {
             // If the 'Strip whitespace on save' option is enabled, we strip
             // whitespaces from the node value just before the file is saved.
             if (node && node.firstChild && node.firstChild.nodeValue == "true") {
-                strip();
+                self.stripws();
             }
         });
-        
+
         require("ext/settings/settings").addSettings("General", markupSettings);
     },
 
@@ -92,15 +92,19 @@ module.exports = ext.register("ext/stripws/stripws", {
     },
 
     enable: function () {
-        this.nodes.each(function (item) {
+        this.nodes.each(function(item) {
             item.enable();
         });
+
+        this.stripws = function() { strip(); };
     },
 
     disable: function () {
-        this.nodes.each(function (item) {
+        this.nodes.each(function(item) {
             item.disable();
         });
+
+        this.stripws = function() {};
     },
 
     destroy: function () {

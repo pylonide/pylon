@@ -3,6 +3,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
+"use strict";
 
 var keys = require("ext/keybindings/keybindings");
 
@@ -15,7 +16,7 @@ return keys.onLoad({
         "save" : {
             "quicksave": "Command-S",
             "saveas": "Shift-Command-S",
-	        "reverttosaved": "Shift-Command-Q"
+            "reverttosaved": "Shift-Command-Q"
         },
         "undo" : {
             "undo": "Command-Z",

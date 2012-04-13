@@ -38,6 +38,9 @@ module.exports = ext.register("ext/beautify/beautify", {
     hotitems: {},
 
     beautify: function () {
+        if (this.disabled === true)
+            return;
+
         var editor = editors.currentEditor;
 
         var sel = editor.getSelection();
@@ -100,12 +103,16 @@ module.exports = ext.register("ext/beautify/beautify", {
                         _self.$selectionEvent = function(e) {
                             if (typeof beautify_selection === "undefined")
                                 return;
-    
+
                             var range = ceEditor.$editor.getSelectionRange();
-                            if (range.start.row == range.end.row && range.start.column == range.end.column)
+                            if (range.start.row == range.end.row && range.start.column == range.end.column) {
+                                _self.disabled = true;
                                 beautify_selection.disable();
-                            else
+                            }
+                            else {
+                                _self.disabled = false;
                                 beautify_selection.enable();
+                            }
                         }
                     );
                 }
@@ -152,7 +159,7 @@ module.exports = ext.register("ext/beautify/beautify", {
                 model.setQueryValue("editors/code/@softtabs", "true");
             }
         });
-        
+
         ext.initExtension(this);
     },
 
@@ -160,12 +167,16 @@ module.exports = ext.register("ext/beautify/beautify", {
         this.nodes.each(function (item) {
             item.enable();
         });
+
+        this.disabled = false;
     },
 
     disable: function () {
         this.nodes.each(function (item) {
             item.disable();
         });
+
+        this.disabled = true;
     },
 
     destroy: function () {

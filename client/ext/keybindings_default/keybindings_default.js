@@ -4,10 +4,9 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/keybindings_default/keybindings_default.xml");
 var css = require("text!ext/keybindings_default/keybindings_default.css");
@@ -18,7 +17,7 @@ var win = require("text!ext/keybindings_default/default_win.js");
 function parseKeyBindings(txt) {
     var json;
     txt.replace(/keys\.onLoad\(([\w\W\n\r]*)\);\n/gm, function(m, s){
-        json = s.replace(/\);[\n\r\s]*\}$/, "");
+        json = s.replace(/\);[\n\r\s]*\}$/, "").replace(/\/\/.+/, "");
     });
     return JSON.parse(json);
 }
@@ -44,7 +43,7 @@ function generatePanelHtml(def, isMac) {
                 continue;
             }
         }
-        
+
         div = count % 3;
         html.push('<div class="keybindings_default_block',
             (div === 1 || div === 2 ? "_border" : ""),
@@ -53,7 +52,7 @@ function generatePanelHtml(def, isMac) {
             command = def.ext[extName][cmdName];
             html.push('<div class="keybindings_default_command">',
                 '<span class="keybindings_default_cmdname">',
-                    (oExt.commands && oExt.commands[cmdName].short 
+                    (oExt.commands && oExt.commands[cmdName].short
                         ? oExt.commands[cmdName].short
                         : uCaseFirst(cmdName)
                     ),
@@ -63,7 +62,7 @@ function generatePanelHtml(def, isMac) {
                 parts = apf.hotkeys.toMacNotation(command).split(" ");
             else
                 parts = command.split("-");
-            html.push('<span class="keybindings_default_cmdkey">', 
+            html.push('<span class="keybindings_default_cmdkey">',
                 parts.join('</span><span class="keybindings_default_cmdop">+</span><span class="keybindings_default_cmdkey">'),
                 '</span></div>');
         }
@@ -77,7 +76,7 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    
+
     commands : {
         "keybindings": {hint: "show a window that lists all available key shortcuts within the IDE"}
     },
@@ -87,13 +86,13 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
 
     hook : function(){
         apf.importCssString(css || "");
-        
+
         this.hotitems.keybindings = [this.nodes[0]];
     },
 
     init : function(amlNode){
         apf.document.body.insertMarkup(markup);
-        
+
         var as = Array.prototype.slice.call(winKeyBindings.$ext.getElementsByTagName("a"));
         var _self = this;
         as.forEach(function(a) {
@@ -102,10 +101,10 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
                 _self.togglePanels(which);
             });
         });
-        
+
         this.buildPanels();
     },
-    
+
     togglePanels: function(which) {
         if (which == "mac") {
             //barKeyBindingsWin.hide();
@@ -120,17 +119,17 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
             //barKeyBindingsWin.show();
         }
     },
-    
+
     buildPanels: function() {
         // build windows panel:
         var panelWin = barKeyBindingsWin;
         panelWin.$ext.innerHTML = generatePanelHtml(parseKeyBindings(win));
-        
+
         // build mac panel:
         var panelMac = barKeyBindingsMac;
         panelMac.$ext.innerHTML = generatePanelHtml(parseKeyBindings(mac), true);
     },
-    
+
     keybindings: function() {
         ext.initExtension(this);
         winKeyBindings.show();
