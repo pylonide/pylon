@@ -48,19 +48,41 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 else
                     _self.toggleOnInit = true;
             }*/
+            
+            if (!e.model.queryNode("auto/statusbar/@show"))
+                e.model.setQueryValue("auto/statusbar/@show", "true");
 
             var codeSettings = e.model.queryNode("//editors/code");
             if (codeSettings && codeSettings.hasAttribute("autohidehorscrollbar")) {
                 _self.horScrollAutoHide = codeSettings.getAttribute("autohidehorscrollbar");
             }
+            
+            if (apf.isTrue(e.model.queryValue("auto/statusbar/@show")))
+                ext.initExtension(_self);
         });
 
-        ide.addEventListener("savesettings", function(e){
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/statusbar/text()");
-            xmlSettings.nodeValue = _self.expanded;
-            return true;
-        });
+//        ide.addEventListener("savesettings", function(e){
+//            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/statusbar/text()");
+//            xmlSettings.nodeValue = _self.expanded;
+//            return true;
+//        });
 
+        this.nodes.push(
+            mnuView.appendChild(new apf.item({
+                caption: "Status Bar",
+                type : "check",
+                checked : "[{require('ext/settings/settings').model}::auto/statusbar/@show]",
+                "onprop.checked" : function(e){
+                    if (apf.isTrue(e.value) && !self.barIdeStatus)
+                        ext.initExtension(_self);
+                }
+            }))
+        );
+    },
+
+    init : function(){
+        var _self = this;
+        
         ide.addEventListener("theme_change", function(e){
             var theme = e.theme || "ace/theme/textmate";
             _self.checkTheme(theme);
@@ -85,20 +107,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
         
-        mnuView.appendChild(new apf.item({
-            caption: "Hide Status Bar",
-            onclick : function() {
-                if (barIdeStatus.visible) {
-                    barIdeStatus.hide();
-                    this.setAttribute("caption", "Show Status Bar");
-                }
-                else {
-                    barIdeStatus.show();
-                    this.setAttribute("caption", "Hide Status Bar");
-                }
-            }
-        }))
-
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("afterswitch", function(e) {
                 if (e.nextPage.type === "ext/imgview/imgview")
@@ -130,53 +138,46 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 _self.setPosition();
             });
         });
-    },
-
-    init : function(){
-        if (typeof ceEditor === "undefined")
-            return;
-
-        var _self = this;
-        var editor = editors.currentEditor;
-        if (editor && editor.ceEditor) {
-            editor.ceEditor.parentNode.appendChild(barIdeStatus);
-            this.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
-            barIdeStatus.setAttribute("right", this.sbWidth + this.edgeDistance);
-            barIdeStatus.setAttribute("bottom", this.sbWidth + this.edgeDistance);
-        }
-
-        hboxStatusBarSettings.$ext.style.overflow = "hidden";
-
-        for(var i = 0, l = this.prefsItems.length; i < l; i++) {
-            var pItem = this.prefsItems[i];
-            if (typeof pItem.pos === "number")
-                mnuStatusBarPrefs.insertBefore(pItem.item, mnuStatusBarPrefs.childNodes[pItem.pos]);
-            else
-                mnuStatusBarPrefs.appendChild(pItem.item);
-        }
-
-        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();	
-        wrapMode.addEventListener("click", function(e) {
-            if (e.currentTarget.checked) {    
-                wrapModeViewport.enable();     
-             }
-            else {
-                wrapModeViewport.disable();
-             }      
-        });
         
-        var editor = ceEditor.$editor;
-        var theme = editor && editor.getTheme() || "ace/theme/textmate";
-        this.checkTheme(theme);
-
-//        if (this.toggleOnInit)
-//            this.toggleStatusBar();
-
-        ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
-            if (e.changed) {
-                _self.horScrollAutoHide = e.value ? "true" : "false";
-                apf.layout.forceResize(tabEditors.parentNode.$ext);
+        ide.addEventListener("init.ext/code/code", function(){
+            ceEditor.parentNode.appendChild(barIdeStatus);
+            _self.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
+            barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance);
+            barIdeStatus.setAttribute("bottom", _self.sbWidth + _self.edgeDistance);
+    
+            hboxStatusBarSettings.$ext.style.overflow = "hidden";
+    
+            for (var i = 0, l = _self.prefsItems.length; i < l; i++) {
+                var pItem = _self.prefsItems[i];
+                if (typeof pItem.pos === "number")
+                    mnuStatusBarPrefs.insertBefore(pItem.item, mnuStatusBarPrefs.childNodes[pItem.pos]);
+                else
+                    mnuStatusBarPrefs.appendChild(pItem.item);
             }
+    
+            !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();	
+            wrapMode.addEventListener("click", function(e) {
+                if (e.currentTarget.checked) {    
+                    wrapModeViewport.enable();     
+                 }
+                else {
+                    wrapModeViewport.disable();
+                 }      
+            });
+            
+            var editor = ceEditor.$editor;
+            var theme = editor && editor.getTheme() || "ace/theme/textmate";
+            _self.checkTheme(theme);
+    
+    //        if (this.toggleOnInit)
+    //            this.toggleStatusBar();
+    
+            ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
+                if (e.changed) {
+                    _self.horScrollAutoHide = e.value ? "true" : "false";
+                    apf.layout.forceResize(tabEditors.parentNode.$ext);
+                }
+            });
         });
 
         ide.addEventListener("track_action", function(e) {

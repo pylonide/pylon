@@ -403,11 +403,9 @@ module.exports = ext.register("ext/code/code", {
             })),
             
             mnuView.appendChild(new apf.item({
-                caption : "{apf.isTrue(this.gutter) ? 'Hide Gutter' : 'Show Gutter'}",
-                gutter  : "[{require('ext/settings/settings').model}::editors/code/@gutter]",
-                onclick : function(){
-                    settings.model.setQueryValue("editors/code/@gutter", String(!apf.isTrue(this.gutter)));
-                }
+                caption : "Gutter",
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
             })),
             
             mnuView.appendChild(new apf.divider()),

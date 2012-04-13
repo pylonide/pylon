@@ -3,6 +3,7 @@
       skin    = "bar-status" 
       skinset = "statusbar"
       class   = "expanded"
+      visible = "[{require('core/settings').model}::auto/statusbar/@show]"
       height  = "28"
       bottom  = "3"
       right   = "3">

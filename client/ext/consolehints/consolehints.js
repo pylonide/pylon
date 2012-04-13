@@ -82,6 +82,14 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     nodes  : [],
     autoOpen : true,
     excludeParent : true,
+    
+    hook : function(){
+        var _self = this;
+        
+        ide.addEventListener("init.ext/console/console", function(){
+            ext.initExtension(_self);
+        });
+    },
 
     init: function() {
         var _self = this;

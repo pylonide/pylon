@@ -299,14 +299,60 @@ module.exports = ext.register("ext/console/console", {
     
     hook: function() {
         var _self = this;
+        
         // Listen for new extension registrations to add to the
         // hints
         ide.addEventListener("ext.register", function(e){
             if (e.ext.commands)
                 apf.extend(_self.allCommands, e.ext.commands);
         });
+        
+        this.nodes.push(
+            mnuView.appendChild(new apf.item({
+                id: "mnuItemConsoleExpanded",
+                caption: "Console",
+                type    : "check",
+                onclick : function() {
+                    if (_self.hidden)
+                        _self.show();
+                    else
+                        _self.hide();
+                }
+            })),
+            
+            mnuView.appendChild(new apf.item({
+                id: "mnuItemInput",
+                caption: "Input Bar",
+                type: "check",
+                checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]",
+                "onprop.checked" : function(e) {
+                    if (apf.isTrue(e.value))
+                        _self.showInput();
+                    else
+                        _self.hideInput();
+                }
+            }))
+        );
+        
+        this.hotitems.show = [mnuItemConsoleExpanded];
+        
+        ide.addEventListener("loadsettings", function(e){
+            if (!e.model.queryNode("auto/console/@autoshow"))
+                e.model.setQueryValue("auto/console/@autoshow", true);
 
-        ext.initExtension(this);
+            _self.height = e.model.queryValue("auto/console/@height") || _self.height;
+
+            if (apf.isTrue(e.model.queryValue("auto/console/@maximized"))) {
+                _self.show(true);
+                _self.maximize();
+            }
+            else {
+                if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
+                    _self.show(true);
+                else
+                    _self.hide(true);
+            }
+        });
     },
 
     init: function(amlNode){
@@ -384,61 +430,8 @@ module.exports = ext.register("ext/console/console", {
         });
 
         this.nodes.push(
-            winDbgConsole,
-            
-            mnuView.appendChild(new apf.item({
-                id: "mnuItemConsoleExpanded",
-                caption: "Show Console",
-                onclick : function() {
-                    if (_self.hidden)
-                        _self.show();
-                    else
-                        _self.hide();
-                }
-            })),
-            
-            mnuView.appendChild(new apf.item({
-                id: "mnuItemInput",
-                caption: "Hide Input Bar",
-                onclick : function() {
-                    if (txtConsoleInput.parentNode.visible) {
-                        _self.$collapsedHeight = 0;
-                        if (_self.hidden)
-                            winDbgConsole.setAttribute("height", "0")
-                        txtConsoleInput.parentNode.hide();
-                        mnuItemInput.setAttribute("caption", "Show Input Bar");
-                    }
-                    else {
-                        _self.$collapsedHeight = _self.collapsedHeight;
-                        if (_self.hidden)
-                            winDbgConsole.setAttribute("height", "34px")
-                        txtConsoleInput.parentNode.show();
-                        mnuItemInput.setAttribute("caption", "Hide Input Bar");
-                    }
-                    apf.layout.forceResize();
-                }
-            }))
+            winDbgConsole
         );
-        
-        this.hotitems.show = [mnuItemConsoleExpanded];
-
-        ide.addEventListener("loadsettings", function(e){
-            if (!e.model.queryNode("auto/console/@autoshow"))
-                e.model.setQueryValue("auto/console/@autoshow", true);
-
-            _self.height = e.model.queryValue("auto/console/@height") || _self.height;
-
-            if (apf.isTrue(e.model.queryValue("auto/console/@maximized"))) {
-                _self.show(true);
-                _self.maximize();
-            }
-            else {
-                if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
-                    _self.show(true);
-                else
-                    _self.hide(true);
-            }
-        });
 
         this.keyEvents[KEY_UP] = function(input) {
             var newVal = cmdHistory.getPrev();
@@ -491,14 +484,32 @@ module.exports = ext.register("ext/console/console", {
         settings.model.setQueryValue("auto/console/@maximized", false);
         btnConsoleMax.setValue(false);
     },
+    
+    showInput : function(){
+        ext.initExtension(this);
+        
+        this.$collapsedHeight = this.collapsedHeight;
+        if (this.hidden)
+            winDbgConsole.setAttribute("height", this.collapsedHeight + "px")
+        txtConsoleInput.parentNode.show();
+        apf.layout.forceResize();
+    },
+    
+    hideInput : function(){
+        this.$collapsedHeight = 0;
+        if (this.hidden)
+            winDbgConsole.setAttribute("height", "0")
+        txtConsoleInput.parentNode.hide();
+        apf.layout.forceResize();
+    },
 
-    show: function(immediate) { this._show(true, immediate); },
+    show: function(immediate) { ext.initExtension(this); this._show(true, immediate); },
     hide: function(immediate) { this._show(false, immediate); },
 
     _show: function(shouldShow, immediate) {
         if (this.hidden != shouldShow)
             return;
-
+            
         this.hidden = !shouldShow;
 
         if (this.$control)
@@ -510,7 +521,7 @@ module.exports = ext.register("ext/console/console", {
             cfg = {
                 height: this.height,
                 dbgVisibleMethod: "show",
-                mnuItemLabel: "Hide Console",
+                mnuItemLabel: "check",
                 animFrom: this.collapsedHeight,
                 animTo: this.height > this.minHeight ? this.height : this.minHeight,
                 steps: 5,
@@ -524,7 +535,7 @@ module.exports = ext.register("ext/console/console", {
             cfg = {
                 height: this.collapsedHeight,
                 dbgVisibleMethod: "hide",
-                mnuItemLabel: "Show Console",
+                mnuItemLabel: "uncheck",
                 animFrom: this.height > this.minHeight ? this.height : this.minHeight,
                 animTo: 65,
                 steps: 5,
@@ -550,7 +561,7 @@ module.exports = ext.register("ext/console/console", {
             apf.layout.forceResize();
 
             settings.model.setQueryValue("auto/console/@expanded", shouldShow);
-            mnuItemConsoleExpanded.setAttribute("caption", cfg.mnuItemLabel);
+            mnuItemConsoleExpanded[cfg.mnuItemLabel]();
         };
 
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
