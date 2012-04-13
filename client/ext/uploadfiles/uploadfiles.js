@@ -226,7 +226,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             
             var folders = file.webkitRelativePath && file.webkitRelativePath.split("/");
             
-            if (!folders.length) {
+            if (!folders || !folders.length) {
                 addFile(file);
                 return next();
             }
@@ -485,6 +485,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             }
             
             /** Request successful */
+            apf.xmldb.setAttribute(file.queueNode, "progress", "100");
             fs.webdav.exec("readdir", [path], function(data) {
                 if (data instanceof Error) {
                     // @todo: in case of error, show nice alert dialog.
