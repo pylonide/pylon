@@ -59,9 +59,9 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     this.workspaceRe = new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
     this.$users = {};
-    
+
     this.nodeCmd = options.exec || process.argv[0];
-    
+
     var davOptions = {
         node: this.options.mountDir,
         mount: this.options.davPrefix,
@@ -141,7 +141,6 @@ Ide.DEFAULT_PLUGINS = [
     "ext/nodeunit/nodeunit",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    //"ext/autosave/autosave",
     "ext/vim/vim",
     "ext/guidedtour/guidedtour",
     "ext/quickstart/quickstart",
@@ -150,7 +149,8 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabsessions/tabsessions",
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker"
+    "ext/colorpicker/colorpicker",
+    "ext/revisions/revisions"
     //"ext/acebugs/acebugs"
 ];
 
