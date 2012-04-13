@@ -32,7 +32,6 @@ module.exports = ext.register("ext/settings/settings", {
     commands : {
         "show": {hint: "show the settings panel"}
     },
-    hotitems: {},
 
     nodes : [],
 
@@ -66,13 +65,11 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     hook : function(){
-        var menuItem = panels.register(this, {
+        panels.register(this, {
             position : 100000,
             caption: "Preferences",
             "class": "preferences"
         });
-        
-        this.hotitems.show = [menuItem];
         
         //Backwards compatible
         this.model = settings.model;
@@ -178,8 +175,14 @@ module.exports = ext.register("ext/settings/settings", {
     },
         
     show : function(e) {
-        panels.activate(this);
-        this.enable();
+        if (!this.panel.visible) {
+            panels.activate(this);
+            this.enable();
+        }
+        else {
+            panels.deactivate(null, true);
+        }
+        
         return false;
     },
 

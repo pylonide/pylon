@@ -62,8 +62,6 @@ module.exports = ext.register("ext/panels/panels", {
         var active = settings.model.queryValue("auto/panels/@active");
         if (panelExt["default"] && !active || active == panelExt.path)
             _self.activate(panelExt, null, true);
-        
-        return panelExt.mnuItem;
     },
     
     animate : function(win, toWin, toWidth){
@@ -231,7 +229,7 @@ module.exports = ext.register("ext/panels/panels", {
         if (!this.currentPanel)
             return;
 
-        if (!apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+        if (anim === false || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             this.currentPanel.panel.hide();
         }
         else if (anim)

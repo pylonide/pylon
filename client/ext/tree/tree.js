@@ -50,7 +50,6 @@ module.exports = ext.register("ext/tree/tree", {
     commands : {
         "show": {hint: "show the tree panel"}
     },
-    hotitems: {},
 
     defaultWidth     : 200,
 
@@ -70,12 +69,11 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
         // Register this panel on the left-side panels
-        var menuItem = panels.register(this, {
+        panels.register(this, {
             position : 1000,
             caption: "Project Files",
             "class": "project_files"
         });
-        this.hotitems.show = [menuItem];
 
         var _self = this;
 
@@ -553,8 +551,14 @@ module.exports = ext.register("ext/tree/tree", {
     },
     
     show : function(e) {
-        panels.activate(this);
-        this.enable();
+        if (!this.panel.visible) {
+            panels.activate(this);
+            this.enable();
+        }
+        else {
+            panels.deactivate(null, true);
+        }
+        
         return false;
     },
 

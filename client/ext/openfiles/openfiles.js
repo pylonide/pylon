@@ -25,15 +25,13 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     commands : {
         "show": {hint: "show the open files panel"}
     },
-    hotitems: {},
 
     hook : function(){
-        var menuItem = panels.register(this, {
+        panels.register(this, {
             position : 2000,
             caption: "Open Files",
             "class": "open_files"
         });
-        this.hotitems.show = [menuItem];
         
         var model = this.model = new apf.model().load("<files />");
         
@@ -149,8 +147,14 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
     
     show : function(e) {
-        panels.activate(this);
-        this.enable();
+        if (!this.panel.visible) {
+            panels.activate(this);
+            this.enable();
+        }
+        else {
+            panels.deactivate(null, true);
+        }
+        
         return false;
     },
     
