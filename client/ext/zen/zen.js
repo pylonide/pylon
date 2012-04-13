@@ -279,6 +279,8 @@ module.exports = ext.register("ext/zen/zen", {
      */
     enterIntoZenMode : function(slow) {
         var _self = this;
+        
+        var activeElement = apf.document.activeElement;
 
         this.saveTabEditorsParentStyles();
         if (self.btnZenFullscreen)
@@ -331,8 +333,8 @@ module.exports = ext.register("ext/zen/zen", {
                 }, 0.5);
 
                 setTimeout(function() {
-                    if (self.ceEditor)
-                        ceEditor.focus();
+                    if (activeElement && activeElement.getHeight())
+                        activeElement.$focus();
                 }, 100);
             });
 
@@ -384,7 +386,8 @@ module.exports = ext.register("ext/zen/zen", {
             apf.layout.forceResize();
 
             setTimeout(function() {
-                ceEditor.focus();
+                if (activeElement && activeElement.getHeight())
+                    activeElement.$focus();
             }, 100);
         }
     },
@@ -401,6 +404,8 @@ module.exports = ext.register("ext/zen/zen", {
             return;
 
         var _self = this;
+        
+        var activeElement = apf.document.activeElement;
 
         btnZenFullscreen.setAttribute("class", "notfull");
         this.isFocused = false;
@@ -443,8 +448,9 @@ module.exports = ext.register("ext/zen/zen", {
                 tabEditors.parentNode.$ext.style.position = "absolute";
 
                 setTimeout(function() {
-                    if (self.ceEditor && fromExitEvent === false)
-                        ceEditor.focus();
+                    if (activeElement && activeElement.getHeight()
+                      && fromExitEvent === false)
+                        activeElement.$focus();
                 }, 100);
             });
 
@@ -468,7 +474,9 @@ module.exports = ext.register("ext/zen/zen", {
 
             apf.layout.forceResize();
             setTimeout(function() {
-                ceEditor.focus();
+                if (activeElement && activeElement.getHeight()
+                  && fromExitEvent === false)
+                    activeElement.$focus();
             }, 100);
         }
 

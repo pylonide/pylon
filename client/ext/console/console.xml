@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="winDbgConsole" height="41">
+    <a:bar id="winDbgConsole" height="34">
         <a:vbox anchors="0 0 0 0">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
@@ -74,10 +74,11 @@
 
             <a:hbox class="consoleInputBox" edge="1" padding="4" pack="end">
                 <a:textbox id="txtConsoleInput"
-                  margin    = "4 0 0"
-                  skin      = "tb_console"
-                  flex      = "1" />
-                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="console-btn.png" state="true" height="38"
+                  initial-message = 'Type "help" to get a list of commands'
+                  margin          = "4 0 0"
+                  skin            = "tb_console"
+                  flex            = "1" />
+                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="switch.png" state="true" height="31"
                     value = "{!!tabConsole.visible}"
                     onprop.value="try { require('ext/console/console')[event.value ? 'show' : 'hide'](); } catch(e) {} " />
             </a:hbox>

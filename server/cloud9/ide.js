@@ -59,8 +59,9 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     this.workspaceRe = new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
     this.$users = {};
-    this.nodeCmd = process.argv[0];
-
+    
+    this.nodeCmd = options.exec || process.argv[0];
+    
     var davOptions = {
         node: this.options.mountDir,
         mount: this.options.davPrefix,
@@ -149,8 +150,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabsessions/tabsessions",
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker",
-    "ext/minimap/minimap"
+    "ext/colorpicker/colorpicker"
     //"ext/acebugs/acebugs"
 ];
 
@@ -217,7 +217,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
             }
 
             var staticUrl = _self.options.staticUrl;
-            var aceScripts = '<script type="text/javascript" data-ace-base="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n';
+            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n';
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,
