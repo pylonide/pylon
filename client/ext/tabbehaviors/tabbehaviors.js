@@ -202,36 +202,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.accessed.remove(page);
         });
 
-        var cycleKeyPressed, cycleKey = apf.isMac ? 18 : 17;
         tabEditors.addEventListener("afterswitch", function(e) {
             var page = e.nextPage;
-
-            if (!cycleKeyPressed) {
-                _self.accessed.remove(page);
-                _self.accessed.push(page);
-            }
         });
 
         tabEditors.addEventListener("close", function(e) {
             if (tabEditors.getPage() == e.page)
                 this.nextTabInLine = _self.accessed[_self.accessed.length - _self.$tabAccessCycle];
-        });
-
-        apf.addEventListener("keydown", function(eInfo) {
-            if (eInfo.keyCode == cycleKey)
-                cycleKeyPressed = true;
-        });
-
-        apf.addEventListener("keyup", function(eInfo) {
-            if (eInfo.keyCode == cycleKey && cycleKeyPressed) {
-                var page = tabEditors.getPage();
-                if (page) {
-                    _self.accessed.remove(page);
-                    _self.accessed.push(page);
-                }
-                _self.$tabAccessCycle = 2;
-                cycleKeyPressed = false;
-            }
         });
 
         tabEditors.addEventListener("aftersavedialogcancel", function(e) {
