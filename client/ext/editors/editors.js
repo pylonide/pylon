@@ -76,6 +76,21 @@ module.exports = ext.register("ext/editors/editors", {
             }
         }
     },
+    
+    toggleTabs : function(force){
+        if (!force && tabEditors["class"] == "hidetabs" || force > 0) {
+            tabEditors.setAttribute("class", "");
+            tabEditors.parentNode.$ext.style.paddingBottom = "32px";
+            apf.layout.forceResize(tabEditors.$ext);
+            this.mnuItemTabs.setAttribute("caption", "Hide Tabs");
+        }
+        else {
+            tabEditors.setAttribute("class", "hidetabs");
+            tabEditors.parentNode.$ext.style.paddingBottom = 0;
+            apf.layout.forceResize(tabEditors.$ext);
+            this.mnuItemTabs.setAttribute("caption", "Show Tabs");
+        }
+    },
 
     addTabSection : function(){
         var _self = this;
@@ -551,10 +566,17 @@ module.exports = ext.register("ext/editors/editors", {
             id : "mnuEditors"
         }));
         
-        mnuView.insertBefore(new apf.item({
+        mnuView.appendChild(new apf.item({
             caption : "Editor",
             submenu : "mnuEditors"
-        }), mnuView.firstChild);
+        }));
+        
+        this.mnuItemTabs = mnuView.appendChild(new apf.item({
+            caption : "Hide Tabs",
+            onclick : function(){
+                _self.toggleTabs();
+            }
+        }));
         
         ext.addType("Editor", function(oExtension){
             _self.register(oExtension);

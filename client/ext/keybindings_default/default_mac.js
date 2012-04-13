@@ -9,7 +9,8 @@ var keys = require("ext/keybindings/keybindings");
 return keys.onLoad({
     "ext" : {
         "console" : {
-            "switchconsole": "Shift-Esc"
+            "switchconsole": "Shift-Esc",
+            "show": "Ctrl-C"
         },
         "save" : {
             "quicksave": "Command-S",
@@ -72,9 +73,6 @@ return keys.onLoad({
         "formatjson" : {
             "format" : "Shift-Command-J"
         },
-        "settings": {
-            "showsettings": "Command-,"
-        },
         "tabbehaviors" : {
             "closetab": "Option-W",
             "closealltabs": "Option-Shift-W",
@@ -96,6 +94,15 @@ return keys.onLoad({
         },
         "tabsessions" : {
             "savetabsession": "Command-Alt-S"
+        },
+        "tree" : {
+            "show" : "Command-U"
+        },
+        "openfiles" : {
+            "show" : "Shift-Command-U"
+        },
+        "settings": {
+            "show": "Command-,"
         },
         "splitview" : {
             "mergetableft": "Option-Command-[",

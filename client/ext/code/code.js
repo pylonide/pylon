@@ -302,7 +302,11 @@ module.exports = ext.register("ext/code/code", {
     hook: function() {
         var _self = this;
 
-        require("ext/settings/settings").addSettings("Code Editor", markupSettings);
+        //Settings Support
+        ide.addEventListener("init.ext/settings/settings", function(e) {
+            var heading = e.ext.getHeading("Code Editor");
+            heading.insertMarkup(markupSettings);
+        });
 
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
@@ -361,7 +365,8 @@ module.exports = ext.register("ext/code/code", {
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            if(typeof ceEditor != "undefined")
+                ceEditor.afterOpenFile(ceEditor.getSession());
         });
     },
 
@@ -381,7 +386,7 @@ module.exports = ext.register("ext/code/code", {
         var _self = this;
 
         var menuSyntaxHighlight = new apf.item({
-            caption : "Syntax Highlighting",
+            caption : "Syntax",
             submenu : "mnuSyntax"
         });
 
@@ -389,12 +394,6 @@ module.exports = ext.register("ext/code/code", {
             type    : "check",
             caption : "Show Invisibles",
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-        });
-
-        var menuWrapLines = new apf.item({
-            type    : "check",
-            caption : "Wrap Lines",
-            checked : "{ceEditor.wrapmode}"
         });
 
         this.nodes.push(
@@ -408,7 +407,6 @@ module.exports = ext.register("ext/code/code", {
                 caption : "Length: {ceEditor.value.length}"
             })),
 
-            mnuView.appendChild(new apf.divider()),
             mnuView.appendChild(menuSyntaxHighlight)
         );
 
@@ -455,7 +453,6 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
-            e.ext.addPrefsItem(menuWrapLines.cloneNode(true), 1);
         });
 
         ide.addEventListener("keybindingschange", function(e) {

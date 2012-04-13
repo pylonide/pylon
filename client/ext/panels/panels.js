@@ -37,7 +37,7 @@ module.exports = ext.register("ext/panels/panels", {
             }
         }
         
-        panelExt.mnuItem = mnuProjectBar.insertBefore(new apf.item({
+        panelExt.mnuItem = mnuSidebar.insertBefore(new apf.item({
             caption : panelExt.name,
             type    : "radio",
             value   : panelExt.path,
@@ -46,35 +46,38 @@ module.exports = ext.register("ext/panels/panels", {
                 if (e.value)
                     _self.activate(panelExt);
             }
-        }), beforePanel && beforePanel.mnuItem);
+        }));
         
-        panelExt.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : "true",
-            //value   : "true",
-            "class" : options["class"],
-            caption : options.caption
-        }), beforePanel && beforePanel.button || navbar.firstChild);
+        ide.addEventListener("init.ext/navbar/navbar", function(){
+            panelExt.button = navbar.insertBefore(new apf.button({
+                skin    : "mnubtn",
+                state   : "true",
+                //value   : "true",
+                "class" : options["class"],
+                caption : options.caption
+            }), beforePanel && beforePanel.button || navbar.firstChild);
 
-        //navbar.current = this;
-        panelExt.button.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (_self.currentPanel && (_self.currentPanel != panelExt || value) && value) {
-                _self.deactivate(_self.currentPanel == panelExt, true);
-                
-                if (value) {
-                    if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
-                        colLeft.hide();
-                    return;
+            //navbar.current = this;
+            panelExt.button.addEventListener("mousedown", function(e){
+                var value = this.value;
+                if (_self.currentPanel && (_self.currentPanel != panelExt || value) && value) {
+                    _self.deactivate(_self.currentPanel == panelExt, true);
+                    
+                    if (value) {
+                        if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
+                            colLeft.hide();
+                        return;
+                    }
                 }
-            }
-
-            _self.activate(panelExt, true);
+    
+                _self.activate(panelExt, true);
+            });
+            
+            panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
         });
         
         this.panels[panelExt.path] = panelExt;
         panelExt.$panelPosition = options.position;
-        panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
         
         ide.addEventListener("init." + panelExt.path, function(e){
             panelExt.panel.setAttribute("draggable", "false");
@@ -92,6 +95,8 @@ module.exports = ext.register("ext/panels/panels", {
         var active = settings.model.queryValue("auto/panels/@active");
         if (panelExt["default"] && !active || active == panelExt.path)
             _self.activate(panelExt, null, true);
+        
+        return panelExt.mnuItem;
     },
     
     animate : function(win, toWin, toWidth){
@@ -242,7 +247,7 @@ module.exports = ext.register("ext/panels/panels", {
 
         colLeft.show();
         
-        if (!noButton)
+        if (!noButton && panelExt.button)
             panelExt.button.setValue(true);
 
         splitterPanelLeft.show();
@@ -265,7 +270,7 @@ module.exports = ext.register("ext/panels/panels", {
         else if (anim)
             this.animate(this.currentPanel.panel);
         
-        if (!noButton)
+        if (!noButton && this.currentPanel.button)
             this.currentPanel.button.setValue(false);
 
         splitterPanelLeft.hide();
@@ -294,13 +299,22 @@ module.exports = ext.register("ext/panels/panels", {
                 value : "[{req"+"uire('ext/settings/settings').model}::auto/panels/@active]"
             })),
             
-            barMenu.appendChild(new apf.button({
-                submenu : "mnuWindows",
-                caption : "Windows",
-                skin    : "c9-menu-btn",
-                margin  : "1 0 0 0"
+            mnuView.appendChild(new apf.item({
+                submenu : "mnuSidebar",
+                caption : "Project Bar" //I would like to rename this to Side Bar
             })),
-            mnuWindows
+            
+            mnuView.appendChild(new apf.item({
+                submenu : "mnuTabs",
+                caption : "Tabs"
+            })),
+            
+            mnuView.appendChild(new apf.item({
+                submenu : "mnuToolbar",
+                caption : "Toolbar"
+            })),
+            
+            mnuView.appendChild(new apf.divider())
         );
         
         colLeft.addEventListener("resize", function(){

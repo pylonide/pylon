@@ -92,6 +92,7 @@ module.exports = ext.register("ext/console/console", {
     hidden : true,
     nodes : [],
     minHeight : 150,
+    collapsedHeight : 34,
 
     autoOpen : true,
     excludeParent : true,
@@ -109,8 +110,12 @@ module.exports = ext.register("ext/console/console", {
         },
         "send": {
             hint: "send a message to the server"
+        },
+        "show": {
+            hint: "Show the console"
         }
     },
+    hotitems : {},
 
     messages: {
         cd: function(message) {
@@ -378,18 +383,42 @@ module.exports = ext.register("ext/console/console", {
 
         this.nodes.push(
             winDbgConsole,
-            mnuWindows.appendChild(new apf.item({
-                id: "chkConsoleExpanded",
-                caption: "Console",
-                type: "check",
-                "onprop.checked" : function(e) {
-                    if (e.value)
+            
+            mnuView.appendChild(new apf.item({
+                id: "mnuItemConsoleExpanded",
+                caption: "Show Console",
+                onclick : function() {
+                    if (_self.hidden)
                         _self.show();
                     else
                         _self.hide();
                 }
+            })),
+            
+            mnuView.appendChild(new apf.item({
+                id: "mnuItemInput",
+                caption: "Hide Input Bar",
+                onclick : function() {
+                    if (txtConsoleInput.parentNode.visible) {
+                        _self.collapsedHeight = 0;
+                        if (_self.hidden)
+                            winDbgConsole.setAttribute("height", "0")
+                        txtConsoleInput.parentNode.hide();
+                        mnuItemInput.setAttribute("caption", "Show Input Bar");
+                    }
+                    else {
+                        _self.collapsedHeight = 34;
+                        if (_self.hidden)
+                            winDbgConsole.setAttribute("height", "34px")
+                        txtConsoleInput.parentNode.show();
+                        mnuItemInput.setAttribute("caption", "Hide Input Bar");
+                    }
+                    apf.layout.forceResize();
+                }
             }))
         );
+        
+        this.hotitems.show = [mnuItemConsoleExpanded];
 
         ide.addEventListener("loadsettings", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
@@ -479,9 +508,10 @@ module.exports = ext.register("ext/console/console", {
             cfg = {
                 height: this.height,
                 dbgVisibleMethod: "show",
-                chkExpandedMethod: "check",
-                animFrom: this.height*0.95,
+                mnuItemLabel: "Hide Console",
+                animFrom: this.collapsedHeight,
                 animTo: this.height > this.minHeight ? this.height : this.minHeight,
+                steps: 5,
                 animTween: "easeOutQuint"
             };
 
@@ -490,11 +520,12 @@ module.exports = ext.register("ext/console/console", {
         }
         else {
             cfg = {
-                height: 34,
+                height: this.collapsedHeight,
                 dbgVisibleMethod: "hide",
-                chkExpandedMethod: "uncheck",
+                mnuItemLabel: "Show Console",
                 animFrom: this.height > this.minHeight ? this.height : this.minHeight,
                 animTo: 65,
+                steps: 5,
                 animTween: "easeInOutCubic"
             };
 
@@ -517,7 +548,7 @@ module.exports = ext.register("ext/console/console", {
             apf.layout.forceResize();
 
             settings.model.setQueryValue("auto/console/@expanded", shouldShow);
-            chkConsoleExpanded[cfg.chkExpandedMethod]();
+            mnuItemConsoleExpanded.setAttribute("caption", cfg.mnuItemLabel);
         };
 
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
@@ -528,7 +559,7 @@ module.exports = ext.register("ext/console/console", {
                 anim  : apf.tween[cfg.animTween],
                 from  : cfg.animFrom,
                 to    : cfg.animTo,
-                steps : 8,
+                steps : cfg.steps,
                 interval : 5,
                 onfinish : finish,
                 oneach : function() { apf.layout.forceResize(); }

@@ -7827,7 +7827,7 @@
         padding-top: 32px;
         background-color:#e8e8e8;
     }
-
+    
     .editor_tab .btnsesssioncontainer {
         padding : 5px 45px 0 21px;
         z-index : 100;
@@ -8153,6 +8153,18 @@
 
     .editor_tab .session_page.curpage{
         display : block;
+    }
+    
+    .editor_tab.hidetabs {
+        padding-top : 0;
+    }
+    .editor_tab.hidetabs .editor_bg, 
+    .editor_tab.hidetabs .session_page {
+        top : 0;
+    }
+    
+    .editor_tab.hidetabs .btnsesssioncontainer{
+        display : none;
     }
 ]]></a:style>
 

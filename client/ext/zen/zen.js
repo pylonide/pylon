@@ -73,17 +73,29 @@ module.exports = ext.register("ext/zen/zen", {
             _self.updateButtonPosition();
         });
         
-        tabEditors.addEventListener("afterswitch", function(e){
-            if (e.nextPage.type === "ext/imgview/imgview")
-                return;
-
-            if (!_self.inited) {
-                // Wait a moment for the editor to get into place
-                setTimeout(function() {
-                    ext.initExtension(_self);
-                });
-            }
+        ide.addEventListener("init.ext/editors/editors", function(){
+            tabEditors.addEventListener("afterswitch", function(e){
+                if (e.nextPage.type === "ext/imgview/imgview")
+                    return;
+    
+                if (!_self.inited) {
+                    // Wait a moment for the editor to get into place
+                    setTimeout(function() {
+                        ext.initExtension(_self); //@matt this is inefficient (Ruben)
+                    });
+                }
+            });
         });
+        
+        this.nodes.push(
+            this.mnuItem = mnuView.appendChild(new apf.item({
+                caption : "Zen Mode",
+                type    : "check",
+                onclick : function(){
+                    _self.toggleFullscreenZen();
+                }
+            }))
+        )
     },
 
     init : function(){
@@ -277,6 +289,8 @@ module.exports = ext.register("ext/zen/zen", {
         if (self.btnZenFullscreen)
             btnZenFullscreen.setAttribute("class", "full");
 
+        this.mnuItem.check();
+
         // Calculates the destination position and dimensions of
         // the animated container
         var browserWidth = window.innerWidth;
@@ -400,6 +414,8 @@ module.exports = ext.register("ext/zen/zen", {
 
         btnZenFullscreen.setAttribute("class", "notfull");
         this.isFocused = false;
+        
+        this.mnuItem.uncheck();
 
         this.zenHandleLeft.style.opacity = "0.0";
         this.zenHandleRight.style.opacity = "0.0";

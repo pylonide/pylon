@@ -28,9 +28,9 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var _self = this;
         var reloadDgExt = true;
         this.nodes.push(
-            mnuWindows.insertBefore(new apf.divider(), mnuWindows.firstChild),
+            mnuView.insertBefore(new apf.divider(), mnuView.firstChild),
 
-            mnuWindows.insertBefore(new apf.item({
+            mnuView.insertBefore(new apf.item({
                 caption : "Extension Manager...",
                 onclick : function(){
                     ext.initExtension(_self);
@@ -48,7 +48,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                         }
                     });
                 }
-            }), mnuWindows.firstChild)
+            }), mnuView.firstChild)
         );
 
         // Load up extensions the user added manually

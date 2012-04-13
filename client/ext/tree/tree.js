@@ -47,6 +47,11 @@ module.exports = ext.register("ext/tree/tree", {
     type             : ext.GENERAL,
     markup           : markup,
 
+    commands : {
+        "show": {hint: "show the tree panel"}
+    },
+    hotitems: {},
+
     defaultWidth     : 200,
 
     deps             : [fs],
@@ -65,11 +70,12 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
         // Register this panel on the left-side panels
-        panels.register(this, {
+        var menuItem = panels.register(this, {
             position : 1000,
             caption: "Project Files",
             "class": "project_files"
         });
+        this.hotitems.show = [menuItem];
 
         var _self = this;
 
@@ -545,6 +551,12 @@ module.exports = ext.register("ext/tree/tree", {
         // Now re-attach the scroll listener
         trFiles.addEventListener("scroll", $trScroll);
     },
+    
+    show : function(e) {
+        panels.activate(this);
+        this.enable();
+        return false;
+    },
 
     enable : function(){
         this.nodes.each(function(item){
@@ -559,22 +571,6 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     destroy : function(){
-        trFiles.removeEventListener("afterselect", this.$afterselect);
-        trFiles.removeEventListener("afterchoose", this.$afterchoose);
-        trFiles.removeEventListener("expand", this.$expand);
-        trFiles.removeEventListener("collapse", this.$collapse);
-        trFiles.removeEventListener("beforemove", this.$beforemove);
-        trFiles.removeEventListener("beforerename", this.$beforerename);
-        trFiles.removeEventListener("beforestoprenam", this.$beforestoprename);
-        trFiles.removeEventListener("beforecopy", this.$beforecopy);
-        trFiles.removeEventListener("beforeadd", $cancelWhenOffline);
-        trFiles.removeEventListener("renamestart", $cancelWhenOffline);
-        trFiles.removeEventListener("beforeremove", $cancelWhenOffline);
-        trFiles.removeEventListener("dragstart", $cancelWhenOffline);
-        trFiles.removeEventListener("dragdrop", $cancelWhenOffline);
-        trFiles.removeEventListener("keyup", this.$keyup);
-        trFiles.removeEventListener("scroll", $trScroll);
-
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
