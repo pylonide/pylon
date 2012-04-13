@@ -1,11 +1,11 @@
 /**
- * Code Editor for the Cloud9 IDE
+ * File Tree for the Cloud9 IDE
  *
  * @TODO
- * - Save & load scroll position of tree
+ * - Load same-level dirs in parallel
  * - Comment everything
  * 
- * @copyright 2010, Ajax.org B.V.
+ * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -19,9 +19,30 @@ var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/tree/tree.xml");
 
+function $trScroll() {
+    if (this.$scrollTimer)
+        clearTimeout(this.$scrollTimer);
+
+    // Set to -1 in case the user scrolls before the tree is done loading,
+    // in which case we don't want to set the scroll pos to the saved one
+    this.scrollPos = -1;
+
+    this.$scrollTimer = setTimeout(function() {
+        var settingsData       = settings.model.data;
+        var settingProjectTree = settingsData.selectSingleNode("auto/projecttree");
+        if (settingProjectTree)
+            apf.xmldb.setAttribute(settingProjectTree, "scrollpos", trFiles.$ext.scrollTop);
+    }, 1000);
+}
+
+function $cancelWhenOffline() {
+    if (!ide.onLine && !ide.offlineFileSystemSupport)
+        return false;
+}
+
 module.exports = ext.register("ext/tree/tree", {
     name             : "Project Files",
-    dev              : "Ajax.org",
+    dev              : "Cloud9 IDE, Inc.",
     alone            : true,
     type             : ext.GENERAL,
     markup           : markup,
@@ -71,6 +92,8 @@ module.exports = ext.register("ext/tree/tree", {
             (davProject.realWebdav || davProject).setAttribute("showhidden",
                 apf.isTrue(model.queryValue('auto/projecttree/@showhidden')));
 
+            _self.scrollPos = model.queryValue('auto/projecttree/@scrollpos');
+
             // auto/projecttree contains the saved expanded nodes
             var strSettings = model.queryValue("auto/projecttree");
             if (strSettings) {
@@ -106,25 +129,23 @@ module.exports = ext.register("ext/tree/tree", {
             if (!_self.changed)
                 return;
 
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
+            var expandedNodes = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
             _self.currentSettings = [];
 
             var path, id;
-            
+
             // expandedList keeps an active record of all the expanded nodes
             // so that on each save this gets serialized into the auto/projecttree
             // settings node
             for (id in _self.expandedList) {
                 path = _self.expandedList[id].getAttribute("path");
-                if (!path) {
+                if (!path)
                     delete _self.expandedList[id];
-                }
-                else {
+                else
                     _self.currentSettings.push(path);
-                }
             }
 
-            xmlSettings.nodeValue = apf.serialize(_self.currentSettings);
+            expandedNodes.nodeValue = apf.serialize(_self.currentSettings);
             _self.changed = false;
             return true;
         });
@@ -239,7 +260,7 @@ module.exports = ext.register("ext/tree/tree", {
         // selection in the settings model
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
             if (settings.model && settings.model.data && trFiles.selected) {
-                var nodePath          = trFiles.selected.getAttribute("path");
+                var nodePath          = trFiles.selected.getAttribute("path").replace(/"/g, "&quot;");
                 var nodeType          = trFiles.selected.getAttribute("type");
                 var settingsData      = settings.model.data;
                 var treeSelectionNode = settingsData.selectSingleNode("auto/tree_selection");
@@ -280,7 +301,7 @@ module.exports = ext.register("ext/tree/tree", {
 
             var count = 0;
             filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
-            while (args[0].selectSingleNode("node()[@name='" + filename.replace(/'/g, "\\'") + "']")) {
+            while (args[0].selectSingleNode('node()[@name="' + filename.replace(/"/g, "&quot;") + '"]')) {
                 filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
             }
             args[1].setAttribute("newname", filename);
@@ -342,11 +363,19 @@ module.exports = ext.register("ext/tree/tree", {
             });
         });
 
-        trFiles.addEventListener("beforeadd", this.cancelWhenOffline);
-        trFiles.addEventListener("renamestart", this.cancelWhenOffline);
-        trFiles.addEventListener("beforeremove", this.cancelWhenOffline);
-        trFiles.addEventListener("dragstart", this.cancelWhenOffline);
-        trFiles.addEventListener("dragdrop", this.cancelWhenOffline);
+        trFiles.addEventListener("keyup", this.$keyup = function(e){
+            if(this.dragging > 0 && e.keyCode == 27) {
+                apf.DragServer.stop();
+            }
+        });
+
+        trFiles.addEventListener("scroll", $trScroll);
+
+        trFiles.addEventListener("beforeadd", $cancelWhenOffline);
+        trFiles.addEventListener("renamestart", $cancelWhenOffline);
+        trFiles.addEventListener("beforeremove", $cancelWhenOffline);
+        trFiles.addEventListener("dragstart", $cancelWhenOffline);
+        trFiles.addEventListener("dragdrop", $cancelWhenOffline);
 
         // When a folder has been expanded, save it in expandedList
         trFiles.addEventListener("expand", this.$expand = function(e){
@@ -374,11 +403,6 @@ module.exports = ext.register("ext/tree/tree", {
         });
     },
 
-    $cancelWhenOffline : function() {
-        if (!ide.onLine && !ide.offlineFileSystemSupport)
-            return false;
-    },
-
     moveFile : function(path, newpath){
         davProject.move(path, newpath);
         trFiles.enable();
@@ -386,7 +410,7 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     /**
-     * Loads the project tree based on currentSettings, which is an arry of
+     * Loads the project tree based on currentSettings, which is an array of
      * folders that were previously expanded, otherwise it contains only the
      * root identifier (i.e. ide.davPrefix)
      * 
@@ -396,7 +420,6 @@ module.exports = ext.register("ext/tree/tree", {
         this.loading = true;
 
         var currentSettings = this.currentSettings;
-        var len = currentSettings.length;
         var _self = this;
 
         /**
@@ -406,7 +429,7 @@ module.exports = ext.register("ext/tree/tree", {
          * @param number i The iterator for referencing currentSettings' elements
          */
         function getLoadPath(i) {
-            if (i >= len)
+            if (i >= currentSettings.length)
                 return onFinish();
 
             var path = currentSettings[i];
@@ -417,6 +440,13 @@ module.exports = ext.register("ext/tree/tree", {
             // check which one is available for us to use (and yes, realWebdav
             // can sometimes not be set on initial load)
             (davProject.realWebdav || davProject).readdir(path, function(data, state, extra) {
+                // Folder not found
+                if (extra.status === 404) {
+                    _self.changed = true;
+                    currentSettings.splice(i, 1);
+                    return getLoadPath(i);
+                }
+
                 // Strip the extra "/" that webDav adds on
                 var realPath = extra.url.substr(0, extra.url.length-1);
 
@@ -429,8 +459,11 @@ module.exports = ext.register("ext/tree/tree", {
                     parentNode = trFiles.queryNode('//folder[@path="' + realPath + '"]');
 
                 // Hmm? Folder deleted?
-                if (!parentNode)
-                    return getLoadPath(++i);
+                if (!parentNode) {
+                    _self.changed = true;
+                    currentSettings.splice(i, 1);
+                    return getLoadPath(i);
+                }
 
                 var dataXml = apf.getXml(data);
                 for (var x = 0, xmlLen = dataXml.childNodes.length; x < xmlLen; x++) {
@@ -468,6 +501,10 @@ module.exports = ext.register("ext/tree/tree", {
                 trFiles.select(trFiles.$model.queryNode("node()"));
             }
 
+            // Scroll to last set scroll pos
+            if (_self.scrollPos && _self.scrollPos > -1)
+                trFiles.$ext.scrollTop = _self.scrollPos;
+
             // Now set the "get" attribute of the <a:insert> rule so the tree
             // knows to ask webdav for expanded folders' contents automatically
             self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
@@ -486,6 +523,12 @@ module.exports = ext.register("ext/tree/tree", {
      * Called when the user hits the refresh button in the Project Files header
      */
     refresh : function(){
+        // When we clear the model below, it dispatches a scroll event which
+        // we don't want to process, so remove that event listener
+        trFiles.removeEventListener("scroll", $trScroll);
+
+        this.scrollPos = trFiles.$ext.scrollTop;
+
         trFiles.getModel().load("<data><folder type='folder' name='" +
             ide.projectName + "' path='" + ide.davPrefix + "' root='1'/></data>");
         this.expandedList = {};
@@ -498,6 +541,9 @@ module.exports = ext.register("ext/tree/tree", {
         ide.dispatchEvent("track_action", { type: "reloadtree" });
 
         this.loadProjectTree();
+
+        // Now re-attach the scroll listener
+        trFiles.addEventListener("scroll", $trScroll);
     },
 
     enable : function(){
@@ -521,11 +567,13 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.removeEventListener("beforerename", this.$beforerename);
         trFiles.removeEventListener("beforestoprenam", this.$beforestoprename);
         trFiles.removeEventListener("beforecopy", this.$beforecopy);
-        trFiles.removeEventListener("beforeadd", this.$cancelWhenOffline);
-        trFiles.removeEventListener("renamestart", this.$cancelWhenOffline);
-        trFiles.removeEventListener("beforeremove", this.$cancelWhenOffline);
-        trFiles.removeEventListener("dragstart", this.$cancelWhenOffline);
-        trFiles.removeEventListener("dragdrop", this.$cancelWhenOffline);
+        trFiles.removeEventListener("beforeadd", $cancelWhenOffline);
+        trFiles.removeEventListener("renamestart", $cancelWhenOffline);
+        trFiles.removeEventListener("beforeremove", $cancelWhenOffline);
+        trFiles.removeEventListener("dragstart", $cancelWhenOffline);
+        trFiles.removeEventListener("dragdrop", $cancelWhenOffline);
+        trFiles.removeEventListener("keyup", this.$keyup);
+        trFiles.removeEventListener("scroll", $trScroll);
 
         this.nodes.each(function(item){
             item.destroy(true, true);

@@ -16,7 +16,7 @@ if (parseInt(process.version.split(".")[1], 10) < 2) {
 
 var options = Parser.parse([
     {short: "w", long: "workspace", description: "Path to the workspace that will be loaded in Cloud9 (may be relative or absolute).", value: true, def: "." },
-    {short: "p", long: "port", parser: parseInt, description: "Port number where Cloud9 will serve from.", value: true, def: process.env.C9_PORT || 3000 },
+    {short: "p", long: "port", parser: parseInt, description: "Port number where Cloud9 will serve from.", value: true, def: process.env.PORT || 3000 },
     {short: "l", long: "ip", description: "IP address where Cloud9 will serve from.", value: true, def: process.env.C9_PORT ? "0.0.0.0" : "127.0.0.1" },
     {short: "a", long: "action", description: "Define an action to execute after the Cloud9 server is started.", value: true, def: null, parser: function(value) {
         return value.split(/\s+/g);
@@ -25,6 +25,7 @@ var options = Parser.parse([
     {short: "d", long: "debug", description: "Activate debug-mode.", def: false},
     {short: "u", long: "user", description: "Run child processes as a specific user.", value: true, def: false },
     {short: "g", long: "group", description: "Run child processes with a specific group.", value: true, def: false },
+    {short: "e", long: "exec", description: "Path to the node executable for debugging.", value: true, def: null},
     {short: "c", long: "config", description: "Load the configuration from a config file. Overrides command-line options.", value: true, def: null, parser: function(value) {
             var pref = ( value.charAt(0) == "/" ) ? "" :  process.cwd() + "/";
             return require(pref + value.replace(".js", "")).Config;

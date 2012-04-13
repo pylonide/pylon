@@ -84,13 +84,20 @@
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
+            <a:item match="[file|folder|project]" onclick="
+                var store = apf.clipboard.store;
+                apf.clipboard.copySelection(apf.activeElement);
+                apf.clipboard.pasteSelection(apf.activeElement);
+                apf.clipboard.store = store;
+            ">Duplicate</a:item>
+            <a:divider />
             <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.cutSelection(apf.activeElement);
             ">Cut</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="
                 apf.clipboard.copySelection(apf.activeElement);
             ">Copy</a:item>
-            <a:item match="[folder|project]" disabled="{apf.clipboard.empty}" onclick="
+            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" onclick="
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />

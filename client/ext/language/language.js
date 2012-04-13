@@ -23,7 +23,7 @@ var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 
-var settings = require("text!ext/language/settings.xml");
+var markupSettings = require("text!ext/language/settings.xml");
 var extSettings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/language/language", {
@@ -81,18 +81,17 @@ module.exports = ext.register("ext/language/language", {
             callback({worker: worker});
         });
 
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            var heading = e.ext.getHeading("Language Support");
-            heading.insertMarkup(settings);
-        });
+        require("ext/settings/settings").addSettings("Language Support", markupSettings );
     },
 
     init : function() {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
-        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+        if (!editors.currentEditor || !editors.currentEditor.ceEditor) {
             return;
+        }
+        
         this.editor = editors.currentEditor.ceEditor.$editor;
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
         this.editor.selection.on("changeCursor", this.$onCursorChange);
@@ -114,7 +113,7 @@ module.exports = ext.register("ext/language/language", {
             }, 100);
         });
 
-        this.editor.addEventListener("change", function(e) {
+        this.editor.on("change", function(e) {
             e.range = {
                 start: e.data.range.start,
                 end: e.data.range.end
@@ -129,10 +128,12 @@ module.exports = ext.register("ext/language/language", {
 
         // Monkeypatching ACE's JS mode to disable worker
         // this will be handled by C9's worker
-        ceEditor.getMode("javascript", function(mode) {
-            mode.createWorker = function() {
-                return null;
-            };
+        ceEditor.addEventListener("loadmode", function(e) {
+            if (e.name === "ace/mode/javascript") {
+                e.mode.createWorker = function() {
+                    return null;
+                };
+            }
         });
     },
 

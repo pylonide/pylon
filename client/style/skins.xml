@@ -902,32 +902,27 @@
             -moz-user-select   : none;
             -khtml-user-select : none;
             user-select        : none;
-            height             : 38px;
-            width              : 20px;
-            backgroudn : no-repeat 0 0;
+            height             : 31px;
+            width              : 18px;
+            background-repeat   : no-repeat;
+            background-position : -36px 50%;
         }
 
         .btn_console_openOver {
-            background-position: 0 -76px;
-        }
-
-        .btn_console_openDown {
-            background-position: 0 -152px;
-        }
-
-        .btn_console_openOpen.btn_console_openOver {
-            background-position: 0 -114px;
+            background-position : -54px 50%;
         }
         .btn_console_openOpen.btn_console_openDown {
-            background-position: 0 -190px;
+            background-position: 0 50%;
         }
+        .btn_console_openOpen.btn_console_openDown:hover {
+            background-position: -18px 50%;
+        }
+        
 
         .btn_console_openOpen {
-            background-position: 0 -38px;
+            background-position: 0 50%;
         }
 
-        .btn_console_openDown:hover {
-        }
 
         .btn_console_open.btnDisabled {
             cursor: default;
@@ -2526,7 +2521,7 @@
             cursor : default;
             z-index:1100000;
             position: relative;
-            height: 13px;
+            height: 20px;
         }
 
         .cbmcontainer span {
@@ -2943,7 +2938,7 @@
             position: relative;
             border: 1px solid #c3c3c3;
             background-color: white;
-            cursor: default;
+            /*cursor: default;*/
             overflow : hidden;
 
             font-family: Tahoma, Arial;
@@ -3072,12 +3067,14 @@
             text-overflow : ellipsis;
             white-space : nowrap;
             overflow : hidden;
+            cursor: default;
             border-right:1px solid #D6D6D6;
             border-left : 1px solid white;
         }
 
-        .with-noise .records .row span u {
-            border-left: 1px solid #D1D1D1;
+        .with-noise .records .row span {
+            border-left : 1px solid #D1D1D1;
+            margin-left : -1px;
         }
 
         .with-noise .records .row span {
@@ -3151,7 +3148,7 @@
             background-color : white;
             color : #333;
         }*/
-        .datagridFocus .records .selected span u{
+        .datagridFocus .records .selected span u {
             border-left : 1px solid #8bc0ed;
         }
 
@@ -3401,7 +3398,7 @@
             position: relative;
             border: 1px solid #c3c3c3;
             background-color: white;
-            cursor: default;
+            /*cursor: default;*/
             overflow : hidden;
             font-family: Tahoma, Arial;
             font-size: 8pt;
@@ -3413,7 +3410,7 @@
             position : absolute;
             top : 20px;
             left : 0;
-            right:0px;
+            right: -1px;
             height : 20px;
             z-index : 10;
             background-color : #e6e6e6;
@@ -4663,60 +4660,52 @@
 <a:list name="lineselect">
     <a:style><![CDATA[
         .lineselect{
-            overflow: auto;
-            position: relative;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
-            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
-            color: #333333;
-            border: 1px solid #afafaf;
-            margin: 0;
-            outline: none;
-            font-family: Tahoma, Arial;
-            font-size: 12px;
-            text-overflow: ellipsis;
-            -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
-            box-shadow: 0px 1px 0px #ffffff;
-
-            cursor: default;
+            
         }
-
-        .runconfig.lineselect {
-            border-color: #ffffff;
-            border-width: 1px 0 0;
+        
+        .searchresults {
+            position : relative;
         }
-        .lineselect>.selected{
-            background-color: rgb(203, 205, 208);
-            color: black;
+        
+        .searchresults>div{
+            background : rgba(255,255,255,0.4);   
+            color : #666;
+            padding : 2px 3px 4px 10px;
+            border-top : 1px solid rgba(255,255,255,0.8);
+            border-bottom : 1px solid rgba(0,0,0,0.1);
+            font-size : 11px;
+            cursor : default;
+            white-space : nowrap;
         }
-        .lineselectFocus>.selected{
+        .searchresults>div:hover{
+            background : rgba(255,255,255,0.6);
+        }
+        .searchresults>div>span{
+            font-size : 14px;
+            color : #333;
+            display : block;
+            padding : 2px;
+        }
+        .searchresults>div>span>strong{
+            color : #111;
+        }
+        .searchresults>div.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
             color : white;
         }
-
-        .runconfig.lineselect>.selected{
-            background-image: linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -o-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -moz-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -webkit-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -ms-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-
-            border-top: 1px solid #3783c4;
-            border-bottom: 1px solid #383838;
-
-            color : white;
+        .searchresults>div.selected>span{
+            color : #f1f1f1;
         }
-        .lineselect .empty, .lineselect .offline, .lineselect .loading{
-            text-align: center;
-            padding: 8px 0 0 5px;
-            color: #AAA;
-            font-weight : normal;
+        .searchresults>div.selected>span>strong{
+            color : #fff;
         }
-        .lineselect>DIV{
-            padding: 2px 6px;
+        .searchresults .message{
+            border : 0;
+            padding : 3px;
+            text-align : center;
+            background : transparent;
         }
-
     ]]></a:style>
 
     <a:presentation>
@@ -5959,6 +5948,10 @@
             overflow : hidden;
             height   : 33px;
             top      : -33px;
+            background    : url(images/bk-win-header.png)  repeat-x 0 0;
+            -moz-border-radius    : 6px 6px 0 0;
+            -webkit-border-radius : 6px 6px 0 0;
+            border-radius         : 6px 6px 0 0;
         }
 
         .bk-window.relative .bk-header {
@@ -5966,27 +5959,23 @@
         }
 
         .bk-window .bk-header .hcontent {
-            background    : url(images/bk-win-header.png)  repeat-x 0 0;
+            
             position      : relative;
-            overflow      : hidden;
+            /*overflow      : hidden;*/
             height        : 26px;
-            padding       : 8px 14px 0;
+            margin       : 8px 14px 0;
             font-family   : Arial;
             font-size     : 14px;
             line-height   : 16px;
             font-weight   : bold;
             color         : #ffffff;
             cursor        : default;
-
-            -moz-border-radius    : 6px 6px 0 0;
-            -webkit-border-radius : 6px 6px 0 0;
-            border-radius         : 6px 6px 0 0;
         }
 
         .bk-window .bk-header .hcontent .buttons {
             position: absolute;
-            right: 7px;
-            top: 9px;
+            right: -7px;
+            top: 1px;
         }
 
         .bk-window .bk-header .hcontent .buttons .close {
@@ -6479,7 +6468,7 @@
 <a:scrollbar name="scrollbar">
     <a:style><![CDATA[
         .scrollbar{
-            height: 100px;
+            height: 200px;
             position: absolute;
             background: #D4D0C8 url(images/raster.gif);
             width: 16px;
@@ -7647,8 +7636,10 @@
         border-top: 1px solid #404040;
         border-bottom: 1px solid #000000;
 
-        background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #191919),color-stop(1, #292929));
-        background: -moz-linear-gradient(center bottom,#191919 0%, #292929 100%);
+        background: #282828;
+        background: -webkit-linear-gradient(top,#282828 0%, #181818 100%);
+        background:    -moz-linear-gradient(top,#282828 0%, #181818 100%);
+        background:         linear-gradient(top,#282828 0%, #181818 100%);
         margin-top : -29px;
         width : auto;
     }
@@ -7786,8 +7777,13 @@
 
         border-top: 1px solid #333333;
 
-        background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #2a2a2a),color-stop(1, #1d1d1d));
-        background: -moz-linear-gradient(center bottom,#2a2a2a 0%,#1d1d1d 100%);
+        background-color: #303030;
+        background-image: -webkit-linear-gradient(top,#1e1e1e 0%, #2a2a2a 8px, #303030 13px, transparent 13px);
+        background-image:    -moz-linear-gradient(top,#1e1e1e 0%, #2a2a2a 8px, #303030 13px, transparent 13px);
+        background-image:         linear-gradient(top,#1e1e1e 0%, #2a2a2a 8px, #303030 13px, transparent 13px);
+        -webkit-box-shadow: 0 -1px 0 0 #000;
+           -moz-box-shadow: 0 -1px 0 0 #000;
+                box-shadow: 0 -1px 0 0 #000;
     }
 
     .tab_console .page.curpage{
@@ -8185,7 +8181,7 @@
       container = "div"
       icon      = "div[1]/div"
       maxwidth  = "150"
-      minwidth  = "0">
+      minwidth  = "17">
         <div class="session_btn">
             <div class="tab_middle">
                 <div class="sessiontab_icon"> </div>
@@ -9032,24 +9028,26 @@
         .tb_console {
             position : relative;
             height   : 31px;
+            margin-right: 1px !important
         }
 
         .tb_console .sbtb_middle {
-            height           : 16px;
-            padding          : 6px 10px 8px;
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 1) inset;
-            -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 1) inset;
-            box-shadow         : 0px 1px 0px rgba(255, 255, 255, 1) inset;
-            color            : #303030;
-            margin           : 0 0 0 26px;
-            outline          : none;
-            font-size        : 14px;
-            text-overflow    : ellipsis;
-            -webkit-border-radius: 4px;
-            -moz-border-radius: 4px;
-            border-radius: 4px;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(247,247,247)),color-stop(1, rgb(218,218,218)));
-            background: -moz-linear-gradient(center bottom,rgb(247,247,247) 50%,rgb(218,218,218) 100%);
+            border          : 1px solid #000;
+            background      : #eee;
+            box-shadow      : inset 0 2px 3px 0 rgba(0,0,0,.5);
+            color           : #202020;
+            font-size       : 14px;
+            height          : 20px;
+            line-height     : 18px;
+            margin          : 1px 0 0 6px;
+            padding         : 1px 4px 0px 4px;
+            outline         : none;
+            text-overflow   : ellipsis;
+        }
+        .tb_consoleFocus .sbtb_middle,
+        .tb_consoleOver .sbtb_middle,
+        .tb_console .sbtb_middle:hover {
+            /*background      : #eee;*/
         }
 
         .topborder .sbtb_middle{
@@ -9059,22 +9057,32 @@
         .tb_console .sbtb_middle INPUT {
             border           : 0;
             height           : 17px;
-            font-size        : 14px;
+            line-height      : 15px;
+            font-size        : 12px;
             color            : #303030;
-            font-family      : "courier new",fixed,swiss,sans-serif;
+            font-family      : menlo,courier new,fixed,swiss,sans-serif;
             outline          : none;
-            font-weight      : bold;
             background-color : transparent;
             width: 100%;
             padding : 0;
         }
 
         .tb_consoleInitial .sbtb_middle INPUT {
-            color : #777777;
+            color : #a3a3a3;
+            font-size : 10px;
         }
 
+        .tb_consoleFocus .sbtb_middle input,
+        .tb_consoleOver .sbtb_middle input,
+        .tb_console .sbtb_middle:hover input {
+            color           : #202020;
+        }
+
+        .tb_consoleDisabled .sbtb_middle {
+            background      : #e2e2e2;
+        }
         .tb_consoleDisabled .sbtb_middle INPUT {
-            color : #CCC;
+            color : #b3b3b3;
         }
 
         .tb_consoleDisabled .sbtb_middle{
@@ -9082,21 +9090,11 @@
             background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
             cursor : default;
         }
-
-        .tb_console .console_arrow {
-            background: url(images/console_arrow.png) no-repeat 0 0;
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            width: 9px;
-            height: 14px;
-        }
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="div[2]/input">
+        <a:main input="div[1]/input">
             <div class="tb_console">
-                <div class="console_arrow"/>
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>
@@ -9260,13 +9258,14 @@
 
         .searchbox_textbox .sbtb_middle {
             height           : 19px;
-            padding          : 2px 25px 2px 25px;
+            padding          : 2px 25px 2px 4px;
 
 
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
             background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
             color: #333333;
             border: 1px solid #afafaf;
+            border-radius : 3px;
             margin: 0;
             outline: none;
             font-family: Tahoma, Arial;
@@ -9333,10 +9332,10 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="div[3]/input" button="div[4]">
+        <a:main input="div[2]/input" button="div[3]">
             <div class="searchbox_textbox">
                 <div class="sbtb_arrow"/>
-                <div class="sbtb_icon"/>
+                <!--div class="sbtb_icon"/-->
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>
@@ -9348,16 +9347,24 @@
 <a:textbox name="textarea">
     <a:style><![CDATA[
         .ta{
-            border: 1px solid #c3c3c3;
-            background: white url("images/textarea_background2.png") no-repeat top left;
-            /*background-attachment: fixed !important; background-attachment: scroll; */
-            color: #333;
-            padding: 6px;
-            font-family: Tahoma, Arial;
-            font-size: 8pt;
             overflow: auto;
-            outline: none;
             resize: none;
+            
+            padding: 2px 6px;
+            border: 1px solid #AFAFAF;
+            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, white),color-stop(1, #EBEBEB));
+            background: -moz-linear-gradient(center bottom,white 50%,#EBEBEB 100%);
+            margin: 0;
+            text-overflow: ellipsis;
+            -webkit-box-shadow: 0px 1px 0px #ffffff;
+            -moz-box-shadow: 0px 1px 0px #ffffff;
+            box-shadow: 0px 1px 0px #ffffff;
+            
+            font-size: 12px;
+            color: #333;
+            font-family: Arial;
+            outline: none;
+            background-color: transparent;
         }
 
         .taFocus{
@@ -9380,7 +9387,7 @@
 
     <a:presentation>
         <a:main input=".">
-            <textarea type="text" class="ta"/>
+            <textarea type="text" class="ta" />
         </a:main>
     </a:presentation>
 </a:textbox>

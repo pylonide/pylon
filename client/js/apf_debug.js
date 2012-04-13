@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(95999)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(96111)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -98,7 +98,7 @@
  *   {String}         message   the error message.
  * @default_private
  */
-var apf = {
+ apf = {
 VERSION:'3.0beta',
     // Content Distribution Network URL:
     
@@ -625,33 +625,8 @@ VERSION:'3.0beta',
             //this.importClass(apf.runSafari, true, self);
         
         
-        if (this.isOpera) apf.runOpera();
-            //this.importClass(apf.runOpera, true, self);
-        
-        
-        if (this.isGecko || !this.isIE && !apf.isWebkit && !this.isOpera)
-            apf.runGecko();
-            //this.importClass(apf.runGecko, true, self);
         
 
-        
-        for (var i, l2, a, m, n, o, v, p = location.href.split(/[?&]/), l = p.length, k = 1; k < l; k++) {
-            if (m = p[k].match(/(.*?)(\..*?|\[.*?\])?=([^#]*)/)) {
-                n = decodeURI(m[1]).toLowerCase(), o = this._GET;
-                if (m[2]) {
-                    for (a = decodeURI(m[2]).replace(/\[\s*\]/g, "[-1]").split(/[\.\[\]]/), i = 0, l2 = a.length; i < l2; i++) {
-                        v = a[i],
-                        o = o[n]
-                            ? o[n]
-                            : o[n] = (parseInt(v) == v)
-                                ? []
-                                : {},
-                        n = v.replace(/^["\'](.*)["\']$/, "$1");
-                    }
-                }
-                o[n != "-1" ? n : o.length] = unescape(decodeURI(m[3]));
-            }
-        }
         
 
         
@@ -1413,11 +1388,6 @@ VERSION:'3.0beta',
     
     
     
-    /**
-     * @private
-     */
-    amlParts : [],
-    
 
     /**
      * Determines the way apf tries to render this application. Set this value
@@ -1433,234 +1403,6 @@ VERSION:'3.0beta',
     parseStrategy : 0,
 
     
-    /**
-     * @private
-     */
-    parsePartialAml : function(docElement){
-        
-        apf.console.warn("The aml namespace definition wasn't found "
-                       + "on the root node of this document. We're assuming "
-                       + "you want to load a partial piece of aml embedded "
-                       + "in this document. Starting to search for it now.");
-        
-
-        var findAml;
-        if (apf.isIE) {
-            findAml = function(htmlNode){
-                
-                if (htmlNode.outerHTML.match(/\/>$/)) {
-                    throw new Error("Cannot have self closing elements!\n"
-                        + htmlNode.outerHTML);
-                }
-                
-                
-                try {
-                    var tags   = {"IMG":1,"LINK":1,"META":1,"INPUT":1,"BR":1,"HR":1,"AREA":1,"BASEFONT":1},
-                        regex  = new RegExp(htmlNode.outerHTML.replace(/([\(\)\|\\\.\^\$\{\}\[\]])/g, "\\$1")
-                               + ".*" + htmlNode.tagName),
-                        match  = htmlNode.parentNode.outerHTML.replace(/\n/g, "").match(regex),
-                        strXml = match[0] + ">"
-                            .replace(/(\w+)\s*=\s*([^\>="'\s ]+)( |\s|\>|\/\>)/g, "$1=\"$2\"$3")
-                            .replace(/ disabled /g, " disabled='true' ")
-                            .replace(/\]\]\&gt;/g, "]]>")
-                            .replace(/<(\w+)(\s[^>]*[^\/])?>/g, function(m, tag, c){
-                                if (tags[tag]) {
-                                    return "<" + tag + (c||"") + "/>";
-                                }
-                                else {
-                                    return m;
-                                }
-                            });
-                } 
-                catch(e) {
-                    
-                    throw new Error(apf.formatErrorString(0, null,
-                        "Parsing inline aml (without xmlns on root node)",
-                        "Could not parse inline aml. This happens when the html"
-                      + "is mangled too much by Internet Explorer. Either you "
-                      + "are using a cdata section or javascript containing "
-                      + "symbols that throw off the browser. Please put this aml "
-                      + "in a seperate file and load it using an include element."));
-                    
-                    
-                    return;
-                }
-
-                var xmlNode = apf.getAmlDocFromString("<div jid='"
-                            + (id++) + "' " + strXmlns + ">"
-                            + strXml + "</div>").documentElement;
-
-                while (xmlNode.childNodes.length > 1)
-                    xmlNode.removeChild(xmlNode.lastChild);
-
-                apf.AppNode.appendChild(xmlNode);
-            }
-        }
-        else {
-            findAml = function(htmlNode){
-                var strXml  = htmlNode.outerHTML.replace(/ _moz-userdefined=""/g, ""),
-                    xmlNode = apf.getAmlDocFromString("<div jid='"
-                            + (id++) + "' " + strXmlns + ">"
-                            + strXml + "</div>").documentElement;
-
-                while (xmlNode.childNodes.length > 1)
-                    xmlNode.removeChild(xmlNode.lastChild);
-
-                if (apf.isWebkit)
-                    xmlNode = apf.AppNode.ownerDocument.importNode(xmlNode, true);
-
-                apf.AppNode.appendChild(xmlNode);
-            }
-        }
-
-        var match = document.body.outerHTML
-                    .match(/(\w+)\s*=\s*["']http:\/\/ajax\.org\/2005\/aml["']/);
-        if (!match)
-            return false;
-
-        var strXmlns = "xmlns:" + match[0],
-            prefix = (RegExp.$1 || "").toUpperCase();
-        if (apf.isOpera)
-            prefix = prefix.toLowerCase();
-        if (!prefix)
-            return false;
-
-        prefix += ":";
-
-        apf.AppNode = apf.getAmlDocFromString("<" + prefix.toLowerCase()
-            + "application " + strXmlns + " />").documentElement;
-
-        var temp, loop, cnode,
-            isPrefix = false,
-            id       = 0,
-            node     = document.body;
-        while (node) {
-            isPrefix = node.nodeType == 1
-                && node.tagName.substr(0,2) == prefix;
-
-            if (isPrefix) {
-                findAml(cnode = node);
-
-                if (apf.isIE) {
-                    loop = node;
-                    var count = 1, next = loop.nextSibling;
-                    if (next) {
-                        loop.parentNode.removeChild(loop);
-
-                        while (next && (next.nodeType != 1 || next.tagName.indexOf(prefix) > -1)){
-                            if (next.nodeType == 1)
-                                count += next.tagName.charAt(0) == "/" ? -1 : 1;
-
-                            if (count == 0) {
-                                if (temp)
-                                    temp.parentNode.removeChild(temp);
-                                temp = next;
-                                break;
-                            }
-
-                            next = (loop = next).nextSibling;
-                            if (!next) {
-                                next = loop;
-                                break;
-                            }
-                            if (loop.nodeType == 1) {
-                                loop.parentNode.removeChild(loop);
-                                if (temp) {
-                                    temp.parentNode.removeChild(temp);
-                                    temp = null;
-                                }
-                            }
-                            else {
-                                if (temp)
-                                    temp.parentNode.removeChild(temp);
-
-                                temp = loop;
-                            }
-                        }
-
-                        node = next; //@todo item should be deleted
-                        //check here for one too far
-                    }
-                    else {
-                        if (temp)
-                            temp.parentNode.removeChild(temp);
-                        temp = loop;
-                    }
-                }
-                else {
-                    if (temp)
-                        temp.parentNode.removeChild(temp);
-
-                    temp = node;
-                    //node = node.nextSibling;
-                }
-
-                if (apf.amlParts.length
-                  && apf.amlParts[apf.amlParts.length-1][1] == cnode)
-                    apf.amlParts[apf.amlParts.length-1][1] = -1;
-
-                apf.amlParts.push([node.parentNode, apf.isIE
-                    ? node.nextSibling : node.nextSibling]);
-            }
-            else if (node.tagName == "SCRIPT" && node.getAttribute("src")
-              && (node.getAttribute("src").indexOf("ajax.org") > -1)) {
-                var strXml = node.outerHTML
-                    .replace(/&lt;/g, "<")
-                    .replace(/&gt;/g, ">")
-                    .replace(/&amp;/g, "&")
-                    .replace(/<SCRIPT[^>]*\>\s*<\!\[CDATA\[>?/i, "")
-                    .replace(/<SCRIPT[^>]*\>(?:<\!\-\-)?/i, "")
-                    .replace(/(\/\/)?\s*\&\#8211;>\s*<\/SCRIPT>/i, "")
-                    .replace(/\-\->\s*<\/SCRIPT>/i, "")
-                    .replace(/\]\](?:\&gt\;|>)\s*<\/SCRIPT>/i, "")
-                    .replace(/<\/SCRIPT>$/mi, "")
-                    .replace(/<\/?\s*(?:p|br)\s*\/?>/ig, "")
-                    .replace(/<\!--\s*.*?\s*-->\s*<script.*/ig, "")
-                    .replace(/\\+(['"])/g, "$1");
-
-                if (strXml.trim()) {
-                    var xmlNode = apf.getAmlDocFromString("<div jid='"
-                        + (id++) + "' " + strXmlns + ">"
-                        + strXml + "</div>").documentElement;
-
-                    if (apf.isWebkit)
-                        xmlNode = apf.AppNode.ownerDocument.importNode(xmlNode, true);
-
-                    apf.AppNode.appendChild(xmlNode);
-
-                    apf.amlParts.push([node.parentNode, node.nextSibling]);
-                }
-            }
-
-            //Walk entire html tree
-            if (!isPrefix && node.firstChild
-              || node.nextSibling) {
-                if (!isPrefix && node.firstChild) {
-                    node = node.firstChild;
-                }
-                else {
-                    node = node.nextSibling;
-                }
-            }
-            else {
-                do {
-                    node = node.parentNode;
-
-                    if (node.tagName == "BODY")
-                        node = null;
-
-                } while (node && !node.nextSibling)
-
-                if (node) {
-                    node = node.nextSibling;
-                }
-            }
-        }
-
-        if (temp)
-            temp.parentNode.removeChild(temp);
-    },
-    
 
     /**
      * @private
@@ -1668,35 +1410,10 @@ VERSION:'3.0beta',
     parseAppMarkup : function(docElement){
         var isEmptyDocument = false;
         
-        
-        if (this.parseStrategy == 1 || !this.parseStrategy && !docElement
-          && document.documentElement.outerHTML.split(">", 1)[0]
-             .indexOf(apf.ns.aml) == -1) {
-            this.parsePartialAml(docElement);
-
-            if (this.parseStrategy == 1 || apf.amlParts.length) {
-                
-                if (apf.amlParts.length)
-                    apf.console.warn("Aml found, parsing...");
-                
-
-                apf.isParsingPartial = true;
-
-                apf.loadAmlIncludes(apf.AppNode);
-
-                if (!self.ERROR_HAS_OCCURRED) {
-                    apf.initialize();
-                }
-
-                return;
-            }
-            else {
-                
-                apf.console.warn("No aml found.");
-                
-                isEmptyDocument = true;
-            }
+        if (document.documentElement.getAttribute("skipParse") == "true") {
+            return;
         }
+        
         
 
         
@@ -1804,54 +1521,6 @@ VERSION:'3.0beta',
         var bodyMarginTop = parseFloat(apf.getStyle(document.body, "marginTop"));
         apf.doesNotIncludeMarginInBodyOffset = (document.body.offsetTop !== bodyMarginTop);
 
-        
-        if (apf.isParsingPartial) {
-            apf.config.setDefaults();
-            apf.hasSingleRszEvent = true;
-
-            var pHtmlNode = document.body;
-            var lastChild = pHtmlNode.lastChild;
-            apf.AmlParser.parseMoreAml(apf.AppNode, pHtmlNode, null,
-                true, false);
-
-            var pNode, firstNode, next, info,
-                lastBefore = null,
-                loop       = pHtmlNode.lastChild;
-            while (loop && lastChild != loop) {
-                info = apf.amlParts[loop.getAttribute("jid")];
-                next = loop.previousSibling;
-                if (info) {
-                    pNode = info[0];
-                    if ("P".indexOf(pNode.tagName) > -1) {
-                        lastBefore = pNode.parentNode.insertBefore(
-                            apf.getNode(loop, [0]), pNode);
-                    }
-                    else {
-                        firstNode = apf.getNode(loop, [0]);
-                        while(firstNode){
-                            if (firstNode) {
-                                lastBefore = pNode.insertBefore(firstNode,
-                                    typeof info[1] == "number" ? lastBefore : info[1]);
-                            }
-                            else {
-                                lastBefore = typeof info[1] == "number" 
-                                    ? lastBefore
-                                    : info[1];
-                            }
-                            firstNode = apf.getNode(loop, [0]);
-                        }
-                    }
-
-                    loop.parentNode.removeChild(loop);
-                }
-                loop = next;
-            }
-
-            
-            $setTimeout("apf.layout.forceResize();");
-            
-        }
-        else
         
         {
             apf.window.init(xmlStr);
@@ -2119,7 +1788,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/class.js)SIZE(45596)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/class.js)SIZE(45673)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2399,7 +2068,8 @@ apf.Class.prototype = new (function(){
             this.$pHtmlNode = struct.htmlNode;
             
             
-                this.ownerDocument.$domParser.$continueParsing(this);
+                if (this.ownerDocument && this.ownerDocument.$domParser)
+                    this.ownerDocument.$domParser.$continueParsing(this);
                 
                 
                 apf.queue.empty();
@@ -2548,12 +2218,6 @@ apf.Class.prototype = new (function(){
         
 
         //Compile pValue through JSLT parser
-        
-        if (pValue && pValue.dataType == apf.FUNCTION) {
-             var fParsed = pValue;
-             pValue = "";
-        }
-        else
         
         {
             var fParsed = apf.lm.compile(pValue, options);
@@ -2741,38 +2405,6 @@ apf.Class.prototype = new (function(){
     };
 
     
-    /**
-     * Adds a listener to listen for changes to a certain property. 
-     * Implemented as Mozilla suggested see
-     * {@link https://developer.mozilla.org/en/Core_JavaScript_1.5_Reference/Global_Objects/Object/watch their site}.
-     */
-    this.watch = function(propName, callback){
-        var eventName = PROP + propName,
-            wrapper   = function(e){
-                callback.call(this, propName, e.oldvalue, e.value);
-            };
-        wrapper.callback = callback;
-        
-        (this.$eventsStack[eventName] || (this.$eventsStack[eventName] = []))
-            .push(wrapper);
-    };
-    
-    /**
-     * Removes a listener to listen for changes to a certain property. 
-     */
-    this.unwatch = function(propName, callback){
-        var list, eventName = PROP + propName;
-        if (!(list = this.$eventsStack[eventName]))
-            return;
-        
-        for (var i = 0, l = list.length; i < l; i++) {
-            if (list[i].callback == callback) {
-                list.remove(i);
-                return;
-            }
-        }
-    };
-    
 
     
 
@@ -2823,13 +2455,6 @@ apf.Class.prototype = new (function(){
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
                         
-                        if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
-                            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                                if (this.ownerDocument && this.$aml && this.$amlLoaded)
-                                    apf.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue); 
-                            }
-                        }
-                        
                         
                         //Set the xml value - this should probably use execProperty
                         return apf.setNodeValue(
@@ -2846,13 +2471,6 @@ apf.Class.prototype = new (function(){
             if (this.$handlePropSet(prop, value, forceOnMe) === false)
                 return;
             
-            
-            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
-                if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                    if (this.ownerDocument && this.$aml && this.$amlLoaded)
-                        apf.uirecorder.capture.capturePropertyChange(this, prop, this[prop], oldvalue); 
-                }
-            }
             
             
             value = this[prop];
@@ -3052,21 +2670,6 @@ apf.Class.prototype = new (function(){
         
         this.$eventDepth--;
 
-        
-        if (apf.uirecorder && apf.uirecorder.captureDetails) {
-            if (["debug"].indexOf(eventName) == -1 && (!e || e.currentTarget == this)) { // ,"DOMNodeRemoved","DOMNodeRemovedFromDocument","DOMNodeInsertedIntoDocument"
-                //if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
-                    if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) { // only capture events when recording
-                        apf.uirecorder.capture.captureEvent(eventName, e || (e = new apf.AmlEvent(eventName, options)));
-                    } 
-                //}
-                // when eventName == "load" all elements are loaded and drawn
-                /*
-                if (eventName == "load" && this.isIE != undefined)
-                    apf.uirecorder.isLoaded = true;
-                */
-            }
-        }
         
         
         if (options) {
@@ -3536,117 +3139,6 @@ apf.color = {
   
 
 
-/**
- * @constructor
- * @private
- */
-apf.AbstractEvent = function(event, win) {
-    win = win || window;
-    var doc = win.document;
-    event = event || win.event;
-    if (event.$extended) return event;
-    this.$extended = true;
-
-    this.event = event;
-
-    this.type   = event.type;
-    this.target = event.target || event.srcElement;
-    while (this.target && this.target.nodeType == 3)
-        this.target = this.target.parentNode;
-
-    if (this.type.indexOf("key") != -1) {
-        this.code = event.which || event.keyCode;
-        /*this.key = apf.AbstractEvent.KEYS.fromCode(this.code);
-        if (this.type == 'keydown') {
-            var fKey = this.code - 111;
-            if (fKey > 0 && fKey < 13)
-                this.key = 'f' + fKey;
-        }
-        this.key = this.key || String.fromCharCode(this.code).toLowerCase();*/
-    }
-    else if (this.type.match(/(click|mouse|menu)/i)) {
-        doc = (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
-        this.page = {
-            x: event.pageX || event.clientX + (doc ? doc.scrollLeft : 0),
-            y: event.pageY || event.clientY + (doc ? doc.scrollTop  : 0)
-        };
-        this.client = {
-            x: (event.pageX) ? event.pageX - win.pageXOffset : event.clientX,
-            y: (event.pageY) ? event.pageY - win.pageYOffset : event.clientY
-        };
-        if (this.type.match(/DOMMouseScroll|mousewheel/)){
-            this.wheel = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
-        }
-        this.rightClick = (event.which == 3) || (event.button == 2);
-        this.relatedTarget = null;
-        if (this.type.match(/over|out/)) {
-            if (this.type == "mouseover")
-                this.relatedTarget = event.relatedTarget || event.fromElement;
-            else if (this.type == "mouseout")
-                this.relatedTarget = event.relatedTarget || event.toElement;
-            else {
-                try {
-                    while (this.relatedTarget && this.relatedTarget.nodeType == 3)
-                        this.relatedTarget = this.relatedTarget.parentNode;
-                }
-                catch(e) {}
-            }
-        }
-    }
-    
-    this.shift   = Boolean(event.shiftKey);
-    this.control = Boolean(event.ctrlKey);
-    this.alt     = Boolean(event.altKey);
-    this.meta    = Boolean(event.metaKey)
-
-    this.stop = function(){
-        return this.stopPropagation().preventDefault();
-    };
-
-    this.stopPropagation = function(){
-        if (this.event.stopPropagation)
-            this.event.stopPropagation();
-        else
-            this.event.cancelBubble = true;
-        return this;
-    };
-
-    this.preventDefault = function(){
-        if (this.event.preventDefault)
-            this.event.preventDefault();
-        else
-            this.event.returnValue = false;
-        return this;
-    };
-};
-
-apf.AbstractEvent.KEYS = {
-    'enter'    : 13,
-    'up'       : 38,
-    'down'     : 40,
-    'left'     : 37,
-    'right'    : 39,
-    'esc'      : 27,
-    'space'    : 32,
-    'backspace': 8,
-    'tab'      : 9,
-    'delete'   : 46,
-
-    fromCode: function(code) {
-        for (var i in this) {
-            if (this[i] == code)
-                return i;
-            return null;
-        }
-    }
-};
-
-apf.AbstractEvent.stop = function(event) {
-    return (new apf.AbstractEvent(event)).stop();
-};
-
-
-
 
 /*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
 
@@ -4045,9 +3537,6 @@ Function.prototype.bindWithEvent = function() {
     return function(event) {
         if (!event)
             event = window.event;
-        
-        if (ev === true)
-            event = new apf.AbstractEvent(event, window);
         
         return __method.apply(o, [event].concat(args)
             .concat(Array.prototype.slice.call(arguments)));
@@ -4926,25 +4415,6 @@ apf.hotkeys = {};
         }
 
         
-        var keys = [];
-        if (e.altKey)
-            keys.push("Alt");
-        if (e.ctrlKey)
-            keys.push("Ctrl");
-        if (e.shiftKey)
-            keys.push("Shift");
-        if (e.metaKey)
-            keys.push("Meta");
-
-        if (_self.keyNames[e.keyCode])
-            keys.push(_self.keyNames[e.keyCode]);
-
-        if (keys.length) {
-            if (e.keyCode > 46 && !_self.keyNames[e.keyCode])
-                keys.push(String.fromCharCode(e.keyCode));
-            apf.setProperty("hotkey", keys.join("-"));
-        }
-        
     });
 }).call(apf.hotkeys);
 
@@ -5001,693 +4471,6 @@ apf.hotkeys = {};
  */
 
 
-/**
- * Creates xml nodes from an JSON string/ object recursively.
- *
- * @param {String}  strJson     the JSON definition.
- * @param {Boolean} [noError]  whether an exception should be thrown by the parser when the xml is not valid.
- * @param {Boolean} [preserveWhiteSpace]  whether whitespace that is present between XML elements should be preserved
- * @return {XMLNode} the created xml document (NOT the root-node).
- */
- 
-apf.json2xml_Obj  = {};
-apf.json2xml_Attr = {};
-apf.json2xml_ObjByAttr = {};
- 
-apf.json2Xml = (function(){
-    var jsonToXml = function (v, name, xml, notag) {
-        var i, n, m, t; 
-        // do an apf warn
-        function cleanString(s){
-            return s.replace(/&/g,"&amp;").replace(/\</g,'&lt;').replace(/\>/g,'&gt;');
-        }
-        if(!notag){
-            if(name != (m=name.replace(/[^a-zA-Z0-9_-]/g, "_")))
-                apf.console.warn("Json2XML, invalid characters found in JSON tagname '" + name, "json2Xml");
-            name = m;
-        }    
-        if (apf.isArray(v)) {
-            for (i = 0, n = v.length; i < n; i++)
-                jsonToXml(v[i],name,xml);
-        }
-        else if (typeof v == "object") {
-            var hasChild = false, objAttr = null;
-            
-            if(!notag)xml.push("<", name);
-            for (i in v) {
-                if ((n=apf.json2xml_Attr[i]) || i.charAt(0)=='@'){
-                    if(!n && !objAttr) objAttr = apf.json2xml_ObjByAttr[i.slice(1)];
-                    if(!notag)xml.push(" ", n?n:i.slice(1), "=\"", cleanString(v[i].toString()), "\"");
-                } else 
-                   hasChild = true;
-            }
-            if (hasChild) {
-                if(!notag)xml.push(">");
-                if(t=(objAttr || apf.json2xml_Obj[name])){
-                    if(t==1) t = { child : name.replace(/(.*)s$/,"$1")||name, key : "name", value: "value"};
-                    for (i in v) {
-                        if(i.charAt(0)!='@' && !apf.json2xml_Attr[i]){
-                            if( typeof(m = v[i]) =='object'){
-                                if(apf.json2xml_Obj[i]){
-                                    jsonToXml(m,i,xml);
-                                }else {
-                                    xml.push("<",t.child," ",t.key,"=\"",cleanString(i.toString()),"\" >");
-                                    jsonToXml(m, i,xml,true);
-                                    xml.push("</",t.child,">\n");
-                                }
-                            } else {
-                                xml.push("<",t.child," ",t.key,"=\"",i,"\" ");
-                                if(t.value){
-                                    if(t.value==1)
-                                        xml.push("/>");
-                                    else
-                                        xml.push(t.value,"=\"",cleanString(v[i].toString()),"\"/>");
-                                }else
-                                 xml.push(">",cleanString(v[i].toString()),"</",t.child,">");
-                            }
-                        }
-                    }
-                    if(!notag)xml.push("</",name,">\n");
-                }else{
-                    for (i in v) {
-                        if (!apf.json2xml_Attr[i] && i.charAt(0)!='@'){
-                           if(i.match(/[^a-zA-Z0-9_-]/g)){
-                               apf.console.warn("Json2XML, invalid characters found in JSON tagname: '" + i, "json2Xml");
-                           }else
-                               jsonToXml(v[i], i, xml,false);
-                        }
-                    }
-                    if(!notag)xml.push("</", name, ">");
-                }
-            }else if(!notag)xml.push("/>");
-        }
-        else {
-            if(!notag)xml.push("<", name, ">", cleanString(v.toString()), "</", name, ">");
-            else xml.push( cleanString(v.toString()));
-       }
-     
-    }
-        
-    return function(strJson, noError, preserveWhiteSpace) {
-        var o   = (typeof strJson == "string" && apf.isJson(strJson))
-          ? JSON.parse(strJson.replace(/""/g, '" "'))//eval("(" + strJson + ")")
-          : strJson,
-            xml = [], i;
-        jsonToXml(o,"jsondoc", xml, false);
-
-        return apf.getXmlDom(xml.join("").replace(/\t|\n/g, ""), noError, true);//preserveWhiteSpace);//@todo apf3.0
-    };
-})();
-
-apf.xml2json = function (xml, noattrs) {
-    // alright! lets go and convert our xml back to json.
-    var filled, out = {}, o, nodes = xml.childNodes, cn, i,j, n,m, u,v,w, s,t,cn1,u1,v1,t1,name; 
-
-    if(!noattrs){
-        if(m = (xml.attributes))for(u = 0,v = m.length; u < v; u++){
-          t = apf.json2xml_Attr[w=m[u].nodeName] || ('@'+w);
-          if(t.indexOf('@a_')!=0)out[t] = m[u].nodeValue, filled = true;
-        }
-    }
-
-    for (var i = 0, j = nodes.length;i<j; i++) {
-        if ((n = nodes[i]).nodeType != 1)
-            continue;
-         name = n.tagName;
-        filled = true;
-
-        // scan for our special attribute
-        t = s = null,o = {};
-
-        if(m = (n.attributes))for(u = 0,v = m.length; u < v; u++){
-            o['@'+(w = m[u].nodeName)] = m[u].nodeValue;
-            if(!s)s = apf.json2xml_ObjByAttr[w];
-        }
-        if(t = s || apf.json2xml_Obj[name]){
-            if(t==1)t={key:'name',value:'value'};
-            // lets enumerate the children
-            for(cn = n.childNodes, u=0,v = cn.length;u<v;u++){
-                if ((s = cn[u]).nodeType != 1) continue;
-                
-                if(t1 = apf.json2xml_Obj[s.nodeName]){
-                    var o2={};
-                    for(cn1 = s.childNodes, u1=0,v1 = cn1.length;u1<v1;u1++){
-                        if ((s1 = cn1[u1]).nodeType != 1) continue;
-                         if(w=s1.getAttribute(t1.key)){
-                            o2[w] = (t1.value==1?(s1.childNodes.length?apf.xml2json(s1,1):1):(s1.getAttribute(t1.value||'value')) || apf.xml2json(s1,1));
-                        }
-                    }
-                    o[s.nodeName]=o2;
-                } else {
-                    if(w=s.getAttribute(t.key)){
-                        o[w] = (t.value==1?(s.childNodes.length?apf.xml2json(s,1):1):(s.getAttribute(t.value||'value')) || apf.xml2json(s,1));
-                    }
-               }
-            }
-        }else{
-            o =  apf.xml2json( n );
-        }
-        if(out[name] !== undefined){
-            if((s=out[name]).dataType!=apf.ARRAY)
-                out[name]=[s,o];
-            else out[name].push(o);
-        }else out[name] = o;
-   }
-   return filled ? out : apf.queryValue(xml, "text()");
-};
-
-
-
-
-/**
- * Reliably determines whether a variable is a string of JSON.
- * @see http://json.org/
- *
- * @param {mixed}   value The variable to check
- * @type  {Boolean}
- */
-apf.isJson = (function() {
-    var escapes  = /\\["\\\/bfnrtu@]/g,
-        values   = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
-        brackets = /(?:^|:|,)(?:\s*\[)+/g,
-        invalid  = /^[\],:{}\s]*$/;
-
-    return function(value) {
-        if (!value) return false;
-        return invalid.test(
-            value.replace(escapes, '@').replace(values, ']').replace(brackets, '')
-        );
-    }
-})();
-
-if (!self["JSON"]) {
-/*
-    http://www.JSON.org/json2.js
-    2010-08-25
-
-    Public Domain.
-
-    NO WARRANTY EXPRESSED OR IMPLIED. USE AT YOUR OWN RISK.
-
-    See http://www.JSON.org/js.html
-
-
-    This code should be minified before deployment.
-    See http://javascript.crockford.com/jsmin.html
-
-    USE YOUR OWN COPY. IT IS EXTREMELY UNWISE TO LOAD CODE FROM SERVERS YOU DO
-    NOT CONTROL.
-
-
-    This file creates a global JSON object containing two methods: stringify
-    and parse.
-
-        JSON.stringify(value, replacer, space)
-            value       any JavaScript value, usually an object or array.
-
-            replacer    an optional parameter that determines how object
-                        values are stringified for objects. It can be a
-                        function or an array of strings.
-
-            space       an optional parameter that specifies the indentation
-                        of nested structures. If it is omitted, the text will
-                        be packed without extra whitespace. If it is a number,
-                        it will specify the number of spaces to indent at each
-                        level. If it is a string (such as '\t' or '&nbsp;'),
-                        it contains the characters used to indent at each level.
-
-            This method produces a JSON text from a JavaScript value.
-
-            When an object value is found, if the object contains a toJSON
-            method, its toJSON method will be called and the result will be
-            stringified. A toJSON method does not serialize: it returns the
-            value represented by the name/value pair that should be serialized,
-            or undefined if nothing should be serialized. The toJSON method
-            will be passed the key associated with the value, and this will be
-            bound to the value
-
-            For example, this would serialize Dates as ISO strings.
-
-                Date.prototype.toJSON = function (key) {
-                    function f(n) {
-                        // Format integers to have at least two digits.
-                        return n < 10 ? '0' + n : n;
-                    }
-
-                    return this.getUTCFullYear()   + '-' +
-                         f(this.getUTCMonth() + 1) + '-' +
-                         f(this.getUTCDate())      + 'T' +
-                         f(this.getUTCHours())     + ':' +
-                         f(this.getUTCMinutes())   + ':' +
-                         f(this.getUTCSeconds())   + 'Z';
-                };
-
-            You can provide an optional replacer method. It will be passed the
-            key and value of each member, with this bound to the containing
-            object. The value that is returned from your method will be
-            serialized. If your method returns undefined, then the member will
-            be excluded from the serialization.
-
-            If the replacer parameter is an array of strings, then it will be
-            used to select the members to be serialized. It filters the results
-            such that only members with keys listed in the replacer array are
-            stringified.
-
-            Values that do not have JSON representations, such as undefined or
-            functions, will not be serialized. Such values in objects will be
-            dropped; in arrays they will be replaced with null. You can use
-            a replacer function to replace those with JSON values.
-            JSON.stringify(undefined) returns undefined.
-
-            The optional space parameter produces a stringification of the
-            value that is filled with line breaks and indentation to make it
-            easier to read.
-
-            If the space parameter is a non-empty string, then that string will
-            be used for indentation. If the space parameter is a number, then
-            the indentation will be that many spaces.
-
-            Example:
-
-            text = JSON.stringify(['e', {pluribus: 'unum'}]);
-            // text is '["e",{"pluribus":"unum"}]'
-
-
-            text = JSON.stringify(['e', {pluribus: 'unum'}], null, '\t');
-            // text is '[\n\t"e",\n\t{\n\t\t"pluribus": "unum"\n\t}\n]'
-
-            text = JSON.stringify([new Date()], function (key, value) {
-                return this[key] instanceof Date ?
-                    'Date(' + this[key] + ')' : value;
-            });
-            // text is '["Date(---current time---)"]'
-
-
-        JSON.parse(text, reviver)
-            This method parses a JSON text to produce an object or array.
-            It can throw a SyntaxError exception.
-
-            The optional reviver parameter is a function that can filter and
-            transform the results. It receives each of the keys and values,
-            and its return value is used instead of the original value.
-            If it returns what it received, then the structure is not modified.
-            If it returns undefined then the member is deleted.
-
-            Example:
-
-            // Parse the text. Values that look like ISO date strings will
-            // be converted to Date objects.
-
-            myData = JSON.parse(text, function (key, value) {
-                var a;
-                if (typeof value === 'string') {
-                    a =
-/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)Z$/.exec(value);
-                    if (a) {
-                        return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4],
-                            +a[5], +a[6]));
-                    }
-                }
-                return value;
-            });
-
-            myData = JSON.parse('["Date(09/09/2001)"]', function (key, value) {
-                var d;
-                if (typeof value === 'string' &&
-                        value.slice(0, 5) === 'Date(' &&
-                        value.slice(-1) === ')') {
-                    d = new Date(value.slice(5, -1));
-                    if (d) {
-                        return d;
-                    }
-                }
-                return value;
-            });
-
-
-    This is a reference implementation. You are free to copy, modify, or
-    redistribute.
-*/
-
-/*jslint evil: true, strict: false */
-
-/*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
-    call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
-    getUTCMinutes, getUTCMonth, getUTCSeconds, hasOwnProperty, join,
-    lastIndex, length, parse, prototype, push, replace, slice, stringify,
-    test, toJSON, toString, valueOf
-*/
-
-
-// Create a JSON object only if one does not already exist. We create the
-// methods in a closure to avoid creating global variables.
-
-if (!this.JSON) {
-    this.JSON = {};
-}
-
-(function () {
-
-    function f(n) {
-        // Format integers to have at least two digits.
-        return n < 10 ? '0' + n : n;
-    }
-
-    if (typeof Date.prototype.toJSON !== 'function') {
-
-        Date.prototype.toJSON = function (key) {
-
-            return isFinite(this.valueOf()) ?
-                   this.getUTCFullYear()   + '-' +
-                 f(this.getUTCMonth() + 1) + '-' +
-                 f(this.getUTCDate())      + 'T' +
-                 f(this.getUTCHours())     + ':' +
-                 f(this.getUTCMinutes())   + ':' +
-                 f(this.getUTCSeconds())   + 'Z' : null;
-        };
-
-        String.prototype.toJSON =
-        Number.prototype.toJSON =
-        Boolean.prototype.toJSON = function (key) {
-            return this.valueOf();
-        };
-    }
-
-    var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
-        escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
-        gap,
-        indent,
-        meta = {    // table of character substitutions
-            '\b': '\\b',
-            '\t': '\\t',
-            '\n': '\\n',
-            '\f': '\\f',
-            '\r': '\\r',
-            '"' : '\\"',
-            '\\': '\\\\'
-        },
-        rep;
-
-
-    function quote(string) {
-
-// If the string contains no control characters, no quote characters, and no
-// backslash characters, then we can safely slap some quotes around it.
-// Otherwise we must also replace the offending characters with safe escape
-// sequences.
-
-        escapable.lastIndex = 0;
-        return escapable.test(string) ?
-            '"' + string.replace(escapable, function (a) {
-                var c = meta[a];
-                return typeof c === 'string' ? c :
-                    '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-            }) + '"' :
-            '"' + string + '"';
-    }
-
-
-    function str(key, holder) {
-
-// Produce a string from holder[key].
-
-        var i,          // The loop counter.
-            k,          // The member key.
-            v,          // The member value.
-            length,
-            mind = gap,
-            partial,
-            value = holder[key];
-
-// If the value has a toJSON method, call it to obtain a replacement value.
-
-        if (value && typeof value === 'object' &&
-                typeof value.toJSON === 'function') {
-            value = value.toJSON(key);
-        }
-
-// If we were called with a replacer function, then call the replacer to
-// obtain a replacement value.
-
-        if (typeof rep === 'function') {
-            value = rep.call(holder, key, value);
-        }
-
-// What happens next depends on the value's type.
-
-        switch (typeof value) {
-        case 'string':
-            return quote(value);
-
-        case 'number':
-
-// JSON numbers must be finite. Encode non-finite numbers as null.
-
-            return isFinite(value) ? String(value) : 'null';
-
-        case 'boolean':
-        case 'null':
-
-// If the value is a boolean or null, convert it to a string. Note:
-// typeof null does not produce 'null'. The case is included here in
-// the remote chance that this gets fixed someday.
-
-            return String(value);
-
-// If the type is 'object', we might be dealing with an object or an array or
-// null.
-
-        case 'object':
-
-// Due to a specification blunder in ECMAScript, typeof null is 'object',
-// so watch out for that case.
-
-            if (!value) {
-                return 'null';
-            }
-
-// Make an array to hold the partial results of stringifying this object value.
-
-            gap += indent;
-            partial = [];
-
-// Is the value an array?
-
-            if (Object.prototype.toString.apply(value) === '[object Array]') {
-
-// The value is an array. Stringify every element. Use null as a placeholder
-// for non-JSON values.
-
-                length = value.length;
-                for (i = 0; i < length; i += 1) {
-                    partial[i] = str(i, value) || 'null';
-                }
-
-// Join all of the elements together, separated with commas, and wrap them in
-// brackets.
-
-                v = partial.length === 0 ? '[]' :
-                    gap ? '[\n' + gap +
-                            partial.join(',\n' + gap) + '\n' +
-                                mind + ']' :
-                          '[' + partial.join(',') + ']';
-                gap = mind;
-                return v;
-            }
-
-// If the replacer is an array, use it to select the members to be stringified.
-
-            if (rep && typeof rep === 'object') {
-                length = rep.length;
-                for (i = 0; i < length; i += 1) {
-                    k = rep[i];
-                    if (typeof k === 'string') {
-                        v = str(k, value);
-                        if (v) {
-                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
-                        }
-                    }
-                }
-            } else {
-
-// Otherwise, iterate through all of the keys in the object.
-
-                for (k in value) {
-                    if (Object.hasOwnProperty.call(value, k)) {
-                        v = str(k, value);
-                        if (v) {
-                            partial.push(quote(k) + (gap ? ': ' : ':') + v);
-                        }
-                    }
-                }
-            }
-
-// Join all of the member texts together, separated with commas,
-// and wrap them in braces.
-
-            v = partial.length === 0 ? '{}' :
-                gap ? '{\n' + gap + partial.join(',\n' + gap) + '\n' +
-                        mind + '}' : '{' + partial.join(',') + '}';
-            gap = mind;
-            return v;
-        }
-    }
-
-// If the JSON object does not yet have a stringify method, give it one.
-
-    if (typeof JSON.stringify !== 'function') {
-        JSON.stringify = function (value, replacer, space) {
-
-// The stringify method takes a value and an optional replacer, and an optional
-// space parameter, and returns a JSON text. The replacer can be a function
-// that can replace values, or an array of strings that will select the keys.
-// A default replacer method can be provided. Use of the space parameter can
-// produce text that is more easily readable.
-
-            var i;
-            gap = '';
-            indent = '';
-
-// If the space parameter is a number, make an indent string containing that
-// many spaces.
-
-            if (typeof space === 'number') {
-                for (i = 0; i < space; i += 1) {
-                    indent += ' ';
-                }
-
-// If the space parameter is a string, it will be used as the indent string.
-
-            } else if (typeof space === 'string') {
-                indent = space;
-            }
-
-// If there is a replacer, it must be a function or an array.
-// Otherwise, throw an error.
-
-            rep = replacer;
-            if (replacer && typeof replacer !== 'function' &&
-                    (typeof replacer !== 'object' ||
-                     typeof replacer.length !== 'number')) {
-                throw new Error('JSON.stringify');
-            }
-
-// Make a fake root object containing our value under the key of ''.
-// Return the result of stringifying the value.
-
-            return str('', {'': value});
-        };
-    }
-
-
-// If the JSON object does not yet have a parse method, give it one.
-
-    if (typeof JSON.parse !== 'function') {
-        JSON.parse = function (text, reviver) {
-
-// The parse method takes a text and an optional reviver function, and returns
-// a JavaScript value if the text is a valid JSON text.
-
-            var j;
-
-            function walk(holder, key) {
-
-// The walk method is used to recursively walk the resulting structure so
-// that modifications can be made.
-
-                var k, v, value = holder[key];
-                if (value && typeof value === 'object') {
-                    for (k in value) {
-                        if (Object.hasOwnProperty.call(value, k)) {
-                            v = walk(value, k);
-                            if (v !== undefined) {
-                                value[k] = v;
-                            } else {
-                                delete value[k];
-                            }
-                        }
-                    }
-                }
-                return reviver.call(holder, key, value);
-            }
-
-
-// Parsing happens in four stages. In the first stage, we replace certain
-// Unicode characters with escape sequences. JavaScript handles many characters
-// incorrectly, either silently deleting them, or treating them as line endings.
-
-            text = String(text);
-            cx.lastIndex = 0;
-            if (cx.test(text)) {
-                text = text.replace(cx, function (a) {
-                    return '\\u' +
-                        ('0000' + a.charCodeAt(0).toString(16)).slice(-4);
-                });
-            }
-
-// In the second stage, we run the text against regular expressions that look
-// for non-JSON patterns. We are especially concerned with '()' and 'new'
-// because they can cause invocation, and '=' because it can cause mutation.
-// But just to be safe, we want to reject all unexpected forms.
-
-// We split the second stage into 4 regexp operations in order to work around
-// crippling inefficiencies in IE's and Safari's regexp engines. First we
-// replace the JSON backslash pairs with '@' (a non-JSON character). Second, we
-// replace all simple value tokens with ']' characters. Third, we delete all
-// open brackets that follow a colon or comma or that begin the text. Finally,
-// we look to see that the remaining characters are only whitespace or ']' or
-// ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
-
-            if (/^[\],:{}\s]*$/
-.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
-.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
-.replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
-
-// In the third stage we use the eval function to compile the text into a
-// JavaScript structure. The '{' operator is subject to a syntactic ambiguity
-// in JavaScript: it can begin a block or an object literal. We wrap the text
-// in parens to eliminate the ambiguity.
-
-                j = eval('(' + text + ')');
-
-// In the optional fourth stage, we recursively walk the new structure, passing
-// each name/value pair to a reviver function for possible transformation.
-
-                return typeof reviver === 'function' ?
-                    walk({'': j}, '') : j;
-            }
-
-// If the text is not JSON parseable, then a SyntaxError is thrown.
-
-            throw new SyntaxError('JSON.parse');
-        };
-    }
-}());
-
-}
-
-/**
- * Creates a json string from a javascript object.
- * @param  {mixed}  o the javascript object to serialize.
- * @return {String} the json string representation of the object.
- * @todo allow for XML serialization
- */
-apf.serialize = function(o){
-    return self.JSON.stringify(o);
-};
-
-/**
- * Evaluate a serialized object back to JS with eval(). When the 'secure' flag
- * is set to 'TRUE', the provided string will be validated for being valid
- * JSON.
- *
- * @param  {String} str the json string to create an object from.
- * @return {Object} the object created from the json string.
- */
-apf.unserialize = function(str){
-    if (!str) return str;
-    return self.JSON.parse(str);
-};
 
 
 
@@ -5807,83 +4590,6 @@ apf.nameserver = {
 };
 
 
-
-
-/**
- * Object which provides a means to store key values pairs in a named context.
- * This objects primary purpose is to provide a way to serialize the state
- * of all the custom state you introduce when building the application. This way
- * you can use {@link element.offline apf.offline} to start the application in 
- * the exact state it was when your user closed the app.
- *
- * @see core.storage
- */
-apf.registry = apf.extend({
-    /**
-     * Stores a key value pair.
-     * @param {String} key       the identifier of the information.
-     * @param {mixed}  value     the information to store.
-     * @param {String} namespace the named context into which to store the key value pair.
-     */
-    put : function(key, value, namespace){
-        this.register(namespace, key, value);
-    },
-    
-    /**
-     * @private
-     */
-    getNamespaces : function(){
-        
-    },
-    
-    /**
-     * Retrieves all the keys of a namespace.
-     * @param {String} namespace the named context of the keys to retrieve.
-     * @return {Array} the list of keys in the namespace.
-     */
-    getKeys : function(namespace){
-        return this.getAllNames(namespace);
-    },
-    
-    /**
-     * Removes a key in a namespace.
-     * @param {String} key       the identifier of the information.
-     * @param {String} namespace the named context of the keys to remove.
-     */
-    remove : function(key, namespace){
-        delete this.lookup[namespace][key];
-    },
-    
-    /**
-     * @private
-     */
-    clear : function(namespace){
-        this.lookup = {}; //@todo
-    },
-    
-    
-    
-    $export : function(storage){
-        var namespace, key;
-
-        for (namespace in this.lookup) {
-            for (key in this.lookup[namespace]) {
-                storage.put(key, this.lookup[key][namespace], namespace);
-            }
-        }
-    }
-}, apf.nameserver);
-
-/**
- * @private
- */
-apf.registry.lookup = {};
-
-apf.registry.get = function(key, namespace){
-    return this.lookup[namespace] ? this.lookup[namespace][key] : null;
-};
-
-apf.Init.run("nameserver");
 
 
 
@@ -6194,11 +4900,6 @@ apf.popup = {
             if (!e) e = event;
 
             
-            if (apf.hasFocusBug 
-              && !apf.popup.focusFix[(e.srcElement || e.target).tagName]) {
-                apf.window.$focusfix();
-            }
-            
             
             //@todo can this cancelBubble just go?
             //apf.cancelBubble(e, null, true);
@@ -6462,11 +5163,6 @@ apf.popup = {
         oHtml.firstChild.onmousedown = function(e){
             if (!e) e = event;
             
-            
-            if (apf.hasFocusBug
-              && !apf.popup.focusFix[(e.srcElement || e.target).tagName]) {
-                apf.window.$focusfix();
-            }
             
             
             (e || event).cancelBubble = true;
@@ -7100,7 +5796,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(18985)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(14497)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7137,66 +5833,6 @@ apf.pasteWindow = function(str){
 
 
 /**
- * @private
- */
-apf.xmlEntityMap = {
-    "quot": "34", "amp": "38", "apos": "39", "lt": "60", "gt": "62",
-    "nbsp": "160", "iexcl": "161", "cent": "162", "pound": "163", "curren": "164",
-    "yen": "165", "brvbar": "166", "sect": "167", "uml": "168", "copy": "169",
-    "ordf": "170", "laquo": "171", "not": "172", "shy": "173", "reg": "174",
-    "macr": "175", "deg": "176", "plusmn": "177", "sup2": "178", "sup3": "179",
-    "acute": "180", "micro": "181", "para": "182", "middot": "183", "cedil": "184",
-    "sup1": "185", "ordm": "186", "raquo": "187", "frac14": "188", "frac12": "189",
-    "frac34": "190", "iquest": "191", "agrave": "192", "aacute": "193",
-    "acirc": "194", "atilde": "195", "auml": "196", "aring": "197", "aelig": "198",
-    "ccedil": "199", "egrave": "200", "eacute": "201", "ecirc": "202",
-    "euml": "203", "igrave": "204", "iacute": "205", "icirc": "206", "iuml": "207",
-    "eth": "208", "ntilde": "209", "ograve": "210", "oacute": "211", "ocirc": "212",
-    "otilde": "213", "ouml": "214", "times": "215", "oslash": "216", "ugrave": "217",
-    "uacute": "218", "ucirc": "219", "uuml": "220", "yacute": "221", "thorn": "222",
-    "szlig": "223", "agrave": "224", "aacute": "225", "acirc": "226", "atilde": "227",
-    "auml": "228", "aring": "229", "aelig": "230", "ccedil": "231", "egrave": "232",
-    "eacute": "233", "ecirc": "234", "euml": "235", "igrave": "236", "iacute": "237",
-    "icirc": "238", "iuml": "239", "eth": "240", "ntilde": "241", "ograve": "242",
-    "oacute": "243", "ocirc": "244", "otilde": "245", "ouml": "246", "divide": "247",
-    "oslash": "248", "ugrave": "249", "uacute": "250", "ucirc": "251", "uuml": "252",
-    "yacute": "253", "thorn": "254", "yuml": "255", "oelig": "338", "oelig": "339",
-    "scaron": "352", "scaron": "353", "yuml": "376", "fnof": "402", "circ": "710",
-    "tilde": "732", "alpha": "913", "beta": "914", "gamma": "915", "delta": "916",
-    "epsilon": "917", "zeta": "918", "eta": "919", "theta": "920", "iota": "921",
-    "kappa": "922", "lambda": "923", "mu": "924", "nu": "925", "xi": "926",
-    "omicron": "927", "pi": "928", "rho": "929", "sigma": "931", "tau": "932",
-    "upsilon": "933", "phi": "934", "chi": "935", "psi": "936", "omega": "937",
-    "alpha": "945", "beta": "946", "gamma": "947", "delta": "948", "epsilon": "949",
-    "zeta": "950", "eta": "951", "theta": "952", "iota": "953", "kappa": "954",
-    "lambda": "955", "mu": "956", "nu": "957", "xi": "958", "omicron": "959",
-    "pi": "960", "rho": "961", "sigmaf": "962", "sigma": "963", "tau": "964",
-    "upsilon": "965", "phi": "966", "chi": "967", "psi": "968", "omega": "969",
-    "thetasym": "977", "upsih": "978", "piv": "982", "ensp": "8194", "emsp": "8195",
-    "thinsp": "8201", "zwnj": "8204", "zwj": "8205", "lrm": "8206", "rlm": "8207",
-    "ndash": "8211", "mdash": "8212", "lsquo": "8216", "rsquo": "8217",
-    "sbquo": "8218", "ldquo": "8220", "rdquo": "8221", "bdquo": "8222",
-    "dagger": "8224", "dagger": "8225", "bull": "8226", "hellip": "8230",
-    "permil": "8240", "prime": "8242", "prime": "8243", "lsaquo": "8249",
-    "rsaquo": "8250", "oline": "8254", "frasl": "8260", "euro": "8364",
-    "image": "8465", "weierp": "8472", "real": "8476", "trade": "8482",
-    "alefsym": "8501", "larr": "8592", "uarr": "8593", "rarr": "8594",
-    "darr": "8595", "harr": "8596", "crarr": "8629", "larr": "8656", "uarr": "8657",
-    "rarr": "8658", "darr": "8659", "harr": "8660", "forall": "8704", "part": "8706",
-    "exist": "8707", "empty": "8709", "nabla": "8711", "isin": "8712",
-    "notin": "8713", "ni": "8715", "prod": "8719", "sum": "8721", "minus": "8722",
-    "lowast": "8727", "radic": "8730", "prop": "8733", "infin": "8734",
-    "ang": "8736", "and": "8743", "or": "8744", "cap": "8745", "cup": "8746",
-    "int": "8747", "there4": "8756", "sim": "8764", "cong": "8773", "asymp": "8776",
-    "ne": "8800", "equiv": "8801", "le": "8804", "ge": "8805", "sub": "8834",
-    "sup": "8835", "nsub": "8836", "sube": "8838", "supe": "8839", "oplus": "8853",
-    "otimes": "8855", "perp": "8869", "sdot": "8901", "lceil": "8968",
-    "rceil": "8969", "lfloor": "8970", "rfloor": "8971", "lang": "9001",
-    "rang": "9002", "loz": "9674", "spades": "9824", "clubs": "9827",
-    "hearts": "9829", "diams": "9830"
-};
-
-/**
  * see string#escapeHTML
  * @param {String} str the html to be escaped.
  * @return {String} the escaped string.
@@ -7213,13 +5849,7 @@ apf.htmlentities = function(str){
  * @todo This function does something completely different from htmlentities, 
  *       the name is confusing and misleading.
  */
-apf.xmlentities = function(str) {
-    return str.replace(/&([a-z]+);/gi, function(a, m) {
-        if (apf.xmlEntityMap[m = m.toLowerCase()])
-            return '&#' + apf.xmlEntityMap[m] + ';';
-        return a;
-    });
-};
+apf.xmlentities = apf.escapeXML;
 
 /**
  * Unescape an html string.
@@ -7496,11 +6126,6 @@ apf.cancelBubble = function(e, o, noPropagate){
     //if (apf.isGecko)
         //apf.window.$mousedown(e);
     
-    
-    if (apf.uirecorder && apf.uirecorder.captureDetails 
-      && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {
-        apf.uirecorder.capture.nextStream(e.type || e.name);
-    }
     
 };
 
@@ -7846,7 +6471,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(45505)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(49534)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7898,24 +6523,78 @@ apf.isChildOf = function(pNode, childnode, orItself){
     return false;
 };
 
+apf.xmlEntityMap = {
+    "quot": "34", "amp": "38", "apos": "39", "lt": "60", "gt": "62",
+    "nbsp": "160", "iexcl": "161", "cent": "162", "pound": "163", "curren": "164",
+    "yen": "165", "brvbar": "166", "sect": "167", "uml": "168", "copy": "169",
+    "ordf": "170", "laquo": "171", "not": "172", "shy": "173", "reg": "174",
+    "macr": "175", "deg": "176", "plusmn": "177", "sup2": "178", "sup3": "179",
+    "acute": "180", "micro": "181", "para": "182", "middot": "183", "cedil": "184",
+    "sup1": "185", "ordm": "186", "raquo": "187", "frac14": "188", "frac12": "189",
+    "frac34": "190", "iquest": "191", "agrave": ["192", "224"], "aacute": ["193", "225"],
+    "acirc": ["194", "226"], "atilde": ["195", "227"], "auml": ["196", "228"],
+    "aring": ["197", "229"], "aelig": ["198", "230"], "ccedil": ["199", "231"],
+    "egrave": ["200", "232"], "eacute": ["201", "233"], "ecirc": ["202", "234"],
+    "euml": ["203", "235"], "igrave": ["204", "236"], "iacute": ["205", "237"],
+    "icirc": ["206", "238"], "iuml": ["207", "239"], "eth": ["208", "240"],
+    "ntilde": ["209", "241"], "ograve": ["210", "242"], "oacute": ["211", "243"],
+    "ocirc": ["212", "244"], "otilde": ["213", "245"], "ouml": ["214", "246"],
+    "times": "215", "oslash": ["216", "248"], "ugrave": ["217", "249"],
+    "uacute": ["218", "250"], "ucirc": ["219", "251"], "uuml": ["220", "252"],
+    "yacute": ["221", "253"], "thorn": ["222", "254"], "szlig": "223", "divide": "247",
+    "yuml": ["255", "376"], "oelig": ["338", "339"], "scaron": ["352", "353"],
+    "fnof": "402", "circ": "710", "tilde": "732", "alpha": ["913", "945"],
+    "beta": ["914", "946"], "gamma": ["915", "947"], "delta": ["916", "948"],
+    "epsilon": ["917", "949"], "zeta": ["918", "950"], "eta": ["919", "951"],
+    "theta": ["920", "952"], "iota": ["921", "953"], "kappa": ["922", "954"],
+    "lambda": ["923", "955"], "mu": ["924", "956"], "nu": ["925", "957"],
+    "xi": ["926", "958"], "omicron": ["927", "959"], "pi": ["928", "960"],
+    "rho": ["929", "961"], "sigma": ["931", "963"], "tau": ["932", "964"],
+    "upsilon": ["933", "965"], "phi": ["934", "966"], "chi": ["935", "967"],
+    "psi": ["936", "968"], "omega": ["937", "969"], "sigmaf": "962", "thetasym": "977",
+    "upsih": "978", "piv": "982", "ensp": "8194", "emsp": "8195", "thinsp": "8201",
+    "zwnj": "8204", "zwj": "8205", "lrm": "8206", "rlm": "8207", "ndash": "8211",
+    "mdash": "8212", "lsquo": "8216", "rsquo": "8217", "sbquo": "8218", "ldquo": "8220",
+    "rdquo": "8221", "bdquo": "8222", "dagger": ["8224", "8225"], "bull": "8226",
+    "hellip": "8230", "permil": "8240", "prime": ["8242", "8243"], "lsaquo": "8249",
+    "rsaquo": "8250", "oline": "8254", "frasl": "8260", "euro": "8364",
+    "image": "8465", "weierp": "8472", "real": "8476", "trade": "8482",
+    "alefsym": "8501", "larr": ["8592", "8656"], "uarr": ["8593", "8657"],
+    "rarr": ["8594", "8658"], "darr": ["8595", "8659"], "harr": ["8596", "8660"],
+    "crarr": "8629", "forall": "8704", "part": "8706", "exist": "8707", "empty": "8709",
+    "nabla": "8711", "isin": "8712", "notin": "8713", "ni": "8715", "prod": "8719",
+    "sum": "8721", "minus": "8722", "lowast": "8727", "radic": "8730", "prop": "8733",
+    "infin": "8734", "ang": "8736", "and": "8743", "or": "8744", "cap": "8745",
+    "cup": "8746", "int": "8747", "there4": "8756", "sim": "8764", "cong": "8773",
+    "asymp": "8776", "ne": "8800", "equiv": "8801", "le": "8804", "ge": "8805",
+    "sub": "8834", "sup": "8835", "nsub": "8836", "sube": "8838", "supe": "8839",
+    "oplus": "8853", "otimes": "8855", "perp": "8869", "sdot": "8901", "lceil": "8968",
+    "rceil": "8969", "lfloor": "8970", "rfloor": "8971", "lang": "9001", "rang": "9002",
+    "loz": "9674", "spades": "9824", "clubs": "9827", "hearts": "9829", "diams": "9830"
+};
+
 /**
- * Escapes "&amp;", greater than and less than signs and quotation marks into
+ * Escapes "&amp;", greater than, less than signs, quotation marks and others into
  * the proper XML entities.
- *
- * @param {String} str   The string to escape
- * @returns {String}     The escaped string
+ * 
+ * @param {String} str the xml string to escape.
+ * @return {String} the escaped string.
  */
 apf.escapeXML = function(str) {
-    // gigo
-    if (typeof str !== "string") return str;
-    
-    return ((str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/'/g, "&apos;")
-    );
+    if (typeof str != "string")
+        return str;
+    return (str || "")
+        .replace(/&/g, "&#38;")
+        .replace(/"/g, "&#34;")
+        .replace(/</g, "&#60;")
+        .replace(/>/g, "&#62;")
+        .replace(/'/g, "&#39;")
+        .replace(/&([a-z]+);/gi, function(a, m) {
+            var x = apf.xmlEntityMap[m.toLowerCase()];
+            if (x)
+                return "&#" + (apf.isArray(x) ? x[0] : x) + ";";
+            return a;
+        });
 };
 
 /**
@@ -7951,7 +6630,7 @@ apf.getChildNumber = function(node, fromList){
     if (!node) return -1;
 
     var p = node.parentNode, j = 0;
-    if (!p) return 0;
+    if (!p) return -1;
     if (!fromList)
         fromList = p.childNodes;
 
@@ -7965,7 +6644,7 @@ apf.getChildNumber = function(node, fromList){
             return j;
         j++;
     }
-    return j;
+    return -1;
 };
 
 /**
@@ -8010,56 +6689,6 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
             parentNode.removeChild(nodes[i]);
     }
 
-    
-    if (options && options.start) { //Assuming each node is in count
-        var reserved, beforeNode, nodes, doc, i, l, marker = options.marker;
-        if (!marker){
-            //optionally find marker
-        }
-
-        //This code assumes that the dataset fits inside this marker
-
-        //Start of marker
-        if (marker.getAttribute("start") - options.start == 0) {
-            marker.setAttribute("start", options.start + options.length);
-            reserved = parseInt(marker.getAttribute("reserved"));
-            marker.setAttribute("reserved", reserved + options.length);
-            beforeNode = marker;
-        }
-        //End of marker
-        else if (options.start + options.length == marker.getAttribute("end")) {
-            marker.setAttribute("end", options.start + options.length);
-            beforeNode = marker.nextSibling;
-            reserved = parseInt(marker.getAttribute("reserved"))
-                + parseInt(marker.getAttribute("end")) - options.length;
-        }
-        //Middle of marker
-        else {
-            var m2 = marker.parentNode.insertBefore(marker.cloneNode(true), marker);
-            m2.setAttribute("end", options.start - 1);
-            marker.setAttribute("start", options.start + options.length);
-            reserved = parseInt(marker.getAttribute("reserved"));
-            marker.setAttribute("reserved", reserved + options.length);
-            beforeNode = marker;
-        }
-
-        nodes = XMLRoot.childNodes;
-
-        if (parentNode.ownerDocument.importNode) {
-            doc = parentNode.ownerDocument;
-            for (i = 0, l = nodes.length; i < l; i++) {
-                parentNode.insertBefore(doc.importNode(nodes[i], true), beforeNode)
-                  .setAttribute(apf.xmldb.xmlIdTag, options.documentId + "|" + (reserved + i));
-            }
-        }
-        else {
-            for (i = nodes.length - 1; i >= 0; i--) {
-                parentNode.insertBefore(nodes[0], beforeNode)
-                  .setAttribute(apf.xmldb.xmlIdTag, options.documentId + "|" + (reserved + i));
-            }
-        }
-    }
-    else
     
     {
         beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
@@ -9252,907 +7881,6 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-apf.xmlDiff = function (doc1, doc2){
-    /*var domParser = new apf.DOMParser();
-    domParser.allowAnyElement = true;
-    domParser.preserveWhiteSpace = true;
-    apf.compareDoc = domParser.parseFromXml(apf.getCleanCopy(mdlTest.data)).documentElement;
-
-    var doc1 = apf.compareDoc,
-        doc2 = apf.getCleanCopy(mdlTest2.data),*/
-
-    var debug = true,
-        hash  = {},
-        rules = [],
-        appendRules = [],
-        reorderRules = [],
-        preserveWhiteSpace = doc1.ownerDocument.$domParser.preserveWhiteSpace,
-        
-        
-        dt = new Date().getTime(),
-        
-        
-        APPEND       = 1,
-        UPDATE       = 2,
-        REMOVE       = 3,
-        SETATTRIBUTE = 4,
-
-        notFoundEl = {}, notFoundAttr = {}, foundEl = {},
-        foundTxt   = {}, foundAttr   = {}, curNode = {include: {}},
-
-        arr, arrPath, l, lPath, found, path, p, t, j, i, a, item, subitem,
-        arrIndex, lastRule, prop,
-        emptyArr   = [], node;
-    
-    (function createHash(el, curPath, hash){
-        var i, nodes, attr, l, a, e, p;
-
-        curPath += "/" + el.tagName; //or mypath =  ?
-        if (l = (nodes = el.childNodes).length){
-            for (i = 0; i < l; i++) {
-                if ((e = nodes[i]).nodeType == 1) {
-                    createHash(nodes[i], curPath, hash);
-                    nodes[i].$childNumber = i;
-                }
-                else {
-                    p = curPath + "/" + e.nodeType,
-                    (hash[p] || (hash[p] = [])).push(e),
-                    e.$isValid = false;
-                    e.$childNumber = i;
-                }
-            }
-        }
-        if (l = (attr = el.attributes).length){
-            for (i = 0; i < l; i++) {
-                p = curPath + "/@" + (a = attr[i]).nodeName,
-                (hash[p] || (hash[p] = [])).push(a),
-                a.$isValid = false;
-            }
-        }
-        
-        (hash[curPath] || (hash[curPath] = [])).push(el);
-        el.$isValid = false;
-        if (el.$amlList)
-            delete el.$amlList;
-        //el.$validChildren = 0;
-    })(doc1, "", hash);
-
-    curNode.include[doc1.parentNode.$uniqueId] = doc1;
-    (function match(el, curPath, hash, pNode, curParentNode, childNumber){
-        var total, first, v, jl, item, include, i, nodes, attr, l, a, e, p, s, sh,
-            tn, curNode, pcur, pcurl, id, count, node,
-            max        = 0,
-            found      = [],
-            pInclude   = {length: 0},
-            oldInclude = curParentNode.include;
-        
-        curPath += "/" + el.tagName; //or mypath =  ?
-        if (!(s = hash[curPath])) {
-            //rules.push([APPEND, el, curParentNode]);
-            (notFoundEl[curPath] || (notFoundEl[curPath]  = [])).push({
-                arr     : null,
-                node    : el,
-                curNode : curParentNode
-            });
-            return false;
-        }
-        else {
-            //@todo optimize this
-            include = (curNode = {}).include = {};
-            for (i = 0, l = s.length; i < l; i++) {
-                if ((item = s[i]))
-                    include[item.$uniqueId] = item;
-            }
-            include.length = l;
-        }
-        
-        if (l = (nodes = el.childNodes).length){
-            for (i = 0; i < l; i++) {
-                if ((e = nodes[i]).nodeType == 1) {
-                    match(e, curPath, hash, pNode, curNode, i);
-                }
-                else {
-                    if ((sh = hash[p = curPath + "/" + e.nodeType])) {
-                        //Ignore the same node
-                        for (total = 0, first = null, v = e.nodeValue, j = 0, jl = sh.length; j < jl; j++) {
-                            //possible extra heuristic  && tn.parentNode.childNodes.length == e.parentNode.childNodes.length
-                            if ((tn = sh[j]) && tn.nodeValue == v) { 
-                                if (!first) {
-                                    first = {
-                                        node    : e,
-                                        //node2   : tn,
-                                        index   : j,
-                                        //v       : v,
-                                        arr     : sh,
-                                        curNode : curNode,
-                                        pcur    : [tn.parentNode.$uniqueId],
-                                        found   : [j],
-                                        childNumber : i
-                                    };
-                                }
-                                else {
-                                    first.found.push(j),
-                                    first.pcur.push(tn.parentNode.$uniqueId);
-                                }
-                                total++;
-                            }
-                        }
-                        
-                        if (total) {
-                            /*if (total == 1) {
-                                (tn = first.node2).$isValid = true; //@todo might be removed
-                                (tn = tn.ownerElement).$validChildren++;
-                            }*/
-                            
-                            pcur = first.pcur, pcurl = pcur.length;
-                            for (j = 0; j < pcurl; j++) {
-                                if (curNode[pcur[j]]) 
-                                    curNode[pcur[j]] += (1/total);
-                                else 
-                                    curNode[pcur[j]] = (1/total);
-                            }
-
-                            //delete sh[j];
-                            (foundTxt[p] || (foundTxt[p] = [])).push(first);
-                            
-                            continue;
-                        }
-                        
-                        //Update or New
-                        (notFoundEl[p] || (notFoundEl[p] = [])).push({
-                            arr     : sh,
-                            node    : e,
-                            curNode : curNode
-                        });
-                        
-                        continue;
-                    }
-                    
-                    //New node
-                    //rules.push([APPEND, e, curNode]);
-                    (notFoundEl[p] || (notFoundEl[p]  = [])).push({
-                        isNew   : true,
-                        arr     : null,
-                        node    : e,
-                        curNode : curNode
-                    });
-                }
-            }
-        }
-        if (l = (attr = el.attributes).length){
-            for (i = 0; i < l; i++) {
-                pattr = curPath + "/@" + (a = attr[i]).nodeName;
-                if (sh = hash[pattr]) {
-                    //Ignore the same node
-                    for (total = 0, first = null, v = a.nodeValue, j = 0, jl = sh.length; j < jl; j++) {
-                        //possible extra heuristic  && tn.parentNode.childNodes.length == e.parentNode.childNodes.length
-                        if ((tn = sh[j]) && tn.nodeValue == v) {
-                            if (!first) {
-                                first = {
-                                    node    : a,
-                                    //node2   : tn,
-                                    index   : j,
-                                    //v       : v,
-                                    arr     : sh,
-                                    curNode : curNode,
-                                    pcur    : [tn.ownerElement.$uniqueId],
-                                    found   : [j]
-                                }
-                            }
-                            else {
-                                first.found.push(j),
-                                first.pcur.push(tn.ownerElement.$uniqueId);
-                            }
-                            total++;
-                        }
-                    }
-                        
-                    if (total) {
-                        /*if (total == 1) {
-                            (tn = first.node2).$isValid = true; //@todo might be removed
-                            (tn = tn.ownerElement).$validChildren++;
-                        }*/
-                        
-                        pcur = first.pcur, pcurl = pcur.length;
-                        for (j = 0; j < pcurl; j++) {
-                            if (curNode[pcur[j]]) 
-                                curNode[pcur[j]] += (1 / total);
-                            else 
-                                curNode[pcur[j]]  = (1 / total);
-                        }
-
-                        //delete sh[j];
-                        (foundAttr[pattr] || (foundAttr[pattr] = [])).push(first);
-                        
-                        continue;
-                    }
-                    
-                    //Update or New
-                    (notFoundAttr[pattr] || (notFoundAttr[pattr] = [])).push({
-                        arr     : sh,
-                        node    : a,
-                        curNode : curNode
-                    });
-                    
-                    continue;
-                }
-                
-                //New node
-                //rules.push([SETATTRIBUTE, a, curNode]);
-                (notFoundAttr[pattr] || (notFoundAttr[pattr]  = [])).push({
-                    isNew   : true,
-                    arr     : null,
-                    node    : a,
-                    curNode : curNode
-                });
-            }
-        }
-        
-        /*for (i = 0, l = s.length; i < l; i++) {
-            //@todo only one? break here?, cache sum?
-            if ((tn = s[i]) && tn.$validChildren == tn.childNodes.length + tn.attributes.length) {
-                tn.$isValid = true;
-                (tn = tn.parentNode).$validChildren++; //@todo -1 not enough?
-                
-                delete s[i];
-            }
-        }*/
-        
-        //if (curPath == "/a:application/div/div/div") debugger;
-
-        for (id in curNode) {
-            if (curNode[id] > max) {
-                //if (curNode.include[id]) {
-                    max = curNode[id];
-                    //me = id;
-                    count = 1;
-                //}
-            }
-            else if (curNode[id] == max) {
-                count++;
-            }
-        }
-
-        //We have no idea who el is
-        if (!max) {
-            count = s.length;
-            for (i = count; i >= 0; i--){
-                if (!s[i])
-                    continue;
-                    
-                pNode = (node = s[i]).parentNode;
-            
-                if (node.$isValid || !include[node.$uniqueId] || !oldInclude[pNode.$uniqueId]) {
-                    delete include[node.$uniqueId],//@todo is this needed?
-                    count--;
-                    continue;
-                }
-                
-                //Nodes could have same parent
-                if (!pInclude[pNode.$uniqueId]) {
-                    pInclude[pNode.$uniqueId] = pNode,
-                    pInclude.length++;
-                }
-                found.push(node);
-            }
-        }
-        //We have some hints who el is
-        else {
-            for (id in curNode) {
-                if (curNode[id] != max)
-                    continue;
-                
-                pNode = (node = apf.all[id]).parentNode;
-                
-                if (node.$isValid || !include[node.$uniqueId] || !oldInclude[pNode.$uniqueId]) {
-                    delete include[node.$uniqueId]; //@todo is this needed?
-                    count--;
-                    continue;
-                }
-                
-                //Nodes could have same parent
-                if (!pInclude[pNode.$uniqueId]) {
-                    pInclude[pNode.$uniqueId] = pNode,
-                    pInclude.length++;
-                }
-                found.push(node);
-            }
-        }
-
-        if (found.length) //@experimental - when a new node is found, dont determine the parent.
-            curParentNode.include = pInclude;
-        
-        for (first = null, i = 0, l = found.length; i < l; i++) { //@todo l == count
-            pNode = (item = found[i]).parentNode; 
-            
-            //guessing parentNode
-            if (curParentNode[pNode.$uniqueId]) 
-                curParentNode[pNode.$uniqueId] += 1 / count;
-            else
-                curParentNode[pNode.$uniqueId]  = 1 / count;
-            
-            if (count > 1) {
-                if (!first) {
-                    first = {
-                        node    : el,
-                        //node2   : found[0],
-                        arr     : s,
-                        curNode : curNode,
-                        curParentNode : curParentNode,
-                        found   : found,
-                        childNumber : childNumber
-                    };
-                    
-                    //foundEl should be here with found array filled by this loop - we trust our scheme
-                    (foundEl[curPath] || (foundEl[curPath] = [])).push(first);
-                }
-                
-                if (count > (item.$matchedNodes || 0))
-                    item.$matchedNodes = count;
-            }
-            else { //Code below is probably not necessary and can be removed.
-                item.$isValid = true;
-                
-                //Clean up hash
-                for (var j = s.length - 1; j >= 0; j--) {
-                    if (s[j] == item) {
-                        delete s[j];//this.splice(i, 1);
-                        break;
-                    }
-                }
-            }
-        }
-        
-        if (!found.length) { //was !count
-            //There might be information in the parent about who we are so 
-            //we'll continue the search in recurEl()
-            var found = [];
-            for (var prop in curNode.include) {
-                if (prop == "length")
-                    continue;
-                found.push(curNode.include[prop]);
-            }
-            
-            (foundEl[curPath] || (foundEl[curPath] = [])).push({
-                arr     : s,
-                node    : el,
-                curParentNode : curParentNode,
-                curNode : curNode,
-                found   : found,
-                childNumber : childNumber
-            });
-            
-            //Update or New
-            /*(notFoundEl[curPath] || (notFoundEl[curPath] = [])).push({
-                arr     : s,
-                node    : el,
-                curNode : curParentNode,
-                me      : curNode
-            });*/
-        }
-
-        curNode.curNode = found[0],
-        curNode.parent  = curParentNode,
-        curNode.curPath = curPath;
-    })(doc2, "", hash, doc1, curNode);
-        
-    //if (doc1.$isValid) //docs match completely
-        //return true;
-
-    /*
-        indexOf (nodes in arrPath) to find out if node still exists. 
-        do remove node from .arr to say its determined
-    */
-
-    function checkOrder(node1, node2) {
-        if (node1.$childNumber != node2.childNumber)
-            reorderRules.push([node1, node2.childNumber]);
-    }
-
-    //Process all conflicting nodes on this path
-    //@todo this should be optimized a lot
-    function recurEl(path){
-        var pathCollision = foundEl[path];
-        if (!pathCollision)
-            return;
-
-        var curItem, curMatch, l, count, nMatch, j, i, potentialMatches,
-            leastMatchNodes, pl, pNode;
-        for (i = 0, pl = pathCollision.length; i < pl; i++) {
-            //Make sure to do cleanup!
-            //Strategy!: the parent knows best!
-            
-            //if (pathCollision[i].node2.$isValid)
-                //continue;
-            
-            potentialMatches = (curItem = pathCollision[i]).found,
-            leastMatchNodes  = 100000;
-            for (count = j = 0, l = potentialMatches.length; j < l; j++) {
-                if ((curMatch = potentialMatches[j]).$isValid)
-                    continue;
-                
-                nMatch = curMatch.$matchedNodes;
-                if (nMatch < leastMatchNodes) {
-                    leastMatchNodes = nMatch,
-                    count = 1;
-                }
-                else if (nMatch == leastMatchNodes) {
-                    count++;
-                }
-            }
-            
-            //Found match
-            if (count == 1) {
-                for (j = 0, l = potentialMatches.length; j < l; j++) {
-                    if (!(curMatch = potentialMatches[j]).$isValid
-                      && curMatch.$matchedNodes == leastMatchNodes) {
-                        curMatch.$isValid = true,
-                        //curMatch.parentNode.$validChildren++;
-                        curItem.curNode.curNode = curMatch;//set who is me
-                        checkOrder(curMatch, curItem);
-                        break;
-                    }
-                }
-            }
-            else if (count) {
-                //recursion.. with pathCollion[i].curNode.parent.found -> potentialMatches for the parent;
-                //if parent found and it was doubting, delete entry from foundEl[path][i].node == pathCollion[i].node.parentNode
-                var include = curItem.curParentNode.include;
-                //There's only one parent
-                if (include.length == 1) {
-                    pNode = curItem.curParentNode.curNode;//apf.all[include[0]];
-                    for (j = 0, l = potentialMatches.length; j < l; j++) {
-                        if (!(curMatch = potentialMatches[j]).$isValid
-                          && curMatch.$matchedNodes == leastMatchNodes
-                          && curMatch.parentNode == pNode) {
-                            curMatch.$isValid = true,
-                            //curMatch.parentNode.$validChildren++;
-                            curItem.curNode.curNode = curMatch;//set who is me
-                            checkOrder(curMatch, curItem);
-                            break;
-                        }
-                    }
-                    //@todo check here if found
-                    continue;
-                }
-                
-                //Determine who's who for the parents
-                recurEl(curItem.curParentNode.curPath);
-                
-                pNode = curItem.curParentNode.curNode;
-                for (j = 0, l = potentialMatches.length; j < l; j++) {
-                    if (!(curMatch = potentialMatches[j]).$isValid
-                      && curMatch.$matchedNodes == leastMatchNodes
-                      && curMatch.parentNode == pNode) {
-                        curMatch.$isValid = true,
-                        //curMatch.parentNode.$validChildren++;
-                        curItem.curNode.curNode = curMatch;//set who is me
-                        checkOrder(curMatch, curItem);
-                        break;
-                    }
-                }
-                
-                /*for (var j = 0; j < potentialMatches.length; j++) {
-                    if (!potentialMatches[j].$isValid && potentialMatches[j].$matchedNodes == leastMatchNodes) {
-                        recur
-                    }
-                }*/
-            }
-            //Add when node is same as others
-            else {
-                //This case is for when there is a node that almost looks the 
-                //same and was discarded but was actually needed
-                var nodes = hash[path], foundLast = false;
-                for (var k = 0; k < nodes.length; k++) {
-                    if (nodes[k] && !nodes[k].$isValid) {
-                        nodes[k].$isValid = true;
-                        curItem.curNode.curNode = nodes[k];
-                        checkOrder(nodes[k], curItem);
-                        foundLast = true;
-                        break;
-                    }
-                }
-                
-                //if (curItem.curParentNode.include.length == 1) {
-                //This case is for when a node looks the same as other nodes
-                if (!foundLast) {
-                    curItem.curNode.isAdding = true;
-
-                    if (!curItem.curParentNode.isAdding) {
-                        (notFoundEl[path] || (notFoundEl[path] = [])).push({
-                            isNew   : true,
-                            arr     : null,
-                            node    : curItem.node,
-                            curNode : curItem.curParentNode
-                        });
-                    }
-                }
-            }
-        }
-        
-        delete foundEl[path];//Will this mess with the iterator?
-    }
-
-    //Process conflicting element nodes
-    for (path in foundEl) {
-        recurEl(path);
-    }
-
-    //Process conflicting text nodes
-    //debugger;
-    for (path in foundTxt) {
-        arr     = foundTxt[path], //found text nodes with this path
-        l       = arr.length,
-        arrPath = arr[0].arr;
-
-        var lost = [];
-        for (i = 0; i < l; i++) {
-            t        = arr[i],
-            arrIndex = t.found;
-            
-            //Find the right node
-            if ((p = t.curNode) && (p = p.curNode)) {
-                if (arrPath[t.index] && p == arrPath[t.index].parentNode) {
-                    checkOrder(arrPath[t.index], t);
-                    delete arrPath[t.index];
-                    //p.$validChildren++;
-                }
-                else {
-                    //cleanup hash
-                    for (found = false, j = 0; j < arrIndex.length; j++) {
-                        if (arrPath[arrIndex[j]] && arrPath[arrIndex[j]].parentNode == p) {
-                            checkOrder(arrPath[arrIndex[j]], t);
-                            delete arrPath[arrIndex[j]],
-                            //p.$validChildren++;
-                            found = true;
-                            break;
-                        }
-                    }
-                    
-                    //if not found, what does it mean?
-                    if (!found && !t.curNode.isAdding)
-                        (notFoundEl[path] || (notFoundEl[path] = [])).push(t);
-                }
-            }
-            else {
-                //throw new Error("hmm, new?");
-                //part of a new chain?
-                /*if (!t.curNode.isAdding) {
-                    
-                }*/
-                //lost.push(t);
-
-                if (!t.curNode.isAdding)
-                    (notFoundEl[path] || (notFoundEl[path] = [])).push(t);
-            }
-        }
-        
-        /*for (i = 0; i < lost.length; i++) {
-            for (var j = 0; j < arrPath.length; j++) {
-                if (!arrPath[j])
-                    continue;
-                alert(1);
-                (notFoundEl[path] || (notFoundEl[path] = [])).push(lost[i]);
-                break;
-            }
-        }*/
-    }
-    
-    //Process conflicting attr nodes
-    for (path in foundAttr) {
-        arr     = foundAttr[path], //found attributes with this path
-        l       = arr.length,
-        arrPath = arr[0].arr;
-
-        for (i = 0; i < l; i++) {
-            t        = arr[i],
-            arrIndex = t.found;
-            
-            //Find the right node
-            if ((p = t.curNode) && (p = p.curNode)) {
-                if (arrPath[t.index] && p == arrPath[t.index].ownerElement) {
-                    delete arrPath[t.index];
-                    //p.$validChildren++;
-                }
-                else {
-                    //cleanup hash
-                    for (found = false, j = 0; j < arrIndex.length; j++) {
-                        if (arrPath[arrIndex[j]] && arrPath[arrIndex[j]].ownerElement == p) {
-                            delete arrPath[arrIndex[j]],
-                            //p.$validChildren++;
-                            found = true;
-                            break;
-                        }
-                    }
-                    
-                    //if not found, what does it mean?
-                    if (!found && !t.curNode.isAdding)
-                        (notFoundAttr[path] || (notFoundAttr[path] = [])).push(t);
-                }
-            }
-            else {
-                //throw new Error("hmm, new?");
-                //part of a new chain?
-                
-                if (!t.curNode.isAdding)
-                    (notFoundAttr[path] || (notFoundAttr[path] = [])).push(t);
-            }
-        }
-    }
-    
-    //Process not found attribute
-    /*
-        arr     : sh,
-        node    : a,
-        curNode : curNode
-        
-        is it update or new?
-        - get the parent node from curNode.curNode;
-            - check if there is a parent node in the list that matches
-                - remove entry in arrPath
-        - else 
-            - parent is new node
-    */
-    for (path in notFoundAttr) {
-        arr     = notFoundAttr[path], //not found attributes with this path
-        l       = arr.length,
-        arrPath = arr[0].arr || emptyArr,
-        lPath   = arrPath.length;
-
-        //should there be a check for isAdded here?
-
-        for (i = 0; i < l; i++) {
-            a = arr[i];
-            
-            if ((p = t.curNode) && p.isAdding) {
-                //Ignore, parent is new, so this will be added automatically
-                continue;
-            }
-            
-            //Found parent
-            if ((p = a.curNode) && (p = p.curNode)) {
-                if (a.node.nodeName == "id")
-                    p.setAttribute("id", a.node.nodeValue);
-                else
-                    rules.push([SETATTRIBUTE, p, a.node]);
-                //p.$validChildren++;
-                
-                //cleanup hash
-                for (j = 0; j < lPath; j++) {
-                    if (arrPath[j] && arrPath[j].ownerElement == p) {
-                        delete arrPath[j];
-                        break;
-                    }
-                }
-            }
-            else {
-                //Ignore, parent is new, so this will be added automatically (i think :S)
-            }
-        }
-    }
-    //Process not found nodes (all but attribute)
-    for (path in notFoundEl) {
-        arr     = notFoundEl[path], //not found attributes with this path
-        l       = arr.length,
-        arrPath = arr[0].arr || emptyArr,
-        lPath   = arrPath.length;
-
-//if (path == "/a:application/div/div/div/div/a/3") debugger;
-
-        for (i = 0; i < l; i++) {
-            t = arr[i];
-            
-            if ((p = t.curNode) && p.isAdding) {
-                //Ignore, parent is new, so this will be added automatically
-                continue;
-            }
-            
-            //Found parent
-            if (p = p.curNode) {
-                appendRules.push(lastRule = [APPEND, p, t.node]);
-                //p.$validChildren++;
-                //cleanup hash
-                for (j = 0; j < lPath; j++) {
-                    if (arrPath[j] && arrPath[j].parentNode == p) {
-                        if (t.node.nodeType != 1) {
-                            lastRule[0] = UPDATE;
-                            lastRule[1] = arrPath[j];
-                        }
-                        else {
-                            appendRules.length--;
-                        }
-
-                        delete arrPath[j];
-                        break;
-                    }
-                }
-            }
-            else {
-                
-            }
-        }
-    }
-    
-    //Process remaining hash
-    for (prop in hash){
-        item = hash[prop];
-        for (i = 0, l = item.length; i < l; i++) {
-            subitem = item[i];
-            //@todo check if the last check is actually needed:
-            // && subitem.$validChildren != subitem.childNodes.length + subitem.attributes.length) {
-            if (subitem && !subitem.$isValid && (subitem.parentNode || subitem.ownerElement).$isValid) {
-                rules.push([REMOVE, subitem]);
-            }
-        }
-    }
-
-    var dt = new Date().getTime();
-    //This loop could be optimized away
-    var q = {}, doc = doc1.ownerDocument;
-    for (i = 0, l = appendRules.length; i < l; i++) {
-        switch((item = appendRules[i])[0]) {//@todo optimize
-            case UPDATE:
-                
-                if (debug) {
-                    apf.console.log("XmlDiff: UPDATE " 
-                        + item[1].nodeValue + " with "
-                        + item[2].nodeValue);
-                }
-                
-            
-                //item[1].nodeValue = item[2].nodeValue;
-                item[1].$setValue(item[2].nodeValue);
-                if (item[1].nodeType != 2) { //@todo apf3.0 optimize this
-                    var childNr1 = apf.getChildNumber(item[1]),
-                        childNr2 = apf.getChildNumber(item[2]);
-                    if (childNr1 != childNr2)
-                        item[1].parentNode.insertBefore(item[1], item[1].parentNode.childNodes[childNr2]);
-                }
-                //@todo need trigger for aml node
-                break;
-            case APPEND:
-                
-                if (debug) {
-                    apf.console.log("XmlDiff: APPEND " 
-                        + (item[2].tagName ? "<" + item[2].tagName + ">" : item[2].nodeValue) + " to "
-                        + "<" + item[1].localName + "> [" + item[1].$uniqueId + "]");
-                }
-                
-            
-                if (!item[1].canHaveChildren) {
-                    item[1].$aml = item[2].parentNode;
-                    if (item[1].$redraw)
-                        item[1].$redraw();
-                    continue;
-                }
-        
-                if (item[1].render != "runtime") {
-                    var xml = item[1].parentNode;
-                    while (xml && xml.nodeType == 1 && !xml.getAttribute("render"))
-                        xml = xml.parentNode;
-                    if (xml && xml.render) {// && !xml.visible) { //@todo apf3.0 add case for page
-                        if (xml.$amlList)
-                            xml.$amlList.push(item);
-                        else {
-                            xml.$amlList = [item];
-                            xml.addEventListener("beforerender", function(e){
-                                var nodes = this.$amlList;
-                                this.$amlList = null;
-        
-                                for (var item, i = 0, l = nodes.length; i < l; i++) {
-                                    item = nodes[i];
-                                    var childNr = apf.getChildNumber(node = item[2]);
-                                    item[1].insertBefore(doc.importNode(node, true), item[1].childNodes[childNr]);
-                                }
-                                
-                                //@todo call afterrender
-                                this.$rendered = true;
-                                this.removeEventListener("beforerender", arguments.callee);
-                                
-                                return false;
-                            });
-                            xml.$rendered = false;
-                        }
-                    }
-                    else {
-                        //!preserveWhiteSpace 
-                        /*var list = item[2].parentNode.selectNodes("node()[local-name() or string-length(normalize-space())]");
-                        var idx  = apf.getChildNumber(item[2], list);
-                        if (idx < list.length) {*/
-
-                        (item[1].$amlList || (item[1].$amlList = []))[apf.getChildNumber(item[2])] = item;
-                        q[item[1].$uniqueId] = item[1];
-                    }
-                }
-                else {
-                    item[1].$aml = item[2].parentNode;
-                    item[1].$rendered = false;
-                }
-            break;
-        }
-    }
-    
-    //@todo apf3.0 optimize this
-    var list, newNode;
-    for (var id in q) {
-        list = q[id].$amlList;
-        for (var item, i = 0; i < list.length; i++) {
-            item = list[i];
-            if (!item) continue;
-            /*if (item[2].nodeType == 1) {
-                newNode = doc.createElementNS(item[2].namespaceURI || apf.ns.xhtml, item[2][apf.TAGNAME]);
-                item[1].insertBefore(newNode, item[1].childNodes[i]);
-            }
-            else {*/
-                newNode = doc.importNode(item[2], true);
-                if (newNode)
-                    item[1].insertBefore(newNode, item[1].childNodes[i]);
-            //}
-        }
-    }
-
-    for (i = 0, l = rules.length; i < l; i++) {
-        switch((item = rules[i])[0]) {
-            case REMOVE:
-                
-                if (debug) {
-                    apf.console.log("XmlDiff: REMOVE " 
-                        + (item[1].localName ? "<" + item[1].localName + ">" : item[1].nodeValue) 
-                        + " [" + item[1].$uniqueId + "] ");
-                }
-                
-                if ((node = item[1]).destroy) {
-                    node.destroy(true, true);
-                }
-                else if (node.parentNode)
-                    node.parentNode.removeChild(node);
-                else
-                    node.ownerElement.removeAttributeNode(node);
-                break;
-            case SETATTRIBUTE:
-                
-                if (debug) {
-                    apf.console.log("XmlDiff: ATTRIBUTE " 
-                        + "<" + item[1].localName + "> [" + item[1].$uniqueId + "] " 
-                        + item[2].nodeName + "=\"" + item[2].nodeValue + "\"");
-                }
-                
-
-                item[1].setAttribute((item = item[2]).nodeName, item.nodeValue);
-                break;
-        }
-    }
-
-    for (var node, pnode, next, nr, tonr, i = 0;i < reorderRules.length; i++) {
-        node = reorderRules[i][0];
-        nr   = node.$childNumber;
-        tonr = reorderRules[i][1];
-        pnode = node.parentNode;
-        next = pnode.childNodes[tonr + (nr < tonr ? 1 : 0)];
-        if (node.nextSibling != next && node != next)
-            pnode.insertBefore(node, next);
-    }
-    
-    apf.queue.empty();
-
-    
-    if (debug)
-        apf.console.time("Diff time:" + (time = (new Date() - dt)));
-    
-    /*var res1 = (apf.formatXml(doc2.xml));
-    var res2 = (apf.formatXml(doc1.serialize()));
-    
-    if(res1 != res2) {
-        throw new Error("A potentially serious xml diff problem was detected. \
-            Please contact the author of this library:\n" 
-            + res1 + "\n\n" + res2); //@todo make this into a proper apf3.0 error
-    }*/
-        
-    
-}
-
-
-
 /*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
 
 /*
@@ -10576,20 +8304,6 @@ apf.extend(apf.config, {
     
     setDefaults : function(){
         
-        if (apf.isParsingPartial) {
-            this.disableRightClick  = false;
-            this.allowSelect        = true;
-            this.autoDisableActions = true;
-            this.autoDisable        = false;
-            this.disableF5          = false;
-            this.autoHideLoading    = true;
-            this.disableSpace       = false;
-            this.disableBackspace   = false;
-            this.undokeys           = false;
-            this.disableTabbing     = true;
-            this.allowBlur          = true;
-        }
-        
     },
 
     getDefault : function(type, prop){
@@ -10685,7 +8399,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(20264)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(19757)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10819,7 +8533,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7008)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7009)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10845,7 +8559,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7978)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7979)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10871,7 +8585,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9780)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9781)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12498,7 +10212,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15348)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15340)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12520,349 +10234,6 @@ apf.setModel = function(instruction, amlNode){
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-/**
- * The parser of the HyperText Markup Language.
- * @private
- */
-apf.htmlCleaner = (function() {
-    var prepareRE    = null, exportRE = null,
-        noMarginTags = {"table": 1, "TABLE": 1},
-        selfClosing  = {"br": 1, "img": 1, "input": 1, "hr": 1};
-
-    return {
-        /**
-         * Processes, sanitizes and cleanses a string of raw html that originates
-         * from outside a contentEditable area, so that the inner workings of the
-         * editor are less likely to be affected.
-         *
-         * @param  {String} html
-         * @return The sanitized string, valid to store and use in the editor
-         * @type   {String}
-         */
-        prepare: function(html, bNoEnclosing) {
-            if (!prepareRE) {
-                // compile 'em regezz
-                prepareRE = [
-                    /<(\/?)strong>|<strong( [^>]+)>/gi,
-                    /<(\/?)em>|<em( [^>]+)>/gi,
-                    /&apos;/g,
-                    /*
-                        Ruben: due to a bug in IE and FF this regexp won't fly:
-                        /((?:[^<]*|<(?:span|strong|em|u|i|b)[^<]*))<br[^>]*?>/gi, //@todo Ruben: add here more inline html tag names
-                    */
-                    /(<(\/?)(span|strong|em|u|i|b|a|strike|sup|sub|font|img)(?:\s+[\s\S]*?)?>)|(<br[\s\S]*?>)|(<(\/?)([\w\-]+)(?:\s+[\s\S]*?)?>)|([^<>]*)/gi, //expensive work around
-                    /(<a[^>]*href=)([^\s^>]+)*([^>]*>)/gi,
-                    /<p><\/p>/gi,
-                    /<a( )([^>]+)\/>|<a\/>/gi
-                ];
-            }
-
-            // Convert strong and em to b and i in FF since it can't handle them
-            if (apf.isGecko) {//@todo what about the other browsers?
-                html = html.replace(prepareRE[0], "<$1b$2>")
-                           .replace(prepareRE[1], "<$1i$2>");
-            }
-            else if (apf.isIE) {
-                html = html.replace(prepareRE[2], "&#39;") // IE can't handle apos
-                           .replace(prepareRE[4], "$1$2 _apf_href=$2$3");
-                           //.replace(prepareRE[5], "<p>&nbsp;</p>");
-
-                // <BR>'s need to be replaced to be properly handled as
-                // block elements by IE - because they're not converted
-                // when an editor command is executed
-                var str = [], capture = false, strP = [], depth = [], bdepth = [],
-                    lastBlockClosed = false;
-                html.replace(prepareRE[3],
-                  function(m, inline, close, tag, br, block, bclose, btag, any){
-                    if (inline) {
-                        var id = strP.push(inline);
-
-                        tag = tag.toLowerCase();
-                        if (!selfClosing[tag]) {
-                            if (close) {
-                                if (!depth[depth.length-1]
-                                  || depth[depth.length-1][0] != tag) {
-                                    strP.length--; //ignore non matching tag
-                                }
-                                else {
-                                    depth.length--;
-                                }
-                            }
-                            else {
-                                depth.push([tag, id]);
-                            }
-                        }
-
-                        capture = true;
-                    }
-                    else if (any) {
-                        strP.push(any);
-                        capture = true;
-                    }
-                    else if (br) {
-                        if (capture) {
-                            if (depth.length) {
-                                strP.push(br);
-                            }
-                            else {
-                                str.push("<p>", strP.join(""), "</p>");
-                                strP = [];
-                            }
-
-                            if (!depth.length)
-                                capture = false;
-                        }
-                        else {
-                            if ((bdepth.length || lastBlockClosed)
-                              && br.indexOf("_apf_marker") > -1) {
-                                //donothing
-                            }
-                            else
-                                str.push("<p>&nbsp;</p>");
-                        }
-                    }
-                    else if (block){
-                        if (bclose) {
-                            if (bdepth[bdepth.length-1] != btag.toLowerCase()) {
-                                return;
-                            }
-                            else {
-                                bdepth.length--;
-                            }
-
-                            //Never put P's inside block elements
-                            if (strP.length) {
-                                str.push(strP.join(""));
-                                strP = [];
-                            }
-
-                            lastBlockClosed = 2;
-                        }
-                        else {
-                            var useStrP = strP.length && strP.join("").trim();
-                            var last = useStrP ? strP : str;
-                            if (!noMarginTags[btag]) {
-                                if (last[last.length - 1] == "<p>&nbsp;</p>")
-                                    last[last.length - 1] = "";//<p></p>"; //maybe make this a setting
-                                else if(useStrP && !bdepth.length)
-                                    last.push("<p></p>");
-                            }
-
-                            if (strP.length) {
-                                //Never put P's inside block elements
-                                if (!useStrP || bdepth.length) {
-                                    str.push(strP.join(""));
-                                    strP = [];
-                                }
-                                else {
-                                    str.push("<p>", strP.join(""), "</p>");
-                                    strP = [];
-                                }
-                            }
-
-                            bdepth.push(btag.toLowerCase());
-                        }
-
-                        str.push(block);
-                        capture = false;
-                    }
-
-                    lastBlockClosed = lastBlockClosed == 2 ? 1 : false;
-                  });
-                var s;
-                if ((s = strP.join("")).trim())
-                    str.push(bNoEnclosing
-                     ? s
-                     : "<p>" + s + "</p>");
-                html = str.join("");
-            }
-
-            // Fix some issues
-            html = (apf.xmlentities ? apf.xmlentities(html) : html)
-                       .replace(prepareRE[6], "<a$1$2></a>");
-
-            return html;
-        },
-
-        /**
-         * Return a string of html, but then formatted in such a way that it can
-         * embedded.
-         *
-         * @param  {String}  html
-         * @param  {Boolean} noEntities
-         * @type   {String}
-         */
-        parse: function(html, noEntities, noParagraph) {
-            if (!exportRE) {
-                // compile 'em regezz
-                exportRE = [
-                    /<br[^>]*><\/li>/gi,
-                    /<br[^>]*_apf_placeholder="1"\/?>/gi,
-                    /<(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>[\s\n\r\t]*<\/(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>/gi,
-                    /<(tr|td)>[\s\n\r\t]*<\/(tr|td)>/gi,
-                    /[\s]*_apf_href="?[^\s^>]+"?/gi,
-                    /(".*?"|'.*?')|(\w)=([^'"\s>]+)/gi,
-                    /<((?:br|input|hr|img)(?:[^>]*[^\/]|))>/ig, // NO! do <br /> see selfClosing
-                    /<p>&nbsp;$/mig,
-                    /(<br[^>]*?>(?:[\r\n\s]|&nbsp;)*<br[^>]*?>)|(<(\/?)(span|strong|em|u|i|b|a|br|strike|sup|sub|font|img)(?:\s+.*?)?>)|(<(\/?)([\w\-]+)(?:\s+.*?)?>)|([^<>]*)/gi,
-                    /<\/p>/gi, //<p>&nbsp;<\/p>|
-                    /<p>/gi,
-                    /<\s*\/?\s*(?:\w+:\s*)?[\w-]*[\s>\/]/g
-                ];
-            }
-
-            if (apf.isIE) {
-                html = html.replace(exportRE[7], "<p></p>")
-                           .replace(exportRE[9], "<br />")
-                           .replace(exportRE[10], "")
-            }
-            else if (html == "<br>")
-                html = "";
-
-            html = (!noEntities && apf.xmlentities ? apf.xmlentities(html) : html)
-                       .replace(exportRE[0], "</li>")
-                       .replace(exportRE[1], "")
-                       .replace(exportRE[2], "")
-                       .replace(exportRE[3], "<$1>&nbsp;</$2>")
-                       .replace(exportRE[4], "")
-                       .replace(exportRE[6], "<$1 />")
-                       .replace(exportRE[11], function(m){
-                           return m.toLowerCase();
-                       });
-
-            //@todo: Ruben: Maybe make this a setting (paragraphs="true")
-            //@todo might be able to unify this function with the one above.
-            if (apf.isIE && !noParagraph) {
-                var str = [], capture = true, strP = [], depth = [], bdepth = [];
-                html.replace(exportRE[8],
-                  function(m, br, inline, close, tag, block, bclose, btag, any){
-                    if (inline) {
-                        if (apf.isIE) {
-                            inline = inline.replace(exportRE[5],
-                                function(m1, str, m2, v){
-                                    return str || m2 + "=\"" + v + "\"";
-                                });//'$2="$3"') //quote un-quoted attributes
-                        }
-
-                        var id = strP.push(inline);
-
-                        if (!selfClosing[tag]) {
-                            if (close) {
-                                if (!depth[depth.length-1]
-                                  || depth[depth.length-1][0] != tag) {
-                                    strP.length--; //ignore non matching tag
-                                }
-                                else {
-                                    depth.length--;
-                                }
-                            }
-                            else {
-                                depth.push([tag, id]);
-                            }
-                        }
-
-                        capture = true;
-                    }
-                    else if (any) {
-                        strP.push(any);
-                        capture = true;
-                    }
-                    else if (br) {
-                        if (capture) {
-                            if (depth.length) {
-                                strP.push(br);
-                            }
-                            else {
-                                str.push("<p>", strP.join("").trim()
-                                    || "&nbsp;", "</p>");
-                                strP    = [];
-                                capture = false;
-                            }
-                        }
-                        else
-                            str.push("<p>&nbsp;</p>");
-                    }
-                    else if (block){
-                        if (bclose) {
-                            if (bdepth[bdepth.length-1] != btag) {
-                                return;
-                            }
-                            else {
-                                bdepth.length--;
-                            }
-
-                            //Never put P's inside block elements
-                            if (strP.length) {
-                                str.push(strP.join(""));
-                                strP = [];
-                            }
-                        }
-                        else {
-                            if (apf.isIE) {
-                                block = block.replace(exportRE[5],
-                                    function(m1, str, m2, v){
-                                        return str || m2 + "=\"" + v + "\"";
-                                    });//'$2="$3"') //quote un-quoted attributes
-                            }
-
-                            //@todo this section can be make similar to the one
-                            //      in the above function and vice verse
-                            var last = strP.length ? strP : str;
-                            if (last[last.length - 1] == "<p>&nbsp;</p>")
-                                last.length--;
-
-                            if (strP.length) {
-                                var s;
-                                //Never put P's inside block elements
-                                if (bdepth.length || (s = strP.join("").trim())
-                                  .replace(/<.*?>/g,"").trim() == "") {
-                                    str.push(s || strP.join(""));
-                                    strP = [];
-                                }
-                                else {
-                                    str.push("<p>",
-                                        (s || strP.join("").trim() || "&nbsp;")
-                                            .replace(/<br \/>[\s\r\n]*$/, ""),
-                                        "</p>");
-                                    strP = [];
-                                }
-                            }
-
-                            bdepth.push(btag);
-                        }
-
-                        str.push(block);
-                        capture = false;
-                    }
-                  });
-
-                if (strP.length) {
-                    str.push("<p>" + strP.join("")
-                        .replace(/<br \/>[\s\r\n]*$/, "") + "</p>");
-                }
-                html = str.join("");
-            }
-            else {
-                html = html.replace(/<br[^>]*_apf_marker="1"[^>]*>/gi, "<br />");
-            }
-
-            
-            // check for VALID XHTML in DEBUG mode...
-            try {
-                apf.getXml("<source>" + html.replace(/&.{3,5};/g, "")
-                    + "</source>");
-            }
-            catch(ex) {
-                apf.console.error(ex.message + "\n" + html.escapeHTML());
-            }
-            
-
-            return html;
-        }
-    };
-})();
 
 
 
@@ -13345,7 +10716,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(2951)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(3138)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13415,9 +10786,11 @@ apf.queue = {
     add : function(id, f){
         this.q[id] = f;
         if (!this.timer)
+            
             this.timer = apf.setZeroTimeout(function(){
                 apf.queue.empty();
             });
+            
     },
 
     remove : function(id){
@@ -14511,7 +11884,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35621)TIME(Fri, 23 Mar 2012 14:03:44 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35621)TIME(Fri, 13 Apr 2012 14:26:30 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15505,21 +12878,6 @@ return {
 /*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(397)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
 
 
-/**
- * Provides a way to record user actions, store them and play them back.
- * @experimental
- */
-apf.uirecorder = {
-    $inited         : false,
-    isRecording     : false,
-    isPlaying       : false,
-    isPaused        : false,
-    captureDetails  : false,
-    $o3             : null,
-
-    setTimeout      : self.setTimeout
-}
-
 
 
 
@@ -15549,7 +12907,7 @@ apf.uirecorder = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(39996)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40680)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15589,6 +12947,8 @@ apf.uirecorder = {
  * @default_private
  */
 apf.xmldb = new (function(){
+    var _self = this;
+    
     this.xmlDocTag    = "a_doc";
     this.xmlIdTag     = "a_id";
     this.xmlListenTag = "a_listen";
@@ -15600,6 +12960,26 @@ apf.xmldb = new (function(){
 
     var cleanRE       = /(?:a_doc|a_id|a_listen|a_loaded)=(?:"|')[^'"]+(?:"|')/g,
         whiteRE       = />[\s\n\r\t]+</g;
+        
+    /**
+     * Clear XML document cache periodically when no model is referencing it
+     */
+    this.garbageCollect = function(){
+        var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
+        for (var i = 0, l = cache.length; i < l; i++) {
+            xmlNode = cache[i]
+            docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
+            model = apf.nameserver.get("model", docId);
+            
+            if (!model || model.data != xmlNode) {
+                cache[i] = null;
+            }
+        }
+    }
+    if (window.setInterval)
+        setInterval(function(){
+            _self.garbageCollect();
+        }, 60000);
 
     /**
      * @private
@@ -15848,37 +13228,6 @@ apf.xmldb = new (function(){
             }
 
             
-            if (xmlNode.$regbase) {
-                var lut = {
-                    "DOMCharacterDataModified" : "text",
-                    "DOMAttrModified"          : "attribute",
-                    "DOMNodeInserted"          : "add",
-                    "DOMNodeRemoved"           : "remove"
-                }
-                var rFn = this.$listeners[id].rFn || (this.$listeners[id].rFn = function(e){
-                    var node = e.relatedNode && e.relatedNode.nodeType != 1
-                        ? e.relatedNode
-                        : e.currentTarget;
-
-                    if (node.nodeName && node.nodeName.substr(0, 2) == "a_")
-                        return;
-
-                    var action = lut[e.name];
-                    if (node.nodeType != 1) {
-                        action = node.nodeType == 2 ? "attribute" : "text";
-                        node = node.parentNode || node.ownerElement;
-                    }
-
-                    //if ((node.parentNode && node.parentNode.nodeType == 1))
-                        apf.xmldb.$listeners[id]([action, node, this, null, node.parentNode]);
-                });
-                xmlNode.addEventListener("DOMCharacterDataModified", rFn);
-                xmlNode.addEventListener("DOMAttrModified",          rFn);
-                xmlNode.addEventListener("DOMNodeInserted",          rFn);
-                xmlNode.addEventListener("DOMNodeRemoved",           rFn);
-                return;
-            }
-            
         }
 
         if (!listen || listen.indexOf(";" + id + ";") == -1)
@@ -15902,14 +13251,6 @@ apf.xmldb = new (function(){
         else {
             id = "e" + o.$uniqueId;
 
-            
-            if (xmlNode.$regbase) {
-                var rFn = this.$listeners[id].rFn;
-                xmlNode.removeEventListener("DOMCharacterDataModified", rFn);
-                xmlNode.removeEventListener("DOMAttrModified",          rFn);
-                xmlNode.removeEventListener("DOMNodeInserted",          rFn);
-                xmlNode.removeEventListener("DOMNodeRemoved",           rFn);
-            }
             
         }
 
@@ -16734,7 +14075,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10313)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10315)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16760,7 +14101,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15458)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15459)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16786,7 +14127,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12312)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12314)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16812,7 +14153,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8228)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8229)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16838,7 +14179,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10208)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10210)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16864,7 +14205,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(36234)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(36015)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17062,12 +14403,6 @@ apf.http = function(){
         
         
         
-        if (apf.uirecorder && apf.uirecorder.captureDetails) {
-            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                apf.uirecorder.capture.trackHttpCall(this, url, options); 
-            }
-        }
-        
 
         var binary = apf.hasXhrBinary && options.binary;
         var async = options.async = (options.async || binary 
@@ -17148,11 +14483,6 @@ apf.http = function(){
             if (options.nocache)
                 httpUrl = apf.getNoCacheUrl(httpUrl);
 
-            
-            if (apf.config.queryAppend) {
-                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
-                    + apf.config.queryAppend;
-            }
             
             
             var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
@@ -17840,7 +15170,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(16889)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(18237)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17881,20 +15211,13 @@ apf.Init.run("http");
  */
 apf.DOMParser = function(){};
 
-/*
-    @todo the shouldWait variable should be tree based and checked recursively up
-*/
 apf.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
     this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
     
-    /* 
-        @todo domParser needs to get a queue based on the parentNode that is 
-              waiting to be parsed. This will prevent collisions when multiple
-              parts of the document are altered at the same time.
-    */
-    this.$shouldWait = 0;
-
+    this.$waitQueue  = {}
+    this.$callCount  = 0;
+    
     // privates
     var RE     = [
             /\<\!(DOCTYPE|doctype)[^>]*>/,
@@ -17921,14 +15244,10 @@ apf.DOMParser.prototype = new (function(){
                 str = str.replace(/xmlns\=\"[^"]*\"/g, "");
         
             
-            xmlNode = apf.getXmlDom(str, null, this.preserveWhiteSpace || apf.debug).documentElement;
-            var i, l,
-                nodes = xmlNode.selectNodes(XPATH);
-            // Case insensitive support
-            for (i = 0, l = nodes.length; i < l; i++) {
-                (nodes[i].ownerElement || nodes[i].selectSingleNode(".."))
-                    .setAttribute(nodes[i].nodeName.toLowerCase(), nodes[i].nodeValue);
-            }
+        
+            var xmlNode = apf.getXmlDom(str);
+            if (apf.xmlParseError) apf.xmlParseError(xmlNode);
+            xmlNode = xmlNode.documentElement;
             
         }
         else {
@@ -17985,6 +15304,8 @@ apf.DOMParser.prototype = new (function(){
 
         //Set parse context
         this.$parseContext = [amlNode, options];
+        
+        this.$addParseState(amlNode, options || {});
 
         //First pass - Node creation
         var nodes, nodelist = {}, prios = [], _self = this;
@@ -18055,7 +15376,8 @@ apf.DOMParser.prototype = new (function(){
             }
         }
 
-        if (this.$shouldWait)
+        if (this.$waitQueue[amlNode.$uniqueId] 
+          && this.$waitQueue[amlNode.$uniqueId].$shouldWait)
             return (docFrag || doc);
 
         if (options.timeout) {
@@ -18070,14 +15392,60 @@ apf.DOMParser.prototype = new (function(){
         return (docFrag || doc);
     };
     
-    this.$callCount = 0;
+    this.$isPaused = function(amlNode){
+        return this.$waitQueue[amlNode.$uniqueId] && 
+          this.$waitQueue[amlNode.$uniqueId].$shouldWait > 0;
+    }
+    
+    this.$addParseState = function(amlNode, options){
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId] 
+            || (this.$waitQueue[amlNode.$uniqueId] = [])
+        waitQueue.pushUnique(options);
+        
+        return waitQueue;
+    }
+    
+    this.$pauseParsing = function(amlNode, options){
+        var waitQueue = this.$waitQueue[amlNode.$uniqueId];
+        if (!waitQueue.$shouldWait) waitQueue.$shouldWait = 0;
+        waitQueue.$shouldWait++;
+    }
+    
     this.$continueParsing = function(amlNode, options){
-        if (this.$shouldWait && --this.$shouldWait != 0)
-            return false;
+        if (!amlNode)
+            amlNode = apf.document.documentElement;
 
-        if (!options)
-            options = {};
+        var uId  = amlNode.$uniqueId;
+        if (uId in this.$waitQueue) {
+            var item = this.$waitQueue[uId];
             
+            if (item.$shouldWait && --item.$shouldWait)
+                return false;
+            
+            var node = amlNode.parentNode;
+            while (node && node.nodeType == 1) {
+                if (this.$waitQueue[node.$uniqueId] 
+                  && this.$waitQueue[node.$uniqueId].$shouldWait)
+                    return false;
+                node = node.parentNode;
+            }
+            
+            var parseAmlNode = apf.all[uId];
+            
+            delete this.$waitQueue[uId];
+            for (var i = 0; i < item.length; i++) {
+                this.$parseState(parseAmlNode, item[i]);
+            }
+            
+            //@todo Check for shouldWait here?
+        }
+        else
+            this.$parseState(amlNode, options || {});
+        
+        delete this.$parseContext;
+    }
+    
+    this.$parseState = function(amlNode, options) {
         this.$callCount++;
 
         if (amlNode.$parseOptions) {
@@ -18106,7 +15474,7 @@ apf.DOMParser.prototype = new (function(){
         (function _recur(nodes){
             var node, nNodes;
             for (var i = 0, l = nodes.length; i < l; i++) {
-                if (!(node = nodes[i]).$parsePrio && !node.$amlLoaded) {
+                if (!(node = nodes[i]).$amlLoaded) {
                     node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                 }
                 
@@ -18121,8 +15489,6 @@ apf.DOMParser.prototype = new (function(){
         
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
-
-        delete this.$parseContext;
     };
     
     this.$createNode = function(doc, nodeType, xmlNode, namespaceURI, nodeName, nodeValue){
@@ -18330,7 +15696,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22555)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22559)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18727,7 +16093,7 @@ apf.AmlNode = function(){
         }
 
         var doc = this.nodeType == this.NODE_DOCUMENT ? this : this.ownerDocument;
-        if (!doc || doc.$domParser.$shouldWait)
+        if (!doc || doc.$domParser.$isPaused(this))
             return amlNode;
 
         if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT)
@@ -18946,7 +16312,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21909)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21964)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19341,8 +16707,9 @@ apf.AmlElement = function(struct, tagName){
         }
         
         this.childNodes.length = 0;
-
-        this.$int.innerHTML = "<div class='loading'>loading...</div>";
+        
+        if(options.noLoadingMsg !== false)
+            this.$int.innerHTML = "<div class='loading'>loading...</div>";
 
         //Do an insertMarkup
         this.insertMarkup(amlDefNode, options);
@@ -19526,29 +16893,6 @@ apf.AmlElement = function(struct, tagName){
 
         
         
-        //Get defaults from the defaults element if it exists
-        var defs = apf.nameserver.getAll("defaults_" + this.localName);
-        if (defs.length) {
-            for (var j = 0, jl = defs.length; j < jl; j++) {
-                var d = defs[j].attributes, di;
-                for (i = 0, l = d.length; i < l; i++) {
-                    a = attr.getNamedItem((di = d[i]).nodeName);
-                    if (a) {
-                        if (a.value)//specified 
-                            continue;
-                        
-                        a.$setValue(di.nodeValue);
-                        this.$inheritProperties[di.nodeName] = 2;
-                    }
-                    else {
-                        this.attributes.push(
-                            new apf.AmlAttr(this, di.nodeName, di.nodeValue));
-                        this.$inheritProperties[di.nodeName] = 2;
-                    }
-                }
-            }
-        }
-        
         
 
         //Set all attributes
@@ -19628,7 +16972,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(4136)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(3974)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19661,7 +17005,7 @@ apf.AmlText = function(isPrototype){
     this.nodeName = "#text";
     
     this.serialize = function(){
-        return apf.xmlentities(this.nodeValue).replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return apf.escapeXML(this.nodeValue);
     };
     
     
@@ -19728,7 +17072,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4716)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4514)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19773,8 +17117,7 @@ apf.AmlAttr = function(ownerElement, name, value){
     
     this.serialize = 
     this.toString  = function(){
-        return this.name + "=\"" + apf.xmlentities(String(this.value))
-            .replace(/</g, "&lt;").replace(/>/g, "&gt;") + "\"";
+        return this.name + "=\"" + apf.escapeXML(String(this.value)) + "\"";
     };
     
     
@@ -19813,7 +17156,7 @@ apf.AmlAttr = function(ownerElement, name, value){
                 host.addEventListener(name, (host.$events[name] = 
                   (typeof value == "string"
                     ? 
-                      apf.lm.compile(value, {event: true, parsecode: true})
+                      new Function('event', value)
                       
                     : value)));
             return;
@@ -19977,7 +17320,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9454)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9508)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20019,7 +17362,9 @@ apf.AmlConfiguration = function(isPrototype){
 apf.AmlDocument = function(){
     this.$prefixes      = {};
     this.$namespaceURIs = {};
+    
     this.domConfig      = new apf.AmlConfiguration();
+    
     
     this.$init();
 };
@@ -20150,31 +17495,6 @@ apf.AmlDocument = function(){
     
     this.querySelectorAll = function(){};
 
-    
-    /**
-     * See W3C evaluate
-     */
-    this.evaluate = function(sExpr, contextNode, nsResolver, type, x){
-        var result = apf.XPath.selectNodes(sExpr,
-            contextNode || this.documentElement);
-
-        /**
-         * @private
-         */
-        return {
-            snapshotLength : result.length,
-            snapshotItem   : function(i){
-                return result[i];
-            }
-        }
-    };
-
-    /**
-     * See W3C createNSResolver
-     */
-    this.createNSResolver = function(contextNode){
-        return {};
-    };
     
 
     this.hasFocus = function(){
@@ -20402,7 +17722,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4311)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20444,7 +17764,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
     this.target = null;
     
     this.serialize = function(){
-        return "<?" + this.target + "\n" + apf.xmlentities(this.nodeValue) + "\n?>";
+        return "<?" + this.target + "\n" + apf.escapeXML(this.nodeValue) + "\n?>";
     };
     
     this.reload = function(){
@@ -20563,255 +17883,6 @@ apf.AmlProcessingInstruction = function(isPrototype){
  *
  */
 
-
-apf.AmlSelection = function(doc){
-    this.$init();
-    
-    this.$ownerDocument = doc;
-    
-    var _self = this;
-    var monitor = false;
-    this.$monitorRange = function(){
-        apf.queue.add("selrange" + this.$uniqueId, function(){
-            var range = _self.$ranges[0];
-            _self.anchorNode   = range.startContainer;
-            _self.anchorOffset = range.startOffset;
-            
-            range = _self.$ranges[_self.rangeCount - 1];
-            _self.focusNode    = range.endContainer;
-            _self.focusOffset  = range.endOffset;
-            monitor = false;
-        });
-        monitor = true;
-    }
-    
-    var update = false;
-    this.$update = function(){
-        if (!update) {
-            apf.queue.add("selupdate" + this.$uniqueId, function(){
-                _self.dispatchEvent("update");
-                update = false;
-            });
-            update = true;
-        }
-    }
-};
-(function() {
-    /**
-     * Returns the element that contains the start of the selection.
-     * Returns null if there's no selection.
-     */
-    this.anchorNode   = null;
-    
-    /**
-     * Returns the offset of the start of the selection relative to the element that contains the start of the selection.
-     * Returns 0 if there's no selection.
-     */
-    this.anchorOffset = 0;
-    
-    /**
-     * Returns the element that contains the end of the selection.
-     * Returns null if there's no selection.
-     */
-    this.focusNode    = null;
-    
-    /**
-     * Returns the offset of the end of the selection relative to the element that contains the end of the selection.
-     *Returns 0 if there's no selection.
-     */
-    this.focusOffset  = null;
-    
-    /**
-     * Returns the number of ranges in the selection.
-     */
-    this.rangeCount   = 0;
-    this.$ranges      = [];
-    
-    this.toString = function(){
-        return "[apf.AmlSelection]";// this.$ranges.join("");
-    }
-    
-    /**
-     * Returns true if there's no selection or if the selection is empty. Otherwise, returns false.
-     */
-    this.isCollapsed = function(){
-        return !this.rangeCount || this.rangeCount == 1 && this.$ranges[0].collapsed;
-    }
-    
-    /**
-     * Replaces the selection with an empty one at the given position.
-     */
-    this.collapse = function(parentNode, offset, noEvent){
-        for (var i = 0, l = this.$ranges.length; i < l; i++) {
-            (range = this.$ranges[i]).removeEventListener("update", this.$monitorRange);
-            range.detach();
-        }
-        
-        var range;
-        this.$ranges = [range = new apf.AmlRange(this.ownerDocument)];
-        range.addEventListener("update", this.$monitorRange);
-        range.setStart(parentNode, offset);
-        range.setEnd(parentNode, offset);
-        this.rangeCount = 1;
-        
-        this.focusNode    = 
-        this.anchorNode   = parentNode;
-        this.anchorOffset = 
-        this.focusOffset  = offset;
-        
-        if (!noEvent)
-            this.dispatchEvent("update");
-    }
-    
-    /**
-     * Replaces the selection with an empty one at the position of the start of the current selection.
-     */
-    this.collapseToStart = function(){
-        
-        if (!this.rangeCount) {
-            
-            return;
-        }
-        
-        
-        var range = this.$ranges[0];
-        this.collapse(range.startContainer, range.startOffset);
-    }
-    
-    /**
-     * Replaces the selection with an empty one at the position of the end of the current selection.
-     */
-    this.collapseToEnd = function(){
-        
-        if (!this.rangeCount) {
-            
-            return;
-        }
-        
-        
-        var range = this.$ranges[this.rangeCount - 1];
-        this.collapse(range.endContainer, range.endOffset);
-    }
-    
-    /**
-     * Replaces the selection with one that contains all the contents of the given element.
-     */
-    this.selectAllChildren = function(parentNode){
-        this.collapse(parentNode, 0, true);
-        var range = this.$ranges[0];
-        range.selectNodeContents(parseNode);
-        
-        this.focusNode    = 
-        this.anchorNode   = parentNode;
-        this.anchorOffset = 0;
-        this.focusOffset  = range.endOffset;
-        
-        this.$update();
-    }
-    
-    /**
-     * Deletes the selection.
-     */
-    this.deleteFromDocument = function(){
-        for (var i = 0, l = this.$ranges.length; i < l; i++) {
-            this.$ranges[i].deleteContents();
-        }
-        
-        var range = this.$ranges[0];
-        this.anchorNode   = range.startContainer;
-        this.anchorOffset = range.startOffset;
-        
-        range = this.$ranges[this.rangeCount - 1];
-        this.focusNode    = range.endContainer;
-        this.focusOffset  = range.endOffset;
-        
-        this.$update();
-    }
-    
-    /**
-     * Returns the given range.
-     */
-    this.getRangeAt = function(index){
-        
-        
-        return this.$ranges[index];
-    }
-    
-    /**
-     * Adds the given range to the selection.
-     */
-    this.addRange = function(range){
-        this.rangeCount = this.$ranges.push(range);
-        
-        this.focusNode    = range.endContainer;
-        this.focusOffset  = range.endOffset;
-        range.addEventListener("update", this.$monitorRange);
-        
-        this.$update();
-        
-        return range;
-    }
-    
-    /**
-     * Removes the given range from the selection, if the range was one of the ones in the selection.
-     */
-    this.removeRange = function(range){
-        this.$ranges.remove(range);
-        this.rangeCount = this.$ranges.length;
-        range.removeEventListener("update", this.$monitorRange);
-        
-        var range = this.$ranges[0];
-        this.anchorNode   = range.startContainer;
-        this.anchorOffset = range.startOffset;
-        
-        range = this.$ranges[this.rangeCount - 1];
-        this.focusNode    = range.endContainer;
-        this.focusOffset  = range.endOffset;
-        
-        this.$update();
-    }
-    
-    /**
-     * Removes all the ranges in the selection.
-     */
-    this.removeAllRanges = function(){
-        for (var range, i = 0, l = this.$ranges.length; i < l; i++) {
-            (range = this.$ranges[i]).removeEventListener("update", this.$monitorRange);
-            range.detach();
-        }
-        
-        this.$ranges    = [];
-        this.rangeCount = 0;
-        
-        this.anchorNode   = null;
-        this.anchorOffset = 0;
-        this.focusNode    = null;
-        this.focusOffset  = 0;
-        
-        this.$update();
-    }
-    
-    //currently only ranges with single element selected is supported
-    this.$getNodeList = function(){
-        var nodes = [];
-        for (var r, i = 0; i < this.rangeCount; i++) {
-            nodes.push((r = this.$ranges[i]).startContainer.childNodes[r.startOffset]);
-        }
-        return nodes;
-    }
-    
-    this.$selectList = function(list){
-        this.removeAllRanges();
-        for (var i = 0; i < list.length; i++) {
-            this.addRange(new apf.AmlRange(this)).selectNode(list[i]);
-        }
-    }
-    
-    this.$getFirstNode = function(){
-        var r;
-        return (r = this.$ranges[0]).startContainer.childNodes[r.startOffset];
-    }
-}).call(apf.AmlSelection.prototype = new apf.Class());
 
 
 /*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
@@ -21425,346 +18496,6 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/**
- * Object creating the XML Schema namespace for the aml parser.
- *
- * @constructor
- * @parser
- *
- * @allownode simpleType, complexType
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.8
- */
-apf.xsd = new apf.AmlNamespace();
-apf.setNamespace("http://www.w3.org/2001/XMLSchema", apf.xsd);
-
-apf.xsd.typeHandlers = {
-    "http://www.w3.org/2001/XMLSchema" : {
-        //XSD datetypes [L10n potential]
-        "dateTime": function(value){
-            value = value.replace(/-/g, "/");
-    
-            value.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})$/);
-            if (!RegExp.$3 || RegExp.$3.length < 4)
-                return false;
-    
-            var dt = new Date(value);
-            if (dt.getFullYear() != parseFloat(RegExp.$3))
-                return false;
-            if (dt.getMonth() != parseFloat(RegExp.$2) - 1)
-                return false;
-            if (dt.getDate() != parseFloat(RegExp.$1))
-                return false;
-            if (dt.getHours() != parseFloat(RegExp.$4))
-                return false;
-            if (dt.getMinutes() != parseFloat(RegExp.$5))
-                return false;
-            if (dt.getSeconds() != parseFloat(RegExp.$5))
-                return false;
-    
-            return true;
-        },
-        "time": function(value){
-            value.match(/^(\d{2}):(\d{2}):(\d{2})$/);
-    
-            var dt = new Date("21/06/1980 " + value);
-            if (dt.getHours() != parseFloat(RegExp.$1))
-                return false;
-            if (dt.getMinutes() != parseFloat(RegExp.$2))
-                return false;
-            if (dt.getSeconds() != parseFloat(RegExp.$3))
-                return false;
-    
-            return true;
-        },
-        "date": function(value){
-            value = value.replace(/-/g, "/");
-            value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-            if (!RegExp.$3 || RegExp.$3.length < 4)
-                return false;
-    
-            //@todo this is a dutch date, localization...
-            var dt = new Date(RegExp.$2 + "/" + RegExp.$1 + "/" + RegExp.$3);
-            if (dt.getFullYear() != parseFloat(RegExp.$3))
-                return false;
-            if (dt.getMonth() != parseFloat(RegExp.$2) - 1)
-                return false;
-            if (dt.getDate() != parseFloat(RegExp.$1))
-                return false;
-    
-            return true;
-        },
-        "gYearMonth": function(value){
-            value = value.replace(/-/g, "/");
-            value.match(/^\/?(\d{4})(?:\d\d)?\/(\d{2})(?:\w|[\+\-]\d{2}:\d{2})?$/);
-            if (!RegExp.$1 || RegExp.$1.length < 4)
-                return false;
-    
-            var dt = new Date(value);
-            if (dt.getFullYear() != parseFloat(RegExp.$))
-                return false;
-            if (dt.getMonth() != parseFloat(RegExp.$2) - 1)
-                return false;
-    
-            return true;
-        },
-        "gYear": function(value){
-            value.match(/^\/?(\d{4})(?:\d\d)?(?:\w|[\+\-]\d{2}:\d{2})?$/);
-            if (!RegExp.$1 || RegExp.$1.length < 4)
-                return false;
-    
-            var dt = new Date(value);
-            if (dt.getFullYear() != parseFloat(RegExp.$1))
-                return false;
-    
-            return true;
-        },
-        "gMonthDay": function(value){
-            value = value.replace(/-/g, "/");
-            value.match(/^\/\/(\d{2})\/(\d{2})(?:\w|[\+\-]\d{2}:\d{2})?$/);
-    
-            var dt = new Date(value);
-            if (dt.getMonth() != parseFloat(RegExp.$1) - 1)
-                return false;
-            if (dt.getDate() != parseFloat(RegExp.$2))
-                return false;
-    
-            return true;
-        },
-        "gDay": function(value){
-            value = value.replace(/-/g, "/");
-            value.match(/^\/{3}(\d{2})(?:\w|[\+\-]\d{2}:\d{2})?$/);
-    
-            var dt = new Date(value);
-            if (dt.getDate() != parseFloat(RegExp.$1))
-                return false;
-    
-            return true;
-        },
-        "gMonth": function(value){
-            value = value.replace(/-/g, "/");
-            value.match(/^\/{2}(\d{2})(?:\w|[\+\-]\d{2}:\d{2})?$/);
-    
-            var dt = new Date(value);
-            if (dt.getMonth() != parseFloat(RegExp.$1) - 1)
-                return false;
-    
-            return true;
-        },
-    
-        //XSD datetypes
-        "string": function(value){
-            return typeof value == "string";
-        },
-        "boolean": function(value){
-            return /^(true|false)$/i.test(value);
-        },
-        "base64Binary": function(value){
-            return true;
-        },
-        "hexBinary": function(value){
-            return /^(?:0x|x|#)?[A-F0-9]{0,8}$/i.test(value);
-        },
-        "float": function(value){
-            return parseFloat(value) == value;
-        },
-        "decimal": function(value){
-            return /^[0-9\.\-,]+$/.test(value);
-        },
-        "double": function(value){
-            return parseFloat(value) == value;
-        },
-        "anyURI": function(value){
-            return /^(?:\w+:\/\/)?(?:(?:[\w\-]+\.)+(?:[a-z]+)|(?:(?:1?\d?\d?|2[0-4]9|25[0-5])\.){3}(?:1?\d\d|2[0-4]9|25[0-5]))(?:\:\d+)?(?:\/([^\s\\\%]+|%[\da-f]{2})*)?$/i
-                .test(value);
-        },
-        "QName": function(value){
-            return true;
-        },
-        "normalizedString": function(value){
-            return true;
-        },
-        "token": function(value){
-            return true;
-        },
-        "language": function(value){
-            return true;
-        },
-        "Name": function(value){
-            return true;
-        },
-        "NCName": function(value){
-            return true;
-        },
-        "ID": function(value){
-            return true;
-        },
-        "IDREF": function(value){
-            return true;
-        },
-        "IDREFS": function(value){
-            return true;
-        },
-        "NMTOKEN": function(value){
-            return true;
-        },
-        "NMTOKENS": function(value){
-            return true;
-        },
-        "integer": function(value){
-            return parseInt(value) == value;
-        },
-        "nonPositiveInteger": function(value){
-            return parseInt(value) == value && value <= 0;
-        },
-        "negativeInteger": function(value){
-            return parseInt(value) == value && value < 0;
-        },
-        "long": function(value){
-            return parseInt(value) == value && value >= -2147483648
-                && value <= 2147483647;
-        },
-        "int": function(value){
-            return parseInt(value) == value;
-        },
-        "short": function(value){
-            return parseInt(value) == value && value >= -32768 && value <= 32767;
-        },
-        "byte": function(value){
-            return parseInt(value) == value && value >= -128 && value <= 127;
-        },
-        "nonNegativeInteger": function(value){
-            return parseInt(value) == value && value >= 0;
-        },
-        "unsignedLong": function(value){
-            return parseInt(value) == value && value >= 0 && value <= 4294967295;
-        },
-        "unsignedInt": function(value){
-            return parseInt(value) == value && value >= 0;
-        },
-        "unsignedShort": function(value){
-            return parseInt(value) == value && value >= 0 && value <= 65535;
-        },
-        "unsignedByte": function(value){
-            return parseInt(value) == value && value >= 0 && value <= 255;
-        },
-        "positiveInteger": function(value){
-            return parseInt(value) == value && value > 0;
-        }
-    },
-    
-    
-    
-    "http://ajax.org/2005/aml" : {
-        //Ajax.org Platform datatypes
-        "url": function(value){
-            //@todo please make this better
-            return /\b(https?|ftp):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i.test(value.trim());
-        },
-        "website": function(value){
-            //@todo please make this better
-            return /^(?:http:\/\/)?([\w-]+\.)+\w{2,4}$/.test(value.trim());
-        },
-        "email": function(value){
-            // @see http://fightingforalostcause.net/misc/2006/compare-email-regex.php
-            return /^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*[\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+[a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/i
-                .test(value.trim());
-        },
-        "creditcard": function(value){
-            value = value.replace(/ /g, "");
-            value = value.pad(21, "0", apf.PAD_LEFT);
-            for (var total = 0, r, i = value.length; i >= 0; i--) {
-                r = value.substr(i, 1) * (i % 2 + 1);
-                total += r > 9 ? r - 9 : r;
-            }
-            return total % 10 === 0;
-        },
-        "expdate": function(value){
-            value = value.replace(/-/g, "/");
-            value = value.split("/");//.match(/(\d{2})\/(\d{2})/);
-            var dt = new Date(value[0] + "/01/" + value[1]);
-            //if(fulldate && dt.getFullYear() != parseFloat(value[1])) return false;
-            if (dt.getYear() != parseFloat(value[1]))
-                return false;//!fulldate &&
-            if (dt.getMonth() != parseFloat(value[0]) - 1)
-                return false;
-    
-            return true;
-        },
-        "wechars": function(value){
-            return /^[0-9A-Za-z\xC0-\xCF\xD1-\xD6\xD8-\xDD\xDF-\xF6\xF8-\xFF -\.',]+$/
-              .test(value)
-        },
-        "phonenumber": function(value){
-            return /^[\d\+\- \(\)]+$/.test(value)
-        },
-        "faxnumber": function(value){
-            return /^[\d\+\- \(\)]+$/.test(value)
-        },
-        "mobile": function(value){
-            return /^[\d\+\- \(\)]+$/.test(value)
-        }
-    }
-};
-
-apf.xsd.custumTypeHandlers = {};
-
-apf.xsd.matchType = function(value, type){
-    var split  = type.split(":"),
-        prefix = split[0],
-        doc    = apf.document,
-        ns     = doc.$prefixes[prefix];
-    type = split[1];
-    if (prefix == "xsd")
-        ns = "http://www.w3.org/2001/XMLSchema";
-    if (!ns) 
-        ns = doc.namespaceURI || apf.ns.xhtml;
-    
-    var c = this.typeHandlers[ns];
-    
-    //check if type is type
-    if (c && c[type])
-        return c[type](value);
-    
-    throw new Error(apf.formatErrorString(0, null, 
-        "Validating XSD Type", "Could not find type: " + type));
-       
-    return true;
-};
-
-apf.xsd.checkType = function(type, xmlNode){
-    var value = typeof xmlNode == "object"
-        ? apf.queryValue(xmlNode)
-        : xmlNode;
-    
-    if (type.indexOf(":") > -1) {
-        var split  = type.split(":"),
-            prefix = split[0],
-            name   = split[1],
-            doc    = apf.document,
-            ns     = doc.$prefixes[prefix];
-        if (prefix == "xsd")
-            ns = "http://www.w3.org/2001/XMLSchema";
-        if (!ns) 
-            ns = doc.namespaceURI || apf.ns.xhtml;
-        
-        var c = this.typeHandlers[ns];
-        if (c && c[name])
-            return c[name](value);
-    }
-
-    if (this.custumTypeHandlers[type]) {
-        return this.custumTypeHandlers[type](value);
-    }
-    else {
-        //@todo MIKE: to be implemented?
-    }
-};
-
-
-
 
 /*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
 
@@ -22266,74 +18997,6 @@ apf.xsd.checkType = function(type, xmlNode){
 
 
 
-/**
- * Object creating the HTML5 namespace for the aml parser.
- *
- * @constructor
- * @parser
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.8
- */
-apf.html5 = new apf.AmlNamespace();
-apf.setNamespace("", apf.html5);
-
-
-
-/**
- * @define input
- * Remarks:
- * Ajax.org Platform supports the input types specified by the WHATWG html5 spec.
- * @attribute {String} type the type of input element.
- *   Possible values:
- *   email      provides a way to enter an email address.
- *   url        provides a way to enter a url.
- *   password   provides a way to enter a password.
- *   datetime   provides a way to pick a date and time.
- *   date       provides a way to pick a date.
- *   month      provides a way to pick a month.
- *   week       provides a way to pick a week.
- *   time       provides a way to pick a time.
- *   number     provides a way to pick a number.
- *   range      provides a way to select a point in a range.
- *   checkbox   provides a way to set a boolean value.
- *   radio      used in a set, it provides a way to select a single value from multiple options.
- *   file       provides a way to upload a file.
- *   submit     provides a way to submit data.
- *   image      provides a way to submit data displaying an image instead of a button.
- *   reset      provides a way to reset entered data.
- * @addnode elements
- */
-/**
- * @private
- */
-apf.HTML5INPUT = {
-    "email"    : "textbox",
-    "url"      : "textbox",
-    "password" : "textbox",
-    "datetime" : "spinner", //@todo
-    "date"     : "calendar",
-    "month"    : "spinner", //@todo
-    "week"     : "spinner", //@todo
-    "time"     : "spinner", //@todo
-    "number"   : "spinner",
-    "range"    : "slider",
-    "checkbox" : "checkbox",
-    "radio"    : "radiobutton",
-    "file"     : "upload",
-    "submit"   : "submit",
-    "image"    : "submit",
-    "reset"    : "button"
-};
-
-/* way to implement this:
-var o = (new function(){
-})
-o.constructor.prototype = new apf.list();
-
-*/
-
 
 
 /* #-ifdef __WITH_HTML5
@@ -22444,7 +19107,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(7025)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(6818)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22504,8 +19167,8 @@ apf.aml.setElement("include", apf.XiInclude);
         
         var domParser = this.ownerDocument.$domParser;
         if (!this.defer) {
-            domParser.$shouldWait++;
-            this.$parseContext = domParser.$parseContext || [this.parentNode];
+            domParser.$pauseParsing.apply(domParser, 
+              this.$parseContext = domParser.$parseContext || [this.parentNode]);
         }
 
         //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
@@ -22552,13 +19215,13 @@ apf.aml.setElement("include", apf.XiInclude);
                 };
 
                 //@todo this is wrong... probably based on load order of last include element. Please rearchitect parse continuation.
-                if (domParser.$continueParsing.apply(domParser, this.$parseContext) === false) {
+                if (domParser.$continueParsing(this.$parseContext[0]) === false) {
                     var o2  = (domParser.$parseContext[1] || (domParser.$parseContext[1] = {})),
                         cb2 = o.callback;
                     o2.callback = function(){
                         if (cb)
                             cb.call(_self.ownerDocument);
-                        domParser.$continueParsing.apply(domParser, _self.$parseContext);
+                        domParser.$continueParsing(_self.$parseContext[0]);
                     };
                 }
             }
@@ -22567,7 +19230,7 @@ apf.aml.setElement("include", apf.XiInclude);
         }
         else {
             if (!this.defer)
-                domParser.$continueParsing.apply(domParser, this.$parseContext);
+                domParser.$continueParsing(this.$parseContext[0]);
             
             done.call(this, xmlNode);
         }
@@ -22659,7 +19322,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34637)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34638)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23835,7 +20498,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33095)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33152)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23945,6 +20608,9 @@ apf.GuiElement = function(){
     
     this.$focussable = apf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
     this.visible     = 2; //default value;
+    
+    this.minwidth    = 1;
+    this.minheight   = 1;
     
     /*this.minwidth   = 5;
     this.minheight  = 5;
@@ -25297,9 +21963,6 @@ apf.__VALIDATION__ = 1 << 6;
 apf.validator = {
     macro : {
         
-        "datatype"  : "apf.xsd.matchType(value, '",
-        "datatype_" : "')",
-        
 
         //var temp
         "pattern"     : "value.match(",
@@ -25476,8 +22139,6 @@ apf.Validation = function(){
      * @method
      */
     
-    this.checkValidity =
-    
     
     /**
      * Puts this element in the error state, optionally showing the
@@ -25524,9 +22185,6 @@ apf.Validation = function(){
         if (this.invalidmsg || value)
             errBox.display(this);
         
-        
-        if (this.hasFeature(apf.__MULTISELECT__) && this.validityState.$errorXml)
-            this.select(this.validityState.$errorXml);
         
         
         if (apf.document.activeElement && apf.document.activeElement != this)
@@ -25695,8 +22353,6 @@ apf.Validation = function(){
     };
     
     
-    this.$propHandlers["datatype"]   =
-    
     this.$propHandlers["required"]   = 
     this.$propHandlers["custom"]     = 
     this.$propHandlers["min"]        = 
@@ -25764,8 +22420,6 @@ apf.Validation = function(){
     };
 };
 
-
-apf.GuiElement.propHandlers["datatype"]   =
 
 apf.GuiElement.propHandlers["required"]   = 
 apf.GuiElement.propHandlers["pattern"]    = 
@@ -25952,8 +22606,6 @@ apf.ValidationGroup = function(name){
      * @method isValid, validate, checkValidity
      */
     
-    this.checkValidity =
-    
     
     /**
      * Checks if (part of) the set of element's registered to this element are
@@ -26016,7 +22668,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58833)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58946)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26265,77 +22917,6 @@ apf.DataBinding = function(){
         return handler ? handler.call(this, xmlNode, callback) : defaultValue || "";
     };
 
-    
-    this.addEventListener("$clear", function(){
-        var queue;
-        if (!this.$amlBindQueue || !(queue = this.$amlBindQueue.caption))
-            return;
-
-        for (var id in queue) {
-            var lm = queue[id];
-            if (lm.destroy) {
-                lm.parentNode = lm.$focusParent = lm.$model = lm.xmlRoot = null;
-                lm.destroy();
-            }
-            delete queue[id];
-        }
-        
-        //delete this.$amlBindQueue;
-    });
-    
-    var afterloadUpdate;
-    this.addEventListener("afterload", afterloadUpdate = function(){
-        var queue;
-        if (!this.$amlBindQueue 
-          || !(queue = this.$amlBindQueue.caption || this.$amlBindQueue.column))
-            return;
-
-        var div, doc = this.ownerDocument;
-        for (var lm, i = 0, l = queue.length; i < l; i++) {
-            if (!queue[i]) continue; //@todo check out why this happens
-            
-            div = document.getElementById("placeholder_" 
-                + this.$uniqueId + "_" + i);
-            
-            lm = doc.createProcessingInstruction("lm", this.$cbindings.caption 
-              || this.$cbindings.column);
-            lm.$model  = this.$model;
-            lm.xmlRoot = queue[i]; //xmlNode
-            lm.$noInitModel = true;
-            //lm.$useXmlDiff  = true;
-            lm.$focusParent = this;
-            lm.parentNode   = this;
-            lm.dispatchEvent("DOMNodeInsertedIntoDocument", {
-                pHtmlNode: div
-            });
-            queue[lm.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)] = lm;
-            delete queue[i];
-        }
-        
-        queue.length = 0;
-    });
-    
-    //Add and remove handler
-    this.addEventListener("xmlupdate", function(e){
-        if (e.xmlNode != e.traverseNode) //@todo this should be more specific
-            return;
-        
-        if ("insert|add|synchronize|move".indexOf(e.action) > -1)
-            afterloadUpdate.call(this, e);
-        else if ("remove|move-away".indexOf(e.action) > -1) {
-            var queue;
-            if (!this.$amlBindQueue || !(queue = this.$amlBindQueue.caption))
-                return;
-
-            /*var htmlNode = apf.xmldb.findHtmlNode(e.xmlNode, this);
-            var captionNode = this.$getLayoutNode("caption", htmlNode);
-            var id = captionNode.getAttribute("id").split("_")[2];
-            var lm = queue[id];*/
-            var lm = queue[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
-            lm.parentNode = lm.$focusParent = lm.$model = lm.xmlRoot = null;
-            lm.destroy();
-        }
-    });
     
     
     this.$hasBindRule = function(name){
@@ -26831,9 +23412,13 @@ apf.DataBinding = function(){
             options.copyAttributes = true;
             
         var newNode = apf.mergeXml(xmlNode, insertPoint, options);
+        
+        this.$isLoading = true; //Optimization for simpledata
 
         //Call __XMLUpdate on all listeners
         apf.xmldb.applyChanges("insert", insertPoint);
+        
+        this.$isLoading = false;
 
         //Select or propagate new data
         if (this.selectable && this.autoselect) {
@@ -27521,20 +24106,6 @@ apf.DataBinding = function(){
     };
 
     
-    /**
-     * @attribute {String} viewport the way this element renders its data.
-     * Possible values:
-     * virtual  this element only renders data that it needs to display.
-     * normal   this element renders all data at startup.
-     * @experimental
-     */
-    this.$propHandlers["viewport"] = function(value){
-        if (value != "virtual")
-            return;
-
-        this.implement(apf.VirtualViewport);
-    };
-    
 };
 
     apf.DataBinding.prototype = new apf[apf.Presentation ? "Presentation" : "AmlElement"]();
@@ -27551,7 +24122,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47502)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27665,13 +24236,6 @@ apf.MultiselectBinding = function(){
             return;
 
         
-        /*if(this.hasFeature(apf.__VIRTUALVIEWPORT__)){
-            this.$clearVirtualDataset(this.xmlRoot);
-            this.reload();
-
-            return;
-        }*/
-        
 
         var _self = this;
         (function sortNodes(xmlNode, htmlParent) {
@@ -27742,15 +24306,22 @@ apf.MultiselectBinding = function(){
     this.$propHandlers["simpledata"] = function(value){
         if (value) {
             this.getTraverseNodes = function(xmlNode){
+                
+                if (this.$sort && !this.$isLoading) {
+                    var nodes = apf.getArrayFromNodelist((xmlNode || this.xmlRoot).childNodes);
+                    return this.$sort.apply(nodes);
+                }
+                
+                
                 return (xmlNode || this.xmlRoot).childNodes;
             };
         
             this.getFirstTraverseNode = function(xmlNode){
-                return (xmlNode || this.xmlRoot).childNodes[0];
+                return this.getTraverseNodes()[0];//(xmlNode || this.xmlRoot).childNodes[0];
             };
         
             this.getLastTraverseNode = function(xmlNode){
-                var nodes = (xmlNode || this.xmlRoot).childNodes;
+                var nodes = this.getTraverseNodes();//(xmlNode || this.xmlRoot).childNodes;
                 return nodes[nodes.length - 1];
             };
         
@@ -28025,16 +24596,21 @@ apf.MultiselectBinding = function(){
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         apf.xmldb.addNodeListener(XMLRoot, this);
+        
+        this.$isLoading = true;
 
         var length = this.getTraverseNodes(XMLRoot).length;
         if (!this.renderRoot && !length)
             return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
+
 
         //Traverse through XMLTree
         var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot, null, 0, "load");
 
         //Build HTML
         this.$fill(nodes);
+        
+        this.$isLoading = false;
 
         //Select First Child
         if (this.selectable) {
@@ -28197,14 +24773,6 @@ apf.MultiselectBinding = function(){
         
 
         
-        /**
-         * @todo Think about not having this code here
-         */
-        if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) {
-            if(!this.$isInViewport(xmlNode)) //xmlNode is a eachd node
-                return;
-        }
-        
 
         //if(xmlNode == listenNode && !action.match(/add|synchronize|insert/))
         //    return; //deleting nodes in parentData of object
@@ -28321,7 +24889,7 @@ apf.MultiselectBinding = function(){
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.$isTreeArch 
               && pNode == this.xmlRoot) { //apf.isChildOf(this.xmlRoot, xmlNode)
-                parentHTMLNode = (this.$findContainer && parentHTMLNode
+                parentHTMLNode = (this.$findContainer && parentHTMLNode && parentHTMLNode.nodeType == 1
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.$container;
 
@@ -30931,7 +27499,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27106)TIME(Fri, 23 Mar 2012 14:03:44 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(26805)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30958,7 +27526,7 @@ apf.__DATAACTION__ = 1 << 25;
 
 
 /**
- * Baseclass adding data action features to this element. 
+ * Baseclass adding data action features to this element.
  */
 apf.DataAction = function(){
     this.$regbase = this.$regbase | apf.__DATAACTION__;
@@ -30989,51 +27557,51 @@ apf.DataAction = function(){
         }
         return tracker;
     };
- 
+
     
 
     this.$actionsLog = {};
     this.$actions    = false;
 
     /**
-     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock} 
-     * is a mechanism for enforcing limits on access to a resource in a 
-     * multi-user environment. Locks are one way of enforcing concurrency 
-     * control policies. Ajax.org Platform (apf) has support for locking in 
-     * combination with {@link term.action action rules}. There are two 
+     * @term locking {@link http://en.wikipedia.org/wiki/Lock_(computer_science) A lock}
+     * is a mechanism for enforcing limits on access to a resource in a
+     * multi-user environment. Locks are one way of enforcing concurrency
+     * control policies. Ajax.org Platform (apf) has support for locking in
+     * combination with {@link term.action action rules}. There are two
      * types of locks; pessimistic and optimistic locks. Descriptions below are
-     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}. 
+     * from {@link http://en.wikipedia.org/wiki/Lock_(computer_science) wikipedia}.
      *
      * Optimistic:
-     * This allows multiple concurrent users access to the database whilst the 
-     * system keeps a copy of the initial-read made by each user. When a user 
-     * wants to update a record, the application determines whether another user 
-     * has changed the record since it was last read. The application does this 
-     * by comparing the initial-read held in memory to the database record to 
-     * verify any changes made to the record. Any discrepancies between the 
-     * initial-read and the database record violates concurrency rules and hence 
-     * causes the system to disregard any update request. An error message is 
-     * generated and the user is asked to start the update process again. 
-     * It improves database performance by reducing the amount of locking 
-     * required, thereby reducing the load on the database server. It works 
-     * efficiently with tables that require limited updates since no users are 
-     * locked out. However, some updates may fail. The downside is constant 
-     * update failures due to high volumes of update requests from multiple 
+     * This allows multiple concurrent users access to the database whilst the
+     * system keeps a copy of the initial-read made by each user. When a user
+     * wants to update a record, the application determines whether another user
+     * has changed the record since it was last read. The application does this
+     * by comparing the initial-read held in memory to the database record to
+     * verify any changes made to the record. Any discrepancies between the
+     * initial-read and the database record violates concurrency rules and hence
+     * causes the system to disregard any update request. An error message is
+     * generated and the user is asked to start the update process again.
+     * It improves database performance by reducing the amount of locking
+     * required, thereby reducing the load on the database server. It works
+     * efficiently with tables that require limited updates since no users are
+     * locked out. However, some updates may fail. The downside is constant
+     * update failures due to high volumes of update requests from multiple
      * concurrent users - it can be frustrating for users.
      *
-     * For optimistic locking apf can run as if there would be no locking. 
+     * For optimistic locking apf can run as if there would be no locking.
      * Changed data is sent to the server and is either successfully saved or
      * not. When the action isn't changed and the server returns an error code
-     * the {@link element.actiontracker actiontracker} <strong>automatically 
-     * reverts the change</strong>. 
+     * the {@link element.actiontracker actiontracker} <strong>automatically
+     * reverts the change</strong>.
      *
      * Pessimistic:
-     * This is whereby a user who reads a record with the intention of updating 
-     * it, places an exclusive lock on the record to prevent other users from 
-     * manipulating it. This means no one else can manipulate that record until 
-     * the user releases the lock. The downside is that users can be locked out 
-     * for a long time thereby causing frustration. 
-     * 
+     * This is whereby a user who reads a record with the intention of updating
+     * it, places an exclusive lock on the record to prevent other users from
+     * manipulating it. This means no one else can manipulate that record until
+     * the user releases the lock. The downside is that users can be locked out
+     * for a long time thereby causing frustration.
+     *
      * For pessimistic locking add the locking attribute to the {@link term.action action rules}
      * that need it. The following example shows a lock request for a rename
      * action on a file browser tree.
@@ -31046,7 +27614,7 @@ apf.DataAction = function(){
      *
      * MultiUser:
      * In multi user environments it can be handy
-     * to be signalled of changes by others within the application. For more 
+     * to be signalled of changes by others within the application. For more
      * information on this please look at {@link element.remote}.
      *
      * Remarks:
@@ -31058,7 +27626,7 @@ apf.DataAction = function(){
      * Note: APF understands the status codes specified in RFC4918 for the locking implementation
      *       {@link http://tools.ietf.org/html/rfc4918#section-9.10.6}
      */
-     
+
     /**
      *  Start the specified action, does optional locking and can be offline aware
      *  - or for optimistic locking it will record the timestamp (a setting
@@ -31096,11 +27664,11 @@ apf.DataAction = function(){
                     context was specified.");
             }
             else {
-                apf.console.warn("Tried starting new action but no '" + name 
+                apf.console.warn("Tried starting new action but no '" + name
                     + "' action rule was found.");
             }
             
-            
+
             return false;
         }
 
@@ -31169,22 +27737,22 @@ apf.DataAction = function(){
 
         //Get Rules from Array
         var rule = this.$actions && this.$actions.getRule(action, xmlNode);
-        if (!rule && this.$actions && apf.config.autoDisableActions 
+        if (!rule && this.$actions && apf.config.autoDisableActions
           && "action|change".indexOf(action) == -1) {
             apf.console.warn("Could not execute action '" + action + "'. \
               No valid action rule was found and auto-disable-actions is enabled");
-            
+
             return false;
         }
+
         
-        
-        
+
         var newMultiple;
         if (multiple) {
             newMultiple = [];
             for (var k = multiple.length - 1; k >= 0; k--) {
                 newMultiple.unshift({
-                    xmlActionNode : rule,
+                    xmlActionNode : rule, // && rule[4],
                     amlNode       : this,
                     selNode       : multiple[k],
                     xmlNode       : multiple[k]
@@ -31208,15 +27776,15 @@ apf.DataAction = function(){
             //Allow the action and arguments to be changed by the event
             if (this.dispatchEvent(ev.name, null, ev) === false)
                 return false;
-            
+
             delete ev.currentTarget;
         }
 
         //Call ActionTracker and return ID of Action in Tracker
-        var at      = this.getActionTracker(); 
+        var at      = this.getActionTracker();
         if (!at)// This only happens at destruction of apf
             return UndoObj;
-        
+
         var UndoObj = at.execute(ev);
         ev.xmlNode = UndoObj.xmlNode;
         ev.undoObj = UndoObj;
@@ -31242,7 +27810,7 @@ apf.DataAction = function(){
      */
     this.$executeSingleValue = function(atName, setName, xmlNode, value, getArgList){
         var xpath, args, rule = this.$getBindRule(setName, xmlNode);
-        
+
         //recompile bindrule to create nodes
         if (!rule) {
             
@@ -31260,15 +27828,15 @@ apf.DataAction = function(){
         ["valuematch", "match", "value"].each(function(type){
             if (!rule[type] || compiled)
                 return;
-            
+
             compiled = rule["c" + type]; //cvaluematch || (rule.value ? rule.cvalue : rule.cmatch);
             if (!compiled)
                 compiled = rule.compile(type);
-            
+
             if (compiled.type != 3)
                 compiled = null;
         });
-        
+
         
         if (!compiled)
             throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make apf Error
@@ -31277,12 +27845,12 @@ apf.DataAction = function(){
         var atAction, model, node,
             sel        = compiled.xpaths, //get first xpath
             shouldLoad = false;
-        
+
         if (sel[0] == "#" || sel[1] == "#") {
             var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
                 xpathmode: 5
             })))(xmlNode);
-            
+
             model = m.model && m.model.$isModel && m.model;
             if (model) {
                 node  = model.queryNode(m.xpath);
@@ -31294,7 +27862,7 @@ apf.DataAction = function(){
                 xmlNode = m.model;
             }
             else {
-                
+
             }
 
             sel[1] = m.xpath;
@@ -31335,7 +27903,7 @@ apf.DataAction = function(){
                 if (model) {
                     if (!model.data)
                         model.load("<data />");
-    
+
                     xpath   = (model.getXpathByAmlNode(this) || ".")
                         + (xpath && xpath != "." ? "/" + xpath : "");
                     xmlNode = model.data;
@@ -31347,7 +27915,7 @@ apf.DataAction = function(){
                     xmlNode = this.dataParent.parent.selected || this.dataParent.parent.xmlRoot;
                     if (!xmlNode)
                         return false;
-                    
+
                     xpath = (this.dataParent.xpath || ".")
                         + (xpath && xpath != "." ? "/" + xpath : "");
                     shouldLoad = true;
@@ -31356,7 +27924,7 @@ apf.DataAction = function(){
 
             args = [xmlNode, value, xpath];
         }
-        
+
         if (getArgList) {
             return {
                 action : atAction,
@@ -31366,13 +27934,13 @@ apf.DataAction = function(){
 
         //Use Action Tracker
         var result = this.$executeAction(atAction, args, atName, xmlNode);
-        
+
         if (shouldLoad)
             this.load(xmlNode.selectSingleNode(xpath));
-        
+
         return result;
     };
-    
+
     /**
      * Changes the value of this element.
      * @action
@@ -31388,17 +27956,17 @@ apf.DataAction = function(){
 
         
         //Not databound
-        if (!this.xmlRoot && !this.$createModel || !(this.$mainBind == "value" 
-          && this.hasFeature(apf.__MULTISELECT__) 
-            ? this.$attrBindings["value"] 
+        if (!this.xmlRoot && !this.$createModel || !(this.$mainBind == "value"
+          && this.hasFeature(apf.__MULTISELECT__)
+            ? this.$attrBindings["value"]
             : this.$hasBindRule(this.$mainBind))) {
         
-            if (!force && value === this.value 
+            if (!force && value === this.value
               || this.dispatchEvent("beforechange", {value : value}) === false)
                 return false;
 
             //@todo in theory one could support actions
-            //@todo disabled below, because it gives unexpected behaviour when 
+            //@todo disabled below, because it gives unexpected behaviour when
             //form elements are used for layout and other UI alterations
             /*this.getActionTracker().execute({
                 action        : "setProperty",
@@ -31410,23 +27978,23 @@ apf.DataAction = function(){
             return this.dispatchEvent("afterchange", {value : value});
         
         }
-        
-        var valueRule = this.$attrBindings["eachvalue"] && "eachvalue" 
+
+        var valueRule = this.$attrBindings["eachvalue"] && "eachvalue"
             || this.$bindings["value"] && "value"
             || this.$hasBindRule("caption") && "caption";
-          
-        if (value === (valueRule != "value" && (this.xmlRoot 
-          && this.$applyBindRule("value", this.xmlRoot, null, true)) 
+
+        if (value === (valueRule != "value" && (this.xmlRoot
+          && this.$applyBindRule("value", this.xmlRoot, null, true))
           || this.value))
             return false;
 
         this.$executeSingleValue("change", this.$mainBind, this.xmlRoot, value);
         
     };
-    
+
     this.$booleanProperties["render-root"] = true;
     this.$supportedProperties.push("create-model", "actions");
-    
+
     /**
      * @attribute {Boolean} create-model whether the model this element connects
      * to is extended when the data pointed to does not exist. Defaults to true.
@@ -31441,15 +28009,15 @@ apf.DataAction = function(){
      *  <a:bar>
      *      <a:label>Name</a:label>
      *      <a:textbox value="[name]" required="true" />
-     * 
+     *
      *      <a:label>Address</a:label>
      *      <a:textarea value="[address]" />
-     * 
+     *
      *      <a:label>Country</a:label>
-     *      <a:dropdown 
-     *        value   = "[mdlForm::country]" 
-     *        model   = "countries.xml" 
-     *        each    = "[country]" 
+     *      <a:dropdown
+     *        value   = "[mdlForm::country]"
+     *        model   = "countries.xml"
+     *        each    = "[country]"
      *        caption = "[@name]" />
      *      <a:button action="submit">Submit</a:button>
      *  </a:bar>
@@ -31458,9 +28026,9 @@ apf.DataAction = function(){
     this.$propHandlers["create-model"] = function(value){
         this.$createModel = value;
     };
-    
+
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        if (typeof this["create-model"] == "undefined" 
+        if (typeof this["create-model"] == "undefined"
           && !this.$setInheritedAttribute("create-model")) {
             this.$createModel = true;
         }
@@ -31920,37 +28488,6 @@ apf.Rename = function(){
     this.$supportedProperties.push("canrename", "autorename");
 
     
-    this.$propHandlers["autorename"] = function(value){
-        if (value) {
-            this.reselectable = true;
-            this.bufferselect = false;
-            this.addEventListener("afterselect", $afterselect);
-            this.addEventListener("keydown", $keydown);
-        }
-        else {
-            this.removeEventListener("afterselect", $afterselect);
-            this.removeEventListener("keydown", $keydown);
-        }
-    }
-
-    function $afterselect(){
-        var _self = this;
-        $setTimeout(function(){
-            if (_self.hasFocus())
-                _self.startRename();
-        }, 20);
-    }
-    
-    function $keydown(e){
-        if (!this.renaming && apf.isCharacter(e.keyCode))
-            this.startRename();
-    }
-    
-    this.$isContentEditable = function(e){
-        if (this.renaming && this.autorename)
-            return true;
-    }
-    
 
     /**
      * Changes the data presented as the caption of a specified {@link term.datanode data node}.
@@ -32199,9 +28736,6 @@ apf.Rename.initEditableArea = function(){
         }
     
         
-        //if (apf.hasFocusBug)
-            //apf.sanitizeTextbox(this.$txt);
-        
     
         this.$txt.refCount         = 0;
         this.$txt.id               = "txt_rename";
@@ -32262,13 +28796,6 @@ apf.Rename.initEditableArea = function(){
         };
     
         
-        if (apf.hasFocusBug) {
-            this.$txt.onfocus = function(){
-                if (apf.window)
-                    apf.window.$focusfix2();
-            };
-        }
-        
     
         this.$txt.onblur = function(){
             //if (apf.isGecko)
@@ -32276,9 +28803,6 @@ apf.Rename.initEditableArea = function(){
             //if (apf.isChrome && !arguments.callee.caller)
                 //return;
 
-            
-            if (apf.hasFocusBug)
-                apf.window.$blurfix();
             
     
             if (this.host.$autocomplete)
@@ -32641,7 +29165,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(38108)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(39271)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32794,37 +29318,6 @@ apf.BaseList = function(){
     };
     
     
-    
-    /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
-     */
-    this.$mode = 0;
-    this.$propHandlers["mode"] = function(value){
-        if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
-            
-            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
-            
-            this.multicheck = value == "check"; //radio is single
-            this.$mode = this.multicheck ? 1 : 2;
-        }
-        else {
-            //@todo undo actionRules setting
-            this.removeEventListener("afterrename", $afterRenameMode);
-            //@todo unimplement??
-            this.$mode = 0;
-        }
-    };
-    
-    //@todo apf3.0 retest this completely
-    function $afterRenameMode(){
-    }
-    
-    
 
     /**** Keyboard support ****/
 
@@ -32872,18 +29365,20 @@ apf.BaseList = function(){
                 break;
             case 36:
                 //HOME
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) 
-                    this.viewport.change(0, null, true, true);
+                var node = this.getFirstTraverseNode();
+                
+                
                     
-                this.select(this.getFirstTraverseNode(), false, shiftKey);
+                this.select(node, false, shiftKey);
                 this.$container.scrollTop = 0;
                 break;
             case 35:
                 //END
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) 
-                    this.viewport.change(this.viewport.length, null, true, true);
+                var node = this.getLastTraverseNode();
                 
-                this.select(this.getLastTraverseNode(), false, shiftKey);
+                
+                
+                this.select(node, false, shiftKey);
                 this.$container.scrollTop = this.$container.scrollHeight;
                 break;
             case 107:
@@ -32943,7 +29438,9 @@ apf.BaseList = function(){
                     this.$setTempSelected (node, ctrlKey, shiftKey, true);
                 else
                     return;
-
+                
+                
+                
                 selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
@@ -32997,6 +29494,8 @@ apf.BaseList = function(){
                 else
                     return;
 
+                
+                
                 selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScroll ? 10 : 0)
@@ -33031,7 +29530,9 @@ apf.BaseList = function(){
                     this.$setTempSelected (node, ctrlKey, shiftKey, true);
                 else
                     return;
-
+                
+                
+                
                 selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
@@ -33063,7 +29564,9 @@ apf.BaseList = function(){
                     this.$setTempSelected (node, ctrlKey, shiftKey);
                 else
                     return;
-
+                
+                
+                
                 selHtml = apf.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScrollY ? 10 : 0)
@@ -33164,16 +29667,12 @@ apf.BaseList = function(){
         if (elCaption) {
             if (elCaption.nodeType == 1) {
                 
-                if (!this.$cbindings.caption || !this.$cbindings.caption.hasAml)
-                
                     elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
             }
             else
                 elCaption.nodeValue = this.$applyBindRule("caption", xmlNode);
         }
         
-        
-        //@todo
         
 
         htmlNode.title = this.$applyBindRule("title", xmlNode) || "";
@@ -33268,43 +29767,6 @@ apf.BaseList = function(){
         
         
         
-        if (this.$mode) {
-            var elCheck = this.$getLayoutNode("item", "check");
-            if (elCheck) {
-                elCheck.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
-                    o.checkToggle(this, true);\o.$skipSelect = true;");
-
-                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
-                    this.$checkedList.push(xmlNode);
-                    this.$setStyleClass(oItem, "checked");
-                }
-                else if (this.isChecked(xmlNode))
-                    this.$setStyleClass(oItem, "checked");
-            }
-            else {
-                
-                throw new Error(apf.formatErrorString(0, this,
-                        "Could not find check attribute",
-                        'Maybe the attribute check is missing from your skin file:\
-                            <a:item\
-                              class        = "."\
-                              caption      = "label/u/text()"\
-                              icon         = "label"\
-                              openclose    = "span"\
-                              select       = "label"\
-                              check        = "label/b"\
-                              container    = "following-sibling::blockquote"\
-                            >\
-                                <div><span> </span><label><b> </b><u>-</u></label></div>\
-                                <blockquote> </blockquote>\
-                            </a:item>\
-                        '));
-                
-                return false;
-            }
-        }
-        
 
         //Setup Nodes Identity (Look)
         if (elIcon) {
@@ -33344,26 +29806,6 @@ apf.BaseList = function(){
         }
 
         if (elCaption) {
-            
-            if (elCaption.nodeType == 1 
-              && this.$cbindings.caption && this.$cbindings.caption.hasAml){
-                var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
-
-                if (elCaption == oItem) {
-                    apf.setNodeValue(elCaption, "");
-                    var span = elCaption.appendChild(elCaption.ownerDocument.createElement("span"));
-                    if (apf.isIE)
-                        span.appendChild(elCaption.ownerDocument.createTextNode(" "));
-                    span.setAttribute("id", "placeholder_" + this.$uniqueId
-                        + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
-                }
-                else {
-                    elCaption.setAttribute("id", "placeholder_" + this.$uniqueId
-                        + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
-                    apf.setNodeValue(elCaption, "");
-                }
-            }
-            else
             
             {
                 apf.setNodeValue(elCaption,
@@ -34589,10 +31031,6 @@ apf.BaseTab = function(){
         page.$activate();
 
         
-        if (page["trans-in"] || this.$activepage && this.$activepage["trans-out"])
-            this.transition(page, page["trans-in"] || "normal",
-                this.$activepage, this.$activepage && this.$activepage["trans-out"] || "normal");
-        
 
         this.$activepage = page;
         
@@ -34897,187 +31335,6 @@ apf.BaseTab = function(){
 
     /**** Public methods ****/
 
-    
-    this.transition = function(pageIn, animIn, pageOut, animOut){
-        var _self = this;
-        
-        if (!this.$transInfo) {
-            this.$int.style.overflow = apf.getStyle(this.$int, 'overflow') || "hidden";
-            
-            this.$transInfo = {
-                start : function(){
-                    var h = _self.$ext;
-                    this.size = [h.style.width, h.style.height];
-                    var d = apf.getDiff(h);
-                    h.style.width  = (h.offsetWidth - d[0]) + "px";
-                    h.style.height = (h.offsetHeight - d[1]) + "px";
-                    
-                    //@todo start anims
-                    if (this["in"]) {
-                        var h = this["in"].oHtml.$ext;
-                        var d = apf.getDiff(h);
-                        h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
-                        h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
-                        h.style.display = "block";
-                        apf.tween.multi(h, this["in"]);
-                    }
-                    if (this["out"]) {
-                        var h = this["out"].oHtml.$ext;
-                        var d = apf.getDiff(h);
-                        h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
-                        h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
-                        h.style.display = "block";
-                        apf.tween.multi(h, this["out"]);
-                    }
-                },
-                
-                stop : function(){
-                    if (this["in"] && this["in"].control.stop) 
-                        this["in"].control.stop();
-                    if (this["out"] && this["out"].control.stop) 
-                        this["out"].control.stop();
-                },
-                
-                finish : function(){
-                    //@todo buffer calls with timeout
-                    var h = _self.$ext;
-                    h.style.width  = this.size[0]; //@todo possibly anim to new size
-                    h.style.height = this.size[1];
-
-                    if (this["in"]) {
-                        var h = this["in"].oHtml.$ext;
-                        h.style.width  = this["in"].size[0];
-                        h.style.height = this["in"].size[1];
-                        h.style.display = "";
-                        h.style.position = "";
-                        h.style.zIndex   = "";
-                        h.style.left     = "";
-                        h.style.top      = "";
-                        apf.setOpacity(h, 1);
-                        delete this["in"];
-                    }
-                    if (this["out"]) {
-                        var h = this["out"].oHtml.$ext;
-                        h.style.width  = this["out"].size[0];
-                        h.style.height = this["out"].size[1];
-                        h.style.display = "";
-                        h.style.position = "";
-                        h.style.zIndex   = "";
-                        h.style.left     = "";
-                        h.style.top      = "";
-                        apf.setOpacity(h, 1);
-                        delete this["out"];
-                    }
-                    
-                    _self.oPages.style.width = "";
-                    _self.oPages.style.height = "";
-                }
-            };
-        }
-        
-        //stop
-        this.$transInfo.stop();
-        
-        var d = apf.getDiff(this.oPages);
-        this.oPages.style.width = (this.oPages.offsetWidth - d[0]) + "px";
-        this.oPages.style.height = (this.oPages.offsetHeight - d[1]) + "px";
-        
-        var preventNext = this.$createAnim(pageIn, animIn, false, pageOut);
-        if (preventNext !== false && pageOut)
-            this.$createAnim(pageOut, animOut, true, pageIn);
-
-        $setTimeout(function(){
-            _self.$transInfo.start();
-        });
-    }
-    
-    this.$cube = {
-        "left"   : [-1, "offsetWidth", "left", "getHtmlInnerWidth"],
-        "right"  : [1, "offsetWidth", "left", "getHtmlInnerWidth"],
-        "top"    : [-1, "offsetHeight", "top", "getHtmlInnerHeight"],
-        "bottom" : [1, "offsetHeight", "top", "getHtmlInnerHeight"]
-    }
-    
-    this.$createAnim = function(page, animType, out, pageOut){
-        var _self = this;
-        
-        //create new anim
-        var anim = {
-            steps    : apf.isIE ? 15 : 25,
-            control  : {},
-            anim     : out ? apf.tween.EASEOUT : apf.tween.EASEOUT,
-            interval : 10,
-            tweens   : [],
-            oHtml    : page,
-            size     : [page.$ext.style.width, page.$ext.style.height],
-            onfinish : function(){
-                _self.$transInfo.finish(out);
-            }
-        };
-        this.$transInfo[out ? "out" : "in"] = anim;
-        
-        var from, to, h = page.$ext;
-        h.style.zIndex   = out ? 10 : 20;
-        h.style.position = "absolute";
-        h.style.left     = 0;
-        h.style.top      = 0;
-        h.style.display  = "block";
-
-        animType = animType.split("-");
-        switch (animType[0]) {
-            case "fade":
-                anim.anim = apf.tween.NORMAL;
-                if (out) h.style.zIndex = 30;
-                anim.tweens.push(
-                    out 
-                        ? {type: "fade", from: 1, to: 0}
-                        : {type: "fade", from: 0, to: 1}
-                );
-                break;
-            case "slide":
-                var info = this.$cube[animType[1]]
-                from     = 0;
-                to       = info[0] * h[info[1]];
-                if (!out)
-                    h.style[info[2]] = from + "px";
-                
-                anim.tweens.push({type: info[2], from: out ? from : to, to: out ? to : from});
-                //else etc
-                break;
-            case "push":
-                var info = this.$cube[animType[1]]
-                var h2   = pageOut.$ext;
-                
-                if (out) {
-                    if (this.$transInfo["in"])
-                        this.$transInfo["in"].tweens = []; //prevent in animation
-                }
-                else
-                    this.$createAnim(pageOut, "normal", true);
-
-                var hInt = apf[info[3]](this.$int);
-
-                var from1 = info[0] * hInt;//h[info[1]];
-                var to1   = 0;
-                
-                var from2 = 0;
-                var to2   = -1 * info[0] * hInt;//h2[info[1]];
-                
-                if (out)
-                    h2.style[info[2]] = to2 + "px";
-                else
-                    h.style[info[2]] = from1 + "px";
-
-                anim.tweens.push({oHtml: h,  type: [info[2]], from: out ? to1 : from1, to: out ? from1 : to1});
-                anim.tweens.push({oHtml: h2, type: [info[2]], from: out ? to2 : from2, to: out ? from2 : to2});
-                
-                return false;
-            case "normal":
-                break;
-            default:
-                throw new Error("Unknown animation type:" + animType[0]); //@todo make into proper apf3.0 error
-        }
-    }
     
 
     /**
@@ -35929,7 +32186,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(51537)TIME(Fri, 23 Mar 2012 14:03:44 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(53431)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36127,8 +32384,16 @@ apf.BaseTree = function(){
 
         // recursive load function
         function expand(currentSelector, allSelectors) {
+            var selectorNode = root.selectSingleNode(currentSelector);
+            
+            // if the node could not be found,
+            // just tell the consumer that it has expanded
+            if (!selectorNode) {
+                return hasExpanded(currentSelector);
+            }
+            
             // first expand the item passed in
-            _self.slideToggle(apf.xmldb.getHtmlNode(root.selectSingleNode(currentSelector), _self), 1, true, null, function () {
+            _self.slideToggle(apf.xmldb.getHtmlNode(selectorNode, _self), 1, true, null, function () {
                 // the number of times the callback has fired, prevent it from executing forever
                 var timesRan = 0;
                 
@@ -36136,8 +32401,27 @@ apf.BaseTree = function(){
                 var callback = function () {
                     // check whether the node is loaded
                     if (!_self.$hasLoadStatus(root.selectSingleNode(currentSelector), "loaded")) {
-                        // otherwise wait if timesRan under 30
-                        return ++timesRan < 30 ? setTimeout(callback, 1000 / 30) : null;
+                        // if not, retry after a second (max 3 times)
+                        if (++timesRan < 3) {
+                            return setTimeout(function () {
+                                _self.slideToggle(apf.xmldb.getHtmlNode(selectorNode, _self), 1, true, null, callback);
+                            }, 1000);
+                        }
+                        else {
+                            // still failing? call 'hasExpanded' for this one and all its children
+                            // cause we're ignoring everything from now;
+                            // and we need the callback to be fired anyway
+                            var allAncestors = allSelectors.filter(function (s) { 
+                                return s.indexOf(currentSelector + "/") === 0;
+                            });
+                            
+                            hasExpanded(currentSelector);
+                            allAncestors.forEach(function (sel) {
+                                hasExpanded(sel);
+                            });
+                                
+                            return null;
+                        }
                     }
                     
                     // notify
@@ -36176,8 +32460,8 @@ apf.BaseTree = function(){
         rootNodes.forEach(function (node) {
             expand(node, paths);
         });
-    };
-
+    }; 
+    
     /**
      * @notimplemented
      * @todo who's volunteering?
@@ -36191,14 +32475,16 @@ apf.BaseTree = function(){
      * @private
      */
     this.slideToggle = function(htmlNode, force, immediate, userAction, callback){
+        callback = typeof callback === "function" ? callback : function () {};
+        
         if (this.nocollapse || userAction && this.disabled)
-            return;
+            return callback();
 
         if (!htmlNode)
             htmlNode = this.$selected;
         
         if (!htmlNode)
-            return callback && callback();
+            return callback();
         
         var id = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
         while (!id && htmlNode.parentNode)
@@ -36206,7 +32492,7 @@ apf.BaseTree = function(){
                 .getAttribute(apf.xmldb.htmlIdTag);
 
         var container = this.$getLayoutNode("item", "container", htmlNode);
-        if (!container) return;
+        if (!container) return callback();
         
         if (apf.getStyle(container, "display") == "block") {
             if (force == 1) {
@@ -36721,6 +33007,7 @@ apf.BaseTree = function(){
             return;
 
         var rule       = this.$getBindRule("insert", xmlNode),
+            _self      = this,
             xmlContext = rule && rule.match
                 ? (rule.cmatch || rule.compile("match"))(xmlNode)
                 : xmlNode;
@@ -36740,7 +33027,16 @@ apf.BaseTree = function(){
                     xmlNode     : xmlContext,
                     insertPoint : xmlContext, 
                     amlNode     : this,
-                    callback    : callback
+                    callback    : function(data, state, extra){
+                        if (state != apf.SUCCESS) {
+                            _self.$setLoadStatus(xmlNode, "potential");
+                            _self.$removeLoading(xmlNode);
+                            _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 2, true);
+                        }
+                        
+                        if (callback)
+                            callback(data, state, extra);
+                    }
                 });
             }
             else {
@@ -36856,15 +33152,6 @@ apf.BaseTree = function(){
                 if (this.$tempsel)
                     this.$selectTemp();
 
-                
-                if (this.$mode && !ctrlKey) {
-                    var sel = this.getSelection();
-                    if (!sel.length || !this.multiselect)
-                        this.checkToggle(this.caret, true);
-                    else
-                        this.checkList(sel, this.isChecked(this.selected), true, false, true);
-                }
-                else
                 
                 if (ctrlKey || !this.isSelected(this.caret))
                     this.select(this.caret, true);
@@ -38961,9 +35248,6 @@ apf.Focussable = function(){
                 apf.window.$focus(this, e);
 
                 
-                if (!nofix && apf.hasFocusBug)
-                    apf.window.$focusfix();
-                
             }
 
             return this;
@@ -39190,7 +35474,7 @@ apf.Interactive = function(){
             return;
         
         
-        dragOutline = _self.dragOutline == true || apf.config.dragOutline;
+        dragOutline = false;        
         
         
         if (_self.dispatchEvent("beforedragstart", {htmlEvent: e}) === false)
@@ -39245,21 +35529,6 @@ apf.Interactive = function(){
             //_self.$disableAnchoring();
 
         if (!(reparent || (oOutline && oOutline.self))) {
-            
-            if (posAbs && dragOutline) {
-                oOutline.className     = "drag";
-                
-                var diffOutline = apf.getDiff(oOutline);
-                _self.$ext.offsetParent.appendChild(oOutline);
-                oOutline.style.left    = pos[0] + "px";
-                oOutline.style.top     = pos[1] + "px";
-                oOutline.style.width   = (_self.$ext.offsetWidth - diffOutline[0]) + "px";
-                oOutline.style.height  = (_self.$ext.offsetHeight - diffOutline[1]) + "px";
-                
-                if (_self.editable)
-                    oOutline.style.display = "block";
-            }
-            else
             
             {
                 if (_self.$ext.style.right) {
@@ -39404,7 +35673,7 @@ apf.Interactive = function(){
             return;
 
         
-        resizeOutline = !(_self.resizeOutline == false || !apf.config.resizeOutline);
+        resizeOutline = false;        
         
         
         var ext = _self.$ext;
@@ -39492,21 +35761,6 @@ apf.Interactive = function(){
         
         var iMarginLeft;
         
-        
-        if (resizeOutline) {
-            oOutline.className     = "resize";
-            var diffOutline = apf.getDiff(oOutline);
-            hordiff = diffOutline[0];
-            verdiff = diffOutline[1];
-            
-            //ext.parentNode.appendChild(oOutline);
-            oOutline.style.left    = startPos[0] + "px";
-            oOutline.style.top     = startPos[1] + "px";
-            oOutline.style.width   = (ext.offsetWidth - hordiff) + "px";
-            oOutline.style.height  = (ext.offsetHeight - verdiff) + "px";
-            oOutline.style.display = "block";
-        }
-        else
         
         {
             if (ext.style.right) {
@@ -39810,39 +36064,6 @@ apf.Interactive = function(){
 
     var oOutline;
     
-    function initOutline(e){
-        var doc = this.$pHtmlDoc || document;
-        oOutline = doc.getElementById("apf_outline");
-        if (!oOutline) {
-            oOutline = doc.body.appendChild(doc.createElement("div"));
-            
-            oOutline.refCount = 0;
-            oOutline.setAttribute("id", "apf_outline");
-            
-            oOutline.style.position = "absolute";
-            oOutline.style.display  = "none";
-            //oOutline.style.zIndex   = 2000000;
-            apf.window.zManager.set("drag", oOutline);
-            oOutline.host = false;
-        }
-        oOutline.refCount++
-    }
-    
-    if (this.addEventListener && this.hasFeature(apf.__AMLNODE__) && !this.$amlLoaded) {
-        if (document.body)
-            initOutline.call(this);
-        else
-            this.addEventListener("DOMNodeInsertedIntoDocument", initOutline);
-    }
-    else {
-        this.$pHtmlDoc = document;
-        initOutline.call(this);
-    }
-    
-    this.$setOutline = function(o){
-        oOutline = o;
-    }
-    
     
     /*this.addEventListener("DOMNodeRemovedFromDocument", function(e){
         oOutline.refCount--;
@@ -39919,441 +36140,6 @@ apf.__MEDIA__ = 1 << 20;
  */
 
 apf.__MULTICHECK__ = 1 << 22;
-
-
-
-/**
- * All elements inheriting from this {@link term.baseclass baseclass} have checkable items.
- *
- * @constructor
- * @baseclass
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       3.0
- *
- * @todo type detection, errors (see functions in multiselect)
- */
-apf.MultiCheck = function(){
-    this.$regbase    = this.$regbase | apf.__MULTICHECK__;
-
-    /**** Properties ****/
-
-    this.multicheck  = true;
-    this.checklength = 0;
-    this.$checkedList = [];
-
-    /**** Public Methods ****/
-    
-    /**
-     * Checks a single, or set of.
-     * The checking can be visually represented in this element.
-     * The element can be checked, partialy checked or unchecked
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     * @return  {Boolean}  whether the selection could not be made
-     *
-     * @event  beforecheck  Fires before a check is made
-     *
-     * @event  aftercheck  Fires after a check is made
-     *
-     */
-    this.check = function(xmlNode, userAction){
-        if (userAction && this.disabled 
-          || this.$checkedList.indexOf(xmlNode) > -1)
-            return;
-
-        if (userAction
-          && this.$executeSingleValue("check", "checked", xmlNode, "true") !== false)
-            return;
-        
-        if (this.dispatchEvent("beforecheck", {xmlNode : xmlNode}) === false)
-            return false;
-        
-        if (!this.multicheck && this.$checkedList.length)
-            this.clearChecked(true);
-
-        this.$checkedList.push(xmlNode);
-        
-        
-        if (this.$isTreeArch) {
-            //Children
-            var nodes = xmlNode.selectNodes(".//" 
-                + this.each.split("|").join("|.//"));
-        
-            this.checkList(nodes, null, true, true);
-            
-            //Parents
-            var all, pNode = this.getTraverseParent(xmlNode);
-            while(pNode && pNode != this.xmlRoot) {
-                nodes = this.getTraverseNodes(pNode);
-                
-                all = true;
-                for (var i = 0; i < nodes.length; i++) {
-                    if (this.$checkedList.indexOf(nodes[i]) == -1) {
-                        all = false;
-                        break;
-                    }
-                }
-                
-                apf.setStyleClass(apf.xmldb.getHtmlNode(pNode, this), 
-                    all ? "checked"
-                        : "partial", ["partial", "checked"]);
-                
-                if (all) //logical assumption that parent cannot be selected at this point
-                    this.$checkedList.push(pNode);
-                
-                pNode = this.getTraverseParent(pNode);
-            }
-        }
-        
-
-        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this),
-            "checked", ["partial"]);
-        
-        this.dispatchEvent("aftercheck", {
-            list        : this.$checkedList,
-            xmlNode     : xmlNode
-        });
-    };
-    
-    /**
-     * Unchecks a single, or set of.
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     * @return  {Boolean}  whether the selection could be made
-     *
-     * @event  beforeuncheck  Fires before a uncheck is made
-     *
-     * @event  afteruncheck  Fires after a uncheck is made
-     *
-     */
-    this.uncheck = function(xmlNode, userAction){
-        if (userAction && this.disabled 
-          || this.$checkedList.indexOf(xmlNode) == -1)
-            return;
-        
-        if (userAction
-          && this.$executeSingleValue("check", "checked", xmlNode, "false") !== false)
-            return;
-        
-        
-        if (this.$isTreeArch)
-            return this.checkList([xmlNode], true, true);
-        
-        
-        if (this.dispatchEvent("beforeuncheck", {
-            xmlNode : xmlNode
-        }) === false)
-            return false;
-
-        this.$checkedList.remove(xmlNode);
-        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), 
-            "", ["checked", "partial"]);
-        
-        this.dispatchEvent("afteruncheck", {
-            list        : this.$checkedList,
-            xmlNode     : xmlNode
-        });
-    };
-
-    /**
-     * Toggles between check and uncheck a single, or set of.
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     *
-     */
-    this.checkToggle = function(xmlNode, userAction){
-        if (userAction && this.disabled)
-            return;
-        
-        if (xmlNode.style) {
-            var htmlNode = xmlNode,
-                id       = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
-            while (!id && htmlNode.parentNode)
-                id = (htmlNode = htmlNode.parentNode)
-                    .getAttribute(apf.xmldb.htmlIdTag);
-            xmlNode = apf.xmldb.getNode(htmlNode)
-        }
-
-        if (this.$checkedList.indexOf(xmlNode) > -1)
-            this.uncheck(xmlNode, userAction);
-        else
-            this.check(xmlNode, userAction);
-    };
-    
-    /**
-     * Checks a set of items
-     *
-     * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
-     * @param {boolean} uncheck
-     * @param {boolean} noClear
-     * @param {boolean} noEvent whether to not call any events
-     * @event  beforecheck  Fires before a check is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
-     * @event  aftercheck   Fires after a check is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
-     */
-    this.checkList = function(xmlNodeList, uncheck, noClear, noEvent, userAction){
-        //if (apf.isIE < 8)
-        if (!xmlNodeList.indexOf)
-            xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
-            //@todo is this need for ie8 and/or other browsers
-
-        if (userAction){
-            if (this.disabled) 
-                return;
-            
-            var changes = [];
-            for (var c, i = 0; i < xmlNodeList.length; i++) {
-                c = this.$executeSingleValue("check", "checked", xmlNodeList[i], uncheck ? "false" : "true", true)
-                if (c === false) break;
-                changes.push(c);
-            }
-    
-            if (changes.length) {
-                return this.$executeAction("multicall", changes, "checked", 
-                  xmlNodeList[0], null, null, 
-                  xmlNodeList.length > 1 ? xmlNodeList : null);
-            }
-        }
-        
-        if (userAction && this.disabled) return;
-        
-        if (!noEvent && this.dispatchEvent("beforecheck", {
-            list : xmlNodeList
-        }) === false)
-            return false;
-        
-        if (!uncheck && !noClear) 
-            this.clearChecked(true);
-        
-        if (!this.multicheck)
-            xmlNodeList = [xmlNodeList[0]];
-
-        var i;
-        if (uncheck) {
-            for (i = xmlNodeList.length - 1; i >= 0; i--) {
-                this.$checkedList.remove(xmlNodeList[i]);
-                this.$setStyleClass(
-                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
-            }
-        }
-        else {
-            for (i = xmlNodeList.length - 1; i >= 0; i--) {
-                this.$checkedList.push(xmlNodeList[i]);
-                this.$setStyleClass(
-                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
-            }
-        }
-
-        
-        if (!noEvent && this.$isTreeArch) {
-            var _self = this;
-            function recur(xmlNode, forceChange) {
-                var nodes = _self.getTraverseNodes(xmlNode);
-                if (!nodes.length) {
-                    if (forceChange) {
-                        if (uncheck) {
-                            _self.$checkedList.remove(xmlNode);
-                            _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
-                                "", ["checked"]);
-                            return 0;
-                        }
-                        else {
-                            if (_self.$checkedList.indexOf(xmlNode) == -1) {
-                                _self.$checkedList.push(xmlNode);
-                                _self.$setStyleClass(
-                                    apf.xmldb.getHtmlNode(xmlNode, _self), "checked");
-                            }
-                            return 1;
-                        }
-                    }
-                    return _self.$checkedList.indexOf(xmlNode) > -1 ? 1 : 0;
-                }
-
-                var isInList = _self.$checkedList.indexOf(xmlNode) != -1,
-                    shouldBeChanged = forceChange
-                        || xmlNodeList.indexOf(xmlNode) > -1 && (uncheck
-                            ? !isInList
-                            : isInList),
-                    all      = true,
-                    none     = true,
-                    partial  = false,
-                    isChecked;
-                for (var i = nodes.length - 1; i >= 0; i--) {
-                    isChecked = recur(nodes[i], shouldBeChanged);
-                    if (isChecked) {
-                        none = false;
-                        if (!partial && isChecked == 2) {
-                            partial = true;
-                            //break;
-                        }
-                    }
-                    else
-                        all = false;
-                    if (!all && !none) {
-                        partial = true;
-                        //break;
-                    }
-                }
-                
-                if (xmlNode == _self.xmlRoot)
-                    return;
-                
-                if (all) {
-                    if (!isInList) {
-                        _self.$checkedList.push(xmlNode);
-                        apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
-                            "checked", ["partial"]);
-                    }
-                }
-                else{
-                    if (isInList)
-                        _self.$checkedList.remove(xmlNode);
-
-                    apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
-                        partial ? "partial" : "", ["partial", "checked"]);
-                }
-                
-                return all ? 1 : (none ? 0 : 2);
-            }
-
-            recur(this.xmlRoot)
-        }
-        
-        
-        if (!noEvent)
-            this.dispatchEvent("aftercheck", {
-                list        : xmlNodeList
-            });
-    };
-
-    /**
-     * Removes the selection of one or more checked nodes.
-     *
-     * @param {Boolean} [singleNode] whether to only deselect the indicated node
-     * @param {Boolean} [noEvent]    whether to not call any events
-     * @event  beforeuncheck  Fires before a uncheck is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
-     * @event  afteruncheck   Fires after a uncheck is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
-     */
-    this.clearChecked = function(noEvent){
-        if (!noEvent && this.dispatchEvent("beforeuncheck", {
-            xmlNode : this.$checkedList
-        }) === false)
-            return false;
-        
-        for (var i = this.$checkedList.length - 1; i >= 0; i--) {
-            this.$setStyleClass(
-                apf.xmldb.getHtmlNode(this.$checkedList[i], this), "", ["checked"]);
-        }
-        
-        this.$checkedList.length = 0;
-        
-        if (!noEvent) {
-            this.dispatchEvent("afteruncheck", {
-                list : this.$checkedList
-            });
-        }
-    };
-    
-    /**
-     * Determines whether a node is checked.
-     *
-     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
-     * @return  {Boolean} whether the element is selected.
-     */
-    this.isChecked = function(xmlNode){
-        return this.$checkedList.indexOf(xmlNode) > -1;
-    };
-
-    /**
-     * Retrieves an array or a document fragment containing all the checked
-     * {@link term.datanode data nodes} from this element.
-     *
-     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
-     */
-    this.getChecked = function(xmldoc){
-        var i, r;
-        if (xmldoc) {
-            r = this.xmlRoot
-                ? this.xmlRoot.ownerDocument.createDocumentFragment()
-                : apf.getXmlDom().createDocumentFragment();
-            for (i = 0; i < this.$checkedList.length; i++)
-                apf.xmldb.cleanNode(r.appendChild(
-                    this.$checkedList[i].cloneNode(true)));
-        }
-        else {
-            for (r = [], i = 0; i < this.$checkedList.length; i++)
-                r.push(this.$checkedList[i]);
-        }
-
-        return r;
-    };
-    
-    /**
-     * Checks all the {@link term.eachnode each nodes} of this element
-     *
-     */
-    this.checkAll = function(userAction){
-        if (!this.multicheck || userAction && this.disabled || !this.xmlRoot)
-            return;
-
-        var nodes = this.$isTreeArch
-            ? this.xmlRoot.selectNodes(".//" 
-              + this.each.split("|").join("|.//"))
-            : this.getTraverseNodes();
-        
-        this.checkList(nodes);
-    };
-    
-    this.addEventListener("beforeload", function(){
-        if (!this.$hasBindRule("checked")) //only reset state when check state isnt recorded
-            this.clearChecked(true);
-    });
-    
-    this.addEventListener("afterload", function(){
-        if (!this.$hasBindRule("checked") && this.$checkedList.length) //only reset state when check state isnt recorded
-            this.checkList(this.$checkedList, false, true, false); //@todo could be optimized (no event calling)
-    });
-    
-    this.addEventListener("xmlupdate", function(e){
-        if (e.action == "attribute" || e.action == "text"
-          || e.action == "synchronize" || e.action == "update") {
-            //@todo list support!
-            var c1 = apf.isTrue(this.$applyBindRule("checked", e.xmlNode));
-            var c2 = this.isChecked(e.xmlNode);
-            if (c1 != c2) {
-                if (c1) {
-                    this.check(e.xmlNode);
-                }
-                else {
-                    this.uncheck(e.xmlNode);
-                }
-            }
-        }
-    });
-    
-    
-    this.addEventListener("aftercheck", function(){
-        //@todo inconsistent because setting this is in event callback
-        if (this.checklength != this.$checkedList.length)
-            this.setProperty("checklength", this.$checkedList.length);
-    });
-    
-    this.addEventListener("afteruncheck", function(){
-        //@todo inconsistent because setting this is in event callback
-        if (this.checklength != this.$checkedList.length)
-            this.setProperty("checklength", this.$checkedList.length);
-    });
-    
-};
 
 
 
@@ -40649,600 +36435,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/**
- * All elements inheriting from this {@link term.baseclass baseclass} have transaction support. A transaction is a 
- * set of changes to data which are treated as one change. When one of the 
- * changes in the set fails, all the changes will be cancelled. In the case of
- * a gui this is mostly relevant when a user decides to cancel after 
- * making several changes. A good example are the well known property windows 
- * with an ok, cancel and apply button. 
- *
- * When a user edits data, for instance user information, all the changes are
- * seen as one edit and put on the undo stack as a single action. Thus clicking
- * undo will undo the entire transaction, not just the last change done by that
- * user in the edit window. Transaction support both optimistic and pessimistic 
- * locking. For more information on the latter see the first example below.
- * Example:
- * This example shows a list with one item. When double clicked on the item
- * a window shows that allows the user to edit the properties of this item.
- * When the window is closed the changes are committed to the xml data. If the
- * user presses cancel the changes are discarded. By pressing the 'add new item'
- * button the same window appears which allows the user to add a new item. All
- * changes made by the user are also sent to the original data source via 
- * rpc calls. When the user starts editing an existing item a lock is requested.
- * This is not necesary for transaction support, but this example shows that it
- * is possible. When the lock fails the window will close. By hooking the
- * 'lockfail' event the user can be notified of the reason. For more information 
- * see {@link term.locking}.
- * <code>
- *  <a:list 
- *    id            = "lstItems" 
- *    onafterchoose = "winEdit.show()" 
- *    width         = "200">
- *      <a:each match="[item]">
- *          <a:caption match="[@name]" />
- *          <a:icon value="icoItem.png" />
- *      </a:each>
- *      <a:actions>
- *          <a:add set="http://localhost/save.php?xml=%[.]">
- *              <item name="New Item" />
- *          </a:add>
- *          <a:update 
- *            set  = "http://localhost/save.php?xml=%[.]" 
- *            lock = "http://localhost/lock.php?id=[@id]" />
- *      </a:actions>
- *      <a:model>
- *          <items>
- *              <item name="test" subject="subject" id="1">message</item>
- *          </items>
- *      </a:model>
- *  </a:list>
- *      
- *  <a:button onclick="winEdit.begin('add');">Add new item</a:button>
- *       
- *  <a:window 
- *    width       = "300"
- *    id          = "winEdit" 
- *    transaction = "true"
- *    model       = "{lstItems.selected}"
- *    title       = "Edit this message">
- *      <a:label>Name</a:label>
- *      <a:textbox 
- *        value      = "[@name]" 
- *        required   = "true" 
- *        invalidmsg = "Please enter your name" />
- *      <a:label>Subject</a:label>
- *      <a:textbox value="[@subject]" />
- *    
- *      <a:label>Message</a:label>
- *      <a:textarea value="[text()]" min-length="100" />
- *      
- *      <a:button action="ok" default="true">OK</a:button>
- *      <a:button action="cancel">Cancel</a:button>
- *      <a:button action="apply" disabled="{!winEdit.undolength}">Apply</a:button>
- *   </a:window>
- * </code>
- *
- * @constructor
- * @baseclass
- *
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
- * 
- * @event transactionconflict Fires when data in a transaction is being updated by an external process.
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.8.9
- */
-apf.Transaction = function(){
-    this.$regbase = this.$regbase | apf.__TRANSACTION__;
-
-    this.$addParent          =
-    this.$transactionNode    =
-    this.$transactionSubject =
-    this.$originalNode       =
-    this.$inTransaction      =
-    this.$lastAction         = null;
-
-    this.$supportedProperties.push("autoshow");
-    
-    /**
-     * @attribute {Boolean} autoshow whether this element is shown when a transaction begins.
-     */
-    this.$booleanProperties["autoshow"] = true;
-
-    /**
-     * Commits a started transaction. This will trigger an update or add action.
-     * forked copy of template data.
-     *
-     * @todo  check what's up with actiontracker usage... 
-     * @bug  when a commit is cancelled using the onbeforecommit event, the 
-     * state of the element becomes undefined.
-     */
-    this.commit = function(repeat){
-        if (!this.$inTransaction)
-            return false;
-
-        if (!this.$validgroup && this.validgroup)
-            this.$validgroup = self[this.validgroup];
-
-        if (this.$validgroup && !this.$validgroup.isValid())
-            return false;
-
-        var returnValue = true;
-        if (!this.$at.undolength) {
-            if (repeat)
-                return false;
-            
-            this.$at.purge();
-            this.$inTransaction = false;
-            
-            this.load(this.$originalNode);
-            this.$helperModel.reset();
-            
-            returnValue = false;
-        }
-        else {
-            
-            apf.console.info("Committing transaction on " + this.localName + "[" + this.name + "]");
-            
-            
-            this.$at.reset();//purge();
-            this.$inTransaction = false;
-            
-            //@todo recursive
-            this.$transactionNode.removeAttribute(apf.xmldb.xmlListenTag)
-            
-            if (this.$lastAction == "add") {
-                //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.xmlRoot : o.selected
-                if (this.$transactionSubject.$executeAction("appendChild",
-                  [this.$addParent, this.$transactionNode], "add", this.$transactionNode)
-                  && this.$transactionSubject.hasFeature(apf.__MULTISELECT__)) {
-                    this.$transactionSubject.select(this.$transactionNode);
-                }
-                
-                this.$transactionSubject = null;
-            }
-            else {
-                //Use ActionTracker
-                //getTraverseParent(o.selected) || o.xmlRoot
-                var at = this.$at;
-                this.$at = this.dataParent 
-                    ? this.dataParent.parent.getActionTracker()
-                    : null;//self[this.getAttribute("actiontracker")];//this.dataParent.parent.getActionTracker();
-                
-                this.$transactionSubject.$executeAction("replaceNode", [this.$originalNode, this.$transactionNode],
-                    "update", this.$transactionNode);
-    
-                this.$at = at;
-        
-                //this.load(this.$transactionNode);
-            }
-        }
-        
-        this.$transactionNode = null;
-        this.$addParent       = null;
-        this.$originalNode    = null;
-        
-        if (this.autoshow) {
-            if (this.autoshow == -1)
-                this.autoshow = true;
-            else
-                this.hide();
-        }
-        
-        return returnValue;
-    };
-    
-    /**
-     * Rolls back the started transaction.
-     */
-    this.rollback = function(noLoad){
-        if (!this.$inTransaction)
-            return;
-        
-        
-        apf.console.info("Rolling back transaction on " + this.localName + "[" + this.name + "]");
-        
-        
-        if (this.$at) {
-            if (this.rpcMode == "realtime")
-                this.$at.undo(-1);
-
-            this.$at.reset();
-        }
-        //this.xmldb.reset();
-        
-        this.$transactionNode = null; //prevent from restarting the transaction in load
-        this.$addParent       = null;
-
-        //Cleanup
-        if (!noLoad)
-            this.load(this.$originalNode);
-        
-        this.$helperModel.reset();
-        
-        this.$stopAction(this.$lastAction, true);
-        
-        this.$originalNode    = null;
-        this.$inTransaction   = false;
-        
-        if (this.autoshow) {
-            if (this.autoshow == -1)
-                this.autoshow = true;
-            else
-                this.hide();
-        }
-    };
-
-    /**
-     * Starts a transaction for this element. This is either an add or update.
-     * @param {String}     strAction the type of transaction to start
-     *   Possible values:
-     *   add    the transaction is started to add a new {@link term.datanode data node}.
-     *   update the transaction is started to update an existing {@link term.datanode data node}.
-     * @param {XMLElement} xmlNode 
-     * @param {XMLElement} parentXmlNode 
-     * @param {AMLElement} dataParent 
-     */
-    this.begin = function(strAction, xmlNode, parentXmlNode, dataParent){
-        if (this.$inTransaction) {
-            /*throw new Error(apf.formatErrorString(0, this, 
-                "Starting Transaction", 
-                "Cannot start a transaction without committing or rolling \
-                 back previously started transaction.", this.oldRoot));*/
-            
-            
-            apf.console.warn("Rolling back transaction, while starting a new one");
-            
-            
-            if (this.autoshow)
-                this.autoshow = -1;
-            this.rollback();
-        }
-
-        
-        apf.console.info("Beginning transaction on " + this.localName + "[" + this.name + "]");
-        
-
-        //Add should look at dataParent and take selection or xmlRoot
-        //winMail.dataParent.parent.xmlRoot
-
-        var _self = this;
-        this.$lastAction = strAction;
-
-        if (!this.$lastAction) {
-            this.$lastAction = this.xmlRoot && "update" || "add";
-                /*this.actionRules && (this.actionRules.add 
-                ? "add"
-                : (this.actionRules.update
-                    ? "update" 
-                    : null)) || this.xmlRoot && "update";*/
-        }
-        
-        
-        if (!this.$lastAction) {
-            throw new Error(apf.formatErrorString(0, this, 
-                "Starting Transaction", 
-                "Could not determine whether to add or update."));
-        }
-        
-        
-        //Determines the actiontracker to integrate the grouped action into
-        if (dataParent)
-            this.$setDynamicProperty("model", "[" + dataParent.id + ".selected]"); //@todo what if it doesn't have an id
-
-        if (xmlNode && this.$lastAction == "update") {
-            this.xmlRoot = xmlNode;
-            //this.$inTransaction = -1; //Prevent load from triggering a new transaction
-            //this.load(xmlNode);
-        }
-        
-        /*
-         * @todo:
-         *   create actiontracker based on data id, destroy actiontracker on cancel/commit - thus being able to implement editor feature natively
-         *   Multiple transactions can exist at the same time in the same container, but on different data
-         *   .cancel(xmlNode) .apply(xmlNode)
-         *   .list(); // returns a list of all started transactions
-         *   Add undo/redo methods to winMultiEdit
-         *   Route undolength/redolength properties
-         *   Setting replaceat="start" or replaceat="end"
-         */
-        if (!this.$at) {
-            this.$at  = new apf.actiontracker();
-            var propListen = function(e){
-                _self.setProperty(e.prop, e.value);
-            };
-            this.$at.addEventListener("prop.undolength", propListen);
-            this.setProperty("undolength", 0);
-            this.$at.addEventListener("prop.redolength", propListen);
-            this.setProperty("redolength", 0);
-        }
-        if (!this.$helperModel) {
-            this.$helperModel = new apf.model();
-            this.$helperModel["save-original"] = true;
-            this.$helperModel.load("<data />");
-        }
-
-        this.$transactionNode = null;
-        this.$addParent       = null;
-        this.$originalNode    = this.xmlRoot;
-
-        
-
-        this.$inTransaction = true;
-        function begin(){
-            
-            if (!this.$transactionNode) {
-                throw new Error(apf.formatErrorString(0, this, 
-                    "Starting transaction", 
-                    "Missing transaction node. Cannot start transaction. \
-                     This error is unrecoverable."));
-            }
-            
-
-            this.$inTransaction = -1;
-            this.$helperModel.data.appendChild(this.$transactionNode);//apf.xmldb.cleanNode());
-            this.load(this.$helperModel.data.firstChild);
-            this.$inTransaction = true;
-            
-            if (this.disabled)
-                this.enable();
-            
-            if (this.autoshow) {
-                if (this.autoshow == -1)
-                    this.autoshow = true;
-                else
-                    this.show();
-            }
-        }
-        
-        //Determine data parent
-        dataParent = this.dataParent && this.dataParent.parent;
-        
-        if (!dataParent || !dataParent.$actions 
-          || !dataParent.$actions[this.$lastAction]) {
-            dataParent = this;
-        }
-        
-        //Add
-        if (this.$lastAction == "add") {
-            //Check for add rule on data parent
-            var rule, actionRules = dataParent.$actions;
-            if (actionRules) {
-                if (xmlNode && xmlNode.nodeType)
-                    rule = actionRules.getRule("add", xmlNode);
-                else if (typeof xmlNode == "string") {
-                    if (xmlNode.trim().charAt(0) == "<") {
-                        xmlNode = apf.getXml(xmlNode);
-                        rule = actionRules.getRule("add", xmlNode)
-                    }
-                    else {
-                        var rules = actionRules.$rules["add"];
-                        for (var i = 0, l = rules.length; i < l; i++) {
-                            if (rules[i].getAttribute("type") == xmlNode) {
-                                xmlNode = null;
-                                rule = rules[i];
-                                break;
-                            }
-                        }
-                    }
-                }
-    
-                if (!rule) 
-                    rule = (dataParent.$actions["add"] || {})[0];
-            }
-            else
-                rule = null;
-            
-            
-            
-            //Run the add code (copy from multiselect) but don't add until commit
-            var refNode  = this.$isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot;
-            var callback = function(addXmlNode, state, extra){
-                if (state != apf.SUCCESS) {
-                    var oError;
-    
-                    oError = new Error(apf.formatErrorString(1032, dataParent,
-                        "Loading xml data",
-                        "Could not add data for control " + dataParent.name
-                        + "[" + dataParent.tagName + "] \nUrl: " + extra.url
-                        + "\nInfo: " + extra.message + "\n\n" + xmlNode));
-    
-                    if (extra.tpModule.retryTimeout(extra, state, dataParent, oError) === true)
-                        return true;
-    
-                    throw oError;
-                }
-                
-                /*if (apf.supportNamespaces && node.namespaceURI == apf.ns.xhtml) {
-                    node = apf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
-                    //@todo import here for webkit?
-                }*/
-
-                if (typeof addXmlNode != "object")
-                    addXmlNode = apf.getXmlDom(addXmlNode).documentElement;
-                if (addXmlNode.getAttribute(apf.xmldb.xmlIdTag))
-                    addXmlNode.setAttribute(apf.xmldb.xmlIdTag, "");
-    
-                if (!dataParent.$startAction("add", addXmlNode, _self.rollback))
-                    return false;
-    
-                var actionNode = (dataParent.$actions && 
-                  dataParent.$actions.getRule("add", dataParent.$isTreeArch
-                    ? dataParent.selected
-                    : dataParent.xmlRoot) || {})[2];
-                
-                if (parentXmlNode) {
-                    _self.$addParent = parentXmlNode;
-                }
-                else if (actionNode && actionNode.getAttribute("parent")) {
-                    _self.$addParent = dataParent.xmlRoot
-                        .selectSingleNode(actionNode.getAttribute("parent"));
-                }
-                else {
-                    _self.$addParent = dataParent.$isTreeArch
-                        ? dataParent.selected || dataParent.xmlRoot
-                        : dataParent.xmlRoot
-                }
-    
-                if (!_self.$addParent)
-                    _self.$addParent = dataParent.xmlRoot || dataParent.getModel(true).data;
-    
-                if (apf.isWebkit && _self.$addParent.ownerDocument != addXmlNode.ownerDocument)
-                    addXmlNode = _self.$addParent.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
-    
-                _self.$transactionNode    = addXmlNode;
-                _self.$transactionSubject = dataParent;
-                begin.call(_self);
-            }
-
-            if (xmlNode)
-                return callback(xmlNode, apf.SUCCESS);
-            else {
-                if (rule && rule.get)
-                    return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
-                else {
-                    
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Starting transaction", 
-                        "Missing add rule for transaction"));
-                    
-                }
-            }
-        }
-        
-        //Update
-        else {
-            if (!dataParent.$startAction(this.$lastAction, this.xmlRoot, this.rollback))
-                return false;
-
-            this.$transactionSubject = dataParent;
-            this.$transactionNode    = this.$originalNode.cloneNode(true);//xmldb.cleanNode(this.xmlRoot.cloneNode(true));
-            //xmlNode.removeAttribute(xmldb.xmlIdTag);
-            
-            //@todo rename listening attributes
-            begin.call(this);
-        }
-    };
-    
-    //Transaction nodes can always load data
-    this.$canLoadData = function(){
-        return true;
-    }
-
-    //Prevent model inheritance to the children
-    this.addEventListener("prop.model", function(e){
-        return false;
-    });
-    
-    //Prevent clear dynamic
-    this.clear = function(){
-        this.documentId = this.xmlRoot = this.cacheId = null;
-    }
-
-    //No need to restart the transaction when the same node is loaded
-    this.addEventListener("beforeload", function(e){
-        var xmlNode = e.xmlNode;
-        
-        //@todo apf3.0 test if this can be enabled again
-        //if (this.$originalNode == xmlNode)
-            //return false;
-        
-        if (this.$inTransaction == -1)
-            return;
-
-        if (this.$inTransaction) {
-            if (this.$transactionNode && xmlNode != this.$transactionNode) {
-                if (this.autoshow)
-                    this.autoshow = -1;
-                
-                this.rollback(true);
-            }
-            else return;
-        }
-
-        if (this.autoshow)
-            this.autoshow = -1;
-            
-        if (this.begin("update", xmlNode) !== false)
-            return false;
-    });
-     
-    //hmm really?
-    //@todo what to do here? check original cloned node???
-    /*this.addEventListener("xmlupdate", function(e){
-        if (this.$inTransaction) {
-            this.dispatchEvent("transactionconflict", {
-                action : e.action,
-                xmlNode: e.xmlNode,
-                UndoObj: e.UndoObj,
-                bubbles : true
-            });
-        }
-    });*/
-    
-    //@todo add when not update???
-    /*this.watch("visible", function(id, oldval, newval){
-        if (!this.xmlRoot || oldval == newval)
-            return;
-        
-        if (newval) {
-            if (!this.$inTransaction)
-                this.begin();
-        }
-        else {
-            if (this.$inTransaction) 
-                this.rollback();
-        }
-    });*/
-}
-
-/**
- * @attribute {Boolean} transaction Whether this element provides transaction
- * support for all it's children.
- * @see baseclass.transaction
- */
-apf.GuiElement.propHandlers["transaction"] = function(value){
-    if (!(this.transaction = apf.isTrue(value)))
-        return;
-
-    if (!this.hasFeature(apf.__DATABINDING__))
-        this.implement(apf.StandardBinding);
-
-    if (!this.hasFeature(apf.__DATAACTION__)) {
-        this.implement(apf.DataAction);
-
-        if (this.actions)
-            this.$propHandlers["actions"].call(this, this.actions, "actions");
-    }
-     
-    if (!this.hasFeature(apf.__TRANSACTION__)) {
-        this.implement(apf.Transaction);
-        
-        if (!this.validgroup) {
-            this.$validgroup = new apf.ValidationGroup();
-            this.$validgroup.register(this);
-        }
-        
-        if (!this.id)
-            this.setProperty("id", this.localName + "_" + this.$uniqueId);
-        
-        var attr = this.attributes.getNamedItem("model");
-        if (!attr)  //@todo find a way to not have to add a model
-            this.attributes.push(attr = new apf.AmlAttr(this, "model", null));
-        attr.inheritedValue = "{" + this.id + ".root}";
-                
-        if (typeof this.autoshow == "undefined" 
-          && (this.localName == "modalwindow" || this.localName == "window"))
-            this.autoshow = true;
-    }
-}
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(28823)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(31628)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41267,743 +36460,6 @@ apf.GuiElement.propHandlers["transaction"] = function(value){
 
 apf.__VIRTUALVIEWPORT__ = 1 << 19;
 
-
-
-/**
- * All elements inheriting from this {@link term.baseclass baseclass} can have a virtual viewport.
- *
- * @experimental This code has never been run. 
- * @constructor
- * @baseclass
- * @private
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org) & Mike de Boer
- * @version     %I%, %G%
- * @since       1.0
- */
-apf.VirtualViewport = function(){
-    this.$init(true);
-
-    this.$regbase = this.$regbase | apf.__VIRTUALVIEWPORT__;
-
-    this.virtualVTimer = null;
-    this._xmlUpdate    = this.$xmlUpdate;
-    
-    apf.setStyleClass(this.$ext, "virtual");
-    
-    this.$deInitNode = function(xmlNode, htmlNode){
-        /*  
-            Not the htmlNode is deleted, but the viewport is rerendered from this node on. 
-            If viewport is too high either the render starting point is adjusted and
-            a complete rerender is requested, or the last empty elements are hidden
-        */
-        this.viewport.redraw();//very unoptimized
-    };
-    
-    this.$moveNode = function(xmlNode, htmlNode){
-        /*
-            Do a remove when removed from current viewport
-            Do an add when moved to current viewport
-            Do a redraw from the first of either when both in viewport
-        */
-        this.viewport.redraw();//very unoptimized
-    };
-    
-    this.emptyNode = apf.xmldb.getXml("<empty />");
-    this.$addEmpty = this.$add;
-    this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
-        //find new slot
-        var htmlNode = this.$pHtmlDoc.getElementById(Lid);
-        
-        if(!htmlNode)
-            return;
-        
-        //execute update
-        this.$updateNode(xmlNode, htmlNode);//, noModifier);
-    };
-
-    this.$fill = function(){
-        
-    };
-    
-    this.addEventListener("$load", function(){
-        if (!this.viewport.limit)
-            this.viewport.limit = 1;
-    });
-    
-    this.clear = function(nomsg, do_event){
-        if (this.clearSelection)
-            this.clearSelection(!do_event);
-
-        this.documentId = this.xmlRoot = this.cacheId = null;
-
-        if (!nomsg) {
-            this.viewport.offset = 0;
-            this.viewport.length = 0;
-            this.viewport.resize(0);
-            this.viewport.sb.update();
-    
-            this.$setClearMessage(this["empty-message"]);
-        }
-        else if(this.$removeClearMessage)
-           this.$removeClearMessage();
-        
-        this.viewport.cache = null;
-    };
-
-    var _self = this;
-    this.viewport = {
-        offset : 0,
-        limit  : 2,
-        length : 0,
-        sb     : new apf.scrollbar(),
-        host   : this,
-        cache  : null,
-        
-        inited : false,
-        draw : function(){
-            this.inited = true;
-            var limit = this.limit; this.limit = 0;
-            this.resize(limit, true);
-        },
-        
-        redraw : function(){
-            this.change(this.offset);
-        },
-        
-        // set id's of xml to the viewport
-        prepare : function(){
-            if (!this.inited)
-                this.draw();
-            
-            var nodes = _self.getTraverseNodes();
-            if (!nodes)
-                return;
-            
-            var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
-                hNodes = _self.$container.childNodes;
-            for (var j = 0, i = 0, l = hNodes.length; i < l; i++) {
-                if (hNodes[i].nodeType != 1) continue;
-                
-                hNodes[i].style.display = (j >= nodes.length) ? "none" : "block"; //Will ruin tables & lists
-                
-                apf.xmldb.nodeConnect(docId, nodes[j], hNodes[i], _self);
-                j++;
-            }
-        },
-        
-        /**
-         * @note This function only supports single dimension items (also no grid, like thumbnails)
-         */
-        resize : function(limit, updateScrollbar){
-            this.cache = null;
-
-            var i;
-            //Viewport shrinks
-            if (limit < this.limit) {
-                var nodes = _self.$container.childNodes;
-                for (i = nodes.length - 1; i >= 0; i--) {
-                    if (nodes[i].nodeType != 1) continue;
-                    _self.$container.removeChild(nodes[i]);
-                    if (--this.limit == limit) break;
-                }
-            }
-            //Viewport grows
-            else if (limit > this.limit) {
-                for (i = this.limit; i < limit; i++) {
-                    _self.$addEmpty(_self.emptyNode, "", _self.xmlRoot, _self.$container);
-                }
-            }
-            else
-                return;
-            
-            this.limit = limit;
-            
-            if (updateScrollbar)
-                this.sb.update(this.$container);
-        },
-        
-        findNewLimit : function(scrollTop){
-            var oHtml = _self.$container;
-            
-            if (!scrollTop)
-                scrollTop = oHtml.scrollTop;
-
-            if (!_self.xmlRoot || oHtml.lastChild && oHtml.lastChild.style.display == "none")
-                return;
-
-            //Grow
-            if (!oHtml.lastChild || oHtml.lastChild.offsetTop + oHtml.lastChild.offsetHeight <= oHtml.offsetHeight + scrollTop) {
-                var Lid, xmlNode, nodes, sel = _self.$getSelection();
-                while (this.limit < this.length - 1 && (!oHtml.lastChild || oHtml.lastChild.offsetTop + oHtml.lastChild.offsetHeight <= oHtml.offsetHeight + scrollTop)) {
-                    this.limit++;
-
-                    nodes = _self.getTraverseNodes();
-                    if (nodes.length < this.limit) {
-                        this.limit = nodes.length;
-                        break;
-                    }
-
-                    xmlNode = nodes[nodes.length - 1];
-                    Lid = apf.xmldb.nodeConnect(_self.documentId, xmlNode, null, _self);
-                    _self.$addEmpty(xmlNode, Lid, _self.xmlRoot, oHtml);
-                    if (sel.indexOf(xmlNode) > -1)
-                        _self.$select(oHtml.lastChild);
-                    else
-                        _self.$deselect(oHtml.lastChild);
-                }
-            }
-            //Shrink
-            else if (oHtml.lastChild && oHtml.lastChild.offsetTop > oHtml.offsetHeight + scrollTop) {
-                var lastChild;
-                while (this.limit > 2 && (lastChild = oHtml.lastChild).offsetTop > oHtml.offsetHeight + scrollTop) {
-                    _self.$container.removeChild(lastChild);
-                    this.limit--;
-                }
-            }
-            
-            if (!this.initialLimit)
-                this.initialLimit = this.limit;
-        },
-        
-        /**
-         *  @todo   This method should be optimized by checking if there is
-         *          overlap between the new offset and the old one
-         */
-        change : function(offset, limit, updateScrollbar, noScroll){
-            var offsetN;
-            
-            if (offset < 0) 
-                offset = 0;
-            
-            if (offset > this.length - this.limit - 1) 
-                offsetN = Math.floor(this.length - this.limit - 1);
-            else 
-                offsetN = Math.floor(offset);
-                
-            if (!limit)
-                limit = this.limit;
-            
-            //var offsetN = Math.floor(offset);
-
-            this.cache   = null;
-            var diff     = offsetN - this.offset,
-                oldLimit = this.limit;
-            if (diff * diff >= this.limit*this.limit) //there is no overlap
-                diff = false;
-            this.offset = offsetN;
-            
-            if (diff > 0) { //get last node before resize
-                var lastNode = _self.$container.lastChild;
-                if (lastNode.nodeType != 1)
-                    lastNode = lastNode.previousSibling;
-            }
-            
-            /*if (limit && this.limit != limit)
-                this.resize(limit, updateScrollbar);
-            else */
-            if (updateScrollbar) {
-                this.sb.$curValue = this.offset / (this.length - this.limit - 1);
-                this.sb.updatePos();
-            }
-
-            //this.viewport.prepare();
-
-            //Traverse through XMLTree
-            //var nodes = this.$addNodes(this.xmlRoot, this.$container, null, this.renderRoot);
-            var nodes = _self.getTraverseNodes();
-            if (!nodes)
-                return;
-                
-            if (nodes.length < this.limit) {
-                if (offset > 0)
-                    alert("shouldnt get here");
-                else
-                    this.resize(nodes.length);
-            }
-
-            var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
-                hNodes = _self.$container.childNodes,
-                xmlNode, htmlNode, xmlPos, sel, len, j, i;
-
-            //remove nodes from the beginning
-            if (diff > 0) {
-                xmlPos = oldLimit - diff;
-                len    = hNodes.length,
-                sel    = _self.$getSelection();
-                for (j = 0, i = 0; j < diff && i < len; i++) {
-                    htmlNode = _self.$container.firstChild;
-                    if (htmlNode.nodeType == 1) {
-                        j++;
-                        xmlNode = nodes[xmlPos++];
-                        if (xmlNode) {
-                            apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
-                            _self.$updateNode(xmlNode, htmlNode);//, noModifier);
-                            if (sel.indexOf(xmlNode) > -1)
-                                _self.$select(htmlNode);
-                            else
-                                _self.$deselect(htmlNode);
-                            htmlNode.style.display = "block";
-                        }
-                        else {
-                            htmlNode.style.display = "none";
-                        }
-                    }
-                    
-                    _self.$container.appendChild(htmlNode);
-                }
-                
-                //var lastNode = nodes[oldLimit - diff - 1]
-            }
-            //remove nodes from the end
-            else if (diff < 0) {
-                diff = diff * -1;
-                xmlPos = 0; //should be adjusted for changing limit
-                sel    = _self.$getSelection();
-                for (j = 0, i = hNodes.length-1; j < diff && i >= 0; i++) {
-                    htmlNode = _self.$container.lastChild;
-                    if (htmlNode.nodeType == 1) {
-                        j++;
-                        xmlNode = nodes[xmlPos++];
-                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
-                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
-                        if (sel.indexOf(xmlNode) > -1)
-                            _self.$select(htmlNode);
-                        else
-                            _self.$deselect(htmlNode);
-                        htmlNode.style.display = "block";
-                    }
-                    
-                    _self.$container.insertBefore(htmlNode, _self.$container.firstChild);
-                }
-            }
-            //Recalc all nodes
-            else if (diff === false){
-                len = hNodes.length; 
-                sel = _self.$getSelection();
-                for (j = 0, i = 0; i < len; i++) {
-                    htmlNode = hNodes[i];
-                    if (htmlNode.nodeType == 1) {
-                        xmlNode = nodes[j++];
-                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
-                        _self.$updateNode(xmlNode, htmlNode);//, noModifier);
-                        if (sel.indexOf(xmlNode) > -1)
-                            _self.$select(htmlNode);
-                        else
-                            _self.$deselect(htmlNode);
-                    }
-                }
-            }
-
-            if (!noScroll) {
-                if (offset >= this.length - this.initialLimit) {
-                    diff = offset - (this.length - this.initialLimit) + 2;
-                    _self.$container.scrollTop = (_self.$container.scrollHeight - _self.$container.offsetHeight) * (diff / 2);
-                }
-                else {
-                    var scrollTop = (offset % 1) * _self.$container.firstChild.offsetHeight;//(diff/limit) * _self.$container.offsetHeight;
-                    this.findNewLimit(scrollTop);
-                    _self.$container.scrollTop = scrollTop;
-                }
-                
-                if (updateScrollbar)
-                    this.sb.update();
-                
-                return;
-            }
-        
-            //Build HTML
-            //_self.$fill(nodes);
-            
-            /*if (_self.$selected) {
-                _self.$deselect(_self.$selected);
-                _self.$selected = null;
-            }
-            
-            if (_self.selected && _self.$isInViewport(_self.selected))
-                _self.select(_self.selected);*/
-        }
-    };
-    
-    this.viewport.sb.parentNode = new apf.Class().$init();
-    this.viewport.sb.parentNode.$container = this.$pHtmlNode;
-    this.viewport.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
-    
-    //this.$container.style.paddingLeft = this.viewport.sb.$ext.offsetWidth + "px";
-    
-    //this.viewport.sb.realtime = false;//!apf.isIE;
-    this.viewport.sb.attach(this.$container, this.viewport, function(timed, pos){
-        var vp = _self.viewport;
-        
-        if (vp.sb.realtime || !timed) {
-            var l = vp.length - vp.initialLimit;
-            if (l == 0)
-                _self.$container.scrollTop = pos * (_self.$container.scrollHeight - _self.$container.offsetHeight);
-            else 
-                vp.change(l * pos, vp.limit, false);
-        }
-        else {
-            clearTimeout(this.virtualVTimer);
-            this.virtualVTimer = $setTimeout(function(){
-                vp.change(Math.round((vp.length - vp.initialLimit) * pos), vp.limit, false);
-            }, 300);
-        }
-    });
-    
-    /* @todo
-     * - Fix bug in optimization
-     * - Fix flickering with larger viewport
-     * - Get templates to work
-     * - Firefox has problems with the scrollbar
-     * / Fix scrolling of items bigger than viewport (limit is too tight sometimes)
-     * - Improve pgup/pgdown
-     * - Fix multigrid lists (thumbnail)
-     * - Fix FF html conversion (insertHtmlNodes)
-     * - Optimize grow function to use fill
-     */
-    
-    apf.layout.setRules(this.$container, "scrollbar", "\
-        var s = apf.all[" + this.viewport.sb.$uniqueId + "];\
-        s.update();\
-    ", true);
-    apf.layout.queue(this.$container);
-    
-    this.$isInViewport = function(xmlNode, struct){
-        /*var marker = xmlNode.selectSingleNode("preceding-sibling::a_marker");
-        var start = marker ? marker.getAttribute("end") : 0;
-        
-        if(!struct && this.viewport.offset + this.viewport.limit < start + 1)
-            return false;
-        
-        var position = start;
-        var nodes = (marker || xmlNode).selectNodes("following-sibling::"
-              + this.each.split("|").join("following-sibling::"));
-        
-        for (var i = 0; i < nodes.length; i++) {
-            ++position;
-            if (nodes[i] == xmlNode)
-                break;
-        }
-        
-        if(struct) struct.position = position;
-        
-        if(this.viewport.offset > position 
-          || this.viewport.offset + this.viewport.limit < position)
-            return false;
-        
-        return true;*/
-        var nodes = this.getTraverseNodes();
-        for (var i = 0, l = nodes.length; i < l; i++){
-            if (nodes[i] == xmlNode)
-                return true;
-        }
-        
-        return false;
-    };
-    
-    this.scrollTo = function(xmlNode, last){
-        var sPos = {};
-        this.$isInViewport(xmlNode, sPos);
-        this.viewport.change(sPos.position + (last ? this.viewport.limit - 1 : 0));
-    };
-    
-    /**
-     * @todo this one should be optimized
-     */
-    this.getFirstTraverseNode = function(xmlNode){
-        return this.getTraverseNodes(xmlNode)[0];
-    };
-    
-    /**
-     * @private
-     */
-    this.$clearVirtualDataset = function(parentNode){
-        var nodes = parentNode.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--)
-            parentNode.removeChild(nodes[i]);
-    };
-
-    /**
-     * @private
-     */
-    this.$createVirtualDataset = function(xmlNode, length, docId) {
-        var marker = xmlNode.selectSingleNode("a_marker") 
-          || xmlNode.appendChild(xmlNode.ownerDocument.createElement("a_marker"));
-        marker.setAttribute("start", "0");
-
-        if (length) {
-            marker.setAttribute("end",   length);
-            marker.setAttribute("reserved", ++this.nodeCount[docId]);
-            this.nodeCount[docId] += length;
-        }
-    };
-    
-    this.$xmlUpdate = function(){
-        this.viewport.cache  = null;
-        this.viewport.length = this.xmlRoot.selectNodes(this.each).length; //@todo fix this for virtual length
-        this.viewport.sb.update(this.$container);
-        this._xmlUpdate.apply(this, arguments);
-    };
-    
-    this.$load = function(XMLRoot){
-        //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(XMLRoot, this);
-
-        //Reserve here a set of nodeConnect id's and add them to our initial marker
-        //Init virtual dataset here
-        
-        if (!this.renderRoot && !this.getTraverseNodes(XMLRoot).length)
-            return this.clear("loading");
-        
-        //Initialize virtual dataset if load rule exists
-        if (this.$hasBindRule("load"))
-            this.$createVirtualDataset(XMLRoot);
-        
-        //Prepare viewport
-        this.viewport.cache  = null;
-        this.viewport.length = this.xmlRoot.selectNodes(this.each).length + 1; //@todo fix this for virtual length
-        this.viewport.prepare();
-        
-        //Traverse through XMLTree
-        var nodes = this.$addNodes(XMLRoot, null, null, this.renderRoot);
-        
-        this.viewport.sb.update(this.$container);
-
-        //Build HTML
-        //this.$fill(nodes);
-
-        //Select First Child
-        if (this.selectable) {
-            if (this.autoselect) {
-                if (nodes.length)
-                    this.$selectDefault(XMLRoot);
-                
-                else
-                    this.setProperty("selected", null); //@todo review this
-                
-            }
-            else {
-                this.clearSelection(true);
-                var xmlNode = this.getFirstTraverseNode(); //should this be moved to the clearSelection function?
-                if (xmlNode)
-                    this.setCaret(xmlNode);
-                
-                this.setProperty("selected", null); //@todo review this
-                this.setProperty("chosen", null);
-                
-            }
-        }
-
-        if (this.$focussable)
-            apf.window.hasFocus(this) ? this.$focus() : this.$blur();
-    };
-    
-    this.$loadSubData = function(){}; //We use the same process for subloading, it shouldn't be done twice
-    
-    /**
-     * @example <a:load get="call:getCategory(start, length, ascending)" total="@total" />
-     */
-    this.$loadPartialData = function(marker, start, length){
-        //We should have a queing system here, disabled the check for now
-        //if (this.$hasLoadStatus(xmlRootNode)) return;
-        
-        var loadNode, rule = this.$getBindRule("load", xmlRootNode);
-        if (rule && (!rule[1] || rule[1](xmlRootNode))) {
-            this.$setLoadStatus(xmlRootNode, "loading");
-            
-            var mdl = this.getModel(true);
-            
-            if (!mdl)
-                throw new Error("Could not find model");
-            
-            if (!rule.getAttribute("total")) {
-                throw new Error(apf.formatErrorString(this, "Loading data", "Error in load rule. Missing total xpath. Expecting <a:load total='xpath' />"))                
-            }
-            
-
-            mdl.$insertFrom(rule.getAttribute("get"), {
-                
-                ascending  : this.$sort ? this.$sort.get().ascending : true,
-                
-                xmlNode     : loadNode,
-                documentId  : this.documentId, //or should xmldb find this itself
-                marker      : marker,
-                start       : start,
-                length      : length,
-                insertPoint : this.xmlRoot, 
-                amlNode     : this,
-                callback    : function(xmlNode){
-                    
-                    _self.setProperty("root", _self.xmlRoot);
-                    
-                    
-                    var length = parseInt(apf.queryValue(xmlNode, 
-                        rule.getAttribute("total")));
-                    
-                    if (_self.viewport.length != length) {
-                        _self.viewport.length = length;
-                        
-                        this.$createVirtualDataset(_self.xmlRoot, 
-                            _self.viewport.length, _self.documentId);
-                    }
-                }
-            });
-        }
-    };
-    
-    //Consider moving these functions to the xmldatabase selectByXpath(xpath, from, length);
-    function fillList(len, list, from){
-        for (var i = 0; i < len; i++) 
-            list.push(_self.documentId + "|" + (from+i));
-    }
-    
-    function buildList(markers, markerId, distance, xml) {
-        var marker, nodes, start,
-            vlen = this.viewport.limit,
-            list = [];
-        
-        //Count from 0
-        if (markerId == -1) {
-            nodes    = xml.selectNodes(_self.each);
-            start    = 0;
-            marker   = markers[0];
-        }
-        else {
-            //Count back from end of marker
-            if (distance < 0) {
-                fillList(Math.abs(distance), list, 
-                    parseInt(marker.getAttribute("reserved")) + parseInt(marker.getAttribute("end"))
-                    - parseInt(marker.getAttribute("start")) + distance);
-                
-                distance = 0;
-                _self.$loadPartialData(marker);
-                
-                if (list.length == vlen)
-                    return list;
-            }
-            
-            nodes  = markers[markerId].selectNodes("following-sibling::"
-              + this.each.split("|").join("following-sibling::"));
-            start  = markers[markerId].getAttribute("end");
-            marker = markers[++markerId];
-        }
-        
-        do {
-            //Add found nodes
-            var loop = Math.min(marker.getAttribute("start") - start, vlen);//, nodes.length
-            for (var i = distance; i < loop; i++)
-                list.push(nodes[i]);
-            
-            if (list.length == vlen)
-                break;
-            
-            //Add empty nodes
-            var mlen = parseInt(marker.getAttribute("end")) - parseInt(marker.getAttribute("start"));
-            fillList(Math.min(mlen, vlen - list.length), list, parseInt(marker.getAttribute("reserved")));
-            
-            //Add code here to trigger download of this missing info
-            _self.$loadPartialData(marker);
-            
-            start    = parseInt(marker.getAttribute("end"));
-            marker   = markers[++markerId];
-            distance = 0;
-        } 
-        while (list.length < vlen && marker);
-        
-        _self.viewport.cache = list;
-        return list;
-    }
-    
-    /**
-     * Retrieves a nodelist containing the {@link term.datanode data nodes} which are rendered by
-     * this element (see each nodes, see {@link baseclass.multiselectbinding.binding.each}).
-     *
-     * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
-     */
-    this.getTraverseNodes = function(xmlNode){
-        if (!this.xmlRoot)
-            return;
-        
-        if (this.viewport.cache)
-            return this.viewport.cache;
-
-        var start = this.viewport.offset + 1,
-            end   = start + this.viewport.limit;
-        
-        //caching statement here
-
-        var markers = (xmlNode || this.xmlRoot).selectNodes("a_marker");
-
-        //Special case for fully loaded virtual dataset
-        if (!markers.length) {
-            var list = (xmlNode || this.xmlRoot).selectNodes("("
-                + this.each + ")[position() >= " + start
-                + " and position() < " + (end) + "]");
-
-            
-            return this.$sort ? this.$sort.apply(list) : list;
-            
-        }
-
-        for (var i = 0; i < markers.length; i++) {
-            //Looking for marker that (partially) exceeds viewport's current position
-            if (markers[i].getAttribute("end") < start) {
-                //If this is the last marker, count from here
-                if (i == markers.length - 1)
-                    return buildList(markers, i, start - markers[i].getAttribute("end"), 
-                      (xmlNode || this.xmlRoot));
-
-                continue;
-            }
-            
-            //There is overlap AND begin is IN marker
-            if (markers[i].getAttribute("start") - end <= 0 
-              && start >= markers[i].getAttribute("start"))
-                return buildList(markers, i, start - markers[i].getAttribute("end"), 
-                  (xmlNode || this.xmlRoot));
-
-            //Marker is after viewport, there is no overlap
-            else if (markers[i-1]) //Lets check the previous marker, if there is one
-                return buildList(markers, i-1, start - markers[i-1].getAttribute("end"), 
-                  (xmlNode || this.xmlRoot));
-                
-            //We have to count from the beginning
-            else
-                return buildList(markers, -1, start, (xmlNode || this.xmlRoot));
-        }
-    };
-    
-    var baseNTS = this.getNextTraverseSelected;
-    this.getNextTraverseSelected = function(xmlNode, up, count){
-        if (!xmlNode)
-            xmlNode = this.selected;
-        if (!count)
-            count = 1;
-
-        var node = baseNTS.call(this, xmlNode, up, count);
-        if (node && node != xmlNode)
-            return node;
-
-        //@todo treeArch support
-        var nodes = this.getTraverseNodes(), i = 0;
-        while (nodes[i] && nodes[i] != xmlNode)
-            i++;
-
-        if (up)
-            i = -1 * (nodes.length - i - 1);
-
-        this.viewport.change(Math.max(0, this.viewport.offset + i
-            + (up ? count : -1 * count)), null, true, true);
-            
-        nodes = this.getTraverseNodes();
-        return nodes[up ? nodes.length - 1 : 0];
-    };
-    
-    //@todo keyboard handlers for pgup/pgdown should measure items instead of assuming fixed height
-    
-    //Init
-    this.caching = false; //for now, because the implications are unknown
-};
 
 
 
@@ -42850,106 +37306,6 @@ apf.window = function(){
 
     
 
-    var timer, state = "", last = "";
-    this.$focusfix = function(){
-        
-        state += "a";
-        clearTimeout(timer);
-        $setTimeout("window.focus();");
-        timer = $setTimeout(determineAction);
-    };
-
-    this.$focusfix2 = function(){
-        
-        state += "b";
-        clearTimeout(timer);
-        timer = $setTimeout(determineAction);
-    };
-
-    this.$blurfix = function(){
-        
-        state += "c";
-        clearTimeout(timer);
-        timer = $setTimeout(determineAction);
-    };
-
-    function determineAction(){
-        clearTimeout(timer);
-
-        //apf.console.info(state);
-        if (state == "e" || state == "c"
-          || state.charAt(0) == "x" && !state.match(/eb$/)
-          || state == "ce" || state == "de") { //|| state == "ae"
-            if (last != "blur") {
-                last = "blur";
-                apf.window.dispatchEvent("blur");
-                //apf.console.warn("blur");
-            }
-        }
-        else {
-            if (last != "focus") {
-                last = "focus";
-                apf.window.dispatchEvent("focus");
-                //apf.console.warn("focus");
-            }
-        }
-
-        state = "";
-        timer = null;
-    }
-
-    apf.addListener(window, "focus", this.$focusevent = function(){
-        
-        if (apf.hasFocusBug) {
-            state += "d";
-            clearTimeout(timer);
-            timer = $setTimeout(determineAction);
-        }
-        else {
-            clearTimeout(iframeFixTimer)
-            iframeFix.newState = "focus";
-            //apf.console.warn("win-focus");
-            iframeFixTimer = $setTimeout(iframeFix, 10);
-        }
-    });
-
-    apf.addListener(window, "blur", this.$blurevent = function(){
-        if (!apf) return;
-        
-        
-        if (apf.hasFocusBug) {
-            state += "e";
-            clearTimeout(timer);
-            timer = $setTimeout(determineAction);
-        }
-        else {
-            clearTimeout(iframeFixTimer)
-            iframeFix.newState = "blur";
-            //apf.console.warn("win-blur");
-            iframeFixTimer = $setTimeout(iframeFix, 10);
-        }
-    });
-
-    var iframeFixTimer;
-    function iframeFix(){
-        clearTimeout(iframeFixTimer);
-
-        var newState = iframeFix.newState;
-        if (last == newState)
-            return;
-
-        last = newState;
-
-        apf.dispatchEvent(last);
-        //apf.console.warn(last);
-    }
-
-    this.hasFocus = function(){
-        return (last == "focus");
-    };
-
-    
-
     /**** Keyboard and Focus Handling ****/
 
     apf.addListener(document, "contextmenu", function(e){
@@ -43089,19 +37445,6 @@ apf.window = function(){
                 apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
             }
     
-            
-            if (apf.hasFocusBug) {
-                var isTextInput = (ta[e.srcElement.tagName]
-                    || e.srcElement.isContentEditable) && !e.srcElement.disabled
-                    || amlNode.$isTextInput
-                    && amlNode.$isTextInput(e) && amlNode.disabled < 1;
-    
-                if (!amlNode || !isTextInput)
-                    apf.window.$focusfix();
-            }
-            else if (!last) {
-                apf.window.$focusevent();
-            }
             
         }
         
@@ -43314,28 +37657,6 @@ apf.window = function(){
               && amlNode.$isTextInput(e) && amlNode.disabled < 1;
 
         
-        //@todo move this to appsettings and use with_hotkey
-        var o,
-            ctrlKey = apf.isMac ? e.metaKey : e.ctrlKey;
-        if (!isTextInput && apf.config.undokeys && ctrlKey) {
-            //Ctrl-Z - Undo
-            if (e.keyCode == 90) {
-                o = apf.document.activeElement;
-                while (o && !o.getActionTracker && !o.$at)
-                    o = o.parentNode;
-                if (!o) o = apf.window;
-                (o.$at || o.getActionTracker()).undo();
-            }
-            //Ctrl-Y - Redo
-            else if (e.keyCode == 89) {
-                o = apf.document.activeElement;
-                while (o && !o.getActionTracker && !o.$at)
-                    o = o.parentNode;
-                if (!o) o = apf.window;
-                (o.$at || o.getActionTracker()).redo();
-            }
-        }
-        
 
         var eInfo = {
             ctrlKey    : e.ctrlKey,
@@ -43475,13 +37796,6 @@ apf.window = function(){
         
         //Put this in callback in between the two phases
         
-        /*XForms and lazy devs support
-        if (!nodes.length && !apf.skins.skins["default"] && apf.autoLoadSkin) {
-            apf.console.warn("No skin file found, attempting to autoload the \
-                              default skin file: skins.xml");
-            apf.loadAmlInclude(null, doSync, "skins.xml", true);
-        }*/
-        
 
         this.$domParser = new apf.DOMParser();
         this.document = apf.document = this.$domParser.parseFromString(strAml, 
@@ -43539,34 +37853,6 @@ apf.window = function(){
     };
     
     
-    var lastFocusElement;
-    this.addEventListener("focus", function(e){
-        if (!apf.document.activeElement && lastFocusParent && !apf.isIphone) {
-            lastFocusElement.focus();
-            /*
-            if (lastFocusParent.$isWindowContainer < 0) {
-                if (lastFocusParent.$tabList.length)
-                    apf.window.moveNext(null, lastFocusParent.$tabList[0]);
-                else
-                    apf.window.$focus(lastFocusParent);
-            }
-            else 
-                apf.window.$focusLast(lastFocusParent);*/
-        }
-    });
-    this.addEventListener("blur", function(e){
-        if (!apf.document.activeElement || apf.isIphone)
-            return;
-
-        apf.document.activeElement.blur(true, {srcElement: this});//, {cancelBubble: true}
-        lastFocusParent   = apf.document.activeElement.$focusParent;
-        lastFocusElement  = apf.document.activeElement;
-        apf.activeElement = apf.document.activeElement = null;
-    });
-    this.getLastActiveElement = function(){
-        return apf.activeElement || lastFocusElement;
-    }
-    
 
     /**
      * @private
@@ -43614,24 +37900,6 @@ apf.window.prototype = new apf.Class().$init();
 apf.window = new apf.window();
 
 
-/**
- * @private
- */
-apf.sanitizeTextbox = function(oTxt){
-    if (!apf.hasFocusBug)
-        return;
-    
-    oTxt.onfocus = function(){
-        if (apf.window)
-            apf.window.$focusfix2();
-    };
-
-    oTxt.onblur = function(){
-        if (apf.window)
-            apf.window.$blurfix();
-    };
-};
-
 
 
 
@@ -43661,172 +37929,6 @@ apf.sanitizeTextbox = function(oTxt){
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-/**
- * Compatibility layer for Gecko based browsers.
- * @private
- */
-apf.runGecko = function(){
-    if (apf.runNonIe)
-        apf.runNonIe();
-
-    /* ***************************************************************************
-     XSLT
-     ****************************************************************************/
-    
-    
-    //XMLDocument.selectNodes
-    HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
-        try {
-            var oResult = this.evaluate(sExpr, (contextNode || this),
-                this.createNSResolver(this.documentElement),
-                7, null); //XpathResult.ORDERED_NODE_ITERATOR_TYPE
-        }
-        catch(ex) {
-            var msg = ex.message;
-            if (ex.code == ex.INVALID_EXPRESSION_ERR)
-                msg = msg.replace(/the expression/i, "'" + sExpr + "'");
-            throw new Error(ex.lineNumber, "XPath error: " + msg);
-        }
-
-        var nodeList = new Array(oResult.snapshotLength);
-        nodeList.expr = sExpr;
-        for (var i = nodeList.length - 1; i >= 0; i--) 
-            nodeList[i] = oResult.snapshotItem(i);
-        return nodeList;
-    };
-    
-    //Element.selectNodes
-    Text.prototype.selectNodes =
-    Attr.prototype.selectNodes =
-    Element.prototype.selectNodes = function(sExpr){
-       return this.ownerDocument.selectNodes(sExpr, this);
-    };
-    
-    //XMLDocument.selectSingleNode
-    HTMLDocument.prototype.selectSingleNode = 
-    XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        try {
-            var oResult = this.evaluate(sExpr, (contextNode || this),
-                this.createNSResolver(this.documentElement),
-                9, null); //XpathResult.FIRST_ORDERED_NODE_TYPE
-        }
-        catch(ex) {
-            var msg = ex.message;
-            if (ex.code == ex.INVALID_EXPRESSION_ERR)
-                msg = msg.replace(/the expression/i, "'" + sExpr + "'");
-            throw new Error(ex.lineNumber, "XPath error: " + msg);
-        }
-        
-        return oResult.singleNodeValue;
-    };
-    
-    //Element.selectSingleNode
-    Text.prototype.selectSingleNode =
-    Attr.prototype.selectSingleNode =
-    Element.prototype.selectSingleNode = function(sExpr){
-        return this.ownerDocument.selectSingleNode(sExpr, this);
-    };
-    
-    
-    
-    var serializer = new XMLSerializer();
-    var o = document.createElement("div");
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
-        var frag, l, node, i;
-        if (nodeList) {
-            frag = document.createDocumentFragment();
-            for (i = nodeList.length - 1; i >= 0; i--) {
-                node = nodeList[i];
-                frag.insertBefore(node, frag.firstChild);
-            }
-        }
-        
-        o.innerHTML = typeof s == "string" ? s : apf.html_entity_decode(serializer.serializeToString(frag))
-            .replace(/<([^>]+)\/>/g, "<$1></$1>");
-
-        frag = document.createDocumentFragment();
-        for (i = 0, l = o.childNodes.length; i < l; i++) {
-            node = o.childNodes[0];
-            frag.appendChild(node);
-        }
-
-        if (beforeNode)
-            htmlNode.insertBefore(frag, beforeNode);
-        htmlNode.appendChild(frag);
-    };
-
-    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
-        if (htmlNode.nodeType != 11 && !htmlNode.style)
-            return htmlNode.appendChild(xmlNode);
-        
-        if (!s) {
-            s = apf.html_entity_decode(xmlNode.serialize
-                ? xmlNode.serialize(true)
-                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
-                    ? xmlNode.nodeValue
-                    : serializer.serializeToString(xmlNode)));
-        }
-
-        o.innerHTML = s.replace(/<([^>]+)\/>/g, "<$1></$1>");
-
-        if (beforeNode)
-            htmlNode.insertBefore(o.firstChild, beforeNode);
-        else
-            htmlNode.appendChild(o.firstChild);
-
-        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-    };
-    
-    /* ******** Error Compatibility **********************************************
-     Error Object like IE
-     ****************************************************************************/
-    function Error(nr, msg){
-        
-        if (!apf.$debugwin.nativedebug) 
-            apf.$debugwin.errorHandler(msg, "", 0);
-        
-        
-        this.message = msg;
-        this.nr = nr;
-    }
-    
-    apf.getHtmlLeft = function(oHtml){
-        return (oHtml.offsetLeft
-            + (parseInt(apf.getStyle(oHtml.parentNode, "borderLeftWidth")) || 0));
-    };
-
-    apf.getHtmlRight = function(oHtml){
-        var p;
-        return (((p = oHtml.offsetParent).tagName == "BODY" 
-          ? apf.getWindowWidth()
-          : p.offsetWidth)
-            - oHtml.offsetLeft - oHtml.offsetWidth
-            - (2 * (parseInt(apf.getStyle(p, "borderLeftWidth")) || 0))
-            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
-    };
-
-    apf.getHtmlTop = function(oHtml){
-        return (oHtml.offsetTop
-            + (parseInt(apf.getStyle(oHtml.parentNode, "borderTopWidth")) || 0));
-    };
-    
-    apf.getHtmlBottom = function(oHtml){
-        var p;
-        return (((p = oHtml.offsetParent).tagName == "BODY" 
-          ? apf.getWindowHeight()
-          : p.offsetHeight)
-            - oHtml.offsetTop - oHtml.offsetHeight
-            - (2 * (parseInt(apf.getStyle(p, "borderTopWidth")) || 0))
-            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
-    };
-
-    apf.getBorderOffset = function(oHtml){
-        return [-1 * (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0),
-            -1 * (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)];
-    };
-}
 
 
 
@@ -43906,18 +38008,6 @@ apf.runIE = function(){
 
                 xmlParser.loadXML(message);
 
-                
-                if (xmlParser.parseError != 0 && apf.xmldb && apf.isJson(message)) {
-                    try {
-                        xmlParser = apf.json2Xml(message, noError);
-                    }
-                   catch(e) {
-                        throw new Error(apf.formatErrorString(1051, null,
-                           "JSON to XML conversion error occurred."+e.message,
-                           "\nSource Text : " + message.replace(/\t/gi, " ")));
-                    }
-                }
-                else
                 
                 if (!noError)
                     this.xmlParseError(xmlParser);
@@ -44089,112 +38179,6 @@ apf.runIE = function(){
             : "alpha(opacity=" + Math.round(value * 100) + ")";
     };
     
-    
-    /**
-     * @private
-     */
-    apf.popup2 = {
-        cache: {},
-        setContent: function(cacheId, content, style, width, height){
-            if (!this.popup)
-                this.init();
-
-            this.cache[cacheId] = {
-                content: content,
-                style  : style,
-                width  : width,
-                height : height
-            };
-            if (content.parentNode)
-                content.parentNode.removeChild(content);
-            if (style)
-                apf.importCssString(style, this.popup.document);
-
-            return this.popup.document;
-        },
-
-        removeContent: function(cacheId){
-            this.cache[cacheId] = null;
-            delete this.cache[cacheId];
-        },
-
-        init: function(){
-            this.popup = window.createPopup();
-
-            this.popup.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
-                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:a=' + apf.ns.aml + ' xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
-                <head>\
-                    <script>\
-                    var apf = {\
-                        all: [],\
-                        lookup:function(uniqueId){\
-                            return this.all[uniqueId] || {\
-                                $setStyleClass:function(){}\
-                            };\
-                        }\
-                    };\
-                    function destroy(){\
-                        apf.all=null;\
-                    }\
-                    </script>\
-                    <style>\
-                    HTML{border:0;overflow:hidden;margin:0}\
-                    BODY{margin:0}\
-                    </style>\
-                </head>\
-                <body onmouseover="if(!self.apf) return;if(this.c){apf.all = this.c.all;this.c.Popup.parentDoc=self;}"></body>\
-                </html>');
-
-            var c = apf;
-            this.popup.document.body.onmousemove = function(){
-                this.c = c
-            }
-        },
-
-        show: function(cacheId, x, y, animate, ref, width, height, callback){
-            if (!this.popup)
-                this.init();
-            var o = this.cache[cacheId];
-            //if(this.last != cacheId)
-            this.popup.document.body.innerHTML = o.content.outerHTML;
-
-            if (animate) {
-                var iVal, steps = 7, i = 0, popup = this.popup;
-                iVal = setInterval(function(){
-                    var value = ++i * ((height || o.height) / steps);
-                    popup.show(x, y, width || o.width, value, ref);
-                    popup.document.body.firstChild.style.marginTop
-                        = (i - steps - 1) * ((height || o.height) / steps);
-                    if (i > steps) {
-                        clearInterval(iVal)
-                        callback(popup.document.body.firstChild);
-                    }
-                }, 10);
-            }
-            else {
-                this.popup.show(x, y, width || o.width, height || o.height, ref);
-            }
-
-            this.last = cacheId;
-        },
-
-        hide: function(){
-            if (this.popup)
-                this.popup.hide();
-        },
-
-        forceHide: function(){
-            if (this.last)
-                apf.lookup(this.last).dispatchEvent("popuphide");
-        },
-
-        destroy: function(){
-            if (!this.popup)
-                return;
-            this.popup.document.body.c = null;
-            this.popup.document.body.onmouseover = null;
-        }
-    };
     
 
     
@@ -44496,20 +38480,6 @@ apf.runNonIe = function (){
             xmlParser = xmlParser.parseFromString(message, "text/xml");
 
             
-            //xmlParser.documentElement.tagName == "parsererror"
-            if (xmlParser.getElementsByTagName("parsererror").length && apf.xmldb
-              && apf.isJson(message)) {
-                try {
-                    xmlParser = apf.json2Xml(message, noError);
-                }
-                catch(e) {
-                    throw new Error(apf.formatErrorString(1051, null,
-                        "JSON to XML conversion error occurred.",
-                        "\nSource Text : " + message.replace(/\t/gi, " ")));
-                }
-            }
-            else
-            
             if (!noError)
                 this.xmlParseError(xmlParser);
         }
@@ -44589,171 +38559,6 @@ apf.runNonIe = function (){
         document.body.focus = function(){};
     
     
-    
-    if (!document.elementFromPoint) {
-        Document.prototype.elementFromPointRemove = function(el){
-            if (!this.RegElements) return;
-
-            this.RegElements.remove(el);
-        };
-        
-        Document.prototype.elementFromPointAdd = function(el){
-            if (!this.RegElements)
-                this.RegElements = [];
-            this.RegElements.push(el);
-        };
-        
-        Document.prototype.elementFromPointReset = function(RegElements){
-            //define globals
-            FoundValue   = [];
-            FoundNode    = null;
-            LastFoundAbs = document.documentElement;
-        };
-        
-        Document.prototype.elementFromPoint = function(x, y){
-            // Optimization, Keeping last found node makes it ignore all lower levels 
-            // when there is no possibility of changing positions and zIndexes
-            /*if(self.FoundNode){
-                var sx = getElementPosX(FoundNode); 
-                var sy = getElementPosY(FoundNode);
-                var ex = sx + FoundNode.offsetWidth; var ey = sy + FoundNode.offsetHeight;
-            }
-            if(!self.FoundNode || !(x > sx && x < ex && y > sy && y < ey))*/
-                document.elementFromPointReset();
-        
-            // Optimization only looking at registered nodes
-            if (this.RegElements) {
-                var calc_z = -1,
-                    i, calc, n, sx, sy, ex, ey, z
-                for (calc_z = -1, calc, i = 0; i < this.RegElements.length; i++) {
-                    n = this.RegElements[i];
-                    if (getStyle(n, "display") == "none") continue;
-        
-                    sx = getElementPosX(n); 
-                    sy = getElementPosY(n);
-                    ex = sx + n.offsetWidth;
-                    ey = sy + n.offsetHeight;
-                    
-                    if (x > sx && x < ex && y > sy && y < ey) {
-                        z = getElementZindex(n);
-                        if (z > calc_z) { //equal z-indexes not supported
-                            calc   = [n, x, y, sx, sy];
-                            calc_z = z;
-                        }
-                    }
-                }
-                
-                if (calc) {
-                    efpi(calc[0], calc[1], calc[2], 0, FoundValue, calc[3], calc[4]);
-                    if (!FoundNode) {
-                        FoundNode    = calc[0];
-                        LastFoundAbs = calc[0];
-                        FoundValue   = [calc_z];
-                    }
-                }
-            }
-            
-            if (!this.RegElements || !this.RegElements.length)
-                efpi(document.body, x, y, 0, [], getElementPosX(document.body),
-                    getElementPosY(document.body));
-                
-            return FoundNode;
-        };
-        
-        function efpi(from, x, y, CurIndex, CurValue, px, py){
-            var StartValue = CurValue,
-                StartIndex = CurIndex,
-            //Loop through childNodes
-                nodes      = from.childNodes,
-                n, i, z, sx, sy, ex, ey, isAbs, isHidden, inSpace;
-            for (n, i = 0; i < from.childNodes.length; i++) {
-                n = from.childNodes[i];
-                if (n.nodeType == 1 && getStyle(n, "display") != "none" && n.offsetParent) {
-                    sx = px + n.offsetLeft - n.offsetParent.scrollLeft;//getElementPosX(n); 
-                    sy = py + n.offsetTop - n.offsetParent.scrollTop;//getElementPosY(n);
-                    ex = sx + n.offsetWidth;
-                    ey = sy + n.offsetHeight;
-                    
-                    //if(Child is position absolute/relative and overflow == "hidden" && !inSpace) continue;
-                    isAbs    = getStyle(n, "position");
-                    isAbs        = (isAbs == "absolute") || (isAbs == "relative");
-                    isHidden = getStyle(n, "overflow") == "hidden";
-                    inSpace  = (x > sx && x < ex && y > sy && y < ey);
-
-                    if (isAbs && isHidden && !inSpace) continue;
-            
-                    CurIndex = StartIndex;
-                    CurValue = StartValue.copy();
-            
-                    //if (Child is position absolute/relative and has zIndex) or overflow == "hidden"
-                    z = parseInt(getStyle(n, "zIndex")) || 0;
-                    if (isAbs && (z || z == 0) || isHidden) {
-                        //if(!is position absolute/relative) zIndex = 0
-                        if (!isAbs) z = 0;
-                        
-                        //if zIndex >= FoundValue[CurIndex] 
-                        if (z >= (FoundValue[CurIndex] || 0)) {
-                            //if zIndex > CurValue[CurIndex];
-                            if (z > (CurValue[CurIndex] || 0)) {
-                                //CurValue = StartValue.copy();
-                                
-                                //set CurValue[CurIndex] = zIndex
-                                CurValue[CurIndex] = z;
-                            }
-                            
-                            CurIndex++;
-                            
-                            //if(inSpace && CurIndex >= FoundValue.length)
-                            if (inSpace && CurIndex >= FoundValue.length) {
-                                //Set FoundNode is currentNode
-                                FoundNode = n;
-                                //Set FoundValue is CurValue
-                                FoundValue = CurValue;//.copy();
-                                
-                                LastFoundAbs = n;
-                            }
-                        }
-                        else
-                            continue; //Ignore this treedepth
-                    }
-                    else if(inSpace && CurIndex >= FoundValue.length){
-                        //else if CurValue[CurIndex] continue; //Ignore this treedepth
-                        //else if(CurValue[CurIndex]) continue;
-                        
-                        //Set FoundNode is currentNode
-                        FoundNode = n;
-                        //Set FoundValue is CurValue
-                        FoundValue = CurValue;//.copy();
-                    }
-                    
-                    //loop through childnodes recursively
-                    efpi(n, x, y, CurIndex, CurValue, isAbs ? sx : px, isAbs ? sy : py)
-                }
-            }
-        }
-        
-        function getElementPosY(myObj){
-            return myObj.offsetTop + parseInt(apf.getStyle(myObj, "borderTopWidth"))
-                + (myObj.offsetParent ? getElementPosY(myObj.offsetParent) : 0);
-        }
-        
-        function getElementPosX(myObj){
-            return myObj.offsetLeft + parseInt(apf.getStyle(myObj, "borderLeftWidth"))
-                + (myObj.offsetParent ? getElementPosX(myObj.offsetParent) : 0);
-        }
-        
-        function getElementZindex(myObj){
-            //This is not quite sufficient and should be changed
-            var z = 0, n, p = myObj;
-            while (p && p.nodeType == 1) {
-                z = Math.max(z, parseInt(getStyle(p, "zIndex")) || -1);
-                p = p.parentNode;
-            }
-            return z;
-        }
-    }
-    
-    
 
     apf.getOpacity = function(oHtml) {
         return apf.getStyle(oHtml, "opacity");
@@ -44793,166 +38598,6 @@ apf.runNonIe = function (){
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-/**
- * Compatibility layer for Opera browsers.
- * @private
- */
-apf.runOpera = function (){
-    if (apf.runNonIe)
-        apf.runNonIe();
-    
-    /* ***************************************************************************
-     XML Serialization
-     ****************************************************************************/
-    //XMLDocument.xml
-    
-    //Node.xml
-    /*Node.prototype.serialize = function(){
-     return (new XMLSerializer()).serializeToString(this);
-     }
-    //Node.xml
-    
-    Node.prototype.serialize        =
-    XMLDocument.prototype.serialize =
-    Element.prototype.serialize     = function(){
-        return (new XMLSerializer()).serializeToString(this);
-    };*/
-    
-    
-    
-    //XMLDocument.selectNodes
-    Document.prototype.selectNodes     = 
-    XMLDocument.prototype.selectNodes  =
-    HTMLDocument.prototype.selectNodes = function(sExpr, contextNode){
-        var oResult = this.evaluate(sExpr, (contextNode ? contextNode : this),
-            this.createNSResolver(this.documentElement),
-            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-        var nodeList = new Array(oResult.snapshotLength);
-        nodeList.expr = sExpr;
-        for (var i = 0; i < nodeList.length; i++) 
-            nodeList[i] = oResult.snapshotItem(i);
-        return nodeList;
-    };
-    
-    //Element.selectNodes
-    Text.prototype.selectNodes =
-    Attr.prototype.selectNodes =
-    Element.prototype.selectNodes = function(sExpr){
-        var doc = this.ownerDocument;
-        if (!doc.selectSingleNode) {
-            doc.selectSingleNode = HTMLDocument.prototype.selectSingleNode;
-            doc.selectNodes = HTMLDocument.prototype.selectNodes;
-        }
-        
-        if (doc.selectNodes) 
-            return doc.selectNodes(sExpr, this);
-        else {
-            throw new Error(apf.formatErrorString(1047, null, "XPath Selection", 
-                "Method selectNodes is only supported by XML Nodes"));
-        }
-    };
-    
-    //XMLDocument.selectSingleNode
-    Document.prototype.selectSingleNode     =
-    XMLDocument.prototype.selectSingleNode  =
-    HTMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
-        var nodeList = this.selectNodes("(" + sExpr + ")[1]", contextNode ? contextNode : null);
-        return nodeList.length > 0 ? nodeList[0] : null;
-    };
-    
-    //Element.selectSingleNode
-    Text.prototype.selectSingleNode =
-    Attr.prototype.selectSingleNode =
-    Element.prototype.selectSingleNode = function(sExpr){
-        var doc = this.ownerDocument;
-        if (!doc.selectSingleNode) {
-            doc.selectSingleNode = HTMLDocument.prototype.selectSingleNode;
-            doc.selectNodes = HTMLDocument.prototype.selectNodes;
-        }
-        
-        if (doc.selectSingleNode) {
-            return doc.selectSingleNode(sExpr, this);
-        }
-        else {
-            throw new Error(apf.formatErrorString(1048, null, "XPath Selection", 
-                "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
-        }
-    };
-    
-    
-    
-    var serializer = new XMLSerializer();
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
-        var node, frag, i, l;
-        if (nodeList) {
-            frag = document.createDocumentFragment();
-            i    = 0;
-            l    = nodeList.length;
-	        for (; i < l; i++) {
-	            if (!(node = nodeList[i])) continue;
-	            frag.appendChild(node);
-	        }
-        }
-        
-        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
-            ? "beforebegin"
-            : "beforeend", s || apf.html_entity_decode(serializer.serializeToString(frag)).replace(/<([^>]+)\/>/g, "<$1></$1>"));
-    };
-
-    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
-        if (htmlNode.nodeType != 11 && !htmlNode.style)
-            return htmlNode.appendChild(xmlNode);
-        
-        if (!s) {
-            s = apf.html_entity_decode(xmlNode.serialize 
-                ? xmlNode.serialize(true)
-                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
-                    ? xmlNode.nodeValue
-                    : serializer.serializeToString(xmlNode)));
-        }
-        
-        (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
-            ? "beforebegin"
-            : "beforeend", s.replace(/<([^>]+)\/>/g, "<$1></$1>"));
-
-        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
-    };
-    
-    apf.getHtmlLeft = function(oHtml){
-        return (oHtml.offsetLeft
-            - (parseInt(apf.getStyle(oHtml.parentNode, "borderLeftWidth")) || 0));
-    };
-
-    apf.getHtmlRight = function(oHtml){
-        var p;
-        return (((p = oHtml.offsetParent).tagName == "BODY" 
-          ? apf.getWindowWidth()
-          : p.offsetWidth)
-            - oHtml.offsetLeft - oHtml.offsetWidth
-            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
-    };
-
-    apf.getHtmlTop = function(oHtml){
-        return (oHtml.offsetTop
-            - (parseInt(apf.getStyle(oHtml.offsetParent, "borderTopWidth")) || 0));
-    };
-
-    apf.getHtmlBottom = function(oHtml){
-        var p;
-        return (((p = oHtml.offsetParent).tagName == "BODY" 
-          ? apf.getWindowHeight()
-          : p.offsetHeight)
-            - oHtml.offsetTop - oHtml.offsetHeight
-            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
-    };
-
-    apf.getBorderOffset = function(oHtml){
-        return [parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0,
-                parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0]
-    };
-};
 
 
 
@@ -46283,217 +39928,8 @@ if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
 
 
 
-/**
- * Object returning an implementation of a JavaScript parser.
- *
- * @constructor
- * @parser
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.9
- */
-apf.JsParser = new (function(){
-    var tok_lut = {
-            '"': 4, '\'': 4, '[': 2, ']': 3, '{': 2, '}': 3, '(': 2, ')': 3,
-            '\n': 6, '\r\n': 6, '//': 7, '/*': 7, '*/': 7, '/':8
-        },
-        tok_close = {'}': '{', ']': '[', ')': '('},
-        tokenizerx    = /(\r?[\n]|\/[\/*]|\*\/|["'{(\[\])}\]\/])|([ \t]+)|([\w\$._])+|(\\?[\w._?,:;!=+-\\\/^&|*"'[\]{}()%$#@~`<>])/g;    
-    
-    function errToString(){
-        return this.t + '[' + this.pos + ']';
-    }
-    
-    function posToString(){
-        return 'Ln : ' + this.line + ', Col : ' + this.col;
-    }
-    
-    function argToString(){
-        return this.type + ' ' + this.name
-            + (this.def !== undefined ? '=' + this.def : '');
-    }
-    
-    function markerToString(){
-        return 'Marker:' + this.type + '  [' + this.pos + '] '+ (this.args ? '('
-            + this.args.join(',') + ')' : '');
-    }
-    
-    function funcToString(){
-        return this.type + ' ' + this.ret + ' ' + this.name + (this.args ? '('
-            + this.args.join(',') + ')' : '') + '  [' + this.pos + ']'
-            + (this.doc ? (' Doc: ' + this.doc) : '');
-    }
-    
-    function concat(t, b, e, m){
-        for (var s = [], sl = 0, i = b; i < e; i += 3) {
-            s[sl++] = (t[i] == 2)
-                ? concat(t[i + 2], 0, t[i + 2].length)
-                : t[i + 2];
-            if(m && i<e-3) s[sl++] = m;    
-        }
-        return s.join('');
-    }    
-    
-    function formatPos(l,pos){
-        return JsParser.line(l, pos).toString();
-    }
 
-    var pre_regex = {
-        'throw': 1, 'return': 1, '(': 1, '[': 1, ',': 1, '=': 1, ":": 1
-    }        
-    
-    this.parse = function(str){
-        var t = [],     // parse tree
-            b = 0,      // block output
-            stack = [], // tree stack
-            type = 0,   // token type
-            mode_tok = 0, // parsemode, contains char of block we parse
-            n,          // tempvar
-            lines = [], // array of linepositions
-            err = [];   // tokenize array
-        var last_tok = null;
-        str.replace(tokenizerx, function(tok, rx_lut, rx_ws, rx_word, rx_misc, pos){
-            type = rx_lut ? tok_lut[rx_lut] : (rx_ws ? 9 : (rx_word ? 5 : 0)); //5 = word
-            //logw( type+" "+pos+"\n");
-            if (!mode_tok) {
-                switch (type) {
-                    case 8: // regex
-                        // previous is: throw return ( , [
-                        if (pre_regex[last_tok] || pre_regex[t[t.length-1]]) {
-                            if (t[t.length-3] == "[") {
-                                mode_tok = "objRgx";
-                                var openTags = 1;
-                            } else
-                                mode_tok = tok;
-                            
-                            t[n = t.length] = type,
-                            t[++n] = pos;
-                            
-                            b = [tok];
-                        } else {
-                            t[n = t.length] = 0;
-                            t[++n] = pos;
-                            t[++n] = tok; 
-                        }
-                        //debugger;
-                        break;                
-                    case 4: //String 
-                    case 7: //Comment
-                        t[n=t.length] = type,
-                        t[++n] = pos;
-                        mode_tok = tok;
-                        b = [tok];
-                        break;
-                    case 2: //[ ( {
-                        t[n = t.length] = type;
-                        t[++n] = pos;
-                        stack.push(t);
-                        t = t[++n] = [0, pos, tok];
-                        break;
-                    case 3: // } ) ]
-                        if (t[2] != tok_close[tok])  {                            
-                            err.push({t: "Error closing " + tok + " (opened with: " + t[2] + ")", pos: pos, toString: errToString});                                                                                                                            
-                        }
-                        else {
-                            t[n = t.length] = type;
-                            t[++n] = pos;
-                            t[++n] = tok;
-                            t      = stack.pop();
-                        }
-                        break;
-                    case 6: // \n
-                        lines[lines.length] = pos;
-                        break;
-                    case 9: // white space
-                        break;
-                    default: // word
-                        t[n = t.length] = type;
-                        t[++n] = pos;
-                        t[++n] = tok;
-                        break;
-                }
-            }
-            else { //In comment or string mode
-                b[b.length] = tok;
-                if (mode_tok == "objRgx") {
-                    if (tok == "[") { 
-                        openTags++;
-                    } else if (tok == "]") {
-                        openTags--;
-                    }
-                    if (openTags == 0) {
-                        mode_tok = 0;
-                        t[++n] = b.join('');
-                    }
-                    //debugger;
-                }
-                switch (type) {
-                    case 4: //String
-                        if (mode_tok == tok){
-                            mode_tok = 0;
-                            t[++n] = b.join('');
-                        }
-                        break;
-                    case 7: //Comment
-                        if (tok == '*/' && mode_tok == '/*') {
-                            mode_tok = 0;
-                            t[++n] = b.join('');
-                        } else if (tok == '*/' && mode_tok == '/') {
-                            mode_tok = 0;
-                            t[++n] = b.join('');
-                        }
-                        break;
-                    case 8: // regex
-                        if(mode_tok == '/'){
-                            mode_tok = 0;
-                            t[++n] = b.join('');
-                        }
-                        break;
-                    case 6: //New line
-                        lines[lines.length] = pos;
-                        if (mode_tok == '//'){
-                            mode_tok = 0;
-                            b.pop();
-                            t[++n] = b.join('');
-                        }
-                        break;
-                }
-            }
-            if(type<9)last_tok = tok;
-        });
-        while (stack.length)
-            err.push({t: "Not closed: " + (n = t[2], t = stack.pop(), n), pos: formatPos(lines,t[t.length - 2]), toString: errToString});
-        if (mode_tok)
-            err.push({t: "Blockmode not closed of " + b[0], pos: formatPos(lines,t[t.length - 1]), toString: errToString});
-                        
-        return {tree: t, lines: lines, err: err};
-    };
-    
-    this.dump = function(s, t, level){
-        for (var i = 0; i < t.length; i += 3) {
-            var type = t[i];
-            if (type ==2)
-                this.dump(s, t[i + 2], level + 1);
-            else 
-                s.push(Array(level).join('----'), type, " ", t[i + 2], "\n");
-        }
-    };
-    
-    this.line = function(lines,pos){
-        for (var i = 0, j = lines.length; i < j && lines[i] < pos; i++);
-        return {line: i+1, col: pos - lines[i - 1], toString: posToString};
-    };
-    
-    this.scan = function(t, tag_prefix, classes, err, in_struct, scope, outer, base_class){
-        
-    }    
-})();
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(113263)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(113264)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48753,7 +42189,7 @@ apf.lm_exec = new (function(){
                     ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
                     : "")) + '"' 
               + (options
-                ? ' options="' + apf.serialize(options).escapeHTML()
+                ? ' options="' + JSON.stringify(options).escapeHTML()
                                   .replace(/"/g, "&quot;")
                                   .replace(/([\[\{\}\]])/g, "\\$1") + '"'
                     + (options.editor ? ' editor="' + options.editor + '"' : "")
@@ -50212,7 +43648,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36637)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36828)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50370,35 +43806,6 @@ apf.actiontracker = function(struct, tagName){
             this.parentNode.$at = this;
     });*/
 
-    
-    this.item = function(index){
-        if (index < this.$undostack.length)
-            return this.$undostack[index];
-
-        return this.$redostack[index - this.$undostack.length];
-    }
-
-    this.add = function(data, title){
-        throw new Error("Not implemented yet");
-    }
-
-    this.remove = function(index){
-        throw new Error("Not implemented yet");
-    }
-
-    this.clearUndo = function(){
-        this.setProperty("undolength", this.$undostack.length = 0);
-        
-
-        this.dispatchEvent("afterchange", {action: "clear-undo"});
-    }
-
-    this.clearRedo = function(){
-        this.setProperty("redolength", this.$redostack.length = 0);
-        
-
-        this.dispatchEvent("afterchange", {action: "clear-redo"});
-    }
     
 
     /**
@@ -50773,7 +44180,9 @@ apf.actiontracker = function(struct, tagName){
 
         var idx, undoObj, qItem;
         // Add the item to the queue
-        if (isGroup) { //@todo currently no offline support for grouped actions
+        if (isGroup) { 
+            //@todo currently no offline support for grouped actions
+            //@todo Why not just pop()?
             var undoObj, qItem = this.$execstack.shift();
             for (var i = 0; i < UndoObj.length; i++) {
                 undoObj = UndoObj[i];
@@ -50786,6 +44195,9 @@ apf.actiontracker = function(struct, tagName){
             }
             if (qItem)
                 this.$execstack.unshift(qItem);
+
+            if (!this.$execstack[0].undoObj.state)
+                this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this);
 
             return;
         }
@@ -53514,16 +46926,11 @@ apf.ruleList.prototype = {
 
                 s.push(rule.match, rule.value);
                 
-                if (!hasAml && rule.value)
-                    hasAml = rule.hasaml || rule.value.indexOf("<a:") > -1;
-                
             }
             
             //always give a function, no async calls (could also just error on execution)
             c[name] = apf.lm.compileMatch(s); 
             
-            
-            c[name].hasAml = hasAml;
             
             
             return c;
@@ -53544,16 +46951,11 @@ apf.ruleList.prototype = {
 
                 s.push(rule.match, rule.value);
                 
-                if (!hasAml && rule.value)
-                    hasAml = rule.hasaml || rule.value.indexOf("<a:") > -1;
-                
             }
             
             //always give a function, no async calls (could also just error on execution)
             c[name] = apf.lm.compileMatch(s); 
             
-            
-            c[name].hasAml = hasAml;
             
         }
 
@@ -54566,21 +47968,6 @@ apf.button  = function(struct, tagName){
     
 
     
-    //@todo solve how this works with XForms
-    this.addEventListener("click", function(e){
-        var action = this.action;
-
-        //#-ifdef __WITH_HTML5
-        if (!action)
-            action = this.localName;
-        //#-endif
-
-        var _self = this;
-        $setTimeout(function(){
-            (apf.button.actions[action] || apf.K).call(_self);
-        });
-    });
-    
 
     
 }).call(apf.button.prototype = new apf.BaseButton());
@@ -54595,277 +47982,6 @@ apf.aml.setElement("trigger", apf.trigger);
 apf.aml.setElement("reset",   apf.reset);
 apf.aml.setElement("button",  apf.button);
 
-
-apf.submit.action   =
-apf.trigger.actions =
-apf.reset.actions   =
-apf.button.actions  = {
-    
-    "undo" : function(action){
-        var tracker;
-        if (this.target && self[this.target]) {
-            tracker = self[this.target].localName == "actiontracker"
-                ? self[this.target]
-                : self[this.target].getActionTracker();
-        }
-        else {
-            var at, node = this;
-            while(node.parentNode)
-                at = (node = node.parentNode).$at;
-        }
-
-        (tracker || apf.window.$at)[action || "undo"]();
-    },
-
-    "redo" : function(){
-        apf.button.actions.undo.call(this, "redo");
-    },
-    
-
-    
-    "remove" : function(){
-        if (this.target && self[this.target])
-            self[this.target].remove()
-        
-        else
-            apf.console.warn("Target to remove wasn't found or specified:'"
-                             + this.target + "'");
-        
-    },
-
-    "add" : function(){
-        if (this.target && self[this.target])
-            self[this.target].add()
-        
-        else
-            apf.console.warn("Target to add wasn't found or specified:'"
-                             + this.target + "'");
-        
-    },
-
-    "rename" : function(){
-        if (this.target && self[this.target])
-            self[this.target].startRename()
-        
-        else
-            apf.console.warn("Target to rename wasn't found or specified:'"
-                             + this.target + "'");
-        
-    },
-    
-
-    
-    "login" : function(){
-        var parent = this.target && self[this.target]
-            ? self[this.target]
-            : this.parentNode;
-
-        var vg = parent.$validgroup || new apf.ValidationGroup();
-        if (!vg.childNodes.length)
-            vg.childNodes = parent.childNodes.slice();
-
-        var vars = {};
-        function loopChildren(nodes){
-            for (var node, i = 0, l = nodes.length; i < l; i++) {
-                node = nodes[i];
-
-                if (node.hasFeature(apf.__VALIDATION__)
-                  && !node.$validgroup && !node.form) {
-                    node.setProperty("validgroup", vg);
-                }
-
-                if (node.type)
-                    vars[node.type] = node.getValue();
-
-                if (vars.username && vars.password)
-                    return;
-
-                if (node.childNodes.length)
-                    loopChildren(node.childNodes);
-            }
-        }
-        loopChildren(parent.childNodes);
-
-        if (!vg.isValid())
-            return;
-
-        if (!vars.username || !vars.password) {
-            
-            throw new Error(apf.formatErrorString(0, this,
-                "Clicking the login button",
-                "Could not find the username or password box"));
-            
-
-            return;
-        }
-
-        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf,"auth")[0];
-        if (!auth)
-            return;
-       
-        auth.logIn(vars.username, vars.password);
-        //apf.auth.login(vars.username, vars.password);
-    },
-
-    "logout" : function(){
-        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
-        if (!auth)
-            return;
-
-        auth.logOut();
-    },
-    
-
-    
-    "submit" : function(doReset){
-        var vg, model;
-
-        var parent = this.target && self[this.target]
-            ? self[this.target]
-            : this.parentNode;
-
-        if (parent.$isModel)
-            model = parent;
-        else {
-            if (!parent.$validgroup) {
-                parent.$validgroup = parent.validgroup
-                    ? self[parent.validgroup]
-                    : new apf.ValidationGroup();
-            }
-
-            vg = parent.$validgroup;
-            if (!vg.childNodes.length)
-                vg.childNodes = parent.childNodes.slice();
-
-            function loopChildren(nodes){
-                for (var node, i = 0, l = nodes.length; i < l; i++) {
-                    node = nodes[i];
-
-                    if (node.getModel) {
-                        model = node.getModel();
-                        if (model)
-                            return false;
-                    }
-
-                    if (node.childNodes.length)
-                        if (loopChildren(node.childNodes) === false)
-                            return false;
-                }
-            }
-            loopChildren(parent.childNodes);
-
-            if (!model) {
-                model = apf.globalModel;
-                if (!model) {
-                    
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Finding a model to submit",
-                        "Could not find a model to submit."));
-                    
-    
-                    return;
-                }
-            }
-        }
-
-        if (doReset) {
-            model.reset();
-            return;
-        }
-
-        if (vg && !vg.isValid())
-            return;
-
-        model.submit();
-    },
-
-    "reset" : function(){
-        apf.button.actions["submit"].call(this, true);
-    },
-    
-
-    
-    "ok" : function(){
-        var node;
-
-        if (this.target) {
-            node = self[this.target];
-        }
-        else {
-            var node = this.parentNode;
-            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
-                node = node.parentNode;
-            }
-
-            if (node && !node.hasFeature(apf.__TRANSACTION__))
-                return;
-        }
-
-        if (node.commit() && node.close) 
-            node.close();
-    },
-
-    "cancel" : function(){
-        var node;
-
-        if (this.target) {
-            node = self[this.target];
-        }
-        else {
-            var node = this.parentNode;
-            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
-                node = node.parentNode;
-            }
-
-            if (node && !node.hasFeature(apf.__TRANSACTION__))
-                return;
-        }
-
-        node.rollback();
-        if (node.close)
-            node.close();
-    },
-
-    "apply" : function(){
-        var node;
-
-        if (this.target) {
-            node = self[this.target];
-        }
-        else {
-            var node = this.parentNode;
-            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
-                node = node.parentNode;
-            }
-
-            if (node && !node.hasFeature(apf.__TRANSACTION__))
-                return;
-        }
-
-        if (node.autoshow)
-            node.autoshow = -1;
-        if (node.commit(true))
-            node.begin("update");
-    },
-    
-
-    "close" : function(){
-        var parent = this.target && self[this.target]
-            ? self[this.target]
-            : this.parentNode;
-
-        while(parent && !parent.close)
-            parent = parent.parentNode;
-
-        if (parent && parent.close)
-            parent.close();
-        
-        else
-            apf.console.warn("Target to close wasn't found or specified:'"
-                             + this.target + "'");
-        
-    }
-};
 
 
 
@@ -55237,17 +48353,6 @@ apf.checkbox = function(struct, tagName){
     })
     
     
-    
-    this.$getActiveElements = function() {
-        // init $activeElements
-        if (!this.$activeElements) {
-            this.$activeElements = {
-                $input       : this.$input
-            }
-        }
-
-        return this.$activeElements;
-    }
     
 }).call(apf.checkbox.prototype = new apf.BaseButton());
 
@@ -56314,37 +49419,6 @@ apf.datagrid = function(struct, tagName){
 
      
     
-    /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
-     */
-    this.$mode = 0;
-    this.$propHandlers["mode"] = function(value){
-        if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
-            
-            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
-            
-            this.multicheck = value == "check"; //radio is single
-            this.$mode = this.multicheck ? 1 : 2;
-        }
-        else {
-            //@todo undo actionRules setting
-            this.removeEventListener("afterrename", $afterRenameMode);
-            //@todo unimplement??
-            this.$mode = 0;
-        }
-    };
-    
-    //@todo apf3.0 retest this completely
-    function $afterRenameMode(){
-    }
-    
-    
-    
     this.$propHandlers["options"] = function(value){
         for (var i = 0, l = this.$headings.length; i < l; i++) {
             this.$headings[i].setAttribute("options", value);
@@ -56834,50 +49908,13 @@ apf.datagrid = function(struct, tagName){
             }
             else {
                 
-                cellType = h.check ? "checkcell" : "cell";
+                cellType = "cell";
                 
                 
                 this.$getNewContext(cellType);
                 cell = this.$getLayoutNode(cellType);
             }
             
-            
-            if (this.$mode && h.check) {
-                var elCheck = this.$getLayoutNode(cellType, "check");
-                if (elCheck) {
-                    elCheck.setAttribute("onmousedown",
-                        "var o = apf.lookup(" + this.$uniqueId + ");\
-                        o.checkToggle(this, true);\o.$skipSelect = true;");
-    
-                    if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
-                        this.$checkedList.push(xmlNode);
-                        this.$setStyleClass(oRow, "checked");
-                    }
-                    else if (this.isChecked(xmlNode))
-                        this.$setStyleClass(oRow, "checked");
-                }
-                else {
-                    
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Could not find check attribute",
-                        'Maybe the attribute check is missing from your skin file:\
-                            <a:item\
-                              class        = "."\
-                              caption      = "label/u/text()"\
-                              icon         = "label"\
-                              openclose    = "span"\
-                              select       = "label"\
-                              check        = "label/b"\
-                              container    = "following-sibling::blockquote"\
-                            >\
-                                <div><span> </span><label><b> </b><u>-</u></label></div>\
-                                <blockquote> </blockquote>\
-                            </a:item>\
-                        '));
-                    
-                    return false;
-                }
-            }
             
             
             apf.setStyleClass(cell, h.$className);
@@ -56900,22 +49937,8 @@ apf.datagrid = function(struct, tagName){
                     h.$compile("value", {nostring: true});
                     
                     
-                    if (h.value)
-                        h.cvalue2.hasAml = h.value.indexOf("<a:") > -1;
-                    
                 }
                 
-                
-                if (h.cvalue2.hasAml){
-                    var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
-                    
-                    var htmlEl = this.$getLayoutNode(cellType, 
-                        "caption", oRow.appendChild(cell));
-                    htmlEl.setAttribute("id", "placeholder_" + this.$uniqueId 
-                        + "_" + ((q.column || (q.column = [])).push(xmlNode) - 1));
-                    apf.setNodeValue(htmlEl, '&nbsp');
-                }
-                else
                 
                 {
                     apf.setNodeValue(this.$getLayoutNode(cellType, 
@@ -56985,8 +50008,6 @@ apf.datagrid = function(struct, tagName){
 
             if (h.tree) {
                 
-                //@todo
-                
                 
                 /*var oc = this.$getLayoutNode("treecell", "openclose", cell);
                 oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
@@ -57000,13 +50021,8 @@ apf.datagrid = function(struct, tagName){
                     h.$compile("value", {nostring: true});
                     
                     
-                    if (h.value)
-                        h.cvalue2.hasAml = h.value.indexOf("<a:") > -1;
-                    
                 }
 
-                
-                if (!h.cvalue2.hasAml)
                 
                     cell.innerHTML = h.cvalue2(xmlNode) || "&nbsp";
             }
@@ -57491,38 +50507,6 @@ apf.aml.setElement("contents",    apf.BindingRule);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-/**
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.4
- */
-apf.defaults = function(struct, tagName){
-    this.$init(tagName || "services", apf.NODE_HIDDEN, struct);
-};
-
-(function(){
-    this.$parsePrio = "002";
-    
-    this.$propHandlers["for"] = function(value){
-        if (this.$lastFor)
-            apf.nameserver.remove("defaults_" + this.$lastFor, this);
-
-        apf.nameserver.add("defaults_" + value, this);
-        this.$lastFor = value;
-    }
-    
-    //@todo apf3.x how should this work?
-    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
-        apf.nameserver.remove("defaults_" + this.$lastFor, this);
-    });
-    
-}).call(apf.defaults.prototype = new apf.AmlElement());
-
-apf.aml.setElement("defaults", apf.defaults);
 
 
 
@@ -58059,17 +51043,6 @@ apf.dropdown = function(struct, tagName){
     };
 
     
-    this.$getActiveElements = function() {
-        // init $activeElements
-        if (!this.$activeElements) {
-            this.$activeElements = {
-                $button       : this.$button
-            }
-        }
-
-        return this.$activeElements;
-    }
-    
 }).call(apf.dropdown.prototype = new apf.BaseList());
 
 apf.config.$inheritProperties["initial-message"] = 1;
@@ -58202,8 +51175,6 @@ apf.errorbox = function(struct, tagName){
 
         var refHtml = 
             
-            host.validityState && host.validityState.$errorHtml ||
-            
             host.$ext;
 
         document.body.appendChild(this.$ext);
@@ -58267,9 +51238,6 @@ apf.errorbox = function(struct, tagName){
             (e || event).cancelBubble = true;
             
             
-            if (apf.hasFocusBug)
-                apf.window.$focusfix();
-            
         }
 
         apf.popup.setContent(this.$uniqueId, this.$ext, "", null, null);
@@ -58316,43 +51284,6 @@ apf.aml.setElement("errorbox", apf.errorbox);
  *
  */
 
-
-
-/**
- * Displays a popup element with a message with optionally an icon at the
- * position specified by the position attribute. After the timeout has passed
- * the popup will dissapear automatically. When the mouse hovers over the popup
- * it doesn't dissapear.
- *
- * @event click Fires when the user clicks on the representation of this event.
- */
-apf.event = function(struct, tagName){
-    this.$init(tagName || "event", apf.NODE_HIDDEN, struct);
-};
-
-(function() {
-    this.$hasInitedWhen = false;
-
-    this.$booleanProperties["repeat"] = true;
-    this.$supportedProperties.push("when", "message", "icon", "repeat");
-
-    this.$propHandlers["when"] = function(value) {
-        if (this.$hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
-            var _self = this;
-            $setTimeout(function() {
-                _self.parentNode.popup(_self.message, _self.icon, _self);
-            });
-        }
-        this.$hasInitedWhen = true;
-
-        if (this.repeat)
-            delete this.when;
-    };
-
-    this.$loadAml = function(x) {};
-}).call(apf.event.prototype = new apf.AmlElement());
-
-apf.aml.setElement("event", apf.event);
 
 
 /*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
@@ -58418,135 +51349,6 @@ apf.aml.setElement("filler", apf.filler);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-/**
- * Element displaying the contents of a .swf (adobe flash) file.
- *
- * @constructor
- * @define flashplayer
- * @allowchild {smartbinding}
- * @addnode elements
- *
- * @inherits apf.BaseSimple
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.9
- *
- * @binding value  Determines the way the value for the element is retrieved 
- * from the bound data.
- * Example:
- * Sets the flash source text based on data loaded into this component.
- * <code>
- *  <a:flashplayer value="[@src]">
- *      <a:model>
- *          <data src="flash.swf" />
- *      </a:model>
- *  </a:flashplayer>
- * </code>
- */
-apf.flashplayer = function(struct, tagName){
-    this.$init(tagName || "flashplayer", apf.NODE_VISIBLE, struct);
-};
-
-(function(){
-    this.implement(
-        
-        apf.DataAction,
-        
-        apf.StandardBinding
-    );
-    
-    /**** Public methods ****/
-    
-    
-    
-    /**
-     * @ref global#setValue
-     */
-    this.setSrc = function(value){
-        this.setProperty("src", value, false, true);
-    };
-    
-    
-    
-    /**** Properties and attributes ****/
-    
-    this.$supportedProperties.push("value", "allowfullscreen", "flashvars");
-    this.$propHandlers["src"] = function(value){
-        //this.$ext.getElementsByTagName("param")[2].setAttribute("value", value);
-        this.$ext.getElementsByTagName("object")[0].setAttribute("data", value);
-//        this.$ext.getElementsByTagName("embed")[0].setAttribute("src", value);
-    };
-    this.$propHandlers["allowfullscreen"] = function(value){
-        this.$ext.getElementsByTagName("param")[1].setAttribute("value", value);
-//        this.$ext.getElementsByTagName("embed")[0].setAttribute("allowFullScreen", value);
-    }
-    this.$propHandlers["flashvars"] = function(value){
-        this.$ext.getElementsByTagName("param")[3].setAttribute("value", value);
-//        this.$ext.getElementsByTagName("embed")[0].setAttribute("flashvars", value);
-    }
-    this.$propHandlers["bgcolor"] = function(value){
-        this.$ext.getElementsByTagName("param")[4].setAttribute("value", value);
-//        this.$ext.getElementsByTagName("embed")[0].setAttribute("bgcolor", value);
-    }
-    this.$propHandlers["wmode"] = function(value){
-        this.$ext.getElementsByTagName("param")[5].setAttribute("value", value);
-//        this.$ext.getElementsByTagName("embed")[0].setAttribute("wmode", value);
-    }
-    
-    /**** Init ****/
-    
-    this.$draw = function(){
-        //Build Main Skin
-        this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
-        if (this.getAttribute("style"))
-            this.$ext.setAttribute("style", this.getAttribute("style"));
-        this.$ext.onclick = function(){this.host.dispatchEvent("click");}
-        
-        var src = this.getAttribute("src") || "";
-        this.$ext.insertAdjacentHTML("beforeend",
-            '<object \
-              width="100%" \
-              height="100%" \
-              data="' + src + '" \
-              type="application/x-shockwave-flash">\
-                <param name="allowfullscreen" value="true">\
-                <param name="allowscriptaccess" value="always">\
-                <param name="quality" value="high">\
-                <param name="flashvars" value="">\
-                <param name="bgcolor" value="#000000">\
-                <param name="cachebusting" value="false">\
-            </object>')
-            /*                <param name="allowScriptAccess" value="always" />\
-                <param name="allowFullScreen" value="false" />\
-                <param name="movie" value="' + src + '" />\
-                <param name="FlashVars" value="false" />\
-                <param name="bgcolor" value="#ffffff" />\
-                <param name="wmode" value="high" />\
-                <param name="play" value="true" />\
-                <param name="menu" value="false" />\
-                <param name="quality" value="high" />\
-'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" \
-              codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" \
-              width="100%" \
-              height="100%" \
-              data="' + src + '" \
-              type="application/x-shockwave-flash" \
-              align="middle">\
-              <embed src="' + src + '" play="true" menu="false" \
-                  quality="high" bgcolor="#ffffff" width="100%" \
-                  height="100%" align="middle" allowScriptAccess="always" \
-                  allowFullScreen="false" type="application/x-shockwave-flash" \
-                  pluginspage="http://www.macromedia.com/go/getflashplayer" />\*/
-    };
-    
-    this.$loadAml = function(x){
-    };
-}).call(apf.flashplayer.prototype = new apf.GuiElement());
-
-apf.aml.setElement("flashplayer", apf.flashplayer);
 
 
 
@@ -58739,17 +51541,6 @@ apf.frame    = function(struct, tagName){
     };
     
         
-    this.$getActiveElements = function() {
-        // init $activeElements
-        if (!this.$activeElements) {
-            this.$activeElements = {
-                oCaption       : this.oCaption
-            }
-        }
-
-        return this.$activeElements;
-    }
-    
 }).call(apf.frame.prototype = new apf.Presentation());
 
 apf.panel.prototype    =
@@ -58812,7 +51603,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(41507)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(41632)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58873,6 +51664,9 @@ apf.vbox = function(struct, tagName){
 };
 
 (function(){
+    this.minwidth    = 0;
+    this.minheight   = 0;
+    
     /**** Properties and Attributes ****/
 
     this.$focussable = false;
@@ -59009,7 +51803,7 @@ apf.vbox = function(struct, tagName){
                         ? (isInFixed ? "1px" : "auto")
                         : (apf.isWebkit && input[node.$ext.tagName] 
                             ? "100%" 
-                            : (apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
+                            : (false && apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
                                 ? "0px"
                                 : "auto"));//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
@@ -59525,7 +52319,8 @@ apf.vbox = function(struct, tagName){
             return;
         }
         
-        if (e.currentTarget.nodeType != 1)
+        if (e.currentTarget.nodeType != 1 
+          || e.currentTarget.nodeFunc != apf.NODE_VISIBLE)
             return;
 
         if (e.relatedNode == this && !e.$isMoveWithinParent) {
@@ -60073,7 +52868,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/item.js)SIZE(23923)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/item.js)SIZE(24653)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60150,7 +52945,7 @@ apf.item  = function(struct, tagName){
 
     this.$supportedProperties.push("submenu", "value", "match", "group", "icon",
                                    "checked", "selected", "disabled", "caption", 
-                                   "type");
+                                   "type", "values");
 
     /**
      * @attribute {String} [submenu] the id of the menu that is shown
@@ -60352,17 +53147,28 @@ apf.item  = function(struct, tagName){
         apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
     }
     
-    this.$values = [1, 0];
     this.$propHandlers["values"] = function(value){
-        this.$values = value && value.split("|");
-    }
+        this.$values = typeof value == "string"
+            ? value.split("\|")
+            : (value || [1, 0]);
+
+        this.$propHandlers["value"].call(this, value);
+    };
     
     this.$propHandlers["value"] = function(value){
         if (this.type != "check")
             return;
         
-        this.setProperty("checked", this.$values.indexOf(value) == 0);
-    }
+        value = (typeof value == "string" ? value.trim() : value);
+        
+        if (this.$values) {
+            this.checked = (typeof value != "undefined" && value !== null
+                && value.toString() == this.$values[0].toString());
+        }
+        else {
+            this.checked = apf.isTrue(value);
+        }
+    };
     
     /**
      * @attribute {Boolean} checked whether the item is checked.
@@ -60376,8 +53182,15 @@ apf.item  = function(struct, tagName){
         else
             apf.setStyleClass(this.$ext, "", ["checked"]);
         
-        if (this.$values && this.$values[value ? 0 : 1] != this.value)
-            return this.setProperty("value", this.$values[value ? 0 : 1]);
+        if (!this.$values) {
+            if (this.getAttribute("values"))
+                this.$propHandlers["values"].call(this, this.getAttribute("values"));
+            //else
+                //this.$values = [true, false];
+        }
+        
+        if(this.$values && this.$values[value ? 0 : 1] != this.value)
+            this.setProperty("value", this.$values ? this.$values[value ? 0 : 1] : true);
     }
     
     this.select = function(){
@@ -60385,10 +53198,14 @@ apf.item  = function(struct, tagName){
     }
     
     this.check = function(){
-        this.setProperty("checked", true);
+        this.setProperty("value", this.$values
+            ? this.$values[0]
+            : true);
     }
     this.uncheck = function(){
-        this.setProperty("checked", false);
+        this.setProperty("value", this.$values
+            ? this.$values[1]
+            : false);
     }
     
     this.$check = function(){
@@ -62469,107 +55286,6 @@ apf.AmlWindow = function(struct, tagName){
     
     
     
-    
-    this.slideIn = function(sFrom, bSticky) {
-        if (!sFrom)
-            sFrom = "bottom";
-        var _center = this.center;
-        this.center = false;
-        this.setProperty("visible", true);
-        this.center = _center;
-        
-        var iFrom  = 0,
-            iTo    = 0,
-            innerW = (apf.isIE
-                ? this.$ext.offsetParent.offsetWidth
-                : window.innerWidth),
-            innerH = (apf.isIE
-                ? this.$ext.offsetParent.offsetHeight
-                : window.innerHeight),
-            cX     = Math.max(0, ((innerW - this.$ext.offsetWidth)  / 2)),
-            cY     = Math.max(0, ((innerH - this.$ext.offsetHeight) / 3)),
-            sType  = "top",
-            pad    = 10;
-
-        switch(sFrom) {
-            case "top":
-                iFrom = -(this.$ext.offsetHeight) - pad;
-                iTo   = bSticky ? 0 : cY;
-                break;
-            case "left":
-                iFrom = -(this.$ext.offsetWidth) - pad;
-                iTo   = bSticky ? 0 : cX;
-                sType = "left";
-                break;
-            case "bottom":
-                iFrom = innerH + this.$ext.offsetHeight + pad;
-                iTo   = bSticky ? innerH - this.$ext.offsetHeight : cY;
-                break;
-            case "right":
-                iFrom = innerW + this.$ext.offsetLeft + pad;
-                iTo   = bSticky ? innerW - this.$ext.offsetWidth : cX;
-                sType = "left";
-                break;
-        }
-        
-        apf.tween.single(this.$ext, {
-            steps   : apf.isIphone ? 5 : 30,
-            interval: 10,
-            from    : iFrom,
-            to      : iTo,
-            type    : sType,
-            anim    : apf.tween.EASEIN
-        });
-        return this;
-    };
-
-    this.slideOut = function(sTo) {
-        if (!sTo)
-            sTo = "bottom";
-        var iFrom = 0,
-            iTo   = 0,
-            sType = "top",
-            pad   = 10;
-
-        switch(sTo) {
-            case "top":
-                iFrom = this.$ext.offsetTop;
-                iTo   = -(this.$ext.offsetHeight) - pad;
-                break;
-            case "left":
-                iFrom = this.$ext.offsetLeft;
-                iTo   = -(this.$ext.offsetWidth) - pad;
-                sType = "left";
-                break;
-            case "bottom":
-                iFrom = this.$ext.offsetTop;
-                iTo = (apf.isIE
-                    ? this.$ext.offsetParent.offsetHeight
-                    : window.innerHeight) + this.$ext.offsetHeight + pad;
-                break;
-            case "right":
-                iFrom = this.$ext.offsetLeft;
-                iTo   = (apf.isIE
-                    ? this.$ext.offsetParent.offsetWidth
-                    : window.innerWidth) + this.$ext.offsetLeft + pad;
-                sType = "left";
-                break;
-        }
-
-        var _self = this;
-        apf.tween.single(this.$ext, {
-            steps   : apf.isIphone ? 5 : 30,
-            interval: 10,
-            from    : iFrom,
-            to      : iTo,
-            type    : sType,
-            anim    : apf.tween.EASEOUT,
-            onfinish: function() { _self.setProperty("visible", false); }
-        });
-        return this;
-    };
-    
-    
 
     this.bringToFront = function(){
         apf.WinServer.setTop(this);
@@ -62966,19 +55682,6 @@ apf.AmlWindow = function(struct, tagName){
     };
     
     
-    this.$getActiveElements = function() {
-        // init $activeElements
-        if (!this.$activeElements) {
-            this.$activeElements = {
-                oTitle   : this.oTitle,
-                oIcon    : this.oIcon,
-                oDrag    : this.oDrag
-            }
-        }
-
-        return this.$activeElements;
-    }
-    
 
     
     this.addEventListener("$skinchange", function(){
@@ -63015,7 +55718,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42597)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42606)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63298,11 +56001,6 @@ apf.model = function(struct, tagName){
              return;
         }
         
-        if (amlNode.$noInitModel) {
-            delete amlNode.$noInitModel;
-            return;
-        }
-        
 
         for (prop in p) {
             if (xmlNode && (node = p[prop].listen 
@@ -63372,8 +56070,6 @@ apf.model = function(struct, tagName){
 
         if (this.data) {
             var xmlNode = 
-              
-              amlNode.$noInitModel ? amlNode.xmlRoot : 
               
               (p.listen ? this.data.selectSingleNode(p.listen) : this.data);
 
@@ -63792,15 +56488,11 @@ apf.model = function(struct, tagName){
                 xmlNode = apf.getXmlDom(xmlNode, null, true).documentElement; //@todo apf3.0 whitespace issue
             }
             
-            else if (apf.isJson(xmlNode)) {
-                xmlNode = apf.json2Xml(xmlNode).documentElement
-            }
-            
             else
                 return this.$loadFrom(xmlNode, options);
         }
 
-        if (this.ownerDocument && this.ownerDocument.$domParser.$shouldWait) {
+        if (this.ownerDocument && this.ownerDocument.$domParser.$isPaused(this)) {
             //if (!this.$queueLoading) {
                 var _self = this;
                 this.data = xmlNode; //@todo expirement //this.$copy = 
@@ -63808,7 +56500,7 @@ apf.model = function(struct, tagName){
                 
                 this.$queueLoading = true;
                 apf.queue.add("modelload" + this.$uniqueId, function(){
-                    if (_self.ownerDocument && _self.ownerDocument.$domParser.$shouldWait)
+                    if (_self.ownerDocument && _self.ownerDocument.$domParser.$isPaused(_self))
                         apf.queue.add("modelload" + _self.$uniqueId, arguments.callee);
                     else {
                         _self.load(xmlNode, options);
@@ -63899,20 +56591,6 @@ apf.model = function(struct, tagName){
         
         
 
-        
-        if (apf.uirecorder && apf.uirecorder.captureDetails) {
-            if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
-                if (this.ownerDocument && this.$aml) {
-                    apf.uirecorder.capture.captureModelChange({
-                        action      : action,
-                        amlNode     : this,
-                        xmlNode     : xmlNode,
-                        listenNode  : listenNode,
-                        UndoObj     : UndoObj
-                    }); 
-                }
-            }
-        }
         
         
         var p, b;
@@ -64036,10 +56714,6 @@ apf.model = function(struct, tagName){
                     xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
                 
                 xmlNode = apf.getXmlDom(xmlNode).documentElement;
-            }
-            
-            else if (apf.isJson(xmlNode)) {
-                xmlNode = apf.json2Xml(xmlNode).documentElement
             }
             
             else
@@ -64193,397 +56867,9 @@ apf.aml.setElement("model", apf.model);
  */
 
 
-/**
- * Notification element, which shows popups when events occur. Similar
- * to growl on the OSX platform.
- * Example:
- * <code>
- *  <a:notifier position="bottom-right" margin="10 10">
- *      <a:event 
- *        when    = "{offline.onLine}"
- *        message = "You are currently working offline"
- *        icon    = "icoOffline.gif" />
- *      <a:event 
- *        when    = "{!offline.onLine}"
- *        message = "You are online"
- *        icon    = "icoOnline.gif" />
- *      <a:event 
- *        when    = "{offline.syncing}" 
- *        message = "Your changes are being synced" 
- *        icon    = "icoSyncing.gif" />
- *      <a:event 
- *        when    = "{!offline.syncing}"
- *        message = "Syncing done"
- *        icon    = "icoDone.gif" />
- *  </a:notifier>
- * </code>
- * Example:
- * Notifier with 4 notifications which appears and stays over the 3 seconds
- * begins to the top right corner and goes to the left. First notification will
- * be displayed when value in textbox will be bigger than 4. In next two cases 
- * notification will be shown when notifier's position or arrange attribute will 
- * be changed. In the last case notification will be shown when date 2008-12-24 
- * will be selected on calendar.
- * <code>
- *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
- *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
- *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
- *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
- *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
- *  </a:notifier>
- * </code>
- * 
- * @define notifier
- * @attribute   {String}   position     Vertical and horizontal element's start
- *                                      position, it can be changed in any time,
- *                                      default is 'top-right'
- *     Possible values:
- *     top-right       element is placed in top-right corner of browser window
- *     top-left        element is placed in top-left corner of browser window
- *     bottom-right    element is placed in bottom-right corner of browser window
- *     bottom-left     element is placed in bottom-left corner of browser window
- *     center-center   element is placed in the middle of browser window
- *     right-top       element is placed in top-right corner of browser window
- *     left-top        element is placed in top-left corner of browser window
- *     right-bottom    element is placed in bottom-right corner of browser window
- *     left-bottom     element is placed in bottom-left corner of browser window
- *     center-center   element is placed in the middle of browser window
- * @attribute   {String}   margin       It's a free space around popup element,
- *                                      default is '10 10 10 10' pixels
- * @attribute   {String}   columnsize   Specify element width and col width where
- *                                      element will be displayed, default is 300 pixels
- * @attribute   {String}   arrange      popup elements can be displayed in rows
- *                                      or columns, default is 'vertical'
- *     Possible values:
- *     vertical     element will be displayed in rows
- *     horizontal   element will be displayed in columns
- * @attribute   {String}   timeout      After the timeout has passed the popup
- *                                      will dissapear automatically. When the
- *                                      mouse hovers over the popup it doesn't
- *                                      dissapear, default is 2 seconds
- * $attribute   {String}   onclick      It's an action executed after user click
- *                                      on notifier cloud
- * 
- * @constructor
- *
- * @inherits apf.Presentation
- * 
- * @author      
- * @version     %I%, %G% 
- * 
- * @allowchild event
- */
-apf.notifier = function(struct, tagName){
-    this.$init(tagName || "notifier", apf.NODE_VISIBLE, struct);
-};
-
-(function() {
-    this.timeout    = 2000;
-    this.position   = "top-right";
-    this.columnsize = 300;
-    this.arrange    = "vertical";
-    this.margin     = "10 10 10 10";
-
-    this.lastPos    = null;
-    this.showing    = 0;
-    this.sign       = 1;
-
-    this.$supportedProperties.push("margin", "position", "timeout",
-        "columnsize", "arrange");
-
-    this.$propHandlers["position"] = function(value) {
-        this.lastPos = null;
-    };
-    
-    this.$propHandlers["margin"] = function(value) {
-        this.margin = value;
-    };
-    
-    this.$propHandlers["timeout"] = function(value) {
-        this.timeout = parseInt(value) * 1000;
-    };
-    
-    function getPageScroll() {
-        return [
-            document.documentElement.scrollTop || document.body.scrollTop,
-            document.documentElement.scrollLeft || document.body.scrollLeft
-        ];
-    }
-
-    function getStartPosition(x, wh, ww, nh, nw, margin) {
-        var scrolled = getPageScroll();
-
-        return [
-             (x[0] == "top"
-                 ? margin[0]
-                 : (x[0] == "bottom"
-                     ? wh - nh - margin[2]
-                     : wh / 2 - nh / 2)) + scrolled[0],
-             (x[1] == "left"
-                 ? margin[3]
-                 : (x[1] == "right"
-                     ? ww - nw - margin[1]
-                     : ww / 2 - nw / 2)) + scrolled[1]
-        ];
-    }
-
-    /**
-     * Function creates new notifie popup element
-     * 
-     * @param {String}  message  Message content displaing in popup element,
-     *                           default is [No message]
-     * @param {String}  icon     Path to icon file relative to "icon-path" which
-     *                           is set in skin declaration
-     * @param {Object}  ev       object representation of event
-     * 
-     */
-    this.popup = function(message, icon, ev) {
-        if (!this.$ext)
-            return;
-
-        this.$ext.style.width = this.columnsize + "px";
-
-        var _self = this,
-            oNoti = this.$pHtmlNode.appendChild(this.$ext.cloneNode(true)),
-            ww    = apf.isIE
-                ? document.documentElement.offsetWidth
-                : window.innerWidth,
-            wh    = apf.isIE
-                ? document.documentElement.offsetHeight
-                : window.innerHeight,
-        
-            removed = false,
-
-            oIcon = this.$getLayoutNode("notification", "icon", oNoti),
-            oBody = this.$getLayoutNode("notification", "body", oNoti);
-
-        this.showing++;
-
-        if (oIcon && icon) {
-            if (oIcon.nodeType == 1) {
-                oIcon.style.backgroundImage = "url("
-                + this.iconPath + icon + ")";
-            }
-            else {
-                oIcon.nodeValue = this.iconPath + icon;
-            }
-
-            this.$setStyleClass(oNoti, this.$baseCSSname + "ShowIcon");
-        }
-
-        oBody.insertAdjacentHTML("beforeend", message || "[No message]");
-        oNoti.style.display = "block";
-
-        var margin = apf.getBox(this.margin || "0"),
-            nh     = oNoti.offsetHeight,
-            nw     = oNoti.offsetWidth,
-            /* It's possible to set for example: position: top-right or right-top */
-            x      = this.position.split("-"),
-            _reset = false;
-
-        if (x[1] == "top" || x[1] == "bottom" || x[0] == "left" || x[0] == "right")
-            x = [x[1], x[0]];
-        /* center-X and X-center are disabled */
-        if ((x[0] == "center" && x[1] !== "center") || (x[0] !== "center" && x[1] == "center"))
-            x = ["top", "right"];
-
-        /* start positions */
-        if (!this.lastPos) {
-            this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
-            this.sign = 1;
-            _reset = true;
-        }
-
-        if ((!_reset && x[0] == "bottom" && this.sign == 1) ||
-           (x[0] == "top" && this.sign == -1)) {
-            if (this.arrange == "vertical") {
-                this.lastPos[0] += x[1] == "center"
-                    ? 0
-                    : this.sign * (x[0] == "top"
-                        ? margin[0] + nh
-                        : (x[0] == "bottom"
-                            ? - margin[2] - nh
-                            : 0));
-            }
-            else {
-                this.lastPos[1] += x[0] == "center"
-                    ? 0
-                    : this.sign * (x[1] == "left"
-                        ? margin[3] + nw
-                        : (x[1] == "right"
-                            ? - margin[1] - nw
-                            : 0));
-            }
-        }
-
-        /* reset to next line, first for vertical, second horizontal */
-        var scrolled = getPageScroll();
-        
-        if (this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[0]) {
-            this.lastPos[1] += (x[1] == "left"
-                ? nw + margin[3]
-                : (x[1] == "right"
-                    ? - nw - margin[3]
-                    : 0));
-            this.sign *= -1;
-            this.lastPos[0] += this.sign*(x[0] == "top"
-                ? margin[0] + nh
-                : (x[0] == "bottom"
-                    ? - margin[2] - nh
-                    : 0));
-        }
-        else if (this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1]) {
-            this.lastPos[0] += (x[0] == "top"
-                ? nh + margin[0]
-                : (x[0] == "bottom"
-                    ? - nh - margin[0]
-                    : 0));
-            this.sign *= -1;
-            this.lastPos[1] += x[0] == "center"
-                ? 0
-                : this.sign * (x[1] == "left"
-                    ? margin[3] + nw
-                    : (x[1] == "right"
-                        ? - margin[1] - nw
-                        : 0));
-        }
-
-        /* Start from begining if entire screen is filled */
-        if (this.lastPos) {
-            if ((this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[1])
-              && this.arrange == "horizontal") {
-                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
-                this.sign = 1;
-            }
-            if ((this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1])
-              && this.arrange == "vertical") {
-                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
-                this.sign = 1;
-            }
-        }  
-
-        oNoti.style.left = this.lastPos[1] + "px";
-        oNoti.style.top  = this.lastPos[0] + "px";
-
-        if ((x[0] == "top" && this.sign == 1) || (x[0] == "bottom" && this.sign == -1)) {
-            if (this.arrange == "vertical") {
-                this.lastPos[0] += x[1] == "center"
-                    ? 0
-                    : this.sign * (x[0] == "top"
-                        ? margin[0] + nh
-                        : (x[0] == "bottom"
-                            ? - margin[2] - nh
-                            : 0));
-            }
-            else {
-                this.lastPos[1] += x[0] == "center"
-                    ? 0
-                    : this.sign * (x[1] == "left"
-                        ? margin[3] + nw
-                        : (x[1] == "right"
-                            ? - margin[1] - nw
-                            : 0));
-            }
-        };
-
-        var isMouseOver = false;
-
-        apf.tween.css(oNoti, "fade", {
-            anim     : apf.tween.NORMAL,
-            steps    : 10,
-            interval : 10,
-            onfinish : function(container) {
-                oNoti.style.filter = "";
-                $setTimeout(hideWindow, _self.timeout)
-            }
-        });
-
-        function hideWindow() {
-            if (isMouseOver)
-                return;
-
-            apf.tween.css(oNoti, "notifier_hidden", {
-                anim    : apf.tween.NORMAL,
-                steps   : 10,
-                interval: 20,
-                onfinish: function(container) {
-                    apf.setStyleClass(oNoti, "", ["notifier_hover"]);
-                    if (isMouseOver)
-                        return;
-
-                    if (oNoti.parentNode) {
-                        if (oNoti.parentNode.removeChild(oNoti) && !removed) {
-                            _self.showing--;
-                            removed = true;
-                        }
-                    }
-
-                    if (_self.showing == 0)
-                        _self.lastPos = null;
-                }
-            });
-        }
-
-        /* Events */
-        oNoti.onmouseover = function(e) {
-            e = (e || event);
-            var tEl = e.explicitOriginalTarget || e.toElement;
-            if (isMouseOver)
-                return;
-            if (tEl == oNoti || apf.isChildOf(oNoti, tEl)) {
-                apf.tween.css(oNoti, "notifier_hover", {
-                    anim    : apf.tween.NORMAL,
-                    steps   : 10,
-                    interval: 20,
-                    onfinish: function(container) {
-                        apf.setStyleClass(oNoti, "", ["notifier_shown"]);
-                    }
-                });
-                
-                isMouseOver = true;
-            }
-        };
-
-        oNoti.onmouseout = function(e) {
-            e = (e || event);
-            var tEl = e.explicitOriginalTarget || e.toElement;
-
-            if (!isMouseOver)
-                return;
-
-            if (apf.isChildOf(tEl, oNoti) ||
-               (!apf.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
-                isMouseOver = false;
-                hideWindow();
-            }
-        };
-
-        if (ev) {
-            oNoti.onclick = function() {
-                ev.dispatchEvent("click");
-            };
-        }
-    };
-
-    /**** Init ****/
-
-    this.$draw = function() {
-        //Build Main Skin
-        this.$pHtmlNode = document.body;
-        
-        this.$ext = this.$getExternal("notification");
-        this.$ext.style.display  = "none";
-        this.$ext.style.position = "absolute";
-        apf.window.zManager.set("notifier", this.$ext);
-    };
-}).call(apf.notifier.prototype = new apf.Presentation());
-
-apf.aml.setElement("notifier", apf.notifier);
-apf.aml.setElement("event", apf.event);
 
 
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(27023)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(27059)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64696,12 +56982,12 @@ apf.page = function(struct, tagName){
                 
                 elBtnClose.addEventListener("mousedown", function(e){
                     apf.cancelBubble(e, apf.lookup(_self.$uniqueId));
-                });
+                }, false);
                 
                 elBtnClose.addEventListener("click", function(e){
                     var page = apf.lookup(_self.$uniqueId);
                      page.parentNode.remove(page, e);
-                });
+                }, false);
 
                 btncontainer.appendChild(elBtnClose);
             }
@@ -65065,11 +57351,12 @@ apf.page = function(struct, tagName){
         
         this.$btnPressed = true;
         
-        if (!this.parentNode.$order)
+        //if (!this.parentNode.$order)
             $btnSet.call(this, oHtml);
         
         //@todo vertically stacked buttons
-        else if (this.parentNode.getPages().length > 1) {
+        //else
+        if (this.parentNode.getPages().length > 1) {
             if (this.$btnControl[this.$uniqueId])
                 return;
             
@@ -65224,7 +57511,7 @@ apf.page = function(struct, tagName){
         if (this.disabled) 
             return;
         
-        if (this.parentNode.$order && this.$btnPressed) {
+        if (false && this.parentNode.$order && this.$btnPressed) {
             this.$dragging = false;
             
             $btnSet.call(this, oHtml);
@@ -65336,20 +57623,10 @@ apf.page = function(struct, tagName){
     };
     
     
-    this.$getActiveElements = function() {
-        // init $activeElements
-        if (!this.$activeElements) {
-            this.$activeElements = {
-                $button : this.$button
-            }
-        }
-
-        return this.$activeElements;
-    }
-    
 }).call(apf.page.prototype = new apf.Presentation());
 
 apf.aml.setElement("page", apf.page);
+
 
 
 
@@ -65376,228 +57653,6 @@ apf.aml.setElement("page", apf.page);
  *
  */
 
-
-
-/**
- * This elements displays buttons which can be used to navigate between some
- * parts of data, for example between parts of article
- * 
- * @define pager
- * @attribute {String} range      determines how much page buttons is displayed 
- * @attribute {String} previous   determines the caption of "go to previous page" button
- * @attribute {String} next       determines the caption of "go to next page" button
- * 
- * @inherits apf.Presentation
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
- * 
- * @author      
- * @version     %I%, %G% 
- * 
- * @define bindings
- * @allowchild current, total
- *
- * @binding current      Determines which page is currently selected
- * @binding total        Determines the number of pages.
- * 
- */
-apf.pager = function(struct, tagName){
-    this.$init(tagName || "pager", apf.NODE_VISIBLE, struct);
-};
-
-(function() {
-    this.previous   = "Previous";
-    this.next       = "Next";
-    this.range      = 5;
-    this.curpage    = 1;
-    this.totalpages = 0;
-    this.autohide   = false;
-    this.oEmpty     = null;
-    
-    //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
-        pageload : 1
-    }, this.$attrExcludePropBind);
-    
-    this.$supportedProperties.push("range", "curpage", "totalpages", 
-        "previous", "next", "autohide", "pageload");
-        
-    this.$booleanProperties["autohide"] = true;
-    
-    this.$propHandlers["curpage"] = function(value){
-        this.gotoPage(value);
-    };
-
-    /**
-     * Selects page depends on its number or jump length
-     * 
-     * @param {Number} pageNr      number of choosen page
-     * @param {Number} pageDelta   length of jump which should be done between
-     *                             current page and new selected page
-     */
-    this.gotoPage = function(pageNr, pageDelta, userAction) {
-        if (userAction && this.disabled)
-            return;
-        
-        var lastCurpage = this.curpage;
-        this.curpage    = pageNr || this.curpage + pageDelta;
-        if (lastCurpage != this.curpage)
-            this.setProperty("curpage", this.curpage);
-
-        //Sanity checks
-        if (this.curpage < 1) 
-            this.curpage = 1;
-        else if (this.totalpages && this.curpage > this.totalpages) 
-            this.curpage = this.totalpages;
-        
-        if (this.dispatchEvent("beforepagechange", {page:this.curpage}) === false)
-            return false;
-        
-        var model = this.getModel(true),
-            _self = this;
-        if (model) {
-            model.$loadFrom(this.pageload, {
-                xmlNode  : this.xmlRoot,
-                page     : this.curpage,
-                callback : function(){
-                    _self.dispatchEvent("afterpagechange", {page:_self.curpage});
-                }
-            });
-        }
-        else {
-            //@todo is this the best way to detect a model?
-            $setTimeout(function(){
-                var model = _self.getModel(true);
-                if (model) {
-                    model.$loadFrom(_self.pageload, {
-                        xmlNode  : _self.xmlRoot,
-                        page     : _self.curpage,
-                        callback : function(){
-                            _self.dispatchEvent("afterpagechange", {page:_self.curpage});
-                        }
-                    });
-                }
-                
-                _self.removeEventListener("afterload", arguments.callee);
-            });
-        }
-    };
-    
-    this.addEventListener("$clear", function(e){
-        return false;
-    });
-    
-    this.$setClearMessage = function(msg, type){
-        if (!this.$empty) {
-            this.$empty = this.$container.ownerDocument.createElement("span");
-            this.$setStyleClass(this.$empty, "loader");
-        }
-        
-        if (type == "loading") {
-            this.$setStyleClass(this.$ext, this.$baseCSSname + "Loading");
-            this.$container.appendChild(this.$empty);
-        }
-    }
-    
-    this.$removeClearMessage = function(){
-        if (this.$empty && this.$empty.parentNode) {
-            this.$empty.parentNode.removeChild(this.$empty);
-            this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Loading"]);
-        }
-    }
-    
-    this.$draw  = function() {
-        this.$ext = this.$getExternal("main");
-        this.$container = this.$getLayoutNode("main", "container",  this.$ext);
-    };
-    
-    this.$load = function(xmlRoot) {
-        this.setProperty("curpage",    parseInt(this.$applyBindRule("current", xmlRoot)));
-        this.setProperty("totalpages", parseInt(this.$applyBindRule("total", xmlRoot)));
-        
-        var curpage    = this.curpage,
-            totalpages = this.totalpages,
-            nodes      = [],
-            btn;
-        
-        this.$container.innerHTML = "";
-        
-        if (!totalpages)
-            return;
-
-        if (curpage != 1 || !this.autohide) {
-            this.$getNewContext("button");
-            btn = this.$getLayoutNode("button");
-            this.$getLayoutNode("button", "caption").nodeValue = this.previous;
-            this.$setStyleClass(btn, "previous");
-            
-            if (curpage != 1) {
-                btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
-                    + ").gotoPage(null, -1, true)");
-                btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
-                btn.setAttribute("onmouseup", 'apf.setStyleClass(this,"", ["down"]);');
-            }
-            else {
-                this.$setStyleClass(btn, "disabled");
-            }
-
-            nodes.push(btn);
-        }
-        
-        var rlow  = Math.floor(this.range / 2),
-        //    rhigh = Math.ceil(this.range / 2);
-            start = Math.max(1, curpage - rlow),
-            end   = Math.min(totalpages + 1, start + this.range),
-            i;
-        if (end - start < this.range && start != 1)
-            start = Math.max(end - this.range, 1);
-        
-        for (i = start; i < end; i++) {
-            this.$getNewContext("button");
-            btn = this.$getLayoutNode("button");
-            this.$getLayoutNode("button", "caption").nodeValue = i;
-            btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
-                + ").gotoPage(" + i + ", null, true)");
-            btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
-            btn.setAttribute("onmouseup", 'apf.setStyleClass(this,"", ["down"]);');
-            nodes.push(btn);
-            
-            if (i == curpage)
-                this.$setStyleClass(btn, "current");
-        }
-        
-        if (curpage != totalpages  || !this.autohide) {
-            this.$getNewContext("button");
-            btn = this.$getLayoutNode("button");
-            this.$getLayoutNode("button", "caption").nodeValue = this.next;
-            this.$setStyleClass(btn, "next");
-            
-            if (curpage != totalpages) {
-                btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
-                    + ").gotoPage(null, 1, true)");
-                btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
-                btn.setAttribute("onmouseup", 'apf.setStyleClass(this,"", ["down"]);');
-            }
-            else {
-                this.$setStyleClass(btn, "disabled");
-            }
-
-            nodes.push(btn);
-        }
-        
-        apf.insertHtmlNodes(nodes, this.$container);
-        
-        if (this.$empty)
-            this.$container.appendChild(this.$empty);
-    }
-    
-
-}).call(apf.pager.prototype = new apf.StandardBinding());
-
-
-apf.aml.setElement("pager",   apf.pager);
-apf.aml.setElement("total",   apf.BindingRule);
-apf.aml.setElement("current", apf.BindingRule);
 
 
 
@@ -66015,1121 +58070,6 @@ apf.aml.setElement("progressbar", apf.progressbar);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-//@todo There is a lot of dead code in here (also in the skin) remove it
-
-/**
- * Element providing a two column grid with properties and values. The values
- * are editable using apf elements.
- *
- * @constructor
- * @define propedit
- * @addnode elements
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.4
- *
- * @inherits apf.DataBinding
- */
-apf.propedit    = function(struct, tagName){
-    this.$init(tagName || "propedit", apf.NODE_VISIBLE, struct);
-    
-    //this.$headings       = [],
-    //this.$cssRules       = []; //@todo Needs to be reset;
-    this.$nodes          = [];
-    //this.$lastOpened     = {};
-    
-    this.$editors        = {};
-    
-    
-    this.$dynCssClasses = [];
-    
-};
-
-(function(){
-    this.$init(function(){
-        this.addEventListener("keydown", keyHandler, true);
-    });
-    
-    
-    this.implement(apf.Cache);
-    
-    
-    this.implement(apf.DataAction);
-    
-    
-    this.$focussable     = true; // This object can get the focus
-    this.$isTreeArch     = true; // This element has a tree architecture
-    this.$isWindowContainer = -1;
-    
-    this.startClosed     = true;
-    this.$animType       = apf.tween.NORMAL;
-    this.$animSteps      = 3;
-    this.$animSpeed      = 20;
-
-    this.$useiframe      = 0;
-    
-    //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
-        properties : 3 //only when it has an xpath
-    }, this.$attrExcludePropBind);
-    
-    /**
-     * @attribute {Boolean} iframe     whether this element is rendered inside an iframe. This is only supported for IE. Default is false for datagrid and true for spreadsheet and propedit.
-     */
-    this.$booleanProperties["iframe"]     = true;
-
-    /**
-     * @attribute {String} properties the {@link terms.datainstruction data instruction} 
-     * to fetch a template definition of the layout for this component. A template
-     * consists of descriptions of columns (or rows for propedit) for which
-     * several settings are determined such as validation rules, edit component 
-     * and selection rules.
-     * Example:
-     * This example contains a template that describes the fields in a property
-     * editor for xml data representing a news article.
-     * <code>
-     *  <news>
-     *      <prop caption="Title *" type="text" match="[title]" required="true" 
-     *        minlength="4" invalidmsg="Incorrect title;The title is required."/>
-     *      <prop caption="Subtitle *" type="text" match="[subtitle]" 
-     *        required="true" minlength="4" 
-     *        invalidmsg="Incorrect subtitle;The subtitle is required."/>
-     *      <prop caption="Source" type="text" match="[source]" minlength="4" 
-     *        invalidmsg="Incorrect source;The source is required."/>
-     *      <prop match="[editors_choice]" caption="Show on homepage"
-     *        overview="overview" type="dropdown">
-     *          <item value="1">Yes</item> 
-     *          <item value="0">No</item> 
-     *      </prop>
-     *      <prop caption="Auteur*" match="[author]" descfield="name" 
-     *        overview="overview" maxlength="10" type="lookup" 
-     *        foreign_table="author" required="true" /> 
-     *      <prop match="[categories/category]" descfield="name" type="lookup" 
-     *        multiple="multiple" caption="Categorie" overview="overview" 
-     *        foreign_table="category" /> 
-     *      <prop caption="Image" type="custom" 
-     *        exec="showUploadWindow('news', 'setNewsImage', selected)" 
-     *        match="[pictures/picture/file]" />
-     *      <prop match="[comments]" descfield="title" caption="Comments" 
-     *        type="children" multiple="multiple">
-     *          <props table="news_comment" descfield="title">
-     *              <prop match="[name]" datatype="string" caption="Name*" 
-     *                required="1" maxlength="255" 
-     *                invalidmsg="Incorrect name;The name is required."/> 
-     *              <prop match="[email]" datatype="apf:email" caption="Email" 
-     *                maxlength="255" 
-     *                invalidmsg="Incorrect e-mail;Please retype."/> 
-     *              <prop match="[date]" datatype="xsd:date" caption="Date*" 
-     *                required="1" 
-     *                invalidmsg="Incorrect date;Format is dd-mm-yyyy."/> 
-     *              <prop match="[title]" datatype="string" caption="Title*" 
-     *                required="1" maxlength="255" 
-     *                invalidmsg="Incorrect title;Title is required."/> 
-     *              <prop match="[body]" caption="Message*" required="1" 
-     *                invalidmsg="Incorrect message;Message is required."/> 
-     *          </props>
-     *      </prop>
-     *  </news>
-     * </code>
-     */
-    this.$propHandlers["properties"] = function(value){
-        if (!value)
-            return this.clear();
-        
-        var _self = this;
-        var propLoadObj = { //Should probably exist only once if expanded with xmlUpdate
-            load : function(data){
-                _self.$loadingProps = false;
-                
-                if (typeof data == "string")
-                    data = apf.getXml(data);
-
-                _self.$properties = data;
-
-                _self.$allowLoad = true;
-                if (_self.$loadqueue)
-                    _self.$checkLoadQueue();
-                else if (_self.xmlRoot)
-                    _self.load(_self.xmlRoot);
-                delete _self.$allowLoad;
-            },
-            
-            clear : function(){
-                _self.$loadingProps = false;
-            },
-            
-            xmlRoot : this.xmlRoot
-        };
-
-        var xml;
-        this.$loadingProps = true;
-        if (typeof value == "string") {
-            if (value.substr(0, 1) == "<") 
-                propLoadObj.load(value);
-            else
-                apf.setModel(value, propLoadObj);
-        }
-        else if (value.$isModel){
-            //Value is model aml element
-            value.register(propLoadObj);
-        }
-        else {
-            if (this.$properties == value && !this.caching)
-                return;
-
-            //Assuming value is xml node
-            
-            setTimeout(function(){
-                propLoadObj.load(value);
-            });
-            
-        }
-        
-        if (this.$properties)
-            this.$prevProperties = this.$properties;
-        
-        delete this.$properties;
-    };
-    this.addEventListener("prop.properties", function(e){
-        if (!e.changed && this.$loadqueue)
-            this.$propHandlers["properties"].call(this, e.value);
-    });
-    
-    this.$columns = ["50%", "50%"];
-    this.$propHandlers["columns"] = function(value){
-        this.$columns = value && value.splitSafe(",") || ["50%", "50%"];
-        
-        if (this.$headings) {
-            this.$headings[0].setProperty("width", this.$columns[0]);
-            this.$headings[1].setProperty("width", this.$columns[1]);
-        }
-    }
-    
-    this.$propHandlers["filter"] = function(value){
-        if (!value) {
-            this.$allowLoad = 2;
-            var xmlRoot = this.xmlRoot;
-            this.clear();
-            if (this.$searchProperties) {
-                this.$properties = this.$searchProperties;
-                delete this.$searchProperties;
-            }
-            this.load(xmlRoot);
-            delete this.$allowLoad;
-            return;
-        }
-
-        var p = (this.$searchProperties || (this.$searchProperties = this.$getProperties())).cloneNode(true);
-        var nodes = p.selectNodes("//node()[not(local-name()='group' or contains(translate(@caption, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "'))]");
-        for (var i = nodes.length - 1; i >= 0; i--)
-            nodes[i].parentNode.removeChild(nodes[i]);
-        
-        nodes = p.selectNodes("//node()[local-name()='group' and not(node())]");
-        
-        var parent;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            parent = nodes[i].parentNode;
-            parent.removeChild(nodes[i]);
-            if (!parent.childNodes.length && parent.parentNode)
-                parent.parentNode.removeChild(parent);
-        }
-
-        //var t = this.$properties;
-        var xmlRoot = this.xmlRoot;
-        this.clear();
-        this.$properties = p;
-        this.$allowLoad = 2;
-        this.load(xmlRoot, {force: true});
-        delete this.$allowLoad;
-        //this.$properties = this.$searchProperties;
-        //this.$properties = t;
-    };
-    
-    function scrollIntoView(){
-        var Q = (this.current || this.$selected),
-            o = this.$body;
-        o.scrollTop = (Q.offsetTop) - 21;
-    }
-
-    /**** Keyboard Support ****/
-    
-    this.$findHtmlNode = function(id) {
-        return this.$pHtmlDoc.getElementById(id);
-    }
-    
-    
-    function keyHandler(e){
-        var key      = e.keyCode,
-            ctrlKey  = e.ctrlKey,
-            shiftKey = e.shiftKey;
-        
-        var selXml = this.$lastEditor && this.$lastEditor[2],
-            oInt   = this.$useiframe ? this.oDoc.documentElement : this.$body,
-            margin, node, hasScroll, hasScrollX, hasScrollY, items, lines;
-
-        switch (key) {
-            case 36:
-                //HOME
-                return false;
-            case 35:
-                //END
-                return false;
-            case 107:
-                //+
-                break;
-            case 37:
-                //LEFT
-                this.$slideToggle(this.$selected.firstChild);
-                return false;
-            case 107:
-            case 39:
-                //RIGHT
-                this.$slideToggle(this.$selected.firstChild);
-                    
-                return false;
-            case 38:
-                //UP
-                var node  = selXml;
-                var sNode = selXml.previousSibling;
-                while(sNode && sNode.nodeType != 1) sNode = sNode.previousSibling;
-                
-                if (sNode) {
-                    var last = sNode, nodes;
-                    while ((nodes = last.selectNodes("prop")).length)
-                        last = nodes[nodes.length - 1];
-                    sNode = last;
-                }
-                else {
-                    sNode = node.parentNode
-                    if (sNode[apf.TAGNAME] != "prop") {
-                        sNode = sNode.previousSibling;
-                        while(sNode && sNode.nodeType != 1) sNode = sNode.previousSibling;
-                        
-                        if (sNode && sNode[apf.TAGNAME] != "prop") {
-                            sNode = (nodes = sNode.selectNodes("prop"))[nodes.length - 1];
-                            while(sNode && sNode.nodeType != 1) sNode = sNode.previousSibling;
-                        }
-                    }
-                }
-
-                if (!sNode)
-                    return;
-
-                var selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                while (!selHtml.offsetWidth)
-                    selHtml = apf.xmldb.findHtmlNode(sNode = sNode.parentNode, this);
-                
-                var top = apf.getAbsolutePosition(selHtml, this.$body)[1]
-                     - (selHtml.offsetHeight/2);
-                if (top <= this.$ext.scrollTop)
-                    this.$ext.scrollTop = top;
-                
-                this.select(selHtml);
-                
-                return false;
-            case 40:
-                //DOWN
-                var node, sNode = (node = selXml).selectSingleNode("prop") || node.nextSibling;
-                do {
-                    while(sNode && (sNode.nodeType != 1 || sNode[apf.TAGNAME] != "prop")) 
-                        sNode = sNode.nextSibling;
-                    
-                    if (!sNode) {
-                        sNode = node.parentNode.nextSibling;
-                        if (sNode && sNode[apf.TAGNAME] != "prop")
-                            sNode = sNode.selectSingleNode("prop");
-                    }
-                }while(sNode && sNode.nodeType != 1);
-                
-                if (!sNode)
-                    return;
-
-                var selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                while (!selHtml.offsetWidth)
-                    selHtml = apf.xmldb.findHtmlNode(sNode = sNode.parentNode, this);
-                
-                if (sNode == node) {
-                    sNode = node.nextSibling
-                    while(sNode && (sNode.nodeType != 1 || sNode[apf.TAGNAME] != "prop")) 
-                        sNode = sNode.nextSibling;
-                    var selHtml = apf.xmldb.findHtmlNode(sNode, this);
-                }
-                
-                var top = apf.getAbsolutePosition(selHtml, this.$body)[1] 
-                    + (selHtml.offsetHeight/2);
-                if (top > this.$ext.scrollTop + this.$ext.offsetHeight)
-                    this.$ext.scrollTop = top - this.$ext.offsetHeight;
-                
-                this.select(selHtml);
-                
-                return false;
-        };
-    }
-    
-    
-    
-    /**** Focus ****/
-    // Too slow for IE
-    
-    this.$focus = function(){
-        if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
-            return;
-
-        this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
-        
-        if (this.oDoc)
-            this.$setStyleClass(this.oDoc.documentElement, this.$baseCSSname + "Focus");
-        
-        if (this.$lastEditor)
-            this.$lastEditor[0].$focus();
-    };
-
-    this.$blur = function(){
-        
-        if (this.renaming)
-            this.stopRename(null, true);
-        
-
-        //@todo fix this by fixing focussing for this component
-        if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix))
-            return;
-
-        this.$setStyleClass(this.oFocus || this.$ext, "", [this.$baseCSSname + "Focus"]);
-        
-        if (this.oDoc)
-            this.$setStyleClass(this.oDoc.documentElement, "", [this.$baseCSSname + "Focus"]);
-        
-        if (this.$lastEditor)
-            this.$lastEditor[0].$blur();
-    };
-    
-    /**** Sliding functions ****/
-    
-    this.$slideToggle = function(htmlNode){
-        container = htmlNode.parentNode.lastChild;
-        
-        if (apf.getStyle(container, "display") == "block") {
-            htmlNode.className = htmlNode.className.replace(/min/, "plus");
-            this.$slideClose(container);
-        }
-        else {
-            htmlNode.className = htmlNode.className.replace(/plus/, "min");
-            this.$slideOpen(container);
-        }
-    };
-    
-    this.$slideOpen = function(container){
-        container.style.display = "";
-
-        apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : 3, 
-            diff    : -2,
-            to      : container.scrollHeight, 
-            anim    : this.$animType,
-            steps   : this.$animSteps,
-            interval: this.$animSpeed,
-            onfinish: function(container){
-                container.style.overflow = "visible";
-                container.style.height = "auto";
-            }
-        });
-    };
-
-    this.$slideClose = function(container){
-        container.style.height   = container.offsetHeight;
-        container.style.overflow = "hidden";
-
-        apf.tween.single(container, {
-            type    : 'scrollheight', 
-            from    : container.scrollHeight, 
-            diff    : -2,
-            to      : 0, 
-            anim    : this.$animType,
-            steps   : this.$animSteps,
-            interval: this.$animSpeed,
-            onfinish: function(container, data){
-               container.style.display = "none";
-            }
-        });
-    };
-    
-    this.$findContainer = function(htmlNode) {
-        var node = htmlNode.nextSibling;
-        if (!node)
-            return htmlNode;
-        return node.nodeType == 1 ? node : node.nextSibling;
-    };
-    
-    /**** Databinding ****/
-    
-    this.addEventListener("bindingsload", this.$loaddatabinding = function(e){
-        var rules = e.bindings["properties"];
-        if (!rules || !rules.length)
-            return;
-        
-        for (var i = 0, l = rules.length; i < l; i++) {
-            
-        }
-    });
-    
-    this.$unloaddatabinding = function(){
-    };
-
-    /**
-     * Returns a column definition object based on the column number.
-     * @param {Number} hid the heading number; this number is based on the sequence of the column elements.
-     */
-    this.getColumn = function(nr){
-        return this.$headings[nr || this.$lastcol || 0];
-    };
-    
-    /**** Column management ****/
-
-    /** 
-     * Resizes a column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
-     * @param {Number} newsize  the new size of the column.
-     * @todo optimize but bringing down the string concats
-     */
-    this.resizeColumn = function(nr, newsize){
-        var h = this.$headings[nr];
-        h.resize(newsize);
-    };
-
-    /**
-     * Hides a column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
-     */
-    this.hideColumn = function(nr){
-        var h = this.$headings[nr];
-        h.hide();
-    };
-    
-    /**
-     * Shows a hidden column.
-     * @param {Number} hid      the heading number; this number is based on the sequence of the column elements. 
-     */
-    this.showColumn = function(nr){
-        var h = this.$headings[nr];
-        h.show();
-    };
-    
-    /**** Databinding ****/
-    
-    /*
-    Property:
-    - caption
-    - editor (name of widget, lm function returning amlNode or lm template ref)
-        - children being aml nodes
-    - value (lm, only when widget is created by grid)
-    
-    validation attr: (only when widget is created by grid)
-    - required
-    - datatype
-    - required
-    - pattern
-    - min
-    - max
-    - maxlength
-    - minlength
-    - notnull
-    - checkequal
-    - validtest
-    
-    Group:
-    - name
-    - properties
-    
-    Move from dg to widgets:
-    - autocomplete with template
-    - dropdown with bound multicheck
-    
-    Furthermore it supports:
-    - properties binding rule to switch properties
-    - special node introspection mode
-        - .listAttributes()
-            - returns array of objects
-                - name
-                - editor
-                - validation rules
-        - .setAttribute(name, value)
-        - .getAttribute(name)
-        - .addEventListener("prop." + name);
-        - .removeEventListener("prop." + name);
-    */
-    
-    this.$getProperties = function(xmlNode){
-        if (this.properties) {
-            return this.$properties || false;
-        }
-        else if (this.$bindings.properties) {
-            var props = this.$bindings.properties;
-            for (var i = 0; i < props.length; i++) {
-                if (!props[i].match) //compile via lm
-                    return xx; //async request entry
-            }
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Forces propedit to wait for the load of a new property definition
-     */
-    this.$canLoadData = function(){
-        if (this.$allowLoad || !this.$attrBindings["properties"])
-            return this.$getProperties() ? true : false;
-            
-        /*
-         @todo this is turned off because it competes with the signal from
-         prop.properties. When the properties property contains an async 
-         statement, the prop isnt set until the call returns. This means this
-         component doesnt know it has the wrong property set until later. 
-         Thats causing problems. Uncommenting this causes a problem when a 
-         dynamic property is not refreshed whenever the model is set.
-        */
-        else if (false) {
-            var _self = this;
-            apf.queue.add("load" + this.$uniqueId, function(){
-                _self.$allowLoad = true;
-                _self.$checkLoadQueue();
-                delete _self.$allowLoad;
-            });
-            return false;
-        }
-    }
-    
-    this.$generateCacheId = function(xmlNode){
-        var node = this.$getProperties();
-        return node ? node.getAttribute(apf.xmldb.xmlIdTag) 
-                || apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(node), node)
-              : 0;
-    }
-    
-    this.$getCurrentFragment = function(){
-        var fragment = this.$container.ownerDocument.createDocumentFragment();
-        fragment.properties = this.$searchProperties || this.$prevProperties || this.$properties;
-
-        while (this.$container.childNodes.length) {
-            fragment.appendChild(this.$container.childNodes[0]);
-        }
-
-        this.clearSelection();
-
-        return fragment;
-    };
-
-    this.$setCurrentFragment = function(fragment){
-        this.$container.appendChild(fragment);
-
-        if (!apf.window.hasFocus(this))
-            this.blur();
-
-        apf.xmldb.addNodeListener(this.xmlRoot, this); //set node listener if not set yet
-        
-        //@todo most unoptimized way possible:
-        if (this.filter && this.$allowLoad != 2) {
-            delete this.$searchProperties;
-            this.$prevProperties = fragment.properties;
-            this.$propHandlers["filter"].call(this, this.filter);
-        }
-        else {
-            this.$xmlUpdate(null, this.xmlRoot);
-            this.$properties = fragment.properties;
-            this.select(apf.xmldb.findHtmlNode(this.$properties.selectSingleNode(".//prop"), this));
-        }
-    };
-    
-    this.$load = function(xmlNode){
-        var p = this.$getProperties();
-        if (!p) return false;
-
-        var output = [];
-        var docId = this.documentId = apf.xmldb.getXmlDocId(p);
-
-        //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(xmlNode, this); //@todo apf3 potential cleanup problem
-        //apf.xmldb.addNodeListener(this.xmlRoot, this);
-
-        var _self = this, doc = p.ownerDocument;
-        (function walk(nodes, parent, depth){
-            for (var u, s, cell, sLid, pnode, html, node, i = 0, l = nodes.length; i < l; i++) {
-                node = nodes[i];
-                _self.$getNewContext("row") 
-                html = _self.$getLayoutNode("row");
-                
-                if (node[apf.TAGNAME] == "group") {
-                    _self.$getNewContext("cell");
-                    apf.setStyleClass(html, "heading");
-
-                    cell = html.appendChild(_self.$getLayoutNode("cell"));
-                    apf.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
-                        (node.getAttribute("caption") || "").trim() || ""); //@todo for IE but seems not a good idea
-                
-                    //group|
-                    pnode = html.appendChild(doc.createElement("blockquote"));
-                    walk(node.selectNodes("prop"), pnode, depth);
-                    html.insertBefore(u = doc.createElement("u"), html.firstChild).appendChild(doc.createTextNode(" "));
-                    u.setAttribute("class", "min");
-                }
-                else {
-                    apf.xmldb.nodeConnect(docId, node, html, _self);
-                
-                    //Build the Cells
-                    _self.$getNewContext("cell");
-                    h = _self.$headings[0];
-        
-                    cell = html.appendChild(_self.$setStyleClass(_self.$getLayoutNode("cell"), h.$className));
-                    apf.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
-                        (node.getAttribute("caption") || "").trim() || ""); //@todo for IE but seems not a good idea
-
-                    if (depth)
-                        cell.firstChild.setAttribute("style", "padding-left:" + (depth * 15) + "px");
-                    
-                    _self.$getNewContext("cell");
-                    h = _self.$headings[1];
-
-                    cell = html.appendChild(_self.$setStyleClass(_self.$getLayoutNode("cell"), h.$className));
-                    apf.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
-                        ((apf.lm.compile(node.getAttribute("value"), {nostring: true}))(_self.xmlRoot) || "") || ""); //@todo for IE but seems not a good idea
-                    
-                    if ((s = node.selectNodes("prop")).length) {
-                        pnode = html.appendChild(doc.createElement("blockquote"));
-                        pnode.setAttribute("style", "display:none;overflow:hidden;height:0;");
-                        walk(s, _self.$getLayoutNode("heading", "container", pnode), depth + 1);
-                        
-                        //Add opener
-                        html.insertBefore(u = doc.createElement("u"), html.firstChild).appendChild(doc.createTextNode(" "));
-                        u.setAttribute("class", "plus");
-                    }
-                }
-
-                if (!parent)
-                    output.push(html);
-                else
-                    parent.appendChild(html);
-            }
-        })(p.selectNodes("group|prop"), null, 0);
-        
-        apf.insertHtmlNodes(output, this.$body);
-        
-        this.setProperty("root", this.xmlRoot); //or xmlNode ??
-
-        //@todo select the first one
-        var prop = p.selectSingleNode(".//prop");
-        if (prop) {
-            this.select(this.$findHtmlNode(
-              prop.getAttribute(apf.xmldb.xmlIdTag) 
-              + "|" + this.$uniqueId));
-        }
-        
-        //@todo most unoptimized way possible:
-        if (this.filter && this.$allowLoad != 2) {
-            delete this.$searchProperties;
-            this.$propHandlers["filter"].call(this, this.filter);
-        }
-    }
-    
-    this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
-        if (xmlNode != this.xmlRoot)
-            return;
-
-        if (UndoObj && this.$lastEditor[0] == UndoObj.amlNode) {
-            this.$lastEditor[1].firstChild.innerHTML = 
-                ((apf.lm.compile(this.$lastEditor[2].getAttribute("value"), {
-                    nostring: true
-                }))(this.xmlRoot) || "") || "";
-        }
-        else {
-            var p = this.$getProperties();
-            if (!p) 
-                return;
-            
-            var node, htmlNode, nodes = p.selectNodes(".//group/prop");
-            for (var i = 0, l = nodes.length; i < l; i++) {
-                node     = nodes[i];
-                htmlNode = this.$findHtmlNode(
-                    node.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
-                
-                htmlNode.childNodes[htmlNode.firstChild.tagName == "U" ? 2 : 1]
-                  .firstChild.innerHTML = 
-                    ((apf.lm.compile(node.getAttribute("value"), {
-                        nostring: true
-                    }))(this.xmlRoot) || "") || "";
-            }
-        }
-    }
-    
-    this.$hideEditor = function(remove){
-        if (this.$lastEditor) {
-            //this.$lastEditor[0].$blur();
-            this.$lastEditor[0].setProperty("visible", false);
-            
-            if (remove) {
-                var pNode = this.$lastEditor[0].$ext.parentNode;
-                pNode.removeChild(this.$lastEditor[0].$ext);
-                pNode.removeAttribute("id");
-                delete pNode.onresize;
-            }
-            
-            var nodes = this.$lastEditor[1].childNodes;
-            for (var i = 0, l = nodes.length; i < l; i++) {
-                if (!nodes[i].host)
-                    nodes[i].style.display = "";
-            }
-            
-            delete this.$lastEditor;
-        }
-    }
-    
-    this.clearSelection = function(){
-        this.$setStyleClass(this.$selected, "", ["selected"]);
-        delete this.$selected;
-        this.$hideEditor();
-    }
-    
-    this.select = function(htmlNode){
-        if (this.disabled) //@todo apf3.0 userAction
-            return;
-        
-        
-        if (this.$selected == htmlNode) {
-            /*var oEditor = this.$lastEditor[0];
-            $setTimeout(function(){
-                oEditor.focus();
-            });*/
-            
-            return;
-        }
-
-        if (this.$selected)
-            this.$setStyleClass(this.$selected, "", ["selected"]);
-
-        this.$setStyleClass(htmlNode, "selected");
-        this.$selected = htmlNode;
-
-        this.$hideEditor();
-        
-        var prop = apf.xmldb.getNode(htmlNode);
-        var _self = this;
-        
-        this.setProperty("selected", prop);
-        
-        /*
-            - editor (name of widget, lm function returning amlNode or lm template ref)
-            - children being aml nodes
-         */
-        var editParent = this.$selected.childNodes[this.$selected.firstChild.tagName == "U" ? 2 : 1];
-        var oEditor, editor = prop.getAttribute("editor");
-        var ceditor = apf.lm.compile(editor, {xpathmode: 2});
-        if (ceditor.type == 2) {
-            
-            if (!editor) {
-                if (prop.childNodes.length) //It's a group
-                    return;
-                else 
-                    throw new Error("Missing editor attribute on property element: " + prop.xml); //@todo apf3.0 make into proper error
-            }
-            
-            
-            if (!this.$editors[editor]) {
-                var constr = apf.namespaces[apf.ns.aml].elements[editor];
-                var isTextbox = "textarea|textbox|secret".indexOf(editor) > -1;
-                var info   = {
-                    htmlNode : editParent,
-                    width    : "100%+2",
-                    height   : 19,
-                    style    : "position:relative;", //z-index:10000
-                    value    : "[{" + this.id + ".root}::" 
-                        + (v = prop.getAttribute("value")).substr(1, v.length - 2) 
-                        + "]",
-                    focussable : false,
-                    realtime   : !isTextbox
-                };
-                if (isTextbox) {
-                    info.focusselect = true;
-                    info.onkeydown = function(e){
-                        if (e.keyCode == 13)
-                            this.change(this.getValue());
-                    }
-                }
-                else if (editor == "checkbox")
-                    info.values = "true|false";    
-                
-                //@todo copy all non-known properties of the prop element
-
-                if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
-                    info.caption   = "[text()]";
-                    info.eachvalue = "[@value]";
-                    info.each      = "item";
-                    info.model     = "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}";
-                }
-
-                oEditor = this.$editors[editor] = new constr(info);
-                
-                var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
-                if (box[1] || box[3]) {
-                    oEditor.setAttribute("width", "100%+2-" + (box[1] + box[3]));
-                }
-                else if (!box[3])
-                    oEditor.$ext.style.marginLeft = "-1px";
-
-                //oEditor.$focussable = false;
-                /*oEditor.addEventListener("focus", function(){
-                    _self.focus();
-                    this.$focus();
-                });*/
-                oEditor.parentNode   = this;
-                oEditor.$focusParent = this;
-                oEditor.setAttribute("focussable", "true");
-                //delete oEditor.parentNode;
-                
-                //@todo set actiontracker
-                oEditor.$parentId = editParent.getAttribute("id");
-                oEditor.$parentRsz = editParent.onresize;
-                
-                //Patch oEditor to forward change
-                oEditor.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
-                    if (atAction == "setAttribute" && !args[2])
-                        atAction = "removeAttribute";
-                    
-                    this.parentNode.$executeAction.call(this.parentNode, 
-                        atAction, args, action, xmlNode, noevent, contextNode, multiple);
-                }
-            }
-            else {
-                oEditor = this.$editors[editor];
-
-                if (oEditor.hasFeature(apf.__MULTISELECT__)) {
-                    oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");
-                }
-
-                oEditor.setAttribute("value", "[{" + this.id + ".root}::" 
-                    + (v = prop.getAttribute("value")).substr(1, v.length - 2) 
-                    + "]");
-
-                oEditor.setProperty("visible", true);
-                if (oEditor.$ext.parentNode 
-                  && oEditor.$ext.parentNode.nodeType == 1
-                  && !apf.hasSingleResizeEvent) {
-                    if (!oEditor.$parentRsz) 
-                        oEditor.$parentRsz = oEditor.$ext.parentNode.onresize;
-                    oEditor.$ext.parentNode.removeAttribute("id");
-                    delete oEditor.$ext.parentNode.onresize;
-                }
-
-                editParent.appendChild(oEditor.$ext);
-                editParent.setAttribute("id", editParent.$parentId);
-                if (oEditor.$parentRsz && !apf.hasSingleResizeEvent) {
-                    editParent.onresize = oEditor.$parentRsz;
-                    editParent.onresize();
-                }
-            }
-            
-            /*setTimeout(function(){
-                oEditor.focus();
-            });*/
-        }
-        else {
-            //Create dropdown 
-            
-            var obj = ceditor.call(this, this.xmlRoot);
-            if (obj.localName == "template") {
-                //add template contents to dropped area
-            }
-            else {
-                //add xml into dropped area
-            }
-        }
-        
-        var nodes = editParent.childNodes;
-        for (var i = 0, l = nodes.length; i < l; i++) {
-            if (!nodes[i].host)
-                nodes[i].style.display = "none";
-        }
-
-        this.$lastEditor = [oEditor, editParent, prop];
-    }
-    
-    this.addEventListener("$clear", function(e){
-        this.$hideEditor(true);
-    });
-    
-    /*this.addEventListener("blur", function(){
-        if (this.$lastEditor)
-            this.$lastEditor[0].$blur();
-    });
-    
-    this.addEventListener("focus", function(){
-        if (this.$lastEditor)
-            this.$lastEditor[0].$focus();
-    });*/
-    
-    /**** Init ****/
-
-    this.$draw = function(){
-        //Build Main Skin
-        this.$ext     = this.$getExternal();
-        this.$body    = this.$getLayoutNode("main", "body", this.$ext);
-        this.$head    = this.$getLayoutNode("main", "head", this.$ext);
-        this.$pointer = this.$getLayoutNode("main", "pointer", this.$ext);
-        this.$container = this.$body;
-
-        if (this.$head.firstChild)
-            this.$head.removeChild(this.$head.firstChild);
-        if (this.$body.firstChild)
-            this.$body.removeChild(this.$body.firstChild);
-
-        var widthdiff = this.$widthdiff = this.$getOption("main", "widthdiff") || 0;
-        this.$defaultwidth = this.$getOption("main", "defaultwidth") || "100";
-        this.$useiframe    = apf.isIE && (apf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
-
-        var _self = this;
-        
-        //Initialize Iframe 
-        if (this.$useiframe && !this.oIframe) {
-            //this.$body.style.overflow = "hidden";
-            //var sInt = this.$body.outerHTML 
-            var sClass   = this.$body.className;
-            //this.$body.parentNode.removeChild(this.$body);
-            this.oIframe = this.$body.appendChild(document.createElement(apf.isIE 
-                ? "<iframe frameborder='0'></iframe>"
-                : "iframe"));
-            this.oIframe.frameBorder = 0;
-            this.oWin = this.oIframe.contentWindow;
-            this.oDoc = this.oWin.document;
-            this.oDoc.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
-                <html xmlns="http://www.w3.org/1999/xhtml">\
-                    <head><script>\
-                        apf = {\
-                            lookup : function(uid){\
-                                return window.parent.apf.lookup(uid);\
-                            },\
-                            Init : {add:function(){},run:function(){}}\
-                        };</script>\
-                    </head>\
-                    <body></body>\
-                </html>');
-            //Import CSS
-            //this.oDoc.body.innerHTML = sInt;
-            this.$body = this.oDoc.body;//.firstChild;
-            this.$body.className = sClass;//this.oIframe.parentNode.className;
-            this.oDoc.documentElement.className = this.$ext.className;
-            //this.oDoc.body.className = this.$ext.className;
-
-            apf.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
-            
-            if (apf.isIE) //@todo this can be removed when focussing is fixed for this component
-                this.$setStyleClass(this.oDoc.documentElement, this.$baseCSSname + "Focus");
-            
-            apf.convertIframe(this.oIframe, true);
-
-            if (apf.getStyle(this.oDoc.documentElement, "overflowY") == "auto") {
-                //@todo ie only
-                this.oIframe.onresize = function(){
-                    _self.$head.style.marginRight = 
-                      _self.oDoc.documentElement.scrollHeight > _self.oDoc.documentElement.offsetHeight 
-                        ? "16px" : "0";
-                }
-                
-                this.addEventListener("afterload", this.oIframe.onresize);
-                this.addEventListener("xmlupdate", this.oIframe.onresize);
-            }
-            
-            this.oDoc.documentElement.onmousedown = function(e){
-                if (!e) e = _self.oWin.event;
-                if ((e.srcElement || e.target).tagName == "HTML")
-                    apf.popup.forceHide();
-            }
-                        
-            this.oDoc.documentElement.onscroll = 
-                function(){
-                    if (_self.$isFixedGrid)
-                        _self.$head.scrollLeft = _self.oDoc.documentElement.scrollLeft;
-                };
-        }
-        else {
-            if (apf.getStyle(this.$body, "overflowY") == "auto") {
-                this.$resize = function(){
-                    _self.$head.style.marginRight = 
-                      _self.$body.scrollHeight > _self.$body.offsetHeight 
-                        ? "16px" : "0";
-                }
-                
-                
-                this.addEventListener("resize", this.$resize);
-                
-                
-                this.addEventListener("afterload", this.$resize);
-                this.addEventListener("xmlupdate", this.$resize);
-            }
-            
-            this.$body.onmousedown = function(e){
-                if (!e) e = event;
-                if ((e.srcElement || e.target) == this)
-                    apf.popup.forceHide();
-            }
-            
-            this.$body.onscroll = 
-                function(){
-                    if (_self.$isFixedGrid)
-                        _self.$head.scrollLeft = _self.$body.scrollLeft;
-                };
-        }
-        
-        var _self = this;
-        this.$body.onmousedown = function(e){
-            if (!e) e = event;
-            var target = e.srcElement || e.target;
-            
-            if (target == this) return;
-            
-            if (target.tagName == "U") {
-                _self.$slideToggle(target);
-                return;
-            }
-            
-            while (target.host || (target.getAttribute(apf.xmldb.htmlIdTag) || "").indexOf("|") == -1) {
-                target = target.parentNode;
-                if (target == this) return;
-            }
-
-            _self.select(target);
-        }
-    };
-    
-    this.$loadAml = function(x){
-        //Create two columns
-        this.$headings = [
-            new apf.BindingColumnRule().$draw(this, "Property", this.$columns[0], "first"),
-            new apf.BindingColumnRule().$draw(this, "Value", this.$columns[1])
-        ];
-    };
-    
-    this.$destroy = function(){
-        apf.popup.removeContent(this.$uniqueId);
-        
-        for (var prop in this.$editors) {
-            this.$editors[prop].destroy();
-        }
-        
-        this.$ext.onclick = null;
-    };
-
-}).call(apf.propedit.prototype = new apf.DataBinding());
-
-
-apf.aml.setElement("propedit",    apf.propedit);
-apf.aml.setElement("column",      apf.BindingColumnRule);
-apf.aml.setElement("description", apf.BindingRule);
-apf.aml.setElement("color",       apf.BindingRule);
 
 
 
@@ -67592,17 +58532,6 @@ apf.radiobutton = function(struct, tagName){
     };
     
     
-    this.$getActiveElements = function() {
-        // init $activeElements
-        if (!this.$activeElements) {
-            this.$activeElements = {
-                oInput       : this.oInput
-            }
-        }
-
-        return this.$activeElements;
-    };
-    
 }).call(apf.radiobutton.prototype = new apf.Presentation());
 
 apf.aml.setElement("radiobutton", apf.radiobutton);
@@ -67700,7 +58629,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/remote.js)SIZE(20984)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/remote.js)SIZE(20970)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68489,7 +59418,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(32190)TIME(Wed, 28 Mar 2012 08:39:04 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(32602)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68517,7 +59446,6 @@ apf.aml.setElement("script", apf.script);
 //@todo: fix the stuff with all the uppercase variable and function names...wazzup?
 
 /**
- * This library needs to be refactored.
  * @constructor
  * @private
  */
@@ -68528,22 +59456,21 @@ apf.scrollbar = function(struct, tagName){
 (function(){
     this.realtime = true;
     this.visible  = false;
-    this.$visible = true;
     this.overflow = "scroll";
+    this.position = 0;
     
-    this.$scrollSizeValue  = 0;
-    this.$stepValue    = 0.03;
-    this.$bigStepValue = 0.1;
-    this.$curValue     = 0;
-    this.$timer        = null;
+    this.$visible         = true;
+    this.$scrollSizeValue = 0;
+    this.$stepValue       = 0.03;
+    this.$bigStepValue    = 0.1;
+    this.$timer           = null;
     this.$scrollSizeWait;
     this.$slideMaxSize;
     
     this.$booleanProperties = ["showonscroll"];
 
     this.addEventListener("focus", function(){
-        if (this.$host.focus && this.$host.$isWindowContainer !== true)
-            this.$host.focus();
+        this.$viewport.focus();
     });
 
     this.$propHandlers["showonscroll"] = function(value){
@@ -68586,11 +59513,11 @@ apf.scrollbar = function(struct, tagName){
                                "Could not find element to attach scrollbar to: " + value));
                         }
                     }
-                    _self.$attach(amlNode);
+                    _self.attach(amlNode);
                 });
             }
             else
-                this.$attach(amlNode);
+                this.attach(amlNode);
         }
     }
     
@@ -68600,188 +59527,70 @@ apf.scrollbar = function(struct, tagName){
         }
     });
     
-    this.$detach = function(){
-        
-    }
-    
-    //@deprecated
-    this.attach = function(oHtml, o, scroll_func){
-        this.$attach(o);
-        this.addEventListener("scroll", scroll_func);
-    }
-    
-    this.$getHtmlHost = function(){
-        var h = this.$host && (this.$host.$int || this.$host.$container);
-        return (h && (h.tagName == "BODY" || h.tagName == "HTML") ? (apf.isSafari || apf.isChrome ? document.body : h.parentNode) : h);
-    }
-    
-    this.$getViewPort = function(oHtml){
-        return oHtml.tagName == "HTML" || oHtml.tagName == "BODY" ? apf[this.$windowSize]() : oHtml[this.$offsetSize];
-    }
-    this.$getScrollHeight = function(oHtml){
-        //add margin + bottom padding
-        return (apf.isIE && oHtml.lastChild 
-            ? oHtml.lastChild[this.$offsetPos] 
-                + oHtml.lastChild[this.$offsetSize] 
-                + apf.getBox(apf.getStyle(oHtml, "padding"))[2]
-                + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)
-            : oHtml[this.$scrollSize]);
-    }
-    
-    //oHtml, o, scroll_func
-    this.$attach = function(amlNode){
-        if (!amlNode)
-            return apf.console.warn("Scrollbar could not connect to amlNode");
-        
-        if (amlNode.host)
-            amlNode = amlNode.host;
-
-        if (!amlNode.nodeFunc && amlNode.style) {
-            this.$host = {
-                empty : true,
-                $int  : amlNode
-            };
+    this.attach = function(viewport){
+        if (viewport.nodeFunc) {
+            
+                viewport = new apf.ViewPortAml(viewport);
         }
-        else {
-            this.$host = amlNode;
+        else if (viewport.style)
+            viewport = new apf.ViewPortHtml(viewport);
+        
+        this.$attach(viewport);
+    }
+    
+    /**
+     * @todo detach
+     */
+    this.$attach = function(viewport){
+        if (!viewport)
+            return apf.console.warn("Scrollbar could not connect to viewport");
+        
+        var _self = this;
+        
+        this.$viewport = viewport;
+        
+        if (this.$viewport.scrollbar != this) {
+            this.$viewport.setScrollbar(this, function(e){
+                if (_self.$viewport != viewport)
+                    return;
+                
+                _self.$update();
+                
+                if (_self.showonscroll) { // && e.byUser) {
+                    _self.scrolling = true;
+                    
+                    clearTimeout(_self.$hideOnScrollTimer);
+                    if (_self.$hideOnScrollControl)
+                        _self.$hideOnScrollControl.stop();
+                    
+                    apf.setOpacity(_self.$ext, 1);
+                    !_self.visible ? _self.show() : _self.$ext.style.display = "block";
+                    _self.$update();
+                    
+                    _self.$hideOnScrollTimer = _self.animHideScrollbar(500, function(){
+                        _self.scrolling = false;
+                    });
+                }
+            });
         }
 
-        //oHtml.parentNode.appendChild(this.$ext);
-        //if (this.overflow == "scroll") {
-        //    this.$ext.style.display = "block";
-        //    this.enable();
-        //}
-        
-        //this.$ext.style.zIndex  = 100000;
-        //this.$ext.style.left    = "166px";//(o.offsetLeft + o.offsetWidth) + "px";
-        //this.$ext.style.top     = "24px";//o.offsetTop + "px";
-        //this.$ext.style.height  = "160px";//o.offsetHeight + "px";
-        
         this.$recalc();
-        
-        //this.$viewheight / this.$scrollSizeheight
-        //if (o.length) {
-        //    this.$caret.style.height = Math.max(5, ((o.limit / o.length)
-        //        * this.$slideMaxSize)) + "px";
-        //    if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
-        //        this.$ext.style.display = "none";
-        //}
-
-        var scrollFunc = function(e){
-            if (e.returnValue === false)
-                return;
-
-            scrolling = apf.isIE;
-            var oHtml = _self.$getHtmlHost();
-
-            var div = (_self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml));
-            if (div) {
-                if (oHtml[_self.$scrollPos] == 0 && e.delta > 0) {
-                    if (_self.$lastScrollState === 0)
-                        return;
-                    setTimeout(function(){_self.$lastScrollState = 0;}, 300);
-                }
-                else if (oHtml[_self.$scrollPos] == _self.$getScrollHeight(oHtml) - oHtml[_self.$offsetSize] && e.delta < 0) {
-                    if (_self.$lastScrollState === 1)
-                        return;
-                    setTimeout(function(){_self.$lastScrollState = 1;}, 300);
-                }
-                delete _self.$lastScrollState;
-                _self.$curValue = (oHtml[_self.$scrollPos] + -1 * e.delta * Math.min(45, apf[_self.$getInner](oHtml)/10)) / div;
-                _self.setScroll(null, null, null, true);
-                e.preventDefault();
-            }
-        };
-        
-        var _self = this, scrolling;
-        if (!this.$host.empty) {
-            amlNode.addEventListener("resize", function(){ //@todo cleanup?
-                _self.$update();
-            });
-            if (amlNode.hasFeature(apf.__DATABINDING__)) {
-                amlNode.addEventListener("afterload", function(){
-                    _self.$update();
-                });
-                amlNode.addEventListener("xmlupdate", function(){
-                    _self.$update();
-                });
-            }
-            
-            amlNode.addEventListener("prop.value", function(){
-                _self.$update();
-            });
-            
-            if (amlNode.$isTreeArch) {
-                amlNode.addEventListener("collapse", function(){
-                    _self.$update();
-                });
-                amlNode.addEventListener("expand", function(){
-                    _self.$update();
-                });
-            }
-            
-            if (!this.horizontal)
-                amlNode.addEventListener("mousescroll", scrollFunc);
-        }
-        else {
-            if (!this.horizontal) {
-                apf.addEventListener("mousescroll", function(e){
-                    if (amlNode == e.target || (amlNode == document.documentElement && e.target == document.body))
-                        scrollFunc(e);
-                })
-            }
-        }
-        
-        var oHtml = _self.$getHtmlHost();
-        apf.addListener(oHtml, "scroll", function(){
-            if (_self.animating || !_self.$visible) 
-                return;
-            
-            if (!scrolling) {
-                var oHtml = _self.$getHtmlHost();
-                var m = _self.$getScrollHeight(oHtml) - _self.$getViewPort(oHtml);
-                var p = oHtml[_self.$scrollPos] / m;
-                if (Math.abs(_self.$curValue - p) > 1/m) {
-                    _self.$curValue = p;
-                    _self.setScroll(null, null, null, true);
-                }
-                return false;
-            }
-            scrolling = false;
-        });
-        
-        if ("HTML|BODY".indexOf(oHtml.tagName) > -1) {
-            var lastHeight = oHtml.scrollHeight;
-            setInterval(function(){
-                if (lastHeight != oHtml.scrollHeight) {
-                    lastHeight = oHtml.scrollHeight;
-                    _self.$recalc();
-                    _self.$update();
-                    //_self.setScroll(null, true);*/
-                }
-            }, 100);
-        }
-        
         this.$update();
         
         return this;
     };
     
     this.$resize = function(){
-        var oHtml = this.$getHtmlHost();
-        if (!oHtml || !oHtml.offsetHeight) 
+        if (!this.$viewport || !this.$viewport.isVisible())
             return;
         
         this.$recalc();
         this.$update();
-        this.setScroll(null, true, true);
+        this.setScrollPosition(this.position, true);
     }
     
     this.$recalc = function(){
-        var oHtml = this.$getHtmlHost();
-        if (!oHtml) return;
-        
-        this.$viewheight         = this.$getViewPort(oHtml);
+        this.$viewheight         = this.$viewport.getHeight();
         this.$scrollSizeheight   = this.$viewheight;
         this.$scrollSizeWait     = 0;//(this.$host.len * COLS)/2;
         this.$stepValue          = (this.$viewheight / this.$scrollSizeheight) / 20;
@@ -68801,15 +59610,15 @@ apf.scrollbar = function(struct, tagName){
         if (this.showonscroll && !this.$ext.offsetHeight)
             return;
 
-        var oHtml = this.$getHtmlHost();
-        if (!oHtml || !oHtml.offsetHeight) //@todo generalize this to resize for non-ie
+        var viewport = this.$viewport;
+        if (!viewport || !viewport.isVisible())
             return;
-        
+
         this.$updating = true;
         
         //Disable scrollbar
-        var vp = this.$getViewPort(oHtml);
-        var sz = this.$getScrollHeight(oHtml);//this.$getScrollHeight(oHtml);
+        var vp = viewport.getHeight();
+        var sz = viewport.getScrollHeight();
 
         if (vp >= sz) {
             if (this.overflow == "scroll") {
@@ -68848,81 +59657,45 @@ apf.scrollbar = function(struct, tagName){
                 * this.$slideMaxSize)) - apf[this.$getDiff](this.$caret)) + "px";
             //if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
                 //this.$ext.style.display = "none";
-            
-            this.$curValue = oHtml[this.$scrollPos] / (sz - vp);
+
+            this.position = viewport.getScrollTop() / (sz - vp);
 
             var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
             this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
-            - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";
+            - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.position) + "px";
         }
         
         this.$updating = false;
     }
     
-    this.setScroll = function (timed, noEvent, noUpdateParent, byUser){
-        if (this.$curValue > 1) 
-            this.$curValue = 1;
-        if (this.$curValue < 0) 
-            this.$curValue = 0;
-
-        if (this.$curValue == NaN) {
+    this.setScrollPosition = function(position, preventEvent) {
+        if (position == NaN) {
             
             apf.console.warn("Scrollbar is hidden while scrolling.");
             
             return;
         }
         
+        if (position > 1) 
+            position = 1;
+        if (position < 0) 
+            position = 0;
+        
+        this.position = position;
+        
+        // Set the caret position
         var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
         this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
-            - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.$curValue) + "px";
+            - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.position) + "px";
 
+        // Don't signal anything when animating or when not visible
         if (this.animating || !this.$visible) 
             return;
 
-        var oHtml, from, viewport, to;
-        if (this.$host) {
-            oHtml    = this.$getHtmlHost();
-            from     = oHtml[this.$scrollPos];
-            viewport = this.$getViewPort(oHtml);
-            to       = (this.$getScrollHeight(oHtml) - viewport) * this.$curValue;
-        }
+        var vp   = this.$viewport;
+        var to   = (vp.getScrollHeight() - vp.getHeight()) * position;
 
-        if (!noUpdateParent) {
-            if (this.$host)
-                oHtml[this.$scrollPos] = to;
-        }
-
-        if (!noEvent) {
-            (this.$host && this.$host.dispatchEvent 
-              ? this.$host 
-              : this).dispatchEvent("scroll", {
-                    timed        : timed,
-                    viewportSize : viewport,
-                    scrollPos    : to,
-                    scrollSize   : this.$getScrollHeight(oHtml),
-                    from         : from,
-                    pos          : this.pos
-                });
-        }
-        
-        if (this.showonscroll && byUser) {
-            var _self = this;
-            this.scrolling = true;
-            
-            clearTimeout(this.$hideOnScrollTimer);
-            if (_self.$hideOnScrollControl)
-                _self.$hideOnScrollControl.stop();
-            
-            apf.setOpacity(this.$ext, 1);
-            !this.visible ? this.show() : this.$ext.style.display = "block";
-            this.$update();
-            
-            this.$hideOnScrollTimer = this.animHideScrollbar(500, function(){
-                _self.scrolling = false;
-            });
-        }
-        
-        this.pos = this.$curValue;
+        vp.setScrollTop(to, preventEvent);
     }
     
     this.animShowScrollbar = function(timeout, cb){
@@ -68963,6 +59736,7 @@ apf.scrollbar = function(struct, tagName){
                 type : "fade",
                 from : 1,
                 to   : 0,
+                steps : 20,
                 onfinish : function(){
                     _self.$ext.style.display = "none";
                     apf.setOpacity(_self.$ext, 1);
@@ -68976,8 +59750,7 @@ apf.scrollbar = function(struct, tagName){
     this.scrollUp = function (v){
         if (v > this.$caret[this.$offsetPos]) 
             return this.$ext.onmouseup();
-        this.$curValue -= this.$bigStepValue;
-        this.setScroll(null, null, null, true);
+        this.setScrollPosition(this.position + this.$bigStepValue);
         
         if (this.$slideFast) {
             this.$slideFast.style[this.$size] = Math.max(1, this.$caret[this.$offsetPos]
@@ -68989,36 +59762,13 @@ apf.scrollbar = function(struct, tagName){
     this.scrollDown = function (v){
         if (v < this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) 
             return this.$ext.onmouseup();
-        this.$curValue += this.$bigStepValue;
-        this.setScroll(null, null, null, true);
+        this.setScrollPosition(this.position + this.$bigStepValue);
         
         if (this.$slideFast) {
             this.$slideFast.style[this.$pos]    = (this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) + "px";
             this.$slideFast.style[this.$size] = Math.max(1, apf[this.$getInner](this.$caret.parentNode) - this.$slideFast[this.$offsetPos]
                 - this.$btnUp[this.$offsetSize]) + "px";
         }
-    }
-    
-    this.getPosition = function(){
-        return this.pos;
-    };
-    
-    this.setPosition = function(pos, noEvent){
-        this.$curValue = pos;
-        this.setScroll(null, noEvent);
-    };
-    
-    this.updatePos = function(){
-        if (this.animating || !this.$visible) 
-            return;
-        
-        var o = this.$host;
-        var indHeight = Math.round(Math.max(10, (((o.limit - 1) / o.length) * this.$slideMaxSize)));
-        this.$caret.style[this.$pos] = (this.$curValue * (this.$slideMaxSize - indHeight) + this.$btnUp[this.$offsetSize]) + "px";
-    }
-    
-    this.$onscroll = function(timed, perc){
-        this.$host[this.$scrollPos] = (this.$host[this.$scrollSize] - this.$host[this.$offsetSize] + 4) * this.$curValue;
     }
     
     this.$draw = function(){
@@ -69066,17 +59816,14 @@ apf.scrollbar = function(struct, tagName){
                 this.className = "btnup btnupdown";
                 clearTimeout(_self.$timer);
                 
-                _self.$curValue -= _self.$stepValue;
-                
-                _self.setScroll(null, null, null, true);
+                _self.setScrollPosition(_self.position - _self.$stepValue);
                 apf.stopPropagation(e);
                 
                 //apf.window.$mousedown(e);
                 
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
-                        _self.$curValue -= _self.$stepValue;
-                        _self.setScroll(null, null, null, true);
+                        _self.setScrollPosition(_self.position - _self.$stepValue);
                     }, 20);
                 }, 300);
             };
@@ -69100,16 +59847,14 @@ apf.scrollbar = function(struct, tagName){
                 this.className = "btndown btndowndown";
                 clearTimeout(_self.$timer);
                 
-                _self.$curValue += _self.$stepValue;
-                _self.setScroll(null, null, null, true);
+                _self.setScrollPosition(_self.position + _self.$stepValue)
                 apf.stopPropagation(e);
                 
                 //apf.window.$mousedown(e);
                 
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
-                        _self.$curValue += _self.$stepValue;
-                        _self.setScroll(null, null, null, true);
+                        _self.setScrollPosition(_self.position + _self.$stepValue)
                     }, 20);
                 }, 300);
             };
@@ -69167,14 +59912,13 @@ apf.scrollbar = function(struct, tagName){
                     next = max;
                 //_self.$caret.style.top = next + "px"
 
-                _self.$curValue = (next - min) / (max - min);
-                _self.setScroll(true);
+                _self.setScrollPosition((next - min) / (max - min));
             };
             
             document.onmouseup = function(){
                 _self.$startPos = false;
                 if (!_self.realtime)
-                    _self.setScroll();
+                    _self.setScrollPosition(_self.position);
                 
                 if (this.releaseCapture)
                     this.releaseCapture();
@@ -69202,8 +59946,7 @@ apf.scrollbar = function(struct, tagName){
             clearInterval(_self.$timer);
             var offset;
             if (e[_self.$eventDir] > _self.$caret[_self.$offsetPos] + _self.$caret[_self.$offsetSize]) {
-                _self.$curValue += _self.$bigStepValue;
-                _self.setScroll(true, null, null, true);
+                _self.setScrollPosition(_self.position + _self.$bigStepValue);
                 
                 if (_self.$slideFast) {
                     _self.$slideFast.style.display = "block";
@@ -69221,8 +59964,7 @@ apf.scrollbar = function(struct, tagName){
                 }, 300);
             }
             else if (e[_self.$eventDir] < _self.$caret[_self.$offsetPos]) {
-                _self.$curValue -= _self.$bigStepValue;
-                _self.setScroll(true, null, null, true);
+                _self.setScrollPosition(_self.position - _self.$bigStepValue);
                 
                 if (_self.$slideFast) {
                     _self.$slideFast.style.display = "block";
@@ -69245,7 +59987,7 @@ apf.scrollbar = function(struct, tagName){
                 
             clearInterval(_self.$timer);
             if (!_self.realtime)
-                _self.setScroll(null, null, null, true);
+                _self.setScrollPosition(_self.position);
             if (_self.$slideFast)
                 _self.$slideFast.style.display = "none";
         };
@@ -69285,7 +60027,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
         this.$sharedScrollbar = self[name] || false;
         
         function hasOnScroll(){
-            return apf.isTrue(sb.getAttribute("showonscroll"));
+            return sb && apf.isTrue(sb.getAttribute("showonscroll"));
         }
         
         var oHtml = this.$container || this.$int || this.$ext, timer, sb;
@@ -69296,7 +60038,20 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             
             sb = _self.$sharedScrollbar;
             
-            if (sb.$host != _self) {
+            if (!sb.$addedMouseOut) {
+                apf.addListener(sb.$ext, "mouseout", function(e){
+                    if (!hasOnScroll())
+                        return;
+
+                    if (apf.findHost(e.fromElement) == sb && apf.findHost(e.toElement) != sb) {
+                        clearTimeout(timer);
+                        hideScrollbar();
+                    }
+                });
+                sb.$addedMouseOut = true;
+            }
+            
+            if (!sb.$viewport || sb.$viewport.amlNode != _self) {
                 var pNode = (_self.$ext == oHtml ? _self.$ext.parentNode : _self.$ext);
                 pNode.appendChild(sb.$ext);
                 
@@ -69311,15 +60066,19 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                 sb.setAttribute("for", _self);
                 sb.$ext.style.display = "none";
                 sb.dragging = false;
+
                 if (sb.$hideOnScrollControl)
                     sb.$hideOnScrollControl.stop();
             }
             
-            if (hasOnScroll()) {
+            if (hasOnScroll() && e) {
                 clearTimeout(timer);
+                
                 var pos = apf.getAbsolutePosition(oHtml);
-                var show = oHtml.offsetWidth - (e.clientX - pos[0]) < 25;
-                if (show && sb.$ext.style.display == "none" || !show && sb.$ext.style.display == "block") {
+                var rightPos = oHtml.offsetWidth - (e.clientX - pos[0]);
+                var show = rightPos < 25 && rightPos > right;
+                if (show && sb.$ext.style.display == "none" 
+                  || !show && sb.$ext.style.display == "block") {
                     if (show)
                         showScrollbar();
                     else
@@ -69329,6 +60088,8 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                     sb.showonscroll = true;
             }
         });
+        
+        this.$sharedScrollbarMove = mouseMove;
         
         function showScrollbar(){
             sb.setProperty("showonscroll", false);
@@ -69362,21 +60123,231 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
         apf.addListener(oHtml, "mouseout", function(e){
             if (!hasOnScroll())
                 return;
-            
-            if (apf.findHost(e.relatedTarget) == sb) {
-                apf.addListener(sb.$ext, "mouseout", function(e){
-                    hideScrollbar();
-                    
-                    apf.removeListener(sb.$ext, "mouseout", arguments.callee);
-                });
-                return;
+
+            if (apf.findHost(e.toElement) != sb) {
+                clearTimeout(timer);
+                hideScrollbar();
             }
-            
-            clearTimeout(timer);
-            hideScrollbar();
         });
     }
 };
+
+apf.ViewPortAml = function(amlNode){
+    this.amlNode = amlNode;
+    
+    var _self = this;
+    var update = function(){
+        if (_self.scrollbar)
+            _self.scrollbar.$update();
+    };
+    
+    amlNode.addEventListener("resize", update);
+    if (amlNode.hasFeature(apf.__DATABINDING__)) {
+        amlNode.addEventListener("afterload", update);
+        amlNode.addEventListener("xmlupdate", update);
+    }
+    
+    amlNode.addEventListener("prop.value", update);
+    
+    if (amlNode.$isTreeArch) {
+        amlNode.addEventListener("collapse", update);
+        amlNode.addEventListener("expand", update);
+    }
+    
+    amlNode.addEventListener("mousescroll", function(e){
+        _self.$mousescroll(e);
+    });
+    
+    var htmlNode = _self.$getHtmlHost();
+    apf.addListener(htmlNode, "scroll", function(){
+        if (_self.scrollbar.animating || !_self.scrollbar.$visible) 
+            return;
+        
+        _self.setScrollTop(this.scrollTop);
+    });
+    
+    if ("HTML|BODY".indexOf(htmlNode.tagName) > -1) {
+        var lastHeight = htmlNode.scrollHeight;
+        setInterval(function(){
+            if (lastHeight != htmlNode.scrollHeight) {
+                lastHeight = htmlNode.scrollHeight;
+                _self.scrollbar.$recalc();
+                _self.scrollbar.$update();
+            }
+        }, 100);
+    }
+};
+
+(function(){
+    this.setScrollbar = function(scrollbar, onscroll){
+       this.scrollbar = scrollbar;
+       
+       this.amlNode.addEventListener("scroll", onscroll);
+    }
+    
+    this.isVisible = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.offsetHeight || htmlNode.offsetWidth ? true : false;
+    }
+    
+    this.focus = function(){
+        if (this.amlNode.focus && this.amlNode.$isWindowContainer !== true)
+            this.amlNode.focus();
+    }
+    
+    this.getScrollTop = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.scrollTop;
+    }
+    
+    this.getScrollLeft = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.scrollLeft;
+    }
+    
+    this.getScrollHeight = function(){
+        var htmlNode = this.$getHtmlHost();
+        return (apf.isIE && htmlNode.lastChild 
+            ? htmlNode.lastChild.offsetTop 
+                + htmlNode.lastChild.offsetHeight
+                + apf.getBox(apf.getStyle(htmlNode, "padding"))[2]
+                + (parseInt(apf.getStyle(htmlNode, "marginBottom")) || 0)
+            : htmlNode.scrollHeight);
+    }
+    
+    this.getScrollWidth = function(){
+        var htmlNode = this.$getHtmlHost();
+        return (apf.isIE && htmlNode.lastChild 
+            ? htmlNode.lastChild.offsetLeft 
+                + htmlNode.lastChild.offsetWidth
+                + apf.getBox(apf.getStyle(htmlNode, "padding"))[1]
+                + (parseInt(apf.getStyle(htmlNode, "marginRight")) || 0)
+            : htmlNode.scrollWidth);
+    }
+    
+    this.getHeight = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.tagName == "HTML" || htmlNode.tagName == "BODY" 
+            ? apf.getWindowHeight() 
+            : apf.getHtmlInnerHeight(htmlNode);
+    }
+    
+    this.getWidth = function(){
+        var htmlNode = this.$getHtmlHost();
+        return htmlNode.tagName == "HTML" || htmlNode.tagName == "BODY" 
+            ? apf.getWindowHeight() 
+            : apf.getHtmlInnerWidth(htmlNode);
+    }
+    
+    this.setScrollTop = function(value, preventEvent, byUser){
+        var htmlNode = this.$getHtmlHost();
+        htmlNode.scrollTop = value;
+        
+        if (!preventEvent) {
+            this.amlNode.dispatchEvent("scroll", {
+                direction : "vertical",
+                byUser    : byUser,
+                viewport  : this,
+                scrollbar : this.scrollbar
+            });
+        }
+    }
+    
+    this.setScrollLeft = function(value, preventEvent, byUser){
+        var htmlNode = this.$getHtmlHost();
+        htmlNode.scrollLeft = value;
+        
+        if (!preventEvent) {
+            this.amlNode.dispatchEvent("scroll", {
+                direction : "horizontal",
+                byUser    : byUser,
+                viewport  : this,
+                scrollbar : this.scrollbar
+            });
+        }
+    }
+    
+    /**** Private ****/
+    
+    this.$getHtmlHost = function(){
+        var htmlNode = this.amlNode.$int || this.amlNode.$container;
+        return (htmlNode.tagName == "BODY" || htmlNode.tagName == "HTML" 
+            ? (apf.isSafari || apf.isChrome ? document.body : htmlNode.parentNode) 
+            : htmlNode);
+    }
+
+    this.$mousescroll = function(e){
+        if (this.scrollbar.horizontal)
+            return;
+        
+        if (e.returnValue === false)
+            return;
+    
+        var oHtml = this.$getHtmlHost();
+    
+        var sb  = this.scrollbar;
+        var div = this.getScrollHeight() - this.getHeight();
+        if (div) {
+            if (oHtml[sb.$scrollPos] == 0 && e.delta > 0) {
+                if (this.$lastScrollState === 0)
+                    return;
+                setTimeout(function(){this.$lastScrollState = 0;}, 300);
+            }
+            else if (oHtml[sb.$scrollPos] == this.getScrollHeight() - oHtml[sb.$offsetSize] && e.delta < 0) {
+                if (this.$lastScrollState === 1)
+                    return;
+                setTimeout(function(){this.$lastScrollState = 1;}, 300);
+            }
+            delete this.$lastScrollState;
+            
+            this.setScrollTop(this.getScrollTop()
+                + -1 * e.delta * Math.min(45, this.getHeight()/10), false, true);
+            
+            e.preventDefault();
+        }
+    }
+}).call(apf.ViewPortAml.prototype);
+
+apf.ViewPortHtml = function(htmlNode){
+    /**** Private ****/
+    
+    this.$getHtmlHost = function(){
+        return htmlNode;
+    }
+    
+    /**** Init ****/
+    
+    var _self = this;
+    
+    htmlNode = (htmlNode.tagName == "BODY" || htmlNode.tagName == "HTML" 
+        ? (apf.isSafari || apf.isChrome ? document.body : htmlNode.parentNode) 
+        : htmlNode);
+
+    apf.addEventListener("mousescroll", function(e){
+        if (htmlNode == e.target 
+          || (htmlNode == document.documentElement && e.target == document.body))
+            _self.$mousescroll(e);
+    })
+    
+    apf.addListener(htmlNode, "scroll", function(){
+        _self.setScrollTop(this.scrollTop);
+    });
+    
+    if ("HTML|BODY".indexOf(htmlNode.tagName) > -1) {
+        var lastHeight = htmlNode.scrollHeight;
+        setInterval(function(){
+            if (lastHeight != htmlNode.scrollHeight) {
+                lastHeight = htmlNode.scrollHeight;
+                _self.scrollbar.$recalc();
+                _self.scrollbar.$update();
+            }
+        }, 100);
+    }
+    
+    this.amlNode = new apf.Class().$init();
+}
+
+apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
@@ -69405,29 +60376,8 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
 
 
 
-/**
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.4
- */
-apf.services = function(struct, tagName){
-    this.$init(tagName || "services", apf.NODE_VISIBLE, struct);
-    
-    this.addEventListener("DOMNodeInsertedIntoDocument", function(aml){
-        var pNode = this.parentNode;
-        if (pNode.register)
-            pNode.register(this);
-    });
-};
 
-apf.services.prototype = new apf.AmlElement();
-apf.aml.setElement("services", apf.services);
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/skin.js)SIZE(9690)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/skin.js)SIZE(9698)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69534,8 +60484,8 @@ apf.aml.setElement("skin", apf.skin);
         
         var defer = this.attributes.getNamedItem("defer");
         if (!defer || !apf.isTrue(defer.nodeValue)) {
-            domParser.$shouldWait++;
-            this.$parseContext = domParser.$parseContext || [this.ownerDocument.documentElement];
+            domParser.$pauseParsing.apply(domParser, 
+                this.$parseContext = domParser.$parseContext || [this.ownerDocument.documentElement]);
         }
         
         //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
@@ -69549,53 +60499,10 @@ apf.aml.setElement("skin", apf.skin);
 
         if (!this.defer) {// && this.$parseContext
             var domParser = this.ownerDocument.$domParser;
-            domParser.$continueParsing.apply(domParser, this.$parseContext);
+            domParser.$continueParsing(this.$parseContext[0]);
         }
     }
     
-    
-    function loadSkinInclude(includeNode, xmlNode, path) {
-        var _self = this;
-
-        
-        apf.console.info("Loading include file: " + apf.getAbsolutePath(path, includeNode.getAttribute("src")));
-        
-
-        
-        apf.getData(
-        
-          apf.getAbsolutePath(path, includeNode.getAttribute("src")), {
-          callback: function(xmlString, state, extra){
-            if (state != apf.SUCCESS) {
-                throw new Error(apf.formatErrorString(0, _self,
-                    "Loading skin includes",
-                    "Could not load skin include: " + extra.url));
-            }
-
-            var newPart = apf.getXml(xmlString.substr(0, 8) == "<a:skin "
-                ? xmlString
-                : '<a:skin xmlns:a="http://ajax.org/2005/aml">' + xmlString + '</a:skin>');
-            apf.mergeXml(newPart, xmlNode, {beforeNode: includeNode});
-            includeNode.parentNode.removeChild(includeNode);
-            
-            var includeNodes = $xmlns(newPart, "include", apf.ns.aml);
-            _self.$includesRemaining += includeNodes.length;
-            if (includeNodes.length) {
-                var path = apf.getDirname(extra.url);
-                for (var i = 0; i < includeNodes.length; i++) {
-                    loadSkinInclude.call(_self, includeNodes[i], xmlNode, path);
-                }
-            }
-            else if (--_self.$includesRemaining == 0) {
-                
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
-                
-
-                finish.call(_self, xmlNode);
-            }
-          }
-        });
-    }
     
     
     function loadSkinFile(path){
@@ -69621,11 +60528,6 @@ apf.aml.setElement("skin", apf.skin);
                 if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                     return true;
 
-                
-                if (this.autoload) {
-                    apf.console.warn("Could not autload skin.");
-                    return finish.call(_self);
-                }
                 
 
                 throw oError;
@@ -69656,17 +60558,6 @@ apf.aml.setElement("skin", apf.skin);
             
             xmlNode.setAttribute("filename", extra.url);
             
-            
-            var includeNodes = $xmlns(xmlNode, "include", apf.ns.aml);
-            _self.$includesRemaining += includeNodes.length;
-            if (includeNodes.length) {
-                var path = apf.getDirname(extra.url);
-                for (var i = 0; i < includeNodes.length; i++) {
-                    loadSkinInclude.call(_self, includeNodes[i], xmlNode, path);
-                }
-                return;
-            }
-            else 
             
             {
                 
@@ -70839,9 +61730,6 @@ apf.spinner = function(struct, tagName){
             return;
 
         
-        if (apf.hasFocusBug)
-            apf.sanitizeTextbox(this.oInput);
-        
 
         this.focused = true;
         this.$setStyleClass(this.oInput, "focus");
@@ -70933,8 +61821,6 @@ apf.spinner = function(struct, tagName){
         this.$buttonMinus = this.$getLayoutNode("main", "buttonminus", this.$ext);
         this.oLeft = this.$getLayoutNode("main", "left", this.$ext);
 
-        
-        apf.sanitizeTextbox(this.oInput);
         
 
         var timer,
@@ -71199,19 +62085,6 @@ apf.spinner = function(struct, tagName){
     };
     
     
-    this.$getActiveElements = function() {
-        // init $activeElements
-        if (!this.$activeElements) {
-            this.$activeElements = {
-                oInput          : this.oInput,
-                $buttonPlus     : this.$buttonPlus,
-                $buttonMinus    : this.$buttonMinus
-            }
-        }
-
-        return this.$activeElements;
-    }
-    
 
 
 }).call(apf.spinner.prototype = new apf.StandardBinding());
@@ -71376,7 +62249,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(16587)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(16644)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71410,6 +62283,9 @@ apf.splitter = function(struct, tagName){
 };
 
 (function() {
+    this.minwidth    = 0;
+    this.minheight   = 0;
+    
     this.$scale = 0; // 0 both, 1 left/top, 2 right/bottom 
     
     this.$focussable = false; // This object can get the focus
@@ -72245,100 +63121,6 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/**
- * Element displaying a bar consisting of bars containing other text, icons
- * and more aml. This element is usually placed in the bottom of the screen to 
- * display context sensitive and other information about the state of the 
- * application.
- * Example:
- * <code>
- *  <a:statusbar>
- *      <a:section icon="application.png">Ajax.org</a:section>
- *      <a:section>Some status information</a:section>
- *      <a:section>
- *          <a:progressbar anchors="6 5 5 5" autostart="true" />
- *      </a:section>
- *  </a:statusbar>
- * </code>
- *
- * @constructor
- * @define statusbar
- * @allowchild bar
- * @allowchild progressbar
- * @addnode elements
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.9
- */
-apf.statusbar = function(struct, tagName){
-    this.$init(tagName || "statusbar", apf.NODE_VISIBLE, struct);
-};
-
-(function(){
-    this.$focussable     = false;
-    
-    /**** DOM Hooks ****/
-    var insertChild;
-    
-    this.addEventListener("AMLRemoveChild", function(amlNode, doOnlyAdmin){
-        if (doOnlyAdmin)
-            return;
-
-    });
-    
-    this.addEventListener("AMLInsert",insertChild = function (amlNode, beforeNode, withinParent){
-        if (amlNode.tagName != "bar")
-            return;
-        
-        amlNode.$propHandlers["caption"] = function(value){
-            apf.setNodeValue(
-                this.$getLayoutNode("bar", "caption", this.$ext), value);
-        }
-        amlNode.$propHandlers["icon"] = function(value){
-            var oIcon = this.$getLayoutNode("bar", "icon", this.$ext);
-            if (!oIcon) return;
-        
-            if (value)
-                this.$setStyleClass(this.$ext, this.$baseCSSname + "Icon");
-            else
-                this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Icon"]);
-            
-            if (oIcon.tagName == "img") 
-                oIcon.setAttribute("src", value ? this.iconPath + value : "");
-            else {
-                oIcon.style.backgroundImage = value 
-                    ? "url(" + this.iconPath + value + ")"
-                    : "";
-            }
-        }
-    });
-    
-    
-    /**** Init ****/
-    
-    this.$draw = function(){
-        //Build Main Skin
-        this.$ext = this.$getExternal();
-        this.$int = this.$getLayoutNode("main", "container", this.$ext);
-    };
-    
-    this.$loadAml = function(x){
-        var nodes = this.childNodes;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            if (nodes[i].localName == "section") {
-                nodes[i].addEventListener("DOMNodeInsertedIntoDocument", function(){
-                    this.$setStyleClass(this.$ext, this.$baseCSSname + "Last");
-                });
-                break;
-            }
-        }
-    };
-}).call(apf.statusbar.prototype = new apf.Presentation());
-
-apf.aml.setElement("statusbar", apf.statusbar);
-
-
 
 /*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
 
@@ -72362,41 +63144,6 @@ apf.aml.setElement("statusbar", apf.statusbar);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-/**
- * @todo description
- *
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       0.4
- */
-apf.style = function(struct, tagName){
-    this.$init(tagName || "style", apf.NODE_HIDDEN, struct);
-};
-
-(function(){
-    this.$focussable = false;
-    
-    this.$propHandlers["src"] = function(value){
-        apf.getData(value, {
-            callback : function(data, state){
-                if (state == apf.SUCCESS) {
-                    apf.importCssString(data);
-                }
-            }
-        });
-    }
-    
-    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        if (this.type != "text/chartcss" && this.firstChild)
-            apf.importCssString(this.firstChild.nodeValue);
-    });
-}).call(apf.style.prototype = new apf.AmlElement());
-
-apf.aml.setElement("style", apf.style);
-apf.xhtml.setElement("style",  apf.style);
 
 
 
@@ -73415,7 +64162,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(28274)TIME(Fri, 23 Mar 2012 14:03:44 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(28629)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73546,8 +64293,9 @@ apf.textbox  = function(struct, tagName){
     this.$booleanProperties["readonly"]    = true;
     this.$booleanProperties["focusselect"] = true;
     this.$booleanProperties["realtime"]    = true;
+    this.$booleanProperties["kbclear"]     = true;
     this.$supportedProperties.push("value", "mask", "initial-message",
-        "focusselect", "realtime", "type", "rows", "cols");
+        "focusselect", "realtime", "type", "rows", "cols", "kbclear");
 
     /**
      * @attribute {String} value the text of this element
@@ -73676,9 +64424,6 @@ apf.textbox  = function(struct, tagName){
      */
     this.$propHandlers["initial-message"] = function(value){
         if (value) {
-            
-            if (apf.hasFocusBug)
-                this.$input.onblur();
             
             
             //this.$propHandlers["value"].call(this, value, null, true);
@@ -73866,10 +64611,18 @@ apf.textbox  = function(struct, tagName){
     });
 
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
-        if (this.$button && key == 27) {
+        if (this.$button && key == 27 && this.kbclear) {
             //this.$clear();
             if (this.value) {
                 this.change("");
+                
+                this.dispatchEvent("keydown", {
+                    keyCode   : key,
+                    ctrlKey   : ctrlKey,
+                    shiftKey  : shiftKey,
+                    altKey    : altKey,
+                    htmlEvent : e});
+                
                 e.stopPropagation();
             }
             //this.focus({mouse:true});
@@ -74010,15 +64763,6 @@ apf.textbox  = function(struct, tagName){
             }
             
             
-            else if (this.localName == "email") {
-                this.datatype = (this.prefix ? this.prefix + ":" : "") + "email";
-                this.$propHandlers["datatype"].call(this, this.datatype, "datatype");
-            }
-            else if (this.localName == "url") {
-                this.datatype = (this.prefix ? this.prefix + ":" : "") + "url";
-                this.$propHandlers["datatype"].call(this, this.datatype, "datatype");
-            }
-            
 
             oExt.setAttribute("onmousedown", "if (!this.host.disabled) \
                 this.host.dispatchEvent('mousedown', {htmlEvent : event});");
@@ -74044,7 +64788,7 @@ apf.textbox  = function(struct, tagName){
         }
         
         if (this.$button) {
-            this.$button.onmousedown = function(){
+            this.$button.onmouseup = function(){
                 _self.$clear(); //@todo why are both needed for doc filter
                 _self.change(""); //@todo only this one should be needed
                 _self.focus({mouse:true});
@@ -74146,9 +64890,6 @@ apf.textbox  = function(struct, tagName){
             
         };
 
-        
-        if (apf.hasFocusBug)
-            apf.sanitizeTextbox(this.$input);
         
 
         if (apf.hasAutocompleteXulBug)
@@ -74506,37 +65247,6 @@ apf.tree = function(struct, tagName){
     
     
     
-    /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
-     */
-    this.$mode = 0;
-    this.$propHandlers["mode"] = function(value){
-        if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
-            
-            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
-            
-            this.multicheck = value == "check"; //radio is single
-            this.$mode = this.multicheck ? 1 : 2;
-        }
-        else {
-            //@todo undo actionRules setting
-            this.removeEventListener("afterrename", $afterRenameMode);
-            //@todo unimplement??
-            this.$mode = 0;
-        }
-    };
-    
-    //@todo apf3.0 retest this completely
-    function $afterRenameMode(){
-        
-    }
-    
-    
     this.$initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
         this.$getNewContext("item");
@@ -74572,43 +65282,6 @@ apf.tree = function(struct, tagName){
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
         
-        
-        if (this.$mode) {
-            var elCheck = this.$getLayoutNode("item", "check");
-            if (elCheck) {
-                elCheck.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
-                    o.checkToggle(this, true);\o.$skipSelect = true;");
-
-                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
-                    this.$checkedList.push(xmlNode);
-                    this.$setStyleClass(oItem, "checked");
-                }
-                else if (this.isChecked(xmlNode))
-                    this.$setStyleClass(oItem, "checked");
-            }
-            else {
-                
-                throw new Error(apf.formatErrorString(0, this,
-                        "Could not find check attribute",
-                        'Maybe the attribute check is missing from your skin file:\
-                            <a:item\
-                              class        = "."\
-                              caption      = "label/u/text()"\
-                              icon         = "label"\
-                              openclose    = "span"\
-                              select       = "label"\
-                              check        = "label/b"\
-                              container    = "following-sibling::blockquote"\
-                            >\
-                                <div><span> </span><label><b> </b><u>-</u></label></div>\
-                                <blockquote> </blockquote>\
-                            </a:item>\
-                        '));
-                
-                return false;
-            }
-        }
         
         
         var ocAction = this.opencloseaction || "ondblclick";
@@ -74711,16 +65384,6 @@ apf.tree = function(struct, tagName){
         var elCaption = this.$getLayoutNode("item", "caption");
         if (elCaption) {
             
-            if (elCaption.nodeType == 1 
-              && this.$cbindings.caption && this.$cbindings.caption.hasAml){
-                var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
-                
-                elCaption.setAttribute("id", "placeholder_" + this.$uniqueId 
-                    + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
-                apf.setNodeValue(elCaption, "");
-            }
-            else
-            
             {
                 apf.setNodeValue(elCaption,
                     this.$applyBindRule("caption", xmlNode));
@@ -74755,8 +65418,6 @@ apf.tree = function(struct, tagName){
         }
         
         
-        //@todo
-        
 
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
         if (elCaption) {
@@ -74764,8 +65425,6 @@ apf.tree = function(struct, tagName){
                 //elCaption = elCaption.parentNode;
             
             if (elCaption.nodeType == 1) {
-                
-                if (!this.$cbindings.caption || !this.$cbindings.caption.hasAml)
                 
                     elCaption.innerHTML = this.$applyBindRule("caption", xmlNode);
             }
@@ -74903,7 +65562,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50246)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50167)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74939,7 +65598,7 @@ apf.aml.setElement("checked", apf.BindingRule);
  * Writing to a file with a WebDAV connector
  * <code>
  *  <a:webdav id="myWebDAV" url="http://my-webdav-server.com/dav_files/" />
- *     
+ *
  *  <a:script>
  *      // write the text 'bar' to a file on the server called 'foo.txt'
  *      myWebDAV.writeFile('http://my-webdav-server.com/dav_files/foo.txt', 'bar');
@@ -75109,7 +65768,7 @@ apf.webdav = function(struct, tagName){
                 oHeaders = {};
             oHeaders["Content-type"] = "text/xml; charset=utf-8";
         }
-        
+
         var fHost = this["force-host"];
         if (fHost && sPath.indexOf(fHost) === -1)
             sPath = fHost.replace(/[\/]+$/, "") + "/" + sPath.replace(/^[\/]+/, "");
@@ -75129,16 +65788,16 @@ apf.webdav = function(struct, tagName){
                     else
                         throw oError;
                 }
-                
+
                 extra.headers = oHeaders;
 
-                var iStatus = parseInt(extra.status);
+                var iStatus = parseInt(extra.status, 10);
                 if (iStatus == 401) //authentication requested
                     return; // 401's are handled by the browser already, so no need for additional processing...
 
                 var sResponse = (extra.http.responseText || "");
                 if (sResponse.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") != ""
-                  && sResponse.indexOf('<?xml version=') == 0) {
+                  && sResponse.indexOf("<?xml version=") == 0) {
                     try {
                         data = (extra.http.responseXML && extra.http.responseXML.documentElement)
                             ? apf.xmlParseError(extra.http.responseXML)
@@ -75182,24 +65841,24 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function notAuth(msg) {
-        unregister.call(this, 'auth-password');
+        unregister.call(this, "auth-password");
 
         var extra = {
-            username : this.$getVar('auth-username'),
+            username : this.$getVar("auth-username"),
             server   : this.$server,
             message  : msg || "Access denied. Please check you username or password."
         }
 
-        var cb = this.$getVar('auth-callback');
+        var cb = this.$getVar("auth-callback");
         if (cb) {
             cb(null, apf.ERROR, extra);
-            unregister.call(this, 'auth-callback');
+            unregister.call(this, "auth-callback");
         }
 
         
         try{
-            apf.console.error(extra.message.toString() + ' (username: ' + extra.username
-                              + ', server: ' + extra.server + ')', 'webdav');
+            apf.console.error(extra.message.toString() + " (username: " + extra.username
+                              + ", server: " + extra.server + ")", "webdav");
         }
         catch(ex){}
         
@@ -75217,23 +65876,23 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function connError(msg) {
-        unregister.call(this, 'auth-password');
+        unregister.call(this, "auth-password");
 
         var extra = {
-            username : this.$getVar('auth-username'),
+            username : this.$getVar("auth-username"),
             server   : this.$server,
             message  : msg || "Could not connect to server, please contact your System Administrator."
         }
 
-        var cb = this.$getVar('auth-callback');
+        var cb = this.$getVar("auth-callback");
         if (cb) {
             cb(null, apf.ERROR, extra);
-            unregister.call(this, 'auth-callback');
+            unregister.call(this, "auth-callback");
         }
 
         
-        apf.console.error(extra.message + ' (username: ' + extra.username
-                          + ', server: ' + extra.server + ')', 'webdav');
+        apf.console.error(extra.message + " (username: " + extra.username
+                          + ", server: " + extra.server + ")", "webdav");
         
 
         return this.dispatchEvent("connectionerror", extra);
@@ -75241,7 +65900,7 @@ apf.webdav = function(struct, tagName){
 
     /*
      * Wrapper function for generation WebDAV-specific Error reporting
-     * 
+     *
      * @param {String} sMsg Message that lists the error details
      * @type  {Error}
      * @private
@@ -75283,7 +65942,7 @@ apf.webdav = function(struct, tagName){
         catch (e) {
             authRequired = true;
         }
-        
+
         var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (authRequired) {
             auth.authRequired(callback);
@@ -75312,7 +65971,7 @@ apf.webdav = function(struct, tagName){
         var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (!auth)
             return;
-        
+
         this.doRequest(function(data, state, extra) {
             if (extra.status == 401)
                 return auth.authRequired();
@@ -75320,14 +65979,14 @@ apf.webdav = function(struct, tagName){
             var cb = this.$getVar("auth-callback");
             if (cb) {
                 cb(null, state, extra);
-                unregister.call(this, 'auth-callback');
+                unregister.call(this, "auth-callback");
             }
         }, this.$rootPath, null, {}, false, null);
     };
 
     /**
      * Unset all cached values.
-     * 
+     *
      * @type {void}
      */
     this.reset = function() {
@@ -75338,11 +65997,11 @@ apf.webdav = function(struct, tagName){
     };
 
     //------------ Filesystem operations ----------------//
-    
+
     /**
-     * Check whether a file or directory  exists on the remote filesystem and pass 
+     * Check whether a file or directory  exists on the remote filesystem and pass
      * that information to a callback function
-     * 
+     *
      * @param {String}   sPath    Path to the file or directory on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
@@ -75356,7 +66015,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Read the content of a file as plaintext and pass the data to a callback
      * function
-     * 
+     *
      * @param {String}   sPath    Path to the file on the WebDAV server
      * @param {Function} callback Function to execute when the request was successful
      * @type  {void}
@@ -75365,7 +66024,7 @@ apf.webdav = function(struct, tagName){
     this.read = function(sPath, callback) {
         this.method = "GET";
         this.doRequest(function(data, state, extra) {
-            var iStatus = parseInt(extra.status);
+            var iStatus = parseInt(extra.status, 10);
             if (iStatus == 403) { //Forbidden
                 var oError = WebDAVError.call(this, "Unable to read file. Server says: "
                              + apf.webdav.STATUS_CODES["403"]);
@@ -75400,7 +66059,7 @@ apf.webdav = function(struct, tagName){
 
     /**
      * Creates a new directory resource on the WebDAV server.
-     * 
+     *
      * @param {String}   sPath      Path of the new directory on the WebDAV server
      * @param {Boolean}  [bLock]    Whether to require a lock before copy
      * @param {Function} [callback] Function to execute when the request was successful
@@ -75418,7 +66077,7 @@ apf.webdav = function(struct, tagName){
         this.method = "MKCOL";
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sPath);
-            var iStatus = parseInt(extra.status);
+            var iStatus = parseInt(extra.status, 10);
             if (iStatus == 201) { //Created
                 _self.readdir(sPath.substr(0, sPath.lastIndexOf("/")), callback);
             }
@@ -75453,7 +66112,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Write new contents (plaintext) to a file resource on the server, with or
      * without an existing lock on the resource.
-     * 
+     *
      * @param {String}   sPath     Path to the file on the WebDAV server
      * @param {String}   sContent  New content-body of the file
      * @param {Boolean}  [bLock]   Whether to require a lock before write
@@ -75477,7 +66136,7 @@ apf.webdav = function(struct, tagName){
         this.method = "PUT";
         var _self = this;
         this.doRequest(function(data, state, extra) {
-            var iStatus = parseInt(extra.status);
+            var iStatus = parseInt(extra.status, 10);
             if (state != apf.SUCCESS) {
                 var oError = WebDAVError.call(this, "Unable to write to file. Server says: "
                              + apf.webdav.STATUS_CODES[String(iStatus)]);
@@ -75499,7 +66158,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Copies a file or directory resource to any location on the same WebDAV
      * server.
-     * 
+     *
      * @param {String}   sFrom        Path to the file on the WebDAV server to be copied
      * @param {String}   sTo          New location to place the copy at
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
@@ -75508,9 +66167,9 @@ apf.webdav = function(struct, tagName){
      * @type  {void}
      */
     this.copy = function(sFrom, sTo, bOverwrite, bLock, callback) {
-        if (!sTo || sFrom == sTo) 
+        if (!sTo || sFrom == sTo)
             return (callback && callback("", apf.SUCCESS, {}));
-        
+
         if (bLock) {
             var oLock = this.lock(sFrom);
             if (!oLock.token)
@@ -75529,8 +66188,8 @@ apf.webdav = function(struct, tagName){
             oHeaders["If"] = "<" + oLock.token + ">";
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sFrom);
-            var iStatus = parseInt(extra.status);
-            if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412 
+            var iStatus = parseInt(extra.status, 10);
+            if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
               || iStatus == 423 || iStatus == 424 || iStatus == 502
               || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to copy file '" + sFrom
@@ -75554,7 +66213,7 @@ apf.webdav = function(struct, tagName){
     /**
      * Moves a file or directory resource to any location on the same WebDAV
      * server.
-     * 
+     *
      * @param {String}   sFrom        Path to the file on the WebDAV server to be moved
      * @param {String}   sTo          New location to move the resource to
      * @param {Boolean}  [bOverwrite] Tells whether to overwrite any existing resource
@@ -75564,9 +66223,9 @@ apf.webdav = function(struct, tagName){
      */
     this.rename =
     this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
-        if (!sTo || sFrom == sTo) 
+        if (!sTo || sFrom == sTo)
             return (callback && callback("", apf.SUCCESS, {}));
-        
+
         if (bLock) {
             var oLock = this.lock(sFrom);
             if (!oLock.token)
@@ -75585,7 +66244,7 @@ apf.webdav = function(struct, tagName){
             oHeaders["If"] = "<" + oLock.token + ">";
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sFrom);
-            var iStatus = parseInt(extra.status);
+            var iStatus = parseInt(extra.status, 10);
             if (iStatus == 400 || iStatus == 403 || iStatus == 409 || iStatus == 412
               || iStatus == 423 || iStatus == 424 || iStatus == 501 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
@@ -75610,7 +66269,7 @@ apf.webdav = function(struct, tagName){
 
     /**
      * Removes an existing directory or file resource from the WebDAV server.
-     * 
+     *
      * @param {String}   sPath    Path to the resource to be removed from the WebDAV server
      * @param {Boolean}  [bLock]  Whether to require a lock before remove
      * @param {Function} callback Function to execute when the request was successful
@@ -75626,7 +66285,7 @@ apf.webdav = function(struct, tagName){
         this.method = "DELETE";
         this.doRequest(function(data, state, extra) {
             bLock && unregisterLock.call(this, sPath);
-            var iStatus = parseInt(extra.status);
+            var iStatus = parseInt(extra.status, 10);
             if (iStatus == 400 || iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError.call(this, "Unable to remove file '" + sPath
                              + "'. Server says: "
@@ -75648,16 +66307,16 @@ apf.webdav = function(struct, tagName){
             '<D:' + reportName + ' xmlns:D="', apf.webdav.NS.D, '">'];
         if (oProperties) {
             for (var prop in oProperties) {
-                aCont.push('<D:' + prop, (oProperties[prop]
-                    ? '>' + apf.xmlentities(apf.escapeXML(oProperties[prop])) + '</D:' + prop + '>'
-                    : '/>'));
+                aCont.push("<D:" + prop, (oProperties[prop]
+                    ? ">" + apf.escapeXML(oProperties[prop]) + "</D:" + prop + ">"
+                    : "/>"));
             }
         }
-        aCont.push('</D:', reportName, '>');
+        aCont.push("</D:", reportName, ">");
 
         this.method = "REPORT";
         this.doRequest(function(data, state, extra) {
-            var iStatus = parseInt(extra.status);
+            var iStatus = parseInt(extra.status, 10);
             if (state != apf.SUCCESS) {
                 var oError = WebDAVError.call(this, "Unable to fetch report on '" + sPath
                              + "'. Server says: "
@@ -75732,7 +66391,7 @@ apf.webdav = function(struct, tagName){
 
         this.method = "UNLOCK";
         this.doRequest(function(data, state, extra) {
-            unregisterLock.call(this, extra.url.replace(this.$server, ''));
+            unregisterLock.call(this, extra.url.replace(this.$server, ""));
         }, oLock.path, null, {
             "Lock-Token": "<" + oLock.token + ">"
         }, true, callback);
@@ -75740,7 +66399,7 @@ apf.webdav = function(struct, tagName){
 
     /*
      * Add a new lock token/ object to the stack
-     * 
+     *
      * @path {String} sPath Path pointing to the resource on the server
      * @type {Object}
      * @private
@@ -75757,7 +66416,7 @@ apf.webdav = function(struct, tagName){
      * Handler function that registers a lock globally when a LOCK request was
      * successful. It parses all the info it received from the server response
      * and caches that info for reuse.
-     * 
+     *
      * @param {XmlDocument} data  Actual XML data, received from the server
      * @param {Number}      state Internal - APF defined - state of the request
      * @param {Object}      extra Simple object that contains additional request data
@@ -75765,12 +66424,12 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function registerLock(data, state, extra) {
-        var iStatus = parseInt(extra.status),
-            sPath   = extra.url.replace(this.$server, ''),
+        var iStatus = parseInt(extra.status, 10),
+            sPath   = extra.url.replace(this.$server, ""),
             oLock   = this.$locks[sPath] || newLock.call(this, sPath);
         if (iStatus == 400 || iStatus == 409 || iStatus == 423 || iStatus == 412) {
             // lock failed, so unregister it immediately
-            unregisterLock.call(this, extra.url.replace(this.$server, ''));
+            unregisterLock.call(this, extra.url.replace(this.$server, ""));
             var oError = WebDAVError.call(this, "Unable to apply lock to '" + sPath
                          + "'. Server says: "
                          + apf.webdav.STATUS_CODES[String(iStatus)]);
@@ -75780,7 +66439,7 @@ apf.webdav = function(struct, tagName){
               }) === false)
                 throw oError;
         }
-        
+
         var NS     = apf.webdav.NS,
             oOwner = $xmlns(data, "owner",     NS.ns0)[0],
             oToken = $xmlns(data, "locktoken", NS.D)[0];
@@ -75797,7 +66456,7 @@ apf.webdav = function(struct, tagName){
 
     /*
      * Removes a Lock token/ object from the stack.
-     * 
+     *
      * @param {String} sPath Path pointing to the resource on the server
      * @type  {void}
      * @private
@@ -75813,7 +66472,7 @@ apf.webdav = function(struct, tagName){
     /*
      * Update the stack of lock requests (NOT the stack of valid locks!) with a
      * new Lock, or an updated one (lifetime may have changed)
-     * 
+     *
      * @param {Object} oLock Object that contains specific info about the Lock
      * @param {String} sFunc Name of the function that requested the lock
      * @param {Array}  aArgs List of arguments that should get passed to that function when the lock is available
@@ -75874,7 +66533,7 @@ apf.webdav = function(struct, tagName){
      * Request the server to change and set properties of a specific resource
      * with different values.
      * @todo Untested functionality
-     * 
+     *
      * @param {String} sPath     Path pointing to the resource on the server
      * @param {Object} oPropsSet A mapping from namespace to a mapping of key/value pairs (where value is an *entitized* XML string)
      * @param {Object} oPropsDel A mapping from namespace to a list of names
@@ -75883,7 +66542,7 @@ apf.webdav = function(struct, tagName){
      */
     this.setProperties = function(sPath, oPropsSet, oPropsDel, sLock) {
         this.method = "PROPPATCH";
-        
+
         this.doRequest(function(data, state, extra) {
             
             apf.console.dir(data);
@@ -75894,7 +66553,7 @@ apf.webdav = function(struct, tagName){
 
     /*
      * create the XML for a PROPPATCH request.
-     * 
+     *
      * @param {Object} oPropsSet A mapping from namespace to a mapping of key/value pairs (where value is an *entitized* XML string)
      * @param {Object} oPropsDel A mapping from namespace to a list of names
      * @type  {String}
@@ -75910,12 +66569,12 @@ apf.webdav = function(struct, tagName){
             break;
         }
         if (bHasProps) {
-            aOut.push('<D:set>');
+            aOut.push("<D:set>");
             for (ns in oPropsSet) {
                 for (i in oPropsSet[ns])
-                    aOut.push('<D:prop>', oPropsSet[ns][i], '</D:prop>')
+                    aOut.push("<D:prop>", oPropsSet[ns][i], "</D:prop>")
             }
-            aOut.push('</D:set>');
+            aOut.push("</D:set>");
         }
         bHasProps = false;
         for (ns in oPropsDel) {
@@ -75923,20 +66582,20 @@ apf.webdav = function(struct, tagName){
             break;
         }
         if (bHasProps) {
-            aOut.push('<D:remove><D:prop>');
+            aOut.push("<D:remove><D:prop>");
             for (ns in oPropsDel) {
                 for (i = 0, j = oPropsDel[ns].length; i < j; i++)
                     aOut.push('<', oPropsDel[ns][i], ' xmlns="', ns, '"/>')
             }
-            aOut.push('</D:prop></D:remove>');
+            aOut.push("</D:prop></D:remove>");
         }
 
-        aOut.push('</D:propertyupdate>');
-        return aOut.join('');
+        aOut.push("</D:propertyupdate>");
+        return aOut.join("");
     }
 
     /*
-     * Handler function that parses the response of a successful PROPFIND 
+     * Handler function that parses the response of a successful PROPFIND
      * request. It parses all the info it received from the server response
      * and caches that info for reuse.
      *
@@ -75948,27 +66607,27 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function parsePropertyPackets(oXml, state, extra, callback) {
-        var status = parseInt(extra.status)
+        var status = parseInt(extra.status, 10);
         if (status == 403 || status == 401 || !oXml)
             return callback ? callback.call(this, null, state, extra) : notAuth.call(this);
 
         if (typeof oXml == "string")
             oXml = apf.getXml(oXml);
-        
-        var aResp = $xmlns(oXml, "response", apf.webdav.NS.D),
-            aOut = [];
+
+        var aResp = $xmlns(oXml, "response", apf.webdav.NS.D);
+        var aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
-            
+
         var sPath;
         for (var sa = [], data, i = 0, j = aResp.length; i < j; i++) {
             // Exclude requesting URL if it matches node's HREF (same node)
             sPath = decodeURIComponent($xmlns(aResp[i], "href", apf.webdav.NS.D)[0].firstChild.nodeValue);
             if (sPath === extra.url)
                 continue;
-                
+
             parseItem.call(this, aResp[i], data = {});
-            if (data.data) 
+            if (data.data) {
                 sa.push({
                     toString: function(){
                         return this.v;
@@ -75976,14 +66635,15 @@ apf.webdav = function(struct, tagName){
                     data : data.data,
                     v    : (data.data.type == "file" ? 1 : 0) + "" + data.data.name.toLowerCase()
                 });
+            }
         }
-        
+
         sa.sort();
-        
+
         for (var i = 0, l = sa.length; i < l; i++) {
             aOut.push(sa[i].data.xml);
         }
-        
+
 //        var start = (extra.headers && typeof extra.headers.Depth != "undefined" && extra.headers.Depth == 0) ? 0 : 1;
 //        for (var i = start, j = aResp.length; i < j; i++)
 //            aOut.push(parseItem.call(this, aResp[i]));
@@ -75992,9 +66652,9 @@ apf.webdav = function(struct, tagName){
     }
 
     /*
-     * Turn an XML WebDAV node that represents a resource and turn it into a 
+     * Turn an XML WebDAV node that represents a resource and turn it into a
      * reusable JS object, cache it so that it can be reused later.
-     * 
+     *
      * @param {XmlNode} oNode
      * @type  {String}
      * @private
@@ -76018,7 +66678,7 @@ apf.webdav = function(struct, tagName){
             type        : sType,
             size        : parseInt(sType == "file"
                 ? (t = $xmlns(oNode, "getcontentlength", NS.lp1)).length ? t[0].firstChild.nodeValue : 0
-                : 0),
+                : 0, 10),
             name        : sName,
             contentType : (sType == "file" && aCType.length
                 ? aCType[0].firstChild.nodeValue
@@ -76029,16 +66689,17 @@ apf.webdav = function(struct, tagName){
             lockable    : ($xmlns(oNode, "locktype", NS.D).length > 0),
             executable  : (aExec.length > 0 && aExec[0].firstChild.nodeValue == "T")
         });
-        
+
         if (extra)
             extra.data = oItem;
-        
-        return oItem.xml = "<" + sType + " path='" + sPath + "'  type='" + sType
-            + "' size='" + oItem.size + "' name='" + oItem.name + "' contenttype='"
-            + oItem.contentType + "' modifieddate='" + oItem.lastModified + "' creationdate='" + oItem.creationDate
-            + "' lockable='" + oItem.lockable.toString() + "' hidden='"
-            + bHidden.toString() + "' executable='" + oItem.executable.toString()
-            + "'/>";
+
+        return oItem.xml = "<" + sType + " path=\"" + apf.escapeXML(sPath) +
+            "\" type=\"" + sType + "\" size=\"" + oItem.size + "\" name=\"" +
+            apf.escapeXML(oItem.name) + "\" contenttype=\"" + oItem.contentType +
+            "\" modifieddate=\"" + oItem.lastModified + "\" creationdate=\"" +
+            oItem.creationDate + "\" lockable=\"" + oItem.lockable.toString() +
+            "\" hidden=\"" + bHidden.toString() + "\" executable=\"" +
+            oItem.executable.toString() + "\"/>";
     }
 
     
@@ -76132,7 +66793,7 @@ apf.webdav = function(struct, tagName){
                 break;
         }
     };
-    
+
     
 }).call(apf.webdav.prototype = new apf.Teleport());
 
@@ -76147,53 +66808,53 @@ apf.webdav.NS = {
 };
 
 apf.webdav.STATUS_CODES = {
-    '100': 'Continue',
-    '101': 'Switching Protocols',
-    '102': 'Processing',
-    '200': 'OK',
-    '201': 'Created',
-    '202': 'Accepted',
-    '203': 'None-Authoritive Information',
-    '204': 'No Content',
-    '1223': 'No Content',
-    '205': 'Reset Content',
-    '206': 'Partial Content',
-    '207': 'Multi-Status',
-    '300': 'Multiple Choices',
-    '301': 'Moved Permanently',
-    '302': 'Found',
-    '303': 'See Other',
-    '304': 'Not Modified',
-    '305': 'Use Proxy',
-    '307': 'Redirect',
-    '400': 'Bad Request',
-    '401': 'Unauthorized',
-    '402': 'Payment Required',
-    '403': 'Forbidden',
-    '404': 'Not Found',
-    '405': 'Method Not Allowed',
-    '406': 'Not Acceptable',
-    '407': 'Proxy Authentication Required',
-    '408': 'Request Time-out',
-    '409': 'Conflict',
-    '410': 'Gone',
-    '411': 'Length Required',
-    '412': 'Precondition Failed',
-    '413': 'Request Entity Too Large',
-    '414': 'Request-URI Too Large',
-    '415': 'Unsupported Media Type',
-    '416': 'Requested range not satisfiable',
-    '417': 'Expectation Failed',
-    '422': 'Unprocessable Entity',
-    '423': 'Locked',
-    '424': 'Failed Dependency',
-    '500': 'Internal Server Error',
-    '501': 'Not Implemented',
-    '502': 'Bad Gateway',
-    '503': 'Service Unavailable',
-    '504': 'Gateway Time-out',
-    '505': 'HTTP Version not supported',
-    '507': 'Insufficient Storage'//,
+    "100": "Continue",
+    "101": "Switching Protocols",
+    "102": "Processing",
+    "200": "OK",
+    "201": "Created",
+    "202": "Accepted",
+    "203": "None-Authoritive Information",
+    "204": "No Content",
+    "1223": "No Content",
+    "205": "Reset Content",
+    "206": "Partial Content",
+    "207": "Multi-Status",
+    "300": "Multiple Choices",
+    "301": "Moved Permanently",
+    "302": "Found",
+    "303": "See Other",
+    "304": "Not Modified",
+    "305": "Use Proxy",
+    "307": "Redirect",
+    "400": "Bad Request",
+    "401": "Unauthorized",
+    "402": "Payment Required",
+    "403": "Forbidden",
+    "404": "Not Found",
+    "405": "Method Not Allowed",
+    "406": "Not Acceptable",
+    "407": "Proxy Authentication Required",
+    "408": "Request Time-out",
+    "409": "Conflict",
+    "410": "Gone",
+    "411": "Length Required",
+    "412": "Precondition Failed",
+    "413": "Request Entity Too Large",
+    "414": "Request-URI Too Large",
+    "415": "Unsupported Media Type",
+    "416": "Requested range not satisfiable",
+    "417": "Expectation Failed",
+    "422": "Unprocessable Entity",
+    "423": "Locked",
+    "424": "Failed Dependency",
+    "500": "Internal Server Error",
+    "501": "Not Implemented",
+    "502": "Bad Gateway",
+    "503": "Service Unavailable",
+    "504": "Gateway Time-out",
+    "505": "HTTP Version not supported",
+    "507": "Insufficient Storage"//,
 //    12002 ERROR_INTERNET_TIMEOUT
 //    12007 ERROR_INTERNET_NAME_NOT_RESOLVED
 //    12029 ERROR_INTERNET_CANNOT_CONNECT
@@ -76205,7 +66866,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101265)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101266)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -76969,7 +67630,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3125)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3126)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77177,7 +67838,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(11154)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(10831)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77282,424 +67943,6 @@ apf.rest = function(){
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-
-
-
-/**
- * @constructor
- * @private
- */
-apf.textbox.masking = function(){
-    /*
-        Special Masking Values:
-        - PASSWORD
-        
-        <a:Textbox name="custref" mask="CS20999999" maskmsg="" validation="/CS200[3-5]\d{4}/" invalidmsg="" bind="custref/text()" />
-    */
-    
-    var _FALSE_ = 9128748732;
-
-    var _REF = {
-        "0" : "\\d",
-        "1" : "[12]",
-        "9" : "[\\d ]",
-        "#" : "[\\d +-]",
-        "L" : "[A-Za-z]",
-        "?" : "[A-Za-z ]",
-        "A" : "[A-Za-z0-9]",
-        "a" : "[A-Za-z0-9 ]",
-        "X" : "[0-9A-Fa-f]",
-        "x" : "[0-9A-Fa-f ]",
-        "&" : "[^\s]",
-        "C" : "."
-    };
-    
-    var lastPos = -1;
-    var masking = false;
-    var oInput = this.$input;
-    var pos = [];
-    var initial, myvalue, format, fcase, replaceChar;
-
-    this.setPosition = function(setpos){
-        setPosition(setpos || lastPos || 0);
-    };
-
-    this.addEventListener("$clear", function(){
-        this.value = "";
-        if (this.mask) 
-            return this.setValue("");
-    });
-    
-    this.$propHandlers["value"] = function(value){
-        var data = "";
-        if (this.includeNonTypedChars) {
-            for (var i = 0; i < initial.length; i++) {
-                if (initial.substr(i, 1) != value.substr(i, 1))
-                    data += value.substr(i, 1);//initial.substr(i,1) == replaceChar
-            }
-        }
-
-        this.$insertData(data || value);
-        setPosition(myvalue.length);
-    };
-    
-    //Char conversion
-    var numpadKeys = {
-        "96": "0",
-        "97": "1",
-        "98": "2",
-        "99": "3",
-        "100": "4",
-        "101": "5",
-        "102": "6",
-        "103": "7",
-        "104": "8",
-        "105": "9",
-        "106": "*",
-        "107": "+",
-        "109": "-",
-        "110": ".",
-        "110": "/"
-    };
-    
-    this.addEventListener("keydown", function(e){
-        var key  = e.keyCode,
-            stop = false;
-
-        switch (key) {
-            case 39:
-                //RIGHT
-                setPosition(lastPos + 1);
-                stop = true;
-                break;
-            case 37:
-                //LEFT
-                setPosition(lastPos - 1);
-                stop = true;
-                break;
-            case 35:
-            case 34:
-                setPosition(myvalue.length);
-                stop = true;
-                break;
-            case 33:
-            case 36:
-                setPosition(0);
-                stop = true;
-                break;
-            case 8:
-                //BACKSPACE
-                deletePosition(lastPos - 1);
-                setPosition(lastPos - 1);
-                stop = true;
-                break;
-            case 46:
-                //DEL
-                deletePosition(lastPos);
-                setPosition(lastPos);
-                stop = true;
-                break;
-            default:
-                if (key == 67 && e.ctrlKey) {
-                    window.clipboardData.setData("Text", this.getValue());  
-                    stop = true;
-                }
-            break;
-        }
-
-        //@todo why isnt the conversion not always good? Check backtick.
-        var chr = numpadKeys[key] || String.fromCharCode(key);
-        if (setCharacter(chr))
-            setPosition(lastPos + 1);
-
-        var value, pos = lastPos;
-        if (this.realtime && (value = this.getValue()) != this.value) {
-            this.change(value);
-            setPosition(pos);
-        }
-
-        if (apf.isCharacter(e.keyCode) || stop)
-            return false;
-    }, true);
-    
-    /* ***********************
-            Init
-    ************************/
-    
-    this.$initMasking = function(){
-        ///this.keyHandler = this._keyHandler;
-        this.$keyHandler = null; //temp solution
-        masking = true;
-
-        this.$input[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
-            var pos = Math.min(calcPosFromCursor(), myvalue.length);
-            setPosition(pos);
-            return false;
-        };
-        
-        this.$input.onpaste = function(e){
-            e = e || window.event;
-            e.returnValue = false;
-            this.host.setValue(window.clipboardData.getData("Text") || "");
-            //setPosition(lastPos);
-            $setTimeout(function(){
-                setPosition(lastPos);
-            }, 1); //HACK good enough for now...
-        };
-        
-        this.getValue = function(){
-            if (this.includeNonTypedChars)
-                return initial == this.$input.value
-                    ? "" 
-                    : this.$input.value.replace(new RegExp(replaceChar, "g"), "");
-            else
-                return myvalue.join("");
-        };
-        
-        this.setValue = function(value){
-            this.$propHandlers["value"].call(this, value);
-        };
-    };
-    
-    this.setMask = function(m){
-        if (!masking)
-            this.$initMasking();
-        
-        m = m.split(";");
-        replaceChar = m.pop();
-        this.includeNonTypedChars = parseInt(m.pop(), 10) !== 0;
-        var mask = m.join(""); //why a join here???
-        var validation = "";
-        var visual = "";
-        var mode_case = "-";
-        var strmode = false;
-        var startRight = false;
-        var chr;
-        pos = [];
-        format = "";
-        fcase = "";
-        
-        for (var looppos = -1, i = 0; i < mask.length; i++) {
-            chr = mask.substr(i, 1);
-            
-            if (!chr.match(/[\!\'\"\>\<\\]/)) {
-                looppos++;
-            }
-            else {
-                if (chr == "!")
-                    startRight = true;
-                else if (chr == "<" || chr == ">")
-                    mode_case = chr;
-                else if (chr == "'" || chr == "\"")
-                    strmode = !strmode;
-                continue;
-            }
-            
-            if (!strmode && _REF[chr]) {
-                pos.push(looppos);
-                visual     += replaceChar;
-                format     += chr;
-                fcase      += mode_case;
-                validation += _REF[chr];
-            }
-            else
-                visual += chr;
-        }
-
-        this.$input.value = visual;
-        initial = visual;
-        //pos = pos;
-        myvalue = [];
-        //format = format;
-        //fcase = fcase;
-        replaceChar = replaceChar;
-        
-        //setPosition(0);//startRight ? pos.length-1 : 0);
-        
-        //validation..
-        //forgot \ escaping...
-    };
-    
-    function checkChar(chr, p){
-        var f = format.substr(p, 1);
-        var c = fcase.substr(p, 1);
-
-        if (chr.match(new RegExp(_REF[f])) == null)
-            return _FALSE_;
-        if (c == ">")
-            return chr.toUpperCase();
-        if (c == "<")
-            return chr.toLowerCase();
-        return chr;
-    }
-
-    function setPosition(p){
-        if (p < 0)
-            p = 0;
-
-        if (apf.hasMsRangeObject) {
-            var range = oInput.createTextRange();
-            range.expand("textedit");
-            range.select();
-
-            if (pos[p] == null) {
-                range.collapse(false);
-                range.select();
-                lastPos = pos.length;
-                return false;
-            }
-
-            range.collapse();
-            range.moveStart("character", pos[p]);
-            range.moveEnd("character", 1);
-            range.select();
-        }
-        else {
-            if (typeof pos[p] == "undefined") {
-                oInput.selectionStart = oInput.selectionEnd = pos[pos.length - 1] + 1;
-                lastPos = pos.length;
-                return false;
-            }
-            oInput.selectionStart = pos[p];
-            oInput.selectionEnd   = pos[p] + 1;
-        }
-
-        lastPos = p;
-    }
-    
-    function setCharacter(chr){
-        if (pos.length && pos[lastPos] == null)
-            return false;
-        
-        chr = checkChar(chr, lastPos);
-        if (chr == _FALSE_)
-            return false;
-
-        if (apf.hasMsRangeObject) {
-            var range = oInput.createTextRange();
-            range.expand("textedit");
-            range.collapse();
-            range.moveStart("character", pos[lastPos]);
-            range.moveEnd("character", 1);
-            range.text = chr;
-            if (apf.document.activeElement == this)
-                range.select();
-        }
-        else {
-            var val   = oInput.value;
-            var start = oInput.selectionStart;
-            var end   = oInput.selectionEnd;
-            oInput.value = val.substr(0, start) + chr + val.substr(end);
-            oInput.selectionStart = start;
-            oInput.selectionEnd   = end;
-        }
-        
-        myvalue[lastPos] = chr;
-        
-        return true;
-    }
-    
-    function deletePosition(p){
-        if (pos[p] == null)
-            return false;
-        
-        if (apf.hasMsRangeObject) {
-            var range = oInput.createTextRange();
-            range.expand("textedit");
-            range.collapse();
-
-            range.moveStart("character", pos[p]);
-            range.moveEnd("character", 1);
-            range.text = replaceChar;
-            range.select();
-        }
-        else {
-            var val   = oInput.value;
-            var start = pos[p];
-            var end   = pos[p] + 1;
-            oInput.value = val.substr(0, start) + replaceChar + val.substr(end);
-            oInput.selectionStart = start;
-            oInput.selectionEnd   = end;
-        }
-        
-        //ipv lastPos
-        myvalue[p] = " ";
-    }
-    
-    this.$insertData = function(str){
-        if (str == this.getValue())
-            return;
-
-        var i, j;
-        
-        try {
-            if (!apf.hasMsRangeObject && oInput.selectionStart == oInput.selectionEnd)
-                setPosition(0); // is this always correct? practice will show...
-        }
-        catch (ex) {
-            // in FF (as we know it), we cannot access the selectStart property
-            // when the control/ input doesn't have the focus or is not visible.
-            // A workaround is provided here...
-            if (!str)
-                return;
-            var chr, val;
-            for (i = 0, j = str.length; i < j; i++) {
-                lastPos = i;
-                if (pos[lastPos] == null)
-                    continue;
-                chr = checkChar(str.substr(i, 1), i);
-                if (chr == _FALSE_)
-                    continue;
-                val = oInput.value;
-                oInput.value = val.substr(0, pos[i]) + chr + val.substr(pos[i] + 1);
-            }
-            if (str.length)
-                lastPos++;
-            return; // job done, bail out
-        }
-
-        str = this.dispatchEvent("insert", { data : str }) || str;
-        
-        if (!str) {
-            if (!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared
-            for (i = this.getValue().length - 1; i >= 0; i--)
-                deletePosition(i);
-            setPosition(0);	
-            return;
-        }
-        
-        for (i = 0, j = str.length; i < j; i++) {
-            lastPos = i;
-            setCharacter(str.substr(i, 1));
-            if (!apf.hasMsRangeObject)
-                setPosition(i + 1);
-        }
-        if (str.length)
-            lastPos++;
-    };
-    
-    function calcPosFromCursor(){
-        var range, lt = 0;
-
-        if (!apf.hasMsRangeObject) {
-            lt = oInput.selectionStart;
-        }
-        else {
-            range  = document.selection.createRange();
-            var r2 = range.duplicate();
-            r2.expand("textedit");
-            r2.setEndPoint("EndToStart", range);
-            lt = r2.text.length;
-        }
-    
-        for (var i = 0; i < pos.length; i++) {
-            if (pos[i] > lt)
-                return (i == 0) ? 0 : i - 1;
-        }
-
-        return myvalue.length; // always return -a- value...
-    }
-};
 
 
 
@@ -78011,7 +68254,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4492)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4360)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -78085,18 +68328,6 @@ apf.LiveMarkupPi = function(){
             return;
 
         if (this.$data) {
-            
-            if (this.$useXmlDiff) {
-                var newXml = apf.getXml("<a:application xmlns:a='" 
-                    + apf.ns.apf + "'>" + apf.xmlentities(data) + "</a:application>", 
-                  null, 
-                  this.ownerDocument.$domParser.preserveWhiteSpace); //@todo apf3.0 slow, rethink xmlentities
-                  
-                var oldXml = this.$data;
-                apf.xmlDiff(oldXml, newXml);
-                
-                return;
-            }
             
             
             var nodes = this.$data.childNodes;

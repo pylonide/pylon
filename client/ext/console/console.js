@@ -305,13 +305,16 @@ module.exports = ext.register("ext/console/console", {
     },
 
     init: function(amlNode){
+
         var _self = this;
         this.panel = tabConsole;
         this.$cwd  = "/workspace"; // code smell
 
         apf.importCssString(this.css);
+        
         // Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole);
+        winDbgConsole.previousSibling.hide();
 
         stProcessRunning.addEventListener("activate", function() {
             _self.showOutput();
@@ -362,7 +365,10 @@ module.exports = ext.register("ext/console/console", {
         });
 
         tabConsole.addEventListener("afterswitch", function(e){
-            settings.model.setQueryValue("auto/console/@active", e.nextPage.name)
+            settings.model.setQueryValue("auto/console/@active", e.nextPage.name);
+            setTimeout(function(){
+                txtConsoleInput.focus();
+            });
         });
 
         winDbgConsole.previousSibling.addEventListener("dragdrop", function(e){
@@ -416,7 +422,10 @@ module.exports = ext.register("ext/console/console", {
                 input.setValue("");
         };
         this.keyEvents[KEY_CR] = function(input) {
-            _self.evalCmd(input.getValue());
+            var inputVal = input.getValue().trim();
+            if (inputVal === "/?")
+                return false;
+            _self.evalCmd(inputVal);
             input.setValue("");
         };
 
@@ -471,7 +480,7 @@ module.exports = ext.register("ext/console/console", {
                 height: this.height,
                 dbgVisibleMethod: "show",
                 chkExpandedMethod: "check",
-                animFrom: 65,
+                animFrom: this.height*0.95,
                 animTo: this.height > this.minHeight ? this.height : this.minHeight,
                 animTween: "easeOutQuint"
             };
@@ -481,7 +490,7 @@ module.exports = ext.register("ext/console/console", {
         }
         else {
             cfg = {
-                height: 41,
+                height: 34,
                 dbgVisibleMethod: "hide",
                 chkExpandedMethod: "uncheck",
                 animFrom: this.height > this.minHeight ? this.height : this.minHeight,
