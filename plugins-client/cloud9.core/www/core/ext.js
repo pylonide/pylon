@@ -80,7 +80,7 @@ module.exports = ext = {
 
         if (oExtension.hook) {
             oExtension.hook();
-            
+
             ide.dispatchEvent("hook." + oExtension.path, {
                 ext : oExtension
             });
@@ -88,7 +88,7 @@ module.exports = ext = {
                 callback.call(this, {ext : oExtension});
             });
         }
-        
+
         ide.dispatchEvent("ext.register", {ext: oExtension});
 
         return oExtension;
@@ -166,7 +166,7 @@ module.exports = ext = {
 
         //Load markup
         var markup = oExtension.markup;
-        if (markup) 
+        if (markup)
             (oExtension.markupInsertionPoint || apf.document.documentElement).insertMarkup(markup);
 
         var deps = oExtension.deps;
@@ -189,7 +189,7 @@ module.exports = ext = {
 
         oExtension.init(amlParent);
         oExtension.inited = true;
-        
+
         ide.dispatchEvent("init." + oExtension.path, {
             ext : oExtension
         });
@@ -234,12 +234,12 @@ module.exports = ext = {
                     consoleExt.write(oExt.commands[cmd].msg);
             });
             var res = oExt[cmd](data);
-            
+
             // if the command specifies a return value, then pass that back
             if (typeof res !== "undefined") {
                 return res;
             }
-            
+
             // otherwise respond with 'false'
             // I would expected true here but soit; console.js checks explicitly for 'false'
             return false;

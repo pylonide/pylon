@@ -335,6 +335,9 @@ module.exports = ext.register("ext/code/code", {
             if (!model.queryNode("editors/code/@animatedscroll"))
                 model.setQueryValue("editors/code/@animatedscroll", "true");
 
+            if (!model.queryNode("editors/code/@animatedscroll"))
+                model.setQueryValue("editors/code/@animatedscroll", "true");
+
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme)
@@ -375,7 +378,7 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.$editor.commands.addCommands(MultiSelectCommands);
 
         // preload common language modes
-        var noop = function() {}; 
+        var noop = function() {};
         ceEditor.getMode("javascript", noop);
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
@@ -461,11 +464,11 @@ module.exports = ext.register("ext/code/code", {
             // the vim plugin), we fire an event so these plugins can react to it.
             ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
         });
-        
+
         ide.addEventListener("afteroffline", function(){
             menuSyntaxHighlight.disable();
         });
-        
+
         ide.addEventListener("afteronline", function(){
             menuSyntaxHighlight.enable();
         });

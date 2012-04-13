@@ -1790,8 +1790,12 @@ var Document = function(text) {
 
         position = this.$clipPosition(position);
 
+<<<<<<< HEAD
         // only detect new lines if the document has no line break yet
         if (this.getLength() <= 1)
+=======
+        if (this.getLength() >= 1)
+>>>>>>> Merge remote-tracking branch 'origin/master' into plugins
             this.$detectNewLine(text);
 
         var lines = this.$split(text);
@@ -8720,6 +8724,375 @@ var ValidationTypes = {
         
         return result;
     },
+<<<<<<< HEAD
+=======
+    
+    
+    
+    simple: {
+
+        "<absolute-size>": function(part){
+            return ValidationTypes.isLiteral(part, "xx-small | x-small | small | medium | large | x-large | xx-large");
+        },
+        
+        "<attachment>": function(part){
+            return ValidationTypes.isLiteral(part, "scroll | fixed | local");
+        },
+        
+        "<attr>": function(part){
+            return part.type == "function" && part.name == "attr";
+        },
+                
+        "<bg-image>": function(part){
+            return this["<image>"](part) || this["<gradient>"](part) ||  part == "none";
+        },        
+        
+        "<gradient>": function(part) {
+            return part.type == "function" && /^(?:\-(?:ms|moz|o|webkit)\-)?(?:repeating\-)?(?:radial|linear)\-gradient/i.test(part);
+        },
+        
+        "<box>": function(part){
+            return ValidationTypes.isLiteral(part, "padding-box | border-box | content-box");
+        },
+        
+        "<content>": function(part){
+            return part.type == "function" && part.name == "content";
+        },        
+        
+        "<relative-size>": function(part){
+            return ValidationTypes.isLiteral(part, "smaller | larger");
+        },
+        
+        //any identifier
+        "<ident>": function(part){
+            return part.type == "identifier";
+        },
+        
+        "<length>": function(part){
+            return part.type == "length" || part.type == "number" || part.type == "integer" || part == "0";
+        },
+        
+        "<color>": function(part){
+            return part.type == "color" || part == "transparent";
+        },
+        
+        "<number>": function(part){
+            return part.type == "number" || this["<integer>"](part);
+        },
+        
+        "<integer>": function(part){
+            return part.type == "integer";
+        },
+        
+        "<line>": function(part){
+            return part.type == "integer";
+        },
+        
+        "<angle>": function(part){
+            return part.type == "angle";
+        },        
+        
+        "<uri>": function(part){
+            return part.type == "uri";
+        },
+        
+        "<image>": function(part){
+            return this["<uri>"](part);
+        },
+        
+        "<percentage>": function(part){
+            return part.type == "percentage" || part == "0";
+        },
+
+        "<border-width>": function(part){
+            return this["<length>"](part) || ValidationTypes.isLiteral(part, "thin | medium | thick");
+        },
+        
+        "<border-style>": function(part){
+            return ValidationTypes.isLiteral(part, "none | hidden | dotted | dashed | solid | double | groove | ridge | inset | outset");
+        },
+        
+        "<margin-width>": function(part){
+            return this["<length>"](part) || this["<percentage>"](part) || ValidationTypes.isLiteral(part, "auto");
+        },
+        
+        "<padding-width>": function(part){
+            return this["<length>"](part) || this["<percentage>"](part);
+        },
+        
+        "<shape>": function(part){
+            return part.type == "function" && (part.name == "rect" || part.name == "inset-rect");
+        },
+        
+        "<time>": function(part) {
+            return part.type == "time";
+        }
+    },
+    
+    complex: {
+
+        "<bg-position>": function(expression){
+            var types   = this,
+                result  = false,
+                numeric = "<percentage> | <length>",
+                xDir    = "left | center | right",
+                yDir    = "top | center | bottom",
+                part,
+                i, len;
+            
+                
+            if (ValidationTypes.isAny(expression, "top | bottom")) {
+                result = true;
+            } else {
+                
+                //must be two-part
+                if (ValidationTypes.isAny(expression, numeric)){
+                    if (expression.hasNext()){
+                        result = ValidationTypes.isAny(expression, numeric + " | " + yDir);
+                    }
+                } else if (ValidationTypes.isAny(expression, xDir)){
+                    if (expression.hasNext()){
+                        
+                        //two- or three-part
+                        if (ValidationTypes.isAny(expression, yDir)){
+                            result = true;
+                      
+                            ValidationTypes.isAny(expression, numeric);
+                            
+                        } else if (ValidationTypes.isAny(expression, numeric)){
+                        
+                            //could also be two-part, so check the next part
+                            if (ValidationTypes.isAny(expression, yDir)){                                    
+                                ValidationTypes.isAny(expression, numeric);                               
+                            }
+                            
+                            result = true;
+                        }
+                    }
+                }                                 
+            }            
+
+            
+            return result;
+        },
+
+        "<bg-size>": function(expression){
+            //<bg-size> = [ <length> | <percentage> | auto ]{1,2} | cover | contain
+            var types   = this,
+                result  = false,
+                numeric = "<percentage> | <length> | auto",
+                part,
+                i, len;      
+      
+            if (ValidationTypes.isAny(expression, "cover | contain")) {
+                result = true;
+            } else if (ValidationTypes.isAny(expression, numeric)) {
+                result = true;                
+                ValidationTypes.isAny(expression, numeric);
+            }
+            
+            return result;
+        },
+        
+        "<repeat-style>": function(expression){
+            //repeat-x | repeat-y | [repeat | space | round | no-repeat]{1,2}
+            var result  = false,
+                values  = "repeat | space | round | no-repeat",
+                part;
+            
+            if (expression.hasNext()){
+                part = expression.next();
+                
+                if (ValidationTypes.isLiteral(part, "repeat-x | repeat-y")) {
+                    result = true;                    
+                } else if (ValidationTypes.isLiteral(part, values)) {
+                    result = true;
+
+                    if (expression.hasNext() && ValidationTypes.isLiteral(expression.peek(), values)) {
+                        expression.next();
+                    }
+                }
+            }
+            
+            return result;
+            
+        },
+        
+        "<shadow>": function(expression) {
+            //inset? && [ <length>{2,4} && <color>? ]
+            var result  = false,
+                count   = 0,
+                inset   = false,
+                color   = false,
+                part;
+                
+            if (expression.hasNext()) {            
+                
+                if (ValidationTypes.isAny(expression, "inset")){
+                    inset = true;
+                }
+                
+                if (ValidationTypes.isAny(expression, "<color>")) {
+                    color = true;
+                }                
+                
+                while (ValidationTypes.isAny(expression, "<length>") && count < 4) {
+                    count++;
+                }
+                
+                
+                if (expression.hasNext()) {
+                    if (!color) {
+                        ValidationTypes.isAny(expression, "<color>");
+                    }
+                    
+                    if (!inset) {
+                        ValidationTypes.isAny(expression, "inset");
+                    }
+
+                }
+                
+                result = (count >= 2 && count <= 4);
+            
+            }
+            
+            return result;
+        },
+        
+        "<x-one-radius>": function(expression) {
+            //[ <length> | <percentage> ] [ <length> | <percentage> ]?
+            var result  = false,
+                count   = 0,
+                numeric = "<length> | <percentage>",
+                part;
+                
+            if (ValidationTypes.isAny(expression, numeric)){
+                result = true;
+                
+                ValidationTypes.isAny(expression, numeric);
+            }                
+            
+            return result;
+        }
+    }
+};
+
+
+parserlib.css = {
+Colors              :Colors,    
+Combinator          :Combinator,                
+Parser              :Parser,
+PropertyName        :PropertyName,
+PropertyValue       :PropertyValue,
+PropertyValuePart   :PropertyValuePart,
+MediaFeature        :MediaFeature,
+MediaQuery          :MediaQuery,
+Selector            :Selector,
+SelectorPart        :SelectorPart,
+SelectorSubPart     :SelectorSubPart,
+Specificity         :Specificity,
+TokenStream         :TokenStream,
+Tokens              :Tokens,
+ValidationError     :ValidationError
+};
+})();
+
+
+
+/**
+ * Main CSSLint object.
+ * @class CSSLint
+ * @static
+ * @extends parserlib.util.EventTarget
+ */
+/*global parserlib, Reporter*/
+var CSSLint = (function(){
+
+    var rules      = [],
+        formatters = [],
+        api        = new parserlib.util.EventTarget();
+        
+    api.version = "0.9.7";
+
+    //-------------------------------------------------------------------------
+    // Rule Management
+    //-------------------------------------------------------------------------
+
+    /**
+     * Adds a new rule to the engine.
+     * @param {Object} rule The rule to add.
+     * @method addRule
+     */
+    api.addRule = function(rule){
+        rules.push(rule);
+        rules[rule.id] = rule;
+    };
+
+    /**
+     * Clears all rule from the engine.
+     * @method clearRules
+     */
+    api.clearRules = function(){
+        rules = [];
+    };
+    
+    /**
+     * Returns the rule objects.
+     * @return An array of rule objects.
+     * @method getRules
+     */
+    api.getRules = function(){
+        return [].concat(rules).sort(function(a,b){ 
+            return a.id > b.id ? 1 : 0;
+        });
+    };
+
+    //-------------------------------------------------------------------------
+    // Formatters
+    //-------------------------------------------------------------------------
+
+    /**
+     * Adds a new formatter to the engine.
+     * @param {Object} formatter The formatter to add.
+     * @method addFormatter
+     */
+    api.addFormatter = function(formatter) {
+        // formatters.push(formatter);
+        formatters[formatter.id] = formatter;
+    };
+    
+    /**
+     * Retrieves a formatter for use.
+     * @param {String} formatId The name of the format to retrieve.
+     * @return {Object} The formatter or undefined.
+     * @method getFormatter
+     */
+    api.getFormatter = function(formatId){
+        return formatters[formatId];
+    };
+    
+    /**
+     * Formats the results in a particular format for a single file.
+     * @param {Object} result The results returned from CSSLint.verify().
+     * @param {String} filename The filename for which the results apply.
+     * @param {String} formatId The name of the formatter to use.
+     * @param {Object} options (Optional) for special output handling.
+     * @return {String} A formatted string for the results.
+     * @method format
+     */
+    api.format = function(results, filename, formatId, options) {
+        var formatter = this.getFormatter(formatId),
+            result = null;
+            
+        if (formatter){
+            result = formatter.startFormat();
+            result += formatter.formatResults(results, filename, options || {});
+            result += formatter.endFormat();
+        }
+        
+        return result;
+    };
+>>>>>>> Merge remote-tracking branch 'origin/master' into plugins
     
     
     
@@ -9362,6 +9735,7 @@ CSSLint.Util = {
 
         return prop;
     },
+<<<<<<< HEAD
 
     /*
      * Polyfill for array indexOf() method.
@@ -9383,6 +9757,29 @@ CSSLint.Util = {
     },
 
     /*
+=======
+
+    /*
+     * Polyfill for array indexOf() method.
+     * @param {Array} values The array to search.
+     * @param {Variant} value The value to search for.
+     * @return {int} The index of the value if found, -1 if not.
+     */
+    indexOf: function(values, value){
+        if (values.indexOf){
+            return values.indexOf(value);
+        } else {
+            for (var i=0, len=values.length; i < len; i++){
+                if (values[i] === value){
+                    return i;
+                }
+            }
+            return -1;
+        }
+    },
+
+    /*
+>>>>>>> Merge remote-tracking branch 'origin/master' into plugins
      * Polyfill for array forEach() method.
      * @param {Array} values The array to operate on.
      * @param {Function} func The function to call on each item.
@@ -10647,12 +11044,92 @@ CSSLint.addRule({
 
             if (event.invalid) {
                 reporter.report(event.invalid.message, event.line, event.col, rule);
+<<<<<<< HEAD
             }
             //if (!properties[name] && name.charAt(0) != "-"){
             //    reporter.error("Unknown property '" + event.property + "'.", event.line, event.col, rule);
             //}
 
         });
+    }
+
+});
+/*
+ * Rule: outline: none or outline: 0 should only be used in a :focus rule
+ *       and only if there are other properties in the same rule.
+ */
+/*global CSSLint*/
+CSSLint.addRule({
+
+    //rule information
+    id: "outline-none",
+    name: "Disallow outline: none",
+    desc: "Use of outline: none or outline: 0 should be limited to :focus rules.",
+    browsers: "All",
+    tags: ["Accessibility"],
+
+    //initialization
+    init: function(parser, reporter){
+        var rule = this,
+            lastRule;
+
+        function startRule(event){
+            if (event.selectors){
+                lastRule = {
+                    line: event.line,
+                    col: event.col,
+                    selectors: event.selectors,
+                    propCount: 0,
+                    outline: false
+                };
+            } else {
+                lastRule = null;
+            }
+        }
+        
+        function endRule(event){
+            if (lastRule){
+                if (lastRule.outline){
+                    if (lastRule.selectors.toString().toLowerCase().indexOf(":focus") == -1){
+                        reporter.report("Outlines should only be modified using :focus.", lastRule.line, lastRule.col, rule);
+                    } else if (lastRule.propCount == 1) {
+                        reporter.report("Outlines shouldn't be hidden unless other visual changes are made.", lastRule.line, lastRule.col, rule);                        
+                    }
+                }
+            }
+        }
+
+        parser.addListener("startrule", startRule);
+        parser.addListener("startfontface", startRule);
+        parser.addListener("startpage", startRule);
+        parser.addListener("startpagemargin", startRule);
+        parser.addListener("startkeyframerule", startRule); 
+=======
+            }
+            //if (!properties[name] && name.charAt(0) != "-"){
+            //    reporter.error("Unknown property '" + event.property + "'.", event.line, event.col, rule);
+            //}
+>>>>>>> Merge remote-tracking branch 'origin/master' into plugins
+
+        parser.addListener("property", function(event){
+            var name = event.property.text.toLowerCase(),
+                value = event.value;                
+                
+            if (lastRule){
+                lastRule.propCount++;
+                if (name == "outline" && (value == "none" || value == "0")){
+                    lastRule.outline = true;
+                }            
+            }
+            
+        });
+        
+        parser.addListener("endrule", endRule);
+        parser.addListener("endfontface", endRule);
+        parser.addListener("endpage", endRule);
+        parser.addListener("endpagemargin", endRule);
+        parser.addListener("endkeyframerule", endRule); 
+
     }
 
 });

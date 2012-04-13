@@ -14,6 +14,8 @@ for (var i = 0; i < clientDirs.length; i++) {
 var projectDir = __dirname + "/../";
 var fsUrl = "/workspace";
 
+var port = process.env.PORT || 3131;
+
 module.exports = {
     name: "Cloud9",
     tmpdir: __dirname + "/../.architect",
@@ -23,7 +25,7 @@ module.exports = {
             title: "Cloud9",
             plugins: [{
                 packagePath: "./cloud9.connect",
-                port: process.env.PORT || 3131,
+                port: port,
                 host: "localhost"
             }, {
                 packagePath: "./cloud9.sourcemint",
@@ -123,7 +125,7 @@ module.exports = {
             "./cloud9.socket",
             {
                 packagePath: "./cloud9.session",
-                key: "cloud9.sid",
+                key: "cloud9.sid." + port,
                 secret: "1234"
             }, {
                 packagePath: "./cloud9.session.file",

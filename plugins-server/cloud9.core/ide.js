@@ -47,6 +47,8 @@ var Ide = module.exports = function(options) {
     };
 
     this.$users = {};
+    this.nodeCmd = options.exec || process.execPath;
+
     this.workspace = new Workspace(this);
 
     var _self = this;
@@ -103,7 +105,7 @@ util.inherits(Ide, EventEmitter);
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
-            var aceScripts = '<script type="text/javascript" data-ace-base="/static/js/worker" src="' + staticUrl + '/ace/build/ace.js"></script>\n';
+            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="' + staticUrl + '/ace/build/ace.js"></script>\n';
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,
@@ -172,6 +174,7 @@ util.inherits(Ide, EventEmitter);
             this.onUserCountChange();
             this.emit("userJoin", user);
         }
+        return user;
     };
 
     this.getUser = function(req) {
@@ -235,6 +238,10 @@ util.inherits(Ide, EventEmitter);
 
     this.sendToUser = function(username, msg) {
         this.$users[username] && this.$users[username].broadcast(msg);
+    };
+
+    this.canShutdown = function() {
+        return this.workspace.canShutdown();
     };
 
     this.dispose = function(callback) {

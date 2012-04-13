@@ -56,6 +56,12 @@ util.inherits(ShellPlugin, Plugin);
                     "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
                 }
             },
+            "mv": {
+                "hint": "move or rename files or directories",
+                "commands": {
+                    "[PATH]": {"hint": "path pointing to a folder. Autocomplete with [TAB]"}
+                }
+            },
             "pwd": {"hint": "return working directory name"}
         }
     };
@@ -136,7 +142,7 @@ util.inherits(ShellPlugin, Plugin);
     this["command-mkdir"] =
     this["command-rm"] =
     this["command-pwd"] =
-    this["command-ls"]  = function(message) {
+    this["command-ls"] = function(message) {
         var self = this;
         this.pm.exec("shell", {
             command: message.command,

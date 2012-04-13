@@ -40,6 +40,18 @@ var Workspace = module.exports = function(ide) {
                 return;
             }
         }
+
+        // if a message is sent with the requireshandling flag
+        // then the client wants to be notified via an error that there was
+        // no plugin suitable of handling this command
+        var message = args.length > 1 && args[1];
+        if (message && message.requireshandling === true) {
+            this.send({
+                type: "result",
+                subtype: "info",
+                body:  "Command '" + message.command + "' was not recognized"
+            }, message);
+        }
     };
 
     this.getExt = function(name) {
@@ -71,14 +83,23 @@ var Workspace = module.exports = function(ide) {
         this.sendError(error, client || null);
     };
 
+    this.canShutdown = function() {
+        var self = this;
+        return Object.keys(this.plugins).every(function(name) {
+            return self.plugins[name].canShutdown();
+        });
+    };
+
     this.dispose = function(callback) {
-        var count;
+        var count = 0;
         for (var name in this.plugins) {
             count += 1;
             this.plugins[name].dispose(function() {
-                count -= 1;
-                if (count === 0)
-                    callback();
+                process.nextTick(function() {
+                    count -= 1;
+                    if (count === 0)
+                        callback();
+                });
             });
         }
     };

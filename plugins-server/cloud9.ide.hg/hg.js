@@ -53,6 +53,12 @@ util.inherits(HgPlugin, Plugin);
             }
         }
 
+        if (message.argv[1] == "commit" && message.argv[2] == "-m") {
+            if (message.argv[3].indexOf("\\n") > -1) {
+                message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
+            }
+        }
+
         this.pm.spawn("shell", {
             command: "hg",
             args: message.argv.slice(1),
