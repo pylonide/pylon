@@ -426,7 +426,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.set(next);
     },
 
-    gototabright: function() {
+    gototabright: function(e) {
+        // Right "Command" key on Mac calls this, don't know why, and don't
+        // want it to! In the meantime, this blocks it
+        if (e.keyCode === 93)
+            return;
         return this.cycleTab("right");
     },
 
