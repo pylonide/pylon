@@ -420,9 +420,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                             id: message.id,
                             group: group,
                             groupKeys: keys,
-                            type: message.nextAction
+                            type: message.nextAction,
                             data: this.getRevision(keys[0]),
-                            content: message.body,
+                            content: message.body
                         };
                         this.worker.postMessage(data);
                         break;
