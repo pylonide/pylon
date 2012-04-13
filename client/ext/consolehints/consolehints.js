@@ -20,14 +20,14 @@ var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 var filterCommands = function(commands, word) {
     return commands.filter(function(cmd) {
-        return cmd !== word && cmd.search(new RegExp("^" + word)) !== -1;
+        return cmd.search(new RegExp("^" + word)) !== -1;
     }).sort();
 };
 
 var mouseHandler = function(e) {
     clearTimeout(hintsTimer);
     var el = e.target || e.srcElement;
-    while (el && el.nodeType === 3 && el.tagName !== "A" && el !== winHints)
+    while (el && el.nodeType === 3 && el.tagName !== "A" && el !== hintsContent)
         el = el.parentNode;
 
     if (el.tagName !== "A") return;
@@ -42,15 +42,15 @@ var getFontSize = function(txtNode) {
     if (fontSize)
         return fontSize;
 
-    var font = apf.getStyle(txtNode, "font");
     var el = document.createElement("span");
-    el.style.font = font;
+    el.className = "consoleInputCloned";
     el.innerHTML = "m";
     document.body.appendChild(el);
     fontSize = {
         width: el.offsetWidth,
         height: el.offsetHeight
     };
+    console.log(el.offsetWidth)
     document.body.removeChild(el);
     return fontSize;
 };
@@ -94,7 +94,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             
             apf.addListener(document, "click", function(e){
                 var node = e.target;
-                if (node.parentNode != winHints || node != winHints)
+                if (node.parentNode != hintsContent || node != hintsContent)
                     _self.hide();
             });
             
@@ -203,7 +203,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         }
 
         var size = getFontSize(textbox.$ext);
-        winHints.style.left = parseInt(cursorPos * size.width, 10) + "px";
+        winHints.style.left = parseInt(cursorPos + 5, 10) + "px";
     },
     hide: function() {
         winHints.style.display = "none";
@@ -214,7 +214,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
     click: function(e) {
         var node = e.target;
-        if (node.parentNode != winHints && node != winHints)
+        if (node.parentNode != hintsContent && node != hintsContent)
             node = node.parentNode;
 
         var parts = node.getAttribute("data-hint").split(",");
