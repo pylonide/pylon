@@ -16,6 +16,7 @@ var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var useragent = require("ace/lib/useragent");
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
+var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
 var ProxyDocument = require("ext/code/proxydocument");
 var CommandManager = require("ace/commands/command_manager").CommandManager;
 var defaultCommands = require("ace/commands/default_commands").commands;
@@ -298,7 +299,7 @@ module.exports = ext.register("ext/code/code", {
 
         doc.editor = this;
     },
-    
+
     hook: function() {
         var _self = this;
 
@@ -330,7 +331,7 @@ module.exports = ext.register("ext/code/code", {
                 var editors = apf.createNodeFromXpath(model.data, "editors");
                 apf.xmldb.appendChild(editors, node);
             }
-            
+
             if (!model.queryNode("editors/code/@animatedscroll"))
                 model.setQueryValue("editors/code/@animatedscroll", "true");
 
@@ -371,6 +372,7 @@ module.exports = ext.register("ext/code/code", {
 
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = this.commandManager;
+        ceEditor.$editor.commands.addCommands(MultiSelectCommands);
 
         // preload common language modes
         var noop = function() {};
