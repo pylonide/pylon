@@ -23,7 +23,7 @@ var SettingsPlugin = function(ide, workspace) {
     this.hooks = ["command"];
     this.name = name;
 
-    this.settingsPath = ide.options.mountDir + "/.settings.xml";
+    this.settingsPath = ide.options.settingsPath;
 };
 
 util.inherits(SettingsPlugin, Plugin);

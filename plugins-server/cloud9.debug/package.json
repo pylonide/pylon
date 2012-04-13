@@ -1,7 +1,7 @@
 {
-    "name": "cloud9.alive",
+    "name": "cloud9.debug",
     "version": "0.0.1",
-    "main": "alive.js",
+    "main": "debug.js",
     "private": true,
 
     "dependencies": {
@@ -9,7 +9,7 @@
 
     "plugin": {
         "consumes": [
-            "hub",
+            "log",
             "connect"
         ]
     }

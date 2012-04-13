@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.ide.remotecontrol",
+    "version": "0.0.1",
+
+    "main": "./remotecontrol.js",
+
+    "plugin": {
+        "provides": [
+            "remotecontrol"
+        ],
+        "consumes": [
+            "ide"
+        ]
+    }
+}

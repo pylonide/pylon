@@ -20,6 +20,7 @@ var Ide = module.exports = function(options) {
 
     assert(options.workspaceId, "option 'workspaceId' is required");
     assert(options.workspaceDir, "option 'workspaceDir' is required");
+    assert(options.settingsPath, "option 'settingsPath' is required");
     assert(options.requirejsConfig, "option 'requirejsConfig' is required");
     assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
@@ -29,6 +30,7 @@ var Ide = module.exports = function(options) {
 
     this.options = {
         workspaceDir: this.workspaceDir,
+        settingsPath: options.settingsPath,
         mountDir: options.mountDir || this.workspaceDir,
         socketIoUrl: options.socketIoUrl || "socket.io",
         davPrefix: options.davPrefix,
@@ -51,11 +53,6 @@ var Ide = module.exports = function(options) {
     this.router = connect.router(function(app) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
             _self.$serveIndex(req, res, next);
-        });
-
-        app.get(/^\/\$reconnect$/, function(req, res, next) {
-            res.writeHead(200);
-            res.end(req.sessionID);
         });
     });
 };

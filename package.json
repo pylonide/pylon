@@ -14,7 +14,7 @@
         "connect": "1.8.x",
         
         "asyncjs": "~0.0.6",
-        "jsDAV": "0.1.x",
+        "jsdav": "0.1.x",
         "gnu-tools": "0.0.x",
         "sourcemint-loader-js": "0.x",
         "sourcemint-platform-nodejs": "0.x",

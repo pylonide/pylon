@@ -34,6 +34,7 @@ module.exports = {
                 prefix: "/static"
             },
             "./cloud9.alive",
+            "./cloud9.debug",
 
             // Client libraries
             "./../plugins-client/cloud9.core",
@@ -56,6 +57,7 @@ module.exports = {
                 ],
                 clientPlugins: [
                     "ext/filesystem/filesystem",
+                    "ext/remotecontrol/remotecontrol",
                     "ext/settings/settings",
                     "ext/editors/editors",
                     "ext/themes/themes",
@@ -150,7 +152,8 @@ module.exports = {
             "./cloud9.ide.settings",
             "./cloud9.ide.shell",
             "./cloud9.ide.state",
-            "./cloud9.ide.watcher"
+            "./cloud9.ide.watcher",
+            "./cloud9.ide.remotecontrol"
             ]
         }
     }

@@ -1,6 +1,7 @@
 "use strict";
 
 var assert = require("assert");
+var path = require("path");
 
 module.exports = function(options, imports, register) {
 
@@ -11,6 +12,9 @@ module.exports = function(options, imports, register) {
         sandbox: {
             getProjectDir: function(callback) {
                 callback(null, options.projectDir);
+            },
+            getSettingsPath: function(callback) {
+                callback(null, options.settingsPath || path.resolve(options.projectDir, ".settings.xml"));
             },
             getWorkspaceId: function(callback) {
                 callback(null, options.workspaceId);

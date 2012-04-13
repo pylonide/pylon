@@ -1,0 +1,11 @@
+{
+    "name": "ext.remotecontrol",
+    "version": "0.0.1",
+    "main": "remotecontrol.js",
+    "private": true,
+    "plugin": {
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}
