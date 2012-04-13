@@ -197,7 +197,7 @@ module.exports = ext.register("ext/tree/tree", {
             }
         });
         
-        ext.initExtension(this);
+        //ext.initExtension(this);
     },
 
     onReady : function() {

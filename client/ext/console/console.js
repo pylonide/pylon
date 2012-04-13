@@ -540,7 +540,7 @@ module.exports = ext.register("ext/console/console", {
                 dbgVisibleMethod: "hide",
                 mnuItemLabel: "uncheck",
                 animFrom: this.height > this.minHeight ? this.height : this.minHeight,
-                animTo: 65,
+                animTo: 0,
                 steps: 5,
                 animTween: "easeInOutCubic"
             };

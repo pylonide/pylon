@@ -82,13 +82,11 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.setAttribute("class", "");
             tabEditors.parentNode.$ext.style.paddingBottom = "32px";
             apf.layout.forceResize(tabEditors.$ext);
-            this.mnuItemTabs.setAttribute("caption", "Hide Tabs");
         }
         else {
             tabEditors.setAttribute("class", "hidetabs");
             tabEditors.parentNode.$ext.style.paddingBottom = 0;
             apf.layout.forceResize(tabEditors.$ext);
-            this.mnuItemTabs.setAttribute("caption", "Show Tabs");
         }
     },
 
@@ -147,6 +145,8 @@ module.exports = ext.register("ext/editors/editors", {
                     width : 17,
                     height : 17,
                     submenu : "mnuTabs",
+                    id : "test",
+                    visible : "{apf.isTrue([{require('core/settings').model}::auto/tabs/@show])}",
                     skin : "btn_icon_only",
                     "class" : "tabmenubtn",
                     background : "tabdropdown.png|horizontal|3|17"
@@ -571,10 +571,12 @@ module.exports = ext.register("ext/editors/editors", {
             submenu : "mnuEditors"
         }));
         
-        this.mnuItemTabs = mnuView.appendChild(new apf.item({
-            caption : "Hide Tabs",
-            onclick : function(){
-                _self.toggleTabs();
+        mnuView.appendChild(new apf.item({
+            caption : "Tabs",
+            type: "check",
+            checked : "[{require('ext/settings/settings').model}::auto/tabs/@show]",
+            "onprop.checked" : function(e) {
+                _self.toggleTabs(apf.isTrue(e.value) ? 1 : -1);
             }
         }));
         
@@ -605,8 +607,14 @@ module.exports = ext.register("ext/editors/editors", {
 
         this.$settings = {};
         ide.addEventListener("loadsettings", function(e){
-            if (!e.model.queryNode("auto/files"));
+            if (!e.model.queryNode("auto/files"))
                 apf.createNodeFromXpath(e.model.data, "auto/files");
+            
+            if (!e.model.queryNode("auto/tabs/@show"))
+                e.model.setQueryValue("auto/tabs/@show", "true");
+            
+            var showTab = settings.model.queryValue("auto/tabs/@show");
+            _self.toggleTabs(apf.isTrue(showTab) ? 1 : -1);
             
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){

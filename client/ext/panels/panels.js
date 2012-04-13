@@ -243,12 +243,15 @@ module.exports = ext.register("ext/panels/panels", {
         //Quick Fix
         if (apf.isGecko)
             apf.layout.forceResize(ide.vbMain.$ext);
-            
-        settings.model.setQueryValue("auto/panels/@active", "");
         
         ide.dispatchEvent("hidepanel." + this.currentPanel.path);
         
         this.currentPanel = null;
+        
+        if (anim != undefined) {
+            settings.model.setQueryValue("auto/panels/@active", "none");
+            mnuPanelsNone.select();
+        }
     },
     
     unregister : function(panelExt){
@@ -261,8 +264,10 @@ module.exports = ext.register("ext/panels/panels", {
         
         this.nodes.push(
             this.group = apf.document.body.appendChild(new apf.group({
-                value : "[{req"+"uire('ext/settings/settings').model}::auto/panels/@active]"
+                value : "[{req" + "uire('ext/settings/settings').model}::auto/panels/@active]"
             })),
+            
+            mnuPanelsNone,
             
             mnuView.appendChild(new apf.item({
                 submenu : "mnuSidebar",
@@ -281,6 +286,12 @@ module.exports = ext.register("ext/panels/panels", {
             
             mnuView.appendChild(new apf.divider())
         );
+        
+        mnuPanelsNone.setAttribute("group", this.group);
+        mnuPanelsNone.addEventListener("onprop.selected", function(e){
+            if (e.value)
+                _self.deactivate(null, true);
+        });
         
         colLeft.addEventListener("resize", function(){
             if (!_self.currentPanel || _self.animating)

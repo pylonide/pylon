@@ -9,7 +9,7 @@
  */
 
 define(function(require, exports, module) {
-    
+
 var ext = require("core/ext");
 var ide = require("core/ide");
 var skin = require("text!ext/guidedtour/skin.xml");

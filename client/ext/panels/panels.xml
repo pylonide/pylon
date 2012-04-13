@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:menu id="mnuSidebar">
-        <a:item type="radio">None</a:item>
+        <a:item id="mnuPanelsNone" type="radio">None</a:item>
         <a:divider />
     </a:menu>
 
