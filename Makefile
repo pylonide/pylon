@@ -1,7 +1,7 @@
 # packages apf
 apf:
-	cd ../packager; ../cloud9/support/node-builds-v4/node-darwin package.js projects/apf_cloud9.apr
-	cd ../packager; cp build/apf_release.js ../cloud9/client/js/apf_release.js
+	cd support/packager; ../node-builds-v4/node-darwin package.js projects/apf_cloud9.apr
+	cd support/packager; cp build/apf_release.js ../../client/js/apf_release.js
 
 # packages core, then ext
 ext:
