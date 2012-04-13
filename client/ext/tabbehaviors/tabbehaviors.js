@@ -249,7 +249,19 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     closetab: function() {
         var page = tabEditors.getPage();
         tabEditors.remove(page);
+        
+        this.resizeTabs();
+        
         return false;
+    },
+    
+    resizeTabs : function(){
+        clearTimeout(this.closeTimer);
+        
+        this.closeTimer = setTimeout(function(){
+            tabEditors.$waitForMouseOut = false;
+            tabEditors.$scaleinit(null, "sync");
+        }, 200);
     },
 
     closealltabs: function(callback) {
@@ -291,6 +303,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.closepage(page, callback);
             }
         }
+        
+        this.resizeTabs();
 
         this.checkPageRender(callback);
     },
@@ -412,7 +426,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.set(next);
     },
 
-    gototabright: function() {
+    gototabright: function(e) {
+        // Right "Command" key on Mac calls this, don't know why, and don't
+        // want it to! In the meantime, this blocks it
+        if (e.keyCode === 93)
+            return;
         return this.cycleTab("right");
     },
 

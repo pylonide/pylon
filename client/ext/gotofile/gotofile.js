@@ -22,7 +22,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     markup  : markup,
     offline : false,
     commands : {
-        "refresh": {hint: "Reload Cloud9 IDE"},
         "_gotofilelegacy": {hint: "Legacy"},
         "gotofile": {hint: "search for a filename and jump to it"}
     },
@@ -280,10 +279,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }
     },
     
-    refresh : function(){
-        location.reload();
-    },
-
     gotofile : function(){
         this.toggleDialog();
         return false;

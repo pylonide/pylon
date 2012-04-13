@@ -128,6 +128,12 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                         _self.hide();
                     }
                 };
+
+                // dismiss on escape, else cliValue executes below
+                if (e.keyCode === 27) {
+                    _self.hide();
+                    return;
+                }
     
                 var cliValue = e.currentTarget.getValue();
                 if (cliValue)
