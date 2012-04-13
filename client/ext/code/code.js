@@ -380,7 +380,7 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.$editor.commands.addCommands(MultiSelectCommands);
 
         // preload common language modes
-        var noop = function() {};
+        var noop = function() {}; 
         ceEditor.getMode("javascript", noop);
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
@@ -394,11 +394,6 @@ module.exports = ext.register("ext/code/code", {
         });
 
         this.nodes.push(
-            //Add a panel to the statusbar showing whether the insert button is pressed
-            sbMain.appendChild(new apf.section({
-                caption : "{ceEditor.insert}"
-            })),
-
             mnuView.appendChild(new apf.item({
                 caption : "Syntax",
                 submenu : "mnuSyntax"

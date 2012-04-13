@@ -19,13 +19,13 @@ module.exports = ext.register("ext/tools/tools", {
     init : function(){
         this.nodes.push(
             barMenu.appendChild(new apf.button({
-                skin : "c9-menu-btn",
+                skin    : "c9-menu-btn",
                 submenu : "mnuTools",
-                margin : "1 0 0 0",
+                margin  : "1 0 0 0",
                 caption : "Tools"
             })),
             
-            apf.document.body.appendChild(new apf.menu({
+            apf.document.documentElement.appendChild(new apf.menu({
                 id : "mnuTools"
             }))
         );

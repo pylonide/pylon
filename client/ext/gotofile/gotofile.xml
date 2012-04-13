@@ -24,14 +24,16 @@
               class     = "searchresults noscrollbar"
               skin      = "lineselect"
               maxheight = "350"
+              model     = "{require('ext/openfile/openfile').model}"
               scrollbar = "sbShared 32 7 7"
               viewport  = "virtual"
               multiselect   = "true"
               loading-message = "Loading file list. One moment please..."
               empty-message = "No files found that match '{txtGoToFile.value}'"
               onafterload   = "
-                if (this.viewport.length &lt; 100) {
-                    var ht = Math.min(350, this.viewport.getScrollHeight());
+                var vp = this.getViewport();
+                if (vp.length &lt; 100) {
+                    var ht = Math.min(350, vp.getScrollHeight());
                     if (ht != this.height)
                         this.setAttribute('height', ht);
                 }

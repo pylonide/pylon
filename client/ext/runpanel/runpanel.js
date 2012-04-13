@@ -57,7 +57,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             "class": "rundebug"
         });
 
-        apf.document.body.insertMarkup(buttonsMarkup);
+        apf.document.documentElement.insertMarkup(buttonsMarkup);
 
         this.nodes.push(
             mnuRunCfg
@@ -118,30 +118,32 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             mdlRunConfigurations.load(runConfigs);
         });
 
-        var page = tabEditors.getPage();
-        if (page && page.$model) {
-            var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-            mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-            mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
-                path.split("/").pop() + " (active file)");
-        }
-
-        tabEditors.addEventListener("afterswitch", function(e){
-            var page = e.nextPage;
-            var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-            mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-            mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
-                path.split("/").pop() + " (active file)");
-        });
-
-        ide.addEventListener("afterfilesave", function(e){
+        ide.addEventListener("init.ext/editors/editors", function(e) {
             var page = tabEditors.getPage();
-            if (page) {
+            if (page && page.$model) {
                 var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
                 mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
                 mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
                     path.split("/").pop() + " (active file)");
             }
+
+            tabEditors.addEventListener("afterswitch", function(e){
+                var page = e.nextPage;
+                var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
+                mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
+                    path.split("/").pop() + " (active file)");
+            });
+
+            ide.addEventListener("afterfilesave", function(e){
+                var page = tabEditors.getPage();
+                if (page) {
+                    var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                    mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
+                    mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
+                        path.split("/").pop() + " (active file)");
+                }
+            });
         });
 
         var hasBreaked = false;

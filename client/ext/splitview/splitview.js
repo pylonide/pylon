@@ -138,7 +138,7 @@ function createSplitView(page, layout, type) {
             var markup = "<a:application xmlns:a=\"http://ajax.org/2005/aml\">"
                 + getEditorMarkup(editor).replace(/id="[\w]*"/, "id=\"ceCloneEditor\"")
                 + "</a:application>";
-            apf.document.body.insertMarkup(markup);
+            apf.document.documentElement.insertMarkup(markup);
             
             this.$cloneEditor = ceCloneEditor;
             addEditorListeners.call(this, this.$cloneEditor);
@@ -176,7 +176,7 @@ function hideGrids(amlPage, exception) {
     for (var name in EditorClones) {
         EditorClones[name].forEach(function(editor) {
             //console.log("hiding editor:", editor.id);
-            apf.document.body.appendChild(editor);
+            apf.document.documentElement.appendChild(editor);
             editor.hide();
         });
     }
@@ -292,11 +292,11 @@ function createEditorClones(editor) {
         ids.push(id + i);
     }
     
-    apf.document.body.insertMarkup(markup.join("") + "</a:application>");
+    apf.document.documentElement.insertMarkup(markup.join("") + "</a:application>");
     ids.forEach(function(eid) {
         var o = self[eid];
         EditorClones[id].push(o);
-        apf.document.body.appendChild(o);
+        apf.document.documentElement.appendChild(o);
         addEditorListeners.call(_self, o);
     });
     return EditorClones[id];
@@ -788,7 +788,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                     split.editors.splice(j, 1);
             }
             this.$cloneEditor.hide();
-            apf.document.body.appendChild(this.$cloneEditor);
+            apf.document.documentElement.appendChild(this.$cloneEditor);
             for (j = split.pages.length - 1; j >= 0; --j) {
                 if (split.pages[j] === split.clone)
                     split.pages.splice(j, 1);

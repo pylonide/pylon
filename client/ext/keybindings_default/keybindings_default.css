@@ -1,9 +1,9 @@
 .keybindings_default .bg-bk-content {
-    background: url(/static/style/images/gitui_menu_backg.png);
+    background: url(/static/ext/main/style/images/gitui_menu_backg.png);
 }
 
 /*.keybindings_default_vbox {
-    background: url(/static/style/images/gitui_menu_backg.png);
+    background: url(/static/ext/main/style/images/gitui_menu_backg.png);
 }*/
 
 .keybindings_default_bar {

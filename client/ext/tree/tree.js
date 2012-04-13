@@ -68,6 +68,7 @@ module.exports = ext.register("ext/tree/tree", {
     "default"        : true,
 
     hook : function(){
+
         // Register this panel on the left-side panels
         panels.register(this, {
             position : 1000,
@@ -143,13 +144,15 @@ module.exports = ext.register("ext/tree/tree", {
             // settings node
             for (id in _self.expandedList) {
                 path = _self.expandedList[id].getAttribute("path");
-                if (!path)
+                if (!path) {
                     delete _self.expandedList[id];
-                else
+                }
+                else {
                     _self.currentSettings.push(path);
+                }
             }
 
-            expandedNodes.nodeValue = apf.serialize(_self.currentSettings);
+            expandedNodes.nodeValue = JSON.stringify(_self.currentSettings);
             _self.changed = false;
             return true;
         });
@@ -372,7 +375,7 @@ module.exports = ext.register("ext/tree/tree", {
                 apf.DragServer.stop();
             }
         });
-
+        
         trFiles.addEventListener("scroll", $trScroll);
 
         trFiles.addEventListener("beforeadd", $cancelWhenOffline);
@@ -405,6 +408,11 @@ module.exports = ext.register("ext/tree/tree", {
                 settings.save();
             }
         });
+    },
+
+    $cancelWhenOffline : function() {
+        if (!ide.onLine && !ide.offlineFileSystemSupport)
+            return false;
     },
 
     moveFile : function(path, newpath){

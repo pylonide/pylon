@@ -237,9 +237,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         });
 
-        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
-            e.ext.addToolsItem(menuItem.cloneNode(true), 0);
-        });
+//        ide.addEventListener("init.ext/tools/tools", function (e) {
+//            mnuTools.appendChild(menuItem.cloneNode(true));
+//        });
 
         ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild);
 

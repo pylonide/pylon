@@ -50,6 +50,7 @@ function worker(project) {
                     'ace/lib/fixoldbrowsers',
                     'ace/lib/event_emitter',
                     'ace/lib/oop',
+                    'ace/narcissus/parser',
                     'ext/language/worker',
                     'ext/codecomplete/local_completer',
                     'ext/codecomplete/snippet_completer',
