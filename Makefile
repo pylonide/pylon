@@ -1,6 +1,13 @@
+UNAME := $(shell uname)
+
+# don't know what the uname values are for other platforms 
+ifeq ($(UNAME), Darwin)
+	nodeToUse := "node-darwin"
+endif
+
 # packages apf
 apf:
-	cd support/packager; ../node-builds-v4/node-darwin package.js projects/apf_cloud9.apr
+	cd support/packager; ../node-builds-v4/$(nodeToUse) package.js projects/apf_cloud9.apr
 	cd support/packager; cp build/apf_release.js ../../client/js/apf_release.js
 
 # packages core, then ext
