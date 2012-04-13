@@ -49,20 +49,7 @@
                                     }
                                     </div>
                                     <ul class="contributors">
-                                      {
-                                        <li>
-                                          <span class="coloredSquare" style=' background-color: blue'>&#9632;</span>
-                                          <span>sergi</span>
-                                        </li>
-                                        <li>
-                                          <span class="coloredSquare" style=' background-color: red'>&#9632;</span>
-                                          <span>linh</span>
-                                        </li>
-                                        <li>
-                                          <span class="coloredSquare" style=' background-color: green'>&#9632;</span>
-                                          <span>fabian</span>
-                                        </li>
-                                        
+                                      {                                        
                                         each([contributors/contributor]) {
                                           <li>
                                             <span class="coloredSquare" style=' background-color: {require("ext/revisions/revisions")
