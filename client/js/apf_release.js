@@ -6765,7 +6765,7 @@ this.$activateButton();});return;}if(this.parentNode&&this.parentNode.$hasButton
 }this.$btnControl={};this.$btnDown=function(oHtml,htmlEvent){if(this.disabled){return;
 }if(htmlEvent.button==2&&this.parentNode.contextmenu){this.parentNode.contextPage=this;
 return;}if(this.parentNode.dispatchEvent("tabselectclick",{page:this,htmlEvent:htmlEvent})===false){return;
-}this.$btnPressed=true;$btnSet.call(this,oHtml);if(this.parentNode.getPages().length>1){if(this.$btnControl[this.$uniqueId]){return;
+}this.$btnPressed=true;$btnSet.call(this,oHtml);if(this.parentNode.$order&&this.parentNode.getPages().length>1){if(this.$btnControl[this.$uniqueId]){return;
 }this.$dragging=true;var pos=apf.getAbsolutePosition(this.$button,this.parentNode.$ext);
 var start=htmlEvent.clientX;var x=start-pos[0];var t=apf.getAbsolutePosition(this.$button)[1];
 oHtml.style.left=(oHtml.offsetLeft)+"px";oHtml.style.top=(oHtml.offsetTop)+"px";
