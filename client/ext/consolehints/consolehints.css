@@ -9,8 +9,8 @@
     border-bottom-right-radius: 0px;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    border: 2px solid #656565;
-    border-width: 2px 2px 0 2px;
+    border: 1px solid #000101;
+    border-width: 1px 1px 0 1px;
 
     background-color: #000000;
     background: -webkit-gradient(linear,left bottom,left top,rgb(46,48,52),rgb(31,31,31));
@@ -18,13 +18,17 @@
     
     max-height: 300px;
     overflow: auto;
+    
+    -webkit-box-shadow: inset 0px 1px 0px 0px #3e4041;
+    -moz-box-shadow: inset 0px 1px 0px 0px #3e4041;
+    box-shadow: inset 0px 1px 0px 0px #3e4041; 
 }
 
 .barConsoleHints a {
     position: relative;
     text-decoration: none;
-    font-weight: normal;
-    color: #eee;
+    font-weight: bold;
+    color: #ffffff;
     padding: 3px 5px;
     margin: 0 0 2px 0;
     display: block;
@@ -34,18 +38,17 @@
     padding: 2px 4px;
     border-radius: 4px;
     background-color: #f0f0f0;
-    background: -webkit-gradient(linear,left bottom,left top,rgb(55,56,58),rgb(41,42,43));
-    background: -moz-linear-gradient(center bottom,rgb(55,56,58),rgb(41,42,43));
-    color: #333;
+    color: #2ca701;
     border: 1px solid #505051;
     border-bottom: 1px solid #1d1e1f;
 }
 
 .barConsoleHints a span {
-    color: #909090;
+    color: #b3b3b3;
     font-style: italic;
     margin-left: 4px;
     font-size: 11px;
+    font-weight: normal;
 }
 
 .barConsoleHints a span.hints_hotkey {
@@ -53,5 +56,9 @@
     font-weight: bold;
     float: right;
     margin-left : 20px;
-    margin-top : 1px;
+    margin-top : 0px;
+}
+
+.barConsoleHints a.selected span {
+    color: #90908b
 }

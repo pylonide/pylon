@@ -16,7 +16,7 @@ var markup = require("text!ext/consolehints/consolehints.xml");
 var css = require("text!ext/consolehints/consolehints.css");
 var Console = require("ext/console/console");
 
-var winHints, selectedHint, animControl, hintsTimer;
+var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 var filterCommands = function(commands, word) {
     return commands.filter(function(cmd) {
@@ -88,6 +88,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         var initConsoleDeps = function() {
             apf.importCssString(_self.css);
             winHints = document.getElementById("barConsoleHints");
+            hintsContent = document.getElementById("consoleHintsContent");
             apf.addListener(winHints, "mousemove", mouseHandler.bind(_self));
             apf.addListener(winHints, "click", _self.click.bind(_self));
             
@@ -136,6 +137,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 }
     
                 var cliValue = e.currentTarget.getValue();
+                
                 if (cliValue)
                     _self.getCmdCompletion(cliValue, getCmdMatches);
                 else
@@ -192,7 +194,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             });
         }).join("");
 
-        winHints.innerHTML = content;
+        hintsContent.innerHTML = content;
         selectedHint = null;
 
         if (apf.getStyle(winHints, "display") === "none") {
@@ -300,7 +302,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
     onEnterKey: function() {
         var handled = false;
-        var hintNodes = winHints.childNodes;
+        var hintNodes = hintsContent.childNodes;
         for (var i = 0, l = hintNodes.length; i < l; ++i) {
             if (hintNodes[i].className === "selected") {
                 this.click({ target: hintNodes[i] });
@@ -314,14 +316,14 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     selectUp: function() {
         var newHint = selectedHint - 1;
         if (newHint < 0)
-            newHint = winHints.childNodes.length - 1;
+            newHint = hintsContent.childNodes.length - 1;
 
         this.select(newHint);
         return true;
     },
     selectDown: function() {
         var newHint = selectedHint + 1;
-        if (newHint > winHints.childNodes.length)
+        if (newHint > hintsContent.childNodes.length)
             newHint = 0;
 
         this.select(newHint);
@@ -329,7 +331,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
     select: function(hint) {
         clearTimeout(hintsTimer);
-        var hintNodes = winHints.childNodes;
+        var hintNodes = hintsContent.childNodes;
 
         if (typeof hint === "number")
             hint = hintNodes[hint];
@@ -348,8 +350,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         return winHints && !!winHints.visible;
     },
     selected: function() {
-        return selectedHint && winHints.childNodes
-            ? winHints.childNodes[selectedHint]
+        return selectedHint && hintsContent.childNodes
+            ? hintsContent.childNodes[selectedHint]
             : false;
     }
 });
