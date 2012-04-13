@@ -38,6 +38,9 @@ module.exports = ext.register("ext/beautify/beautify", {
     hotitems: {},
 
     beautify: function () {
+        if (this.disabled === true)
+            return;
+
         var editor = editors.currentEditor;
 
         var sel = editor.getSelection();
@@ -102,10 +105,14 @@ module.exports = ext.register("ext/beautify/beautify", {
                                 return;
 
                             var range = ceEditor.$editor.getSelectionRange();
-                            if (range.start.row == range.end.row && range.start.column == range.end.column)
+                            if (range.start.row == range.end.row && range.start.column == range.end.column) {
+                                _self.disabled = true;
                                 beautify_selection.disable();
-                            else
+                            }
+                            else {
+                                _self.disabled = false;
                                 beautify_selection.enable();
+                            }
                         }
                     );
                 }
@@ -161,9 +168,7 @@ module.exports = ext.register("ext/beautify/beautify", {
             item.enable();
         });
 
-        if (this._beautify) {
-            this.beautify = this._beautify;
-        }
+        this.disabled = false;
     },
 
     disable: function () {
@@ -171,10 +176,7 @@ module.exports = ext.register("ext/beautify/beautify", {
             item.disable();
         });
 
-        if (!this._beautify) {
-            this._beautify = this.beautify;
-        }
-        this.beautify = function(){};
+        this.disabled = true;
     },
 
     destroy: function () {
