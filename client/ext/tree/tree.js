@@ -148,7 +148,7 @@ module.exports = ext.register("ext/tree/tree", {
                 }
             }
 
-            xmlSettings.nodeValue = JSON.stringify(_self.currentSettings);
+            expandedNodes.nodeValue = JSON.stringify(_self.currentSettings);
             _self.changed = false;
             return true;
         });

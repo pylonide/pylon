@@ -34,64 +34,64 @@ module.exports = ext.register("ext/save/save", {
     saveBuffer  : {},
 
     hook : function(){
-        if (!self.tabEditors) return;
-
         var _self = this;
 
-        tabEditors.addEventListener("close", this.$close = function(e) {
-            var at = e.page.$at;
-            if (!at.undo_ptr)
-                at.undo_ptr = at.$undostack[0];
-            var node = e.page.$doc.getNode();
-            if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
-              || !at.undo_ptr && node.getAttribute("changed") == 1
-              && e.page.$doc.getValue()) {
-                ext.initExtension(_self);
-
-                var pages   = tabEditors.getPages(),
-                currIdx = pages.indexOf(e.page);
-                tabEditors.set(pages[currIdx].id); //jump to file
-
-                var filename = node.getAttribute("path").replace(ide.workspaceDir, "").replace(ide.davPrefix, "");
-
-                winCloseConfirm.page = e.page;
-                winCloseConfirm.all  = -100;
-                winCloseConfirm.show();
-
-                fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
-
-                winCloseConfirm.addEventListener("hide", function(){
-                    if (winCloseConfirm.all != -100) {
-                        var f = function(resetUndo){
-                            var page;
-                            if (!(page=winCloseConfirm.page))
-                                return;
-
-                            tabEditors.remove(page, true, page.noAnim);
-                            delete page.noAnim;
-                            if (resetUndo)
-                                page.$at.undo(-1);
-                            delete winCloseConfirm.page;
-                            page.dispatchEvent("aftersavedialogclosed");
-                        };
-
-                        if (winCloseConfirm.all == -200)
-                            _self.quicksave(winCloseConfirm.page, f);
+        ide.addEventListener("init.ext/editors/editors", function(){
+            tabEditors.addEventListener("close", _self.$close = function(e) {
+                var at = e.page.$at;
+                if (!at.undo_ptr)
+                    at.undo_ptr = at.$undostack[0];
+                var node = e.page.$doc.getNode();
+                if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
+                  || !at.undo_ptr && node.getAttribute("changed") == 1
+                  && e.page.$doc.getValue()) {
+                    ext.initExtension(_self);
+    
+                    var pages   = tabEditors.getPages(),
+                    currIdx = pages.indexOf(e.page);
+                    tabEditors.set(pages[currIdx].id); //jump to file
+    
+                    var filename = node.getAttribute("path").replace(ide.workspaceDir, "").replace(ide.davPrefix, "");
+    
+                    winCloseConfirm.page = e.page;
+                    winCloseConfirm.all  = -100;
+                    winCloseConfirm.show();
+    
+                    fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
+    
+                    winCloseConfirm.addEventListener("hide", function(){
+                        if (winCloseConfirm.all != -100) {
+                            var f = function(resetUndo){
+                                var page;
+                                if (!(page=winCloseConfirm.page))
+                                    return;
+    
+                                tabEditors.remove(page, true, page.noAnim);
+                                delete page.noAnim;
+                                if (resetUndo)
+                                    page.$at.undo(-1);
+                                delete winCloseConfirm.page;
+                                page.dispatchEvent("aftersavedialogclosed");
+                            };
+    
+                            if (winCloseConfirm.all == -200)
+                                _self.quicksave(winCloseConfirm.page, f);
+                            else
+                                f(true);
+                            /*winSaveAs.page = winCloseConfirm.page;*/
+                        }
                         else
-                            f(true);
-                        /*winSaveAs.page = winCloseConfirm.page;*/
-                    }
-                    else
-                        tabEditors.dispatchEvent("aftersavedialogcancel");
-
-                    winCloseConfirm.removeEventListener("hide", arguments.callee);
-                });
-
-                btnYesAll.hide();
-                btnNoAll.hide();
-
-                e.preventDefault();
-            }
+                            tabEditors.dispatchEvent("aftersavedialogcancel");
+    
+                        winCloseConfirm.removeEventListener("hide", arguments.callee);
+                    });
+    
+                    btnYesAll.hide();
+                    btnNoAll.hide();
+    
+                    e.preventDefault();
+                }
+            });
         });
 
         this.nodes.push(ide.barTools.appendChild(new apf.button({
