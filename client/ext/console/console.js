@@ -496,6 +496,9 @@ module.exports = ext.register("ext/console/console", {
     },
     
     hideInput : function(){
+        if (!this.inited)
+            return;
+        
         this.$collapsedHeight = 0;
         if (this.hidden)
             winDbgConsole.setAttribute("height", "0")

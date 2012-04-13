@@ -22,6 +22,7 @@ var settings = require("core/settings");
 var strTour = require("text!ext/guidedtour/tour.js");
 var helloWorldScript = require("text!ext/guidedtour/hello-world-script.txt");
 
+var save, hasDeploy = false;
 var madeNewFile = false;
 var wentToZen = false;
 var madeDebug = false;
@@ -48,7 +49,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     
     init: function(amlNode) { 
         this.initTour();
-        this.tour = eval(strTour);
+        eval(strTour);
         
         this.overlay   = document.createElement("div");
         this.hlElement = document.createElement("div");
@@ -93,6 +94,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.animateui = settings.model.queryValue('general/@animateui');
         settings.model.setQueryValue('general/@animateui', false);
         
+        ext.initExtension(require("ext/console/console"));
+        
         /*ide.addEventListener("loadsettings", function(e){
             _self.animateui = settings.model.queryValue('general/@animateui');
             settings.model.setQueryValue('general/@animateui', false);
@@ -101,7 +104,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         !self["winFilesViewer"] && panels.activate(require("ext/tree/tree"));
 
         var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
-        if (demoFile && !deletedFile) {
+        if (demoFile && !deletedFile && false) {
             txtConsoleInput.setValue("rm helloWorld-quideTour.js");
             deletedFile = true;
             require("ext/console/console").commandTextHandler({
