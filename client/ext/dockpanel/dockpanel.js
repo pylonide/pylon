@@ -1,10 +1,10 @@
 /**
  * Dock Panel for the Cloud9 IDE client
- * 
+ *
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ext = require("core/ext");
@@ -24,9 +24,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
     nodes          : [],
     dockpanels     : [],
-    
+
     loaded : false,
-    
+
     /**
      * Standard Extension functionality
      */
@@ -34,7 +34,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         var _self = this;
 
         var vManager = new apf.visibilitymanager();
-        this.layout = new DockableLayout(hboxDockPanel, 
+        this.layout = new DockableLayout(hboxDockPanel,
             //Find Page
             function(arrExtension){
                 if (!arrExtension || !_self.dockpanels[arrExtension[0]])
@@ -45,10 +45,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     return item.page;
 
                 var page = item.getPage();
-                
+
                 if (page)
                     page.$arrExtension = arrExtension;
-                
+
                 vManager.permanent(page, function(e){
                     item.mnuItem.check();
                 }, function(){
@@ -56,12 +56,12 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 });
 
                 return page;
-            }, 
+            },
             //Store Page
             function(amlPage){
                 var arrExtension = amlPage.$arrExtension;
                 var item = _self.dockpanels[arrExtension[0]][arrExtension[1]];
-                
+
                 item.page = amlPage;
                 item.mnuItem.uncheck();
 
@@ -98,9 +98,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 }
                 catch (ex) {}
             }
-            
+
             ide.dispatchEvent("dockpanel.load.settings", {state: state});
-            
+
             _self.layout.loadState(state);
             _self.loaded = true;
         });
@@ -110,7 +110,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             onclick : function(){
                 var defaultSettings = _self.defaultState,//settings.model.queryValue("auto/dockpanel_default/text()"),
                     state;
-                    
+
                 if (defaultSettings) {
                     // JSON parse COULD fail
                     try {
@@ -118,26 +118,26 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                     }
                     catch (ex) {}
                     _self.layout.loadState(state);
-                    
+
                     settings.model.setQueryValue("auto/dockpanel/text()", state)
-                    
+
                     _self.saveSettings();
-                    
+
                     ide.dispatchEvent("restorelayout");
                 }
             }
         }));
-        
+
         mnuToolbar.appendChild(new apf.divider());
     },
-    
+
     saveSettings : function(){
         clearTimeout(this.$timer);
-        
+
         var _self = this;;
         this.$timer = setTimeout(function(){
             var state = _self.layout.getState();
-            
+
             settings.model.setQueryValue(
                 "auto/dockpanel/text()",
                 JSON.stringify(state)
@@ -179,18 +179,29 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 layout.show(uId, true);
                 if (layout.isExpanded(uId) < 0)
                     layout.showMenu(uId);
-                
+
                 page.parentNode.set(page);
             }
-        }));        
+        }));
     },
 
-    addDockable : function(def){        
+    unregister : function(name, type) {
+        var panel = this.dockpanels[name];
+        if (!panel || !panel[type])
+            return;
+
+        if (panel[type].mnuItem)
+            panel[type].mnuItem.removeNode();
+
+        delete panel[type];
+    },
+
+    addDockable : function(def){
         var state = this.defaultState;
-            
+
         if (!def.barNum)
             def.barNum = 0;
-        
+
         if (def.sections) {
             if (def.barNum || def.barNum === 0) {
                 if (state.bars[def.barNum])
@@ -200,7 +211,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             }
             else
                 state.bars.push(def);
-            
+
             return;
         }
 
@@ -208,7 +219,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             state.bars[def.barNum || 0] = {expanded: false, width: 230, sections: []};
 
         var bar = state.bars[def.barNum || 0];
-        
+
         if (def.buttons) {
             bar.sections.push(def);
         }
@@ -220,20 +231,20 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 buttons : [def]
             });
         }
-        
+
         return bar.sections.slice(-1);
     }, //properties.forceShow ??
-    
+
     getButtons : function(name, type, state){
         state = state || this.layout.getState(true);
         var list  = [];
-        
+
         if(!state)
             return;
-        
+
         if(!state.bars)
             state = state.state;
-            
+
         state.bars.each(function(bar){
             bar.sections.each(function(section){
                 section.buttons.each(function(button){
@@ -243,23 +254,23 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 });
             });
         });
-        
+
         return list;
     },
-    
+
     getBars : function(name, type, state){
         var state = state || this.layout.getState(true);
         var list  = [];
-        
+
         if(!state)
             return;
-        
+
         if(!state.bars)
             state = state.state;
-        
+
         if (!state.bars)
             return list;
-        
+
         state.bars.each(function(bar){
             var found = false;
             bar.sections.each(function(section){
@@ -269,26 +280,26 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                         found = true;
                 });
             });
-            
+
             if (found)
                 list.push(bar);
         });
-        
+
         return list;
     },
-    
+
     hideSection: function(name, collapse){
         var buttons = this.getButtons(name);
         var bars = [];
         var _self = this;
-        
+
         buttons.each(function(button){
             if (button.hidden < 0)
                 bars.pushUnique(_self.layout.findBar(button.uniqueId));
             if (button.hidden == -1)
                 _self.layout.hide(button.uniqueId);
         });
-        
+
         if (collapse) {
             bars.each(function(bar){
                 if (bar.expanded == 1)
@@ -296,31 +307,31 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             });
         }
     },
-    
+
     showSection: function(name, expand){
         var buttons = this.getButtons(name);
         var _self = this;
         var bars = [];
-        
+
         buttons.each(function(button){
             if (button.hidden && button.hidden == 1) {
                 _self.layout.show(button.uniqueId);
                 bars.pushUnique(_self.layout.findBar(button.uniqueId));
             }
         });
-        
+
         bars.each(function(bar){
             if (expand && bar.expanded < 0)
                 _self.layout.expandBar(bar.uniqueId);
         });
     },
-    
+
     showBar : function(bar){
         if (bar.cache) {
             bar.cache.show();
             return;
         }
-        
+
         var _self = this;
         bar.sections.each(function(section){
             section.buttons.each(function(button){
@@ -328,21 +339,21 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             });
         });
     },
-    
+
     hideBar : function(bar){
         if (bar.cache)
             bar.cache.hide();
     },
-    
+
     expandBar : function(bar){
         this.layout.expandBar(bar.cache);
     },
-    
+
     //@todo removal of pages
-    
+
     /**
      * Increases the notification number count by one
-     * 
+     *
      * @windowIdent identifier of the dock object
      */
     increaseNotificationCount: function(windowIdent){
@@ -359,11 +370,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                             , this.dockObjects[doi].notCount
                     );
                 }
-                
+
                 return true;
             }
         }
-        
+
         return false;*/
     },
 
@@ -380,10 +391,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 return true;
             }
         }
-        
+
         return false;
     },
-    
+
     /**
      * Updates the notification element to visually reflect notCount
      */
@@ -394,7 +405,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             btnObj.$ext.getElementsByClassName("dock_notification")[0].textContent = countInner;
         else
             btnObj.$ext.getElementsByClassName("dock_notification")[0].innerText = countInner;
-        
+
         return true;
     }
 });
