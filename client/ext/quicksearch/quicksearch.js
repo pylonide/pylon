@@ -70,6 +70,15 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
             _self.updateBarPosition();
         });
+
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateBarPosition();
+        });
     },
 
     init : function(amlNode){
@@ -162,7 +171,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(winQuickSearch);
-            
+
         setTimeout(function() {
             _self.updateBarPosition();
         });

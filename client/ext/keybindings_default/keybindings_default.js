@@ -7,7 +7,6 @@
  
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/keybindings_default/keybindings_default.xml");
 var css = require("text!ext/keybindings_default/keybindings_default.css");
