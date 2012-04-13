@@ -1,36 +1,30 @@
-var IO = require("socket.io");
+"use strict";
+
+var Socket = require("./socket");
 
 module.exports = function setup(options, imports, register) {
 
+    var mountDir = options.mountDir;
+
     var ide = imports.ide.getServer();
-    var sessionStore = imports["session-store"];
+    var session = imports.session;
+    var permissions = imports["workspace-permissions"];
 
-    var socketIo = IO.listen(imports.http.getServer());
-    socketIo.enable("browser client minification");
-    socketIo.set("log level", 1);
-    socketIo.set("close timeout", 7);
-    socketIo.set("heartbeat timeout", 2.5);
-    socketIo.set("heartbeat interval", 5);
-    socketIo.set("polling duration", 5);
-
-    socketIo.sockets.on("connection", function(client) {
-        client.on("message", function listener(data) {
-            var message = data;
-            if (typeof data == "string") {
-                try {
-                    message = JSON.parse(data);
-                } catch(e) {
-                    return;
-                }
+    var socket = new Socket(session, session.getKey(), mountDir);
+    socket.listen(imports.http.getServer());
+    socket.on("attach", function(client, message) {
+        var uid = message.session.uid;
+        permissions.getPermissions(uid, function(err, userPermissions) {
+            if (err) {
+                return client.send(JSON.stringify({
+                    "type": "error",
+                    "code": err.code || 500,
+                    "message": err.message || err
+                }));
             }
-            if (message.command === "attach") {
-                sessionStore.get(message.sessionId, function(err, session) {
-                    if (err || !session || !session.uid)
-                        return;
 
-                    ide.addClientConnection(session.uid, client, data);
-                });
-            }
+            ide.addUser(uid, userPermissions);
+            ide.addClientConnection(uid, client, message);
         });
     });
 

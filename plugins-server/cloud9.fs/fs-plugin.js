@@ -1,6 +1,7 @@
 var assert = require("assert");
 var path = require("path");
 var utils = require("connect").utils;
+var error = require("http-error");
 
 var jsDAV = require("jsdav");
 var DavPermission = require("./dav/permission");
@@ -12,16 +13,16 @@ module.exports = function setup(options, imports, register) {
     assert(options.urlPrefix);
 
     var permissions = imports["workspace-permissions"];
-    
+
     imports.sandbox.getProjectDir(function(err, projectDir) {
         if (err) return register(err);
         init(projectDir);
     });
-    
+
     function init(projectDir) {
 
         var mountDir = path.normalize(projectDir);
-        
+
         var davOptions = {
             node: mountDir,
             path: mountDir,
@@ -44,8 +45,11 @@ module.exports = function setup(options, imports, register) {
             if (req.url.indexOf(options.urlPrefix) !== 0)
                 return next();
 
+            if (!req.session || !req.session.uid)
+                return next(new error.Unauthorized());
+
             var pause = utils.pause(req);
-            permissions.getPermissions(req, function(err, permissions) {
+            permissions.getPermissions(req.session.uid, function(err, permissions) {
                 if (err) {
                     next(err);
                     pause.resume();
