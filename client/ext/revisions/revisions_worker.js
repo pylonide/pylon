@@ -15,7 +15,7 @@ var startChar = {
 
 var getLastAndAfterRevisions = function(data) {
     "use strict";
-    
+
     var group = data.group;
     // Ordered timestamps
     var keys = data.groupKeys;
@@ -52,7 +52,7 @@ var getLastAndAfterRevisions = function(data) {
 
 self.onmessage = function(e) {
     if (!self.dmp) {
-        importScripts("/static/ext/revisions/diff_match_patch_uncompressed.js");
+        importScripts("/static/ext/revisions/diff_match_patch.js");
         self.dmp = new diff_match_patch();
     }
 
