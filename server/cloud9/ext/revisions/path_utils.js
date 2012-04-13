@@ -1,3 +1,10 @@
+/**
+ * Revisions Path Utils for Cloud9 IDE
+ *
+ * @author Sergi Mansilla <sergi@c9.io>
+ * @copyright 2012, Ajax.org B.V.
+ */
+
 var Path = require("path");
 var REV_FOLDER_NAME = ".c9revisions";
 /**

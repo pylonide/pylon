@@ -1,3 +1,10 @@
+/**
+ * Revisions Worker for the Cloud9 IDE.
+ *
+ * @author Sergi Mansilla <sergi@c9.io>
+ * @copyright 2012, Ajax.org B.V.
+ */
+
 var debug = function() {
     var args = Array.prototype.slice.call(arguments);
     self.postMessage({

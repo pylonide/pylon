@@ -1,7 +1,7 @@
 /**
  * Revisions Module for the Cloud9 IDE.
  *
- * @author Sergi Mansilla <sergi AT ajax DOT org>
+ * @author Sergi Mansilla <sergi@c9.io>
  * @copyright 2012, Ajax.org B.V.
  */
 
