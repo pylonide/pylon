@@ -13,7 +13,8 @@
         "consumes": [
             "http",
             "ide",
-            "session-store"
+            "session",
+            "workspace-permissions"
         ]
     }
 }
