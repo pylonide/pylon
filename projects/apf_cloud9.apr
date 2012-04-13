@@ -328,7 +328,7 @@
         <!--p:define name="__ENABLE_AUTORENAME" value="1" /-->
         <!--p:define name="__WITH_TRANSACTION" value="1" /-->
 
-        <!--p:define name="__WITH_VIRTUALVIEWPORT" value="1" /-->
+        <p:define name="__WITH_VIRTUALVIEWPORT" value="1" />
         <p:define name="__WITH_CLIPBOARD" value="1" />
         <p:define name="__WITH_CLIPBOARD_SELECTION" value="1" />
         <p:define name="__WITH_AMLCOMMENT" value="1" />
