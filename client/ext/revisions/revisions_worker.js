@@ -14,22 +14,39 @@ var startChar = {
 };
 
 var getLastAndAfterRevisions = function(data) {
-    var i, patch;
-    var revision = data.data;
+    var group = data.group;
+
+    // Ordered timestamps
+    var keys = data.groupKeys;
+    var minKey = keys[0];
+    var maxKey = keys[keys.length - 1];
+    var revision = group[keys[0]];
     var beforeRevision = data.content;
 
-    for (i = 0; i < revision.revision; i++) {
+    var i, patch;
+    for (i = 0; i <= revision.ts.length; i++) {
         var ts = revision.ts[i];
+        if (minKey == ts) {
+            break;
+        }
+
         patch = revision.tsValues[ts][0];
         beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
     }
 
-    var lastRevision = revision.tsValues[revision.ts[revision.revision]][0];
-    return [
-        beforeRevision,
-        self.dmp.patch_apply(lastRevision, beforeRevision)[0],
-        lastRevision
-    ];
+    var afterRevision = beforeRevision;
+    for (i = 0; i <= keys.length; i++) {
+        var ts = keys[i];
+        var rev = group[ts];
+        patch = rev.tsValues[ts][0];
+        afterRevision = self.dmp.patch_apply(patch, afterRevision)[0];
+
+        if (maxKey == ts) {
+            break;
+        }
+    }
+
+    return [beforeRevision, afterRevision];
 }
 
 self.onmessage = function(e) {
@@ -46,9 +63,9 @@ self.onmessage = function(e) {
     var packet = {};
     switch (e.data.type) {
         case "preview":
-            var revs = getLastAndAfterRevisions(e.data);
-            var beforeRevision = revs[0];
-            var afterRevision = revs[1];
+            var results = getLastAndAfterRevisions(e.data);
+            var beforeRevision = results[0];
+            var afterRevision = results[1];
 
             var lines1 = beforeRevision.split(rNL);
             var lines2 = afterRevision.split(rNL);

@@ -139,6 +139,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     allRevisions: {},
     compactRevisions: {},
     useCompactList: true,
+    groupedRevisionIds: [],
 
     toggle: function() {
         if (!this.panel) { return; }
@@ -395,12 +396,50 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (!message.nextAction)
                     return;
 
-                var data = {
+                var data;
+                var self = this;
+                var len = this.groupedRevisionIds.length;
+                if (this.useCompactList && this.groupedRevisionIds.length > 0) {
+                    var group = {};
+                    for (var i = 0; i < len; i++) {
+                        var groupedRevs = this.groupedRevisionIds[i];
+                        if (groupedRevs.indexOf(parseInt(message.id, 10)) !== -1) {
+                            groupedRevs.forEach(function(ts) {
+                                group[ts] = self.getRevision.call(self, ts);
+                            });
+                            break;
+                        }
+                    }
+
+                    var keys = Object.keys(group)
+                        .map(function(key) { return parseInt(key, 10); })
+                        .sort(function(a, b) { return a - b; });
+
+                    if (keys.length > 1) {
+                        data = {
+                            id: message.id,
+                            group: group,
+                            groupKeys: keys,
+                            type: message.nextAction
+                            data: this.getRevision(keys[0]),
+                            content: message.body,
+                        };
+                        this.worker.postMessage(data);
+                        break;
+                    }
+                }
+
+                var groupData = {};
+                groupData[message.id] = revision;
+                data = {
                     id: message.id,
+                    group: groupData,
+                    groupKeys: [parseInt(message.id, 10)],
                     type: message.nextAction,
                     data: revision,
                     content: message.body
                 };
+
                 this.worker.postMessage(data);
                 break;
         }
@@ -511,12 +550,13 @@ module.exports = ext.register("ext/revisions/revisions", {
     getRevision: function(id, content) {
         id = parseInt(id, 10);
 
+        /*
         if (this.useCompactList) {
             // In case we have compacted revisions as the view, we must retrieve
             // the first revision in the group, because we want to go back to the
             // first revision of the grouped revisions.
             id = this.compactRevisions[id].first;
-        }
+        }*/
 
         var tstamps = this.allTimestamps.slice(0);
         var revision = tstamps.indexOf(id);
@@ -544,7 +584,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Retrieves the original contents of a particular revision. It might be that
      * the original contents were cached, in which case the round trip to the
      * server is avoided. The `nextAction` parameter will eventually tell the client
-     * what to do once eerything is loaded.
+     * what to do once everything is loaded.
      **/
     loadRevision: function(id, nextAction) {
         if (nextAction === "preview") {
@@ -615,6 +655,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         Util.compactRevisions(timestamps).forEach(function(ts) {
             finalTS.push.apply(finalTS, ts.__reduce(repack, [[]]));
         });
+
+        this.groupedRevisionIds = finalTS;
 
         finalTS.forEach(function(tsGroup) {
             // The property name will be the id of the last timestamp in the group.
