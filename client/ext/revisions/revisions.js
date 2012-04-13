@@ -130,6 +130,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
+    model: new apf.model(),
 
     realSession: {},
     originalContents: {},
@@ -189,7 +190,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     init: function() {
         var self = this;
-
         ide.send({
             command: "revisions",
             subCommand: "getRevisionHistory",
@@ -211,6 +211,13 @@ module.exports = ext.register("ext/revisions/revisions", {
         }));
         revisionsPanel.appendChild(pgRevisions);
 
+        var menuItem = new apf.item({
+            caption: "File revisions",
+            type: "check",
+            checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
+            onclick: function() { self.toggle(); }
+        });
+
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.getHeading("General").appendChild(new apf.checkbox({
                 "class" : "underlined",
@@ -228,18 +235,12 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         });
 
-        var menuItem = new apf.item({
-            caption: "File revisions",
-            type: "check",
-            checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
-            onclick: function() { self.toggle(); }
-        });
-
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             e.ext.addToolsItem(menuItem.cloneNode(true), 0);
         });
 
         ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild);
+
         this.nodes.push(this.panel, ide.mnuFile.insertBefore(
             menuItem,
             ide.mnuFile.firstChild
@@ -399,7 +400,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 var data;
                 var self = this;
                 var len = this.groupedRevisionIds.length;
-                if (this.useCompactList && this.groupedRevisionIds.length > 0) {
+                if (this.useCompactList && len > 0) {
                     var group = {};
                     for (var i = 0; i < len; i++) {
                         var groupedRevs = this.groupedRevisionIds[i];
@@ -504,11 +505,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Populates the revisions model with the current revision list and attributes.
      **/
     populateModel: function() {
-        // Create the model lazily
-        if (!this.model) {
-            this.model = new apf.model();
-        }
-
         var revisions = this.allRevisions;
         var timestamps = this.allTimestamps;
         var revsXML = "";
@@ -995,18 +991,16 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     show: function() {
-        ceEditor.$editor.container.style.right = "200px";
-
-        this.populateModel();
-        this.$rescanCompactNodes();
-
-        this.panel.show();
-
+        settings.model.setQueryValue("general/@revisionmode", true);
         ide.dispatchEvent("revisions.visibility", {
             visibility: "shown",
             width: BAR_WIDTH
         });
+        ceEditor.$editor.container.style.right = "200px";
+        this.panel.show();
 
+        this.populateModel();
+        this.$rescanCompactNodes();
         this.$disableEditingFeatures();
 
         var all = this.allTimestamps;
@@ -1026,7 +1020,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 lstRevisions.select(node);
             }
         }
-        settings.model.setQueryValue("general/@revisionmode", true);
     },
 
     hide: function() {
