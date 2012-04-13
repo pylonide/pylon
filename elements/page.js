@@ -492,7 +492,7 @@ apf.page = function(struct, tagName){
         //#ifdef __ENABLE_TAB_ORDER
         //@todo vertically stacked buttons
         //else
-        if (this.parentNode.getPages().length > 1) {
+        if (this.parentNode.$order && this.parentNode.getPages().length > 1) {
             if (this.$btnControl[this.$uniqueId])
                 return;
             
