@@ -10,6 +10,8 @@
                 .revisionsHolder {
                     background: #f8f8f8;
                     background: -webkit-linear-gradient(0, #f2f2f2 1px, #f8f8f8 10px);
+                    background:    -moz-linear-gradient(0, #f2f2f2 1px, #f8f8f8 10px);
+                    background:         linear-gradient(0, #f2f2f2 1px, #f8f8f8 10px);
                     border-left: 1px solid #fff;
                 }
 
@@ -60,7 +62,7 @@
              * Revision
              * --------------------------------------------------------------------------------------- */
                 .revisions-list .revision {
-                    border-top: 1px solid #ced5dd;
+                    border-bottom: 1px solid #ced5dd;
                     color: #404040;
                     cursor: pointer;
                     display: block;
@@ -69,8 +71,8 @@
                     padding: 14px 0;
                     position: relative;
                 }
-                .revisions-list .revision:last-child {
-                    border-bottom: 1px solid #ced5dd;
+                .revisions-list .revision:first-child {
+                    border-top: 1px solid #ced5dd;
                 }
                 .revisions-list .revision.hover {
                     background: #f1f1f1;
@@ -80,11 +82,19 @@
                 .revisions-list .revision.selected {
                     background: #107BC9;
                     background: -webkit-linear-gradient(top, #1f88d4, #006ebd) !important;
+                    background:    -moz-linear-gradient(top, #1f88d4, #006ebd) !important;
+                    background:         linear-gradient(top, #1f88d4, #006ebd) !important;
                     border-top-color: #1875B8;
-                    box-shadow: 0 1px 0 #41A7F1 inset !important;
+                    box-shadow: 0 1px 0 #41A7F1 inset,
+                                0 -1px 0 0 #1875B8 !important;
                     color: #fff;
                     text-shadow: 0 1px 0 #0067b0;
                 }
+
+                .compactView .revision {
+                    display: none;
+                } 
+
                 .revision .revision-icon {
                     float: left;
                     text-align: right;
@@ -108,6 +118,13 @@
                     font-weight: bold;
                     color: #AEAEAE;
                 }
+                /*
+                 * Revisions with the 'rev-compact' class will be shown when
+                 * the list is compacted
+                 */
+                .compactView .revision.rev-compact {
+                    display: block;
+                }
 
                 .revision .revision-icon .rev-restoration {
                     display: inline-block;
@@ -120,6 +137,10 @@
                 }
                 .revision.selected .revision-icon .rev-restoration {
                     background-position: 0 100%;
+                }
+                .compactView .revision .rev-usersave,
+                .compactView .revision .rev-autosave {
+                    display: none;
                 }
                 .revision .revision-info {
                     overflow: hidden;
@@ -140,12 +161,14 @@
                 .revision.selected .contributors {
                     color: #fff;
                 }
-                .revision.selected .contributors span {
+                .revision .contributors span {
                     display: inline-block;
                     height: 11px;
                     line-height: 11px;
                 }
                 .revision .contributors .coloredSquare {
+                    background-image: url(images/contributor.png);
+                    box-shadow: 0 1px 0 0 rgba(255,255,255,.24);
                     overflow: hidden;
                     text-indent: -9999px;
                     width: 11px;
@@ -206,75 +229,60 @@
             /* ------------------------------------------------------------------------------------------
              * Other
              * --------------------------------------------------------------------------------------- */
-            .compactView .revision {
-                display: none;
-            }
+                 .revisions-listFocus>.indicate>SPAN>U{
+                    border: 1px dotted #BBB;/*#25a8e7;*/
+                    color : black;
+                    padding: 1px 3px 1px 1px;
+                }
 
-            /*
-             * Revisions with the 'rev-compact' class will be shown when
-             * the list is compacted
-             */
-            .compactView .revision.rev-compact {
-                display: block;
-            }
-             .revisions-listFocus>.indicate>SPAN>U{
-                border: 1px dotted #BBB;/*#25a8e7;*/
-                color : black;
-                padding: 1px 3px 1px 1px;
-            }
+                .revisions-list>.selected>SPAN>U{
+                    background-color: #f0f0f0;
+                    color: black;
+                }
+                .revisions-listFocus>.selected>SPAN>U {
+                    color: white;
+                    background-color: #25a8e7;
+                }
 
-            .revisions-list>.selected>SPAN>U{
-                background-color: #f0f0f0;
-                color: black;
-            }
-            .revisions-listFocus>.selected>SPAN>U {
-                color: white;
-                background-color: #25a8e7;
-            }
+                .revisions-list .empty, .revisions-list .offline, .revisions-list .loading{
+                    text-align: center;
+                    padding: 8px 0 0 5px;
+                    color: #aaa;
+                    font-weight : normal;
+                }
 
-            .revisions-list .empty, .revisions-list .offline, .revisions-list .loading{
-                text-align: center;
-                padding: 8px 0 0 5px;
-                color: #aaa;
-                font-weight : normal;
-            }
+                .revisions-list.emptyLeft .empty {
+                    text-align: left;
+                }
 
-            .revisions-list.emptyLeft .empty {
-                text-align: left;
-            }
+                .spiRevisionPreview, spiRevisionLoading {
+                    position: absolute;
+                    top: 5px;
+                    right: 0;
+                    background-image: url(images/revisions-spinner-active.gif);
+                }
 
-            .spiRevisionPreview, spiRevisionLoading {
-                position: absolute;
-                top: 5px;
-                right: 0;
-                background-image: url(images/revisions-spinner-active.gif);
-            }
-
-            .revision_hl_delete {
-                position: absolute;
-                background: rgb(243, 207, 207);
-            }
+                .revision_hl_delete {
+                    position: absolute;
+                    background: rgb(243, 207, 207);
+                }
 
 
-            /*
-             * Uncomment the following for strikethrough on deleted text
-             * .revision_hl_delete_strike {
-             *     position: absolute;
-             *     border-bottom: solid 1px black;
-             *     padding: 0;
-             *     margin: 0;
-             *     margin: -.6em 0 0 0;
-             * }
-             */
+                /*
+                 * Uncomment the following for strikethrough on deleted text
+                 * .revision_hl_delete_strike {
+                 *     position: absolute;
+                 *     border-bottom: solid 1px black;
+                 *     padding: 0;
+                 *     margin: 0;
+                 *     margin: -.6em 0 0 0;
+                 * }
+                 */
 
-            .revision_hl_insert {
-                position: absolute;
-                background: rgb(168, 232, 166);
-            }
-
-
-
-            
+                .revision_hl_insert {
+                    position: absolute;
+                    background: rgb(168, 232, 166);
+                }
         ]]></a:style>
 
         <!--

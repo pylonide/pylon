@@ -17,7 +17,7 @@
         </a:toolbar>
         <a:hbox flex = "1">
             <a:list
-              id          = "lstRevisions"v
+              id          = "lstRevisions"
               anchors     = "0 0 0 0"
               model       = "{require('ext/revisions/revisions').model}"
               multiselect = "false"
@@ -62,9 +62,10 @@
                                           <span class="coloredSquare" style=' background-color: green'>&#9632;</span>
                                           <span>fabian</span>
                                         </li>
+                                        
                                         each([contributors/contributor]) {
                                           <li>
-                                            <span class="coloredSquare" style=' color: {require("ext/revisions/revisions")
+                                            <span class="coloredSquare" style=' background-color: {require("ext/revisions/revisions")
                                             .getUserColorByEmail([@email])}'>&#9632;</span>
                                             <span>[@email]</span>
                                           </li>
