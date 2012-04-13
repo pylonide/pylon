@@ -47,7 +47,6 @@ var extAll = define([
     "ext/nodeunit/nodeunit",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    //"ext/autosave/autosave",
     "ext/vim/vim",
     "ext/guidedtour/guidedtour",
     "ext/quickstart/quickstart",
@@ -57,6 +56,7 @@ var extAll = define([
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
     "ext/colorpicker/colorpicker",
-    "ext/minimap/minimap"
+    "ext/revisions/revisions"
+    //"ext/minimap/minimap"
     //"ext/acebugs/acebugs"
 ]);
