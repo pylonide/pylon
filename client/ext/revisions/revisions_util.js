@@ -36,10 +36,10 @@ exports.compactRevisions = function(timestamps) {
 };
 
 exports.localDate = function(ts) {
-    var getTZOffset = function(ts) {
+    var getTZOffset = function() {
         return -(new Date()).getTimezoneOffset() * 60000;
     };
 
-    return new Date(ts + getTZOffset(ts));
+    return new Date(ts + getTZOffset());
 };
 });

@@ -173,17 +173,20 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var self = this;
         // Retrieve the current user email in case we are not in Collab mode
-        // (where we can retrieve the participants' email from the server)
-        apf.ajax("/api/context/getemail", {
-            method: "get",
-            callback: function(data, state, extra) {
-                if (state === 200 && data) {
-                    self.defaultUser = {
-                        email: data
-                    };
+        // (where we can retrieve the participants' email from the server) or
+        // in OSS Cloud9.
+        if (!this.isCollab || ide.workspaceId !== ".") {
+            apf.ajax("/api/context/getemail", {
+                method: "get",
+                callback: function(data, state, extra) {
+                    if (state === 200 && data) {
+                        self.defaultUser = {
+                            email: data
+                        };
+                    }
                 }
-            }
-        });
+            });
+        }
 
         this.$initWorker();
     },
