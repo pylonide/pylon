@@ -31,6 +31,8 @@ var GitPlugin = function(ide, workspace) {
         EDITOR: "",
         GIT_EDITOR: ""
     };
+
+    this.processCount = 0;
 };
 
 util.inherits(GitPlugin, Plugin);
@@ -40,6 +42,12 @@ util.inherits(GitPlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on(this.channel, function(msg) {
+            if (msg.type == "shell-start")
+                self.processCount += 1;
+
+            if (msg.type == "shell-exit")
+                self.processCount -= 1;
+
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
     };
@@ -50,15 +58,6 @@ util.inherits(GitPlugin, Plugin);
 
         if (cmd !== "git")
             return false;
-
-        if (message.argv.indexOf("config") != -1) {
-            return this.sendResult(0, message.command, {
-                code: 1,
-                argv: message.argv,
-                err: null,
-                out: "Sorry, you're now allowed to change the Git config on our servers"
-            });
-        }
 
         if (typeof message.protocol == "undefined")
             message.protocol = "client";
@@ -75,7 +74,7 @@ util.inherits(GitPlugin, Plugin);
             command: "git",
             args: message.argv.slice(1),
             cwd: message.cwd,
-            env: this.gitEnv,
+            env: this.gitEnv
         }, this.channel, function(err, pid) {
             if (err)
                 self.error(err, 1, message, client);
@@ -135,9 +134,8 @@ util.inherits(GitPlugin, Plugin);
         return c9util.extend(struct, map || {});
     };
 
-    this.dispose = function(callback) {
-        // TODO kill all running processes!
-        callback();
+    this.canShutdown = function() {
+        return this.processCount === 0;
     };
 
 }).call(GitPlugin.prototype);
