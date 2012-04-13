@@ -56,7 +56,7 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
         // see what's in the settings
         var settingsNode = settings.model.queryNode("general/@confirmexit");
         if (settingsNode && apf.isTrue(settingsNode.value)) {
-            return "Are you sure you want to leave Cloud9?";
+            return "You're about to leave Cloud9 IDE.";
         }
     },
 
