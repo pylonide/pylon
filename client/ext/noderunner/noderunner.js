@@ -148,7 +148,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     apf.ajax("/debug", {
                         method      : "POST",
                         contentType : "application/json",
-                        data        : apf.serialize({
+                        data        : JSON.stringify({
                             agent   : navigator.userAgent,
                             type    : "C9 SERVER EXCEPTION",
                             code    : e.code,

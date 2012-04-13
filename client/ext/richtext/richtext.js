@@ -27,18 +27,6 @@ module.exports = ext.register("ext/richtext/richtext", {
             value   : "[data]",
             anchors : "0 0 0 0"
         }));
-
-        this.nodes.push(
-            //Add a panel to the statusbar showing whether the insert button is pressed
-            sbMain.appendChild(new apf.section({
-                caption : "{rteEditor.insert}"
-            })),
-
-            //Add a panel to the statusbar showing the length of the document
-            sbMain.appendChild(new apf.section({
-                caption : "Length: {rteEditor.value.length}"
-            }))
-        );
     },
 
     enable : function(){

@@ -27,8 +27,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     skin     : {
         id   : "statusbar",
         data : skin,
-        "media-path" : ide.staticPrefix + "/style/images/",
-        "icon-path"  : ide.staticPrefix + "/style/icons/"
+        "media-path" : ide.staticPrefix + "ext/main/style/images/",
+        "icon-path"  : ide.staticPrefix + "ext/main/style/icons/"
     },
     expanded: false,
     nodes : [],

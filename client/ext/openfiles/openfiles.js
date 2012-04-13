@@ -90,15 +90,17 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 tabEditors.remove(tabEditors.getPage(sel[i].getAttribute("path")));
             }
         });
-
-        tabEditors.addEventListener("afterswitch", function(e){
-            var page = e.nextPage;
-            if (page && page.$model.data) {
-                var node = _self.model.queryNode("file[@path='" 
-                    + page.$model.data.getAttribute("path") + "']");
-                if (node && !lstOpenFiles.isSelected(node))
-                    lstOpenFiles.select(node);
-            }
+        
+        ide.addEventListener("init.ext/editors/editors", function(){
+            tabEditors.addEventListener("afterswitch", function(e){
+                var page = e.nextPage;
+                if (page && page.$model.data) {
+                    var node = _self.model.queryNode("file[@path='" 
+                        + page.$model.data.getAttribute("path") + "']");
+                    if (node && !lstOpenFiles.isSelected(node))
+                        lstOpenFiles.select(node);
+                }
+            });
         });
 
         ide.addEventListener("treechange", function(e) {
