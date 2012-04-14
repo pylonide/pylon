@@ -81,7 +81,8 @@ sys.inherits(ShellHgPlugin, Plugin);
             return false;
         }
 
-        if (message.argv[1] == "commit" && message.argv[2] == "-m") {
+        // support newlines; if a \n is detected, treat the whole commit message as a newline
+        if (message.argv[1] == "commit" && message.argv[2].indexOf("m") >= 0) {
             if (message.argv[3].indexOf("\\n") > -1) {
                 message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
             }
