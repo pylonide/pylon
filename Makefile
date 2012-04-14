@@ -8,7 +8,7 @@ endif
 # packages apf
 apf:
 	cd support/packager; ../node-builds-v4/$(nodeToUse) package.js projects/apf_cloud9.apr
-	cd support/packager; cp build/apf_release.js ../../client/js/apf_release.js
+	cd support/packager; cat build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../client/js/apf_release.js
 
 # packages core, then ext
 ext:
