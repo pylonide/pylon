@@ -1,5 +1,5 @@
 ({
-    optimize: "none",
+    //optimize: "none",
     baseUrl: "./client",
     paths: {
         "text" : "../text", // plugin for pulling in text! files

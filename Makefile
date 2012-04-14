@@ -16,6 +16,7 @@ ext:
 	node r.js -o core.build.js
 	mkdir -p client/build
 	node r.js -o app.build.js
+	#gzip client/build/packed.js
 
 # calls dryice on worker & packages it 
 worker:
