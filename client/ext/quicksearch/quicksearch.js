@@ -123,15 +123,25 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             
             var ace = _self.$getAce();
             if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
-                // fall back to break
+                // fall back to return
             }
-            else if (e.keyCode == 32 || (e.keyCode >=35 && e.keyCode <= 40) || (e.keyCode >=48 && e.keyCode <= 90) || (e.keyCode >=96 && e.keyCode <= 111) ||
-                    (e.keyCode >=186 && e.keyCode <= 191) || (e.keyCode >=219 && e.keyCode <= 222)) {       
-                    // chillax, then fire--necessary for rapid key strokes
-                    setTimeout(function() {
-                        _self.execSearch(false, false);
-                    }, 20);  
+            else {
+                if (e.keyCode == 8) {
+                  // ignore backspace--see 'keyup'   
                 }
+                else if (e.keyCode == 39) { // right arrow
+                    _self.execSearch(false, false);
+                }
+                else if (e.keyCode == 37) { // left arrow
+                    _self.execSearch(false, true);
+                }
+                else if (apf.isCharacter(e.keyCode)) { 
+                    setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
+                        _self.execSearch(false, false);
+                    }, 20);   
+                }
+            }
+            
             return;
         });
         
