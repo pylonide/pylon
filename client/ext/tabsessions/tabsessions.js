@@ -38,18 +38,35 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             var model = e && e.model || settings.model;
         
             _self.nodes.push(
-                apf.document.documentElement.appendChild(new apf.menu({
-                    id : "mnuTabLoadSessions",
-                    onitemclick : function(e){
-                        _self.loadSession(e.relatedNode.value);
-                    }
-                })),
-                apf.document.documentElement.appendChild(new apf.menu({
-                    id : "mnuTabDeleteSessions",
-                    onitemclick : function(e){
-                        _self.removeSession(e.relatedNode.value);
-                    }
-                }))
+                menus.addItemByPath("View/Tabs/~", new apf.divider()), 400),
+                
+                menus.addItemByPath("View/Tabs/Load Tab Session", [
+                    this.mnuTabLoadSessions = new apf.menu({
+                        onitemclick : function(e){
+                            _self.loadSession(e.relatedNode.value);
+                        }
+                    }),
+                    this.mnuFileLoadSession = new apf.item({
+                        disabled: !sessions.length
+                    })], 500),
+                    
+                menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
+                    caption : "Save Tab Session",
+                    onclick : function(){
+                        winSaveSessionAs.show();
+                    },
+                    disabled : "{!!!tabEditors.activepage}"
+                }), 600),
+                    
+                menus.addItemByPath("View/Tabs/Delete Tab Session", [    
+                    this.mnuTabDeleteSessions = new apf.menu({
+                        onitemclick : function(e){
+                            _self.removeSession(e.relatedNode.value);
+                        }
+                    }), 
+                    this.mnuFileDeleteSession = new apf.item({
+                        disabled: !sessions.length
+                    })], 700)
             );
             
             var sessions = model.queryNodes("auto/sessions/session");
@@ -63,42 +80,18 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             
             var name;
             sessionnames.forEach(function(name) {
-                mnuTabLoadSessions.appendChild(new apf.item({
+                _self.mnuTabLoadSessions.appendChild(new apf.item({
                     caption : name,
                     //type    : "radio",
                     value   : name
                 }));
-                mnuTabDeleteSessions.appendChild(new apf.item({
+                _self.mnuTabDeleteSessions.appendChild(new apf.item({
                     caption : name,
                     //type    : "radio",
                     value   : name
                 }));
             });
     
-            _self.nodes.push(
-                mnuTabs.appendChild(new apf.divider()),
-                mnuTabs.appendChild(new apf.item({
-                    id      : "mnuFileLoadSession",
-                    caption : "Load Tab Session",
-                    submenu : "mnuTabLoadSessions",
-                    disabled: !sessions.length
-                })),
-    
-                mnuTabs.appendChild(new apf.item({
-                    caption : "Save Tab Session",
-                    onclick : function(){
-                        winSaveSessionAs.show();
-                    },
-                    disabled : "{!!!tabEditors.activepage}"
-                })),
-                
-                mnuTabs.appendChild(new apf.item({
-                    id      : "mnuFileDeleteSession",
-                    caption : "Delete Tab Session",
-                    submenu : "mnuTabDeleteSessions",
-                    disabled: !sessions.length
-                }))
-            );
             _self.hotitems["savetabsession"] = [_self.nodes[4]];
         });
     },
@@ -136,12 +129,12 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         if (session)
             settings.model.removeXml(session);
         else {
-            mnuTabLoadSessions.appendChild(new apf.item({
+            this.mnuTabLoadSessions.appendChild(new apf.item({
                 caption : name,
                 //type    : "radio",
                 value   : name
             }));
-            mnuTabDeleteSessions.appendChild(new apf.item({
+            this.mnuTabDeleteSessions.appendChild(new apf.item({
                 caption : name,
                 //type    : "radio",
                 value   : name
@@ -152,8 +145,8 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         session.appendChild(files);
         settings.model.appendXml(session, "auto/sessions");
         
-        mnuFileLoadSession.enable();
-        mnuFileDeleteSession.enable();
+        this.mnuFileLoadSession.enable();
+        this.mnuFileDeleteSession.enable();
         
         settings.save();
         winSaveSessionAs.hide();
@@ -213,16 +206,16 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         settings.model.removeXml("auto/sessions/session[@name=\"" + name + "\"]");
         
         settings.save();
-        var menuitems = mnuTabLoadSessions.childNodes.concat(mnuTabDeleteSessions.childNodes);
+        var menuitems = this.mnuTabLoadSessions.childNodes.concat(this.mnuTabDeleteSessions.childNodes);
         for (var i = 0, l = menuitems.length; i < l; i++) {
             item = menuitems[i];
             if (item.value == name)
-                mnuTabLoadSessions.removeChild(item);
+                this.mnuTabLoadSessions.removeChild(item);
         }
         
         if (menuitems.length == 2) {
-            mnuFileLoadSession.disable();
-            mnuFileDeleteSession.disable();
+            this.mnuFileLoadSession.disable();
+            this.mnuFileDeleteSession.disable();
         }
         
     },
@@ -240,6 +233,11 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
     },
 
     destroy : function(){
+        menus.remove("View/Tabs/~", 400);
+        menus.remove("View/Tabs/Load Tab Session");
+        menus.remove("View/Tabs/Save Tab Session");
+        menus.remove("View/Tabs/Delete Tab Session");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

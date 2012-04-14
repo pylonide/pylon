@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var fs = require("ext/filesystem/filesystem");
+var menus = require("ext/menus/menus");
 
 //var TreeDocument = require("concorde/AceDocument");
 var Save = require("ext/save/save");

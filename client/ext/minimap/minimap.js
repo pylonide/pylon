@@ -11,6 +11,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var Map = require("ext/minimap/map");
+var menus = require("ext/menus/menus");
 var css = require("text!ext/minimap/style.css");
 
 return module.exports = ext.register("ext/minimap/minimap", {

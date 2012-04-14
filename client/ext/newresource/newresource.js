@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/newresource/newresource.xml");
 

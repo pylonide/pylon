@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
@@ -33,14 +34,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     hook : function(){
         var _self = this;
 
-        this.nodes.push(
-            mnuFile.insertBefore(new apf.item({
-                caption : "Open...",
-                onclick : function() {
-                    _self.toggleDialog(1);
-                }
-            }), mnuFile.firstChild),
+        var mnuItem = new apf.item({
+            onclick : function() {
+                _self.toggleDialog(1);
+            }
+        })
 
+        menus.addItemByPath("File/Open...", mnuItem, 100);
+        menus.addItemByPath("Goto/File...", mnuItem.cloneNode(true), 100);
+
+        this.nodes.push(
             ide.barTools.appendChild(new apf.button({
                 id      : "btnOpen",
                 icon    : "open.png",
@@ -267,16 +270,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         if (nodes.length == 0)
             return false;
             
-        this.toggleDialog(-1);
-        
-        //txtGoToFile.change("");
-        
-        for (var i = 0; i < nodes.length; i++) {
-            var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
-                + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
-            editors.showFile(path);
-            ide.dispatchEvent("track_action", {type: "fileopen"});
-        }
+        this.toggleDialog(-1, false, function(){
+            for (var i = 0; i < nodes.length; i++) {
+                var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
+                    + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
+                editors.showFile(path);
+                ide.dispatchEvent("track_action", {type: "fileopen"});
+            }
+        });
     },
     
     gotofile : function(){
@@ -289,7 +290,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         return false;
     },
 
-    toggleDialog: function(force, noanim) {
+    toggleDialog: function(force, noanim, callback) {
         if (!self.winGoToFile || !force && !winGoToFile.visible || force > 0) {
             if (self.winGoToFile && winGoToFile.visible)
                 return;
@@ -352,11 +353,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                         
                         if (editors.currentEditor && editors.currentEditor.ceEditor)
                             editors.currentEditor.ceEditor.focus();
+                        
+                        callback && callback();
                     }
                 });
             }
             else {
                 winGoToFile.hide();
+                callback && callback();
             }
         }
 
@@ -378,6 +382,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     destroy : function(){
+        menus.remove("File/Open...");
+        menus.remove("Goto/File...");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

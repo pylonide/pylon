@@ -8,6 +8,7 @@
 define(function(require, exports, module) {
 
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
  
 module.exports = ext.register("ext/undo/undo", {
     dev    : "Ajax.org",
@@ -22,20 +23,16 @@ module.exports = ext.register("ext/undo/undo", {
     nodes : [],
 
     init : function(amlNode){
-        this.nodes.push(
-            mnuEdit.appendChild(new apf.item({
-                caption : "Undo",
-                onclick : this.undo
-            })),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Redo",
-                onclick : this.redo
-            }))
-        );
+        var mnuItemUndo = menus.addItemByPath("Edit/Undo", new apf.item({
+            onclick : this.undo
+        }), 100);
+        var mnuItemRedo = menus.addItemByPath("Edit/Redo", new apf.item({
+            onclick : this.redo
+        }), 200);
 
         this.hotitems = {
-            "undo" : [this.nodes[0]],
-            "redo" : [this.nodes[1]]
+            "undo" : [mnuItemUndo],
+            "redo" : [mnuItemRedo]
         };
     },
 
@@ -64,6 +61,9 @@ module.exports = ext.register("ext/undo/undo", {
     },
 
     destroy : function(){
+        menus.remove("Edit/Undo");
+        menus.remove("Edit/Redo");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

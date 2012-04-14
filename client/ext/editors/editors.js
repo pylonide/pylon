@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var util = require("core/util");
 var settings = require("ext/settings/settings");
 
@@ -36,16 +37,15 @@ module.exports = ext.register("ext/editors/editors", {
         }));*/
 
         //Add a menu item to the list of editors
-        oExtension.$itmEditor = mnuEditors.appendChild(new apf.item({
+        oExtension.$itmEditor = menus.addItemByPath("View/Editors/" + oExtension.name, new apf.item({
             type     : "radio",
-            caption  : oExtension.name,
             value    : oExtension.path,
             disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" 
                 + oExtension.path + "')}",
             onclick  : function(){
                 require('ext/editors/editors').switchEditor(this.value);
             }
-        }));
+        }), 40000);
 
         var _self = this;
         oExtension.fileExtensions.each(function(mime){
@@ -66,6 +66,8 @@ module.exports = ext.register("ext/editors/editors", {
             if (!_self.fileExtensions[fe].length)
                 delete _self.fileExtensions[fe];
         });
+        
+        menus.remove("View/Editors/" + oExtension.name);
 
         if (this.fileExtensions["default"] == oExtension) {
             delete this.fileExtensions["default"];
@@ -144,7 +146,7 @@ module.exports = ext.register("ext/editors/editors", {
                     left  : 5,
                     width : 17,
                     height : 17,
-                    submenu : "mnuTabs",
+                    submenu : "{require('ext/menus/menus').getMenuId('View/Tabs')}",
                     id : "test",
                     visible : "{apf.isTrue([{require('core/settings').model}::auto/tabs/@show])}",
                     skin : "btn_icon_only",
@@ -562,23 +564,13 @@ module.exports = ext.register("ext/editors/editors", {
                 tabEditors.set(page);
         });
         
-        apf.document.documentElement.appendChild(new apf.menu({
-            id : "mnuEditors"
-        }));
-        
-        mnuView.appendChild(new apf.item({
-            caption : "Editor",
-            submenu : "mnuEditors"
-        }));
-        
-        mnuView.appendChild(new apf.item({
-            caption : "Tabs",
+        menus.addItemByPath("View/Tab Bar", new apf.item({
             type: "check",
             checked : "[{require('ext/settings/settings').model}::auto/tabs/@show]",
             "onprop.checked" : function(e) {
                 _self.toggleTabs(apf.isTrue(e.value) ? 1 : -1);
             }
-        }));
+        }), 100);
         
         ext.addType("Editor", function(oExtension){
             _self.register(oExtension);
@@ -880,6 +872,8 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     destroy : function(){
+        menus.remove("View/Tab Bar");
+        
         this.hbox.destroy(true, true);
         //this.splitter.destroy(true, true);
     }

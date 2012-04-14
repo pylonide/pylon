@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var noderunner = require("ext/noderunner/noderunner");
 var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
+var menus = require("ext/menus/menus");
 var dock = require("ext/dockpanel/dockpanel");
 var save = require("ext/save/save");
 var markup = require("text!ext/runpanel/runpanel.xml");

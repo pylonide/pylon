@@ -17,6 +17,7 @@ var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
 var markup = require("text!ext/statusbar/statusbar.xml");
 var skin = require("text!ext/statusbar/skin.xml");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/statusbar/statusbar", {
     name     : "Status bar",
@@ -58,7 +59,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             }
             
             if (apf.isTrue(e.model.queryValue("auto/statusbar/@show")))
-                ext.initExtension(_self);
+                _self.preinit();
         });
 
 //        ide.addEventListener("savesettings", function(e){
@@ -67,17 +68,38 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 //            return true;
 //        });
 
+
         this.nodes.push(
-            mnuView.appendChild(new apf.item({
-                caption: "Status Bar",
+            menus.addItemByPath("View/Status Bar", new apf.item({
                 type : "check",
                 checked : "[{require('ext/settings/settings').model}::auto/statusbar/@show]",
                 "onprop.checked" : function(e){
-                    if (apf.isTrue(e.value) && !self.barIdeStatus)
-                        ext.initExtension(_self);
+                    if (apf.isTrue(e.value))
+                        _self.preinit();
                 }
-            }))
+            }), 400);
         );
+    },
+    
+    preinit : function(){
+        var _self = this;
+        
+        ide.addEventListener("init.ext/editors/editors", function(e){
+            if (!_self.inited && e.ext 
+              && e.ext.currentEditor && e.ext.currentEditor.ceEditor)
+                ext.initExtension(_self);
+                
+            tabEditors.addEventListener("afterswitch", function(e){
+                if (e.nextPage.type == "ext/code/code") {
+                    if (self.barIdeStatus)
+                        barIdeStatus.hide();
+                    return;
+                }
+    
+                ext.initExtension(_self);
+                barIdeStatus.show();
+            });
+        });
     },
 
     init : function(){
@@ -308,6 +330,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     },
 
     destroy : function(){
+        menus.remove("View/Status Bar");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

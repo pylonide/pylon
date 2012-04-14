@@ -65,7 +65,7 @@
                 action="insert-before" copy="{event.ctrlKey}" />    
         </a:tree>
         
-        <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
+        <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}" render="runtime">
             <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>

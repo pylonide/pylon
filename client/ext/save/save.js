@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var css = require("text!ext/save/save.css");
+var menus = require("ext/menus/menus");
 var markup = require("text!ext/save/save.xml");
 
 module.exports = ext.register("ext/save/save", {

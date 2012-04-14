@@ -14,6 +14,7 @@ define(function(require, exports, module) {
 
 var editors, parseLine, predefinedCmds; // These modules are loaded on demand
 var ide = require("core/ide");
+var menus = require("ext/menus/menus");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var Logger = require("ext/console/logger");
@@ -307,34 +308,27 @@ module.exports = ext.register("ext/console/console", {
                 apf.extend(_self.allCommands, e.ext.commands);
         });
         
-        this.nodes.push(
-            mnuView.appendChild(new apf.item({
-                id: "mnuItemConsoleExpanded",
-                caption: "Console",
-                type    : "check",
-                onclick : function() {
-                    if (_self.hidden)
-                        _self.show();
-                    else
-                        _self.hide();
-                }
-            })),
-            
-            mnuView.appendChild(new apf.item({
-                id: "mnuItemInput",
-                caption: "Input Bar",
-                type: "check",
-                checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]",
-                "onprop.checked" : function(e) {
-                    if (apf.isTrue(e.value))
-                        _self.showInput();
-                    else
-                        _self.hideInput();
-                }
-            }))
-        );
+        this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
+            type    : "check",
+            onclick : function() {
+                if (_self.hidden)
+                    _self.show();
+                else
+                    _self.hide();
+            }
+        }), 400);
+        this.mnuItemInput = menus.addItemByPath("View/Input Bar", new apf.item({
+            type: "check",
+            checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]",
+            "onprop.checked" : function(e) {
+                if (apf.isTrue(e.value))
+                    _self.showInput();
+                else
+                    _self.hideInput();
+            }
+        }), 500);
         
-        this.hotitems.show = [mnuItemConsoleExpanded];
+        this.hotitems.show = [this.mnuItemConsoleExpanded];
         
         ide.addEventListener("loadsettings", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
@@ -564,7 +558,7 @@ module.exports = ext.register("ext/console/console", {
             apf.layout.forceResize();
 
             settings.model.setQueryValue("auto/console/@expanded", shouldShow);
-            mnuItemConsoleExpanded[cfg.mnuItemLabel]();
+            this.mnuItemConsoleExpanded[cfg.mnuItemLabel]();
         };
 
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
@@ -594,6 +588,9 @@ module.exports = ext.register("ext/console/console", {
     },
 
     destroy: function(){
+        menus.remove("View/Console");
+        menus.remove("View/Input Bar");
+        
         this.nodes.each(function(item) { item.destroy(true, true); });
         this.nodes = [];
     }

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var Editors = require("ext/editors/editors");
 
 var Range = require("ace/range").Range;

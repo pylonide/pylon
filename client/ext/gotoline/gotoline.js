@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var settings = require("core/settings");
 var skin = require("text!ext/gotoline/skin.xml");
@@ -35,15 +36,14 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
     hook : function(){
         var _self = this;
-        this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Go to Line...",
-                onclick : function(){
-                    _self.gotoline();
-                }
-            }))
-        );
+        
+        menus.addItemByPath("Goto/~", new apf.divider(), 200);
+        menus.addItemByPath("Goto/Go to Line...", new apf.item({
+            caption : "Go to Line...",
+            onclick : function(){
+                _self.gotoline();
+            }
+        }), 300);
 
         ide.addEventListener("gotoline", function() {
             _self.gotoline();
@@ -303,6 +303,9 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     },
 
     destroy : function(){
+        menus.remove("Goto/~", 200);
+        menus.remvoe("Goto/Go to Line...")
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

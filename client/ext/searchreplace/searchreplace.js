@@ -39,6 +39,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var _self = this;
 
         this.nodes.push(
+            menus.addItemByPath("View/Project Bar"
+            
             mnuEdit.appendChild(new apf.divider()),
             mnuEdit.appendChild(new apf.item({
                 caption : "Search...",

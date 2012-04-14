@@ -13,6 +13,7 @@ var Util = require("core/util");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
+var menus = require("ext/menus/menus");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
 

@@ -4,6 +4,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var inspector = require("ext/debugger/inspector");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var markup = require("text!ext/language/liveinspect.xml");
 var skin = require("text!ext/language/liveinspect.skin.xml");
 // postfix plugin because debugger is restricted keyword

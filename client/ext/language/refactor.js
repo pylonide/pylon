@@ -10,6 +10,7 @@ var PlaceHolder = require("ace/placeholder").PlaceHolder;
 var marker = require("ext/language/marker");
 var ide = require("core/ide");
 var code = require("ext/code/code");
+var menus = require("ext/menus/menus");
 
 module.exports = {
     renameVariableItem: null,

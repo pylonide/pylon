@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 "use strict";
 
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/clipboard/clipboard", {
@@ -25,26 +26,23 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     hook : function(){
         var _self = this;
         
-        this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Cut",
-                onclick : function() {
-                    _self.cut();
-                }
-            })),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Copy",
-                onclick : function() { 
-                    _self.copy();
-                }
-            })),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Paste",
-                onclick : function() { 
-                    _self.paste();
-                }
-        })));
+        menus.addItemByPath("Edit/~", new apf.divider(), 300);
+        menus.addItemByPath("Edit/Cut", new apf.item({
+            onclick : function() {
+                _self.cut();
+            }
+        }), 400);
+        menus.addItemByPath("Edit/Copy", new apf.item({
+            onclick : function() { 
+                _self.copy();
+            }
+        }), 500);
+        menus.addItemByPath("Edit/Paste", new apf.item({
+            caption : "Paste",
+            onclick : function() { 
+                _self.paste();
+            }
+        }), 600);
     },
 
     init : function (amlNode) {
@@ -127,6 +125,11 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     destroy : function(){
+        menus.remove("Edit/~", 300);
+        menus.remove("Edit/Cut");
+        menus.remove("Edit/Copy");
+        menus.remove("Edit/Paste");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

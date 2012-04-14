@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/themes/themes", {
@@ -25,25 +26,24 @@ module.exports = ext.register("ext/themes/themes", {
         var _self = this;
         
         for (var name in themes) {
-            this.nodes.push(
-                mnuThemes.appendChild(new apf.item({
-                    caption : name,
-                    type    : "item",
-                    value   : themes[name],
-                    onmouseover: function(e) {
-                        _self.currTheme = settings.model.queryValue("editors/code/@theme");
-                        settings.model.setQueryValue("editors/code/@theme", this.value);
+            menus.addItemByPath("View/Themes/" + name, new apf.item({
+                type    : "item",
+                value   : themes[name],
+                onmouseover: function(e) {
+                    _self.currTheme = settings.model.queryValue("editors/code/@theme");
+                    settings.model.setQueryValue("editors/code/@theme", this.value);
+                    _self.saved = false;
+                },
+                onmouseout: function(e) {
+                    if (!_self.saved) {
+                        settings.model.setQueryValue("editors/code/@theme", _self.currTheme);
                         _self.saved = false;
-                    },
-                    onmouseout: function(e) {
-                        if (!_self.saved) {
-                            settings.model.setQueryValue("editors/code/@theme", _self.currTheme);
-                            _self.saved = false;
-                        }
                     }
-                }))
-            );
+                }
+            }));
         }
+        
+        this.themes = themes;
     },
 
     set : function(path, dispatch){
@@ -57,20 +57,12 @@ module.exports = ext.register("ext/themes/themes", {
 
     init : function(){
         var _self = this;
-        var menuItem = new apf.item({
-            caption : "Themes",
-            submenu : "mnuThemes"
-        });
-
-        this.nodes.push(
-            mnuView.appendChild(menuItem),
-            apf.document.documentElement.appendChild(new apf.menu({
-                id : "mnuThemes",
-                onitemclick : function(e){
-                    _self.set(e.relatedNode.value);
-                }
-            }))
-        );
+        
+        menus.addItemByPath("View/Themes", new apf.menu({
+            onitemclick : function(e){
+                _self.set(e.relatedNode.value);
+            }
+        }), 30000);
 
         ide.addEventListener("init.ext/code/code", function() {
             if (ceEditor && ceEditor.$editor)
@@ -79,12 +71,15 @@ module.exports = ext.register("ext/themes/themes", {
     },
     
     enable : function(){
+        menus.enableItem("View/Themes");
     },
 
     disable : function(){
+        menus.disableItem("View/Themes");
     },
 
     destroy : function(){
+        menus.remove("View/Themes");
     }
 });
 

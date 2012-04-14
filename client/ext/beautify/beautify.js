@@ -15,6 +15,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var util = require("core/util");
 var code = require("ext/code/code");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var jsbeautify = require("ext/beautify/res/jsbeautify/jsbeautify-min");
@@ -122,22 +123,19 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     hook: function () {
         var _self = this;
+
         var menuItem = new apf.item({
             id : "beautify_selection",
             disabled : "true",
-            caption: "Beautify Selection",
             onclick: function () {
                 _self.beautify();
             }
         });
-
-        this.nodes.push(menuItem);
-
-        ide.addEventListener("init.ext/tools/tools", function(e) {
-            mnuTools.appendChild(menuItem);
-        });
-
-        this.hotitems.beautify = [this.nodes[0]];
+        
+        menus.addItemByPath("Tools/Beautify Selection", menuItem, 100);
+        
+        this.hotitems.beautify = [menuItem];
+        
         code.commandManager.addCommand({
             name: "beautify",
             exec: function () {
@@ -180,6 +178,8 @@ module.exports = ext.register("ext/beautify/beautify", {
     },
 
     destroy: function () {
+        menus.remove("Tools/Beautify Selection");
+        
         this.nodes.each(function (item) {
             item.destroy(true, true);
         });

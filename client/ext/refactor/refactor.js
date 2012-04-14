@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = refactor("text!ext/refactor/refactor.xml");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/refactor/refactor", {
     name   : "Refactor",

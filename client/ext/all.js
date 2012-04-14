@@ -40,7 +40,6 @@ var extAll = define([
     "ext/keybindings_default/keybindings_default",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
-    "ext/tools/tools",
     "ext/menus/menus",
     "ext/sidebar/sidebar",
     "ext/beautify/beautify",
