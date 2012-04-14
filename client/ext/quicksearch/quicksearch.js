@@ -135,7 +135,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 else if (e.keyCode == 37) { // left arrow
                     _self.execSearch(false, true);
                 }
-                else if (apf.isCharacter(e.keyCode)) { 
+                else if (apf.isCharacter(e.keyCode) && !e.metaKey) { 
                     setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
                         _self.execSearch(false, false);
                     }, 20);   
