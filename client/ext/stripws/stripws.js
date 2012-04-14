@@ -63,7 +63,7 @@ module.exports = ext.register("ext/stripws/stripws", {
                     ext.initExtension(self);
                     strip();
                 }
-            }), 200);
+            }), 200)
         );
         
 

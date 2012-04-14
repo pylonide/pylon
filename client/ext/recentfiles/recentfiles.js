@@ -26,23 +26,13 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         var _self = this;
 
         this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Open Recent",
-                submenu : "mnuRecent"
-            }), ide.mnuFile.firstChild),
-
-            apf.document.documentElement.appendChild(this.menu = new apf.menu({
-                id : "mnuRecent",
-                childNodes : [
-                    this.divider = new apf.divider(),
-                    new apf.item({
-                        caption : "Clear Menu",
-                        onclick : function(){
-                            _self.clearMenu();
-                        }
-                    })
-                ]
-            }))
+            this.menu = menus.addItemByPath("File/Open Recent/", new apf.menu(), 600),
+            menus.addItemByPath("File/Open Recent/Clear Menu", new apf.item({
+                onclick : function(){
+                    _self.clearMenu();
+                }
+            }), 100),
+            menus.addItemByPath("File/Open Recent/~", new apf.divider(), 200)
         );
 
         ide.addEventListener("loadsettings", function(e){
@@ -173,6 +163,8 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
     },
 
     destroy : function(){
+        menus.remove("File/Open Recent");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

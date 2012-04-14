@@ -53,12 +53,15 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     hook : function(){
         var _self = this;
         
-        var mnuItem = menus.addItemByPath("Tools/Format JSON", new apf.item({
-            onclick : function(){
-                ext.initExtension(_self);
-                _self.winFormat.show();
-            }
-        }));
+        var mnuItem;
+        this.nodes.push(
+            mnuItem = menus.addItemByPath("Tools/Format JSON", new apf.item({
+                onclick : function(){
+                    ext.initExtension(_self);
+                    _self.winFormat.show();
+                }
+            }), 500)
+        );
         
         this.hotitems["format"] = [mnuItem];
     },
@@ -80,8 +83,6 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     },
     
     destroy : function(){
-        menus.remove("Tools/Format JSON");
-        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

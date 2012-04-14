@@ -37,13 +37,15 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     hook : function(){
         var _self = this;
         
-        menus.addItemByPath("Goto/~", new apf.divider(), 200);
-        menus.addItemByPath("Goto/Go to Line...", new apf.item({
-            caption : "Go to Line...",
-            onclick : function(){
-                _self.gotoline();
-            }
-        }), 300);
+        this.nodes.push(
+            menus.addItemByPath("Goto/~", new apf.divider(), 200),
+            menus.addItemByPath("Goto/Go to Line...", new apf.item({
+                caption : "Go to Line...",
+                onclick : function(){
+                    _self.gotoline();
+                }
+            }), 300)
+        );
 
         ide.addEventListener("gotoline", function() {
             _self.gotoline();
@@ -303,9 +305,6 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     },
 
     destroy : function(){
-        menus.remove("Goto/~", 200);
-        menus.remvoe("Goto/Go to Line...")
-        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

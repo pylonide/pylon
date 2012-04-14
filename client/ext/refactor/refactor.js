@@ -34,11 +34,10 @@ module.exports = ext.register("ext/refactor/refactor", {
         };
         
         this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Refactor",
+            menus.addItemByPath("Tools/~", new apf.divider(), 10000),
+            menus.addItemByPath("Tools/Refactor", new apf.item({
                 onclick : openUi
-            }))
+            }), 11000)
         
             /*ide.barTools.appendChild(new apf.button({
                 icon    : "replace.png",
@@ -66,6 +65,9 @@ module.exports = ext.register("ext/refactor/refactor", {
     },
     
     destroy : function(){
+        menus.remove("Tools/~", 10000);
+        menus.remove("Tools/Refactor");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

@@ -40,11 +40,11 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         })
 
-        menus.addItemByPath("File/Open...", mnuItem, 100);
-        menus.addItemByPath("Goto/File...", mnuItem.cloneNode(true), 100);
-
         this.nodes.push(
-            ide.barTools.appendChild(new apf.button({
+            menus.addItemByPath("File/Open...", mnuItem, 100),
+            menus.addItemByPath("Goto/File...", mnuItem.cloneNode(true), 100),
+    
+            barTools.appendChild(new apf.button({
                 id      : "btnOpen",
                 icon    : "open.png",
                 width   : 29,
@@ -68,7 +68,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.updateFileCache();
         });
 
-        this.hotitems["gotofile"] = [this.nodes[0]];
+        this.hotitems["gotofile"] = [this.nodes[0], this.nodes[1], this.nodes[3]];
     },
 
     init : function() {
@@ -382,9 +382,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     destroy : function(){
-        menus.remove("File/Open...");
-        menus.remove("Goto/File...");
-        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

@@ -26,23 +26,25 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     hook : function(){
         var _self = this;
         
-        menus.addItemByPath("Edit/~", new apf.divider(), 300);
-        menus.addItemByPath("Edit/Cut", new apf.item({
-            onclick : function() {
-                _self.cut();
-            }
-        }), 400);
-        menus.addItemByPath("Edit/Copy", new apf.item({
-            onclick : function() { 
-                _self.copy();
-            }
-        }), 500);
-        menus.addItemByPath("Edit/Paste", new apf.item({
-            caption : "Paste",
-            onclick : function() { 
-                _self.paste();
-            }
-        }), 600);
+        this.nodes.push(
+            menus.addItemByPath("Edit/~", new apf.divider(), 300),
+            menus.addItemByPath("Edit/Cut", new apf.item({
+                onclick : function() {
+                    _self.cut();
+                }
+            }), 400),
+            menus.addItemByPath("Edit/Copy", new apf.item({
+                onclick : function() { 
+                    _self.copy();
+                }
+            }), 500),
+            menus.addItemByPath("Edit/Paste", new apf.item({
+                caption : "Paste",
+                onclick : function() { 
+                    _self.paste();
+                }
+            }), 600)
+        );
     },
 
     init : function (amlNode) {

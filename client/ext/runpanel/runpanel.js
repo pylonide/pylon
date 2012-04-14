@@ -67,7 +67,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         while (tbRun.childNodes.length) {
             var button = tbRun.firstChild;
 
-            ide.barTools.appendChild(button);
+            barTools.appendChild(button);
             if (button.nodeType == 1) {
                 this.nodes.push(button);
             }

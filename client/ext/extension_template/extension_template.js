@@ -81,6 +81,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var menus = require("ext/menus/menus");
 
 /**
  * The following require() call with the "text!" prefix tells requireJS 
@@ -223,8 +224,7 @@ module.exports = ext.register("ext/extension_template/extension_template", {
     hook : function(){
         var _self = this;
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                caption : "Extension Template Window",
+            menus.addItemByPath("Edit/Extension Template Window", new apf.item({
                 onclick : function(){
                     ext.initExtension(_self);
                     _self.winExtensionTemplate.show();

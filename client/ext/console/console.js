@@ -308,7 +308,7 @@ module.exports = ext.register("ext/console/console", {
                 apf.extend(_self.allCommands, e.ext.commands);
         });
         
-        this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
+        this.mnuItemConsoleExpanded = menus.addItemByPath("View/Show Console", new apf.item({
             type    : "check",
             onclick : function() {
                 if (_self.hidden)
@@ -317,7 +317,7 @@ module.exports = ext.register("ext/console/console", {
                     _self.hide();
             }
         }), 400);
-        this.mnuItemInput = menus.addItemByPath("View/Input Bar", new apf.item({
+        this.mnuItemInput = menus.addItemByPath("View/Show Input Bar", new apf.item({
             type: "check",
             checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]",
             "onprop.checked" : function(e) {

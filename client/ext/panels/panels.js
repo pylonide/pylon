@@ -11,7 +11,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var menus = require("ext/menus/menus");
-var markup = require("text!ext/panels/panels.xml");
 var markupSettings =  require("text!ext/panels/settings.xml");
 
 module.exports = ext.register("ext/panels/panels", {
@@ -19,7 +18,6 @@ module.exports = ext.register("ext/panels/panels", {
     dev    : "Ajax.org",
     alone  : true,
     type   : ext.GENERAL, 
-    markup : markup,
     minWidth: 110,
     nodes : [],
     panels : {},
@@ -29,8 +27,9 @@ module.exports = ext.register("ext/panels/panels", {
     register : function(panelExt, options){
         var _self = this;
         
-        panelExt.mnuItem = mnuSidebar.insertBefore(new apf.item({
-            caption : panelExt.name,
+        panelExt.mnuItem = menus.addItemByPath(
+          "View/Side Bar/" + panelExt.name, 
+          new apf.item({
             type    : "radio",
             value   : panelExt.path,
             group   : this.group,
@@ -38,7 +37,7 @@ module.exports = ext.register("ext/panels/panels", {
                 if (e.value)
                     _self.activate(panelExt);
             }
-        }));
+        }), options.position);
         
         ide.addEventListener("init.ext/sidebar/sidebar", function(e){
             e.ext.add(panelExt, options);
@@ -256,7 +255,8 @@ module.exports = ext.register("ext/panels/panels", {
     },
     
     unregister : function(panelExt){
-        panelExt.mnuItem.destroy(true, true);
+        menus.remove("View/Side Bar/" + panelExt.name);
+          
         delete this.panels[panelExt.path];
     },
 
@@ -268,31 +268,10 @@ module.exports = ext.register("ext/panels/panels", {
                 value : "[{req" + "uire('core/settings').model}::auto/panels/@active]"
             })),
             
-            mnuPanelsNone,
-            
-            mnuView.appendChild(new apf.item({
-                submenu : "mnuSidebar",
-                caption : "Project Bar" //I would like to rename this to Side Bar
-            })),
-            
-            mnuView.appendChild(new apf.item({
-                submenu : "mnuTabs",
-                caption : "Tabs"
-            })),
-            
-            mnuView.appendChild(new apf.item({
-                submenu : "mnuToolbar",
-                caption : "Toolbar"
-            })),
-            
-            mnuView.appendChild(new apf.divider())
+            menus.addItemByPath("View/Tabs/", new apf.menu(), 20000),
+            menus.addItemByPath("View/Toolbar/", new apf.menu(), 30000),
+            menus.addItemByPath("View/~", new apf.divider(), 40000)
         );
-        
-        mnuPanelsNone.setAttribute("group", this.group);
-        mnuPanelsNone.addEventListener("onprop.selected", function(e){
-            if (e.value)
-                _self.deactivate(null, true);
-        });
         
         colLeft.addEventListener("resize", function(){
             if (!_self.currentPanel || _self.animating)
@@ -375,6 +354,10 @@ module.exports = ext.register("ext/panels/panels", {
     },
     
     destroy : function(){
+        menus.remove("View/Tabs");
+        menus.remove("View/Toolbar");
+        menus.remove("View/~");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

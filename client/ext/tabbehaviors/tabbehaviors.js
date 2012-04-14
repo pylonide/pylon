@@ -73,7 +73,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 disabled : "{!!!tabEditors.activepage}"
             }), 300),
 
-            mnuContext = new apf.menu({id : "mnuContextTabs"}),
+            mnuContext = new apf.menu({id : "mnuContextTabs"})
         );
         
         menus.addItemByPath("Reveal in File Tree", new apf.item({
@@ -81,7 +81,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.revealtab(tabEditors.contextPage);
             },
             disabled : "{!!!tabEditors.activepage}"
-        }), 100, mnuContext),
+        }), 100, mnuContext);
         menus.addItemByPath("~", new apf.divider(), 200, mnuContext);
         menus.addItemByPath("Close Tab", new apf.item({
             onclick : function() {
@@ -92,26 +92,26 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         menus.addItemByPath("Close All Tabs", new apf.item({
             onclick : this.closealltabs.bind(this),
             disabled : "{!!!tabEditors.activepage}"
-        }), 400, mnuContext),
+        }), 400, mnuContext);
         menus.addItemByPath("Close Other Tabs", new apf.item({
             onclick : function() {
                 _self.closeallbutme(tabEditors.$activePage);
             },
             disabled : "{!!!tabEditors.activepage}"
-        }), 500, mnuContext),
+        }), 500, mnuContext);
         menus.addItemByPath("~", new apf.divider(), 600, mnuContext);
         menus.addItemByPath("Close Tabs to the Right", new apf.item({
             onclick : function() {
                 _self.closealltotheright();
             },
             disabled : "{!!!tabEditors.activepage}"
-        }), 600, mnuContext),
+        }), 600, mnuContext);
         menus.addItemByPath("Close Tabs to the Left", new apf.item({
             onclick : function() {
                 _self.closealltotheleft();
             },
             disabled : "{!!!tabEditors.activepage}"
-        }), 700, mnuContext)
+        }), 700, mnuContext);
         
         this.hotitems.revealtab     = [mnuContextTabs.childNodes[0]];
         this.hotitems.closetab      = [this.nodes[0], mnuContextTabs.childNodes[2]];

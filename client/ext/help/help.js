@@ -32,68 +32,12 @@ define(function(require, exports, module) {
         },
         showingAll: true,
 
-        initPanel: function(panelExt) {
-            if (panelExt.panel) {
-                return;
-            }
-
-            ext.initExtension(panelExt);
-            this.$setEvents(panelExt);
-
-            var set = this.$settings && this.$settings[panelExt.path];
-            if (set) this.setPanelSettings(panelExt, set);
-
-            panelExt.panel.setAttribute("draggable", "false");
-        },
-
-        register: function(panelExt) {
-            var _self = this;
-            if (!panelExt.alwayson) {
-                panelExt.mnuItem = mnuPanels.appendChild(new apf.item({
-                    caption: panelExt.name,
-                    type: "check",
-                    //checked : panelExt.visible || false,
-                    checked: "{panelExt.visible}",
-                    onclick: function() {
-                        _self.initPanel(panelExt);
-                        this.checked ? panelExt.enable() : panelExt.disable();
-                    }
-                }));
-            }
-
-            if (false && this.$settings && this.$settings[panelExt.path]) {
-                this.setPanelSettings(panelExt, _self.$settings[panelExt.path]);
-            }
-            else if (panelExt.visible) {
-                if (panelExt.skin) {
-                    setTimeout(function() {
-                        this.initPanel(panelExt);
-                    });
-                }
-                else {
-                    this.initPanel(panelExt);
-                }
-            }
-
-            this.panels[panelExt.path] = panelExt;
-        },
-
-
-        unregister: function(panelExt) {
-            panelExt.mnuItem.destroy(true, true);
-            delete this.panels[panelExt.path];
-        },
-
         init: function(amlNode) {
             apf.importCssString((this.css || ""));
-
+            
             this.nodes.push(
-            barMenu.appendChild(new apf.button({
-                submenu: "mnuHelp",
-                caption: "Help",
-                skin: "c9-menu-btn",
-                margin: "1 0 0 0"
-            })));
+                menus.addItemByPath("Help/", null, 100000)
+            );
 
             if (window.location.host.indexOf("c9.io") >= 0 || window.location.host.indexOf("stage.io") >= 0) {                
                 var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";

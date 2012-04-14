@@ -388,14 +388,14 @@ module.exports = ext.register("ext/code/code", {
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
         });
 
+        menus.addItemByPath("View/Show Gutter", new apf.item({
+            type    : "check",
+            checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
+        }), 300);
+        
         menus.addItemByPath("View/Syntax", new apf.item({
             submenu : "mnuSyntax"
         }), 2000000);
-        
-        menus.addItemByPath("View/Gutter", new apf.item({
-            type    : "check",
-            checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
-        }), 3000000);
         
         menus.addItemByPath("View/~", new apf.divider(), 4000000)
         

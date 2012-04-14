@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var menus = require("ext/menus/menus");
 var markup = require("text!ext/main/main.xml");
 var skin = require("text!ext/main/style/skins.xml");
 
@@ -43,12 +42,7 @@ module.exports = ext.register("ext/main/main", {
     nodes   : [],
 
     init : function(){
-        //Set references to global elements - aka extension points
         
-        menus.setRootMenu("File", 100);
-        menus.setRootMenu("Edit", 200);
-        menus.setRootMenu("View", 300);
-        menus.setRootMenu("Tools", 400);
     },
 
     enable : function(){

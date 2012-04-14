@@ -42,17 +42,17 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     hook : function(){
         var _self = this;
 
+        var mnuItem;
         this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Search in Files...",
+            menus.addItemByPath("Find/~", apf.divider(), 10000),
+            mnuItem = menus.addItemByPath("Find in Files...", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(false);
                 }
-            }))
+            }), 20000)
         );
 
-        this.hotitems.searchinfiles = [this.nodes[1]];
+        this.hotitems.searchinfiles = [mnuItem];
     },
 
     init : function(amlNode){
@@ -292,6 +292,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     destroy : function(){
+        menus.remove("Find/~");
+        menus.remove("Find in Files...");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

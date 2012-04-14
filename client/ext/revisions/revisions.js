@@ -214,13 +214,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }));
         revisionsPanel.appendChild(pgRevisions);
 
-        var menuItem = new apf.item({
-            caption: "File revisions",
-            type: "check",
-            checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
-            onclick: function() { self.toggle(); }
-        });
-
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.getHeading("General").appendChild(new apf.checkbox({
                 "class" : "underlined",
@@ -242,12 +235,15 @@ module.exports = ext.register("ext/revisions/revisions", {
 //            mnuTools.appendChild(menuItem.cloneNode(true));
 //        });
 
-        ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild);
-
-        this.nodes.push(this.panel, ide.mnuFile.insertBefore(
-            menuItem,
-            ide.mnuFile.firstChild
-        ));
+        this.nodes.push(
+            this.panel,
+            menus.addItemByPath("File/File revisions", new apf.item({
+                type: "check",
+                checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
+                onclick: function() { self.toggle(); }
+            }), 900),
+            menus.addItemByPath("File/~", new apf.divider(), 1000)
+        );
 
         this.$afterSelectFn = function(e) {
             var node = this.selected;
@@ -1147,6 +1143,9 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     destroy : function() {
+        menus.remove("File/File revisions");
+        menus.remove("File/~", 1000);
+        
         if (this.saveInterval)
             clearInterval(this.saveInterval);
 

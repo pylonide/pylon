@@ -38,7 +38,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             var model = e && e.model || settings.model;
         
             _self.nodes.push(
-                menus.addItemByPath("View/Tabs/~", new apf.divider()), 400),
+                menus.addItemByPath("View/Tabs/~", new apf.divider(), 400),
                 
                 menus.addItemByPath("View/Tabs/Load Tab Session", [
                     this.mnuTabLoadSessions = new apf.menu({
@@ -48,7 +48,8 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     }),
                     this.mnuFileLoadSession = new apf.item({
                         disabled: !sessions.length
-                    })], 500),
+                    })
+                ], 500),
                     
                 menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
                     caption : "Save Tab Session",
@@ -66,7 +67,8 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     }), 
                     this.mnuFileDeleteSession = new apf.item({
                         disabled: !sessions.length
-                    })], 700)
+                    })
+                ], 700)
             );
             
             var sessions = model.queryNodes("auto/sessions/session");

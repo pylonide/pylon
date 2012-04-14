@@ -27,7 +27,12 @@ module.exports = ext.register("ext/menus/menus", {
                 edge    : "8 5 0 5",
                 padding : "3",
                 align   : "center"
-            }), logobar.firstChild.firstChild)
+            }), logobar.firstChild.firstChild),
+            
+            this.setRootMenu("File", 100),
+            this.setRootMenu("Edit", 200),
+            this.setRootMenu("View", 300),
+            this.setRootMenu("Tools", 400)
         );
     },
     
