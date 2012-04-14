@@ -21,7 +21,7 @@ var ProxyDocument = require("ext/code/proxydocument");
 var CommandManager = require("ace/commands/command_manager").CommandManager;
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
-var settings = require("ext/settings/settings");
+var settings = require("core/settings");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
 
@@ -304,47 +304,41 @@ module.exports = ext.register("ext/code/code", {
         var _self = this;
 
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading("Code Editor");
-            heading.insertMarkup(markupSettings);
-        });
-
         ide.addEventListener("loadsettings", function(e) {
-            var model = e.model;
-            if (!model.queryNode("editors/code")) {
-                var node = apf.n("<code />")
-                  .attr("overwrite", "false")
-                  .attr("selectstyle", "line")
-                  .attr("activeline", "true")
-                  .attr("showinvisibles", "false")
-                  .attr("showprintmargin", "true")
-                  .attr("printmargincolumn", "80")
-                  .attr("softtabs", "true")
-                  .attr("tabsize", "4")
-                  .attr("scrollspeed", "2")
-                  .attr("fontsize", "12")
-                  .attr("wrapmode", "false")
-                  .attr("wraplimitmin", "")
-                  .attr("wraplimitmax", "")
-                  .attr("gutter", "true")
-                  .attr("folding", "true")
-                  .attr("newlinemode", "auto")
-                  .attr("highlightselectedword", "true")
-                  .attr("autohidehorscrollbar", "true").node();
-
-                var editors = apf.createNodeFromXpath(model.data, "editors");
-                apf.xmldb.appendChild(editors, node);
-            }
-
-            if (!model.queryNode("editors/code/@animatedscroll"))
-                model.setQueryValue("editors/code/@animatedscroll", "true");
+            settings.setDefaults("editors/code", [
+                ["overwrite", "false"],
+                ["selectstyle", "line"],
+                ["activeline", "true"],
+                ["showinvisibles", "false"],
+                ["showprintmargin", "true"],
+                ["printmargincolumn", "80"],
+                ["softtabs", "true"],
+                ["tabsize", "4"],
+                ["scrollspeed", "2"],
+                ["fontsize", "12"],
+                ["wrapmode", "false"],
+                ["wraplimitmin", ""],
+                ["wraplimitmax", ""],
+                ["gutter", "true"],
+                ["folding", "true"],
+                ["newlinemode", "auto"],
+                ["highlightselectedword", "true"],
+                ["autohidehorscrollbar", "true"],
+                ["animatedscroll", "true"]
+            ]);
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme)
                 require([theme], function() {});
+
             // pre load custom mime types
             _self.getCustomTypes(e.model);
+        });
+        
+        ide.addEventListener("init.ext/settings/settings", function(e) {
+            var heading = e.ext.getHeading("Code Editor");
+            heading.insertMarkup(markupSettings);
         });
 
         ide.addEventListener("afteropenfile", function(e) {

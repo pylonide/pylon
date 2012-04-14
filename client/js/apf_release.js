@@ -26745,7 +26745,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/cloud9/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(26805)TIME(Fri, 13 Apr 2012 10:38:48 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/cloud9/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27069)TIME(Sat, 14 Apr 2012 07:39:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27114,11 +27114,14 @@ apf.DataAction = function(){
                     : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
         }
         else {
-            if (!this.$createModel)
-                return false;
-
             atAction = "setValueByXpath";
             xpath    = sel[1];
+            
+            if (!this.$createModel || this.getModel() && !this.getModel().$createModel) {
+                throw new Error("Model data does not exist, and I am not "
+                    + "allowed to create the element for xpath '" 
+                    + xpath + "' and element " + this.serialize(true));
+            }
 
             if (!xmlNode) {
                 //Assuming this component is connnected to a model
@@ -28388,7 +28391,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/cloud9/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(39271)TIME(Fri, 13 Apr 2012 10:39:08 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/cloud9/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(39277)TIME(Fri, 13 Apr 2012 22:42:59 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28592,7 +28595,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 
                     
                 this.select(node, false, shiftKey);
@@ -28604,7 +28607,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 
                 
                 this.select(node, false, shiftKey);
@@ -28670,7 +28673,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -28728,7 +28731,7 @@ apf.BaseList = function(){
 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -28768,7 +28771,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -28805,7 +28808,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -55267,7 +55270,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/rubendaniels/Development/cloud9/support/packager/lib/../support/apf/elements/model.js)SIZE(42606)TIME(Wed, 11 Apr 2012 18:42:28 GMT)*/
+/*FILEHEAD(/Users/rubendaniels/Development/cloud9/support/packager/lib/../support/apf/elements/model.js)SIZE(42646)TIME(Sat, 14 Apr 2012 07:42:49 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55380,18 +55383,12 @@ apf.model = function(struct, tagName){
     
     this.$listeners = {};
     this.$proplisteners = {};
-
-    if (!apf.globalModel) {
-        apf.globalModel = this;
-        
-        apf.nameserver.register("model", "@default", this);
-        
-    }
 };
 
 (function(){
-    this.$parsePrio = "020";
-    this.$isModel   = true;
+    this.$parsePrio   = "020";
+    this.$isModel     = true;
+    this.$createModel = true;
     
     this.canHaveChildren  = false;
     this.enablereset       = false;
@@ -55405,16 +55402,21 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["whitespace"] = true;
-    this.$booleanProperties["autoinit"]   = true;
-    this.$booleanProperties.enablereset   = true;
+    this.$booleanProperties["whitespace"]   = true;
+    this.$booleanProperties["create-model"] = true;
+    this.$booleanProperties["autoinit"]     = true;
+    this.$booleanProperties.enablereset     = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "enablereset", "remote", "whitespace"];
+        "enablereset", "remote", "whitespace", "create-model"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
         if (this.$amlLoaded)
             this.$loadFrom(value);
+    };
+    
+    this.$propHandlers["create-model"] = function(value, prop){
+        this.$createModel = value;
     };
 
     
