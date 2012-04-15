@@ -213,6 +213,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         colLeft.appendChild(winRunPanel);
         this.nodes.push(winRunPanel);
 
+        if (window.location.host.indexOf("c9.io") !== 0 && window.location.host.indexOf("stage.io") !== 0)
+            mdlRunnerSelector.appendXml('<element caption="System Node" value="system" />');
+
         lstRunCfg.addEventListener("afterremove", function(e){
             mnuRunCfg.childNodes.each(function(item){
                 if (item.node == e.args[0].xmlNode)
