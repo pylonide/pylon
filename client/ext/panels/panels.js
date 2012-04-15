@@ -219,7 +219,7 @@ module.exports = ext.register("ext/panels/panels", {
         splitterPanelLeft.show();
         this.currentPanel = panelExt;
         
-        //settings.model.setQueryValue("auto/panels/@active", panelExt.path);
+        settings.model.setQueryValue("auto/panels/@active", panelExt.path);
         
         ide.dispatchEvent("showpanel." + panelExt.path);
         

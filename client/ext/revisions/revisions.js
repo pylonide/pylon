@@ -389,7 +389,11 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
-        this.setSaveButtonCaption();
+        var self = this;
+        
+        setTimeout(function() {
+            self.setSaveButtonCaption();
+        });
         
         var path = this.$getDocPath();
         if (this.originalContents[path]) {

@@ -42,20 +42,6 @@ module.exports = ext.register("ext/html/html", {
 
     init : function(){
         var _self = this;
-        tabEditors.addEventListener("afterswitch", function(e){
-            _self.afterSwitchOrOpen(e.nextPage);
-        });
-        ide.addEventListener("afteropenfile", function(e){
-            // Only listen for event from editors.js
-            if (e.editor && e.node.$model)
-                _self.afterSwitchOrOpen(e.node);
-        });
-        ide.addEventListener("updatefile", function(e) {
-            var page = tabEditors.getPage(e.newPath);
-            if (!page || !page.$active)
-                return;
-            _self.afterSwitchOrOpen(page);
-        });
         
         this.nodes.push(
 //            menus.$insertByIndex(barTools, new apf.divider({
@@ -68,6 +54,7 @@ module.exports = ext.register("ext/html/html", {
                 "class" : "preview",
                 tooltip : "Preview in browser",
                 caption : "Preview",
+                disabled : true,
                 onclick : function(){
                     var file = _self.page.$model.data;
                     window.open(location.protocol + "//" 
@@ -75,8 +62,29 @@ module.exports = ext.register("ext/html/html", {
                 }
             }), 10)
         );
+        
+        ide.addEventListener("init.ext/editors/editors", function(e) {
+            tabEditors.addEventListener("afterswitch", function(e){
+                _self.afterSwitchOrOpen(e.nextPage);
+            });
+            ide.addEventListener("closefile", function(e){
+                if (tabEditors.getPages().length == 1)
+                    _self.disable();
+            });
+            ide.addEventListener("afteropenfile", function(e){
+                // Only listen for event from editors.js
+                if (e.editor && e.node.$model)
+                    _self.afterSwitchOrOpen(e.node);
+            });
+            ide.addEventListener("updatefile", function(e) {
+                var page = tabEditors.getPage(e.newPath);
+                if (!page || !page.$active)
+                    return;
+                _self.afterSwitchOrOpen(page);
+            });
+        });
 
-        this.enabled = true;
+        this.enabled = false;
     },
 
     enable : function() {
