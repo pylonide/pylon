@@ -152,6 +152,19 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     hook: function() {
+        this.nodes.push(
+            menus.addItemByPath("File/File revisions", new apf.item({
+                type: "check",
+                checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
+                onclick: function() { self.toggle(); }
+            }), 900),
+            menus.addItemByPath("File/~", new apf.divider(), 1000)
+        );
+    },
+
+    init: function() {
+        var self = this;
+        
         // This is the main interval. Whatever it happens, every `INTERVAL`
         // milliseconds, the plugin will attempt to save every file that is
         // open and dirty.
@@ -171,7 +184,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             email: null
         };
 
-        var self = this;
+        this.$initWorker();
+        
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
         // in OSS Cloud9.
@@ -188,22 +202,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
         
-        this.nodes.push(
-            this.panel,
-            menus.addItemByPath("File/File revisions", new apf.item({
-                type: "check",
-                checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
-                onclick: function() { self.toggle(); }
-            }), 900),
-            menus.addItemByPath("File/~", new apf.divider(), 1000)
-        );
-
-        //@sergi Why is this happening in hook?
-        this.$initWorker();
-    },
-
-    init: function() {
-        var self = this;
         ide.send({
             command: "revisions",
             subCommand: "getRevisionHistory",
@@ -212,18 +210,28 @@ module.exports = ext.register("ext/revisions/revisions", {
             // only for the first time and won't ever change.
             getOriginalContent: true
         });
-
-        this.panel = ceEditor.parentNode.appendChild(new apf.bar({
-            id: "revisionsPanel",
-            visible: false,
-            top: 2,
-            bottom: 0,
-            right: 0,
-            width: BAR_WIDTH,
-            height: "100%",
-            "class": "revisionsBar"
-        }));
-        revisionsPanel.appendChild(pgRevisions);
+    
+        /**
+         * @todo the panel should move to the active editor tab using
+         *       afterselect
+         */
+        ide.addEventListener("init.ext/code/code", function (e) {
+            _self.panel = ceEditor.parentNode.appendChild(new apf.bar({
+                id: "revisionsPanel",
+                visible: false,
+                top: 2,
+                bottom: 0,
+                right: 0,
+                width: BAR_WIDTH,
+                height: "100%",
+                "class": "revisionsBar"
+            }));
+            revisionsPanel.appendChild(pgRevisions);
+            
+            _self.nodes.push(
+                _self.panel
+            );
+        });
 
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.getHeading("General").appendChild(new apf.checkbox({
@@ -245,10 +253,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 //        ide.addEventListener("init.ext/tools/tools", function (e) {
 //            mnuTools.appendChild(menuItem.cloneNode(true));
 //        });
-
-        this.nodes.push(
-            this.panel
-        );
 
         this.$afterSelectFn = function(e) {
             var node = this.selected;

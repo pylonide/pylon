@@ -22,10 +22,10 @@
               model       = "{require('ext/revisions/revisions').model}"
               multiselect = "false"
               autoselect  = "false"
-              drag = "false"
-              drop = "false"
-              skin="revisions-list"
-              flex="1">
+              drag        = "false"
+              drop        = "false"
+              skin        = "revisions-list"
+              flex        = "1">
                 <a:each match="[revision]">
                         <a:caption>
                             <?lm

@@ -79,7 +79,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             type    : "check",
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
         }), c += 100, this.mnuRunCfg);
-        menus.addItemByPath("Auto show/hide debug tools", new apf.item({ 
+        menus.addItemByPath("Auto show & hide debug tools", new apf.item({ 
             type    : "check",
             onclick : function(){
                 _self.checkAutoHide();
@@ -301,7 +301,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var menu = this.mnuRunCfg;
 
         var item = menu.firstChild;
-        while (item && item.tagName !== "a:divider") {
+        while (item && item.localName !== "divider") {
             menu.removeChild(item);
             item = menu.firstChild;
         }
