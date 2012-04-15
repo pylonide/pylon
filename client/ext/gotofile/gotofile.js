@@ -68,7 +68,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.toggleDialog(-1);
             
             else if (e.keyCode == 13){
-                _self.openFile();
+                _self.openFile(true);
 
                 ide.dispatchEvent("track_action", {type: "gotofile"});
                 return false;
@@ -253,13 +253,13 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
     },
     
-    openFile: function(){
+    openFile: function(noanim){
         var nodes = dgGoToFile.getSelection();
         
         if (nodes.length == 0)
             return false;
             
-        this.toggleDialog(-1, false, function(){
+        this.toggleDialog(-1, noanim, function(){
             for (var i = 0; i < nodes.length; i++) {
                 var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
                     + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");

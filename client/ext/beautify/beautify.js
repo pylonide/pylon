@@ -131,11 +131,11 @@ module.exports = ext.register("ext/beautify/beautify", {
                 _self.beautify();
             }
         });
-        
+
         menus.addItemByPath("Tools/Beautify Selection", menuItem, 100);
-        
+
         this.hotitems.beautify = [menuItem];
-        
+
         code.commandManager.addCommand({
             name: "beautify",
             exec: function () {
@@ -179,7 +179,7 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     destroy: function () {
         menus.remove("Tools/Beautify Selection");
-        
+
         this.nodes.each(function (item) {
             item.destroy(true, true);
         });

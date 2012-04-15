@@ -39,7 +39,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         
         this.nodes.push(
             menus.addItemByPath("Goto/~", new apf.divider(), 200),
-            menus.addItemByPath("Goto/Go to Line...", new apf.item({
+            menus.addItemByPath("Goto/Goto Line...", new apf.item({
                 caption : "Goto Line...",
                 onclick : function(){
                     _self.gotoline();

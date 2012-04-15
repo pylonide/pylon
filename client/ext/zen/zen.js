@@ -83,7 +83,6 @@ module.exports = ext.register("ext/zen/zen", {
             _self.updateButtonPosition();
         });
 
-        
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("afterswitch", function(e){
                 if (e.nextPage.type != "ext/code/code")
@@ -100,7 +99,7 @@ module.exports = ext.register("ext/zen/zen", {
             });
         });
         
-        menus.addItemByPath("View/Zen Mode", new apf.item({
+        this.mnuItem = menus.addItemByPath("View/Zen Mode", new apf.item({
             caption : "Zen Mode",
             type    : "check",
             onclick : function(){
