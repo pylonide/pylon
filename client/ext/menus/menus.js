@@ -51,7 +51,7 @@ module.exports = ext.register("ext/menus/menus", {
             }
         }
         
-        parent.insertBefore(item, beforeNode);
+        return parent.insertBefore(item, beforeNode);
     },
     
     setRootMenu : function(name, index, item, menu){

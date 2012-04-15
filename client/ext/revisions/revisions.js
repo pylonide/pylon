@@ -117,7 +117,7 @@ var addCodeMarker = function(session, doc, type, range) {
 };
 
 var INTERVAL = 60000;
-var CHANGE_TIMEOUT = 10000;
+var CHANGE_TIMEOUT = 2000;
 
 module.exports = ext.register("ext/revisions/revisions", {
     name: "Revisions",
@@ -160,6 +160,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         
         var mnuItem;
         this.nodes.push(
+            this.mnuSave = new apf.menu({ id : "mnuSave" }),
+            
             mnuItem = menus.addItemByPath("File/File revisions", new apf.item({
                 type: "check",
                 checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
@@ -191,33 +193,45 @@ module.exports = ext.register("ext/revisions/revisions", {
                 onclick: function() { self.toggle(); }
             }));
         });
-
-        this.hotitems.revisions = [mnuItem];
-    },
-    
-    init: function() {
-        var self = this;
         
-        // This is the main interval. Whatever it happens, every `INTERVAL`
-        // milliseconds, the plugin will attempt to save every file that is
-        // open and dirty.
-        this.saveInterval = setInterval(this.doAutoSave.bind(this), INTERVAL);
-
-        this.$onMessageFn = this.onMessage.bind(this);
+        btnSave.removeAttribute("icon");
+        btnSave.setAttribute("caption", "");
+        btnSave.setAttribute("tooltip", "Manual Save");
+        btnSave.setAttribute("margin", "0 20 0 20");
+        btnSave.setAttribute("submenu", "mnuSave");
+        btnSave.removeAttribute("onclick");
+        
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onFileSaveFn = this.onFileSave.bind(this);
 
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
-        ide.addEventListener("socketMessage", this.$onMessageFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
+        
+        var c = 0;
+        menus.addItemByPath("Save Now", new apf.item({ 
+            onclick : function(){
+                Save.quicksave();
+            }
+        }), c += 100, this.mnuSave);
+        menus.addItemByPath("~", new apf.divider(), c += 100, this.mnuSave);
+        menus.addItemByPath("About Auto-Save", new apf.item({ 
+            onclick : function(){
+                
+            }
+        }), c += 100, this.mnuSave);
 
+        this.hotitems.revisions = [mnuItem];
+        
         this.defaultUser = {
             email: null
         };
-
-        this.$initWorker();
+        
+        // This is the main interval. Whatever it happens, every `INTERVAL`
+        // milliseconds, the plugin will attempt to save every file that is
+        // open and dirty.
+        this.saveInterval = setInterval(this.doAutoSave.bind(this), INTERVAL);
         
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
@@ -235,6 +249,24 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
         
+        this.$initWorker();
+    },
+    
+    setSaveButtonCaption: function(){
+        if (!tabEditors.activepage)
+            btnSave.setCaption("")
+        else if (tabEditors.getPage().$model.queryValue("@changed") == 1)
+            btnSave.setCaption("Saving...")
+        else
+            btnSave.setCaption("All changes saved")
+    },
+    
+    init: function() {
+        var self = this;
+        
+        this.$onMessageFn = this.onMessage.bind(this);
+        ide.addEventListener("socketMessage", this.$onMessageFn);
+
         ide.send({
             command: "revisions",
             subCommand: "getRevisionHistory",
@@ -311,12 +343,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         var path = data.node.getAttribute("path");
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
+                setTimeout(function() {
+                    self.setSaveButtonCaption();
+                });
+                
                 self.onDocChange.call(self, e, doc);
             };
         }
 
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
         //ext.initExtension(this); //Please only init when the revisions menu item is clicked 
+        
+        this.setSaveButtonCaption();
     },
 
     onSwitchFile: function(e) {
@@ -341,6 +379,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
+        this.setSaveButtonCaption();
+        
         var path = this.$getDocPath();
         if (this.originalContents[path]) {
             delete this.originalContents[path];
@@ -873,6 +913,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             restoring: restoring,
             contributors: contributors
         };
+        
+        this.setSaveButtonCaption();
 
         // If we are not in a collaboration document we do all the processing
         // in a worker istead of sending over to the server. Later on, we'll
@@ -889,6 +931,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         ide.send(data);
+        
         this.$resetEditingUsers(docPath);
     },
 

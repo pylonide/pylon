@@ -95,14 +95,17 @@ module.exports = ext.register("ext/save/save", {
             });
         });
 
-        this.nodes.push(barTools.appendChild(new apf.button({
-            id       : "btnSave",
-            icon     : "save.png",
-            tooltip  : "Save",
-            skin     : "c9-toolbarbutton",
-            disabled : "{!!!tabEditors.activepage}",
-            onclick  : this.quicksave.bind(this)
-        })));
+        this.nodes.push(
+            menus.$insertByIndex(barTools, new apf.button({
+                id       : "btnSave",
+                icon     : "save.png",
+                caption  : "Save",
+                tooltip  : "Save",
+                skin     : "c9-toolbarbutton",
+                disabled : "{!!!tabEditors.activepage}",
+                onclick  : this.quicksave.bind(this)
+            }), 1000)
+        );
 
         var saveItem, saveAsItem;
         this.nodes.push(

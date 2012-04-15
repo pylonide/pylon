@@ -147,8 +147,8 @@ module.exports = ext.register("ext/editors/editors", {
                     width : 17,
                     height : 17,
                     submenu : "{require('ext/menus/menus').getMenuId('View/Tabs')}",
-                    id : "test",
-                    visible : "{apf.isTrue([{require('core/settings').model}::auto/tabs/@show])}",
+                    showme  : "[{require('core/settings').model}::auto/tabs/@show]",
+                    visible : "{apf.isTrue(this.showme)}",
                     skin : "btn_icon_only",
                     "class" : "tabmenubtn",
                     background : "tabdropdown.png|horizontal|3|17"

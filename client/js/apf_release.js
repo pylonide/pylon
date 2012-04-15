@@ -19922,7 +19922,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33206)TIME(Sun, 15 Apr 2012 06:45:14 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33273)TIME(Sun, 15 Apr 2012 17:30:36 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20623,7 +20623,8 @@ apf.GuiElement.propHandlers = {
      * the mouse over the element.
      */
     "tooltip" : function(value){
-        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " (" + this.hotkey + ")" : ""));
+        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " ("
+            + (apf.isMac ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey) + ")" : ""));
     },
     
     

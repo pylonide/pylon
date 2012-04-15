@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
-var markup = require("text!ext/html/html.xml");
+var menus = require("ext/menus/menus");
 
 var previewExtensions = [
     "htm", "html", "xhtml",
@@ -24,10 +24,23 @@ module.exports = ext.register("ext/html/html", {
     type  : ext.GENERAL,
     alone : true,
     deps  : [code],
-    markup: markup,
     nodes : [],
 
-    hook : function(){
+    afterSwitchOrOpen : function(node) {
+        var name = node.$model.data.getAttribute("name");
+        var fileExtension = name.split(".").pop();
+
+        if (previewExtensions.indexOf(fileExtension) > -1) {
+            //ext.initExtension(this);
+            this.page = node;
+            this.enable();
+        }
+        else {
+            this.disable();
+        }
+    },
+
+    init : function(){
         var _self = this;
         tabEditors.addEventListener("afterswitch", function(e){
             _self.afterSwitchOrOpen(e.nextPage);
@@ -43,41 +56,27 @@ module.exports = ext.register("ext/html/html", {
                 return;
             _self.afterSwitchOrOpen(page);
         });
-    },
+        
+        this.nodes.push(
+//            menus.$insertByIndex(barTools, new apf.divider({
+//                skin : "c9-divider"
+//            }), 300),
+            
+            menus.$insertByIndex(barTools, new apf.button({
+                skin : "c9-toolbarbutton",
+                //icon : "preview.png" ,
+                "class" : "preview",
+                tooltip : "Preview in browser",
+                caption : "Preview",
+                onclick : function(){
+                    var file = _self.page.$model.data;
+                    window.open(location.protocol + "//" 
+                        + location.host + file.getAttribute("path"), "_blank");
+                }
+            }), 10)
+        );
 
-    afterSwitchOrOpen : function(node) {
-        var name = node.$model.data.getAttribute("name");
-        var fileExtension = name.split(".").pop();
-
-        if (previewExtensions.indexOf(fileExtension) > -1) {
-            ext.initExtension(this);
-            this.page = node;
-            this.enable();
-        }
-        else {
-            this.disable();
-        }
-    },
-
-    init : function() {
-        //Append the button bar to the main toolbar
-        var nodes = barHtmlMode.childNodes;
-        var node;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            node = barTools.appendChild(nodes[0]);
-            if (node.nodeType != 1) {
-                continue;
-            }
-            this.nodes.push(node);
-        }
-
-        btnHtmlOpen.onclick = this.onOpenPage.bind(this);
         this.enabled = true;
-    },
-
-    onOpenPage : function() {
-        var file = this.page.$model.data;
-        window.open(location.protocol + "//" + location.host + file.getAttribute("path"), "_blank");
     },
 
     enable : function() {
@@ -86,7 +85,7 @@ module.exports = ext.register("ext/html/html", {
         this.enabled = true;
 
         this.nodes.each(function(item){
-            item.show();
+            item.enable && item.enable();
         });
     },
 
@@ -96,7 +95,7 @@ module.exports = ext.register("ext/html/html", {
         this.enabled = false;
 
         this.nodes.each(function(item){
-            item.hide && item.hide();
+            item.disable && item.disable();
         });
     },
 
