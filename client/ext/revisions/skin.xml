@@ -25,6 +25,11 @@
                 .revisionsBar .topbar {
                     background: #e8e8e8;
                     border-left: 1px solid transparent;
+                    box-shadow: 0 -1px 0 0 rgba(255,255,255,0.5) inset, 3px 1px 11px -3px rgba(0,0,0,0.3);
+                    border-bottom : 1px solid rgba(0,0,0,0.1);
+                    margin-bottom : -1px;
+                    z-index : 1000;
+                    position : relative;
                 }
                 .revisionsBar .topbar span {
                     color: #8B8B8B;
@@ -40,7 +45,7 @@
                 .revisionsBar .topbar .btn {
                     cursor: pointer;
                     position: absolute;
-                    right: 11px;
+                    right: 5px;
                     top: 0;
                 }
                 .revisionsBar .topbar .btn .left,
@@ -215,15 +220,18 @@
             /* ------------------------------------------------------------------------------------------
              * Show Detailes
              * --------------------------------------------------------------------------------------- */
-                 .show-detailes {
-                    border-top: 1px solid #ced5dd;
-                    box-shadow: 0 1px 0 0 #fff inset;
+                 .show-details {
+                    border-top: 1px solid rgba(0,0,0,0.1);
+                    box-shadow: 0 1px 0 0 #fff inset, 0px -2px 13px -6px rgba(0,0,0,0.3);
                     padding-bottom: 3px;
+                    margin-top : -1px;
+                    z-index : 1000;
+                    position : relative;
                  }
-                 .show-detailes .subbar {
+                 .show-details .subbar {
                     background: none;
                  }
-                 .show-detailes .checkbox {
+                 .show-details .checkbox {
                     left: 1px;
                  }
             /* ------------------------------------------------------------------------------------------

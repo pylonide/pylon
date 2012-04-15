@@ -2670,7 +2670,7 @@
 
         .cbgrey.cbcontainer span {
             color : #333;
-            top   : 1px;
+            top   : 0px;
         }
 
         .cbgrey.cbcontainer .checkbox {
