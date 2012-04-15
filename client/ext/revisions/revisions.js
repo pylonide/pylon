@@ -143,7 +143,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     docChangeListeners: {},
 
     toggle: function() {
-        if (!this.panel) { return; }
+        ext.initExtension(this);
 
         if (this.panel.visible)
             this.hide();
@@ -152,11 +152,13 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     hook: function() {
+        var _self = this;
+        
         this.nodes.push(
             menus.addItemByPath("File/File revisions", new apf.item({
                 type: "check",
                 checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
-                onclick: function() { self.toggle(); }
+                onclick: function() { _self.toggle(); }
             }), 900),
             menus.addItemByPath("File/~", new apf.divider(), 1000)
         );
@@ -216,7 +218,7 @@ module.exports = ext.register("ext/revisions/revisions", {
          *       afterselect
          */
         ide.addEventListener("init.ext/code/code", function (e) {
-            _self.panel = ceEditor.parentNode.appendChild(new apf.bar({
+            self.panel = ceEditor.parentNode.appendChild(new apf.bar({
                 id: "revisionsPanel",
                 visible: false,
                 top: 2,
@@ -228,8 +230,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             }));
             revisionsPanel.appendChild(pgRevisions);
             
-            _self.nodes.push(
-                _self.panel
+            self.nodes.push(
+                self.panel
             );
         });
 
@@ -1017,7 +1019,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             visibility: "shown",
             width: BAR_WIDTH
         });
-        ceEditor.$editor.container.style.right = "200px";
+        ceEditor.$editor.container.style.right = BAR_WIDTH + "px";
         this.panel.show();
 
         this.populateModel();
