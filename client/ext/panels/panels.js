@@ -282,7 +282,6 @@ module.exports = ext.register("ext/panels/panels", {
             menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200),
             
             menus.addItemByPath("View/Tabs/", null, 20000),
-            menus.addItemByPath("View/Toolbar/", null, 30000),
             menus.addItemByPath("View/~", new apf.divider(), 40000)
         );
         
@@ -368,7 +367,6 @@ module.exports = ext.register("ext/panels/panels", {
     
     destroy : function(){
         menus.remove("View/Tabs");
-        menus.remove("View/Toolbar");
         menus.remove("View/~");
         
         this.nodes.each(function(item){

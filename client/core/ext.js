@@ -48,6 +48,8 @@ module.exports = ext = {
         if (oExtension.registered)
             return oExtension;
 
+        var dt = new Date();
+
         if (!this.model.data)
             this.model.load("<plugins />");
 
@@ -90,6 +92,8 @@ module.exports = ext = {
         }
         
         ide.dispatchEvent("ext.register", {ext: oExtension});
+        
+        this.model.queryNode("plugin[@path='" + path + "']").setAttribute("time", Number(new Date() - dt));
 
         return oExtension;
     },
@@ -155,6 +159,8 @@ module.exports = ext = {
     initExtension : function(oExtension, amlParent) {
         if (oExtension.inited)
             return;
+            
+        oExtension.inited = true; // Prevent Re-entry∑
 
         var skin = oExtension.skin;
         if (skin && typeof skin == "object") {
@@ -188,7 +194,6 @@ module.exports = ext = {
         }
 
         oExtension.init(amlParent);
-        oExtension.inited = true;
         
         ide.dispatchEvent("init." + oExtension.path, {
             ext : oExtension

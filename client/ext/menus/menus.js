@@ -121,7 +121,8 @@ module.exports = ext.register("ext/menus/menus", {
         }
         
         if (item) {
-            item.setAttribute("submenu", menu.id || "mnuMenus" + this.count);
+            item.setAttribute("submenu", menu.id);
+            item.setAttribute("caption", name.split("/").pop());
             items[name] = item;
         }
         else {
@@ -145,12 +146,14 @@ module.exports = ext.register("ext/menus/menus", {
     
     setMenuItem : function(parent, name, menuItem, index, item){
         var items = this.items;
+        var itemName = name.split("/").pop();
+        if (itemName == "~")
+            name += index;
         
         item = items[name];
         if (!item) {
             item = items[name] = menuItem;
             
-            var itemName = name.split("/").pop();
             if (itemName != "~")
                 item.setAttribute("caption", itemName);
         }
@@ -184,7 +187,7 @@ module.exports = ext.register("ext/menus/menus", {
             }
             //Submenu item & menu
             else if (i != l - 1 || !menuItem.nodeFunc) {
-                isLast = steps[i + 1] === "";
+                isLast = !steps[i + 1];
                 menu = !isLast && menus[curpath] 
                   || this.setSubMenu(menu, curpath, i == l - 1 || isLast ? index : null,
                     isLast && (!menuItem.nodeFunc ? menuItem.item : menuItem.localName != "menu" && menuItem),
@@ -215,6 +218,11 @@ module.exports = ext.register("ext/menus/menus", {
     
     remove : function(path) {
         //menus.remove("Tools/Beautify Selection");
+    },
+    
+    getMenuId : function(path){
+        var menu = this.menus[path];
+        return menu.id;
     },
     
     /**

@@ -64,7 +64,7 @@ module.exports = ext.register("ext/html/html", {
         var nodes = barHtmlMode.childNodes;
         var node;
         for (var i = nodes.length - 1; i >= 0; i--) {
-            node = ide.barTools.appendChild(nodes[0]);
+            node = barTools.appendChild(nodes[0]);
             if (node.nodeType != 1) {
                 continue;
             }

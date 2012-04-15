@@ -35,6 +35,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var _self = this;
 
         var mnuItem = new apf.item({
+            test : 1,
             onclick : function() {
                 _self.toggleDialog(1);
             }
@@ -42,19 +43,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
         this.nodes.push(
             menus.addItemByPath("File/Open...", mnuItem, 100),
-            menus.addItemByPath("Goto/File...", mnuItem.cloneNode(true), 100),
+            menus.addItemByPath("Goto/Goto File...", mnuItem.cloneNode(false), 100),
     
-            barTools.appendChild(new apf.button({
-                id      : "btnOpen",
-                icon    : "open.png",
-                width   : 29,
-                tooltip : "Open...",
-                skin    : "c9-toolbarbutton",
-                onclick : function() {
-                    _self.toggleDialog(1);
-                }
-            })),
-            
             this.model = new apf.model(),
             this.modelCache = new apf.model()
         );

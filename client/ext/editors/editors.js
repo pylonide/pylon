@@ -564,7 +564,7 @@ module.exports = ext.register("ext/editors/editors", {
                 tabEditors.set(page);
         });
         
-        menus.addItemByPath("View/Tabs Bar", new apf.item({
+        menus.addItemByPath("View/Tab Buttons", new apf.item({
             type: "check",
             checked : "[{require('ext/settings/settings').model}::auto/tabs/@show]",
             "onprop.checked" : function(e) {

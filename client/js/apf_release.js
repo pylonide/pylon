@@ -14668,7 +14668,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/markup/domparser.js)SIZE(18237)TIME(Wed, 11 Apr 2012 18:42:28 GMT)*/
+/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Sun, 15 Apr 2012 10:04:33 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15024,13 +15024,16 @@ apf.DOMParser.prototype = new (function(){
 
                     //attributes
                     var attr = xmlNode.attributes, n;
-                    for (var a, i = 0, l = attr.length; i < l; i++) {
-                        o.attributes.push(new apf.AmlAttr(o, 
+                    for (var a, na, i = 0, l = attr.length; i < l; i++) {
+                        o.attributes.push(na = new apf.AmlAttr(o, 
                             (n = (a = attr[i]).nodeName), a.nodeValue));
                         
                         if (n == "render")
                             o.render = true;
+                        else
                         
+                        if (n.substr(0, 2) == "on")
+                            na.$triggerUpdate();
                     }
                 }
                 
@@ -15170,7 +15173,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(core/markup/aml/node.js)SIZE(22559)TIME(Wed, 11 Apr 2012 18:42:28 GMT)*/
+/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Sun, 15 Apr 2012 08:21:24 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15555,8 +15558,9 @@ apf.AmlNode = function(){
         if (!doc || doc.$domParser.$isPaused(this))
             return amlNode;
 
-        if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT)
-            return; //We don't update the tree if this is a doc fragment
+        // Don't update the tree if this is a doc fragment or if this element is not inited yet
+        if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT || !this.$amlLoaded)
+            return amlNode; 
 
         //@todo review this...
         if (initialAppend && !amlNode.render) { // && (nNodes = node.childNodes).length ??
@@ -15752,7 +15756,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(21964)TIME(Wed, 11 Apr 2012 17:42:24 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22466)TIME(Sun, 15 Apr 2012 10:03:12 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15828,7 +15832,7 @@ apf.AmlElement = function(struct, tagName){
         
         //Parse struct to create attributes and child nodes
         if (struct) {
-            var nodes, prop, i, l;
+            var nodes, prop, i, l, attr;
             if (struct.childNodes) {
                 nodes = struct.childNodes;
                 delete struct.childNodes; //why delete?
@@ -15837,8 +15841,18 @@ apf.AmlElement = function(struct, tagName){
             //Attributes
             for (prop in struct){ 
                 if (prop == "htmlNode") continue;
+                
+                attr = new apf.AmlAttr(this, prop, struct[prop]);
+                
+                //These exceptions should be generalized
+                if (prop == "id")
+                    this.$propHandlers["id"].call(this, this.id = struct.id);
+                else if (prop == "hotkey")
+                    this.$propHandlers["hotkey"].call(this, this.hotkey = struct.hotkey);
+                else if (prop.substr(0, 2) == "on")
+                    attr.$triggerUpdate();
 
-                this.attributes.push(new apf.AmlAttr(this, prop, struct[prop]));
+                this.attributes.push(attr);
             }
             
             if (!this.ownerDocument) {
@@ -15982,7 +15996,7 @@ apf.AmlElement = function(struct, tagName){
         if (!a) {
             this.attributes.push(a = new apf.AmlAttr(this, name, value));
         
-            if (!this.$amlLoaded)
+            if (!this.$amlLoaded && name != "id" && name != "hotkey")
                 return;
             
             if (noTrigger)
@@ -16487,7 +16501,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/attr.js)SIZE(4514)TIME(Fri, 13 Apr 2012 10:38:48 GMT)*/
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4709)TIME(Sun, 15 Apr 2012 10:01:52 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16557,16 +16571,21 @@ apf.AmlAttr = function(ownerElement, name, value){
     this.$triggerUpdate = function(e, oldValue){
         var name  = this.name,
             value = this.value || this.nodeValue,
-            host  = this.ownerElement;
+            host  = this.ownerElement,
+            isEvent = name.substr(0, 2) == "on";
 
-        if (name == "id" && !this.specified && host.id) {
-            this.specified = true;
-            return;
+        if (!this.specified) {
+            //@todo This should be generalized
+            if (isEvent && this.$lastValue == value
+              || name == "id" && host.id || name == "hotkey" && host.hotkey) {
+                this.specified = true;
+                return;
+            }
         }
 
-        if (name.substr(0, 2) == "on") {
+        if (isEvent) {
             if (host.$events[name])
-                host.removeEventListener(name.replace(/^on/, ""), host.$events[name]);
+                host.removeEventListener(name.substr(2), host.$events[name]);
             if (value)
                 host.addEventListener(name, (host.$events[name] = 
                   (typeof value == "string"
@@ -19903,7 +19922,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33152)TIME(Wed, 11 Apr 2012 18:42:28 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33206)TIME(Sun, 15 Apr 2012 06:45:14 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20499,10 +20518,10 @@ apf.GuiElement.propHandlers = {
             var _self     = this;
             //this.disabled = false;
 
-            apf.queue.add("disable" + this.$uniqueId, function(e){
-                _self.disabled = value;
-                apf.GuiElement.propHandlers.disabled.call(_self, value);
-            });
+            this.addEventListener("DOMNodeInsertedIntoDocument", 
+                this.$updateDisabled || (this.$updateDisabled = function(e){
+                    apf.GuiElement.propHandlers.disabled.call(_self, _self.disabled);
+                }));
             return;
         }
         else
@@ -46921,7 +46940,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(elements/button.js)SIZE(31193)TIME(Tue, 10 Apr 2012 08:56:22 GMT)*/
+/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Sun, 15 Apr 2012 07:09:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47282,7 +47301,6 @@ apf.button  = function(struct, tagName){
 
         this.parentNode.menuIsPressed = this;
 
-        //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
         menu.display(null, null, false, this,
             null, null, this.$ext.offsetWidth - 2);
 
@@ -47313,13 +47331,13 @@ apf.button  = function(struct, tagName){
 
         
 
-        var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
+        //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
 
 //        menu.display(pos[0],
 //            pos[1] + this.$ext.offsetHeight, true, this,
 //            null, null, this.$ext.offsetWidth - 2);
             
-        menu.display(null, pos[1] + this.$ext.offsetHeight, true, this,
+        menu.display(null, null, true, this,
             null, null, this.$ext.offsetWidth - 2);
 
         //apf.window.$focus(this);
@@ -53961,7 +53979,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19229)TIME(Wed, 11 Apr 2012 17:06:05 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19339)TIME(Sun, 15 Apr 2012 08:48:19 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54287,6 +54305,9 @@ apf.menu = function(struct, tagName){
         
         this.visible = false;
         
+        if (!this.parentNode)
+            apf.document.documentElement.appendChild(this);
+        
         if (this.$rendered !== false) {
             this.show();
             afterRender.call(this);
@@ -54336,7 +54357,7 @@ apf.menu = function(struct, tagName){
             if (nodes[i].group != group)
                 continue;
 
-            if (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value)
+            if (value && (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value))
                 nodes[i].setProperty("selected", true, false, true);
                 //nodes[i].$handlePropSet("selected", true);
             else if (nodes[i].selected)

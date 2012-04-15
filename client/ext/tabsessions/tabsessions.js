@@ -31,9 +31,8 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         "savetabsession": {hint: "save the current tab state as a new session", msg: "Save tab session."},
     },
     hotitems   : [],
-    init : function(amlNode){
-        apf.importCssString((this.css || ""));
-        
+    
+    hook : function(){
         var _self = this;
         ide.addEventListener("loadsettings", function(e) {            
             var model = e && e.model || settings.model;
@@ -43,12 +42,12 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             menus.addItemByPath("View/Tabs/~", new apf.divider(), 400);
             
             menus.addItemByPath("View/Tabs/Load Tab Session", {
-                menu : this.mnuTabLoadSessions = new apf.menu({
+                menu : _self.mnuTabLoadSessions = new apf.menu({
                     onitemclick : function(e){
                         _self.loadSession(e.relatedNode.value);
                     }
                 }),
-                item : this.mnuFileLoadSession = new apf.item({
+                item : _self.mnuFileLoadSession = new apf.item({
                     disabled: !sessions.length
                 })
             }, 500);
@@ -56,18 +55,19 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             var itmSaveSessions = menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
                 caption : "Save Tab Session",
                 onclick : function(){
+                    ext.initExtension(_self);
                     winSaveSessionAs.show();
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), 600)
                 
             menus.addItemByPath("View/Tabs/Delete Tab Session", {    
-                menu : this.mnuTabDeleteSessions = new apf.menu({
+                menu : _self.mnuTabDeleteSessions = new apf.menu({
                     onitemclick : function(e){
                         _self.removeSession(e.relatedNode.value);
                     }
                 }), 
-                item : this.mnuFileDeleteSession = new apf.item({
+                item : _self.mnuFileDeleteSession = new apf.item({
                     disabled: !sessions.length
                 })
             }, 700);
@@ -94,6 +94,10 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
     
             _self.hotitems["savetabsession"] = [itmSaveSessions];
         });
+    },
+    
+    init : function(amlNode){
+        apf.importCssString((this.css || ""));
     },
     
     saveSession : function(name, overwrite) {

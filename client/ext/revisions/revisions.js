@@ -187,7 +187,18 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
             });
         }
+        
+        this.nodes.push(
+            this.panel,
+            menus.addItemByPath("File/File revisions", new apf.item({
+                type: "check",
+                checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
+                onclick: function() { self.toggle(); }
+            }), 900),
+            menus.addItemByPath("File/~", new apf.divider(), 1000)
+        );
 
+        //@sergi Why is this happening in hook?
         this.$initWorker();
     },
 
@@ -236,13 +247,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 //        });
 
         this.nodes.push(
-            this.panel,
-            menus.addItemByPath("File/File revisions", new apf.item({
-                type: "check",
-                checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
-                onclick: function() { self.toggle(); }
-            }), 900),
-            menus.addItemByPath("File/~", new apf.divider(), 1000)
+            this.panel
         );
 
         this.$afterSelectFn = function(e) {

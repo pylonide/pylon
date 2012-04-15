@@ -57,22 +57,36 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             caption: "Run",
             "class": "rundebug"
         });
-
-        apf.document.documentElement.insertMarkup(buttonsMarkup);
-
+        
+        barTools.insertMarkup(buttonsMarkup);
+        
         this.nodes.push(
-            mnuRunCfg
+            this.mnuRunCfg = new apf.menu({ id : "mnuRunCfg" })
         );
-
-        while (tbRun.childNodes.length) {
-            var button = tbRun.firstChild;
-
-            barTools.appendChild(button);
-            if (button.nodeType == 1) {
-                this.nodes.push(button);
+        
+        var c = 0;
+        menus.addItemByPath("no run history", new apf.item({ 
+            disabled : true,
+        }), c += 100, this.mnuRunCfg);
+        menus.addItemByPath("~", new apf.divider(), c += 100, this.mnuRunCfg);
+        menus.addItemByPath("Configure....", new apf.item({ 
+            onclick : function(){
+                _self.showRunConfigs(false);
             }
-        }
-
+        }), c += 100, this.mnuRunCfg);
+        menus.addItemByPath("~", new apf.divider(), c += 100, this.mnuRunCfg);
+        menus.addItemByPath("Run in debug mode", new apf.item({ 
+            type    : "check",
+            checked : "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
+        }), c += 100, this.mnuRunCfg);
+        menus.addItemByPath("Auto show/hide debug tools", new apf.item({ 
+            type    : "check",
+            onclick : function(){
+                _self.checkAutoHide();
+            },
+            checked : "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
+        }), c += 100, this.mnuRunCfg);
+        
         mdlRunConfigurations.addEventListener("afterload", function(e) {
             _self.$populateMenu();
         });
@@ -84,66 +98,68 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });*/
 
         require("ext/settings/settings").addSettings("General", markupSettings);
-
-        ide.addEventListener("loadsettings", function(e){
-            var runConfigs = e.model.queryNode("auto/configurations");
-            if (!runConfigs) {
-                runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
-                apf.xmldb.setAttribute(runConfigs, "debug", "true");
-
-                e.model.setQueryValue("general/@saveallbeforerun", false);
-            }
-            if (!e.model.queryNode("auto/configurations/@debug"))
-                e.model.setQueryValue("auto/configurations/@debug", true);
-            if (!e.model.queryNode("auto/configurations/@autohide"))
-                e.model.setQueryValue("auto/configurations/@autohide", true);
-
-            if (!runConfigs.selectSingleNode("config[@curfile]")) {
-                var setLast = false;
-                if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
-                    var config = e.model.queryNode("auto/configurations/config")
-                    if (config)
-                        apf.xmldb.setAttribute(config, "last", "true");
-                    else
-                        setLast = true;
+        
+        this.mnuRunCfg.addEventListener("prop.visible", function(){
+            ide.addEventListener("loadsettings", function(e){
+                var runConfigs = e.model.queryNode("auto/configurations");
+                if (!runConfigs) {
+                    runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
+                    apf.xmldb.setAttribute(runConfigs, "debug", "true");
+    
+                    e.model.setQueryValue("general/@saveallbeforerun", false);
                 }
-
-                var cfg = apf.n("<config />")
-                    .attr("name", " (active file)")
-                    .attr("curfile", "1");
-                if (setLast)
-                    cfg.attr("last", "true");
-                runConfigs.insertBefore(cfg.node(), runConfigs.firstChild);
-            }
-
-            mdlRunConfigurations.load(runConfigs);
-        });
-
-        ide.addEventListener("init.ext/editors/editors", function(e) {
-            var page = tabEditors.getPage();
-            if (page && page.$model) {
-                var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
-                    path.split("/").pop() + " (active file)");
-            }
-
-            tabEditors.addEventListener("afterswitch", function(e){
-                var page = e.nextPage;
-                var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
-                    path.split("/").pop() + " (active file)");
+                if (!e.model.queryNode("auto/configurations/@debug"))
+                    e.model.setQueryValue("auto/configurations/@debug", true);
+                if (!e.model.queryNode("auto/configurations/@autohide"))
+                    e.model.setQueryValue("auto/configurations/@autohide", true);
+    
+                if (!runConfigs.selectSingleNode("config[@curfile]")) {
+                    var setLast = false;
+                    if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
+                        var config = e.model.queryNode("auto/configurations/config")
+                        if (config)
+                            apf.xmldb.setAttribute(config, "last", "true");
+                        else
+                            setLast = true;
+                    }
+    
+                    var cfg = apf.n("<config />")
+                        .attr("name", " (active file)")
+                        .attr("curfile", "1");
+                    if (setLast)
+                        cfg.attr("last", "true");
+                    runConfigs.insertBefore(cfg.node(), runConfigs.firstChild);
+                }
+    
+                mdlRunConfigurations.load(runConfigs);
             });
-
-            ide.addEventListener("afterfilesave", function(e){
+    
+            ide.addEventListener("init.ext/editors/editors", function(e) {
                 var page = tabEditors.getPage();
-                if (page) {
+                if (page && page.$model) {
                     var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
                     mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
                     mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
                         path.split("/").pop() + " (active file)");
                 }
+    
+                tabEditors.addEventListener("afterswitch", function(e){
+                    var page = e.nextPage;
+                    var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                    mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
+                    mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
+                        path.split("/").pop() + " (active file)");
+                });
+    
+                ide.addEventListener("afterfilesave", function(e){
+                    var page = tabEditors.getPage();
+                    if (page) {
+                        var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                        mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
+                        mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
+                            path.split("/").pop() + " (active file)");
+                    }
+                });
             });
         });
 
@@ -218,8 +234,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         colLeft.appendChild(winRunPanel);
         this.nodes.push(winRunPanel);
 
+        var _self = this;
         lstRunCfg.addEventListener("afterremove", function(e){
-            mnuRunCfg.childNodes.each(function(item){
+            _self.mnuRunCfg.childNodes.each(function(item){
                 if (item.node == e.args[0].xmlNode)
                     item.destroy(true, true);
             });
@@ -281,7 +298,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     $populateMenu : function() {
-        var menu = mnuRunCfg;
+        var menu = this.mnuRunCfg;
 
         var item = menu.firstChild;
         while (item && item.tagName !== "a:divider") {
@@ -304,9 +321,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var _self = this;
 
         if (!divider)
-            divider = mnuRunCfg.getElementsByTagNameNS(apf.ns.aml, "divider")[0];
+            divider = this.mnuRunCfg.getElementsByTagNameNS(apf.ns.aml, "divider")[0];
 
-        mnuRunCfg.insertBefore(new apf.item({
+        this.mnuRunCfg.insertBefore(new apf.item({
             caption  : "[{this.node}::@name]",
             node     : cfg,
             type     : "radio",
