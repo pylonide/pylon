@@ -196,7 +196,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         
         btnSave.removeAttribute("icon");
         btnSave.setAttribute("caption", "");
-        btnSave.setAttribute("tooltip", "Manual Save");
+        btnSave.removeAttribute("tooltip");
         btnSave.setAttribute("margin", "0 20 0 20");
         btnSave.setAttribute("submenu", "mnuSave");
         btnSave.removeAttribute("onclick");
