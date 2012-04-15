@@ -18,6 +18,9 @@ return keys.onLoad({
             "saveas": "Ctrl-Shift-S",
             "reverttosaved": "Ctrl-Shift-Q"
         },
+        "revisions" : {
+            "show": "Ctrl-B"
+        },
         "undo" : {
             "undo": "Ctrl-Z",
             "redo": "Ctrl-Y"

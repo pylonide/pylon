@@ -18,6 +18,9 @@ return keys.onLoad({
             "saveas": "Shift-Command-S",
             "reverttosaved": "Shift-Command-Q"
         },
+        "revisions" : {
+            "revisions": "Command-B"
+        },
         "undo" : {
             "undo": "Command-Z",
             "redo": "Shift-Command-Z"

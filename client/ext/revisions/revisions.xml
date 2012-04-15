@@ -60,7 +60,7 @@
             ?></a:caption>
             <a:remove match="[revision]" />
         </a:list>
-        <a:hbox edge="2 2 2 4" class="show-details">
+        <a:hbox edge="3 2 3 4" class="show-details">
             <a:checkbox
                 skin    = "checkbox_grey"
                 top     = "-25"

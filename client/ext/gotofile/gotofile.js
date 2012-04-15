@@ -35,7 +35,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var _self = this;
 
         var mnuItem = new apf.item({
-            test : 1,
             onclick : function() {
                 _self.toggleDialog(1);
             }

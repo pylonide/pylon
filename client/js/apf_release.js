@@ -15756,7 +15756,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22466)TIME(Sun, 15 Apr 2012 10:03:12 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22466)TIME(Sun, 15 Apr 2012 15:15:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16501,7 +16501,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/attr.js)SIZE(4709)TIME(Sun, 15 Apr 2012 10:01:52 GMT)*/
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Sun, 15 Apr 2012 15:10:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16577,7 +16577,7 @@ apf.AmlAttr = function(ownerElement, name, value){
         if (!this.specified) {
             //@todo This should be generalized
             if (isEvent && this.$lastValue == value
-              || name == "id" && host.id || name == "hotkey" && host.hotkey) {
+              || name == "id" && host.id) {
                 this.specified = true;
                 return;
             }
@@ -52442,7 +52442,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(24653)TIME(Fri, 13 Apr 2012 10:38:48 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25018)TIME(Sun, 15 Apr 2012 15:30:36 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52656,7 +52656,15 @@ apf.item  = function(struct, tagName){
      * </code>
      */
     this.$propHandlers["hotkey"] = function(value){
-        if (this.$hotkey)
+        if (!this.$amlLoaded) {
+            var _self = this;
+            this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+                if (_self.$hotkey && _self.hotkey)
+                    apf.setNodeValue(this.$hotkey, apf.isMac 
+                      ? apf.hotkeys.toMacNotation(_self.hotkey) : _self.hotkey);
+            });
+        }
+        else if (this.$hotkey)
             apf.setNodeValue(this.$hotkey, apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
 
         if (this.$lastHotkey) {

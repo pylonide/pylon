@@ -128,8 +128,14 @@ module.exports = ext.register("ext/revisions/revisions", {
     deps: [fs],
     offline: true,
     nodes: [],
+    
     skin: skin,
     model: new apf.model(),
+    
+    commands : {
+        "revisions": {hint: "Show revisions panel"}
+    },
+    hotitems: {},
 
     realSession: {},
     originalContents: {},
@@ -143,8 +149,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     docChangeListeners: {},
 
     toggle: function() {
-        ext.initExtension(this);
-
         if (this.panel.visible)
             this.hide();
         else
@@ -154,16 +158,43 @@ module.exports = ext.register("ext/revisions/revisions", {
     hook: function() {
         var _self = this;
         
+        var mnuItem;
         this.nodes.push(
-            menus.addItemByPath("File/File revisions", new apf.item({
+            mnuItem = menus.addItemByPath("File/File revisions", new apf.item({
                 type: "check",
                 checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
+                disabled: "{!tabEditors.length}",
                 onclick: function() { _self.toggle(); }
             }), 900),
             menus.addItemByPath("File/~", new apf.divider(), 1000)
         );
-    },
+        
+        ide.addEventListener("loadsettings", function(e){
+            var revisionMode = e.model.queryValue("general/@revisionmode");
+            if (apf.isTrue(revisionMode)) {
+                ide.addEventListener("init.ext/editors/editors", function (e) {
+                    tabEditors.addEventListener("afterswitch", function(){
+                        if (self.ceEditor)
+                            _self.show();
+                        tabEditors.removeEventListener("afterswitch", arguments.callee);
+                    });
+                });
+            }
+        });
+        
+        ide.addEventListener("init.ext/settings/settings", function (e) {
+            e.ext.getHeading("General").appendChild(new apf.checkbox({
+                "class" : "underlined",
+                skin  : "checkbox_grey",
+                value : "[general/@revisionmode]",
+                label : "File revisions",
+                onclick: function() { self.toggle(); }
+            }));
+        });
 
+        this.hotitems.revisions = [mnuItem];
+    },
+    
     init: function() {
         var self = this;
         
@@ -212,49 +243,27 @@ module.exports = ext.register("ext/revisions/revisions", {
             // only for the first time and won't ever change.
             getOriginalContent: true
         });
+        
+        this.panel = new apf.bar({
+            id: "revisionsPanel",
+            visible: false,
+            top: 2,
+            bottom: 0,
+            right: 0,
+            width: BAR_WIDTH,
+            height: "100%",
+            "class": "revisionsBar"
+        });
+        this.nodes.push(this.panel);
     
         /**
          * @todo the panel should move to the active editor tab using
          *       afterselect
          */
         ide.addEventListener("init.ext/code/code", function (e) {
-            self.panel = ceEditor.parentNode.appendChild(new apf.bar({
-                id: "revisionsPanel",
-                visible: false,
-                top: 2,
-                bottom: 0,
-                right: 0,
-                width: BAR_WIDTH,
-                height: "100%",
-                "class": "revisionsBar"
-            }));
+            self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
-            
-            self.nodes.push(
-                self.panel
-            );
         });
-
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            e.ext.getHeading("General").appendChild(new apf.checkbox({
-                "class" : "underlined",
-                skin  : "checkbox_grey",
-                value : "[general/@revisionmode]",
-                label : "File revisions",
-                onclick: function() { self.toggle(); }
-            }));
-        });
-
-        ide.addEventListener("loadsettings", function(e){
-            var revisionMode = e.model.queryValue("general/@revisionmode");
-            if (apf.isTrue(revisionMode)) {
-                self.show();
-            }
-        });
-
-//        ide.addEventListener("init.ext/tools/tools", function (e) {
-//            mnuTools.appendChild(menuItem.cloneNode(true));
-//        });
 
         this.$afterSelectFn = function(e) {
             var node = this.selected;
@@ -312,7 +321,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onSwitchFile: function(e) {
         var self = this;
-
+        
         // This is the wrong way to do it. We should assume than when switching
         // the revisions are already there.
         // We should cache the revisions for each file and destroy them when
@@ -782,6 +791,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // Scroll to the first change, leaving it in the middle of the screen.
         editor.renderer.scrollToRow(firstChange - (editor.$getVisibleRowCount() / 2));
+        //editor.gotoLine(firstChange); //If we can scroll from - to this would be nice
         editor.selection.clearSelection()
 
         // Look for the node that references the revision we are loading and
@@ -1014,12 +1024,17 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     show: function() {
+        ext.initExtension(this);
+        
         settings.model.setQueryValue("general/@revisionmode", true);
+        
         ide.dispatchEvent("revisions.visibility", {
             visibility: "shown",
             width: BAR_WIDTH
         });
+        
         ceEditor.$editor.container.style.right = BAR_WIDTH + "px";
+        
         this.panel.show();
 
         this.populateModel();
