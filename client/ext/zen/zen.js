@@ -100,13 +100,13 @@ module.exports = ext.register("ext/zen/zen", {
             });
         });
         
-        menus.addItemByPath("View/Zen", new apf.item({
+        menus.addItemByPath("View/Zen Mode", new apf.item({
             caption : "Zen Mode",
             type    : "check",
             onclick : function(){
                 _self.toggleFullscreenZen();
             }
-        }), 100000);
+        }), 200000);
     },
 
     init : function(){

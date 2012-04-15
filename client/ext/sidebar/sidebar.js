@@ -34,7 +34,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                     else
                         navbar.hide();
                 }
-            }), 200)
+            }), 400)
         );
     },
     

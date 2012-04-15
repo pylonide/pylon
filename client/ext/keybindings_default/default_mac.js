@@ -10,8 +10,7 @@ var keys = require("ext/keybindings/keybindings");
 return keys.onLoad({
     "ext" : {
         "console" : {
-            "switchconsole": "Shift-Esc",
-            "show": "Cmd-Esc"
+            "switchconsole": "Shift-Esc"
         },
         "save" : {
             "quicksave": "Command-S",

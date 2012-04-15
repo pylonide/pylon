@@ -388,28 +388,30 @@ module.exports = ext.register("ext/code/code", {
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
         });
 
-        menus.addItemByPath("View/Gutter", new apf.item({
-            type    : "check",
-            checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
-        }), 300);
-        
-        menus.addItemByPath("View/Syntax", new apf.item({
-            submenu : "mnuSyntax"
-        }), 2000000);
-        
-        menus.addItemByPath("View/~", new apf.divider(), 4000000)
-        
-        menus.addItemByPath("View/Wrap Lines", new apf.item({
-            type    : "check",
-            checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
-        }), 5000000);
-        
-        menus.addItemByPath("View/Wrap To Viewport", new apf.item({
-            disabled : "{!apf.isTrue(this.wrapmode)}",
-            wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
-            type     : "check",
-            checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
-        }), 6000000);
+        this.nodes.push(
+            menus.addItemByPath("View/Gutter", new apf.item({
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
+            }), 500),
+            
+            menus.addItemByPath("View/Syntax", new apf.item({
+                submenu : "mnuSyntax"
+            }), 300000),
+            
+            menus.addItemByPath("View/~", new apf.divider(), 400000),
+            
+            menus.addItemByPath("View/Wrap Lines", new apf.item({
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+            }), 500000),
+            
+            menus.addItemByPath("View/Wrap To Viewport", new apf.item({
+                disabled : "{!apf.isTrue(this.wrapmode)}",
+                wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
+                type     : "check",
+                checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
+            }), 600000)
+        );
 
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
@@ -528,12 +530,6 @@ module.exports = ext.register("ext/code/code", {
     },
 
     destroy : function(){
-        menus.remove("View/Syntax");
-        menus.remove("View/Gutter");
-        menus.remove("View/~");
-        menus.remove("View/Wrap Lines");
-        menus.remove("View/Wrap To Viewport");
-        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

@@ -41,7 +41,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         })
 
         this.nodes.push(
-            menus.addItemByPath("File/Open...", mnuItem, 100),
+            menus.addItemByPath("File/Open...", mnuItem, 500),
             menus.addItemByPath("Goto/Goto File...", mnuItem.cloneNode(false), 100),
     
             this.model = new apf.model(),

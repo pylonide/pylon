@@ -162,13 +162,13 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.nodes.push(
             this.mnuSave = new apf.menu({ id : "mnuSave" }),
             
+            menus.addItemByPath("File/~", new apf.divider(), 800),
             mnuItem = menus.addItemByPath("File/File revisions", new apf.item({
                 type: "check",
                 checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
                 disabled: "{!tabEditors.length}",
                 onclick: function() { _self.toggle(); }
-            }), 900),
-            menus.addItemByPath("File/~", new apf.divider(), 1000)
+            }), 900)
         );
         
         ide.addEventListener("loadsettings", function(e){

@@ -49,7 +49,7 @@ var extAll = define([
     "ext/nodeunit/nodeunit",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    "ext/vim/vim",
+    "ext/vim/vim", 
     "ext/guidedtour/guidedtour",
     "ext/quickstart/quickstart",
     "ext/jslanguage/jslanguage",

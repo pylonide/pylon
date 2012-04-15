@@ -269,7 +269,9 @@ module.exports = ext.register("ext/panels/panels", {
                 value : "[{req" + "uire('core/settings').model}::auto/panels/@active]"
             })),
             
-            menus.addItemByPath("View/Side Bar/", null, 10000),
+            menus.addItemByPath("View/Side Bar/", null, 100),
+            menus.addItemByPath("View/~", new apf.divider(), 200),
+            
             this.mnuPanelsNone = 
               menus.addItemByPath("View/Side Bar/None", new apf.item({
                 type: "radio",
@@ -281,8 +283,7 @@ module.exports = ext.register("ext/panels/panels", {
               }), 100),
             menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200),
             
-            menus.addItemByPath("View/Tabs/", null, 20000),
-            menus.addItemByPath("View/~", new apf.divider(), 40000)
+            menus.addItemByPath("View/Tabs/", null, 20000)
         );
         
         colLeft.addEventListener("resize", function(){

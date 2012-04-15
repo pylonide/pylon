@@ -77,7 +77,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     if (apf.isTrue(e.value))
                         _self.preinit();
                 }
-            }), 400)
+            }), 600)
         );
     },
     

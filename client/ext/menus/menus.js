@@ -37,6 +37,16 @@ module.exports = ext.register("ext/menus/menus", {
             this.setRootMenu("Goto", 600),
             this.setRootMenu("Tools", 700)
         );
+        
+        this.addItemByPath("File/~", new apf.divider(), 1000000);
+        this.addItemByPath("File/Quit Cloud9 IDE", new apf.item({
+            onclick : function(){
+
+            }
+        }), 2000000);
+        
+        this.addItemByPath("View/~", new apf.divider(), 9999);
+        this.addItemByPath("View/~", new apf.divider(), 99999);
     },
     
     $insertByIndex : function(parent, item, index) {

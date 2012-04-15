@@ -570,7 +570,7 @@ module.exports = ext.register("ext/editors/editors", {
             "onprop.checked" : function(e) {
                 _self.toggleTabs(apf.isTrue(e.value) ? 1 : -1);
             }
-        }), 100);
+        }), 300);
         
         ext.addType("Editor", function(oExtension){
             _self.register(oExtension);

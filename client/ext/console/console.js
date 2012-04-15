@@ -111,9 +111,6 @@ module.exports = ext.register("ext/console/console", {
         },
         "send": {
             hint: "send a message to the server"
-        },
-        "show": {
-            hint: "Show the console"
         }
     },
     hotitems : {},
@@ -181,6 +178,7 @@ module.exports = ext.register("ext/console/console", {
             }
         }
         else {
+            this.show();
             txtConsoleInput.focus()
         }
     },
@@ -317,7 +315,7 @@ module.exports = ext.register("ext/console/console", {
                     else
                         _self.hide();
                 }
-            }), 400),
+            }), 700),
             this.mnuItemInput = menus.addItemByPath("View/Input Bar", new apf.item({
                 type: "check",
                 checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]",
@@ -327,10 +325,10 @@ module.exports = ext.register("ext/console/console", {
                     else
                         _self.hideInput();
                 }
-            }), 500)
+            }), 800)
         );
         
-        this.hotitems.show = [this.mnuItemConsoleExpanded];
+        this.hotitems.switchconsole = [this.mnuItemConsoleExpanded];
         
         ide.addEventListener("loadsettings", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
