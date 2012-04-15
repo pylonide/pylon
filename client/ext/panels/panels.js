@@ -72,7 +72,8 @@ module.exports = ext.register("ext/panels/panels", {
         
         this.animating = true;
         
-        navbar.$ext.style.zIndex = 10000;
+        if (self.navbar)
+            navbar.$ext.style.zIndex = 10000;
         
         if (toWin) {
             var toWinExt = toWin.$altExt || toWin.$ext;
@@ -250,7 +251,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         if (anim != undefined) {
             settings.model.setQueryValue("auto/panels/@active", "none");
-            mnuPanelsNone.select();
+            this.mnuPanelsNone.select();
         }
     },
     
@@ -268,8 +269,20 @@ module.exports = ext.register("ext/panels/panels", {
                 value : "[{req" + "uire('core/settings').model}::auto/panels/@active]"
             })),
             
-            menus.addItemByPath("View/Tabs/", new apf.menu(), 20000),
-            menus.addItemByPath("View/Toolbar/", new apf.menu(), 30000),
+            menus.addItemByPath("View/Side Bar/", null, 10000),
+            this.mnuPanelsNone = 
+              menus.addItemByPath("View/Side Bar/None", new apf.item({
+                type: "radio",
+                group: this.group,
+                "onprop.selected": function(e){
+                    if (e.value)
+                        _self.deactivate(null, true);
+                }
+              }), 100),
+            menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200),
+            
+            menus.addItemByPath("View/Tabs/", null, 20000),
+            menus.addItemByPath("View/Toolbar/", null, 30000),
             menus.addItemByPath("View/~", new apf.divider(), 40000)
         );
         

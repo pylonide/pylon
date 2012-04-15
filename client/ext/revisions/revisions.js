@@ -288,7 +288,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
-        var path = doc.$page.name;
+        var path = data.node.getAttribute("path");
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
                 self.onDocChange.call(self, e, doc);
@@ -296,7 +296,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
-        ext.initExtension(this);
+        //ext.initExtension(this); //Please only init when the revisions menu item is clicked 
     },
 
     onSwitchFile: function(e) {
@@ -941,9 +941,9 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $getDocPath: function(page) {
-        if (!page && tabEditors) {
+        if (!page && tabEditors)
             page = tabEditors.getPage();
-        }
+        
         // Can we rely on `name`?
         // What follows is a hacky way to get a path that we can use on
         // the server. I am sure that these workspace string manipulation
@@ -992,7 +992,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     $rescanCompactNodes: function() {
         var length = this.compactTimestamps && this.compactTimestamps.length;
-        if (!length)
+        if (!length || !self.lstRevisions)
             return;
 
         for (var i = 0; i < length; i++) {

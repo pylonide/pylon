@@ -44,7 +44,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
         });
 
         this.nodes.push(
-            menus.addItemByPath("View/Show Minimap", this.menuItem, 800)
+            menus.addItemByPath("View/Minimap", this.menuItem, 800)
         );
 
         ide.addEventListener("afteropenfile", function() {

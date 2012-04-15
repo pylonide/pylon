@@ -23,7 +23,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         var _self = this;
         
         this.nodes.push(
-            menus.addItemByPath("View/Show Side Bar", new apf.item({
+            menus.addItemByPath("View/Side Navigation", new apf.item({
                 type: "check",
                 checked : "[{require('ext/settings/settings').model}::auto/sidebar/@show]",
                 "onprop.checked" : function(e) {
@@ -34,18 +34,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                     else
                         navbar.hide();
                 }
-            }), 200),
-            
-            menus.addItemByPath("View/Side Bar/", new apf.menu(), 10000),
-            menus.addItemByPath("View/Side Bar/None", new apf.item({
-                type: "radio",
-                group: this.group,
-                "onprop.selected": function(e){
-                    if (e.value)
-                        _self.deactivate(null, true);
-                }
-            }), 100),
-            menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
+            }), 200)
         );
     },
     

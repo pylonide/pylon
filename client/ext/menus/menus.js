@@ -31,101 +31,171 @@ module.exports = ext.register("ext/menus/menus", {
             
             this.setRootMenu("File", 100),
             this.setRootMenu("Edit", 200),
-            this.setRootMenu("View", 300),
-            this.setRootMenu("Tools", 400)
+            this.setRootMenu("Selection", 300),
+            this.setRootMenu("Find", 400),
+            this.setRootMenu("View", 500),
+            this.setRootMenu("Goto", 600),
+            this.setRootMenu("Tools", 700)
         );
     },
     
-    setRootMenu : function(name, index){
-        var items = this.items, menu, menus = this.menus;
+    $insertByIndex : function(parent, item, index) {
+        item.$position = index;
         
-        menu = menus[name];
-        if (!menu)
-            menus[name] = new apf.menu({
-                id : "mnuMenus" + ++this.count
-            });
-        
-        item = items[name];
-        if (!item) {
-            items[name] = new apf.button({
-                skin    : "c9-menu-btn",
-                submenu : "mnuMenus" + this.count,
-                margin  : "1 0 0 0",
-                caption : name,
-                onmousedown : function(){
-                    if (!menu.parentNode)
-                        apf.document.documentElement.appendChild(menu);
-                }
-            });
+        var beforeNode, diff = 1000000, nodes = parent.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            var d = nodes[i].$position - index;
+            if (d > 0 && d < diff) {
+                beforeNode = nodes[i];
+                diff = d;
+            }
         }
         
-        if (typeof index == "number") {
-            //this.menubar.appendChild(
+        parent.insertBefore(item, beforeNode);
+    },
+    
+    setRootMenu : function(name, index, item, menu){
+        var items = this.items, menus = this.menus;
+        
+       if (menu) {
+            if (!menu.id)
+                menu.setAttribute("id", "mnuMenus" + ++this.count);
+            menus[name] = menu;
         }
+        else {
+            menu = menus[name];
+            if (!menu) {
+                menu = menus[name] = new apf.menu({
+                    id : "mnuMenus" + ++this.count
+                });
+            }
+        }
+        
+        if (item) {
+            item.setAttribute("submenu", menu.id || "mnuMenus" + this.count);
+            items[name] = item;
+        }
+        else {
+            item = items[name];
+            if (!item) {
+                item = items[name] = new apf.button({
+                    skin    : "c9-menu-btn",
+                    submenu : menu.id,
+                    margin  : "1 0 0 0",
+                    caption : name
+                });
+            }
+        }
+        
+        if (typeof index == "number")
+            this.$insertByIndex(this.menubar, item, index);
         
         return menu;
     },
     
-    setSubMenu : function(parent, name, index){
-        var items = this.items, menu, menus = this.menus;
-        
-        menu = menus[name];
-        if (!menu)
-            menus[name] = new apf.menu({
-                id : "mnuMenus" + ++this.count
-            });
-        
-        item = items[name];
-        if (!item) {
-            items[name] = new apf.item({
-                submenu : "mnuMenus" + this.count,
-                caption : name.split("/").pop(),
-                onmousedown : function(){
-                    if (!menu.parentNode)
-                        apf.document.documentElement.appendChild(menu);
+    setSubMenu : function(parent, name, index, item, menu){
+        var items = this.items, menu, menus = this.menus, item;
+
+        if (menu) {
+            //Switch old menu for new menu
+            if (menus[name]) {
+                var nodes = menus[name].childNodes;
+                for (var i = 0, l = nodes.length; i < l; i++) {
+                    this.$insertByIndex(menu, nodes[i], nodes[i].$position);
                 }
-            });
+                
+                menus[name].destroy(true, true);
+            }
+            
+            if (!menu.id)
+                menu.setAttribute("id", "mnuMenus" + ++this.count);
+            menus[name] = menu;
+        }
+        else {
+            menu = menus[name];
+            if (!menu) {
+                menu = menus[name] = new apf.menu({
+                    id : "mnuMenus" + ++this.count
+                });
+            }
         }
         
-        if (typeof index == "number") {
-            //parent.appendChild(
+        if (item) {
+            item.setAttribute("submenu", menu.id || "mnuMenus" + this.count);
+            items[name] = item;
         }
+        else {
+            item = items[name];
+            if (!item) {
+                item = items[name] = new apf.item({
+                    submenu : menu.id,
+                    caption : name.split("/").pop()
+                });
+            }
+            else {
+                item.setAttribute("submenu", menu.id);
+            }
+        }
+        
+        if (typeof index == "number")
+            this.$insertByIndex(parent, item, index);
         
         return menu;
     },
     
-    setMenuItem : function(parent, name, menuItem, index){
-        var items = this.items, menu, menus = this.menus;
+    setMenuItem : function(parent, name, menuItem, index, item){
+        var items = this.items;
         
         item = items[name];
         if (!item) {
-            items[name] = menuItem;
-            item.setAttribute("caption", name.split("/").pop());
+            item = items[name] = menuItem;
+            
+            var itemName = name.split("/").pop();
+            if (itemName != "~")
+                item.setAttribute("caption", itemName);
         }
         
         //index...
-        //parent.appendChild(
+        if (typeof index == "number")
+            this.$insertByIndex(parent, item, index);
+        else
+            parent.appendChild(item);
     },
     
     addItemByPath : function(path, menuItem, index, menu){
-        var steps = path.split("/"), name, item, p = [];
-        var items = this.items, menus = this.menus;
-        for (var i = 0, l = steps; i < l; i++) {
+        var steps = path.split("/"), name, p = [], isLast, menus = this.menus;
+        var curpath;
+        
+        if (!menuItem)
+            menuItem = "";
+        
+        for (var i = 0, l = steps.length; i < l; i++) {
             name = steps[i];
             p.push(name);
+            curpath = p.join("/");
             
             //Menubar button & menu
             if (i == 0 && !menu) {
-                menu = this.setRootMenu(name, i == l - 1 ? index : null)
+                isLast = !steps[i + 1];
+                menu = !isLast && menus[curpath] 
+                  || this.setRootMenu(name, i == l - 1  || isLast ? index : null,
+                    isLast && (!menuItem.nodeFunc && menuItem.item || menuItem.localName == "button" && menuItem),
+                    isLast && (!menuItem.nodeFunc && menuItem.menu || menuItem.localName == "menu" && menuItem));
             }
             //Submenu item & menu
-            else if (i != l - 1) {
-                menu = this.setSubMenu(menu, p.join("/"), i == l - 1 ? index : null);
+            else if (i != l - 1 || !menuItem.nodeFunc) {
+                isLast = steps[i + 1] === "";
+                menu = !isLast && menus[curpath] 
+                  || this.setSubMenu(menu, curpath, i == l - 1 || isLast ? index : null,
+                    isLast && (!menuItem.nodeFunc ? menuItem.item : menuItem.localName != "menu" && menuItem),
+                    isLast && (!menuItem.nodeFunc && menuItem.menu || menuItem.localName == "menu" && menuItem));
             }
             //Leaf
             else {
                 this.setMenuItem(menu, p.join("/"), menuItem, index);
             }
+            
+            if (isLast) break;
         }
         
         return menuItem || menu;

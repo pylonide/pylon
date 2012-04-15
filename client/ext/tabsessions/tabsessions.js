@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var util = require("core/util");
 var settings = require("ext/settings/settings");
 var tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
+var menus = require("ext/menus/menus");
 var css = require("text!ext/save/save.css");
 var markup = require("text!ext/tabsessions/tabsessions.xml");
 var tabbeh = require("ext/tabbehaviors/tabbehaviors");
@@ -37,41 +38,39 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         ide.addEventListener("loadsettings", function(e) {            
             var model = e && e.model || settings.model;
         
-            _self.nodes.push(
-                menus.addItemByPath("View/Tabs/~", new apf.divider(), 400),
-                
-                menus.addItemByPath("View/Tabs/Load Tab Session", [
-                    this.mnuTabLoadSessions = new apf.menu({
-                        onitemclick : function(e){
-                            _self.loadSession(e.relatedNode.value);
-                        }
-                    }),
-                    this.mnuFileLoadSession = new apf.item({
-                        disabled: !sessions.length
-                    })
-                ], 500),
-                    
-                menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
-                    caption : "Save Tab Session",
-                    onclick : function(){
-                        winSaveSessionAs.show();
-                    },
-                    disabled : "{!!!tabEditors.activepage}"
-                }), 600),
-                    
-                menus.addItemByPath("View/Tabs/Delete Tab Session", [    
-                    this.mnuTabDeleteSessions = new apf.menu({
-                        onitemclick : function(e){
-                            _self.removeSession(e.relatedNode.value);
-                        }
-                    }), 
-                    this.mnuFileDeleteSession = new apf.item({
-                        disabled: !sessions.length
-                    })
-                ], 700)
-            );
-            
             var sessions = model.queryNodes("auto/sessions/session");
+        
+            menus.addItemByPath("View/Tabs/~", new apf.divider(), 400);
+            
+            menus.addItemByPath("View/Tabs/Load Tab Session", {
+                menu : this.mnuTabLoadSessions = new apf.menu({
+                    onitemclick : function(e){
+                        _self.loadSession(e.relatedNode.value);
+                    }
+                }),
+                item : this.mnuFileLoadSession = new apf.item({
+                    disabled: !sessions.length
+                })
+            }, 500);
+                
+            var itmSaveSessions = menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
+                caption : "Save Tab Session",
+                onclick : function(){
+                    winSaveSessionAs.show();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            }), 600)
+                
+            menus.addItemByPath("View/Tabs/Delete Tab Session", {    
+                menu : this.mnuTabDeleteSessions = new apf.menu({
+                    onitemclick : function(e){
+                        _self.removeSession(e.relatedNode.value);
+                    }
+                }), 
+                item : this.mnuFileDeleteSession = new apf.item({
+                    disabled: !sessions.length
+                })
+            }, 700);
             
             // get sessionnames to order alfabetically
             var sessionnames = [];
@@ -80,7 +79,6 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             }
             sessionnames.sort();
             
-            var name;
             sessionnames.forEach(function(name) {
                 _self.mnuTabLoadSessions.appendChild(new apf.item({
                     caption : name,
@@ -94,7 +92,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 }));
             });
     
-            _self.hotitems["savetabsession"] = [_self.nodes[4]];
+            _self.hotitems["savetabsession"] = [itmSaveSessions];
         });
     },
     
@@ -223,12 +221,22 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
     },
     
     enable : function(){
+        menus.enable("View/Tabs/~", 400);
+        menus.enable("View/Tabs/Load Tab Session");
+        menus.enable("View/Tabs/Save Tab Session");
+        menus.enable("View/Tabs/Delete Tab Session");
+        
         this.nodes.each(function(item){
             item.enable();
         });
     },
 
     disable : function(){
+        menus.disable("View/Tabs/~", 400);
+        menus.disable("View/Tabs/Load Tab Session");
+        menus.disable("View/Tabs/Save Tab Session");
+        menus.disable("View/Tabs/Delete Tab Session");
+        
         this.nodes.each(function(item){
             item.disable();
         });

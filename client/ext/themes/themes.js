@@ -58,7 +58,7 @@ module.exports = ext.register("ext/themes/themes", {
     init : function(){
         var _self = this;
         
-        menus.addItemByPath("View/Themes", new apf.menu({
+        var mnuThemes = menus.addItemByPath("View/Themes", new apf.menu({
             onitemclick : function(e){
                 _self.set(e.relatedNode.value);
             }

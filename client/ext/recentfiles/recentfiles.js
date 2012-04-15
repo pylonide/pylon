@@ -26,15 +26,19 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         var _self = this;
 
         this.nodes.push(
-            this.menu = menus.addItemByPath("File/Open Recent/", new apf.menu(), 600),
+            this.menu = 
+                menus.addItemByPath("File/Open Recent/", null, 600),
+            
+            this.divider = 
+              menus.addItemByPath("File/Open Recent/~", new apf.divider(), 1000000),
+            
             menus.addItemByPath("File/Open Recent/Clear Menu", new apf.item({
                 onclick : function(){
                     _self.clearMenu();
                 }
-            }), 100),
-            menus.addItemByPath("File/Open Recent/~", new apf.divider(), 200)
+            }), 2000000)
         );
-
+        
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/recentfiles");

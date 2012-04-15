@@ -55,7 +55,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         var mnuContext;
         this.nodes.push(
-            this.mnuTabs = menus.addItemByPath("View/Tabs/", new apf.menu(), 20000),
+            this.mnuTabs = menus.addItemByPath("View/Tabs/", null, 20000),
             menus.addItemByPath("View/Tabs/Close Tab", new apf.item({
                 onclick : function() {
                     _self.closetab(tabEditors.contextPage);

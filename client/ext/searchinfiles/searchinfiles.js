@@ -44,8 +44,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
         var mnuItem;
         this.nodes.push(
-            menus.addItemByPath("Find/~", apf.divider(), 10000),
-            mnuItem = menus.addItemByPath("Find in Files...", new apf.item({
+            menus.addItemByPath("Find/~", new apf.divider(), 10000),
+            mnuItem = menus.addItemByPath("Find/Find in Files...", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(false);
                 }

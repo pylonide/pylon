@@ -70,7 +70,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
 
         this.nodes.push(
-            menus.addItemByPath("View/Show Status Bar", new apf.item({
+            menus.addItemByPath("View/Status Bar", new apf.item({
                 type : "check",
                 checked : "[{require('ext/settings/settings').model}::auto/statusbar/@show]",
                 "onprop.checked" : function(e){

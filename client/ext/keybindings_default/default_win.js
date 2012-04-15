@@ -11,7 +11,7 @@ return keys.onLoad({
     "ext" : {
         "console" : {
             "switchconsole": "Shift-Esc",
-            "show": "Alt-C"
+            "show": "Ctrl-Esc"
         },
         "save" : {
             "quicksave": "Ctrl-S",
