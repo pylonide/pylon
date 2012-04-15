@@ -94,6 +94,7 @@ module.exports = ext.register("ext/console/console", {
     nodes : [],
     minHeight : 150,
     collapsedHeight : 30,
+    $collapsedHeight : 0,
 
     autoOpen : true,
     excludeParent : true,
@@ -343,9 +344,10 @@ module.exports = ext.register("ext/console/console", {
             else {
                 if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
                     _self.show(true);
-                else
-                    _self.hide(true);
             }
+            
+            if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
+                _self.showInput();
         });
     },
 
@@ -355,8 +357,6 @@ module.exports = ext.register("ext/console/console", {
         this.panel = tabConsole;
         this.$cwd  = "/workspace"; // code smell
         
-        _self.$collapsedHeight = _self.collapsedHeight;
-
         apf.importCssString(this.css);
         
         // Append the console window at the bottom below the tab
@@ -519,7 +519,7 @@ module.exports = ext.register("ext/console/console", {
                 height: this.height,
                 dbgVisibleMethod: "show",
                 mnuItemLabel: "check",
-                animFrom: this.collapsedHeight,
+                animFrom: this.$collapsedHeight,
                 animTo: this.height > this.minHeight ? this.height : this.minHeight,
                 steps: 5,
                 animTween: "easeOutQuint"
@@ -530,11 +530,11 @@ module.exports = ext.register("ext/console/console", {
         }
         else {
             cfg = {
-                height: this.collapsedHeight,
+                height: this.$collapsedHeight,
                 dbgVisibleMethod: "hide",
                 mnuItemLabel: "uncheck",
                 animFrom: this.height > this.minHeight ? this.height : this.minHeight,
-                animTo: 0,
+                animTo: this.$collapsedHeight,
                 steps: 5,
                 animTween: "easeInOutCubic"
             };

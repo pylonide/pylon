@@ -149,6 +149,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     docChangeListeners: {},
 
     toggle: function() {
+        ext.initExtension(this);
+        
         if (this.panel.visible)
             this.hide();
         else

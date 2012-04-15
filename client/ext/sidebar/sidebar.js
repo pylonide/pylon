@@ -36,6 +36,13 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 }
             }), 400)
         );
+        
+        ide.addEventListener("loadsettings", function(e){
+            if (apf.isTrue(e.model.queryValue("auto/sidebar/@show"))) {
+                ext.initExtension(_self);
+                navbar.show();
+            }
+        });
     },
     
     init : function(){
