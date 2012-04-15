@@ -96,27 +96,31 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         );
         
         var c = 0;
-        menus.addItemByPath("no run history", new apf.item({ 
+        menus.addItemToMenu(this.mnuRunCfg, new apf.item({ 
+            caption  : "no run history",
             disabled : true,
-        }), c += 100, this.mnuRunCfg);
-        menus.addItemByPath("~", new apf.divider(), c += 100, this.mnuRunCfg);
-        menus.addItemByPath("Configure....", new apf.item({ 
+        }), c += 100);
+        menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
+        menus.addItemToMenu(this.mnuRunCfg, new apf.item({ 
+            caption : "Configure....",
             onclick : function(){
                 _self.showRunConfigs(false);
             }
-        }), c += 100, this.mnuRunCfg);
-        menus.addItemByPath("~", new apf.divider(), c += 100, this.mnuRunCfg);
-        menus.addItemByPath("Run in debug mode", new apf.item({ 
+        }), c += 100);
+        menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
+        menus.addItemToMenu(this.mnuRunCfg, new apf.item({ 
+            caption : "Run in debug mode",
             type    : "check",
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
-        }), c += 100, this.mnuRunCfg);
-        menus.addItemByPath("Auto show & hide debug tools", new apf.item({ 
+        }), c += 100);
+        menus.addItemToMenu(this.mnuRunCfg, new apf.item({ 
+            caption : "Auto show & hide debug tools",
             type    : "check",
             onclick : function(){
                 _self.checkAutoHide();
             },
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
-        }), c += 100, this.mnuRunCfg);
+        }), c += 100);
         
         this.mdlRunConfigurations.addEventListener("afterload", function(e) {
             _self.$populateMenu();

@@ -171,7 +171,7 @@ module.exports = ext.register("ext/menus/menus", {
         
         if (!menuItem)
             menuItem = "";
-        
+            
         for (var i = 0, l = steps.length; i < l; i++) {
             name = steps[i];
             p.push(name);
@@ -205,7 +205,7 @@ module.exports = ext.register("ext/menus/menus", {
     },
     
     addItemToMenu : function(menu, menuItem, index){
-        
+        this.$insertByIndex(menu, menuItem, index);
     },
     
     enableItem : function(path){

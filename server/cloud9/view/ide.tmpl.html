@@ -17,6 +17,7 @@
         //<![CDATA[
 
             window.cloud9config = {
+                startdate: new Date(),
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
                 debug: <%debug%>,
@@ -71,6 +72,10 @@
 //                            loader.animateLoader(20);
                             require(plugins, function(){
                                 ide.dispatchEvent("extload", {modules: plugins});
+
+                                console.log("Total Load Time " 
+                                    + (new Date() - window.cloud9config.startdate) + "ms");
+
                                 ide.addEventListener("$event.extload", function(cb){
                                     cb();
                                 });

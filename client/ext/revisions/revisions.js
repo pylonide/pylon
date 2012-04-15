@@ -210,17 +210,27 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("closefile", this.$onCloseFileFn);
         
         var c = 0;
-        menus.addItemByPath("Save Now", new apf.item({ 
+        menus.addItemToMenu(this.mnuSave, new apf.item({ 
+            caption : "Save Now",
             onclick : function(){
                 Save.quicksave();
             }
-        }), c += 100, this.mnuSave);
-        menus.addItemByPath("~", new apf.divider(), c += 100, this.mnuSave);
-        menus.addItemByPath("About Auto-Save", new apf.item({ 
+        }), c += 100);
+        menus.addItemToMenu(this.mnuSave, new apf.item({ 
+            caption : "Enable Auto-Save",
+            type    : "check",
+            checked : "true", //[{require('core/settings').model}::general/@autosave]",
+            onclick : function(){
+                //@todo
+            }
+        }), c += 100);
+        menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
+        menus.addItemToMenu(this.mnuSave, new apf.item({ 
+            caption : "About Auto-Save",
             onclick : function(){
                 
             }
-        }), c += 100, this.mnuSave);
+        }), c += 100);
 
         this.hotitems.revisions = [mnuItem];
         

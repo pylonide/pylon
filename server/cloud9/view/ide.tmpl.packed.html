@@ -17,6 +17,7 @@
         //<![CDATA[
 
             window.cloud9config = {
+                startdate: new Date(),
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
                 debug: <%debug%>,
@@ -55,10 +56,14 @@
                         aceConfig.set("themePath", "static/build/theme");
 
                         // Load extensions
-                        ide.dispatchEvent("extload", {modules: plugins});
+                        ide.dispatchEvent("extload", {modules: []});
+                        
+                        console.log("Total Load Time " 
+                            + (new Date() - window.cloud9config.startdate) + "ms");
+                            
                         ide.addEventListener("$event.extload", function(cb){
                             cb();
-                         });
+                        });
                     });
 
                     preloaderImgs();
