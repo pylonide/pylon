@@ -40,39 +40,32 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
-
-    <a:menu id="mnuSyntax">
-        <a:item type="radio" value="auto">Auto-Select</a:item>
-        <a:item type="radio" value="text/plain">Plain Text</a:item>
-        <a:divider />
-
-    </a:menu>
 var ModesCaption = {
-    "C#",
-    "C/C++",
-    "Clojure",
-    "CoffeeScript",
-    "Coldfusion",
-    "CSS",
-    "Groovy",
-    "Java",
-    "JavaScript",
-    "Latex",
-    "Script",
-    "Lua",
-    "Markdown",
-    "OCaml",
-    "PHP",
-    "Perl",
-    "Powershell",
-    "Python",
-    "Ruby",
-    "Scala",
-    "SCSS",
-    "SQL",
-    "Textile",
-    "HTML",
-    "XML"
+    "C#" : true,
+    "C/C++" : true,
+    "Clojure" : true,
+    "CoffeeScript" : true,
+    "Coldfusion" : true,
+    "CSS" : true,
+    "Groovy" : true,
+    "Java" : true,
+    "JavaScript" : true,
+    "Latex" : true,
+    "Script" : true,
+    "Lua" : true,
+    "Markdown" : true,
+    "OCaml" : true,
+    "PHP" : true,
+    "Perl" : true,
+    "Powershell" : true,
+    "Python" : true,
+    "Ruby" : true,
+    "Scala" : true,
+    "SCSS" : true,
+    "SQL" : true,
+    "Textile" : true,
+    "HTML" : true,
+    "XML" : true
 }
 
 var SupportedModes = {
@@ -414,7 +407,10 @@ module.exports = ext.register("ext/code/code", {
         c = 0;
         this.menus.push(
             menus.addItemByPath("Edit/Line/Indent", new apf.item({
-                hotkey : apf.isMac ? "Tab" : "Tab" // TODO: Don't hardcode this
+                hotkey : apf.isMac ? "Tab" : "Tab", // TODO: Don't hardcode this
+                onclick : function(){
+                    //The code should go here
+                }
             }), c += 100),
 
             menus.addItemByPath("Edit/Line/Outdent", new apf.item({
@@ -605,8 +601,47 @@ module.exports = ext.register("ext/code/code", {
             
             menus.addItemByPath("View/~", new apf.divider(), 290000),
             
-            menus.addItemByPath("View/Syntax", new apf.item({
-                submenu : "mnuSyntax"
+            menus.addItemByPath("View/Syntax/", new apf.item({
+                onitemclick : function(e) {
+                    var file = ide.getActivePageModel();
+        
+                    if (file) {
+                        var value = e.relatedNode.value;
+        
+                        if (value == "auto")
+                            apf.xmldb.removeAttribute(file, "customtype", "");
+                        else
+                            apf.xmldb.setAttribute(file, "customtype", value);
+        
+                        if (file.getAttribute("customtype")) {
+                            var fileName = file.getAttribute("name");
+        
+                            if (contentTypes["*" + fileName])
+                                delete contentTypes["*" + fileName];
+        
+                            var mime = value.split(";")[0];
+                            var fileExt = (fileName.lastIndexOf(".") != -1) ?
+                                fileName.split(".").pop() : null;
+        
+                            if (fileExt && contentTypes[fileExt] !== mime)
+                                delete contentTypes[fileExt];
+        
+                            var customType = fileExt ?
+                                contentTypes[fileExt] : contentTypes["*" + fileName];
+        
+                            if (!customType)
+                                _self.setCustomType(fileExt ? fileExt : file, mime);
+
+                            ide.dispatchEvent("track_action", {
+                                type: "syntax highlighting",
+                                fileType: fileExt,
+                                fileName: fileName,
+                                mime: mime,
+                                customType: customType
+                            });
+                        }
+                    }
+                }
             }), 300000),
 
             menus.addItemByPath("View/Newline Mode/", null, 310000),
@@ -643,7 +678,30 @@ module.exports = ext.register("ext/code/code", {
                 wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
                 type     : "check",
                 checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
-            }), 600000),
+            }), 600000)
+        );
+        
+        c = 0;
+        this.menus.push(
+            menus.addItemByPath("View/Syntax/Auto-Select", new apf.item({
+                value: "auto"
+            }), c += 100),
+            
+            menus.addItemByPath("View/Syntax/Plain Text", new apf.item({
+                value: "text/plain"
+            }), c += 100)
+        );
+        
+        for (var mode in ModesCaption) {
+            this.menus.push(
+                menus.addItemByPath("View/Syntax/" + mode, new apf.item({
+                    value: contentTypes[mode.toLowerCase()]
+                }), c += 100)
+            )
+        }
+        
+        c = 0;
+        this.menus.push(
             
             /**** Goto ****/
 
@@ -735,46 +793,6 @@ module.exports = ext.register("ext/code/code", {
             caption : "Show Invisibles",
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
         });
-
-        mnuSyntax.onitemclick = function(e) {
-            var file = ide.getActivePageModel();
-
-            if (file) {
-                var value = e.relatedNode.value;
-
-                if (value == "auto")
-                    apf.xmldb.removeAttribute(file, "customtype", "");
-                else
-                    apf.xmldb.setAttribute(file, "customtype", value);
-
-                if (file.getAttribute("customtype")) {
-                    var fileName = file.getAttribute("name");
-
-                    if (contentTypes["*" + fileName])
-                        delete contentTypes["*" + fileName];
-
-                    var mime = value.split(";")[0];
-                    var fileExt = (fileName.lastIndexOf(".") != -1) ?
-                        fileName.split(".").pop() : null;
-
-                    if (fileExt && contentTypes[fileExt] !== mime)
-                        delete contentTypes[fileExt];
-
-                    var customType = fileExt ?
-                        contentTypes[fileExt] : contentTypes["*" + fileName];
-
-                    if (!customType)
-                        _self.setCustomType(fileExt ? fileExt : file, mime);
-                    ide.dispatchEvent("track_action", {
-                        type: "syntax highlighting",
-                        fileType: fileExt,
-                        fileName: fileName,
-                        mime: mime,
-                        customType: customType
-                    });
-                }
-            }
-        };
 
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
