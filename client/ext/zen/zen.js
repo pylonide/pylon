@@ -100,6 +100,7 @@ module.exports = ext.register("ext/zen/zen", {
         });
         
         this.mnuItem = menus.addItemByPath("View/Zen Mode", new apf.item({
+            hotkey : apf.isMac ? "Option-Z" : "Alt-E", // TODO: Don't hardcode this
             caption : "Zen Mode",
             type    : "check",
             onclick : function(){

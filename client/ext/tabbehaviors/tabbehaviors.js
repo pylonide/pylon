@@ -58,16 +58,19 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.mnuTabs = menus.addItemByPath("Goto/Tabs/", null, 302),
             
             menus.addItemByPath("Goto/Tabs/Close Tab", new apf.item({
+                hotkey : apf.isMac ? "Option-W" : "Ctrl-W", // TODO: Don't hardcode this
                 onclick : function() {
                     _self.closetab(tabEditors.contextPage);
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), 100),
             menus.addItemByPath("Goto/Tabs/Close All Tabs", new apf.item({
+                hotkey : apf.isMac ? "Option-Shift-W" : "Ctrl-Shift-W", // TODO: Don't hardcode this
                 onclick : this.closealltabs.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
             }), 200),
             menus.addItemByPath("Goto/Tabs/Close All But Current Tab", new apf.item({
+                hotkey : apf.isMac ? "Option-Command-W" : "Ctrl-Alt-W", // TODO: Don't hardcode this
                 onclick : function() {
                     _self.closeallbutme(tabEditors.$activePage);
                 },

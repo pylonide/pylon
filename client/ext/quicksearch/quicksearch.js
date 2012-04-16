@@ -85,6 +85,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             menus.addItemByPath("Find/~", new apf.divider(), 700),
 
             mnuReplace = menus.addItemByPath("Find/Quick Find", new apf.item({
+                hotkey : apf.isMac ? "Command-F" : "Ctrl-F", // TODO: Don't hardcode this
                 onclick : function() {
                     _self.toggleDialog(1);
                 }

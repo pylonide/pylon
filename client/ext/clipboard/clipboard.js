@@ -29,16 +29,19 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         this.nodes.push(
             menus.addItemByPath("Edit/~", new apf.divider(), 300),
             menus.addItemByPath("Edit/Cut", new apf.item({
+                hotkey : apf.isMac ? "Command-X" : "Ctrl-X", // TODO: Don't hardcode this
                 onclick : function() {
                     _self.cut();
                 }
             }), 400),
             menus.addItemByPath("Edit/Copy", new apf.item({
+                hotkey : apf.isMac ? "Command-C" : "Ctrl-C", // TODO: Don't hardcode this
                 onclick : function() { 
                     _self.copy();
                 }
             }), 500),
             menus.addItemByPath("Edit/Paste", new apf.item({
+                hotkey : apf.isMac ? "Command-V" : "Ctrl-V", // TODO: Don't hardcode this
                 caption : "Paste",
                 onclick : function() { 
                     _self.paste();
