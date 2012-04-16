@@ -15,6 +15,7 @@ var editors = require("ext/editors/editors");
 var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
 var markup = require("text!ext/quicksearch/quicksearch.xml");
+var menus = require("ext/menus/menus");
 
 var oIter, oTotal;
 
@@ -79,6 +80,16 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
             _self.updateBarPosition();
         });
+        
+        this.nodes.push(
+            menus.addItemByPath("Find/~", new apf.divider(), 700),
+
+            mnuReplace = menus.addItemByPath("Find/Quick Find", new apf.item({
+                onclick : function() {
+                    _self.toggleDialog(1);
+                }
+            }), 800)
+        );
     },
 
     init : function(amlNode){

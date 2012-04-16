@@ -159,7 +159,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hook: function() {
         var _self = this;
-return;
+//return;
         var mnuItem;
         this.nodes.push(
             this.mnuSave = new apf.menu({ id : "mnuSave" }),

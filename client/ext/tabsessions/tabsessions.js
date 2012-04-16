@@ -39,9 +39,9 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         
             var sessions = model.queryNodes("auto/sessions/session");
         
-            menus.addItemByPath("View/Tabs/~", new apf.divider(), 700);
+            menus.addItemByPath("Goto/Tabs/~", new apf.divider(), 700);
             
-            menus.addItemByPath("View/Tabs/Load Tab Session", {
+            menus.addItemByPath("Goto/Tabs/Load Tab Session", {
                 menu : _self.mnuTabLoadSessions = new apf.menu({
                     onitemclick : function(e){
                         _self.loadSession(e.relatedNode.value);
@@ -52,7 +52,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 })
             }, 800);
                 
-            var itmSaveSessions = menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
+            var itmSaveSessions = menus.addItemByPath("Goto/Tabs/Save Tab Session", new apf.item({
                 caption : "Save Tab Session",
                 onclick : function(){
                     ext.initExtension(_self);
@@ -61,7 +61,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 disabled : "{!!!tabEditors.activepage}"
             }), 900);
                 
-            menus.addItemByPath("View/Tabs/Delete Tab Session", {    
+            menus.addItemByPath("Goto/Tabs/Delete Tab Session", {    
                 menu : _self.mnuTabDeleteSessions = new apf.menu({
                     onitemclick : function(e){
                         _self.removeSession(e.relatedNode.value);

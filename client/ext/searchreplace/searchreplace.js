@@ -46,14 +46,16 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     _self.toggleDialog(false);
                 }
             }), 100),
-            mnuFind = menus.addItemByPath("Find/Find Next", new apf.item({
+            menus.addItemByPath("Find/Find Next", new apf.item({
+                hotkey : apf.isMac ? "Cmd-G" : "Shift-Cmd-G", // TODO: Don't hardcode this
                 onclick : function() {
-                    _self.findNext();
+                    
                 }
             }), 200),
-            mnuFind = menus.addItemByPath("Find/Find Previous", new apf.item({
+            menus.addItemByPath("Find/Find Previous", new apf.item({
+                hotkey : apf.isMac ? "Shift-Cmd-G" : "Shift-Ctrl-G", // TODO: Don't hardcode this
                 onclick : function() {
-                    _self.findNext(true);
+                    
                 }
             }), 300),
             menus.addItemByPath("Find/~", new apf.divider(), 400),
@@ -62,19 +64,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     _self.toggleDialog(true);
                 }
             }), 500),
-            mnuReplace = menus.addItemByPath("Find/Replace Next", new apf.item({
+            menus.addItemByPath("Find/Replace Next", new apf.item({
                 onclick : function() {
-                    _self.toggleDialog(true);
+                    
                 }
-            }), 600),
-
-            menus.addItemByPath("Find/~", new apf.divider(), 700),
-
-            mnuReplace = menus.addItemByPath("Find/Quick Search", new apf.item({
-                onclick : function() {
-                    _self.toggleDialog(true);
-                }
-            }), 800)
+            }), 600)
         );
 
         this.hotitems.search        = [mnuFind];
@@ -249,7 +243,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         if (!this.$editor)
             return;
         var txt = this.txtFind.getValue();
-        if (!txt)
+        if (!txt) 
             return;
         var options = this.getOptions();
         

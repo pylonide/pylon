@@ -30,6 +30,7 @@ module.exports = ext.register("ext/menus/menus", {
                 align   : "center"
             }), logobar.firstChild.firstChild),
             
+            this.setRootMenu("Project", 10),
             this.setRootMenu("File", 100),
             this.setRootMenu("Edit", 200),
             this.setRootMenu("Selection", 300),
@@ -47,7 +48,6 @@ module.exports = ext.register("ext/menus/menus", {
         }), 2000000);
         
         this.addItemByPath("View/~", new apf.divider(), 9999);
-        this.addItemByPath("View/~", new apf.divider(), 99999);
     },
     
     $insertByIndex : function(parent, item, index) {

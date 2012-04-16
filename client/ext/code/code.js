@@ -40,6 +40,41 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
+
+    <a:menu id="mnuSyntax">
+        <a:item type="radio" value="auto">Auto-Select</a:item>
+        <a:item type="radio" value="text/plain">Plain Text</a:item>
+        <a:divider />
+
+    </a:menu>
+var ModesCaption = {
+    "C#",
+    "C/C++",
+    "Clojure",
+    "CoffeeScript",
+    "Coldfusion",
+    "CSS",
+    "Groovy",
+    "Java",
+    "JavaScript",
+    "Latex",
+    "Script",
+    "Lua",
+    "Markdown",
+    "OCaml",
+    "PHP",
+    "Perl",
+    "Powershell",
+    "Python",
+    "Ruby",
+    "Scala",
+    "SCSS",
+    "SQL",
+    "Textile",
+    "HTML",
+    "XML"
+}
+
 var SupportedModes = {
     "application/javascript": "javascript",
     "application/json": "json",
@@ -491,26 +526,9 @@ module.exports = ext.register("ext/code/code", {
                 hotkey : apf.isMac ? "Esc" : "Esc" // TODO: Don't hardcode this
             }), c += 100),
             
-            /* {CTRL+ALT+UP} Put an extra cursor on the line above
-* {CTRL+ALT+DOWN} Put an extra cursor on the line below
-* {CTRL+ALT+SHIFT+UP} Move the cursor up, but introduce a new cursor in the place of the current one
-* {CTRL+ALT+SHIFT+DOWN} Move the cursor down, but introduce a new cursor in the place of the current one
-* {CTRL+ALT+RIGHT} Add the next instance of the selected text to your selection
-* {CTRL+ALT+LEFT} Add the previous instance of the selected text to your selection
-* {CTRL+ALT+SHIFT+RIGHT} Select the next instance of the selected text
-* {CTRL+ALT+SHIFT+LEFT} Select the previous instance of the selected text
-* {CTRL+SHIFT+L} Merge the selected parts by creating a new selection that ranges from the start of the first selection to the end of the last one
-*/
-
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
-
-            menus.addItemByPath("Selection/Multiple Cursor Down", new apf.item({
-                hotkey : apf.isMac ? "Ctrl-Alt-Down" : "" // TODO: Don't hardcode this
-            }), c += 100),
-
-            menus.addItemByPath("Selection/Multiple Cursor Up", new apf.item({
-                hotkey : apf.isMac ? "Ctrl-Alt-Up" : "" // TODO: Don't hardcode this
-            }), c += 100),
+            
+            menus.addItemByPath("Selection/Multiple Selections/", null, c += 100),
 
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
 
@@ -540,14 +558,52 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("Selection/Select to Document End", new apf.item({
                 hotkey : apf.isMac ? "Command-Shift-Down" : "Ctrl-Shift-End|Alt-Shift-Down" // TODO: Don't hardcode this
+            }), c += 100)
+        );
+        
+        c = 0;
+        this.menus.push(
+            menus.addItemByPath("Selection/Multiple Selections/Add Cursor Up", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-Alt-Up" : "" // TODO: Don't hardcode this
             }), c += 100),
             
-            /**** View ****/
+            menus.addItemByPath("Selection/Multiple Selections/Add Cursor Down", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-Alt-Down" : "" // TODO: Don't hardcode this
+            }), c += 100),
+            
+            menus.addItemByPath("Selection/Multiple Selections/Move Active Cursor Up", new apf.item({
+                hotkey : apf.isMac ? "Shift-Ctrl-Alt-Up" : "" // TODO: Don't hardcode this
+            }), c += 100),
+            
+            menus.addItemByPath("Selection/Multiple Selections/Move Active Cursor Down", new apf.item({
+                hotkey : apf.isMac ? "Shift-Ctrl-Alt-Down" : "" // TODO: Don't hardcode this
+            }), c += 100),
 
+            menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
+            
+            menus.addItemByPath("Selection/Multiple Selections/Add Next Selection Match", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-Alt-Right" : "" // TODO: Don't hardcode this
+            }), c += 100),
+            
+            menus.addItemByPath("Selection/Multiple Selections/Add Previous Selection Match", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-Alt-Left" : "" // TODO: Don't hardcode this
+            }), c += 100),
+
+            menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
+            
+            menus.addItemByPath("Selection/Multiple Selections/Merge Selection Range", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-Shift-L" : "" // TODO: Don't hardcode this
+            }), c += 100)
+        );
+            
+        /**** View ****/
+        this.menus.push(
             menus.addItemByPath("View/Gutter", new apf.item({
                 type    : "check",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
             }), 500),
+            
+            menus.addItemByPath("View/~", new apf.divider(), 290000),
             
             menus.addItemByPath("View/Syntax", new apf.item({
                 submenu : "mnuSyntax"
@@ -556,18 +612,23 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("View/Newline Mode/", null, 310000),
 
             menus.addItemByPath("View/Newline Mode/Auto", new apf.item({
-                type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+                type    : "radio",
+                value   : "auto",
+                selected : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
             }), 100),
+            
+            menus.addItemByPath("View/Newline Mode/~", new apf.divider(), 110),
 
             menus.addItemByPath("View/Newline Mode/Windows (CRLF)", new apf.item({
-                type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+                type    : "radio",
+                value   : "windows",
+                selected : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
             }), 200),
 
             menus.addItemByPath("View/Newline Mode/Unix (LF)", new apf.item({
-                type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+                type    : "radio",
+                value   : "unix",
+                selected : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
             }), 300),
 
             menus.addItemByPath("View/~", new apf.divider(), 400000),

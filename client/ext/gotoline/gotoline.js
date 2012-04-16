@@ -158,7 +158,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var maxTop = aceHtml.offsetHeight - 100;
 
         editor.ceEditor.parentNode.appendChild(winGotoLine);
-        winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1] - 5));
+        winGotoLine.setAttribute("top", Math.max(0, Math.min(maxTop, pos.pageY - epos[1] - 5)));
         winGotoLine.setAttribute("left", -60);
 
         winGotoLine.show();

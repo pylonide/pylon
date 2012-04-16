@@ -55,18 +55,19 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         var mnuContext;
         this.nodes.push(
-            this.mnuTabs = menus.addItemByPath("View/Tabs/", null, 20000),
-            menus.addItemByPath("View/Tabs/Close Tab", new apf.item({
+            this.mnuTabs = menus.addItemByPath("Goto/Tabs/", null, 302),
+            
+            menus.addItemByPath("Goto/Tabs/Close Tab", new apf.item({
                 onclick : function() {
                     _self.closetab(tabEditors.contextPage);
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), 100),
-            menus.addItemByPath("View/Tabs/Close All Tabs", new apf.item({
+            menus.addItemByPath("Goto/Tabs/Close All Tabs", new apf.item({
                 onclick : this.closealltabs.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
             }), 200),
-            menus.addItemByPath("View/Tabs/Close All But Current Tab", new apf.item({
+            menus.addItemByPath("Goto/Tabs/Close All But Current Tab", new apf.item({
                 onclick : function() {
                     _self.closeallbutme(tabEditors.$activePage);
                 },
@@ -686,7 +687,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     destroy : function(){
-        menus.remove("View/Tabs");
+        menus.remove("Goto/Tabs");
         menus.remove(mnuContextTabs);
         
         this.nodes.each(function(item){

@@ -107,7 +107,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         });
         
         this.nodes.push(
-            menus.addItemByPath("View/Dock Panels/", null, 30000),
+            menus.addItemByPath("View/Dock Panels/", null, 150),
             
             menus.addItemByPath("View/Dock Panels/Restore Default", new apf.item({
                 onclick : function(){

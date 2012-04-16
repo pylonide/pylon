@@ -285,9 +285,7 @@ module.exports = ext.register("ext/panels/panels", {
                         _self.deactivate(null, true);
                 }
               }), 100),
-            menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200),
-            
-            menus.addItemByPath("View/Tabs/", null, 20000)
+            menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
         );
         
         colLeft.addEventListener("resize", function(){
@@ -371,8 +369,7 @@ module.exports = ext.register("ext/panels/panels", {
     },
     
     destroy : function(){
-        menus.remove("View/Tabs");
-        menus.remove("View/~");
+        menus.remove("View/~", 200);
         
         this.nodes.each(function(item){
             item.destroy(true, true);
