@@ -155,6 +155,7 @@ module.exports = ext.register("ext/code/code", {
     deps    : [editors],
 
     nodes : [],
+    menus : [],
 
     fileExtensions : Object.keys(contentTypes),
     supportedModes: Object.keys(SupportedModes),
@@ -364,32 +365,9 @@ module.exports = ext.register("ext/code/code", {
             if(typeof ceEditor != "undefined")
                 ceEditor.afterOpenFile(ceEditor.getSession());
         });
-    },
-
-    init: function(amlPage) {
-        amlPage.appendChild(ceEditor);
-        ceEditor.show();
-
-        this.ceEditor = this.amlEditor = ceEditor;
-        ceEditor.$editor.commands = this.commandManager;
-        ceEditor.$editor.commands.addCommands(MultiSelectCommands);
-
-        // preload common language modes
-        var noop = function() {}; 
-        ceEditor.getMode("javascript", noop);
-        ceEditor.getMode("html", noop);
-        ceEditor.getMode("css", noop);
-
-        var _self = this;
-
-        var menuShowInvisibles = new apf.item({
-            type    : "check",
-            caption : "Show Invisibles",
-            checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-        });
-
-        this.nodes.push(
-            /*menus.addItemByPath("Edit/~", new apf.divider(), 700),
+        
+        this.menus.push(
+            menus.addItemByPath("Edit/~", new apf.divider(), 700),
 
             menus.addItemByPath("Edit/Line/", null, 800),
 
@@ -540,7 +518,7 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("Selection/Select to Document End", new apf.item({
                 
             }), 1200),
-*/
+
             menus.addItemByPath("View/Gutter", new apf.item({
                 type    : "check",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
@@ -550,7 +528,6 @@ module.exports = ext.register("ext/code/code", {
                 submenu : "mnuSyntax"
             }), 300000),
 
-            /* broken for some reason
             menus.addItemByPath("View/Newline Mode/", null, 310000),
 
             menus.addItemByPath("View/Newline Mode/Auto", new apf.item({
@@ -566,7 +543,7 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("View/Newline Mode/Unix (LF)", new apf.item({
                 type    : "check",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
-            }), 300),*/
+            }), 300),
 
             menus.addItemByPath("View/~", new apf.divider(), 400000),
             
@@ -580,7 +557,7 @@ module.exports = ext.register("ext/code/code", {
                 wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
                 type     : "check",
                 checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
-            }), 600000)/*,
+            }), 600000),
 
             menus.addItemByPath("Goto/~", new apf.divider(), 300),
 
@@ -646,8 +623,31 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({
 
-            }), 2000)*/
+            }), 2000)
         );
+    },
+
+    init: function(amlPage) {
+        amlPage.appendChild(ceEditor);
+        ceEditor.show();
+
+        this.ceEditor = this.amlEditor = ceEditor;
+        ceEditor.$editor.commands = this.commandManager;
+        ceEditor.$editor.commands.addCommands(MultiSelectCommands);
+
+        // preload common language modes
+        var noop = function() {}; 
+        ceEditor.getMode("javascript", noop);
+        ceEditor.getMode("html", noop);
+        ceEditor.getMode("css", noop);
+
+        var _self = this;
+
+        var menuShowInvisibles = new apf.item({
+            type    : "check",
+            caption : "Show Invisibles",
+            checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+        });
 
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
@@ -755,17 +755,29 @@ module.exports = ext.register("ext/code/code", {
 
     enable : function() {
         this.nodes.each(function(item){
+            item.enable();
+        });
+        
+        this.nodes.each(function(item){
             item.show();
         });
     },
 
     disable : function() {
+        this.menus.each(function(item){
+            item.disable();
+        });
+        
         this.nodes.each(function(item){
             item.hide();
         });
     },
 
     destroy : function(){
+        this.menus.each(function(item){
+            item.destroy(true, true);
+        });
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
