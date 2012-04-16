@@ -1,3 +1,4 @@
+var connect = require("connect");
 
 module.exports = function setup(options, imports, register) {
 

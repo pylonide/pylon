@@ -23,7 +23,6 @@ var NpmPlugin = function(ide, workspace) {
     this.workspaceId = workspace.workspaceId;
     this.hooks = ["command"];
     this.name = name;
-    this.processCount = 0;
 };
 
 util.inherits(NpmPlugin, Plugin);
@@ -33,12 +32,6 @@ util.inherits(NpmPlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on(this.workspaceId + "::npm", function(msg) {
-            if (msg.type == "npm-start")
-                self.processCount += 1;
-
-            if (msg.type == "npm-exit")
-                self.processCount -= 1;
-
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
     };
@@ -114,8 +107,9 @@ util.inherits(NpmPlugin, Plugin);
         return c9util.extend(struct, map || {});
     };
 
-    this.canShutdown = function() {
-        return this.processCount === 0;
+    this.dispose = function(callback) {
+        // TODO kill all running processes!
+        callback();
     };
 
 }).call(NpmPlugin.prototype);

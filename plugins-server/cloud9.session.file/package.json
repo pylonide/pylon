@@ -9,7 +9,7 @@
     },
 
     "plugin": {
-        "provides": ["session-store"],
+        "provides": ["session"],
         "consumes": [
             "connect"
         ]

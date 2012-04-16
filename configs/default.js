@@ -123,12 +123,17 @@ module.exports = {
                 urlPrefix: fsUrl
             },
             "./cloud9.socket",
+/*
             {
                 packagePath: "./cloud9.session",
                 key: "cloud9.sid." + port,
                 secret: "1234"
-            }, {
+            },
+*/
+            {
                 packagePath: "./cloud9.session.file",
+                key: "cloud9.sid",
+                secret: "1234",
                 sessionsPath: __dirname + "/../.architect/sessions"
             },
              "./cloud9.permissions",

@@ -29,7 +29,6 @@ var NodeRuntimePlugin = function(ide, workspace) {
 
     this.hooks = ["command"];
     this.name = name;
-    this.processCount = 0;
 };
 
 util.inherits(NodeRuntimePlugin, Plugin);
@@ -44,12 +43,6 @@ util.inherits(NodeRuntimePlugin, Plugin);
 
             if (type == "node-start" || type == "node-exit")
                 self.workspace.getExt("state").publishState();
-
-            if (msg.type == "node-start")
-                self.processCount += 1;
-
-            if (msg.type == "node-exit")
-                self.processCount -= 1;
 
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
@@ -90,7 +83,7 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 return self.error(err, 1, message, client);
 
             if (state.processRunning)
-                return self.error("Child process already running!", 1, message);
+                return self.$error("Child process already running!", 1, message);
 
             self.pm.spawn("node", {
                 file: file,
@@ -111,7 +104,7 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 return self.error(err, 1, message, client);
 
             if (state.processRunning)
-                return self.error("Child process already running!", 1, message);
+                return self.$error("Child process already running!", 1, message);
 
             self.pm.spawn("node-debug", {
                 file: file,
@@ -133,8 +126,8 @@ util.inherits(NodeRuntimePlugin, Plugin);
         });
     };
 
-    this.canShutdown = function() {
-        return this.processCount === 0;
+    this.dispose = function(callback) {
+        callback && callback();
     };
 
 }).call(NodeRuntimePlugin.prototype);

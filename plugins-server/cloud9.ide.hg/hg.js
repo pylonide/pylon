@@ -27,8 +27,6 @@ var HgPlugin = function(ide, workspace) {
     this.hooks      = ["command"];
     this.name       = name;
     this.banned     = ["serve"];
-
-    this.processCount = 0;
 };
 
 util.inherits(HgPlugin, Plugin);
@@ -38,12 +36,6 @@ util.inherits(HgPlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on(this.channel, function(msg) {
-            if (msg.type == "shell-start")
-                self.processCount += 1;
-
-            if (msg.type == "shell-exit")
-                self.processCount -= 1;
-
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
     };
@@ -84,17 +76,17 @@ util.inherits(HgPlugin, Plugin);
         return true;
     };
 
-    var hghelp = null;
-    var commandsMap = {
-        "default": {
-            "commands": {
-                "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
+    var hghelp     = null,
+        commandsMap = {
+            "default": {
+                "commands": {
+                    "[PATH]": {"hint": "path pointing to a folder or file. Autocomplete with [TAB]"}
+                }
             }
-        }
-    };
+        };
 
     this.$commandHints = function(commands, message, callback) {
-        var self = this;
+        var _self = this;
 
         if (!hghelp) {
             hghelp = {};
@@ -118,9 +110,9 @@ util.inherits(HgPlugin, Plugin);
                 };
 
                 out.replace(/([\w]+)[\s]{3,5}([\w].+)\n/gi, function(m, sub, hint) {
-                    if (self.banned.indexOf(sub) > -1)
+                    if (_self.banned.indexOf(sub) > -1)
                         return;
-                    hghelp.hg.commands[sub] = self.augmentCommand(sub, {"hint": hint});
+                    hghelp.hg.commands[sub] = _self.augmentCommand(sub, {"hint": hint});
                 });
                 onfinish();
             }, null, null);
@@ -140,8 +132,9 @@ util.inherits(HgPlugin, Plugin);
         return c9util.extend(struct, map || {});
     };
 
-    this.canShutdown = function() {
-        return this.processCount === 0;
+    this.dispose = function(callback) {
+        // TODO kill all running processes!
+        callback();
     };
 
 }).call(HgPlugin.prototype);
