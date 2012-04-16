@@ -371,12 +371,12 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 revision.contributors = [user.data.email];
             }
 
-            self.pushPatch(path, revision, currentDoc, callback);
+            self.pushPatch(path, revision, callback);
         });
     };
 
     this.saveRevision = function(path, revision, callback) {
-        this.pushPatch(path, revision, revision.lastContent, callback);
+        this.pushPatch(path, revision, callback);
     };
 
     /**
@@ -389,18 +389,16 @@ require("util").inherits(RevisionsPlugin, Plugin);
      *
      * Push a new revision into the stack and broadcast it to clients.
      **/
-    this.pushPatch = function(path, revision, currentDoc, callback) {
+    this.pushPatch = function(path, revision, callback) {
         var self = this;
         this.getRevisions(path, function(err, revObj) {
             if (err)
                 return callback(new Error("Couldn't retrieve revisions for " + path));
-
-            var doc = currentDoc || self.getCurrentDoc(path);
-            revObj.lastContent = doc;
+                
             revObj.revisions.push(revision);
 
-            self.broadcastRevisions.call(self, revObj);
             self.saveToDisk(path, callback);
+            self.broadcastRevisions.call(self, revObj);
         });
     };
 

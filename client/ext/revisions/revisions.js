@@ -52,7 +52,6 @@ Array.prototype.__reduce = function(func, initial) {
     return value;
 };
 
-
 /**
  * addCodeMarker(editor, type, range)
  * - session(Object): Editor session where we should put the markers
