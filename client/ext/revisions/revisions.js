@@ -268,7 +268,7 @@ return;
     setSaveButtonCaption: function(){
         if (!tabEditors.activepage)
             btnSave.setCaption("")
-        else if (tabEditors.getPage().$model.queryValue("@changed") == 1)
+        else if (tabEditors.getPage().getModel().queryValue("@changed") == 1)
             btnSave.setCaption("Saving...")
         else
             btnSave.setCaption("All changes saved")
@@ -468,7 +468,6 @@ return;
 
                 this.buildRevisionsList(message.body);
                 this.populateModel();
-                this.$rescanCompactNodes();
 
                 break;
 
@@ -1069,18 +1068,6 @@ return;
         this.populateModel();
     },
 
-    $rescanCompactNodes: function() {
-        var length = this.compactTimestamps && this.compactTimestamps.length;
-        if (!length || !self.lstRevisions)
-            return;
-
-        for (var i = 0; i < length; i++) {
-            var rev = this.$getRevisionNode(this.compactTimestamps[i]);
-            var htmlNode = apf.xmldb.findHtmlNode(rev, lstRevisions);
-            apf.setStyleClass(htmlNode, "rev-compact");
-        }
-    },
-
     show: function() {
         ext.initExtension(this);
 
@@ -1096,7 +1083,6 @@ return;
         this.panel.show();
 
         this.populateModel();
-        this.$rescanCompactNodes();
 
         var all = this.allTimestamps;
         var cmp = this.compactTimestamps;
@@ -1155,32 +1141,26 @@ return;
 
     enableEventListeners: function() {
         if (this.$onMessageFn) {
-            ide.removeEventListener("socketMessage", this.$onMessageFn);
             ide.addEventListener("socketMessage", this.$onMessageFn);
         }
 
         if (this.$onOpenFileFn) {
-            ide.removeEventListener("afteropenfile", this.$onOpenFileFn);
             ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         }
 
         if (this.$onCloseFileFn) {
-            ide.removeEventListener("closefile", this.$onCloseFileFn);
             ide.addEventListener("closefile", this.$onCloseFileFn);
         }
 
         if (this.$onFileSaveFn) {
-            ide.removeEventListener("afterfilesave", this.$onFileSaveFn);
             ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         }
 
         if (this.$onSwitchFileFn) {
-            ide.removeEventListener("editorswitch", this.$onSwitchFileFn);
             ide.addEventListener("editorswitch", this.$onSwitchFileFn);
         }
 
         if (this.$afterSelectFn) {
-            lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
             lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
         }
     },
