@@ -81,15 +81,18 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             _self.updateBarPosition();
         });
         
+        var mnuItem;
         this.nodes.push(
             menus.addItemByPath("Find/~", new apf.divider(), 700),
 
-            mnuReplace = menus.addItemByPath("Find/Quick Find", new apf.item({
+            mnuItem = menus.addItemByPath("Find/Quick Find", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(1);
                 }
             }), 800)
         );
+        
+        this.hotitems.quicksearch = [mnuItem];
     },
 
     init : function(amlNode){
