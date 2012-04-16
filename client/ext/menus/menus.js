@@ -20,6 +20,7 @@ module.exports = ext.register("ext/menus/menus", {
     items   : {},
     menus   : {},
     count   : 0,
+    debug   : 1,
 
     init : function(){
         this.nodes.push(
@@ -92,7 +93,7 @@ module.exports = ext.register("ext/menus/menus", {
                     skin    : "c9-menu-btn",
                     submenu : menu.id,
                     margin  : "1 0 0 0",
-                    caption : name
+                    caption : (this.debug ? "\\[" + index + "\\] " : "") + name
                 });
             }
         }
@@ -132,7 +133,8 @@ module.exports = ext.register("ext/menus/menus", {
         
         if (item) {
             item.setAttribute("submenu", menu.id);
-            item.setAttribute("caption", name.split("/").pop());
+            item.setAttribute("caption", 
+                (this.debug ? "[" + index + "]" : "") + name.split("/").pop());
             items[name] = item;
         }
         else {
@@ -140,7 +142,8 @@ module.exports = ext.register("ext/menus/menus", {
             if (!item) {
                 item = items[name] = new apf.item({
                     submenu : menu.id,
-                    caption : name.split("/").pop()
+                    caption : (this.debug ? "\\[" + index + "\\] " : "") 
+                                + name.split("/").pop()
                 });
             }
             else {
@@ -165,7 +168,8 @@ module.exports = ext.register("ext/menus/menus", {
             item = items[name] = menuItem;
             
             if (itemName != "~")
-                item.setAttribute("caption", itemName);
+                item.setAttribute("caption", 
+                    (this.debug ? "\\[" + index + "\\] " : "") + itemName);
         }
         
         //index...
