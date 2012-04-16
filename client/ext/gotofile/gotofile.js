@@ -116,7 +116,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                     txtGoToFile.focus();
             }
             else if (e.keyCode == 13) {
-                _self.openFile();
+                _self.openFile(true);
                 return false;
             }
             else if (apf.isCharacter(e.keyCode)) {

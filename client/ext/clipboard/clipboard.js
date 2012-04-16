@@ -69,7 +69,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     copy: function() {
-       if (apf.document.activeElement == trFiles) {
+        if (apf.document.activeElement == trFiles) {
             apf.clipboard.copySelection(trFiles);
         }
         else {

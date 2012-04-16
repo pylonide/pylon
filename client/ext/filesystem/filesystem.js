@@ -442,10 +442,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         });
                     }
                     else {
-                        // populate the document
-                        doc.setValue(data);
-                        // fire event
-                        ide.dispatchEvent("afteropenfile", { doc: doc, node: node, editor: editor });
+                        //doc.addEventListener("editor.ready", function(){
+                            // populate the document
+                            doc.setValue(data);
+                            
+                            // fire event
+                            ide.dispatchEvent("afteropenfile", { doc: doc, node: node, editor: editor });
+                        //});
                     }
                 };
                 

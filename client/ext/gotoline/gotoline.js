@@ -58,7 +58,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             }
         });
 
-        this.hotitems.gotoline = [this.nodes[1]];
+        this.hotitems.gotoline = [this.nodes[0]];
     },
 
     init : function() {

@@ -53,9 +53,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     init : function(amlNode){
         var _self = this;
 
-        var mnuContext;
+        var mnuContext, itmLeft, itmRight, itmStackLeft, itmStackRight;
         this.nodes.push(
-            this.mnuTabs = menus.addItemByPath("Goto/Tabs/", null, 302),
+            this.mnuTabs = menus.addItemByPath("View/Tabs/", null, 175),
             
             menus.addItemByPath("Goto/Tabs/Close Tab", new apf.item({
                 hotkey : apf.isMac ? "Option-W" : "Ctrl-W", // TODO: Don't hardcode this
@@ -81,13 +81,25 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
             menus.addItemByPath("Goto/Switch File/", null, 301),
 
-            menus.addItemByPath("Goto/Switch File/Next File", new apf.item({
-                hotkey : apf.isMac ? "Option-Tab" : "Ctrl-Tab" // TODO: Don't hardcode this
+            itmLeft = menus.addItemByPath("Goto/Switch File/Next File", new apf.item({
+                hotkey : apf.isMac ? "Option-Tab" : "Ctrl-Tab", // TODO: Don't hardcode this,
+                onclick : function(){ _self.gototabright(); }
             }), 100),
 
-            menus.addItemByPath("Goto/Switch File/Previous File", new apf.item({
-                hotkey : apf.isMac ? "Option-Shift-Tab" : "Ctrl-Shift-Tab" // TODO: Don't hardcode this
+            itmRight = menus.addItemByPath("Goto/Switch File/Previous File", new apf.item({
+                hotkey : apf.isMac ? "Option-Shift-Tab" : "Ctrl-Shift-Tab", // TODO: Don't hardcode this
+                onclick : function(){ _self.gototableft(); }
             }), 200),
+            
+            menus.addItemByPath("Goto/Switch File/~", new apf.divider(), 300),
+
+            itmStackLeft = menus.addItemByPath("Goto/Switch File/Next File in Stack", new apf.item({
+                onclick : function(){ _self.nexttab(); }
+            }), 400),
+
+            itmStackRight = menus.addItemByPath("Goto/Switch File/Previous File in Stack", new apf.item({
+                onclick : function(){ _self.previoustab(); }
+            }), 500),
             
             mnuContext = new apf.menu({id : "mnuContextTabs"})
         );
@@ -136,12 +148,21 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.hotitems.closealltotheright = [itmCloseRight];
         this.hotitems.closealltotheleftt = [itmCloseLeft];
 
+        this.hotitems.gototabright       = [itmRight];
+        this.hotitems.gototableft        = [itmLeft];
+        this.hotitems.nexttab            = [itmStackRight];
+        this.hotitems.previoustab        = [itmStackLeft];
+
         mnuContextTabs.addEventListener("prop.visible", function(e) {
             // If there are only 0 or 1 pages, disable both and return
             if (tabEditors.getPages().length <= 1) {
                 itmCloseOther.setAttribute('disabled', true);
                 itmCloseRight.setAttribute('disabled', true);
                 itmCloseLeft.setAttribute('disabled', true);
+                itmRight.setAttribute('disabled', true);
+                itmLeft.setAttribute('disabled', true);
+                itmStackRight.setAttribute('disabled', true);
+                itmStackLeft.setAttribute('disabled', true);
                 return;
             }
 
@@ -152,6 +173,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             itmCloseOther.setAttribute('disabled', false);
             itmCloseLeft.setAttribute('disabled', false);
             itmCloseRight.setAttribute('disabled', false);
+            itmRight.setAttribute('disabled', false);
+            itmLeft.setAttribute('disabled', false);
+            itmStackRight.setAttribute('disabled', false);
+            itmStackLeft.setAttribute('disabled', false);
 
             // if last tab, remove "close to the right"
             if (page.nextSibling.localName !== "page") {
@@ -690,7 +715,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     destroy : function(){
-        menus.remove("Goto/Tabs");
+        menus.remove("View/Tabs");
         menus.remove(mnuContextTabs);
         
         this.nodes.each(function(item){
