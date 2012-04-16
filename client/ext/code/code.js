@@ -155,6 +155,7 @@ module.exports = ext.register("ext/code/code", {
     deps    : [editors],
 
     nodes : [],
+    menus : [],
 
     fileExtensions : Object.keys(contentTypes),
     supportedModes: Object.keys(SupportedModes),
@@ -364,6 +365,265 @@ module.exports = ext.register("ext/code/code", {
             if(typeof ceEditor != "undefined")
                 ceEditor.afterOpenFile(ceEditor.getSession());
         });
+        
+        this.menus.push(
+            menus.addItemByPath("Edit/~", new apf.divider(), 700),
+
+            menus.addItemByPath("Edit/Line/", null, 800),
+
+            menus.addItemByPath("Edit/Line/Indent", new apf.item({
+                hotkey : apf.isMac ? "Tab" : "Tab" // TODO: Don't hardcode this
+            }), 100),
+
+            menus.addItemByPath("Edit/Line/Outdent", new apf.item({
+                hotkey : apf.isMac ? "Shift-Tab" : "Shift-Tab" // TODO: Don't hardcode this
+            }), 200),
+
+            menus.addItemByPath("Edit/Line/Move Line Up", new apf.item({
+                hotkey : apf.isMac ? "Option-Up" : "Alt-Up" // TODO: Don't hardcode this
+            }), 300),
+
+            menus.addItemByPath("Edit/Line/Move Line Down", new apf.item({
+                hotkey : apf.isMac ? "Option-Down" : "Alt-Down" // TODO: Don't hardcode this
+            }), 400),
+
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), 500),
+
+            menus.addItemByPath("Edit/Line/Copy Lines Up", new apf.item({
+                hotkey : apf.isMac ? "Command-Option-Up" : "Ctrl-Alt-Up" // TODO: Don't hardcode this
+            }), 700),
+
+            menus.addItemByPath("Edit/Line/Copy Lines Down", new apf.item({
+                hotkey : apf.isMac ? "Command-Option-Down" : "Ctrl-Alt-Down" // TODO: Don't hardcode this
+            }), 800),
+
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), 900),
+
+            menus.addItemByPath("Edit/Line/Select to Line End", new apf.item({
+                hotkey : apf.isMac ? "Shift-End" : "Shift-End" // TODO: Don't hardcode this
+            }), 1000),
+
+            menus.addItemByPath("Edit/Line/Select to Line Start", new apf.item({
+                hotkey : apf.isMac ? "Shift-Home" : "Shift-Home" // TODO: Don't hardcode this
+            }), 1100),
+
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), 1200),
+
+            menus.addItemByPath("Edit/Line/Remove Line", new apf.item({
+                hotkey : apf.isMac ? "Command-D" : "Ctrl-D" // TODO: Don't hardcode this
+            }), 1300),
+
+            menus.addItemByPath("Edit/Line/Remove to Line End", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-K" : "" // TODO: Don't hardcode this
+            }), 1400),
+
+            menus.addItemByPath("Edit/Line/Remove to Line Start", new apf.item({
+                hotkey : apf.isMac ? "Option-Backspace" : "" // TODO: Don't hardcode this
+            }), 1500),
+
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), 1600),
+
+            menus.addItemByPath("Edit/Line/Split Line", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-O" : "" // TODO: Don't hardcode this
+            }), 1700),
+
+            menus.addItemByPath("Edit/Comment/", null, 900),
+
+            menus.addItemByPath("Edit/Comment/Toggle Comment", new apf.item({
+                hotkey : apf.isMac ? "Command-7" : "Ctrl-7" // TODO: Don't hardcode this
+            }), 901),
+
+            menus.addItemByPath("Edit/Comment/", null, 999),
+
+            menus.addItemByPath("Edit/Text/", null, 1000),
+
+            menus.addItemByPath("Edit/Text/Remove Word Right", new apf.item({
+                hotkey : apf.isMac ? "Alt-Delete" : "" // TODO: Don't hardcode this
+            }), 100),
+
+            menus.addItemByPath("Edit/Text/Remove Word Left", new apf.item({
+                hotkey : apf.isMac ? "Alt-Backspace|Ctrl-Alt-Backspace" : "" // TODO: Don't hardcode this
+            }), 200),
+
+            menus.addItemByPath("Edit/Text/~", new apf.divider(), 300),
+
+            menus.addItemByPath("Edit/Text/Transpose Letters", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-T" : "Ctrl-T" // TODO: Don't hardcode this
+            }), 400),
+
+            menus.addItemByPath("Edit/Code Folding/", null, 1100),
+
+            /*menus.addItemByPath("Edit/Code Folding/Fold", new apf.item({
+                hotkey : apf.isMac ? "Tab" : "Tab" // TODO: Don't hardcode this
+            }), 100),
+
+            menus.addItemByPath("Edit/Code Folding/Unfold", new apf.item({
+                hotkey : apf.isMac ? "Tab" : "Tab" // TODO: Don't hardcode this
+            }), 200),*/
+
+            menus.addItemByPath("Edit/Code Folding/Fold All", new apf.item({
+                hotkey : apf.isMac ? "Option-0" : "Alt-0" // TODO: Don't hardcode this
+            }), 100),
+
+            menus.addItemByPath("Edit/Code Folding/Unfold All", new apf.item({
+                hotkey : apf.isMac ? "Option-Shift-0" : "Alt-Shift-0" // TODO: Don't hardcode this
+            }), 200),
+                
+            menus.addItemByPath("Edit/Change Case/", null, 1200),
+
+            menus.addItemByPath("Edit/Change Case/Change to Upper Case", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-U" : "Ctrl-U" // TODO: Don't hardcode this
+            }), 100),
+
+            menus.addItemByPath("Edit/Change Case/Change to Lower Case", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-Shift-U" : "Ctrl-Shift-U" // TODO: Don't hardcode this
+            }), 200),
+
+            menus.addItemByPath("Selection/Select All", new apf.item({
+                hotkey : apf.isMac ? "Command-A" : "Ctrl-A" // TODO: Don't hardcode this
+            }), 100),
+
+            menus.addItemByPath("Selection/~", new apf.divider(), 200),
+
+            menus.addItemByPath("Selection/Multiple Cursor Down", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-Alt-Down" : "" // TODO: Don't hardcode this
+            }), 280),
+
+            menus.addItemByPath("Selection/Multiple Cursor Up", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-Alt-Up" : "" // TODO: Don't hardcode this
+            }), 290),
+
+            menus.addItemByPath("Selection/~", new apf.divider(), 299),
+
+            menus.addItemByPath("Selection/Center Selection", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-L" : "" // TODO: Don't hardcode this
+            }), 300),
+
+            menus.addItemByPath("Selection/Select Word Right", new apf.item({
+                hotkey : apf.isMac ? "Option-Shift-Right" : "Ctrl-Shift-Right" // TODO: Don't hardcode this
+            }), 300),
+
+            menus.addItemByPath("Selection/Select Word Left", new apf.item({
+                hotkey : apf.isMac ? "Option-Shift-Left" : "Ctrl-Shift-Left" // TODO: Don't hardcode this
+            }), 400),
+
+            menus.addItemByPath("Selection/~", new apf.divider(), 500),
+
+            menus.addItemByPath("Selection/Select to Line End", new apf.item({
+                hotkey : apf.isMac ? "Command-Shift-Right" : "Alt-Shift-Right" // TODO: Don't hardcode this
+            }), 800),
+
+            menus.addItemByPath("Selection/Select to Line Start", new apf.item({
+                hotkey : apf.isMac ? "Command-Shift-Left" : "Alt-Shift-Left" // TODO: Don't hardcode this
+            }), 900),
+
+            menus.addItemByPath("Selection/~", new apf.divider(), 1000),
+
+            menus.addItemByPath("Selection/Select to Document Start", new apf.item({
+                hotkey : apf.isMac ? "Command-Shift-Up" : "Ctrl-Shift-Home|Alt-Shift-Up" // TODO: Don't hardcode this
+            }), 1100),
+
+            menus.addItemByPath("Selection/Select to Document End", new apf.item({
+                hotkey : apf.isMac ? "Command-Shift-Down" : "Ctrl-Shift-End|Alt-Shift-Down" // TODO: Don't hardcode this
+            }), 1200),
+
+            menus.addItemByPath("View/Gutter", new apf.item({
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
+            }), 500),
+            
+            menus.addItemByPath("View/Syntax", new apf.item({
+                submenu : "mnuSyntax"
+            }), 300000),
+
+            menus.addItemByPath("View/Newline Mode/", null, 310000),
+
+            menus.addItemByPath("View/Newline Mode/Auto", new apf.item({
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+            }), 100),
+
+            menus.addItemByPath("View/Newline Mode/Windows (CRLF)", new apf.item({
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+            }), 200),
+
+            menus.addItemByPath("View/Newline Mode/Unix (LF)", new apf.item({
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+            }), 300),
+
+            menus.addItemByPath("View/~", new apf.divider(), 400000),
+            
+            menus.addItemByPath("View/Wrap Lines", new apf.item({
+                type    : "check",
+                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+            }), 500000),
+            
+            menus.addItemByPath("View/Wrap To Viewport", new apf.item({
+                disabled : "{!apf.isTrue(this.wrapmode)}",
+                wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
+                type     : "check",
+                checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
+            }), 600000),
+
+            menus.addItemByPath("Goto/~", new apf.divider(), 399),
+
+            menus.addItemByPath("Goto/Word Right", new apf.item({
+                hotkey : apf.isMac ? "Option-Right" : "Ctrl-Right" // TODO: Don't hardcode this
+            }), 400),
+
+            menus.addItemByPath("Goto/Word Left", new apf.item({
+                hotkey : apf.isMac ? "Option-Left" : "Tab" // TODO: Don't hardcode this
+            }), 500),
+
+            menus.addItemByPath("Goto/~", new apf.divider(), 600),
+
+            menus.addItemByPath("Goto/Line End", new apf.item({
+                hotkey : apf.isMac ? "Command-Right|End|Ctrl-E" : "Alt-Right|End" // TODO: Don't hardcode this
+            }), 900),
+
+            menus.addItemByPath("Goto/Line Start", new apf.item({
+                hotkey : apf.isMac ? "Command-Left|Home|Ctrl-A" : "Alt-Left|Home" // TODO: Don't hardcode this
+            }), 1000),
+
+            menus.addItemByPath("Tools/~", new apf.divider(), 30000),
+
+            menus.addItemByPath("Tools/Git/", null, 40000),
+
+            menus.addItemByPath("Tools/Git/Push", new apf.item({
+            }), 1000),
+
+            menus.addItemByPath("Tools/Git/Pull", new apf.item({
+ 
+            }), 2000),
+
+            menus.addItemByPath("Tools/Git/Stash", new apf.item({
+ 
+            }), 3000),
+
+            menus.addItemByPath("Tools/Git/Commit", new apf.item({
+ 
+            }), 4000),
+
+            menus.addItemByPath("Tools/Git/Checkout", new apf.item({
+
+            }), 5000),
+
+            // should probably do HG, too...
+
+            menus.addItemByPath("Tools/~", new apf.divider(), 50000),
+
+            menus.addItemByPath("Tools/NPM/", null, 60000),
+
+            menus.addItemByPath("Tools/NPM/Install", new apf.item({
+ 
+            }), 1000),
+
+            menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({
+
+            }), 2000)
+        );
     },
 
     init: function(amlPage) {
@@ -387,267 +647,6 @@ module.exports = ext.register("ext/code/code", {
             caption : "Show Invisibles",
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
         });
-
-        this.nodes.push(
-            /*menus.addItemByPath("Edit/~", new apf.divider(), 700),
-
-            menus.addItemByPath("Edit/Line/", null, 800),
-
-            menus.addItemByPath("Edit/Line/Indent", new apf.item({
-
-            }), 100),
-
-            menus.addItemByPath("Edit/Line/Outdent", new apf.item({
-
-            }), 200),
-
-            menus.addItemByPath("Edit/Line/Move Line Up", new apf.item({
-                
-            }), 300),
-
-            menus.addItemByPath("Edit/Line/Move Line Down", new apf.item({
-
-            }), 400),
-
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), 500),
-
-            menus.addItemByPath("Edit/Line/Duplicate Line", new apf.item({
-
-            }), 600),
-
-            menus.addItemByPath("Edit/Line/Copy Lines Up", new apf.item({
-                
-            }), 700),
-
-            menus.addItemByPath("Edit/Line/Copy Lines Down", new apf.item({
-                
-            }), 800),
-
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), 900),
-
-            menus.addItemByPath("Edit/Line/Select to Line End", new apf.item({
-
-            }), 1000),
-
-            menus.addItemByPath("Edit/Line/Select to Line Start", new apf.item({
-                
-            }), 1100),
-
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), 1200),
-
-            menus.addItemByPath("Edit/Line/Remove Line", new apf.item({
-
-            }), 1300),
-
-            menus.addItemByPath("Edit/Line/Remove to Line End", new apf.item({
-                
-            }), 1400),
-
-            menus.addItemByPath("Edit/Line/Remove to Line Start", new apf.item({
-                
-            }), 1500),
-
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), 1600),
-
-            menus.addItemByPath("Edit/Line/Split Line", new apf.item({
-                
-            }), 1700),
-
-            menus.addItemByPath("Edit/Comment/", null, 900),
-
-            menus.addItemByPath("Edit/Comment/Toggle Comment", new apf.item({
-                
-            }), 100),
-
-            menus.addItemByPath("Edit/Text/", null, 1000),
-
-            menus.addItemByPath("Edit/Text/Remove Word Right", new apf.item({
-                
-            }), 100),
-
-            menus.addItemByPath("Edit/Text/Remove Word Left", new apf.item({
-                
-            }), 200),
-
-            menus.addItemByPath("Edit/Text/~", new apf.divider(), 300),
-
-            menus.addItemByPath("Edit/Text/Transpose Letters", new apf.item({
-                
-            }), 400),
-
-            menus.addItemByPath("Edit/Code Folding/", null, 1100),
-
-            menus.addItemByPath("Edit/Code Folding/Fold", new apf.item({
-                
-            }), 100),
-
-            menus.addItemByPath("Edit/Code Folding/Unfold", new apf.item({
-                
-            }), 200),
-
-            menus.addItemByPath("Edit/Code Folding/Fold All", new apf.item({
-                
-            }), 100),
-
-            menus.addItemByPath("Edit/Code Folding/Unfold All", new apf.item({
-                
-            }), 200),
-                
-            menus.addItemByPath("Edit/Change Case/", null, 1200),
-
-            menus.addItemByPath("Edit/Change Case/Swap Case", new apf.item({
-                
-            }), 200),
-
-            menus.addItemByPath("Selection/Select All", new apf.item({
-                
-            }), 100),
-
-            menus.addItemByPath("Selection/~", new apf.divider(), 200),
-
-            menus.addItemByPath("Selection/Select Word Right", new apf.item({
-                
-            }), 300),
-
-            menus.addItemByPath("Selection/Select Word Left", new apf.item({
-                
-            }), 400),
-
-            menus.addItemByPath("Selection/~", new apf.divider(), 500),
-
-            menus.addItemByPath("Selection/Select Page Down", new apf.item({
-                
-            }), 600),
-
-            menus.addItemByPath("Selection/Select Page Up", new apf.item({
-                
-            }), 700),
-
-            menus.addItemByPath("Selection/Select to Line End", new apf.item({
-                
-            }), 800),
-
-            menus.addItemByPath("Selection/Select to Line Start", new apf.item({
-                
-            }), 900),
-
-            menus.addItemByPath("Selection/~", new apf.divider(), 1000),
-
-            menus.addItemByPath("Selection/Select to Document Start", new apf.item({
-                
-            }), 1100),
-
-            menus.addItemByPath("Selection/Select to Document End", new apf.item({
-                
-            }), 1200),
-*/
-            menus.addItemByPath("View/Gutter", new apf.item({
-                type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
-            }), 500),
-            
-            menus.addItemByPath("View/Syntax", new apf.item({
-                submenu : "mnuSyntax"
-            }), 300000),
-
-            /* broken for some reason
-            menus.addItemByPath("View/Newline Mode/", null, 310000),
-
-            menus.addItemByPath("View/Newline Mode/Auto", new apf.item({
-                type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
-            }), 100),
-
-            menus.addItemByPath("View/Newline Mode/Windows (CRLF)", new apf.item({
-                type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
-            }), 200),
-
-            menus.addItemByPath("View/Newline Mode/Unix (LF)", new apf.item({
-                type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
-            }), 300),*/
-
-            menus.addItemByPath("View/~", new apf.divider(), 400000),
-            
-            menus.addItemByPath("View/Wrap Lines", new apf.item({
-                type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
-            }), 500000),
-            
-            menus.addItemByPath("View/Wrap To Viewport", new apf.item({
-                disabled : "{!apf.isTrue(this.wrapmode)}",
-                wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
-                type     : "check",
-                checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
-            }), 600000)/*,
-
-            menus.addItemByPath("Goto/~", new apf.divider(), 300),
-
-            menus.addItemByPath("Goto/Word Right", new apf.item({
-
-            }), 400),
-
-            menus.addItemByPath("Goto/Word Left", new apf.item({
-
-            }), 500),
-
-            menus.addItemByPath("Goto/~", new apf.divider(), 600),
-
-            menus.addItemByPath("Goto/Page Down", new apf.item({
-
-            }), 700),
-
-            menus.addItemByPath("Goto/Page Up", new apf.item({
-
-            }), 800),
-
-            menus.addItemByPath("Goto/Line End", new apf.item({
-
-            }), 900),
-
-            menus.addItemByPath("Goto/Line Start", new apf.item({
-
-            }), 1000),
-
-            menus.addItemByPath("Tools/~", new apf.divider(), 30000),
-
-            menus.addItemByPath("Tools/Git/", null, 40000),
-
-            menus.addItemByPath("Tools/Git/Push", new apf.item({
-
-            }), 1000),
-
-            menus.addItemByPath("Tools/Git/Pull", new apf.item({
-
-            }), 2000),
-
-            menus.addItemByPath("Tools/Git/Stash", new apf.item({
-
-            }), 3000),
-
-            menus.addItemByPath("Tools/Git/Commit", new apf.item({
-
-            }), 4000),
-
-            menus.addItemByPath("Tools/Git/Checkout", new apf.item({
-
-            }), 5000),
-
-            // should probably do HG, too...
-
-            menus.addItemByPath("Tools/~", new apf.divider(), 50000),
-
-            menus.addItemByPath("Tools/NPM/", null, 60000),
-
-            menus.addItemByPath("Tools/NPM/Install", new apf.item({
-
-            }), 1000),
-
-            menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({
-
-            }), 2000)*/
-        );
 
         mnuSyntax.onitemclick = function(e) {
             var file = ide.getActivePageModel();
@@ -755,17 +754,29 @@ module.exports = ext.register("ext/code/code", {
 
     enable : function() {
         this.nodes.each(function(item){
+            item.enable();
+        });
+        
+        this.nodes.each(function(item){
             item.show();
         });
     },
 
     disable : function() {
+        this.menus.each(function(item){
+            item.disable();
+        });
+        
         this.nodes.each(function(item){
             item.hide();
         });
     },
 
     destroy : function(){
+        this.menus.each(function(item){
+            item.destroy(true, true);
+        });
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

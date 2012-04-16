@@ -27,7 +27,7 @@ module.exports = ext.register("ext/autotest/autotest", {
             if (m) {
                 run(path);
             } else {
-                var testPath = path.replace(/\.js$/, "_test.js");
+                var testpath = path.replace(/\.js$/, "_test.js");
                 if (path == testPath) return;
                 fs.exists(testPath, function(exists) {
                     if (exists)

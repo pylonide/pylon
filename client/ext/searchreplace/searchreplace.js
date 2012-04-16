@@ -62,14 +62,19 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     _self.toggleDialog(true);
                 }
             }), 500),
-            
-            menus.addItemByPath("Find/~", new apf.divider(), 600),
+            mnuReplace = menus.addItemByPath("Find/Replace Next", new apf.item({
+                onclick : function() {
+                    _self.toggleDialog(true);
+                }
+            }), 600),
+
+            menus.addItemByPath("Find/~", new apf.divider(), 700),
 
             mnuReplace = menus.addItemByPath("Find/Quick Search", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
-            }), 700)
+            }), 800)
         );
 
         this.hotitems.search        = [mnuFind];

@@ -72,20 +72,19 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), 300),
-            menus.addItemByPath("View/Tabs/~", new apf.divider(), 400),
-            menus.addItemByPath("View/Tabs/Close Tabs to the Right", new apf.item({
-                onclick : function() {
-                    _self.closealltotheright();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            }), 500),
 
-            menus.addItemByPath("View/Tabs/Close Tabs to the Left", new apf.item({
-                onclick : function() {
-                    _self.closealltotheleft();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            }), 600),
+            menus.addItemByPath("Goto/~", new apf.divider(), 300),
+
+            menus.addItemByPath("Goto/Switch File/", null, 301),
+
+            menus.addItemByPath("Goto/Switch File/Next File", new apf.item({
+                hotkey : apf.isMac ? "Option-Tab" : "Ctrl-Tab" // TODO: Don't hardcode this
+            }), 100),
+
+            menus.addItemByPath("Goto/Switch File/Previous File", new apf.item({
+                hotkey : apf.isMac ? "Option-Shift-Tab" : "Ctrl-Shift-Tab" // TODO: Don't hardcode this
+            }), 200),
+            
             mnuContext = new apf.menu({id : "mnuContextTabs"})
         );
         
