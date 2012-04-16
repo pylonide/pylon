@@ -246,6 +246,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
         var findValueSanitized = query.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
+        _self.$panel.setAttribute("caption", _self.pageTitle);
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
 
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
