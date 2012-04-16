@@ -127,13 +127,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             }
             else {
                 if (e.keyCode == 8) {
-                  // ignore backspace--see 'keyup'   
-                }
-                else if (e.keyCode == 39) { // right arrow
-                    _self.execSearch(false, false);
-                }
-                else if (e.keyCode == 37) { // left arrow
-                    _self.execSearch(false, true);
+                  // ignore backspace--see 'keyup'--else the isCharacter() case fires   
                 }
                 else if (apf.isCharacter(e.keyCode) && !e.metaKey) { 
                     setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
