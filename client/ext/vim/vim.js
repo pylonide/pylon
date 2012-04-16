@@ -125,7 +125,7 @@ module.exports = ext.register("ext/vim/vim", {
             onclick: function() { self.toggle(); }
         });
         
-        menus.addItemByPath("View/Vim Mode", menuItem, 8000000);
+        menus.addItemByPath("View/Vim Mode", menuItem, 150000);
 
         require("ext/settings/settings").addSettings("Code Editor", markupSettings);
 

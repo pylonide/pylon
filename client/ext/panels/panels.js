@@ -33,8 +33,12 @@ module.exports = ext.register("ext/panels/panels", {
             type    : "radio",
             value   : panelExt.path,
             group   : this.group,
+            onclick : function(){
+                if (panelExt.show)
+                    panelExt.show();
+            },
             "onprop.selected" : function(e){
-                if (e.value)
+                if (e.value && !panelExt.show)
                     _self.activate(panelExt);
             }
         }), options.position);

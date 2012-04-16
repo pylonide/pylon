@@ -68,9 +68,9 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 //            return true;
 //        });
 
-
         this.nodes.push(
             menus.addItemByPath("View/Status Bar", new apf.item({
+                test : "1",
                 type : "check",
                 checked : "[{require('ext/settings/settings').model}::auto/statusbar/@show]",
                 "onprop.checked" : function(e){
@@ -90,7 +90,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 ext.initExtension(_self);
                 
             tabEditors.addEventListener("afterswitch", function(e){
-                if (e.nextPage.type == "ext/code/code") {
+                if (e.nextPage.type != "ext/code/code") {
                     if (self.barIdeStatus)
                         barIdeStatus.hide();
                     return;
@@ -140,7 +140,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("afterswitch", function(e) {
-                if (e.nextPage.type === "ext/imgview/imgview")
+                if (e.nextPage.type != "ext/code/code")
                     return;
     
                 if (!_self.inited) {

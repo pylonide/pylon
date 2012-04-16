@@ -165,7 +165,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.mnuSave = new apf.menu({ id : "mnuSave" }),
             
             menus.addItemByPath("File/~", new apf.divider(), 800),
-            mnuItem = menus.addItemByPath("File/File revisions", new apf.item({
+            mnuItem = menus.addItemByPath("File/File Revisions", new apf.item({
                 type: "check",
                 checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
                 disabled: "{!tabEditors.length}",

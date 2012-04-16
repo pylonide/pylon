@@ -44,7 +44,7 @@
 
         <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
             <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
-                <a:vbox id="colLeft" width="200" minwidth="150" visible="false" />
+                <a:vbox id="colLeft" width="200" minwidth="105" visible="false" />
                 <a:splitter width="0" id="splitterPanelLeft" />
                 <a:vbox id="colMiddle" flex="1" padding="3" />
                 <a:vbox id="colRight" padding="0">

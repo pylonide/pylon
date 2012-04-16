@@ -36,6 +36,8 @@ define(function(require, exports, module) {
         showingAll: true,
 
         hook : function(){
+            var _self = this;
+            
             this.nodes.push(
                 menus.addItemByPath("Help/", null, 100000)
             );
@@ -101,6 +103,8 @@ define(function(require, exports, module) {
         },
 
         showAbout: function() {
+            ext.initExtension(this);
+            
             aboutDialog.show();
             document.getElementById("c9Version").innerHTML = "Version " + window.cloud9config.version;
         },

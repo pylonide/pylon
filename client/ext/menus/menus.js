@@ -41,7 +41,7 @@ module.exports = ext.register("ext/menus/menus", {
         this.addItemByPath("File/~", new apf.divider(), 1000000);
         this.addItemByPath("File/Quit Cloud9 IDE", new apf.item({
             onclick : function(){
-
+                location.href = "http://c9.io";
             }
         }), 2000000);
         

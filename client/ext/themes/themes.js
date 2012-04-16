@@ -58,11 +58,11 @@ module.exports = ext.register("ext/themes/themes", {
     init : function(){
         var _self = this;
         
-        var mnuThemes = menus.addItemByPath("View/Themes", new apf.menu({
+        var mnuThemes = menus.addItemByPath("View/Themes/", new apf.menu({
             onitemclick : function(e){
                 _self.set(e.relatedNode.value);
             }
-        }), 30000);
+        }), 350000);
 
         ide.addEventListener("init.ext/code/code", function() {
             if (ceEditor && ceEditor.$editor)
