@@ -14,27 +14,21 @@ module.exports = function startup(options, imports, register) {
         fs.mkdir(options.sessionsPath, 0755);
     }
 
-    var connect = imports.connect;
-    var Session = connect.getModule().session;
-
-
     var sessionStore = new FileStore({
         basePath: options.sessionsPath,
         reapInterval: 60 * 60 * 1000    // 1 hour
     });
-    connect.useSession(Session({
-        store: sessionStore,
-        key: options.key,
-        secret: options.secret
-    }));
-
+    
     register(null, {
-        session: {
-            get: sessionStore.get.bind(sessionStore)
+        "session-store": {
+            get: sessionStore.get.bind(sessionStore),
+            set: sessionStore.set.bind(sessionStore),
+            destroy: sessionStore.destroy.bind(sessionStore),
+            createSession: sessionStore.createSession.bind(sessionStore)
         }
     });
+    
 };
-
 
 
 var FileStore = function(options) {
@@ -69,7 +63,9 @@ var FileStore = function(options) {
         }, self.reapInterval);
     }
 };
+
 FileStore.prototype.__proto__ = Store.prototype;
+
 FileStore.prototype.get = function(sid, fn){
   var self = this;
   path.exists(self.basePath + "/" + sid, function(exists) {
@@ -103,6 +99,7 @@ FileStore.prototype.get = function(sid, fn){
       }
   });      
 };
+
 FileStore.prototype.set = function(sid, sess, fn){
   var self = this;
   // TODO: Write file to tmp and rename to avoid corrupted sessions when writing and reading overlaps.
@@ -115,6 +112,7 @@ FileStore.prototype.set = function(sid, sess, fn){
       }
   });
 };
+
 FileStore.prototype.destroy = function(sid, fn){
   var self = this;
   path.exists(self.basePath + "/" + sid, function(exists) {
@@ -132,6 +130,7 @@ FileStore.prototype.destroy = function(sid, fn){
       }
   });
 };
+
 FileStore.prototype.all = function(fn){
     var self = this;
     fs.readdir(self.basePath, function(err, files) {
@@ -147,6 +146,7 @@ FileStore.prototype.all = function(fn){
         fn && fn(arr);
     });
 };
+
 FileStore.prototype.clear = function(fn){
     throw new Error("NYI");
 /*
@@ -154,10 +154,10 @@ FileStore.prototype.clear = function(fn){
   fn && fn();
 */
 };
+
 FileStore.prototype.length = function(fn){
     throw new Error("NYI");
 /*
   fn(null, Object.keys(this.sessions).length);
 */
 };
-
