@@ -170,7 +170,6 @@ self.onmessage = function(e) {
                 silentsave: e.data.silentsave,
                 restoring: e.data.restoring,
                 ts: Date.now(),
-                lastContent: lastContent,
                 length: lastContent.length
             };
     }

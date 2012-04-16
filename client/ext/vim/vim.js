@@ -147,6 +147,7 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     init: function() {
+        require("ext/console/console").showInput();
         txtConsoleInput.addEventListener("keydown", function(e) {
             if (e.keyCode === 27 && typeof ceEditor !== "undefined") { // ESC is pressed in the CLI
                 ceEditor.focus();
