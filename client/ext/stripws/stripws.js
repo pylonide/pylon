@@ -56,16 +56,14 @@ module.exports = ext.register("ext/stripws/stripws", {
 
     hook: function () {
         var self = this;
-
         this.nodes.push(
             menus.addItemByPath("Tools/Strip Whitespace", new apf.item({
                 onclick: function () {
                     ext.initExtension(self);
-                    strip();
+                    self.stripws();
                 }
             }), 200)
         );
-        
 
         ide.addEventListener("beforefilesave", function(data) {
             var node =
@@ -76,6 +74,13 @@ module.exports = ext.register("ext/stripws/stripws", {
             if (node && node.firstChild && node.firstChild.nodeValue == "true") {
                 self.stripws();
             }
+        });
+
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                self.disable();
+            else
+                self.enable();
         });
 
         require("ext/settings/settings").addSettings("General", markupSettings);
@@ -103,7 +108,7 @@ module.exports = ext.register("ext/stripws/stripws", {
 
     destroy: function () {
         menus.remove("Tools/Strip Whitespace");
-        
+
         this.nodes.each(function (item) {
             item.destroy(true, true);
         });

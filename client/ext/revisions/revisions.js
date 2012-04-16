@@ -1056,18 +1056,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         return this.revisionsData[path];
     },
 
-    $disableEditingFeatures: function() {
-        require("ext/stripws/stripws").disable();
-        require("ext/beautify/beautify").disable();
-        require("ext/language/language").disable();
-    },
-
-    $enableEditingFeatures: function() {
-        require("ext/stripws/stripws").enable();
-        require("ext/beautify/beautify").enable();
-        require("ext/language/language").enable();
-    },
-
     $setRevisionListClass: function() {
         if (this.useCompactList === true) {
             apf.setStyleClass(lstRevisions.$ext, "compactView");
@@ -1107,12 +1095,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.populateModel();
         this.$rescanCompactNodes();
-        this.$disableEditingFeatures();
 
         var all = this.allTimestamps;
         var cmp = this.compactTimestamps;
-        var lastTimeStamp;
 
+        var lastTimeStamp;
         if (this.useCompactList === true && cmp && cmp.length > 0) {
             lastTimeStamp = cmp[cmp.length - 1];
         }
@@ -1136,7 +1123,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.goToEditView();
 
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
-        this.$enableEditingFeatures();
     },
 
     disableEventListeners: function() {

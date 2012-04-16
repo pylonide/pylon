@@ -119,6 +119,13 @@ module.exports = ext.register("ext/beautify/beautify", {
                 }
             }, 200);
         });
+
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.disable();
+            else
+                _self.enable();
+        });
     },
 
     hook: function () {
