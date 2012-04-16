@@ -193,7 +193,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         btnSave.setAttribute("margin", "0 20 0 20");
         btnSave.setAttribute("submenu", "mnuSave");
         btnSave.removeAttribute("onclick");
-
+        
+        this.$onMessageFn = this.onMessage.bind(this);
+        ide.addEventListener("socketMessage", this.$onMessageFn);
+        
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onFileSaveFn = this.onFileSave.bind(this);
@@ -278,17 +281,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     init: function() {
         var self = this;
 
-        this.$onMessageFn = this.onMessage.bind(this);
-        ide.addEventListener("socketMessage", this.$onMessageFn);
-
-        ide.send({
-            command: "revisions",
-            subCommand: "getRevisionHistory",
-            path: self.$getDocPath(),
-            // Send over the original revision of the file as well. This is
-            // only for the first time and won't ever change.
-            getOriginalContent: true
-        });
+        
 
         this.panel = new apf.bar({
             id: "revisionsPanel",
@@ -347,7 +340,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     onOpenFile: function(data) {
         if (!data || !data.doc)
             return;
-
+            
         var self = this;
         var doc = data.doc;
         // TODO: Unregister events on unloading file
@@ -360,6 +353,15 @@ module.exports = ext.register("ext/revisions/revisions", {
                 self.onDocChange.call(self, e, doc);
             };
         }
+
+        ide.send({
+            command: "revisions",
+            subCommand: "getRevisionHistory",
+            path: self.$getDocPath(doc.$page),
+            // Send over the original revision of the file as well. This is
+            // only for the first time and won't ever change.
+            getOriginalContent: true
+        });
 
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
 
@@ -379,7 +381,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             path: self.$getDocPath(e.nextPage),
             // Send over the original revision of the file as well. This is
             // only for the first time and won't ever change.
-            getOriginalContent: true
+            getOriginalContent: false
         });
     },
 
@@ -464,7 +466,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var message = e.message;
         if (message.type !== "revision")
             return;
-
+            
         switch (message.subtype) {
             case "getRevisionHistory":
                 if (message.originalContent) {
