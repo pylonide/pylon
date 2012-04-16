@@ -294,6 +294,8 @@ apf.xmldb = new (function(){
                         return;
                     
                     if(model.$propBinds[sUId[1]][sUId[2]]) {
+                        if (!apf.isChildOf(model.data, xmlNode, true)) 
+                            return false;
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
                         var node  = xpath
                             ? apf.queryNode(model.data, xpath)
