@@ -96,10 +96,6 @@
                     text-shadow: 0 1px 0 #0067b0;
                 }
 
-                .compactView .revision {
-                    display: none;
-                } 
-
                 .revision .revision-icon {
                     float: left;
                     text-align: right;
@@ -122,13 +118,6 @@
                     font-size: 12px;
                     font-weight: bold;
                     color: #AEAEAE;
-                }
-                /*
-                 * Revisions with the 'rev-compact' class will be shown when
-                 * the list is compacted
-                 */
-                .compactView .revision.rev-compact {
-                    display: block;
                 }
 
                 .revision .revision-icon .rev-restoration {
@@ -201,15 +190,16 @@
 
 
                 @-webkit-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
-                   @-moz-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
-                        @keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+                @-moz-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+                @keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+
                 .revision .revision-info button[disabled] {
                     background: url(images/loading.png) no-repeat;
                     -webkit-animation: loadingDots .7s linear 0s infinite normal;
                        -moz-animation: loadingDots .7s linear 0s infinite normal;
                             animation: loadingDots .7s linear 0s infinite normal;
                 }
-                
+
                 .revision.selected .revision-info button,
                 .revision.hover .revision-info button {
                     display: block;
@@ -217,8 +207,9 @@
                 .revision.selected .revision-info button {
                     background-position: 50% -30px;
                 }
+
             /* ------------------------------------------------------------------------------------------
-             * Show Detailes
+             * Show Details
              * --------------------------------------------------------------------------------------- */
                  .show-details {
                     border-top: 1px solid rgba(0,0,0,0.1);
@@ -292,11 +283,6 @@
                     background: rgb(168, 232, 166);
                 }
         ]]></a:style>
-
-        <!--
-
--->
-
         <a:presentation>
             <a:main container=".">
                 <div class="revisions-list">

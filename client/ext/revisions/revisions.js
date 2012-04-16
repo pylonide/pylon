@@ -128,10 +128,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     deps: [fs],
     offline: true,
     nodes: [],
-    
+
     skin: skin,
     model: new apf.model(),
-    
+
     commands : {
         "revisions": {hint: "Show revisions panel"}
     },
@@ -150,7 +150,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     toggle: function() {
         ext.initExtension(this);
-        
+
         if (this.panel.visible)
             this.hide();
         else
@@ -159,11 +159,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hook: function() {
         var _self = this;
-        
+
         var mnuItem;
         this.nodes.push(
             this.mnuSave = new apf.menu({ id : "mnuSave" }),
-            
             menus.addItemByPath("File/~", new apf.divider(), 800),
             mnuItem = menus.addItemByPath("File/File Revisions", new apf.item({
                 type: "check",
@@ -172,7 +171,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 onclick: function() { _self.toggle(); }
             }), 900)
         );
-        
+
         ide.addEventListener("loadsettings", function(e){
             var revisionMode = e.model.queryValue("general/@revisionmode");
             if (apf.isTrue(revisionMode)) {
@@ -185,7 +184,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 });
             }
         });
-        
+
         ide.addEventListener("init.ext/settings/settings", function (e) {
             e.ext.getHeading("General").appendChild(new apf.checkbox({
                 "class" : "underlined",
@@ -195,14 +194,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                 onclick: function() { self.toggle(); }
             }));
         });
-        
+
         btnSave.removeAttribute("icon");
         btnSave.setAttribute("caption", "");
         btnSave.removeAttribute("tooltip");
         btnSave.setAttribute("margin", "0 20 0 20");
         btnSave.setAttribute("submenu", "mnuSave");
         btnSave.removeAttribute("onclick");
-        
+
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onFileSaveFn = this.onFileSave.bind(this);
@@ -210,15 +209,15 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-        
+
         var c = 0;
-        menus.addItemToMenu(this.mnuSave, new apf.item({ 
+        menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "Save Now",
             onclick : function(){
                 Save.quicksave();
             }
         }), c += 100);
-        menus.addItemToMenu(this.mnuSave, new apf.item({ 
+        menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "Enable Auto-Save",
             type    : "check",
             checked : "true", //[{require('core/settings').model}::general/@autosave]",
@@ -227,24 +226,24 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }), c += 100);
         menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
-        menus.addItemToMenu(this.mnuSave, new apf.item({ 
+        menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "About Auto-Save",
             onclick : function(){
-                
+
             }
         }), c += 100);
 
         this.hotitems.revisions = [mnuItem];
-        
+
         this.defaultUser = {
             email: null
         };
-        
+
         // This is the main interval. Whatever it happens, every `INTERVAL`
         // milliseconds, the plugin will attempt to save every file that is
         // open and dirty.
         this.saveInterval = setInterval(this.doAutoSave.bind(this), INTERVAL);
-        
+
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
         // in OSS Cloud9.
@@ -260,10 +259,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
             });
         }
-        
+
         this.$initWorker();
     },
-    
+
     setSaveButtonCaption: function(){
         if (!tabEditors.activepage)
             btnSave.setCaption("")
@@ -272,10 +271,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         else
             btnSave.setCaption("All changes saved")
     },
-    
+
     init: function() {
         var self = this;
-        
+
         this.$onMessageFn = this.onMessage.bind(this);
         ide.addEventListener("socketMessage", this.$onMessageFn);
 
@@ -287,7 +286,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             // only for the first time and won't ever change.
             getOriginalContent: true
         });
-        
+
         this.panel = new apf.bar({
             id: "revisionsPanel",
             visible: false,
@@ -299,7 +298,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             "class": "revisionsBar"
         });
         this.nodes.push(this.panel);
-    
+
         /**
          * @todo the panel should move to the active editor tab using
          *       afterselect
@@ -358,20 +357,20 @@ module.exports = ext.register("ext/revisions/revisions", {
                 setTimeout(function() {
                     self.setSaveButtonCaption();
                 });
-                
+
                 self.onDocChange.call(self, e, doc);
             };
         }
 
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
-        //ext.initExtension(this); //Please only init when the revisions menu item is clicked 
-        
+        //ext.initExtension(this); //Please only init when the revisions menu item is clicked
+
         this.setSaveButtonCaption();
     },
 
     onSwitchFile: function(e) {
         var self = this;
-        
+
         // This is the wrong way to do it. We should assume than when switching
         // the revisions are already there.
         // We should cache the revisions for each file and destroy them when
@@ -392,11 +391,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         var self = this;
-        
+
         setTimeout(function() {
             self.setSaveButtonCaption();
         });
-        
+
         var path = this.$getDocPath();
         if (this.originalContents[path]) {
             delete this.originalContents[path];
@@ -593,10 +592,18 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Populates the revisions model with the current revision list and attributes.
      **/
     populateModel: function() {
-        var revisions = this.allRevisions;
-        var timestamps = this.allTimestamps;
-        var revsXML = "";
+        var revisions, timestamps;
 
+        if (this.useCompactList && this.compactRevisions && this.compactTimestamps) {
+            revisions = this.compactRevisions;
+            timestamps = this.compactTimestamps;
+        }
+        else {
+            revisions = this.allRevisions;
+            timestamps = this.allTimestamps;
+        }
+
+        var revsXML = "";
         for (var i = timestamps.length - 1; i >= 0; i--) {
             var ts = timestamps[i];
             var rev = revisions[ts];
@@ -929,7 +936,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             restoring: restoring,
             contributors: contributors
         };
-        
+
         this.setSaveButtonCaption();
 
         // If we are not in a collaboration document we do all the processing
@@ -947,7 +954,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         ide.send(data);
-        
+
         this.$resetEditingUsers(docPath);
     },
 
@@ -1023,7 +1030,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     $getDocPath: function(page) {
         if (!page && tabEditors)
             page = tabEditors.getPage();
-        
+
         // Can we rely on `name`?
         // What follows is a hacky way to get a path that we can use on
         // the server. I am sure that these workspace string manipulation
@@ -1068,6 +1075,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         else {
             apf.setStyleClass(lstRevisions.$ext, null, ["compactView"]);
         }
+
+        this.populateModel();
     },
 
     $rescanCompactNodes: function() {
@@ -1084,16 +1093,16 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     show: function() {
         ext.initExtension(this);
-        
+
         settings.model.setQueryValue("general/@revisionmode", true);
-        
+
         ide.dispatchEvent("revisions.visibility", {
             visibility: "shown",
             width: BAR_WIDTH
         });
-        
+
         ceEditor.$editor.container.style.right = BAR_WIDTH + "px";
-        
+
         this.panel.show();
 
         this.populateModel();
@@ -1230,7 +1239,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     destroy : function() {
         menus.remove("File/File revisions");
         menus.remove("File/~", 1000);
-        
+
         if (this.saveInterval)
             clearInterval(this.saveInterval);
 
