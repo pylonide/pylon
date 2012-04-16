@@ -38,7 +38,7 @@ module.exports = ext.register("ext/html/html", {
 
         ide.addEventListener("afteropenfile", function(e){
             // Only listen for event from editors.js
-            if (e.editor && e.node.$model)
+            if (e.editor && e.node && e.node.$model)
                 _self.afterSwitchOrOpen(e.node);
         });
 

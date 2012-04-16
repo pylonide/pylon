@@ -16,6 +16,7 @@
       softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
       tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
       scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
+      newlinemode       = "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
       animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@animatedscroll]"
       fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
       wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"

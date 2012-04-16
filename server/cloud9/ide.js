@@ -151,8 +151,7 @@ Ide.DEFAULT_PLUGINS = [
     "ext/tabsessions/tabsessions",
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker",
-    "ext/minimap/minimap"
+    "ext/colorpicker/colorpicker"
     //"ext/acebugs/acebugs"
 ];
 
@@ -218,7 +217,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
-            var aceScripts = '<script type="text/javascript" data-ace-base="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n';
+            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n';
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,

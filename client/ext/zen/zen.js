@@ -280,6 +280,8 @@ module.exports = ext.register("ext/zen/zen", {
      */
     enterIntoZenMode : function(slow) {
         var _self = this;
+        
+        var activeElement = apf.document.activeElement;
 
         this.saveTabEditorsParentStyles();
         if (self.btnZenFullscreen)
@@ -332,8 +334,8 @@ module.exports = ext.register("ext/zen/zen", {
                 }, 0.5);
 
                 setTimeout(function() {
-                    if (editors.currentEditor && editors.currentEditor.amlEditor)
-                        editors.currentEditor.amlEditor.focus();
+                    if (activeElement && activeElement.getHeight())
+                        activeElement.$focus();
                 }, 100);
             });
 
@@ -385,7 +387,8 @@ module.exports = ext.register("ext/zen/zen", {
             apf.layout.forceResize();
 
             setTimeout(function() {
-                editors.currentEditor.amlEditor.focus();
+                if (activeElement && activeElement.getHeight())
+                    activeElement.$focus();
             }, 100);
         }
     },
@@ -402,6 +405,8 @@ module.exports = ext.register("ext/zen/zen", {
             return;
 
         var _self = this;
+        
+        var activeElement = apf.document.activeElement;
 
         btnZenFullscreen.setAttribute("class", "notfull");
         this.isFocused = false;
@@ -444,8 +449,9 @@ module.exports = ext.register("ext/zen/zen", {
                 tabEditors.parentNode.$ext.style.position = "absolute";
 
                 setTimeout(function() {
-                    if (editors.currentEditor && editors.currentEditor.amlEditor && fromExitEvent === false)
-                        editors.currentEditor.amlEditor.focus();
+                    if (activeElement && activeElement.getHeight()
+                      && fromExitEvent === false)
+                        activeElement.$focus();
                 }, 100);
             });
 
@@ -469,7 +475,9 @@ module.exports = ext.register("ext/zen/zen", {
 
             apf.layout.forceResize();
             setTimeout(function() {
-                editors.currentEditor.amlEditor.focus();
+                if (activeElement && activeElement.getHeight()
+                  && fromExitEvent === false)
+                    activeElement.$focus();
             }, 100);
         }
 

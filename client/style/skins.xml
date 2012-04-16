@@ -2521,7 +2521,7 @@
             cursor : default;
             z-index:1100000;
             position: relative;
-            height: 13px;
+            height: 20px;
         }
 
         .cbmcontainer span {
@@ -4660,60 +4660,52 @@
 <a:list name="lineselect">
     <a:style><![CDATA[
         .lineselect{
-            overflow: auto;
-            position: relative;
-            background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
-            background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
-            color: #333333;
-            border: 1px solid #afafaf;
-            margin: 0;
-            outline: none;
-            font-family: Tahoma, Arial;
-            font-size: 12px;
-            text-overflow: ellipsis;
-            -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
-            box-shadow: 0px 1px 0px #ffffff;
-
-            cursor: default;
+            
         }
-
-        .runconfig.lineselect {
-            border-color: #ffffff;
-            border-width: 1px 0 0;
+        
+        .searchresults {
+            position : relative;
         }
-        .lineselect>.selected{
-            background-color: rgb(203, 205, 208);
-            color: black;
+        
+        .searchresults>div{
+            background : rgba(255,255,255,0.4);   
+            color : #666;
+            padding : 2px 3px 4px 10px;
+            border-top : 1px solid rgba(255,255,255,0.8);
+            border-bottom : 1px solid rgba(0,0,0,0.1);
+            font-size : 11px;
+            cursor : default;
+            white-space : nowrap;
         }
-        .lineselectFocus>.selected{
+        .searchresults>div:hover{
+            background : rgba(255,255,255,0.6);
+        }
+        .searchresults>div>span{
+            font-size : 14px;
+            color : #333;
+            display : block;
+            padding : 2px;
+        }
+        .searchresults>div>span>strong{
+            color : #111;
+        }
+        .searchresults>div.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
             color : white;
         }
-
-        .runconfig.lineselect>.selected{
-            background-image: linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -o-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -moz-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -webkit-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-            background-image: -ms-linear-gradient(bottom, rgb(51,127,189) 0%, rgb(63,144,215) 100%);
-
-            border-top: 1px solid #3783c4;
-            border-bottom: 1px solid #383838;
-
-            color : white;
+        .searchresults>div.selected>span{
+            color : #f1f1f1;
         }
-        .lineselect .empty, .lineselect .offline, .lineselect .loading{
-            text-align: center;
-            padding: 8px 0 0 5px;
-            color: #AAA;
-            font-weight : normal;
+        .searchresults>div.selected>span>strong{
+            color : #fff;
         }
-        .lineselect>DIV{
-            padding: 2px 6px;
+        .searchresults .message{
+            border : 0;
+            padding : 3px;
+            text-align : center;
+            background : transparent;
         }
-
     ]]></a:style>
 
     <a:presentation>
@@ -6472,7 +6464,7 @@
 <a:scrollbar name="scrollbar">
     <a:style><![CDATA[
         .scrollbar{
-            height: 100px;
+            height: 200px;
             position: absolute;
             background: #D4D0C8 url(images/raster.gif);
             width: 16px;
@@ -8213,7 +8205,7 @@
       container = "div"
       icon      = "div[1]/div"
       maxwidth  = "150"
-      minwidth  = "0">
+      minwidth  = "17">
         <div class="session_btn">
             <div class="tab_middle">
                 <div class="sessiontab_icon"> </div>
@@ -9065,21 +9057,21 @@
 
         .tb_console .sbtb_middle {
             border          : 1px solid #000;
-            background      : #e2e2e2;
+            background      : #eee;
             box-shadow      : inset 0 2px 3px 0 rgba(0,0,0,.5);
             color           : #202020;
             font-size       : 14px;
-            height          : 21px;
-            line-height     : 21px;
+            height          : 20px;
+            line-height     : 18px;
             margin          : 1px 0 0 6px;
-            padding         : 0 6px;
+            padding         : 1px 4px 0px 4px;
             outline         : none;
             text-overflow   : ellipsis;
         }
         .tb_consoleFocus .sbtb_middle,
         .tb_consoleOver .sbtb_middle,
         .tb_console .sbtb_middle:hover {
-            background      : #eee;
+            /*background      : #eee;*/
         }
 
         .topborder .sbtb_middle{
@@ -9089,10 +9081,10 @@
         .tb_console .sbtb_middle INPUT {
             border           : 0;
             height           : 17px;
-            line-height      : 17px;
-            font-size        : 13px;
+            line-height      : 15px;
+            font-size        : 12px;
             color            : #303030;
-            font-family      : "courier new",fixed,swiss,sans-serif;
+            font-family      : menlo,courier new,fixed,swiss,sans-serif;
             outline          : none;
             background-color : transparent;
             width: 100%;
@@ -9101,6 +9093,7 @@
 
         .tb_consoleInitial .sbtb_middle INPUT {
             color : #a3a3a3;
+            font-size : 10px;
         }
 
         .tb_consoleFocus .sbtb_middle input,
@@ -9289,13 +9282,14 @@
 
         .searchbox_textbox .sbtb_middle {
             height           : 19px;
-            padding          : 2px 25px 2px 25px;
+            padding          : 2px 25px 2px 4px;
 
 
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, rgb(255,255,255)),color-stop(1, rgb(235,235,235)));
             background: -moz-linear-gradient(center bottom,rgb(255,255,255) 50%,rgb(235,235,235) 100%);
             color: #333333;
             border: 1px solid #afafaf;
+            border-radius : 3px;
             margin: 0;
             outline: none;
             font-family: Tahoma, Arial;
@@ -9362,10 +9356,10 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="div[3]/input" button="div[4]">
+        <a:main input="div[2]/input" button="div[3]">
             <div class="searchbox_textbox">
                 <div class="sbtb_arrow"/>
-                <div class="sbtb_icon"/>
+                <!--div class="sbtb_icon"/-->
                 <div class="sbtb_middle">
                     <input type="text"/>
                 </div>

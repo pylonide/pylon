@@ -18,6 +18,7 @@ var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
 var Settings = require("ext/settings/settings");
+var markupSettings =  require("text!ext/vim/settings.xml");
 var util = require("ext/vim/maps/util");
 
 var VIM_ENABLED = false;
@@ -151,15 +152,7 @@ module.exports = ext.register("ext/vim/vim", {
             e.ext.addToolsItem(menuItem.cloneNode(true), 0);
         });
 
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            e.ext.getHeading("Code Editor").appendChild(new apf.checkbox({
-                "class" : "underlined",
-                skin  : "checkbox_grey",
-                value : "[editors/code/@vimmode]",
-                label : "Vim mode",
-                onclick: function() { self.toggle(); }
-            }));
-        });
+        Settings.addSettings("Code Editor", markupSettings);
 
         var tryEnabling = function () {
             if (Settings.model) {

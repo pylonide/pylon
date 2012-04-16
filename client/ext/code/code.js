@@ -309,15 +309,11 @@ module.exports = ext.register("ext/code/code", {
 
         doc.editor = this;
     },
-
+    
     hook: function() {
         var _self = this;
 
-        //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading("Code Editor");
-            heading.insertMarkup(markupSettings);
-        });
+        require("ext/settings/settings").addSettings("Code Editor", markupSettings);
 
         ide.addEventListener("loadsettings", function(e) {
             var model = e.model;
@@ -332,19 +328,22 @@ module.exports = ext.register("ext/code/code", {
                   .attr("softtabs", "true")
                   .attr("tabsize", "4")
                   .attr("scrollspeed", "2")
-                  .attr("animatedscroll", "true")
                   .attr("fontsize", "12")
                   .attr("wrapmode", "false")
                   .attr("wraplimitmin", "")
                   .attr("wraplimitmax", "")
                   .attr("gutter", "true")
                   .attr("folding", "true")
+                  .attr("newlinemode", "auto")
                   .attr("highlightselectedword", "true")
                   .attr("autohidehorscrollbar", "true").node();
 
                 var editors = apf.createNodeFromXpath(model.data, "editors");
                 apf.xmldb.appendChild(editors, node);
             }
+            
+            if (!model.queryNode("editors/code/@animatedscroll"))
+                model.setQueryValue("editors/code/@animatedscroll", "true");
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
@@ -363,7 +362,7 @@ module.exports = ext.register("ext/code/code", {
                 if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
                   && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
                   && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
-                    var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
+                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "").replace(/"/g, "&quot;") + '"]');
                     if (nodes.length) {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
                     }
@@ -403,6 +402,12 @@ module.exports = ext.register("ext/code/code", {
             type    : "check",
             caption : "Show Invisibles",
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+        });
+
+        var menuWrapLines = new apf.item({
+            type    : "check",
+            caption : "Wrap Lines",
+            checked : "{ceEditor.wrapmode}"
         });
 
         this.nodes.push(
@@ -466,6 +471,7 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
+            e.ext.addPrefsItem(menuWrapLines.cloneNode(true), 1);
         });
 
         ide.addEventListener("keybindingschange", function(e) {

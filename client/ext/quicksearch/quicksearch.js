@@ -145,12 +145,18 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         }); 
         
         winQuickSearch.addEventListener("blur", function(e){
-            if (!apf.isChildOf(winQuickSearch, e.toElement))
+            if (winQuickSearch.visible && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
         txtQuickSearch.addEventListener("blur", function(e){
-            if (!apf.isChildOf(winQuickSearch, e.toElement))
+            if (self.winQuickSearch && winQuickSearch.visible 
+              && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
+        });
+        
+        ide.addEventListener("closepopup", function(e){
+            if (e.element != _self)
+                _self.toggleDialog(-1, true);
         });
 
         var editor = editors.currentEditor;
@@ -256,11 +262,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         oTotal.innerHTML = "of " + ranges.length;
     },
 
-    toggleDialog: function(force) {
+    toggleDialog: function(force, noanim) {
         ext.initExtension(this);
-
-        if (this.control && this.control.stop)
-            this.control.stop();
 
         var editorPage = tabEditors.getPage();
         if (!editorPage) return;
@@ -275,6 +278,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         if (!force && !winQuickSearch.visible || force > 0) {
             this.position = -1;
+            
+            if (this.control && this.control.stop)
+                this.control.stop();
 
             var sel   = editor.getSelection();
             var doc   = editor.getDocument();
@@ -289,6 +295,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
             if (value)
                 txtQuickSearch.setValue(value);
+
+            ide.dispatchEvent("closepopup", {element: this});
 
             winQuickSearch.$ext.style.top = "-30px";
             winQuickSearch.show();
@@ -314,6 +322,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 interval : 10,
                 control  : (this.control = {}),
                 onfinish : function() {
+                    divSearchCount.$ext.style.visibility = "";
                     _self.updateCounter();
                     if (corrected && corrected.onfinish)
                         corrected.onfinish();
@@ -325,36 +334,44 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 anim: "in"
             });
             
-            txtQuickSearch.focus();
-            txtQuickSearch.select();
+            if (this.control && this.control.stop)
+                this.control.stop();
+                
+            divSearchCount.$ext.style.visibility = "hidden";
+            
+            if (!noanim) {
+                winQuickSearch.visible = false;
+                
+                txtQuickSearch.focus();
+                txtQuickSearch.select();
 
-            //Animate
-            apf.tween.single(winQuickSearch, {
-                type     : "top",
-                anim     : apf.tween.NORMAL,
-                from     : winQuickSearch.$ext.offsetTop,
-                to       : corrected ? corrected.to : -30,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {}),
-                onfinish : function(){
-                    winQuickSearch.hide();
-                    editor.amlEditor.focus();
-                }
-            });
-
-            // I don't believe you want to remove selection after you've 
-            // found what you are looking for. Commented out
-            //var ace = this.$getAce();
-            //if (ace)
-            //    ace.selection.clearSelection();
+                //Animate
+                apf.tween.single(winQuickSearch, {
+                    type     : "top",
+                    anim     : apf.tween.NORMAL,
+                    from     : winQuickSearch.$ext.offsetTop,
+                    to       : corrected ? corrected.to : -30,
+                    steps    : 8,
+                    interval : 10,
+                    control  : (this.control = {}),
+                    onfinish : function(){    
+                        winQuickSearch.visible = true;
+                        winQuickSearch.hide();
+                        
+                        editor.ceEditor.focus();
+                    }
+                });
+            }
+            else {
+                winQuickSearch.hide();
+            }
         }
         
         return false;
     },
 
     quicksearch : function(){
-        this.toggleDialog(1);
+        this.toggleDialog();
     },
 
     execSearch: function(close, backwards, wasDelete, save) {
@@ -440,7 +457,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
 
     find: function() {
-        this.toggleDialog(1);
+        this.toggleDialog();
         return false;
     },
 
