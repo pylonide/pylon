@@ -20,7 +20,7 @@ module.exports = ext.register("ext/menus/menus", {
     items   : {},
     menus   : {},
     count   : 0,
-    debug   : 1,
+    debug   : location.href.indexOf('menus=1') > -1,
 
     init : function(){
         this.nodes.push(
