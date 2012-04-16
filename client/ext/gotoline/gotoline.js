@@ -39,7 +39,6 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         
         this.nodes.push(
             menus.addItemByPath("Goto/Goto Line...", new apf.item({
-                hotkey : apf.isMac ? "Command-L" : "Ctrl-L" // TODO: Don't hardcode this
                 caption : "Goto Line...",
                 onclick : function(){
                     _self.gotoline();

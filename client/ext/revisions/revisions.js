@@ -170,7 +170,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 disabled: "{!tabEditors.length}",
                 onclick: function() { _self.toggle(); }
             }), 900),
-            menus.addItemByPath("File/~", new apf.divider(), 910),
+            menus.addItemByPath("File/~", new apf.divider(), 910)
         );
 
         ide.addEventListener("loadsettings", function(e){
