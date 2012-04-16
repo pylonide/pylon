@@ -159,7 +159,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hook: function() {
         var _self = this;
-//return;
+
         var mnuItem;
         this.nodes.push(
             this.mnuSave = new apf.menu({ id : "mnuSave" }),
@@ -241,7 +241,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 method: "get",
                 callback: function(data, state, extra) {
                     if (state === 200 && data) {
-                        self.defaultUser = {
+                        _self.defaultUser = {
                             email: data
                         };
                     }
