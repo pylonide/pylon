@@ -146,7 +146,9 @@ module.exports = ext.register("ext/editors/editors", {
                     left  : 5,
                     width : 17,
                     height : 17,
-                    submenu : "{require('ext/menus/menus').getMenuId('View/Tabs')}",
+                    onmouseover : function(){
+                        this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
+                    },
                     showme  : "[{require('core/settings').model}::auto/tabs/@show]",
                     visible : "{apf.isTrue(this.showme)}",
                     skin : "btn_icon_only",
@@ -333,6 +335,12 @@ module.exports = ext.register("ext/editors/editors", {
 
         var model = new apf.model();
         var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+            /*page.addEventListener("afteropen", function(){
+                doc.dispatchEvent("editor.ready", {page: fake});
+                doc.addEventListener("$event.editor.ready", 
+                    function(fn){ fn({page: page}); });
+            });*/
+            
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
             doc.$page    = page;
@@ -363,11 +371,6 @@ module.exports = ext.register("ext/editors/editors", {
 
         //if (editorPage.model != model)
             //this.beforeswitch({nextPage: fake});
-
-        //Open tab, set as active and wait until opened
-        /*fake.addEventListener("afteropen", function(){
-
-        });*/
 
         editor.enable();
         editor.$itmEditor.select();

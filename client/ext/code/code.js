@@ -770,6 +770,8 @@ module.exports = ext.register("ext/code/code", {
 
             }), 2000)
         );
+
+        this.disable();
     },
 
     init: function(amlPage) {
@@ -794,6 +796,13 @@ module.exports = ext.register("ext/code/code", {
             checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
         });
 
+        ide.addEventListener("closefile", function(e){
+            if (tabEditors.length > 1)
+                _self.enable();
+            else
+                _self.disable();
+        });
+        
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
@@ -858,7 +867,12 @@ module.exports = ext.register("ext/code/code", {
     },
 
     enable : function() {
-        this.nodes.each(function(item){
+        if (this.disabled === false)
+            return;
+            
+        this.disabled = false;
+        
+        this.menus.each(function(item){
             item.enable();
         });
         
@@ -868,6 +882,11 @@ module.exports = ext.register("ext/code/code", {
     },
 
     disable : function() {
+        if (this.disabled)
+            return;
+        
+        this.disabled = true;
+        
         this.menus.each(function(item){
             item.disable();
         });
