@@ -389,7 +389,7 @@ module.exports = ext.register("ext/code/code", {
         });
 
         this.nodes.push(
-            menus.addItemByPath("Edit/~", new apf.divider(), 700),
+            /*menus.addItemByPath("Edit/~", new apf.divider(), 700),
 
             menus.addItemByPath("Edit/Line/", null, 800),
 
@@ -455,7 +455,7 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("Edit/Comment/", null, 900),
 
-            menus.addItemByPath("Edit/Comment/Toogle Comment", new apf.item({
+            menus.addItemByPath("Edit/Comment/Toggle Comment", new apf.item({
                 
             }), 100),
 
@@ -540,7 +540,7 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("Selection/Select to Document End", new apf.item({
                 
             }), 1200),
-
+*/
             menus.addItemByPath("View/Gutter", new apf.item({
                 type    : "check",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
@@ -550,6 +550,7 @@ module.exports = ext.register("ext/code/code", {
                 submenu : "mnuSyntax"
             }), 300000),
 
+            /* broken for some reason
             menus.addItemByPath("View/Newline Mode/", null, 310000),
 
             menus.addItemByPath("View/Newline Mode/Auto", new apf.item({
@@ -565,7 +566,7 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("View/Newline Mode/Unix (LF)", new apf.item({
                 type    : "check",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
-            }), 300),
+            }), 300),*/
 
             menus.addItemByPath("View/~", new apf.divider(), 400000),
             
@@ -579,8 +580,7 @@ module.exports = ext.register("ext/code/code", {
                 wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
                 type     : "check",
                 checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
-            }), 600000),
-
+            }), 600000)/*,
 
             menus.addItemByPath("Goto/~", new apf.divider(), 300),
 
@@ -646,7 +646,7 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({
 
-            }), 2000)
+            }), 2000)*/
         );
 
         mnuSyntax.onitemclick = function(e) {

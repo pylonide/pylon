@@ -59,7 +59,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     winSaveSessionAs.show();
                 },
                 disabled : "{!!!tabEditors.activepage}"
-            }), 900)
+            }), 900);
                 
             menus.addItemByPath("View/Tabs/Delete Tab Session", {    
                 menu : _self.mnuTabDeleteSessions = new apf.menu({
