@@ -357,10 +357,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         var path = data.node.getAttribute("path");
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
-                setTimeout(function() {
-                    self.setSaveButtonCaption();
-                });
-
                 self.onDocChange.call(self, e, doc);
             };
         }
@@ -430,6 +426,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.docChangeTimeout = setTimeout(function() {
             var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
             if (doc.$page && autoSaveEnabled) {
+                self.setSaveButtonCaption();
                 self.save(doc.$page);
             }
         }, CHANGE_TIMEOUT);
@@ -863,7 +860,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // Scroll to the first change, leaving it in the middle of the screen.
         editor.renderer.scrollToRow(firstChange - (editor.$getVisibleRowCount() / 2));
-        //editor.gotoLine(firstChange); //If we can scroll from - to this would be nice
         editor.selection.clearSelection()
 
         // Look for the node that references the revision we are loading and
