@@ -109,26 +109,24 @@ module.exports = ext.register("ext/save/save", {
 
         var saveItem, saveAsItem;
         this.nodes.push(
-            menus.addItemByPath("File/~", new apf.divider(), 1000),
-
             saveItem = menus.addItemByPath("File/Save", new apf.item({
                 onclick : this.quicksave.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
-            }), 1100),
+            }), 1000),
 
             saveAsItem = menus.addItemByPath("File/Save As...", new apf.item({
                 onclick : function () {
                     _self.saveas();
                 },
                 disabled : "{!!!tabEditors.activepage}"
-            }), 1200),
+            }), 1100),
 
             menus.addItemByPath("File/Save All", new apf.item({
                 onclick : function(){
                     _self.saveall();
                 },
                 disabled : "{!!!tabEditors.activepage}"
-            }), 1300),
+            }), 1200),
 
             menus.addItemByPath("File/Revert to Saved", new apf.item({
                 onclick : function(){

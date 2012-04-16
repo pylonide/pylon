@@ -46,12 +46,30 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     _self.toggleDialog(false);
                 }
             }), 100),
-            menus.addItemByPath("Find/~", new apf.divider(), 200),
+            mnuFind = menus.addItemByPath("Find/Find Next", new apf.item({
+                onclick : function() {
+                    _self.findNext();
+                }
+            }), 200),
+            mnuFind = menus.addItemByPath("Find/Find Previous", new apf.item({
+                onclick : function() {
+                    _self.findNext(true);
+                }
+            }), 300),
+            menus.addItemByPath("Find/~", new apf.divider(), 400),
             mnuReplace = menus.addItemByPath("Find/Replace...", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
-            }), 300)
+            }), 500),
+            
+            menus.addItemByPath("Find/~", new apf.divider(), 600),
+
+            mnuReplace = menus.addItemByPath("Find/Quick Search", new apf.item({
+                onclick : function() {
+                    _self.toggleDialog(true);
+                }
+            }), 700)
         );
 
         this.hotitems.search        = [mnuFind];
@@ -220,7 +238,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         };
     },
 
-    findNext: function() {
+    findNext: function(backwards) {
         if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
@@ -230,6 +248,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return;
         var options = this.getOptions();
         
+        if (backwards)
+            options.backwards = true;
+
         if (this.$crtSearch != txt) {
             this.$crtSearch = txt;
             // structure of the options:

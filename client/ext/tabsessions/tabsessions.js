@@ -39,7 +39,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         
             var sessions = model.queryNodes("auto/sessions/session");
         
-            menus.addItemByPath("View/Tabs/~", new apf.divider(), 400);
+            menus.addItemByPath("View/Tabs/~", new apf.divider(), 700);
             
             menus.addItemByPath("View/Tabs/Load Tab Session", {
                 menu : _self.mnuTabLoadSessions = new apf.menu({
@@ -50,7 +50,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 item : _self.mnuFileLoadSession = new apf.item({
                     disabled: !sessions.length
                 })
-            }, 500);
+            }, 800);
                 
             var itmSaveSessions = menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
                 caption : "Save Tab Session",
@@ -59,7 +59,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     winSaveSessionAs.show();
                 },
                 disabled : "{!!!tabEditors.activepage}"
-            }), 600)
+            }), 900)
                 
             menus.addItemByPath("View/Tabs/Delete Tab Session", {    
                 menu : _self.mnuTabDeleteSessions = new apf.menu({
@@ -70,7 +70,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 item : _self.mnuFileDeleteSession = new apf.item({
                     disabled: !sessions.length
                 })
-            }, 700);
+            }, 1000);
             
             // get sessionnames to order alfabetically
             var sessionnames = [];

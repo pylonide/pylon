@@ -72,7 +72,20 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), 300),
+            menus.addItemByPath("View/Tabs/~", new apf.divider(), 400),
+            menus.addItemByPath("View/Tabs/Close Tabs to the Right", new apf.item({
+                onclick : function() {
+                    _self.closealltotheright();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            }), 500),
 
+            menus.addItemByPath("View/Tabs/Close Tabs to the Left", new apf.item({
+                onclick : function() {
+                    _self.closealltotheleft();
+                },
+                disabled : "{!!!tabEditors.activepage}"
+            }), 600),
             mnuContext = new apf.menu({id : "mnuContextTabs"})
         );
         

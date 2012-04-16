@@ -45,7 +45,7 @@ module.exports = ext.register("ext/keybindings/keybindings", {
             if ((items = (oExt.hotitems && oExt.hotitems[command]))) {
                 for (j = 0, l = items.length; j < l; ++j) {
                     item = items[j];
-                    if (!item.setAttribute) continue;
+                    if (item === undefined || !item.setAttribute) continue;
                     item.setAttribute("hotkey", bindings[command]);
                 }
             }

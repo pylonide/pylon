@@ -38,13 +38,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var _self = this;
         
         this.nodes.push(
-            menus.addItemByPath("Goto/~", new apf.divider(), 200),
             menus.addItemByPath("Goto/Goto Line...", new apf.item({
                 caption : "Goto Line...",
                 onclick : function(){
                     _self.gotoline();
                 }
-            }), 300)
+            }), 200)
         );
 
         ide.addEventListener("gotoline", function() {
