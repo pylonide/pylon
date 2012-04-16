@@ -13,9 +13,6 @@ module.exports = function(options, imports, register) {
             getProjectDir: function(callback) {
                 callback(null, options.projectDir);
             },
-            getSettingsPath: function(callback) {
-                callback(null, options.settingsPath || path.resolve(options.projectDir, ".settings.xml"));
-            },
             getWorkspaceId: function(callback) {
                 callback(null, options.workspaceId);
             },

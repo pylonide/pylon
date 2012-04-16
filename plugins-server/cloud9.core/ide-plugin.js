@@ -1,6 +1,5 @@
 var assert = require("assert");
 var utils = require("connect").utils;
-var error = require("http-error");
 
 var IdeServer = require("./ide");
 
@@ -24,10 +23,7 @@ module.exports = function setup(options, imports, register) {
         if (err) return register(err);
         sandbox.getWorkspaceId(function(err, workspaceId) {
             if (err) return register(err);
-            sandbox.getSettingsPath(function(err, settingsPath) {
-                if (err) return register(err);
-                init(projectDir, workspaceId, settingsPath);
-            });
+            init(projectDir, workspaceId);
         });
     });
 
