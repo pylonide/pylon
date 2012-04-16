@@ -54,32 +54,33 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var _self = this;
 
         var mnuContext, itmLeft, itmRight, itmStackLeft, itmStackRight;
+        var itmCloseFile, itemCloseAllFiles, itmClosetab, itmCloseAllTabs, itmCloseOtherTabs;
         this.nodes.push(
             this.mnuTabs = menus.addItemByPath("View/Tabs/", null, 175),
             
             menus.addItemByPath("File/~", new apf.divider(), 100000),
-            menus.addItemByPath("File/Close File", new apf.item({
+            itmCloseFile = menus.addItemByPath("File/Close File", new apf.item({
                 onclick : function() {
                     _self.closetab(tabEditors.contextPage);
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), 110000),
-            menus.addItemByPath("File/Close All Files", new apf.item({
+            itmCloseAllFiles = menus.addItemByPath("File/Close All Files", new apf.item({
                 onclick : this.closealltabs.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
             }), 120000),
             
-            menus.addItemByPath("View/Tabs/Close Tab", new apf.item({
+            itmCloseTab = menus.addItemByPath("View/Tabs/Close Tab", new apf.item({
                 onclick : function() {
                     _self.closetab(tabEditors.contextPage);
                 },
                 disabled : "{!!!tabEditors.activepage}"
             }), 100),
-            menus.addItemByPath("View/Tabs/Close All Tabs", new apf.item({
+            itmCloseAllTabs = menus.addItemByPath("View/Tabs/Close All Tabs", new apf.item({
                 onclick : this.closealltabs.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
             }), 200),
-            menus.addItemByPath("View/Tabs/Close All But Current Tab", new apf.item({
+            itmCloseOtherTabs = menus.addItemByPath("View/Tabs/Close All But Current Tab", new apf.item({
                 onclick : function() {
                     _self.closeallbutme(tabEditors.$activePage);
                 },
@@ -149,9 +150,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }), 700, mnuContext);
         
         this.hotitems.revealtab          = [itmReveal];
-        this.hotitems.closetab           = [this.nodes[0], itmClose];
-        this.hotitems.closealltabs       = [this.nodes[1], itmCloseAll];
-        this.hotitems.closeallbutme      = [this.nodes[2], itmCloseOther];
+        this.hotitems.closetab           = [itmCloseFile, itmCloseTab, itmClose];
+        this.hotitems.closealltabs       = [itmCloseAllTabs, itmCloseAllFiles, itmCloseAll];
+        this.hotitems.closeallbutme      = [itmCloseOtherTabs, itmCloseOther];
         this.hotitems.closealltotheright = [itmCloseRight];
         this.hotitems.closealltotheleftt = [itmCloseLeft];
         
