@@ -31,6 +31,8 @@ module.exports = ext = {
         1 : "General"
     },
 
+    model : new apf.model(),
+
     currentLayoutMode : null,
 
     addType : function(defName, regHandler, unregHandler){
@@ -46,12 +48,15 @@ module.exports = ext = {
         if (oExtension.registered)
             return oExtension;
 
-        if (!mdlExt.queryNode("plugin[@path='" + path + "']"))
-            mdlExt.appendXml('<plugin type="' + this.typeLut[oExtension.type]
+        if (!this.model.data)
+            this.model.load("<plugins />");
+
+        if (!this.model.queryNode("plugin[@path='" + path + "']"))
+            this.model.appendXml('<plugin type="' + this.typeLut[oExtension.type]
                 + '" name="' + (oExtension.name || "") + '" path="' + path
                 + '" dev="' + (oExtension.dev || "") + '" enabled="1" userext="0" />');
         else
-            mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+            this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
         if (oExtension.commands) {
             for (var cmd in oExtension.commands)
@@ -137,7 +142,7 @@ module.exports = ext = {
 
         this.extHandlers[oExtension.type].unregister(oExtension);
 
-        mdlExt.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
+        this.model.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
 
         if (oExtension.inited) {
             oExtension.destroy();
@@ -156,13 +161,13 @@ module.exports = ext = {
             var data = oExtension.skin.data;
             oExtension.skinNode = new apf.skin(apf.extend({}, oExtension.skin, {data: null}));
             oExtension.skinNode.setProperty("src", data);
-            apf.document.body.appendChild(oExtension.skinNode);
+            apf.document.documentElement.appendChild(oExtension.skinNode);
         }
 
         //Load markup
         var markup = oExtension.markup;
         if (markup) 
-            (oExtension.markupInsertionPoint || apf.document.body).insertMarkup(markup);
+            (oExtension.markupInsertionPoint || apf.document.documentElement).insertMarkup(markup);
 
         var deps = oExtension.deps;
         if (deps) {
@@ -199,7 +204,7 @@ module.exports = ext = {
             return;
 
         ext.enable();
-        mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+        this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
     },
 
     disableExt : function(path) {
@@ -208,7 +213,7 @@ module.exports = ext = {
             return;
 
         ext.disable();
-        mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 0);
+        this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 0);
     },
 
     execCommand: function(cmd, data) {
@@ -224,7 +229,7 @@ module.exports = ext = {
 
         var oExt = require(oCmd.ext);
         if (oExt && typeof oExt[cmd] === "function") {
-            require(["ext/console/console"], function(consoleExt) {
+            self["requ"+"ire"](["ext/console/console"], function(consoleExt) {
                 if (oExt.commands[cmd].msg)
                     consoleExt.write(oExt.commands[cmd].msg);
             });
