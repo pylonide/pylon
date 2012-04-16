@@ -81,14 +81,13 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
     },
 
-    init : function(amlNode){
+    init : function(){
         var _self = this;
-        var ace;
-        
-        txtQuickSearch.addEventListener("clear", function(e) {
+
+        txtQuickSearch.addEventListener("clear", function() {
             _self.execSearch(false, false, true);
         })
-        
+
         txtQuickSearch.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
@@ -96,10 +95,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     return false;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
-                    
+
                     if (txtQuickSearch.getValue())
                         _self.saveHistory(txtQuickSearch.getValue());
-                    
+
                     if (e.htmlEvent)
                         apf.stopEvent(e.htmlEvent);
                     else if (e.stop)
@@ -112,61 +111,58 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     _self.navigateList("next");
                     break;
                 case 36: //HOME
-                    if (!e.ctrlKey) return;
+                    if (!e.ctrlKey)
+                        return;
                     _self.navigateList("first");
                     break;
                 case 35: //END
-                    if (!e.ctrlKey) return;
+                    if (!e.ctrlKey)
+                        return;
                     _self.navigateList("last");
                     break;
             }
-            
+
             var ace = _self.$getAce();
-            if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
-                // fall back to return
-            }
-            else {
-                if (e.keyCode == 8) {
-                  // ignore backspace--see 'keyup'--else the isCharacter() case fires   
-                }
-                else if (apf.isCharacter(e.keyCode) && !e.metaKey) { 
-                    setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
-                        _self.execSearch(false, false);
-                    }, 20);   
-                }
-            }
-            
-            return;
-        });
-        
-        txtQuickSearch.addEventListener("keyup", function(e) {
-            ace = _self.$getAce();
+            if (ace.getSession().getDocument().getLength() > MAX_LINES)
+                return;
+
             switch (e.keyCode) {
-                case 8: // BACKSPACE
-                    var ace = _self.$getAce();
-                    if (ace.getSession().getDocument().getLength() > MAX_LINES) { 
-                        // fall back to return
+                case 8: // Backspace is handled in "keyup", else isCharacter steals it
+                    return;
+                default:
+                    if (apf.isCharacter(e.keyCode) && !e.metaKey) {
+                        setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
+                            _self.execSearch(false, false);
+                        }, 20);
                     }
-                    else {
-                        _self.execSearch(false, !!e.shiftKey, true);
-                    }
-                    return false;
-                case 27:
-                    _self.toggleDialog(-1);
                     break;
             }
-        }); 
-        
+
+            return;
+        });
+
+        txtQuickSearch.addEventListener("keyup", function(e) {
+            var ace = _self.$getAce();
+            switch (e.keyCode) {
+                case 8: // Backspace
+                    var ace = _self.$getAce();
+                    if (ace.getSession().getDocument().getLength() < MAX_LINES)
+                        _self.execSearch(false, !!e.shiftKey, true);
+                    return false;
+            }
+        });
+
         winQuickSearch.addEventListener("blur", function(e){
             if (winQuickSearch.visible && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
+
         txtQuickSearch.addEventListener("blur", function(e){
-            if (self.winQuickSearch && winQuickSearch.visible 
+            if (self.winQuickSearch && winQuickSearch.visible
               && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
-        
+
         ide.addEventListener("closepopup", function(e){
             if (e.element != _self)
                 _self.toggleDialog(-1, true);
@@ -244,13 +240,13 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             oTotal.innerHTML = "of 0";
             return;
         }
-        
+
         if (backwards) {
             var newCount = oIter.innerHTML - 1;
             if (newCount < 1) {
                 newCount = String(ranges.length);
             }
-            oIter.innerHTML = String(newCount); 
+            oIter.innerHTML = String(newCount);
         }
         else {
             var crtIdx = -1;
@@ -271,7 +267,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             }
             oIter.innerHTML = String(++crtIdx);
         }
-    
+
         oTotal.innerHTML = "of " + ranges.length;
     },
 
@@ -289,7 +285,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         if (!force && !winQuickSearch.visible || force > 0) {
             this.position = -1;
-            
+
             if (this.control && this.control.stop)
                 this.control.stop();
 
@@ -310,7 +306,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
-            
+
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
@@ -329,12 +325,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         else if (winQuickSearch.visible) {
             if (this.control && this.control.stop)
                 this.control.stop();
-                
+
             divSearchCount.$ext.style.visibility = "hidden";
-            
+
             if (!noanim) {
                 winQuickSearch.visible = false;
-                
+
                 txtQuickSearch.focus();
                 txtQuickSearch.select();
 
@@ -347,10 +343,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     steps    : 8,
                     interval : 10,
                     control  : (this.control = {}),
-                    onfinish : function(){    
+                    onfinish : function(){
                         winQuickSearch.visible = true;
                         winQuickSearch.hide();
-                        
+
                         editor.ceEditor.focus();
                     }
                 });
@@ -359,7 +355,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 winQuickSearch.hide();
             }
         }
-        
+
         return false;
     },
 
@@ -373,13 +369,13 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             return;
 
         var searchTxt = txtQuickSearch.getValue();
-            
+
         if (searchTxt.length < 2 && ace.getSession().getDocument().getLength() > MAX_LINES_SOFT)
             return;
 
         //if (!searchTxt)
           //  return this.updateCounter();
-        
+
         var options = {
             backwards: !!backwards,
             wrap: true,
@@ -391,9 +387,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         if (this.$crtSearch != searchTxt)
             this.$crtSearch = searchTxt;
-            
+
         var highlightTxt = ace.session.getTextRange(ace.selection.getRange());
-        
+
         // super ace bug ! if you're already highlighting some text, another find executes
         // from the end of the cursor, not the start of your current highlight. thus,
         // if the text is "copyright" and you execute a search for "c", followed immediately by
@@ -405,27 +401,27 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             // we have a selection, that is the start of the current needle, but selection !== needle
             if (!wasDelete) {
                 var highlightTxtReStart = new RegExp("^" + Util.escapeRegExp(highlightTxt), "i");
-            
+
                                                                             // if we're going backwards, reset the cursor anyway
-                if (searchTxt.match(highlightTxtReStart) && (options.backwards || searchTxt.toLowerCase() != highlightTxt.toLowerCase())) { 
-                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - highlightTxt.length); 
+                if (searchTxt.match(highlightTxtReStart) && (options.backwards || searchTxt.toLowerCase() != highlightTxt.toLowerCase())) {
+                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - highlightTxt.length);
                 }
-            } 
+            }
             else { // we've deleted a letter, so stay on the same highlighted term
                 var searchTxtReStart = new RegExp("^" + Util.escapeRegExp(searchTxt), "i");
-                
-                if (highlightTxt.match(searchTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) { 
-                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - searchTxt.length - 1); 
+
+                if (highlightTxt.match(searchTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) {
+                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - searchTxt.length - 1);
                 }
             }
         }
 
         ace.find(searchTxt, options);
         this.currentRange = ace.selection.getRange();
-        
+
         if (save)
             this.saveHistory(searchTxt);
-        
+
         if (close) {
             winQuickSearch.hide();
             editors.currentEditor.ceEditor.focus();
@@ -433,12 +429,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         this.updateCounter(backwards);
     },
-    
+
     saveHistory : function(searchTxt){
         var settings = require("ext/settings/settings");
         if (!settings.model)
             return;
-            
+
         var history = settings.model;
         var search = apf.createNodeFromXpath(history.data, "search");
 
@@ -454,11 +450,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         return false;
     },
 
-    findnext: function(e) { // apparently, CMD + G executes a search; 
+    findnext: function(e) { // apparently, CMD + G executes a search;
         if (e !== 1) {      // halt that by forcing this method to come from a click
             return;
         }
-        
+
         var ace = this.$getAce();
         if (!ace)
             return;
@@ -473,7 +469,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         if (e !== 1) {
             return;
         }
-        
+
         var ace = this.$getAce();
         if (!ace)
             return;
