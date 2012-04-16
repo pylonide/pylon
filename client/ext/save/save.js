@@ -320,13 +320,14 @@ module.exports = ext.register("ext/save/save", {
         return false;
     },
 
-    _saveAsNoUI: function(page, path, newPath) {
+    _saveAsNoUI: function(page, path, newPath, isReplace) {
         if (!page || !path)
             return;
 
         newPath = newPath || path;
 
         var file = page.$model.data;
+        var oldFile = file;
         var saving = parseInt(file.getAttribute("saving"), 10);
 
         if (saving) {
@@ -349,12 +350,14 @@ module.exports = ext.register("ext/save/save", {
             var doc = page.$doc;
 
             if (path !== newPath || parseInt(node.getAttribute("newfile") || 0, 10) === 1) {
-                model.load(node);
-                file = model.data;
-                fs.beforeRename(file, null, newPath, false);
+                file = apf.getCleanCopy(node)
+                fs.beforeRename(file, null, newPath, false, isReplace);
                 doc.setNode(file);
+                model.load(file);
+                tabEditors.set(tabEditors.getPage());
             }
 
+            apf.xmldb.removeAttribute(oldFile, "saving");
             apf.xmldb.removeAttribute(file, "saving");
 
             if (self.saveBuffer[path]) {
@@ -443,7 +446,7 @@ module.exports = ext.register("ext/save/save", {
         var file = page.$model.data;
         var path = file.getAttribute("path");
         var newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
-
+        var isReplace = false;
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"), 10);
         if (saving) {
@@ -457,7 +460,7 @@ module.exports = ext.register("ext/save/save", {
         var doSave = function() {
             winConfirm.hide();
             winSaveAs.hide();
-            self._saveAsNoUI(page, path, newPath);
+            self._saveAsNoUI(page, path, newPath, isReplace);
         };
 
         if (path !== newPath || parseInt(file.getAttribute("newfile") || 0, 10) === 1) {
@@ -465,7 +468,7 @@ module.exports = ext.register("ext/save/save", {
                 if (exists) {
                     var name = newPath.match(/\/([^/]*)$/)[1];
                     var folder = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
-
+                    isReplace = true;
                     util.confirm(
                         "Are you sure?",
                         "\"" + name + "\" already exists, do you want to replace it?",
