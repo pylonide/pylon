@@ -464,11 +464,11 @@ module.exports = ext.register("ext/code/code", {
         c = 0;
         this.menus.push(
             addEditorMenu("Edit/Text/Remove Word Right", [
-                "Alt-Delete", "Ctrl-Delete"
+                "Alt-Delete", "Alt-Delete"
             ], "removewordright"),
 
             addEditorMenu("Edit/Text/Remove Word Left", [
-                "Alt-Backspace|Ctrl-Alt-Backspace", "Ctrl-Backspace"
+                "Alt-Backspace", "Alt-Backspace"
             ], "removewordleft"),
 
             menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
@@ -546,11 +546,11 @@ module.exports = ext.register("ext/code/code", {
 
             addEditorMenu("Selection/Select to Document Start", [
                 "Command-Shift-Up", "Ctrl-Shift-Home|Alt-Shift-Up" 
-            ], "selecttoend"),
+            ], "selecttostart"),
 
             addEditorMenu("Selection/Select to Document End", [
                 "Command-Shift-Down", "Ctrl-Shift-End|Alt-Shift-Down" 
-            ], "selecttostart")
+            ], "selecttoend")
         );
         
         c = 0;
@@ -697,8 +697,7 @@ module.exports = ext.register("ext/code/code", {
         }
         
         c = 0;
-        this.menus.push(
-            
+        this.menus.push(  
             /**** Goto ****/
 
             menus.addItemByPath("Goto/~", new apf.divider(), c = 399),
@@ -725,46 +724,7 @@ module.exports = ext.register("ext/code/code", {
             
             addEditorMenu("Goto/Scroll to Selection", [
                 "Ctrl-L", ""
-            ], "centerselection"),
-
-            /**** Tools ****/
-
-            menus.addItemByPath("Tools/~", new apf.divider(), 30000),
-
-            menus.addItemByPath("Tools/Git/", null, 40000),
-
-            menus.addItemByPath("Tools/Git/Push", new apf.item({
-            }), 1000),
-
-            menus.addItemByPath("Tools/Git/Pull", new apf.item({
- 
-            }), 2000),
-
-            menus.addItemByPath("Tools/Git/Stash", new apf.item({
- 
-            }), 3000),
-
-            menus.addItemByPath("Tools/Git/Commit", new apf.item({
- 
-            }), 4000),
-
-            menus.addItemByPath("Tools/Git/Checkout", new apf.item({
-
-            }), 5000),
-
-            // should probably do HG, too...
-
-            menus.addItemByPath("Tools/~", new apf.divider(), 50000),
-
-            menus.addItemByPath("Tools/NPM/", null, 60000),
-
-            menus.addItemByPath("Tools/NPM/Install", new apf.item({
- 
-            }), 1000),
-
-            menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({
-
-            }), 2000)
+            ], "centerselection")
         );
 
         this.disable();

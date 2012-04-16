@@ -27,7 +27,7 @@ module.exports = ext.register("ext/codecomplete/codecomplete", {
         this.nodes.push(
             menus.addItemByPath("Edit/~", new apf.divider(), 2000),
             menus.addItemByPath("Edit/Show Autocomplete", new apf.item({
-                hotkey : apf.isMac ? "Ctrl-Space" : "Alt-Space"
+                hotkey : apf.isMac ? "Alt-Space" : "Ctrl-Space"
             }), 2100)
         );
     },

@@ -92,10 +92,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             menus.addItemByPath("Goto/Switch File/", null, 301),
 
             itmLeft = menus.addItemByPath("Goto/Switch File/Next File", new apf.item({
+                hotkey : apf.isMac ? "Option-Tab" : "Ctrl-Tab", // TODO: Don't hardcode this,
                 onclick : function(){ _self.gototabright(); }
             }), 100),
 
             itmRight = menus.addItemByPath("Goto/Switch File/Previous File", new apf.item({
+                hotkey : apf.isMac ? "Option-Shift-Tab" : "Ctrl-Shift-Tab", // TODO: Don't hardcode this
                 onclick : function(){ _self.gototableft(); }
             }), 200),
             
@@ -155,7 +157,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.hotitems.closeallbutme      = [itmCloseOtherTabs, itmCloseOther];
         this.hotitems.closealltotheright = [itmCloseRight];
         this.hotitems.closealltotheleftt = [itmCloseLeft];
-        
+
         this.hotitems.gototabright       = [itmRight];
         this.hotitems.gototableft        = [itmLeft];
         this.hotitems.nexttab            = [itmStackRight];

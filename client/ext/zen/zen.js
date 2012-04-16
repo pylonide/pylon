@@ -47,6 +47,7 @@ module.exports = ext.register("ext/zen/zen", {
         "zen": {hint: "toggle zen mode"},
         "zenslow": {hint: "toggle zen mode in slow-motion"}
     },
+    hotitems : {},
 
     nodes : [],
 
@@ -106,6 +107,8 @@ module.exports = ext.register("ext/zen/zen", {
                 _self.toggleFullscreenZen();
             }
         }), 200000);
+        
+        this.hotitems.zen = [this.mnuItem];
     },
 
     init : function(){

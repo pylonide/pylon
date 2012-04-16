@@ -317,7 +317,7 @@ module.exports = ext.register("ext/console/console", {
                         _self.hide();
                 }
             }), 700),
-            this.mnuItemInput = menus.addItemByPath("View/Input Bar", new apf.item({
+            this.mnuItemInput = menus.addItemByPath("View/Command Line", new apf.item({
                 type: "check",
                 checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]",
                 "onprop.checked" : function(e) {
@@ -328,6 +328,43 @@ module.exports = ext.register("ext/console/console", {
                 }
             }), 800)
         );
+
+        menus.addItemByPath("Tools/~", new apf.divider(), 30000),
+
+        menus.addItemByPath("Tools/Git/", null, 40000),
+
+        menus.addItemByPath("Tools/Git/Push", new apf.item({
+        }), 1000),
+
+        menus.addItemByPath("Tools/Git/Pull", new apf.item({
+
+        }), 2000),
+
+        menus.addItemByPath("Tools/Git/Stash", new apf.item({
+
+        }), 3000),
+
+        menus.addItemByPath("Tools/Git/Commit", new apf.item({
+
+        }), 4000),
+
+        menus.addItemByPath("Tools/Git/Checkout", new apf.item({
+
+        }), 5000),
+
+        // should probably do HG, too...
+
+        menus.addItemByPath("Tools/~", new apf.divider(), 50000),
+
+        menus.addItemByPath("Tools/NPM/", null, 60000),
+
+        menus.addItemByPath("Tools/NPM/Install", new apf.item({
+
+        }), 1000),
+
+        menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({
+
+        }), 2000)
         
         this.hotitems.switchconsole = [this.mnuItemConsoleExpanded];
         
