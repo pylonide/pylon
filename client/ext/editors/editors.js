@@ -351,7 +351,6 @@ module.exports = ext.register("ext/editors/editors", {
 
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
-            ide.dispatchEvent("afteropenfile", {doc: doc, node: e.node, editor: editor});
         });
 
         this.initEditorEvents(fake, model);
