@@ -11,19 +11,25 @@ var Plugin = require("../cloud9.core/plugin");
 var Path = require("path");
 var fs = require("fs");
 var util = require("util");
+var assert = require("assert");
 
 var name = "settings";
 
+var SETTINGS_PATH;
+
 module.exports = function setup(options, imports, register) {
+    assert(options.workspaceId, "option 'workspaceId' is required");
+    SETTINGS_PATH = options.settingsPath;
+
     imports.ide.register(name, SettingsPlugin, register);
+
 };
 
 var SettingsPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = name;
-
-    this.settingsPath = ide.options.settingsPath;
+    this.settingsPath = SETTINGS_PATH;
 };
 
 util.inherits(SettingsPlugin, Plugin);
