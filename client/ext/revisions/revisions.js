@@ -387,7 +387,12 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterSwitch: function(e) {
-        this.hide();
+        if (e.nextPage.$showRevisions === true) {
+            this.show();
+        }
+        else {
+            this.hide();
+        }
     },
 
     onCloseFile: function(e) {
@@ -1100,6 +1105,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 lstRevisions.select(node);
             }
         }
+        tabEditors.getPage().$showRevisions = true;
     },
 
     hide: function() {
@@ -1110,6 +1116,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.goToEditView();
 
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
+        tabEditors.getPage().$showRevisions = false;
     },
 
     disableEventListeners: function() {
