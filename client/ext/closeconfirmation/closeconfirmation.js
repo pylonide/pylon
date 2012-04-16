@@ -7,7 +7,6 @@
 
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/closeconfirmation/settings.xml");

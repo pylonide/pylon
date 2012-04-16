@@ -17,6 +17,7 @@ var Save = require("ext/save/save");
 //var Collab = require("c9/ext/collaborate/collaborate");
 var Util = require("ext/revisions/revisions_util");
 var settings = require("ext/settings/settings");
+var markupSettings = require("text!ext/revisions/settings.xml");
 
 // Ace dependencies
 var Range = require("ace/range").Range;
@@ -165,35 +166,25 @@ module.exports = ext.register("ext/revisions/revisions", {
             menus.addItemByPath("File/~", new apf.divider(), 800),
             mnuItem = menus.addItemByPath("File/File Revision History...", new apf.item({
                 type: "check",
-                checked: "[{require('ext/settings/settings').model}::general/@revisionmode]",
+                checked: "[{require('ext/settings/settings').model}::general/@revisionsvisible]",
                 disabled: "{!tabEditors.length}",
                 onclick: function() { _self.toggle(); }
             }), 900),
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
-
-        ide.addEventListener("loadsettings", function(e){
-            var revisionMode = e.model.queryValue("general/@revisionmode");
-            if (apf.isTrue(revisionMode)) {
+        
+        settings.addSettings("General", markupSettings);
+        ide.addEventListener("loadsettings", function(e) {
+            var revisionVisible = e.model.queryValue("general/@revisionsvisible");
+            if (apf.isTrue(revisionVisible)) {
                 ide.addEventListener("init.ext/editors/editors", function (e) {
-                    tabEditors.addEventL
-                    istener("afterswitch", function(){
+                    tabEditors.addEventListener("afterswitch", function() {
                         if (self.ceEditor)
                             _self.show();
                         tabEditors.removeEventListener("afterswitch", arguments.callee);
                     });
                 });
             }
-        });
-
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            e.ext.getHeading("General").appendChild(new apf.checkbox({
-                "class" : "underlined",
-                skin  : "checkbox_grey",
-                value : "[general/@revisionmode]",
-                label : "File revisions",
-                onclick: function() { self.toggle(); }
-            }));
         });
 
         btnSave.removeAttribute("icon");
@@ -221,10 +212,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "Enable Auto-Save",
             type    : "check",
-            checked : "true", //[{require('core/settings').model}::general/@autosave]",
-            onclick : function(){
-                //@todo
-            }
+            checked : "[{require('core/settings').model}::general/@autosaveenabled]"
         }), c += 100);
         menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
         menus.addItemToMenu(this.mnuSave, new apf.item({
@@ -264,13 +252,27 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$initWorker();
     },
 
-    setSaveButtonCaption: function(){
-        if (!tabEditors.activepage)
-            btnSave.setCaption("")
-        else if (tabEditors.getPage().getModel().queryValue("@changed") == 1)
-            btnSave.setCaption("Saving...")
-        else
-            btnSave.setCaption("All changes saved")
+    setSaveButtonCaption: function(caption) {
+        if (caption) {
+            return btnSave.setCaption(caption);
+        }
+        
+        if (!tabEditors.activepage) {
+            btnSave.setCaption("");
+        }
+        
+        var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
+        var hasChanged = tabEditors.getPage().getModel().queryValue("@changed") == 1;
+        
+        if (autoSaveEnabled && hasChanged) {
+            btnSave.setCaption("Saving...");
+        }
+        else if (!hasChanged) {
+            btnSave.setCaption("All changes saved");
+        }
+        else {
+            btnSave.setCaption("");
+        }
     },
 
     init: function() {
@@ -364,7 +366,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
-        //ext.initExtension(this); //Please only init when the revisions menu item is clicked
 
         this.setSaveButtonCaption();
     },
@@ -411,6 +412,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (path && this.docChangeListeners[path]) {
             delete this.docChangeListeners[path];
         }
+
+        this.save(e.page);
     },
 
     onDocChange: function(e, doc) {
@@ -425,7 +428,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         var self = this;
         clearTimeout(this.docChangeTimeout);
         this.docChangeTimeout = setTimeout(function() {
-            if (doc.$page) {
+            var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
+            if (doc.$page && autoSaveEnabled) {
                 self.save(doc.$page);
             }
         }, CHANGE_TIMEOUT);
@@ -475,7 +479,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 break;
 
-            // The server is sending us the latest value of the current doc,
+            // The server is sending us the original value of the current doc,
             // which we will send to the worker to process.
             case "getOriginalContent":
                 var revision = this.getRevision(message.id);
@@ -886,7 +890,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
-        if (!tabEditors)
+        var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
+        if (!tabEditors || !autoSaveEnabled)
             return;
 
         tabEditors.getPages().forEach(this.save, this);
@@ -1075,7 +1080,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     show: function() {
         ext.initExtension(this);
 
-        settings.model.setQueryValue("general/@revisionmode", true);
+        settings.model.setQueryValue("general/@revisionsvisible", true);
 
         ide.dispatchEvent("revisions.visibility", {
             visibility: "shown",
@@ -1109,7 +1114,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     hide: function() {
-        settings.model.setQueryValue("general/@revisionmode", false);
+        settings.model.setQueryValue("general/@revisionsvisible", false);
         ceEditor.$editor.container.style.right = "0";
         this.panel.hide();
 
