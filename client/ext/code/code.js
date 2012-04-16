@@ -752,7 +752,6 @@ module.exports = ext.register("ext/code/code", {
         });
     },
 
-
     enable : function() {
         this.nodes.each(function(item){
             item.enable();

@@ -52443,7 +52443,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25018)TIME(Sun, 15 Apr 2012 15:30:36 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25144)TIME(Mon, 16 Apr 2012 09:17:07 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52681,20 +52681,22 @@ apf.item  = function(struct, tagName){
                     return;
                 
                 //hmm not very scalable...
-                var buttons = apf.document.getElementsByTagNameNS(apf.ns.aml, "button");
-                for (var i = 0; i < buttons.length; i++) {
-                    if (buttons[i].submenu == _self.parentNode.name) {
-                        var btn = buttons[i];
-                        btn.$setState("Over", {});
-
-                        $setTimeout(function(){
-                            btn.$setState("Out", {});
-                        }, 200);
-
-                        break;
+                if (_self.parentNode) {
+                    var buttons = apf.document.getElementsByTagNameNS(apf.ns.aml, "button");
+                    for (var i = 0; i < buttons.length; i++) {
+                        if (buttons[i].submenu == _self.parentNode.name) {
+                            var btn = buttons[i];
+                            btn.$setState("Over", {});
+    
+                            $setTimeout(function(){
+                                btn.$setState("Out", {});
+                            }, 200);
+    
+                            break;
+                        }
                     }
                 }
-
+                
                 _self.$down();
                 _self.$up();
                 _self.$click();
