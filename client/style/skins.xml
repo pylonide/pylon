@@ -81,6 +81,11 @@
             height        : 36px;
             background    : url(images/c9-menu-backg.png) repeat-x 0 0;
             border-bottom : 1px solid #000000;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .c9-menu-bar .c9-mbar-logo {
@@ -325,10 +330,12 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .btn.smallbtn {
@@ -820,9 +827,6 @@
                 overflow           : hidden;
                 position           : relative;
                 cursor             : pointer;
-                -moz-user-select   : none;
-                -khtml-user-select : none;
-                user-select        : none;
                 background-color   : #1f7224;
                 filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#24872b', endColorstr='#1e6c22');
                 -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#24872b', endColorstr='#1e6c22')";
@@ -834,6 +838,12 @@
                 -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
                 -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
                 box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
+
+                -moz-user-select: -moz-none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+                user-select: none;
             }
 
             .github-button .icon {
@@ -899,13 +909,15 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             height             : 31px;
             width              : 18px;
             background-repeat   : no-repeat;
             background-position : -36px 50%;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .btn_console_openOver {
@@ -917,7 +929,7 @@
         .btn_console_openOpen.btn_console_openDown:hover {
             background-position: -18px 50%;
         }
-        
+
 
         .btn_console_openOpen {
             background-position: 0 50%;
@@ -940,11 +952,13 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             height             : 21px;
             width              : 22px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .btn_icon_onlyDown.tabmenubtn {
@@ -1018,11 +1032,13 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             background-repeat:no-repeat;
             background-position: 0 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .dockButton-footer {
@@ -1343,10 +1359,12 @@
             overflow           : visible;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .c9-menu-btn .c9-left {
@@ -1451,11 +1469,13 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
             border:1px solid transparent;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .with-arrow.c9-toolbarbutton {
@@ -1596,9 +1616,6 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
             border:1px solid transparent;
             padding-bottom: 1px;
@@ -1620,6 +1637,12 @@
             background         :-moz-linear-gradient(center bottom, #2e2e2e 0%, #282828 100%) repeat scroll 0 0 transparent;
 
             width: 25px;
+
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .c9-sidepanelsbutton .c9-icon {
@@ -1727,12 +1750,14 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 13px;
             margin:            : 0 1px;
             border             : 1px solid transparent;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .c9-toolbarbutton2 .c9-icon {
@@ -1817,11 +1842,13 @@
             cursor              : pointer;
             position            : relative;
             cursor              : default;
-            -moz-user-select    : none;
-            -khtml-user-select  : none;
-            user-select         : none;
             background-position : 0 0;
             background-repeat   : no-repeat;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .header-btnOver {
@@ -1851,12 +1878,14 @@
             cursor              : pointer;
             position            : relative;
             cursor              : default;
-            -moz-user-select    : none;
-            -khtml-user-select  : none;
-            user-select         : none;
             background-position : 0 27px;
             background-repeat   : no-repeat;
             background-image    : url(images/browser_button.png);
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .browser-btn span{
@@ -2115,12 +2144,14 @@
             cursor              : pointer;
             position            : relative;
             cursor              : default;
-            -moz-user-select    : none;
-            -khtml-user-select  : none;
-            user-select         : none;
             background-repeat   : no-repeat;
             background-image    : url("images/c9-topbar-btns.png");
             background-position : 0 0;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         // dashboard
@@ -2476,7 +2507,7 @@
             top        : 2px;
             background : url("images/checkbox.png") no-repeat 0 -12px;
         }
-        
+
         .cbcontainerDown .checkbox {
             background-position : 0 -36px;
         }
@@ -2531,7 +2562,7 @@
             line-height   : 14px;
             color         : #f1f1f1;
             cursor:default;
-            
+
             padding     : 1px 3px 2px 0px;
             position    : relative;
             top         : -2px;
@@ -2544,13 +2575,13 @@
 
         .cbmcontainerFocus span {
         }
-        
+
         .cbmcontainerOver  {
             background-color : #393939;
         }
-        
+
         .cbmcontainerChecked.cbmcontainerDown.cbmcontainerFocus .checkbox {
-            
+
         }
 
         .cbmcontainer .checkbox {
@@ -2562,9 +2593,9 @@
             top        : 1px;
             background: none;
         }
-        
+
         .cbmcontainerDown .checkbox {
-            
+
         }
 
         .cbmcontainerChecked .checkbox {
@@ -2796,8 +2827,13 @@
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_editor {
-          position: relative;
-          overflow: hidden;
+            position: relative;
+            overflow: hidden;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .ace_scroller {
@@ -4015,12 +4051,12 @@
         .modal-divider {
             border-color : #b0b2b4 #E6E6E6 #E6E6E6 #b0b2b4;
         }
-        
+
         .divider-status-bar {
             border: none;
             background: url(images/toolbar-divider.png) 0px 0px repeat-y;
         }
-        
+
         .ace_dark .divider-status-bar {
             background: url(images/toolbar-divider.png) -6px 0px repeat-y;
         }
@@ -4645,7 +4681,7 @@
             color: #303030;
             font-size: 12px;
         }
-        
+
         .menu-bk .label {
             color: #F1F1F1;
         }
@@ -4660,15 +4696,15 @@
 <a:list name="lineselect">
     <a:style><![CDATA[
         .lineselect{
-            
+
         }
-        
+
         .searchresults {
             position : relative;
         }
-        
+
         .searchresults>div{
-            background : rgba(255,255,255,0.4);   
+            background : rgba(255,255,255,0.4);
             color : #666;
             padding : 2px 3px 4px 10px;
             border-top : 1px solid rgba(255,255,255,0.8);
@@ -4969,7 +5005,7 @@
     <a:style><![CDATA[
         .menu-bk {
             display  : none;
-            
+
             /* fallback (Older Opera) */
             background: #272727;
             /* Mozilla: */
@@ -4983,10 +5019,10 @@
             -webkit-box-shadow    : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.21);
             box-shadow            : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
             border: 1px solid #000000;
-            
+
             margin-left: 5px;
-            
-            
+
+
             margin: -1px 0 0 0;
             padding: 3px 0 3px 0;
             z-index: 10000;
@@ -4999,7 +5035,7 @@
             color         : #f1f1f1;
             cursor:default;
         }
-        
+
         .menu-bk.moveleft {
             margin-left: 6px;
         }
@@ -5008,16 +5044,16 @@
             margin-top: -10px;
             margin-left: 6px;
         }
-        
+
         .menu-bk.downward {
             margin-left: 6px;
             margin-top: 30px;
         }
-        
+
         .menu-bk.moveright {
             margin-left: -8px;
         }
-        
+
         .menu-bk .arrow {
             position : absolute;
             width: 24px;
@@ -5030,7 +5066,7 @@
         .menu-bk.moveright .arrow {
             left: 9px;
         }
-        
+
         .menu-bk.upward .arrow {
             top: auto;
             bottom: -14px;
@@ -5041,7 +5077,7 @@
         .menu-bk.mnuSbPrefs.upward .arrow, .menu-bk.mnuSbTools.upward .arrow {
             right: 5px;
         }
-        
+
         .menu-bk.mnuSbPrefs.downward .arrow, .menu-bk.mnuSbTools.downward .arrow {
             right: 4px;
         }
@@ -5177,7 +5213,7 @@
             -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
-        
+
         .dockwindowblack .arrow {
             background-image: url(images/black-panel_arrow.png);
             background-repeat: no-repeat;
@@ -5188,13 +5224,13 @@
             width: 22px;
             height: 22px;
         }
-        
+
         .dockwindowblack.left .arrow {
             background-position: 0 -22px;
             right: auto;
             left: -22px;
         }
-        
+
         .dockwindowblack.noarrow .arrow {
             display: none;
         }
@@ -5337,6 +5373,11 @@
                 overflow : hidden;
                 z-index  : 10000;
                 padding  : 30px 0 0 0;
+                -moz-user-select: -moz-none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+                user-select: none;
             }
 
             .fm-window .fm-header {
@@ -5429,11 +5470,11 @@
             bottom              : 0;
             z-index             : 1;
         }
-        
+
         .deploy-sb.sbios .filler {
             left: 2px;
         }
-        
+
         .sbios .mainrail {
             height              : 100%;
             width               : 6px;
@@ -5959,7 +6000,7 @@
         }
 
         .bk-window .bk-header .hcontent {
-            
+
             position      : relative;
             /*overflow      : hidden;*/
             height        : 26px;
@@ -6972,12 +7013,14 @@
             overflow           : hidden;
             cursor             : default;
             position           : relative;
-            -moz-user-select   : none;
-            -khtml-user-select : none;
-            user-select        : none;
             line-height        : 17px;
             border             : 1px solid transparent;
             float              : left;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
         }
 
         .c9-dropdown-btn.main {
@@ -7672,11 +7715,11 @@
     .tab_console .btncontainer .btntab .tab_console_title {
         overflow : hidden;
         padding  : 0 0 0 0;
-		-moz-user-select: -moz-none;
-	    -khtml-user-select: none;
-	    -webkit-user-select: none;
-	    -o-user-select: none;
-	    user-select: none;
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;
+        user-select: none;
     }
 
     .tab_console .btncontainer .btntab.btnclose .tab_console_title {
@@ -7846,6 +7889,12 @@
         -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
         -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
         box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+        -o-user-select: none;
+        user-select: none;
     }
 
     .editor_tab .btnsesssioncontainer>div {
@@ -8587,10 +8636,11 @@
             -webkit-border-radius: 4px;
             -moz-border-radius: 4px;
             border-radius: 4px;
-            
-            -moz-user-select: none;
+
+            -moz-user-select: -moz-none;
             -khtml-user-select: none;
             -webkit-user-select: none;
+            -o-user-select: none;
             user-select: none;
 
             /*-webkit-border-bottom-left-radius: 4px;
@@ -9350,7 +9400,7 @@
         .ta{
             overflow: auto;
             resize: none;
-            
+
             padding: 2px 6px;
             border: 1px solid #AFAFAF;
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, white),color-stop(1, #EBEBEB));
@@ -9360,7 +9410,7 @@
             -webkit-box-shadow: 0px 1px 0px #ffffff;
             -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
-            
+
             font-size: 12px;
             color: #333;
             font-family: Arial;

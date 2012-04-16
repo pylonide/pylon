@@ -15,6 +15,12 @@
                 -moz-transition: background-color 0.2s linear, border 0.2s linear, -moz-box-shadow 0.2s linear;
 
                 background: transparent url('images/editor_bar_bg.png') 0px 30px repeat-x;
+
+                -moz-user-select: -moz-none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                -o-user-select: none;
+                user-select: none;
             }
 
             .bar-status:hover {
@@ -30,7 +36,7 @@
                 -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
                 box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             }
-            
+
             .bar-status .lbl_row_col {
                 text-align: center;
                 color: rgba(0, 0, 0, 0.4);
