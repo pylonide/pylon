@@ -50,7 +50,6 @@ var getFontSize = function(txtNode) {
         width: el.offsetWidth,
         height: el.offsetHeight
     };
-    console.log(el.offsetWidth)
     document.body.removeChild(el);
     return fontSize;
 };
@@ -213,6 +212,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         return true;
     },
     click: function(e) {
+        e.preventDefault();
+
         var node = e.target;
         if (node.parentNode != hintsContent && node != hintsContent)
             node = node.parentNode;

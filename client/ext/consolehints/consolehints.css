@@ -28,7 +28,7 @@
 }
 
 .consoleHintsBg {
-    background-image: url("/static/style/images/noise_pattern_transparent.png");
+    background-image: url("/static/ext/main/style/images/noise_pattern_transparent.png");
     bottom: 0;
     left: 0;
     position: absolute;
