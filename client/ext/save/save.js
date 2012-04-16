@@ -46,8 +46,13 @@ module.exports = ext.register("ext/save/save", {
                 if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
                   || !at.undo_ptr && node.getAttribute("changed") == 1
                   && e.page.$doc.getValue()) {
+
                     ext.initExtension(_self);
     
+                    if (apf.isTrue(require("ext/settings/settings").model.queryValue("general/@autosaveenabled"))) {
+                        return;
+                    }
+
                     var pages   = tabEditors.getPages(),
                     currIdx = pages.indexOf(e.page);
                     tabEditors.set(pages[currIdx].id); //jump to file

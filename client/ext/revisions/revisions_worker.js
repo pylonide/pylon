@@ -153,7 +153,7 @@ self.onmessage = function(e) {
             break;
 
         case "newRevision":
-            beforeRevision = e.data.originalContent;
+            beforeRevision = e.data.originalContent
             var tss = e.data.timestamps;
             for (var i = 0, l = tss.length; i < l; i++) {
                 patch = e.data.revisions[tss[i]].patch[0];
