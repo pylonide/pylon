@@ -159,7 +159,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hook: function() {
         var _self = this;
-
+return;
         var mnuItem;
         this.nodes.push(
             this.mnuSave = new apf.menu({ id : "mnuSave" }),
@@ -177,7 +177,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             var revisionMode = e.model.queryValue("general/@revisionmode");
             if (apf.isTrue(revisionMode)) {
                 ide.addEventListener("init.ext/editors/editors", function (e) {
-                    tabEditors.addEventListener("afterswitch", function(){
+                    tabEditors.addEventL
+                    istener("afterswitch", function(){
                         if (self.ceEditor)
                             _self.show();
                         tabEditors.removeEventListener("afterswitch", arguments.callee);

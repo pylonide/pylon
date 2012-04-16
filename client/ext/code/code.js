@@ -366,166 +366,183 @@ module.exports = ext.register("ext/code/code", {
                 ceEditor.afterOpenFile(ceEditor.getSession());
         });
         
+        var c = 600;
         this.menus.push(
-            menus.addItemByPath("Edit/~", new apf.divider(), 700),
-
-            menus.addItemByPath("Edit/Line/", null, 800),
-
+            menus.addItemByPath("Edit/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Line/", null, c += 100),
+            menus.addItemByPath("Edit/Comment/", null, c += 100),
+            menus.addItemByPath("Edit/Text/", null, c += 100),
+            menus.addItemByPath("Edit/Code Folding/", null, c += 100),
+            menus.addItemByPath("Edit/Convert Case/", null, c += 100)
+        );
+        
+        c = 0;
+        this.menus.push(
             menus.addItemByPath("Edit/Line/Indent", new apf.item({
                 hotkey : apf.isMac ? "Tab" : "Tab" // TODO: Don't hardcode this
-            }), 100),
+            }), c += 100),
 
             menus.addItemByPath("Edit/Line/Outdent", new apf.item({
                 hotkey : apf.isMac ? "Shift-Tab" : "Shift-Tab" // TODO: Don't hardcode this
-            }), 200),
+            }), c += 100),
 
             menus.addItemByPath("Edit/Line/Move Line Up", new apf.item({
                 hotkey : apf.isMac ? "Option-Up" : "Alt-Up" // TODO: Don't hardcode this
-            }), 300),
+            }), c += 100),
 
             menus.addItemByPath("Edit/Line/Move Line Down", new apf.item({
                 hotkey : apf.isMac ? "Option-Down" : "Alt-Down" // TODO: Don't hardcode this
-            }), 400),
+            }), c += 100),
 
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), 500),
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
 
             menus.addItemByPath("Edit/Line/Copy Lines Up", new apf.item({
                 hotkey : apf.isMac ? "Command-Option-Up" : "Ctrl-Alt-Up" // TODO: Don't hardcode this
-            }), 700),
+            }), c += 100),
 
             menus.addItemByPath("Edit/Line/Copy Lines Down", new apf.item({
                 hotkey : apf.isMac ? "Command-Option-Down" : "Ctrl-Alt-Down" // TODO: Don't hardcode this
-            }), 800),
-
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), 900),
-
-            menus.addItemByPath("Edit/Line/Select to Line End", new apf.item({
-                hotkey : apf.isMac ? "Shift-End" : "Shift-End" // TODO: Don't hardcode this
-            }), 1000),
-
-            menus.addItemByPath("Edit/Line/Select to Line Start", new apf.item({
-                hotkey : apf.isMac ? "Shift-Home" : "Shift-Home" // TODO: Don't hardcode this
-            }), 1100),
-
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), 1200),
+            }), c += 100),
+            
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
 
             menus.addItemByPath("Edit/Line/Remove Line", new apf.item({
                 hotkey : apf.isMac ? "Command-D" : "Ctrl-D" // TODO: Don't hardcode this
-            }), 1300),
+            }), c += 100),
 
             menus.addItemByPath("Edit/Line/Remove to Line End", new apf.item({
                 hotkey : apf.isMac ? "Ctrl-K" : "" // TODO: Don't hardcode this
-            }), 1400),
+            }), c += 100),
 
             menus.addItemByPath("Edit/Line/Remove to Line Start", new apf.item({
                 hotkey : apf.isMac ? "Option-Backspace" : "" // TODO: Don't hardcode this
-            }), 1500),
+            }), c += 100),
 
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), 1600),
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
 
             menus.addItemByPath("Edit/Line/Split Line", new apf.item({
                 hotkey : apf.isMac ? "Ctrl-O" : "" // TODO: Don't hardcode this
-            }), 1700),
-
-            menus.addItemByPath("Edit/Comment/", null, 900),
-
+            }), c += 100)
+        )
+        
+        c = 0;
+        this.menus.push(
             menus.addItemByPath("Edit/Comment/Toggle Comment", new apf.item({
                 hotkey : apf.isMac ? "Command-7" : "Ctrl-7" // TODO: Don't hardcode this
-            }), 901),
-
-            menus.addItemByPath("Edit/Comment/", null, 999),
-
-            menus.addItemByPath("Edit/Text/", null, 1000),
-
+            }), c += 100)
+        );
+        
+        c = 0;
+        this.menus.push(
             menus.addItemByPath("Edit/Text/Remove Word Right", new apf.item({
                 hotkey : apf.isMac ? "Alt-Delete" : "" // TODO: Don't hardcode this
-            }), 100),
+            }), c += 100),
 
             menus.addItemByPath("Edit/Text/Remove Word Left", new apf.item({
                 hotkey : apf.isMac ? "Alt-Backspace|Ctrl-Alt-Backspace" : "" // TODO: Don't hardcode this
-            }), 200),
+            }), c += 100),
 
-            menus.addItemByPath("Edit/Text/~", new apf.divider(), 300),
+            menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
 
             menus.addItemByPath("Edit/Text/Transpose Letters", new apf.item({
                 hotkey : apf.isMac ? "Ctrl-T" : "Ctrl-T" // TODO: Don't hardcode this
-            }), 400),
+            }), c += 100)
+        );
 
-            menus.addItemByPath("Edit/Code Folding/", null, 1100),
-
-            /*menus.addItemByPath("Edit/Code Folding/Fold", new apf.item({
-                hotkey : apf.isMac ? "Tab" : "Tab" // TODO: Don't hardcode this
-            }), 100),
+        c = 0;
+        this.menus.push(
+            menus.addItemByPath("Edit/Code Folding/Fold", new apf.item({
+                hotkey : apf.isMac ? "Alt-L" : "Alt-L" // TODO: Don't hardcode this
+            }), c += 100),
 
             menus.addItemByPath("Edit/Code Folding/Unfold", new apf.item({
-                hotkey : apf.isMac ? "Tab" : "Tab" // TODO: Don't hardcode this
-            }), 200),*/
-
+                hotkey : apf.isMac ? "Shift-Alt-L" : "Shift-Alt-L" // TODO: Don't hardcode this
+            }), c += 100),
+        
+            menus.addItemByPath("Edit/Code Folding/~", new apf.divider(), c += 100),
+            
             menus.addItemByPath("Edit/Code Folding/Fold All", new apf.item({
                 hotkey : apf.isMac ? "Option-0" : "Alt-0" // TODO: Don't hardcode this
-            }), 100),
+            }), c += 100),
 
             menus.addItemByPath("Edit/Code Folding/Unfold All", new apf.item({
                 hotkey : apf.isMac ? "Option-Shift-0" : "Alt-Shift-0" // TODO: Don't hardcode this
-            }), 200),
-                
-            menus.addItemByPath("Edit/Change Case/", null, 1200),
-
-            menus.addItemByPath("Edit/Change Case/Change to Upper Case", new apf.item({
+            }), c += 100)
+        );
+        
+        c = 0
+        this.menus.push(
+            menus.addItemByPath("Edit/Convert Case/Upper Case", new apf.item({
                 hotkey : apf.isMac ? "Ctrl-U" : "Ctrl-U" // TODO: Don't hardcode this
-            }), 100),
+            }), c += 100),
 
-            menus.addItemByPath("Edit/Change Case/Change to Lower Case", new apf.item({
+            menus.addItemByPath("Edit/Convert Case/Lower Case", new apf.item({
                 hotkey : apf.isMac ? "Ctrl-Shift-U" : "Ctrl-Shift-U" // TODO: Don't hardcode this
-            }), 200),
-
+            }), c += 100)
+        );
+        
+        c = 0;
+        this.menus.push(
             menus.addItemByPath("Selection/Select All", new apf.item({
                 hotkey : apf.isMac ? "Command-A" : "Ctrl-A" // TODO: Don't hardcode this
-            }), 100),
+            }), c += 100),
+            
+            menus.addItemByPath("Selection/Single Selection", new apf.item({
+                hotkey : apf.isMac ? "Esc" : "Esc" // TODO: Don't hardcode this
+            }), c += 100),
+            
+            /* {CTRL+ALT+UP} Put an extra cursor on the line above
+* {CTRL+ALT+DOWN} Put an extra cursor on the line below
+* {CTRL+ALT+SHIFT+UP} Move the cursor up, but introduce a new cursor in the place of the current one
+* {CTRL+ALT+SHIFT+DOWN} Move the cursor down, but introduce a new cursor in the place of the current one
+* {CTRL+ALT+RIGHT} Add the next instance of the selected text to your selection
+* {CTRL+ALT+LEFT} Add the previous instance of the selected text to your selection
+* {CTRL+ALT+SHIFT+RIGHT} Select the next instance of the selected text
+* {CTRL+ALT+SHIFT+LEFT} Select the previous instance of the selected text
+* {CTRL+SHIFT+L} Merge the selected parts by creating a new selection that ranges from the start of the first selection to the end of the last one
+*/
 
-            menus.addItemByPath("Selection/~", new apf.divider(), 200),
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
 
             menus.addItemByPath("Selection/Multiple Cursor Down", new apf.item({
                 hotkey : apf.isMac ? "Ctrl-Alt-Down" : "" // TODO: Don't hardcode this
-            }), 280),
+            }), c += 100),
 
             menus.addItemByPath("Selection/Multiple Cursor Up", new apf.item({
                 hotkey : apf.isMac ? "Ctrl-Alt-Up" : "" // TODO: Don't hardcode this
-            }), 290),
+            }), c += 100),
 
-            menus.addItemByPath("Selection/~", new apf.divider(), 299),
-
-            menus.addItemByPath("Selection/Center Selection", new apf.item({
-                hotkey : apf.isMac ? "Ctrl-L" : "" // TODO: Don't hardcode this
-            }), 300),
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
 
             menus.addItemByPath("Selection/Select Word Right", new apf.item({
                 hotkey : apf.isMac ? "Option-Shift-Right" : "Ctrl-Shift-Right" // TODO: Don't hardcode this
-            }), 300),
+            }), c += 100),
 
             menus.addItemByPath("Selection/Select Word Left", new apf.item({
                 hotkey : apf.isMac ? "Option-Shift-Left" : "Ctrl-Shift-Left" // TODO: Don't hardcode this
-            }), 400),
+            }), c += 100),
 
-            menus.addItemByPath("Selection/~", new apf.divider(), 500),
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
 
             menus.addItemByPath("Selection/Select to Line End", new apf.item({
                 hotkey : apf.isMac ? "Command-Shift-Right" : "Alt-Shift-Right" // TODO: Don't hardcode this
-            }), 800),
+            }), c += 100),
 
             menus.addItemByPath("Selection/Select to Line Start", new apf.item({
                 hotkey : apf.isMac ? "Command-Shift-Left" : "Alt-Shift-Left" // TODO: Don't hardcode this
-            }), 900),
+            }), c += 100),
 
-            menus.addItemByPath("Selection/~", new apf.divider(), 1000),
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
 
             menus.addItemByPath("Selection/Select to Document Start", new apf.item({
                 hotkey : apf.isMac ? "Command-Shift-Up" : "Ctrl-Shift-Home|Alt-Shift-Up" // TODO: Don't hardcode this
-            }), 1100),
+            }), c += 100),
 
             menus.addItemByPath("Selection/Select to Document End", new apf.item({
                 hotkey : apf.isMac ? "Command-Shift-Down" : "Ctrl-Shift-End|Alt-Shift-Down" // TODO: Don't hardcode this
-            }), 1200),
+            }), c += 100),
+            
+            /**** View ****/
 
             menus.addItemByPath("View/Gutter", new apf.item({
                 type    : "check",
@@ -566,6 +583,8 @@ module.exports = ext.register("ext/code/code", {
                 type     : "check",
                 checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
             }), 600000),
+            
+            /**** Goto ****/
 
             menus.addItemByPath("Goto/~", new apf.divider(), 399),
 
@@ -586,6 +605,14 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("Goto/Line Start", new apf.item({
                 hotkey : apf.isMac ? "Command-Left|Home|Ctrl-A" : "Alt-Left|Home" // TODO: Don't hardcode this
             }), 1000),
+            
+            menus.addItemByPath("Goto/~", new apf.divider(), 1100),
+            
+            menus.addItemByPath("Goto/Scroll to Selection", new apf.item({
+                hotkey : apf.isMac ? "Ctrl-L" : "" // TODO: Don't hardcode this
+            }), 1200),
+
+            /**** Tools ****/
 
             menus.addItemByPath("Tools/~", new apf.divider(), 30000),
 
