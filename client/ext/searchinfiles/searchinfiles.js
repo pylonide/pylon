@@ -244,9 +244,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             options.replacement = ""; // even if there's text in the "replace" field, don't send it when not replacing
         }
 
-        var findValueSanitized = query.trim().replace(/([\[\]\{\}])/g, "\\$1");
+        //var findValueSanitized = query.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
-        trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
+        trSFResult.$ext.getElementsByClassName("empty")[0].innerText = "Searching for '" + query + "'...";
+        //trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
 
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
@@ -267,7 +268,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 else {
                     optionsDesc = "";
                 }
-                return trSFResult.setAttribute("empty-message", "No matches for '" + findValueSanitized + "' " + optionsDesc);
+                return trSFResult.$ext.getElementsByClassName("empty")[0].innerText = "No matches for '" + query + "' " + optionsDesc;
+                //return trSFResult.setAttribute("empty-message", "No matches for '" + findValueSanitized + "' " + optionsDesc);
             }
             else
                 _self.$panel.setAttribute("caption", _self.pageTitle + " (" + matches + ")");
