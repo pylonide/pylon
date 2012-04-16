@@ -107,7 +107,7 @@ var Workspace = module.exports = function(config) {
                 process.nextTick(function() {
                     count -= 1;
                     if (count == 0)
-                        callback();
+                        callback && callback();
                 });
             });
         }
