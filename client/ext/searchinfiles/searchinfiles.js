@@ -14,6 +14,7 @@ var Util = require("core/util");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
+var menus = require("ext/menus/menus");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
 
@@ -42,17 +43,17 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     hook : function(){
         var _self = this;
 
+        var mnuItem;
         this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Search in Files...",
+            menus.addItemByPath("Find/~", new apf.divider(), 10000),
+            mnuItem = menus.addItemByPath("Find/Find in Files...", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(false);
                 }
-            }))
+            }), 20000)
         );
 
-        this.hotitems.searchinfiles = [this.nodes[1]];
+        this.hotitems.searchinfiles = [mnuItem];
     },
 
     init : function(amlNode){
@@ -291,6 +292,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     destroy : function(){
+        menus.remove("Find/~");
+        menus.remove("Find in Files...");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

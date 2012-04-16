@@ -40,6 +40,8 @@ var extAll = define([
     "ext/keybindings_default/keybindings_default",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
+    "ext/menus/menus",
+    "ext/sidebar/sidebar",
     "ext/beautify/beautify",
     "ext/offline/offline",
     "ext/stripws/stripws",
@@ -47,7 +49,7 @@ var extAll = define([
     "ext/nodeunit/nodeunit",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    "ext/vim/vim",
+    "ext/vim/vim", 
     "ext/guidedtour/guidedtour",
     "ext/quickstart/quickstart",
     "ext/jslanguage/jslanguage",
@@ -57,6 +59,7 @@ var extAll = define([
     "ext/codetools/codetools",
     "ext/colorpicker/colorpicker",
     "ext/revisions/revisions"
+    //"ext/acebugs/acebugs"
     //"ext/minimap/minimap"
     //"ext/acebugs/acebugs"
 ]);

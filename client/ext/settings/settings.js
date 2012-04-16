@@ -32,6 +32,7 @@ module.exports = ext.register("ext/settings/settings", {
     commands : {
         "show": {hint: "show the settings panel"}
     },
+    hotitems : {},
 
     nodes : [],
 
@@ -70,6 +71,8 @@ module.exports = ext.register("ext/settings/settings", {
             caption: "Preferences",
             "class": "preferences"
         });
+        
+        this.hotitems.show = [this.mnuItem];
         
         //Backwards compatible
         this.model = settings.model;

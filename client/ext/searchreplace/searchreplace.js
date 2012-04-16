@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
+var menus = require("ext/menus/menus");
 var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -38,24 +39,23 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     hook : function(){
         var _self = this;
 
+        var mnuFind, mnuReplace
         this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Search...",
+            mnuFind = menus.addItemByPath("Find/Find...", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(false);
                 }
-            })),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Search & Replace...",
+            }), 100),
+            menus.addItemByPath("Find/~", new apf.divider(), 200),
+            mnuReplace = menus.addItemByPath("Find/Replace...", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(true);
                 }
-            }))
+            }), 300)
         );
 
-        this.hotitems.search = [this.nodes[1]];
-        this.hotitems.searchreplace = [this.nodes[2]];
+        this.hotitems.search        = [mnuFind];
+        this.hotitems.searchreplace = [mnuReplace];
 
         code.commandManager.addCommand({
             name: "replace",
@@ -363,6 +363,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     destroy : function(){
+        menus.remove("Find/Find...");
+        menus.remove("Find/~", 200);
+        menus.remove("Find/Replace...");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

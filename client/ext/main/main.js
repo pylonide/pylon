@@ -42,11 +42,7 @@ module.exports = ext.register("ext/main/main", {
     nodes   : [],
 
     init : function(){
-        //Set references to global elements - aka extension points
-        ide.mnuFile        = mnuFile;
-        ide.mnuEdit        = mnuEdit;
-        ide.barTools       = barTools;
-        ide.vbMain         = vbMain;
+        
     },
 
     enable : function(){

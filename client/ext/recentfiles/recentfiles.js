@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/recentfiles/recentfiles", {
     dev         : "Ajax.org",
@@ -25,25 +26,19 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         var _self = this;
 
         this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Open Recent",
-                submenu : "mnuRecent"
-            }), ide.mnuFile.firstChild),
-
-            apf.document.documentElement.appendChild(this.menu = new apf.menu({
-                id : "mnuRecent",
-                childNodes : [
-                    this.divider = new apf.divider(),
-                    new apf.item({
-                        caption : "Clear Menu",
-                        onclick : function(){
-                            _self.clearMenu();
-                        }
-                    })
-                ]
-            }))
+            this.menu = 
+                menus.addItemByPath("File/Open Recent/", null, 600),
+            
+            this.divider = 
+              menus.addItemByPath("File/Open Recent/~", new apf.divider(), 1000000),
+            
+            menus.addItemByPath("File/Open Recent/Clear Menu", new apf.item({
+                onclick : function(){
+                    _self.clearMenu();
+                }
+            }), 2000000)
         );
-
+        
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/recentfiles");
@@ -172,6 +167,8 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
     },
 
     destroy : function(){
+        menus.remove("File/Open Recent");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

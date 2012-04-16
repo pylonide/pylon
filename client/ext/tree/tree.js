@@ -50,6 +50,7 @@ module.exports = ext.register("ext/tree/tree", {
     commands : {
         "show": {hint: "show the tree panel"}
     },
+    hotitems : {},
 
     defaultWidth     : 200,
 
@@ -75,6 +76,8 @@ module.exports = ext.register("ext/tree/tree", {
             caption: "Project Files",
             "class": "project_files"
         });
+        
+        this.hotitems.show = [this.mnuItem];
 
         var _self = this;
 

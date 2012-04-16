@@ -79,7 +79,7 @@
             position      : relative;
             overflow      : visible;
             height        : 36px;
-            background    : url(images/c9-menu-backg.png) repeat-x 0 0;
+            background    : url(images/c9-menu-backg.png) repeat-x 0 0 #2f3032;
             border-bottom : 1px solid #000000;
         }
 
@@ -165,8 +165,8 @@
             width            : 65px;
             overflow         : hidden;
             position         : relative;
-            background-image : url(images/dockLeftBackground.png);
-            border-right    : 1px solid #2E2E2E;
+            background       : url(images/dockLeftBackground.png) #2f3032;
+            border-right     : 1px solid #2E2E2E;
         }
 
         /*.deploy.mnubtn {
@@ -2670,7 +2670,7 @@
 
         .cbgrey.cbcontainer span {
             color : #333;
-            top   : 1px;
+            top   : 0px;
         }
 
         .cbgrey.cbcontainer .checkbox {
@@ -5347,7 +5347,7 @@
             }
 
             .fm-window .fm-header .hcontent {
-                background    : url(images/header_backg.png)  repeat-x 0 0;
+                background    : url(images/header_backg.png)  repeat-x 0 0 #4f4f52;
                 margin-right  : 6px;
                 position      : relative;
                 overflow      : hidden;

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ext     = require("core/ext");
 var ide     = require("core/ide");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var BlameJS = require("ext/gitblame/blamejs");
 var util    = require("core/util");
@@ -36,17 +37,14 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
             }
         });
-
-        this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                // @TODO: Support more CVSs? Just "Blame this File"
-                caption : "Git Blame this File",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    _self.requestBlame();
-                }
-            }))
-        );
+        
+        menus.addItemByPath("Tools/Git Blame", new apf.item({
+            // @TODO: Support more CVSs? Just "Blame this File"
+            onclick : function(){
+                ext.initExtension(_self);
+                _self.requestBlame();
+            }
+        }), 500);
     },
 
     requestBlame : function() {
@@ -145,6 +143,8 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     },
 
     destroy : function(){
+        menus.remove("Tools/Git Blame");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

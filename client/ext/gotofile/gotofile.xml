@@ -6,7 +6,8 @@
       minheight = "35"
       maxheight = "400"
       zindex    = "99999"
-      top       = "{apf.isTrue([{require('ext/settings/settings').model}::auto/tabs/@show]) ? 37 : 5}"
+      showtab   = "[{require('ext/settings/settings').model}::auto/tabs/@show]"
+      top       = "{apf.isTrue(this.showtab) ? 37 : 5}"
       style     = "
         background:#e8e8e8;
         box-shadow:0 5px 7px rgba(0,0,0,0.5);
@@ -20,17 +21,16 @@
         <a:vbox edge="0 5 5 5" padding="5" anchors2="0 0 0 0">
             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
             <a:list id="dgGoToFile"
-              flex2      = "1" 
-              class     = "searchresults noscrollbar"
-              skin      = "lineselect"
-              maxheight = "350"
-              model     = "{require('ext/openfile/openfile').model}"
-              scrollbar = "sbShared 32 7 7"
-              viewport  = "virtual"
-              multiselect   = "true"
+              class           = "searchresults noscrollbar"
+              skin            = "lineselect"
+              maxheight       = "350"
+              model           = "{require('ext/openfile/openfile').model}"
+              scrollbar       = "sbShared 32 7 7"
+              viewport        = "virtual"
+              multiselect     = "true"
               loading-message = "Loading file list. One moment please..."
-              empty-message = "No files found that match '{txtGoToFile.value}'"
-              onafterload   = "
+              empty-message   = "No files found that match '{txtGoToFile.value}'"
+              onafterload     = "
                 var vp = this.getViewport();
                 if (vp.length &lt; 100) {
                     var ht = Math.min(350, vp.getScrollHeight());

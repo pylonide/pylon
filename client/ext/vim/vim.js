@@ -17,6 +17,7 @@ var handler = require("ext/vim/keyboard").handler;
 var cmdModule = require("ext/vim/commands");
 var commands = cmdModule.commands;
 var cliCmds = require("ext/vim/cli");
+var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/vim/settings.xml");
 var util = require("ext/vim/maps/util");
@@ -119,15 +120,12 @@ module.exports = ext.register("ext/vim/vim", {
     hook : function() {
         var self = this;
         var menuItem = new apf.item({
-            caption: "Vim mode",
             type: "check",
             checked: "[{require('ext/settings/settings').model}::editors/code/@vimmode]",
             onclick: function() { self.toggle(); }
         });
-
-        ide.addEventListener("init.ext/tools/tools", function (e) {
-            mnuTools.appendChild(menuItem.cloneNode(true));
-        });
+        
+        menus.addItemByPath("View/Vim Mode", menuItem, 8000000);
 
         require("ext/settings/settings").addSettings("Code Editor", markupSettings);
 
@@ -174,6 +172,8 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     destroy: function() {
+        menus.remove("Tools/Vim mode");
+        
         this.nodes.forEach(function(item) { item.destroy(); });
         this.nodes = [];
     }

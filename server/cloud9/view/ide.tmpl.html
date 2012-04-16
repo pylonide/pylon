@@ -17,6 +17,7 @@
         //<![CDATA[
 
             window.cloud9config = {
+                startdate: new Date(),
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
                 debug: <%debug%>,
@@ -27,7 +28,8 @@
                 projectName: <%projectName%>,
                 version: <%version%>,
                 staticUrl: <%staticUrl%>,
-                socketIoUrl: <%socketIoUrl%>
+                socketIoUrl: <%socketIoUrl%>,
+                settings: <%settingsXml%>
             };
 
             // prevent console messages from crashing our app!
@@ -53,7 +55,6 @@
                     if (VERSION == RELEASE)
                         list.push("ace/editor");
 
-                    apf.IdeSettings = <%settingsXml%>
                     //loader.animateLoader(20);
                     require(list, function(ide, ext, util){
                         var plugins = <%plugins%>;
@@ -71,6 +72,10 @@
 //                            loader.animateLoader(20);
                             require(plugins, function(){
                                 ide.dispatchEvent("extload", {modules: plugins});
+
+                                console.log("Total Load Time " 
+                                    + (new Date() - window.cloud9config.startdate) + "ms");
+
                                 ide.addEventListener("$event.extload", function(cb){
                                     cb();
                                 });

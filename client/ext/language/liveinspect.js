@@ -16,6 +16,23 @@ module.exports = (function () {
     var datagridHtml = null;
     var currentExpression = null;
     
+    var hook = function () {
+        ide.addEventListener("init.ext/debugger/debugger", function(){
+            ext.initExtension(this);
+            
+            // listen to changes that affect the debugger, so we can toggle the visibility based on this
+            stRunning.addEventListener("prop.active", checkDebuggerActive);
+            stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
+            
+            // when hovering over the inspector window we should ignore all further listeners
+            apf.addListener(datagridHtml, "mouseover", function() {
+                if (activeTimeout) {
+                    clearTimeout(activeTimeout);
+                }
+            });
+        });
+    }
+    
     var init = function () {
         // get respective HTML elements
         windowHtml = winLiveInspect.$ext;
@@ -57,19 +74,6 @@ module.exports = (function () {
                 editor.$editor.addEventListener("mousedown", onEditorClick);
                 editor.getSession().getSelection().addEventListener("changeCursor", onEditorClick);
             }
-        });
-        
-        ide.addEventListener("init.ext/debugger/debugger", function(){
-            // listen to changes that affect the debugger, so we can toggle the visibility based on this
-            stRunning.addEventListener("prop.active", checkDebuggerActive);
-            stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
-            
-            // when hovering over the inspector window we should ignore all further listeners
-            apf.addListener(datagridHtml, "mouseover", function() {
-                if (activeTimeout) {
-                    clearTimeout(activeTimeout);
-                }
-            });
         });
         
         // we should track mouse movement over the whole window
@@ -343,6 +347,7 @@ module.exports = (function () {
     
     // public interfaces
     return ext.register("ext/language/liveinspect", {
+        hook    : hook,
         init    : init,
         name    : "Live inspect",
         dev     : "Ajax.org",

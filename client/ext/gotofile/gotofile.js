@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
@@ -33,25 +34,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     hook : function(){
         var _self = this;
 
-        this.nodes.push(
-            mnuFile.insertBefore(new apf.item({
-                caption : "Open...",
-                onclick : function() {
-                    _self.toggleDialog(1);
-                }
-            }), mnuFile.firstChild),
+        var mnuItem = new apf.item({
+            onclick : function() {
+                _self.toggleDialog(1);
+            }
+        })
 
-            ide.barTools.appendChild(new apf.button({
-                id      : "btnOpen",
-                icon    : "open.png",
-                width   : 29,
-                tooltip : "Open...",
-                skin    : "c9-toolbarbutton",
-                onclick : function() {
-                    _self.toggleDialog(1);
-                }
-            })),
-            
+        this.nodes.push(
+            menus.addItemByPath("File/Open...", mnuItem, 500),
+            menus.addItemByPath("Goto/Goto File...", mnuItem.cloneNode(false), 100),
+    
             this.model = new apf.model(),
             this.modelCache = new apf.model()
         );
@@ -65,7 +57,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             _self.updateFileCache();
         });
 
-        this.hotitems["gotofile"] = [this.nodes[0]];
+        this.hotitems["gotofile"] = [this.nodes[0], this.nodes[1], this.nodes[3]];
     },
 
     init : function() {
@@ -76,7 +68,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.toggleDialog(-1);
             
             else if (e.keyCode == 13){
-                _self.openFile();
+                _self.openFile(true);
 
                 ide.dispatchEvent("track_action", {type: "gotofile"});
                 return false;
@@ -261,22 +253,20 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
     },
     
-    openFile: function(){
+    openFile: function(noanim){
         var nodes = dgGoToFile.getSelection();
         
         if (nodes.length == 0)
             return false;
             
-        this.toggleDialog(-1);
-        
-        //txtGoToFile.change("");
-        
-        for (var i = 0; i < nodes.length; i++) {
-            var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
-                + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
-            editors.showFile(path);
-            ide.dispatchEvent("track_action", {type: "fileopen"});
-        }
+        this.toggleDialog(-1, noanim, function(){
+            for (var i = 0; i < nodes.length; i++) {
+                var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
+                    + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
+                editors.showFile(path);
+                ide.dispatchEvent("track_action", {type: "fileopen"});
+            }
+        });
     },
     
     gotofile : function(){
@@ -289,7 +279,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         return false;
     },
 
-    toggleDialog: function(force, noanim) {
+    toggleDialog: function(force, noanim, callback) {
         if (!self.winGoToFile || !force && !winGoToFile.visible || force > 0) {
             if (self.winGoToFile && winGoToFile.visible)
                 return;
@@ -352,11 +342,14 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                         
                         if (editors.currentEditor && editors.currentEditor.ceEditor)
                             editors.currentEditor.ceEditor.focus();
+                        
+                        callback && callback();
                     }
                 });
             }
             else {
                 winGoToFile.hide();
+                callback && callback();
             }
         }
 

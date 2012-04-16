@@ -11,6 +11,7 @@ require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var useragent = require("ace/lib/useragent");
@@ -21,7 +22,7 @@ var ProxyDocument = require("ext/code/proxydocument");
 var CommandManager = require("ace/commands/command_manager").CommandManager;
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
-var settings = require("ext/settings/settings");
+var settings = require("core/settings");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
 
@@ -304,47 +305,41 @@ module.exports = ext.register("ext/code/code", {
         var _self = this;
 
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading("Code Editor");
-            heading.insertMarkup(markupSettings);
-        });
-
         ide.addEventListener("loadsettings", function(e) {
-            var model = e.model;
-            if (!model.queryNode("editors/code")) {
-                var node = apf.n("<code />")
-                  .attr("overwrite", "false")
-                  .attr("selectstyle", "line")
-                  .attr("activeline", "true")
-                  .attr("showinvisibles", "false")
-                  .attr("showprintmargin", "true")
-                  .attr("printmargincolumn", "80")
-                  .attr("softtabs", "true")
-                  .attr("tabsize", "4")
-                  .attr("scrollspeed", "2")
-                  .attr("fontsize", "12")
-                  .attr("wrapmode", "false")
-                  .attr("wraplimitmin", "")
-                  .attr("wraplimitmax", "")
-                  .attr("gutter", "true")
-                  .attr("folding", "true")
-                  .attr("newlinemode", "auto")
-                  .attr("highlightselectedword", "true")
-                  .attr("autohidehorscrollbar", "true").node();
-
-                var editors = apf.createNodeFromXpath(model.data, "editors");
-                apf.xmldb.appendChild(editors, node);
-            }
-
-            if (!model.queryNode("editors/code/@animatedscroll"))
-                model.setQueryValue("editors/code/@animatedscroll", "true");
+            settings.setDefaults("editors/code", [
+                ["overwrite", "false"],
+                ["selectstyle", "line"],
+                ["activeline", "true"],
+                ["showinvisibles", "false"],
+                ["showprintmargin", "true"],
+                ["printmargincolumn", "80"],
+                ["softtabs", "true"],
+                ["tabsize", "4"],
+                ["scrollspeed", "2"],
+                ["fontsize", "12"],
+                ["wrapmode", "false"],
+                ["wraplimitmin", ""],
+                ["wraplimitmax", ""],
+                ["gutter", "true"],
+                ["folding", "true"],
+                ["newlinemode", "auto"],
+                ["highlightselectedword", "true"],
+                ["autohidehorscrollbar", "true"],
+                ["animatedscroll", "true"]
+            ]);
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme)
                 require([theme], function() {});
+
             // pre load custom mime types
             _self.getCustomTypes(e.model);
+        });
+        
+        ide.addEventListener("init.ext/settings/settings", function(e) {
+            var heading = e.ext.getHeading("Code Editor");
+            heading.insertMarkup(markupSettings);
         });
 
         ide.addEventListener("afteropenfile", function(e) {
@@ -394,32 +389,28 @@ module.exports = ext.register("ext/code/code", {
         });
 
         this.nodes.push(
-            mnuView.appendChild(new apf.item({
-                caption : "Syntax",
-                submenu : "mnuSyntax"
-            })),
-            
-            mnuView.appendChild(new apf.item({
-                caption : "Gutter",
+            menus.addItemByPath("View/Gutter", new apf.item({
                 type    : "check",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
-            })),
+            }), 500),
             
-            mnuView.appendChild(new apf.divider()),
+            menus.addItemByPath("View/Syntax", new apf.item({
+                submenu : "mnuSyntax"
+            }), 300000),
             
-            mnuView.appendChild(new apf.item({
-                caption : "Wrap Lines",
+            menus.addItemByPath("View/~", new apf.divider(), 400000),
+            
+            menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
                 checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
-            })),
+            }), 500000),
             
-            mnuView.appendChild(new apf.item({
-                caption  : "Wrap To Viewport",
+            menus.addItemByPath("View/Wrap To Viewport", new apf.item({
                 disabled : "{!apf.isTrue(this.wrapmode)}",
                 wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
                 type     : "check",
                 checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
-            }))
+            }), 600000)
         );
 
         mnuSyntax.onitemclick = function(e) {

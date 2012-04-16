@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var menus = require("ext/menus/menus");
 var DockableLayout = require("ext/dockpanel/libdock");
 var settings = require("ext/settings/settings");
 
@@ -104,31 +105,34 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             _self.layout.loadState(state);
             _self.loaded = true;
         });
-
-        mnuToolbar.appendChild(new apf.item({
-            caption : "Restore Default",
-            onclick : function(){
-                var defaultSettings = _self.defaultState,//settings.model.queryValue("auto/dockpanel_default/text()"),
-                    state;
-                    
-                if (defaultSettings) {
-                    // JSON parse COULD fail
-                    try {
-                        state = defaultSettings;//objSettings.state;
-                    }
-                    catch (ex) {}
-                    _self.layout.loadState(state);
-                    
-                    settings.model.setQueryValue("auto/dockpanel/text()", state)
-                    
-                    _self.saveSettings();
-                    
-                    ide.dispatchEvent("restorelayout");
-                }
-            }
-        }));
         
-        mnuToolbar.appendChild(new apf.divider());
+        this.nodes.push(
+            menus.addItemByPath("View/Dock Panels/", null, 30000),
+            
+            menus.addItemByPath("View/Dock Panels/Restore Default", new apf.item({
+                onclick : function(){
+                    var defaultSettings = _self.defaultState,//settings.model.queryValue("auto/dockpanel_default/text()"),
+                        state;
+                        
+                    if (defaultSettings) {
+                        // JSON parse COULD fail
+                        try {
+                            state = defaultSettings;//objSettings.state;
+                        }
+                        catch (ex) {}
+                        _self.layout.loadState(state);
+                        
+                        settings.model.setQueryValue("auto/dockpanel/text()", state)
+                        
+                        _self.saveSettings();
+                        
+                        ide.dispatchEvent("restorelayout");
+                    }
+                }
+            }), 100),
+            
+            menus.addItemByPath("View/Dock Panels/~", new apf.divider(), 200)
+        );
     },
     
     saveSettings : function(){
@@ -156,6 +160,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     },
 
     destroy : function(){
+        menus.remove("View/Dock Panels/Restore Default");
+        menus.remove("View/Dock Panels/~", 200);
+        
         this.layout.clearState();
     },
 
@@ -168,8 +175,9 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
         var layout = this.layout, _self = this;
 
-        panel[type].mnuItem = mnuToolbar.appendChild(new apf.item({
-            caption : options.menu.split("/").pop(),
+        panel[type].mnuItem = menus.addItemByPath(
+          "View/Dock Panels/" + options.menu.split("/").pop(), 
+          new apf.item({
             id      : "mnu" + type,
             type    : "check",
             onclick : function(){
@@ -183,6 +191,11 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 page.parentNode.set(page);
             }
         }));        
+    },
+    
+    //@todo
+    unregister : function() {
+        
     },
 
     addDockable : function(def){        

@@ -4,7 +4,6 @@
       title     = "New from Template"
       icon      = ""
       center    = "true"
-      render    = "runtime"
       width     = "350"
       height    = "300"
       skin      = "bk-window"

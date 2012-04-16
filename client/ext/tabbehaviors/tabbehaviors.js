@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
+var menus = require("ext/menus/menus");
 var openfiles = require("ext/openfiles/openfiles");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
@@ -52,89 +53,79 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     init : function(amlNode){
         var _self = this;
 
+        var mnuContext;
         this.nodes.push(
-            mnuTabs.appendChild(new apf.item({
-                caption : "Close Tab",
+            this.mnuTabs = menus.addItemByPath("View/Tabs/", null, 20000),
+            menus.addItemByPath("View/Tabs/Close Tab", new apf.item({
                 onclick : function() {
                     _self.closetab(tabEditors.contextPage);
                 },
                 disabled : "{!!!tabEditors.activepage}"
-            })),
-            mnuTabs.appendChild(new apf.item({
-                caption : "Close All Tabs",
+            }), 100),
+            menus.addItemByPath("View/Tabs/Close All Tabs", new apf.item({
                 onclick : this.closealltabs.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
-            })),
-            mnuTabs.appendChild(new apf.item({
-                caption : "Close All But Current Tab",
+            }), 200),
+            menus.addItemByPath("View/Tabs/Close All But Current Tab", new apf.item({
                 onclick : function() {
                     _self.closeallbutme(tabEditors.$activePage);
                 },
                 disabled : "{!!!tabEditors.activepage}"
-            })),
-            //mnuTabs.appendChild(new apf.divider()),
-            apf.document.documentElement.appendChild(new apf.menu({
-                id : "mnuContextTabs",
-                childNodes : [
-                    new apf.item({
-                        caption : "Reveal in File Tree",
-                        onclick : function() {
-                            _self.revealtab(tabEditors.contextPage);
-                        },
-                        disabled : "{!!!tabEditors.activepage}"
-                    }),
-                    new apf.divider(),
-                    new apf.item({
-                        caption : "Close Tab",
-                        onclick : function() {
-                            _self.closetab(tabEditors.contextPage);
-                        },
-                        disabled : "{!!!tabEditors.activepage}"
-                    }),
-                    new apf.item({
-                        caption : "Close All Tabs",
-                        onclick : this.closealltabs.bind(this),
-                        disabled : "{!!!tabEditors.activepage}"
-                    }),
-                    new apf.item({
-                        caption : "Close Other Tabs",
-                        onclick : function() {
-                            _self.closeallbutme(tabEditors.$activePage);
-                        },
-                        disabled : "{!!!tabEditors.activepage}"
-                    }),
-                    new apf.divider(),
-                    new apf.item({
-                        caption : "Close Tabs to the Right",
-                        onclick : function() {
-                            _self.closealltotheright();
-                        },
-                        disabled : "{!!!tabEditors.activepage}"
-                    }),
-                    new apf.item({
-                        caption : "Close Tabs to the Left",
-                        onclick : function() {
-                            _self.closealltotheleft();
-                        },
-                        disabled : "{!!!tabEditors.activepage}"
-                    })
-                ]
-            }))
+            }), 300),
+
+            mnuContext = new apf.menu({id : "mnuContextTabs"})
         );
         
-        this.hotitems.revealtab     = [mnuContextTabs.childNodes[0]];
-        this.hotitems.closetab      = [this.nodes[0], mnuContextTabs.childNodes[2]];
-        this.hotitems.closealltabs  = [this.nodes[1], mnuContextTabs.childNodes[3]];
-        this.hotitems.closeallbutme = [this.nodes[2], mnuContextTabs.childNodes[4]];
-        this.hotitems.closealltotheright = [mnuContextTabs.childNodes[6]];
-        this.hotitems.closealltotheleftt = [mnuContextTabs.childNodes[7]];
+        var itmReveal = menus.addItemByPath("Reveal in File Tree", new apf.item({
+            onclick : function() {
+                _self.revealtab(tabEditors.contextPage);
+            },
+            disabled : "{!!!tabEditors.activepage}"
+        }), 100, mnuContext);
+        menus.addItemByPath("~", new apf.divider(), 200, mnuContext);
+        var itmClose = menus.addItemByPath("Close Tab", new apf.item({
+            onclick : function() {
+                _self.closetab(tabEditors.contextPage);
+            },
+            disabled : "{!!!tabEditors.activepage}"
+        }), 300, mnuContext);
+        var itmCloseAll = menus.addItemByPath("Close All Tabs", new apf.item({
+            onclick : this.closealltabs.bind(this),
+            disabled : "{!!!tabEditors.activepage}"
+        }), 400, mnuContext);
+        var itmCloseOther = menus.addItemByPath("Close Other Tabs", new apf.item({
+            onclick : function() {
+                _self.closeallbutme(tabEditors.$activePage);
+            },
+            disabled : "{!!!tabEditors.activepage}"
+        }), 500, mnuContext);
+        menus.addItemByPath("~", new apf.divider(), 600, mnuContext);
+        var itmCloseRight = menus.addItemByPath("Close Tabs to the Right", new apf.item({
+            onclick : function() {
+                _self.closealltotheright();
+            },
+            disabled : "{!!!tabEditors.activepage}"
+        }), 600, mnuContext);
+        var itmCloseLeft = menus.addItemByPath("Close Tabs to the Left", new apf.item({
+            onclick : function() {
+                _self.closealltotheleft();
+            },
+            disabled : "{!!!tabEditors.activepage}"
+        }), 700, mnuContext);
+        
+        this.hotitems.revealtab     = [itmReveal];
+        this.hotitems.closetab      = [this.nodes[0], itmClose];
+        this.hotitems.closealltabs  = [this.nodes[1], itmCloseAll];
+        this.hotitems.closeallbutme = [this.nodes[2], itmCloseOther];
+        this.hotitems.closealltotheright = [itmCloseRight];
+        this.hotitems.closealltotheleftt = [itmCloseLeft];
 
         mnuContextTabs.addEventListener("prop.visible", function(e) {
             // If there are only 0 or 1 pages, disable both and return
             if (tabEditors.getPages().length <= 1) {
-                mnuContextTabs.childNodes[4].setAttribute('disabled', true);
-                mnuContextTabs.childNodes[6].setAttribute('disabled', true);
-                mnuContextTabs.childNodes[7].setAttribute('disabled', true);
+                itmCloseOther.setAttribute('disabled', true);
+                itmCloseRight.setAttribute('disabled', true);
+                itmCloseLeft.setAttribute('disabled', true);
                 return;
             }
 
@@ -142,17 +133,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var pages = tabEditors.getPages();
 
             // be optimistic, reset menu items to disabled
-            mnuContextTabs.childNodes[4].setAttribute('disabled', false);
-            mnuContextTabs.childNodes[6].setAttribute('disabled', false);
-            mnuContextTabs.childNodes[7].setAttribute('disabled', false);
+            itmCloseOther.setAttribute('disabled', false);
+            itmCloseLeft.setAttribute('disabled', false);
+            itmCloseRight.setAttribute('disabled', false);
 
             // if last tab, remove "close to the right"
             if (page.nextSibling.localName !== "page") {
-                mnuContextTabs.childNodes[6].setAttribute('disabled', true);
+                itmCloseRight.setAttribute('disabled', true);
             }
             // if first tab, remove "close to the left"
             else if (pages.indexOf(page) == 0) {
-                mnuContextTabs.childNodes[7].setAttribute('disabled', true);
+                itmCloseLeft.setAttribute('disabled', true);
             }
         });
 
@@ -179,7 +170,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
                 if (e.$isMoveWithinParent) {
                     if (page.$tabMenu) {
-                        mnuTabs.insertBefore(page.$tabMenu,
+                        _self.mnuTabs.insertBefore(page.$tabMenu,
                             page.nextSibling ? page.nextSibling.$tabMenu : null);
 
                         _self.updateState();
@@ -250,9 +241,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     
     closetab: function() {
         var page = tabEditors.getPage();
+        var pages = tabEditors.getPages();
+        var isLast = pages[pages.length - 1] == page;
+        
         tabEditors.remove(page);
         
-        this.resizeTabs();
+        if (!isLast)
+            this.resizeTabs();
         
         return false;
     },
@@ -263,7 +258,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.closeTimer = setTimeout(function(){
             tabEditors.$waitForMouseOut = false;
             tabEditors.$scaleinit(null, "sync");
-        }, 200);
+        }, 500);
     },
 
     closealltabs: function(callback) {
@@ -590,7 +585,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (this.more)
             return; // no more items allowed...
 
-        var mnu = mnuTabs.appendChild(new apf.item({
+        var mnu = this.mnuTabs.appendChild(new apf.item({
             caption : page.getAttribute("caption"),
             model   : page.$model,
             relPage : page.id,
@@ -635,7 +630,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.sep = null;
         }
         else if (!this.sep && (len || force)) {
-            this.sep = mnuTabs.insertBefore(new apf.divider(), mnuTabs.childNodes[this.menuOffset]);
+            this.sep = this.mnuTabs.insertBefore(new apf.divider(), 
+                this.mnuTabs.childNodes[this.menuOffset]);
         }
 
         if (len < (force ? 19 : 20)) { // we already have 9 other menu items
@@ -645,7 +641,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
         }
         else if (!this.more) {
-            this.more = mnuTabs.appendChild(new apf.item({
+            this.more = this.mnuTabs.appendChild(new apf.item({
                 caption : "More...",
                 onclick : function() {
                     panels.activate(openfiles);
@@ -678,6 +674,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     destroy : function(){
+        menus.remove("View/Tabs");
+        menus.remove(mnuContextTabs);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/newresource/newresource.xml");
 
@@ -35,34 +36,35 @@ module.exports = ext.register("ext/newresource/newresource", {
 
     nodes   : [],
 
-    init : function(amlNode){
+    hook : function(amlNode){
         var _self = this;
 
         this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "New Folder",
-                onclick : function(){
-                    _self.newfolder();
-                }
-            }), ide.mnuFile.firstChild),
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "New From Template...",
-                onclick : function(){
-                    _self.newfiletemplate();
-                }
-            }), ide.mnuFile.firstChild),
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "New File",
+            menus.addItemByPath("File/New File", new apf.item({
                 onclick : function(){
                     _self.newfile();
                 }
-            }), ide.mnuFile.firstChild)
+            }), 100),
+            menus.addItemByPath("File/New From Template...", new apf.item({
+                onclick : function(){
+                    _self.newfiletemplate();
+                }
+            }), 200),
+            menus.addItemByPath("File/New Folder", new apf.item({
+                onclick : function(){
+                    _self.newfolder();
+                }
+            }), 300),
+            menus.addItemByPath("File/~", new apf.divider(), 400)
         );
 
-        this.hotitems.newfile = [this.nodes[3]];
-        this.hotitems.newfiletemplate = [this.nodes[2]];
-        this.hotitems.newfolder = [this.nodes[1]];
+        this.hotitems.newfile = [this.nodes[0]];
+        this.hotitems.newfiletemplate = [this.nodes[1]];
+        this.hotitems.newfolder = [this.nodes[2]];
+    },
+    
+    init : function(){
+        
     },
 
     newfile: function(type, value, path) {
@@ -110,6 +112,8 @@ module.exports = ext.register("ext/newresource/newresource", {
     },
 
     newfiletemplate : function(){
+        ext.initExtension(this);
+        
         winNewFileTemplate.show();
     },
 
@@ -141,8 +145,6 @@ module.exports = ext.register("ext/newresource/newresource", {
             item.destroy(true, true);
         });
         this.nodes = [];
-
-        mnuNew.destroy(true, true);
 
         tabEditors.removeEventListener("close", this.$close);
     }

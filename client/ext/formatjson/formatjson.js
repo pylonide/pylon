@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var markup = require("text!ext/formatjson/formatjson.xml");
@@ -51,17 +52,18 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     
     hook : function(){
         var _self = this;
+        
+        var mnuItem;
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                caption : "Format JSON",
+            mnuItem = menus.addItemByPath("Tools/Format JSON", new apf.item({
                 onclick : function(){
                     ext.initExtension(_self);
                     _self.winFormat.show();
                 }
-            }))
+            }), 500)
         );
         
-        this.hotitems["format"] = [this.nodes[0]];
+        this.hotitems["format"] = [mnuItem];
     },
     
     init : function(amlNode){

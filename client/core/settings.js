@@ -80,6 +80,19 @@ module.exports = {
     $loadsettings : function(cb){
         cb({model : require('core/settings').model});
     },
+    
+    setDefaults : function(path, attr){
+        var node = this.model.queryNode(path);
+        if (!node)
+            node = apf.createNodeFromXpath(this.model.data, path);
+
+        for (var i = 0, l = attr.length; i < l; i++) {
+            if (!node.getAttributeNode(attr[i][0]))
+                apf.xmldb.setAttribute(node, attr[i][0], attr[i][1]);
+        }
+        
+        apf.xmldb.applyChanges("synchronize", node);
+    },
 
     /**
      * Initializes the settings. The settings can come from different sources:
@@ -91,6 +104,8 @@ module.exports = {
         var xml, _self = this;
         var resetSettings = location.href.indexOf('reset=1') > -1;
         var sIdent = this.sIdent = "cloud9.settings." + ide.workspaceId;
+
+        this.model.setProperty("create-model", false);
 
         if (resetSettings)
             xml = template;

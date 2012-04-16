@@ -10,6 +10,7 @@ var PlaceHolder = require("ace/placeholder").PlaceHolder;
 var marker = require("ext/language/marker");
 var ide = require("core/ide");
 var code = require("ext/code/code");
+var menus = require("ext/menus/menus");
 
 module.exports = {
     renameVariableItem: null,
@@ -27,21 +28,18 @@ module.exports = {
             _self.enableVariableRefactor(event.data);
         });
 
-        var nodes = [];
         this.refactorItem = new apf.item({
-            caption: "Rename Variable",
             disabled: true,
             onclick: function() {
                 _self.renameVariable();
             }
         });
 
-        nodes.push(this.refactorItem);
-
-        ide.addEventListener("init.ext/tools/tools", function (e) {
-            mnuTools.appendChild(new apf.divider());
-            mnuTools.appendChild(_self.refactorItem);
-        });
+        var nodes = [];
+        nodes.push(
+            menus.addItemByPath("Tools/~", new apf.divider(), 10000),
+            menus.addItemByPath("Tools/Rename Variable", _self.refactorItem, 20000)
+        );
 
         code.commandManager.addCommand({
             name: "renameVar",
@@ -50,7 +48,7 @@ module.exports = {
             }
         });
         
-        ext.hotitems.renameVar = [nodes[0]];
+        ext.hotitems.renameVar = [nodes[1]];
         ext.nodes.push(nodes[0], nodes[1]);
     },
     

@@ -9,6 +9,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var settings = require("core/settings");
 var panels = require("ext/panels/panels");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/sidebar/sidebar", {
     name     : "Side Bar",
@@ -22,8 +23,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         var _self = this;
         
         this.nodes.push(
-            mnuView.appendChild(new apf.item({
-                caption: "Project Bar",
+            menus.addItemByPath("View/Side Navigation", new apf.item({
                 type: "check",
                 checked : "[{require('ext/settings/settings').model}::auto/sidebar/@show]",
                 "onprop.checked" : function(e) {
@@ -34,16 +34,24 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                     else
                         navbar.hide();
                 }
-            })),
-            
-            navbar //After refactor this should be created here, rather than in ide.tmpl.html
+            }), 400)
         );
         
-        navbar.hide();
+        ide.addEventListener("loadsettings", function(e){
+            if (apf.isTrue(e.model.queryValue("auto/sidebar/@show"))) {
+                ext.initExtension(_self);
+                navbar.show();
+            }
+        });
     },
     
     init : function(){
-        
+        this.nodes.push(
+            hboxMain.insertBefore(new apf.vbox({
+                id: "navbar",
+                "class": "black-menu-bar unselectable"
+            }), hboxMain.firstChild)
+        );
     },
     
     add : function(panelExt, options) {
@@ -95,6 +103,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
     },
 
     destroy : function(){
+        menus.remove("View/Side Bar");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

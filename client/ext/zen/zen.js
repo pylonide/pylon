@@ -19,6 +19,7 @@ var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
 var markup = require("text!ext/zen/zen.xml");
 var skin = require("text!ext/zen/skin.xml");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/zen/zen", {
     name     : "Zen mode",
@@ -82,30 +83,29 @@ module.exports = ext.register("ext/zen/zen", {
             _self.updateButtonPosition();
         });
 
-        
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("afterswitch", function(e){
-                if (e.nextPage.type === "ext/imgview/imgview")
+                if (e.nextPage.type != "ext/code/code")
                     return;
     
                 if (!_self.inited) {
                     // Wait a moment for the editor to get into place
                     setTimeout(function() {
-                        ext.initExtension(_self); //@matt this is inefficient (Ruben)
+                        ext.initExtension(_self); //@matt this can be optimized (Ruben)
                     });
                 }
+                
+                tabEditors.removeEventListener("afterswitch", arguments.callee);
             });
         });
         
-        this.nodes.push(
-            this.mnuItem = mnuView.appendChild(new apf.item({
-                caption : "Zen Mode",
-                type    : "check",
-                onclick : function(){
-                    _self.toggleFullscreenZen();
-                }
-            }))
-        )
+        this.mnuItem = menus.addItemByPath("View/Zen Mode", new apf.item({
+            caption : "Zen Mode",
+            type    : "check",
+            onclick : function(){
+                _self.toggleFullscreenZen();
+            }
+        }), 200000);
     },
 
     init : function(){
@@ -656,6 +656,8 @@ module.exports = ext.register("ext/zen/zen", {
     },
 
     destroy : function(){
+        menus.remove("View/Zen");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

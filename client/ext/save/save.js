@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var css = require("text!ext/save/save.css");
+var menus = require("ext/menus/menus");
 var markup = require("text!ext/save/save.xml");
 
 module.exports = ext.register("ext/save/save", {
@@ -94,50 +95,47 @@ module.exports = ext.register("ext/save/save", {
             });
         });
 
-        this.nodes.push(ide.barTools.appendChild(new apf.button({
-            id       : "btnSave",
-            icon     : "save.png",
-            tooltip  : "Save",
-            skin     : "c9-toolbarbutton",
-            disabled : "{!!!tabEditors.activepage}",
-            onclick  : this.quicksave.bind(this)
-        })));
+        this.nodes.push(
+            menus.$insertByIndex(barTools, new apf.button({
+                id       : "btnSave",
+                icon     : "save.png",
+                caption  : "Save",
+                tooltip  : "Save",
+                skin     : "c9-toolbarbutton",
+                disabled : "{!!!tabEditors.activepage}",
+                onclick  : this.quicksave.bind(this)
+            }), 1000)
+        );
 
         var saveItem, saveAsItem;
         this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
+            menus.addItemByPath("File/~", new apf.divider(), 1000),
 
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save All",
-                onclick : function(){
-                    _self.saveall();
-                },
+            saveItem = menus.addItemByPath("File/Save", new apf.item({
+                onclick : this.quicksave.bind(this),
                 disabled : "{!!!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild),
+            }), 1100),
 
-            saveAsItem = ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save As...",
+            saveAsItem = menus.addItemByPath("File/Save As...", new apf.item({
                 onclick : function () {
                     _self.saveas();
                 },
                 disabled : "{!!!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild),
+            }), 1200),
 
-            saveItem = ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save",
-                onclick : this.quicksave.bind(this),
+            menus.addItemByPath("File/Save All", new apf.item({
+                onclick : function(){
+                    _self.saveall();
+                },
                 disabled : "{!!!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild),
+            }), 1300),
 
-            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
-
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Revert to Saved",
+            menus.addItemByPath("File/Revert to Saved", new apf.item({
                 onclick : function(){
                     _self.reverttosaved();
                 },
                 disabled : "{!!!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild)
+            }), 700)
         );
 
         this.hotitems.quicksave = [saveItem];
@@ -510,6 +508,13 @@ module.exports = ext.register("ext/save/save", {
     },
 
     destroy : function(){
+        menus.remove("File/~", 1100),
+        menus.remove("File/Save All")
+        menus.remove("File/Save As...")
+        menus.remove("File/Save")
+        menus.remove("File/~", 800)
+        menus.remove("File/Revert to Saved")
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

@@ -9,6 +9,7 @@
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var util = require("core/util");
 var markup = require("text!ext/extmgr/extmgr.xml");
 var panels = require("ext/panels/panels");
@@ -28,32 +29,26 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var _self = this;
         var reloadDgExt = true;
         
-        ide.addEventListener("init.ext/tools/tools", function(){
-            _self.nodes.push(
-                mnuTools.appendChild(new apf.divider()),
-    
-                mnuTools.insertBefore(new apf.item({
-                    caption : "Extension Manager...",
-                    onclick : function(){
-                        ext.initExtension(_self);
-                        winExt.show();
-    
-                        // Hackity hackathon
-                        // @TODO the problem is apparently that APF does not
-                        // like to show the datagrid records when two datagrids are
-                        // bound to the same model && that one of the xpath selectors
-                        // used to filter the model, has no results
-                        setTimeout(function() {
-                            if (reloadDgExt) {
-                                dgExt.reload();
-                                reloadDgExt = false;
-                            }
-                        });
-                    }
-                }))
-            );
-        });
+        menus.addItemByPath("Tools/~", new apf.divider(), 1000000);
+        menus.addItemByPath("Tools/Extension Manager...", new apf.item({
+            onclick : function(){
+                ext.initExtension(_self);
+                winExt.show();
 
+                // Hackity hackathon
+                // @TODO the problem is apparently that APF does not
+                // like to show the datagrid records when two datagrids are
+                // bound to the same model && that one of the xpath selectors
+                // used to filter the model, has no results
+                setTimeout(function() {
+                    if (reloadDgExt) {
+                        dgExt.reload();
+                        reloadDgExt = false;
+                    }
+                });
+            }
+        }), 2000000);
+        
         // Load up extensions the user added manually
         ide.addEventListener("loadsettings", function(e){
             ide.addEventListener("extload", function(){
@@ -165,6 +160,9 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     },
     
     destroy : function(){
+        menus.remove("Tools/~", 1000000);
+        menus.remove("Tools/Extension Manager...");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
