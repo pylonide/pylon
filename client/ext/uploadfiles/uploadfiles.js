@@ -51,6 +51,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     skin: "header-btn",
                     right: "56",
                     icon: "download-ico.png",
+                    tooltip: "Download Files",
                     onclick : function(){
                         window.open("/api/project/download/zip/" + require("core/ide").projectName);
                     }
