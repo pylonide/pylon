@@ -62,7 +62,7 @@ return keys.onLoad({
             "newfolder": "Option-Ctrl-Shift-N"
         },
         "quicksearch": {
-            "quicksearch": "Command-F",
+            "find": "Command-F",
             "findnext": "Command-G",
             "findprevious": "Shift-Command-G"
         },

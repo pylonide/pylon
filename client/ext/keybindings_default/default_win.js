@@ -62,7 +62,7 @@ return keys.onLoad({
             "newfolder": "Ctrl-Alt-N"
         },
         "quicksearch": {
-            "quicksearch": "Ctrl-F",
+            "find": "Ctrl-F",
             "findnext": "Ctrl-K",
             "findprevious": "Ctrl-Shift-K"
         },
