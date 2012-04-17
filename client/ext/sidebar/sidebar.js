@@ -23,7 +23,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         var _self = this;
         
         this.nodes.push(
-            menus.addItemByPath("View/Side Navigation", new apf.item({
+            menus.addItemByPath("View/Project Bar", new apf.item({
                 type: "check",
                 checked : "[{require('ext/settings/settings').model}::auto/sidebar/@show]",
                 "onprop.checked" : function(e) {
@@ -90,6 +90,15 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
     },
 
+    showOrHide : function(enable) {
+        ext.initExtension(this);
+
+        if (enable)
+            navbar.show();
+        else
+            navbar.hide();
+    },
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
@@ -103,7 +112,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
     },
 
     destroy : function(){
-        menus.remove("View/Side Bar");
+        menus.remove("View/Project Bar");
         
         this.nodes.each(function(item){
             item.destroy(true, true);

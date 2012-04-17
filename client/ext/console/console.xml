@@ -72,7 +72,7 @@
                   caption = "Auto-show console when running" />
             </a:menu>
 
-            <a:hbox class="consoleInputBox" edge="1" padding="4" pack="end" visible="false">
+            <a:hbox id="cliBox" class="consoleInputBox" edge="1" padding="4" pack="end" visible="false">
                 <a:textbox id="txtConsoleInput"
                   initial-message = 'Type "help" to get a list of commands'
                   margin          = "2 0 0"

@@ -3,7 +3,11 @@ this.tour = {
     finalText: "Well, that's everything! Still have questions? Head on over to <a href=\"http://support.cloud9ide.com/forums\" target=\"_blank\">our documentation site</a>.",
     steps: [
     {
-        el: navbar,
+        before: function() {
+            require("ext/sidebar/sidebar").showOrHide(true);
+        },
+        el: undefined,
+        div: "navbar",
         desc: "This is the project bar. It controls the behavior of the IDE, as well as the presentation of your code.",
         pos: "right",
         time: 4
@@ -11,7 +15,8 @@ this.tour = {
         before: function() {
             // require("ext/tree/tree").enable();
         },
-        el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Project Files"]'),
+        el: undefined,
+        div: "navbar.childNodes[0]",
         desc: "This button shows and hides your project files.",
         pos: "right",
         time: 4
@@ -19,7 +24,8 @@ this.tour = {
         before: function() {
             //require("ext/openfiles/openfiles").enable();
         },
-        el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Open Files"]'),
+        el: undefined,
+        div: "navbar.childNodes[1]",
         desc: "This button shows and hides your open files in a list view.",
         pos: "right",
         time: 4
@@ -27,7 +33,8 @@ this.tour = {
         before: function() {
             //require("ext/settings/settings").enable();
         },
-        el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Preferences"]'),
+        el: undefined,
+        div: "navbar.childNodes[navbar.childNodes.length - 1]",
         desc: "Here, you can change the behavior of the editor, manipulate the code beautifier, and change the indentation and width of the editor, among other options.",
         pos: "right",
         time: 4
@@ -91,7 +98,7 @@ this.tour = {
         },
         el: undefined,
         div: "barIdeStatus",
-        desc: "This is the status bar. It shows your current line number and column position, and clicking on it lets you modify some visual aspects, like vim mode, line margins, and beautify options.",
+        desc: "This is the status bar. It shows your current line number and column position. Clicking on it lets you modify IDE aspects, like vim mode, line margins, and scroll speed.",
         pos: "left",
         time: 4
     }, {
@@ -101,7 +108,7 @@ this.tour = {
         },
         el: undefined,
         div: undefined,
-        desc: "If you hover over this corner, you can activate \"Zen Mode,\" which is a distraction-free environment. We'll simulate pressing that button now.",
+        desc: "If you hover over this corner, you can activate Zen Mode, which is a distraction-free environment. We'll simulate pressing that button now.",
         pos: "left",
         time: 5
     }, {
@@ -128,9 +135,9 @@ this.tour = {
         skip: true
     }, {
         before: function(){
-            //ideConsole.disable();
+            require("ext/console/console").showInput();
         },
-        el: apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
+        el: cliBox,
         desc: "This area down here acts just like a command line for your project in the Cloud9 IDE. You can always type 'help' to get a list of the available commands.",
         pos: "top",
         time: 5

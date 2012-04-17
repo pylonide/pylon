@@ -2,7 +2,7 @@
  * Guides the user through features of the IDE
  * 
  * @author Matt Pardee
- * @author Garen J. Torikian
+ * @contributor Garen J. Torikian
  * 
  * @copyright 2011, Cloud9 IDE, Inc
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -263,7 +263,10 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 _self.currentEl = barIdeStatus;
             }
             else if (step.div !== undefined) {
-                if (step.node !== undefined) {
+                if (step.div.indexOf("navbar") >= 0) {
+                    _self.currentEl = eval(step.div);
+                }
+                else if (step.node !== undefined) {
                     _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
                 }
                 else {
