@@ -461,8 +461,14 @@ module.exports = ext.register("ext/save/save", {
             winConfirm.hide();
             winSaveAs.hide();
             self._saveAsNoUI(page, path, newPath, isReplace);
+            if (btnConfirmOk.caption == "Yes")
+                btnConfirmOk.setCaption("Ok");
         };
-
+        
+        var doCancel = function() {
+            if (btnConfirmOk.caption == "Yes")
+                btnConfirmOk.setCaption("Ok");
+        };
         if (path !== newPath || parseInt(file.getAttribute("newfile") || 0, 10) === 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
@@ -470,12 +476,13 @@ module.exports = ext.register("ext/save/save", {
                     var folder = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
                     isReplace = true;
                     util.confirm(
-                        "Are you sure?",
+                        "A file with this name already exists",
                         "\"" + name + "\" already exists, do you want to replace it?",
-                        "A file or folder with the same name already exists in the folder "
-                        + folder + ". "
-                        + "Replacing it will overwrite it's current contents.",
-                        doSave);
+                        "A file with the same name already exists at this location." +
+                        "Selecting Yes will overwrite the existing document.",
+                        doSave,
+                        doCancel);
+                    btnConfirmOk.setCaption("Yes");
                 }
                 else {
                     doSave();
