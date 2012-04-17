@@ -882,9 +882,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         var realSession = this.realSession[this.$getDocPath()];
         if (realSession) {
             ceEditor.$editor.setSession(realSession);
-            ceEditor.$editor.setReadOnly(false);
-            ceEditor.show();
         }
+        ceEditor.$editor.setReadOnly(false);
+        ceEditor.show();
     },
 
     doAutoSave: function() {
