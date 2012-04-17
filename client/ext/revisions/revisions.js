@@ -212,17 +212,17 @@ module.exports = ext.register("ext/revisions/revisions", {
                 Save.quicksave();
             }
         }), c += 100);
+        
         menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "Enable Auto-Save",
             type    : "check",
-            checked : "[{require('core/settings').model}::general/@autosaveenabled]"
+            checked : "{[{require('core/settings').model}::general/@autosaveenabled] != '' ? [{require('core/settings').model}::general/@autosaveenabled] : 'true'}"
         }), c += 100);
+        
         menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
         menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "About Auto-Save",
-            onclick : function(){
-
-            }
+            onclick : function() {}
         }), c += 100);
 
         this.hotitems.revisions = [mnuItem];
@@ -281,8 +281,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     init: function() {
         var self = this;
 
-        
-
         this.panel = new apf.bar({
             id: "revisionsPanel",
             visible: false,
@@ -299,7 +297,7 @@ module.exports = ext.register("ext/revisions/revisions", {
          * @todo the panel should move to the active editor tab using
          *       afterselect
          */
-        ide.addEventListener("init.ext/code/code", function (e) {
+        ide.addEventListener("init.ext/code/code", function(e) {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
@@ -1088,7 +1086,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ceEditor.$editor.container.style.right = BAR_WIDTH + "px";
 
         this.panel.show();
-
         this.populateModel();
 
         var all = this.allTimestamps;
