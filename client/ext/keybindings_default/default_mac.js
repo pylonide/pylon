@@ -12,11 +12,6 @@ return keys.onLoad({
         "console" : {
             "switchconsole": "Shift-Esc"
         },
-        "save" : {
-            "quicksave": "Command-S",
-            "saveas": "Shift-Command-S",
-            "reverttosaved": "Shift-Command-Q"
-        },
         "revisions" : {
             "revisions": "Command-B"
         },
@@ -40,19 +35,10 @@ return keys.onLoad({
             "zen": "Option-Z",
             "zenslow": "Shift-Option-Z"
         },
-        "gotofile": {
-            "_gotofilelegacy": "Option-Shift-R",
-            "gotofile": "Command-E"
-        },
         "newresource": {
             "newfile": "Option-Shift-N",
             "newfiletemplate": "Option-Ctrl-N",
             "newfolder": "Option-Ctrl-Shift-N"
-        },
-        "quicksearch": {
-            "find": "Command-F",
-            "findnext": "Command-G",
-            "findprevious": "Shift-Command-G"
         },
         "searchreplace" : {
             //"search": "Shift-Command-F",
@@ -146,10 +132,6 @@ return keys.onLoad({
             "backspace": "Command-Backspace|Option-Backspace|Backspace",
             "outdent": "Shift-Tab",
             "indent": "Tab"
-        },
-        "language": {
-            "complete": "Ctrl-Space|Alt-Space",
-            "renameVar": "Option-Command-R"
         }
     }
 });

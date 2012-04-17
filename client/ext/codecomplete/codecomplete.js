@@ -23,13 +23,6 @@ module.exports = ext.register("ext/codecomplete/codecomplete", {
         language.registerLanguageHandler('ext/codecomplete/local_completer');
         language.registerLanguageHandler('ext/codecomplete/snippet_completer');
         language.registerLanguageHandler('ext/codecomplete/open_files_local_completer');
-        
-        this.nodes.push(
-            menus.addItemByPath("Edit/~", new apf.divider(), 2000),
-            menus.addItemByPath("Edit/Show Autocomplete", new apf.item({
-                hotkey : apf.isMac ? "Alt-Space" : "Ctrl-Space"
-            }), 2100)
-        );
     },
 
     enable : function() {

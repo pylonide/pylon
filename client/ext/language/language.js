@@ -24,7 +24,8 @@ var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 
 var markupSettings = require("text!ext/language/settings.xml");
-var extSettings = require("ext/settings/settings");
+var settings = require("ext/settings/settings");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
@@ -84,13 +85,14 @@ module.exports = ext.register("ext/language/language", {
             });
         }, true);
 
-        require("ext/settings/settings").addSettings("Language Support", markupSettings );
+        settings.addSettings("Language Support", markupSettings );
     },
 
     init : function() {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
+        
         if (!editors.currentEditor || !editors.currentEditor.ceEditor) {
             return;
         }
@@ -154,7 +156,7 @@ module.exports = ext.register("ext/language/language", {
     },
 
     setJSHint: function() {
-        if(extSettings.model.queryValue("language/@jshint") != "false")
+        if(settings.model.queryValue("language/@jshint") != "false")
             this.worker.call("enableFeature", ["jshint"]);
         else
             this.worker.call("disableFeature", ["jshint"]);
@@ -162,7 +164,7 @@ module.exports = ext.register("ext/language/language", {
     },
 
     setInstanceHighlight: function() {
-        if(extSettings.model.queryValue("language/@instanceHighlight") != "false")
+        if(settings.model.queryValue("language/@instanceHighlight") != "false")
             this.worker.call("enableFeature", ["instanceHighlight"]);
         else
             this.worker.call("disableFeature", ["instanceHighlight"]);
@@ -172,7 +174,7 @@ module.exports = ext.register("ext/language/language", {
     },
 
     setUnusedFunctionArgs: function() {
-        if(extSettings.model.queryValue("language/@unusedFunctionArgs") != "false")
+        if(settings.model.queryValue("language/@unusedFunctionArgs") != "false")
             this.worker.call("enableFeature", ["unusedFunctionArgs"]);
         else
             this.worker.call("disableFeature", ["unusedFunctionArgs"]);
@@ -180,7 +182,7 @@ module.exports = ext.register("ext/language/language", {
     },
 
     setUndeclaredVars: function() {
-        if(extSettings.model.queryValue("language/@undeclaredVars") != "false")
+        if(settings.model.queryValue("language/@undeclaredVars") != "false")
             this.worker.call("enableFeature", ["undeclaredVars"]);
         else
             this.worker.call("disableFeature", ["undeclaredVars"]);

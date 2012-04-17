@@ -11,6 +11,7 @@ var marker = require("ext/language/marker");
 var ide = require("core/ide");
 var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 
 module.exports = {
     renameVariableItem: null,
@@ -28,28 +29,23 @@ module.exports = {
             _self.enableVariableRefactor(event.data);
         });
 
-        this.refactorItem = new apf.item({
+        this.mnuItem = new apf.item({
             disabled: true,
-            onclick: function() {
-                _self.renameVariable();
-            }
-        });
+            command : "renameVar"
+        })
 
-        var nodes = [];
-        nodes.push(
+        ext.nodes.push(
             menus.addItemByPath("Tools/~", new apf.divider(), 10000),
-            menus.addItemByPath("Tools/Rename Variable", _self.refactorItem, 20000)
+            menus.addItemByPath("Tools/Rename Variable", this.mnuItem, 20000)
         );
-
-        ide.commandManager.addCommand({
+        
+        commands.addCommand({
             name: "renameVar",
+            bindKey: {mac: "Option-Command-R", win: "Ctrl-Alt-R"},
             exec: function(editor) {
                 _self.renameVariable();
             }
         });
-        
-        ext.hotitems.renameVar = [nodes[1]];
-        ext.nodes.push(nodes[0], nodes[1]);
     },
     
     enableRefactorings: function(event) {
@@ -62,7 +58,7 @@ module.exports = {
             }
         }
 
-        this.refactorItem.setAttribute('disabled', !enableVariableRename);
+        this.mnuItem.setAttribute('disabled', !enableVariableRename);
     },
     
     enableVariableRefactor: function(data) {

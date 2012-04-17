@@ -16,6 +16,7 @@ var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
 var markup = require("text!ext/quicksearch/quicksearch.xml");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 
 var oIter, oTotal;
 
@@ -48,7 +49,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
     defaultOffset : 30,
     offsetWidth : 30,
-    hotitems: {},
 
     nodes   : [],
 
@@ -56,8 +56,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     hook : function(){
         var _self = this;
-        ide.commandManager.addCommand({
+        
+        commands.addCommand({
             name: "find",
+            bindKey: {mac: "Command-F", win: "Ctrl-F"},
             exec: function(env, args, request) {
                 _self.toggleDialog(1);
             }
@@ -81,18 +83,13 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             _self.updateBarPosition();
         });
         
-        var mnuItem;
         this.nodes.push(
             menus.addItemByPath("Find/~", new apf.divider(), 700),
 
-            mnuReplace = menus.addItemByPath("Find/Quick Find", new apf.item({
-                onclick : function() {
-                    _self.toggleDialog(1);
-                }
+            menus.addItemByPath("Find/Quick Find", new apf.item({
+                command : "find"
             }), 800)
         );
-        
-        this.hotitems.quicksearch = [mnuItem];
     },
 
     init : function(amlNode){

@@ -58,11 +58,29 @@ function replaceText(editor, prefix, newText) {
     editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
 }
 
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
+
 module.exports = {
-    hook: function(language, worker) {
+    hook: function(ext, worker) {
         var _self = this;
         worker.on("complete", function(event) {
             _self.onComplete(event);
+        });
+        
+        ext.nodes.push(
+            menus.addItemByPath("Edit/~", new apf.divider(), 2000),
+            menus.addItemByPath("Edit/Show Autocomplete", new apf.item({
+                command : "complete"
+            }), 2100)
+        );
+        
+        commands.addCommand({
+            name: "complete",
+            bindKey: {mac: "Ctrl-Space|Alt-Space", win: "Ctrl-Space|Alt-Space"},
+            exec: function(editor) {
+                _self.invoke();
+            }
         });
     },
     

@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var fs = require("ext/filesystem/filesystem");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 
 //var TreeDocument = require("concorde/AceDocument");
 var Save = require("ext/save/save");
@@ -192,7 +193,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         btnSave.removeAttribute("tooltip");
         btnSave.setAttribute("margin", "0 20 0 20");
         btnSave.setAttribute("submenu", "mnuSave");
-        btnSave.removeAttribute("onclick");
+        btnSave.removeAttribute("command");
         
         this.$onMessageFn = this.onMessage.bind(this);
         ide.addEventListener("socketMessage", this.$onMessageFn);

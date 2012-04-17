@@ -28,20 +28,20 @@ module.exports = ext.register("ext/panels/panels", {
         var _self = this;
         
         panelExt.mnuItem = menus.addItemByPath(
-          "View/Project Bar/" + panelExt.name, 
-          new apf.item({
-            type    : "radio",
-            value   : panelExt.path,
-            group   : this.group,
-            onclick : function(){
-                if (panelExt.show)
-                    panelExt.show();
-            },
-            "onprop.selected" : function(e){
-                if (e.value && !panelExt.show)
-                    _self.activate(panelExt);
-            }
-        }), options.position);
+          "View/Side Bar/" + panelExt.name, 
+            new apf.item({
+                type    : "radio",
+                value   : panelExt.path,
+                group   : this.group,
+                onclick : function(){
+                    if (panelExt.show)
+                        panelExt.show();
+                },
+                "onprop.selected" : function(e){
+                    if (e.value && !panelExt.show)
+                        _self.activate(panelExt);
+                }
+            }), options.position);
         
         ide.addEventListener("init.ext/sidebar/sidebar", function(e){
             e.ext.add(panelExt, options);
@@ -260,7 +260,7 @@ module.exports = ext.register("ext/panels/panels", {
     },
     
     unregister : function(panelExt){
-        menus.remove("View/Project Bar/" + panelExt.name);
+        menus.remove("View/Side Bar/" + panelExt.name);
           
         delete this.panels[panelExt.path];
     },
@@ -273,11 +273,11 @@ module.exports = ext.register("ext/panels/panels", {
                 value : "[{req" + "uire('core/settings').model}::auto/panels/@active]"
             })),
             
-            menus.addItemByPath("View/Project Bar/", null, 100),
+            menus.addItemByPath("View/Side Bar/", null, 100),
             menus.addItemByPath("View/~", new apf.divider(), 200),
             
             this.mnuPanelsNone = 
-              menus.addItemByPath("View/Project Bar/None", new apf.item({
+              menus.addItemByPath("View/Side Bar/None", new apf.item({
                 type: "radio",
                 group: this.group,
                 "onprop.selected": function(e){
@@ -285,7 +285,7 @@ module.exports = ext.register("ext/panels/panels", {
                         _self.deactivate(null, true);
                 }
               }), 100),
-            menus.addItemByPath("View/Project Bar/~", new apf.divider(), 200)
+            menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
         );
         
         colLeft.addEventListener("resize", function(){

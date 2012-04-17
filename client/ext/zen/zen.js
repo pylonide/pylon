@@ -20,6 +20,7 @@ var settings = require("ext/settings/settings");
 var markup = require("text!ext/zen/zen.xml");
 var skin = require("text!ext/zen/skin.xml");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/zen/zen", {
     name     : "Zen mode",

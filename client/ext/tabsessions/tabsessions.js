@@ -16,6 +16,7 @@ var menus = require("ext/menus/menus");
 var css = require("text!ext/save/save.css");
 var markup = require("text!ext/tabsessions/tabsessions.xml");
 var tabbeh = require("ext/tabbehaviors/tabbehaviors");
+var commands = require("ext/commands/commands");
 
 tabbeh.menuOffset += 3;
 

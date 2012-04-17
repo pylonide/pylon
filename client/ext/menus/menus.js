@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/menus/menus", {
     name    : "Menus",
@@ -74,11 +75,12 @@ module.exports = ext.register("ext/menus/menus", {
         
         apf.button.prototype.$propHandlers["command"] = 
         apf.item.prototype.$propHandlers["command"] = function(value){
-            this.setAttribute("hotkey", "{ide.commandManager." + value + "}");
+            this.setAttribute("hotkey", 
+                value && "{ide.commandManager." + value + "}" || "");
             
-            this.onclick = function(){
-                ide.commandManager.exec(value);
-            };
+            this.onclick = value && function(){
+                commands.exec(value);
+            } || null;
         }
     },
     

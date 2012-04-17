@@ -11,6 +11,7 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/quickwatch/quickwatch.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/quickwatch/quickwatch", {
     name    : "quickwatch",

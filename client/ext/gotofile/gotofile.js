@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
@@ -26,7 +27,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         "_gotofilelegacy": {hint: "Legacy"},
         "gotofile": {hint: "search for a filename and jump to it"}
     },
-    hotitems: {},
 
     dirty   : true,
     nodes   : [],
@@ -35,10 +35,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var _self = this;
 
         var mnuItem = new apf.item({
-            onclick : function() {
+        	command : "gotofile"
+	    });
+        
+        commands.addCommand({
+            name: "gotofile",
+            bindKey: {mac: "Command-E", win: "Ctrl-E"},
+            exec: function () {
                 _self.toggleDialog(1);
             }
-        })
+        });
 
         this.nodes.push(
             menus.addItemByPath("File/Open...", mnuItem, 500),
@@ -56,8 +62,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         ide.addEventListener("extload", function(){
             _self.updateFileCache();
         });
-
-        this.hotitems["gotofile"] = [this.nodes[0], this.nodes[1], this.nodes[3]];
     },
 
     init : function() {

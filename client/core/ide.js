@@ -8,47 +8,9 @@
 define(function(require, exports, module) {
     var Document       = require("core/document");
     var util           = require("core/util");
-    var CommandManager = require("support/ace/lib/ace/commands/command_manager").CommandManager;
 
     ide = new apf.Class().$init(); //global on purpose
     
-    ide.commandManager = new CommandManager(apf.isMac ? "mac" : "win");
-    apf.extend(ide.commandManager, new apf.Class().$init());
-    
-    ide.commandManager.getHotkey = function(command){
-        return this.commands[command].bindKey[this.platform];
-    }
-    
-    var exec = ide.commandManager.exec;
-    ide.commandManager.exec = function(command, editor, args){
-        if (!editor) {
-            //@todo this needs a better abstraction
-            var page = self.tabEditors && tabEditors.getPage();
-            editor = page && page.$editor;
-            if (editor.ceEditor)
-                editor = editor.ceEditor.$editor;
-        }
-        
-        exec.apply(this, [command, editor, args]);
-    }
-    
-    var addCommand = ide.commandManager.addCommand;
-    ide.commandManager.addCommand = function(command){
-        this[command.name] = "";
-        
-        addCommand.apply(this, arguments);
-        
-        if (command.bindKey)
-            this.setProperty(command.name, command.bindKey[this.platform]);
-    }
-    
-    var removeCommand = ide.commandManager.removeCommand
-    ide.commandManager.removeCommand = function(command){
-        if (this[command.name])
-            this.setProperty(command.name, "");
-        removeCommand.apply(this, arguments);
-    }
-
     ide.createDocument = function(node, value){
         return new Document(node, value);
     };

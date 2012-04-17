@@ -13,6 +13,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var dock   = require("ext/dockpanel/dockpanel");
+var commands = require("ext/commands/commands");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
@@ -38,33 +39,32 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     nodesAll: [],
     nodes : [],
-    hotitems: {},
 
     hook : function(){
         var _self = this;
         
-        ide.commandManager.addCommand({
+        commands.addCommand({
             name: "resume",
             bindKey: {mac: "F8", win: "F8"},
             exec: function(){
                 self.dbg && dbg.continueScript();
             }
         });
-        ide.commandManager.addCommand({
+        commands.addCommand({
             name: "stepinto",
             bindKey: {mac: "F11", win: "F11"},
             exec: function(){
                 self.dbg && dbg.stepInto();
             }
         });
-        ide.commandManager.addCommand({
+        commands.addCommand({
             name: "stepover",
             bindKey: {mac: "F10", win: "F10"},
             exec: function(){
                 self.dbg && dbg.stepNext();
             }
         });
-        ide.commandManager.addCommand({
+        commands.addCommand({
             name: "stepout",
             bindKey: {mac: "Shift-F11", win: "Shift-F11"},
             exec: function(){

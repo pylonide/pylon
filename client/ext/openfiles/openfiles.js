@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/openfiles/openfiles.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/openfiles/openfiles", {
     name            : "Open Files",

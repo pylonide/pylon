@@ -21,6 +21,7 @@ var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/vim/settings.xml");
 var util = require("ext/vim/maps/util");
+//var commands = require("ext/commands/commands");
 
 var VIM_ENABLED = false;
 var OLD_HANDLER;

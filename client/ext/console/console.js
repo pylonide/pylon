@@ -15,6 +15,7 @@ define(function(require, exports, module) {
 var editors, parseLine, predefinedCmds; // These modules are loaded on demand
 var ide = require("core/ide");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var Logger = require("ext/console/logger");
@@ -302,7 +303,7 @@ module.exports = ext.register("ext/console/console", {
     hook: function() {
         var _self = this;
         
-        //@todo this should be done via ide.commandManager instead
+        //@todo this should be done via commands instead
         // Listen for new extension registrations to add to the
         // hints
         ide.addEventListener("ext.register", function(e){
@@ -310,7 +311,7 @@ module.exports = ext.register("ext/console/console", {
                 apf.extend(_self.allCommands, e.ext.commands);
         });
         
-        ide.commandManager.addCommand({
+        commands.addCommand({
             name: "toggleconsole",
             exec: function () {
                 if (_self.hidden)
@@ -320,7 +321,7 @@ module.exports = ext.register("ext/console/console", {
             }
         });
         
-        ide.commandManager.addCommand({
+        commands.addCommand({
             name: "toggleinputbar",
             exec: function () {
                 if (_self.hiddenInput)

@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var settings = require("ext/settings/settings");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",

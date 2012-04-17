@@ -13,6 +13,7 @@ var css = require("text!ext/splitview/splitview.css");
 var Code = require("ext/code/code");
 var Tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var Editors = require("ext/editors/editors");
+var commands = require("ext/commands/commands");
 
 var EditSession = require("ace/edit_session").EditSession;
 

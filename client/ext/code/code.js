@@ -12,6 +12,7 @@ require("apf/elements/codeeditor");
 var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var useragent = require("ace/lib/useragent");
@@ -331,8 +332,8 @@ module.exports = ext.register("ext/code/code", {
     hook: function() {
         var _self = this;
         
-        ide.commandManager.addCommands(defaultCommands);
-        ide.commandManager.addCommands(MultiSelectCommands);
+        commands.addCommands(defaultCommands);
+        commands.addCommands(MultiSelectCommands);
 
         //Settings Support
         ide.addEventListener("loadsettings", function(e) {
@@ -645,7 +646,7 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.show();
 
         this.ceEditor = this.amlEditor = ceEditor;
-        ceEditor.$editor.commands = ide.commandManager;
+        ceEditor.$editor.commands = commands;
 
         // preload common language modes
         var noop = function() {}; 

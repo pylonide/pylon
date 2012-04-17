@@ -16,6 +16,7 @@ var editors = require("ext/editors/editors");
 var menus = require("ext/menus/menus");
 var extSettings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/stripws/settings.xml");
+var commands = require("ext/commands/commands");
 
 // Attaching to exports.module for testing purposes
 var strip = module.exports.strip = function () {

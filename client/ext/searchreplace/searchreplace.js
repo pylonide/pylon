@@ -16,6 +16,7 @@ var search = require("ace/search");
 var editors = require("ext/editors/editors");
 var css = require("text!ext/searchreplace/searchreplace.css");
 var markup = require("text!ext/searchreplace/searchreplace.xml");
+var commands = require("ext/commands/commands");
 
 var oIter, oTotal;
 
@@ -39,7 +40,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     hook : function(){
         var _self = this;
 
-        var mnuFind, mnuReplace
+        commands.addCommand({
+            name: "replace",
+            exec: function(env, args, request) {
+                _self.toggleDialog(true, true);
+            }
+        });
+
         this.nodes.push(
             mnuFind = menus.addItemByPath("Find/Find...", new apf.item({
                 onclick : function() {
@@ -47,40 +54,24 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 }
             }), 100),
             menus.addItemByPath("Find/Find Next", new apf.item({
-                hotkey : apf.isMac ? "Cmd-G" : "Shift-Cmd-G", // TODO: Don't hardcode this
-                onclick : function() {
-                    
-                }
+                command : "findnext"
             }), 200),
             menus.addItemByPath("Find/Find Previous", new apf.item({
-                hotkey : apf.isMac ? "Shift-Cmd-G" : "Shift-Ctrl-G", // TODO: Don't hardcode this
-                onclick : function() {
-                    
-                }
+                command : "findprevious"
             }), 300),
             menus.addItemByPath("Find/~", new apf.divider(), 400),
-            mnuReplace = menus.addItemByPath("Find/Replace...", new apf.item({
-                onclick : function() {
-                    _self.toggleDialog(true);
-                }
+            menus.addItemByPath("Find/Replace...", new apf.item({
+                command : "replace"
             }), 500),
             menus.addItemByPath("Find/Replace Next", new apf.item({
                 onclick : function() {
                     
                 }
-            }), 600)
+            }), 600),
+            menus.addItemByPath("Find/Replace All", new apf.item({
+                command : "replaceall"
+            }), 700)
         );
-
-        this.hotitems.search        = [mnuFind];
-        this.hotitems.searchreplace = [mnuReplace];
-
-        ide.commandManager.addCommand({
-            name: "replace",
-            exec: function(editor) {
-                _self.setEditor(editor, editor.getSelection()).toggleDialog(true, true);
-            }
-        });
-
     },
 
     init : function(amlNode){
@@ -190,6 +181,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         }
         else
             winSearchReplace.hide();
+
         return false;
     },
 

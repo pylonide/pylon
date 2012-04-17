@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/newresource/newresource.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/newresource/newresource", {
     dev     : "Ajax.org",

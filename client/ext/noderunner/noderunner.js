@@ -14,6 +14,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var markup = require("text!ext/noderunner/noderunner.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
     name    : "Node Runner",

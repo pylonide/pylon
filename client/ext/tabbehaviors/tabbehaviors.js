@@ -13,6 +13,7 @@ var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
 var menus = require("ext/menus/menus");
 var openfiles = require("ext/openfiles/openfiles");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",

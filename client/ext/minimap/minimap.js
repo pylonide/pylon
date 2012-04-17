@@ -13,6 +13,7 @@ var editors = require("ext/editors/editors");
 var Map = require("ext/minimap/map");
 var menus = require("ext/menus/menus");
 var css = require("text!ext/minimap/style.css");
+var commands = require("ext/commands/commands");
 
 return module.exports = ext.register("ext/minimap/minimap", {
     name  : "Minimap",

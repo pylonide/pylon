@@ -14,6 +14,7 @@ var fs = require("ext/filesystem/filesystem");
 var css = require("text!ext/save/save.css");
 var menus = require("ext/menus/menus");
 var markup = require("text!ext/save/save.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/save/save", {
     dev         : "Ajax.org",
@@ -36,6 +37,37 @@ module.exports = ext.register("ext/save/save", {
 
     hook : function(){
         var _self = this;
+        
+        commands.addCommand({
+            name: "quicksave",
+            bindKey: {mac: "Command-S", win: "Ctrl-S"},
+            exec: function () {
+                _self.quicksave();
+            }
+        });
+        
+        commands.addCommand({
+            name: "saveas",
+            bindKey: {mac: "Command-Shift-S", win: "Ctrl-Shift-S"},
+            exec: function () {
+                _self.saveas();
+            }
+        });
+
+        commands.addCommand({
+            name: "saveall",
+            exec: function () {
+                _self.saveall();
+            }
+        });
+        
+        commands.addCommand({
+            name: "reverttosaved",
+            bindKey: {mac: "Command-Q", win: "Ctrl-Shift-Q"},
+            exec: function () {
+                _self.reverttosaved();
+            }
+        });
 
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("close", _self.$close = function(e) {
@@ -108,41 +140,32 @@ module.exports = ext.register("ext/save/save", {
                 tooltip  : "Save",
                 skin     : "c9-toolbarbutton",
                 disabled : "{!!!tabEditors.activepage}",
-                onclick  : this.quicksave.bind(this)
+                command  : "quicksave"
             }), 1000)
         );
 
         var saveItem, saveAsItem;
         this.nodes.push(
             saveItem = menus.addItemByPath("File/Save", new apf.item({
-                onclick : this.quicksave.bind(this),
+                command : "quicksave",
                 disabled : "{!!!tabEditors.activepage}"
             }), 1000),
 
             saveAsItem = menus.addItemByPath("File/Save As...", new apf.item({
-                onclick : function () {
-                    _self.saveas();
-                },
+                command : "saveas",
                 disabled : "{!!!tabEditors.activepage}"
             }), 1100),
 
             menus.addItemByPath("File/Save All", new apf.item({
-                onclick : function(){
-                    _self.saveall();
-                },
+                command : "saveall",
                 disabled : "{!!!tabEditors.activepage}"
             }), 1200),
 
             menus.addItemByPath("File/Revert to Saved", new apf.item({
-                onclick : function(){
-                    _self.reverttosaved();
-                },
+                command : "reverttosaved",
                 disabled : "{!!!tabEditors.activepage}"
             }), 700)
         );
-
-        this.hotitems.quicksave = [saveItem];
-        this.hotitems.saveas = [saveAsItem];
     },
 
     init : function(amlNode){

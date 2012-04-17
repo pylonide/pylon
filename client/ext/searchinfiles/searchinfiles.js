@@ -17,6 +17,7 @@ var ideConsole = require("ext/console/console");
 var menus = require("ext/menus/menus");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     name     : "Search in files",

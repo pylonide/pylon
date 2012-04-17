@@ -16,6 +16,7 @@ var ide = require("core/ide");
 var util = require("core/util");
 var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var jsbeautify = require("ext/beautify/res/jsbeautify/jsbeautify-min");
@@ -136,9 +137,9 @@ module.exports = ext.register("ext/beautify/beautify", {
               command  : "beautify"
           }), 100);
 
-        ide.commandManager.addCommand({
+        commands.addCommand({
             name: "beautify",
-            bindKey: {mac: "Ctrl-Shift-B", win: "Shift-Command-B"},
+            bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
             exec: function () {
                 _self.beautify();
             }

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/undo/undo", {
     dev    : "Ajax.org",

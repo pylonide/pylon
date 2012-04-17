@@ -13,6 +13,7 @@ var markup = require("text!ext/settings/settings.xml");
 var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
 var settings = require("core/settings");
+var commands = require("ext/commands/commands");
 var panelSettings =  require("text!ext/panels/settings.xml");
 
 module.exports = ext.register("ext/settings/settings", {

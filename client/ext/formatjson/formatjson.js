@@ -14,7 +14,8 @@ var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var markup = require("text!ext/formatjson/formatjson.xml");
-        
+var commands = require("ext/commands/commands");
+
 module.exports = ext.register("ext/formatjson/formatjson", {
     name     : "JSON Formatter",
     dev      : "Ajax.org",

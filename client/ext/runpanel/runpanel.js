@@ -17,6 +17,7 @@ var dock = require("ext/dockpanel/dockpanel");
 var save = require("ext/save/save");
 var markup = require("text!ext/runpanel/runpanel.xml");
 var markupSettings = require("text!ext/runpanel/settings.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/runpanel/runpanel", {
     name    : "Run Panel",

@@ -18,6 +18,7 @@ var fs = require("ext/filesystem/filesystem");
 var settings = require("ext/settings/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/tree/tree.xml");
+var commands = require("ext/commands/commands");
 
 function $trScroll() {
     if (this.$scrollTimer)
