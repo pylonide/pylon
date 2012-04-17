@@ -26,7 +26,7 @@ function main(args) {
     var project = {
         roots: [
             ACE_HOME + "/lib",
-            __dirname + "/client",
+            "/tmp/c9_worker_build",
             __dirname + "/support/treehugger/lib"
         ],
         textPluginPattern: /^ace\/requirejs\/text!/
@@ -71,7 +71,7 @@ function worker(project) {
             worker
         ],
         filter: [ /* copy.filter.uglifyjs */],
-        dest: __dirname + "/client/js/worker/worker.js"
+        dest: __dirname + "/plugins-client/cloud9.core/www/js/worker/worker.js"
     });
 }
 
