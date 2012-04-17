@@ -263,7 +263,7 @@
 
                 .ace_dark .revision_hl_delete {
                     position: absolute;
-                    background: rgb(64, 54, 54);
+                    background: rgb(118, 54, 54);
                 }
                 
                 .revision_hl_delete {
