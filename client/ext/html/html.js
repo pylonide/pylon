@@ -47,7 +47,7 @@ module.exports = ext.register("ext/html/html", {
 
     afterSwitchOrOpen : function(node) {
         var name = node.$model.data.getAttribute("name");
-        var fileExtension = name.split(".").pop();
+        var fileExtension = name.split(".").pop().toLowerCase();
 
         if (previewExtensions.indexOf(fileExtension) > -1) {
             ext.initExtension(this);

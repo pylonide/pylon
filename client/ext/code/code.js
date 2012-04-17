@@ -221,7 +221,7 @@ module.exports = ext.register("ext/code/code", {
             var fileName = node.getAttribute("name");
 
             if (fileName.lastIndexOf(".") != -1)
-                mime = contentTypes[fileName.split(".").pop()];
+                mime = contentTypes[fileName.split(".").pop().toLowerCase()];
             else
                 mime = contentTypes["*" + fileName];
         }
@@ -423,7 +423,7 @@ module.exports = ext.register("ext/code/code", {
 
                     var mime = value.split(";")[0];
                     var fileExt = (fileName.lastIndexOf(".") != -1) ?
-                        fileName.split(".").pop() : null;
+                        fileName.split(".").pop().toLowerCase() : null;
 
                     if (fileExt && contentTypes[fileExt] !== mime)
                         delete contentTypes[fileExt];
