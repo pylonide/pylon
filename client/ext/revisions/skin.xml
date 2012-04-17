@@ -261,11 +261,15 @@
                     background-image: url(images/revisions-spinner-active.gif);
                 }
 
+                .ace_dark .revision_hl_delete {
+                    position: absolute;
+                    background: rgb(64, 54, 54);
+                }
+                
                 .revision_hl_delete {
                     position: absolute;
-                    background: rgb(243, 207, 207);
+                    background: rgb(102, 87, 87);
                 }
-
 
                 /*
                  * Uncomment the following for strikethrough on deleted text
@@ -278,6 +282,11 @@
                  * }
                  */
 
+                .ace_dark .revision_hl_insert {
+                    position: absolute;
+                    background: rgb(73, 102, 73);
+                }
+                
                 .revision_hl_insert {
                     position: absolute;
                     background: rgb(168, 232, 166);
