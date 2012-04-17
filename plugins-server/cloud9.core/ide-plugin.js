@@ -16,6 +16,8 @@ module.exports = function setup(options, imports, register) {
     var baseUrl = options.baseUrl || "";
     var staticPrefix = imports.static.getStaticPrefix();
 
+    var socketUrl = options.socketUrl || "/socket.io";
+
     var ide;
     var serverPlugins = {};
 
@@ -43,6 +45,7 @@ module.exports = function setup(options, imports, register) {
             workspaceDir: projectDir,
             settingsPath: settingsPath,
             davPrefix: baseUrl + "/workspace",
+            socketIoUrl: socketUrl.replace(/^\//, ""),
             baseUrl: baseUrl,
             debug: false,
             staticUrl: staticPrefix,
@@ -66,6 +69,9 @@ module.exports = function setup(options, imports, register) {
                 },
                 getServer: function() {
                     return ide;
+                },
+                getSocketUrl: function() {
+                    return socketUrl;
                 },
                 initUserAndProceed: initUserAndProceed
             }
