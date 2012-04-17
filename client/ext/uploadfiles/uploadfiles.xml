@@ -23,7 +23,7 @@
                 <div class="uploadOrText"></div>
                 <a:button id="fileUploadSelectBtn" skin="btn-default-css3">a complete folder</a:button>
             </a:hbox>
-            <div style="color: #838383">Your files will instantly start uploading to: <span id="uplTargetFolder"></span></div>
+            <div style="color: #838383">Your files will instantly start uploading to the <span id="uplTargetFolder"></span> directory</div>
         </a:vbox>
         <input id="fileUploadSelect" type="file" multiple="multiple" /> <!--  class="uploadWithFolders" -->
         <!--input id="folderUploadSelect" type="file" webkitdirectory="" directory="" /-->

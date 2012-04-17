@@ -20,20 +20,23 @@
           skin="header-btn"
           right="56"
           icon="panel_upload.png"
-          onclick="winUploadFiles.show()" />
+          onclick="winUploadFiles.show()"
+          tooltip="Upload Files" />
         <a:button id="btnTreeRefresh"
           top="-22"
           skin="header-btn"
           right="29"
           icon="panel_refresh.png"
           visible = "{trFiles.visible}"
-          onclick="require('ext/tree/tree').refresh()" />
+          onclick="require('ext/tree/tree').refresh()" 
+          tooltip="Refresh Project Tree" />
         <a:button
           top="-22"
           skin="header-btn"
           right="5"
           icon="panel_settings.png"
-          submenu="mnuFilesSettings"/>
+          submenu="mnuFilesSettings"
+          tooltip="Settings" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         
         <a:menu id="mnuFilesSettings">
