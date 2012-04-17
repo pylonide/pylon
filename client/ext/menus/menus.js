@@ -48,6 +48,38 @@ module.exports = ext.register("ext/menus/menus", {
         }), 2000000);
         
         this.addItemByPath("View/~", new apf.divider(), 9999);
+        
+        apf.button.prototype.$propHandlers["hotkey"] = function(value){
+            if (this.$hotkey)
+                apf.setNodeValue(this.$hotkey, apf.isMac 
+                      ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey);
+    
+            if (this.tooltip)
+                apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
+        }
+        
+        apf.item.prototype.$propHandlers["hotkey"] = function(value){
+            if (!this.$amlLoaded) {
+                var _self = this;
+                this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+                    if (_self.$hotkey && _self.hotkey)
+                        apf.setNodeValue(this.$hotkey, apf.isMac 
+                          ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey);
+                });
+            }
+            else if (this.$hotkey)
+                apf.setNodeValue(this.$hotkey, 
+                    apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
+        }
+        
+        apf.button.prototype.$propHandlers["command"] = 
+        apf.item.prototype.$propHandlers["command"] = function(value){
+            this.setAttribute("hotkey", "{ide.commandManager." + value + "}");
+            
+            this.onclick = function(){
+                ide.commandManager.exec(value);
+            };
+        }
     },
     
     $insertByIndex : function(parent, item, index) {

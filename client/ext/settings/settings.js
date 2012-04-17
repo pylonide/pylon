@@ -76,6 +76,7 @@ module.exports = ext.register("ext/settings/settings", {
         
         //Backwards compatible
         this.model = settings.model;
+        this.setDefaults = settings.setDefaults;
     },
     
     headings : {},
@@ -100,7 +101,7 @@ module.exports = ext.register("ext/settings/settings", {
         colLeft.appendChild(winSettings);
         
         this.nodes.push(winSettings);
-
+        
         // this has to be done out here for some reason
         this.addSettings("General",  panelSettings );
     },

@@ -5,7 +5,7 @@
                 <div class="expand-panel-bg"></div>
                 <a:button id="btnResume" tooltip="Resume"
                   icon     = "play.png"
-                  onclick  = "dbg.continueScript();"
+                  command  = "debugresume"
                   skin     = "c9-sidepanelsbutton"
                   disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button  tooltip="Suspend"
@@ -17,17 +17,17 @@
                 <a:button id="btnStepOver" tooltip="Step Over"
                   icon     = "step.png"
                   skin     = "c9-sidepanelsbutton"
-                  onclick  = "dbg.stepNext();"
+                  command  = "stepover"
                   disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button id="btnStepInto" tooltip="Step Into"
                   icon     = "stepinto.png" 
                   skin     = "c9-sidepanelsbutton"
-                  onclick  = "dbg.stepInto();" 
+                  command  = "stepinto" 
                   disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button id="btnStepOut" tooltip="Step Out"
                   icon     = "stepback.png" 
                   skin     = "c9-sidepanelsbutton"
-                  onclick  = "dbg.stepOut();"
+                  command  = "stepout"
                   disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
             </a:hbox>
         </a:page>

@@ -41,7 +41,7 @@ module.exports = {
             menus.addItemByPath("Tools/Rename Variable", _self.refactorItem, 20000)
         );
 
-        code.commandManager.addCommand({
+        ide.commandManager.addCommand({
             name: "renameVar",
             exec: function(editor) {
                 _self.renameVariable();

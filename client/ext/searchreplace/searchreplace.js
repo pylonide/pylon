@@ -74,7 +74,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.hotitems.search        = [mnuFind];
         this.hotitems.searchreplace = [mnuReplace];
 
-        code.commandManager.addCommand({
+        ide.commandManager.addCommand({
             name: "replace",
             exec: function(editor) {
                 _self.setEditor(editor, editor.getSelection()).toggleDialog(true, true);

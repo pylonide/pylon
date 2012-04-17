@@ -56,7 +56,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     hook : function(){
         var _self = this;
-        code.commandManager.addCommand({
+        ide.commandManager.addCommand({
             name: "find",
             exec: function(env, args, request) {
                 _self.toggleDialog(1);

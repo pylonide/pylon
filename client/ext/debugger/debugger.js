@@ -16,8 +16,9 @@ var dock   = require("ext/dockpanel/dockpanel");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
+var settings = require("ext/settings/settings");
+
 require("ext/debugger/inspector");
-require("ext/settings/settings");
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
@@ -41,6 +42,35 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     hook : function(){
         var _self = this;
+        
+        ide.commandManager.addCommand({
+            name: "resume",
+            bindKey: {mac: "F8", win: "F8"},
+            exec: function(){
+                self.dbg && dbg.continueScript();
+            }
+        });
+        ide.commandManager.addCommand({
+            name: "stepinto",
+            bindKey: {mac: "F11", win: "F11"},
+            exec: function(){
+                self.dbg && dbg.stepInto();
+            }
+        });
+        ide.commandManager.addCommand({
+            name: "stepover",
+            bindKey: {mac: "F10", win: "F10"},
+            exec: function(){
+                self.dbg && dbg.stepNext();
+            }
+        });
+        ide.commandManager.addCommand({
+            name: "stepout",
+            bindKey: {mac: "Shift-F11", win: "Shift-F11"},
+            exec: function(){
+                self.dbg && dbg.stepOut();
+            }
+        });
 
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.send({
@@ -220,15 +250,6 @@ module.exports = ext.register("ext/debugger/debugger", {
         //@todo move this to noderunner...
         dbg.addEventListener("changeframe", function(e) {
             e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
-        });
-
-        pgDebugNav.addEventListener("afterrender", function(){
-            _self.hotitems["resume"]   = [btnResume];
-            _self.hotitems["stepinto"] = [btnStepInto];
-            _self.hotitems["stepover"] = [btnStepOver];
-            _self.hotitems["stepout"]  = [btnStepOut];
-
-            require("ext/keybindings/keybindings").update(_self);
         });
 
         dbgBreakpoints.addEventListener("afterrender", function(){

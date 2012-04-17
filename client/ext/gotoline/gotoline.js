@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
+var keys = require("ext/keybindings/keybindings");
 var editors = require("ext/editors/editors");
 var settings = require("core/settings");
 var skin = require("text!ext/gotoline/skin.xml");
@@ -50,8 +51,9 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             _self.gotoline();
         });
 
-        code.commandManager.addCommand({
+        ide.commandManager.addCommand({
             name: "gotoline",
+            bindKey: {mac: "Command-L", win: "Ctrl-G"},
             exec: function() {
                 _self.gotoline();
             }

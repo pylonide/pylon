@@ -19,7 +19,6 @@ var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
 var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
 var ProxyDocument = require("ext/code/proxydocument");
-var CommandManager = require("ace/commands/command_manager").CommandManager;
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
 var settings = require("core/settings");
@@ -187,7 +186,6 @@ module.exports = ext.register("ext/code/code", {
 
     fileExtensions : Object.keys(contentTypes),
     supportedModes: Object.keys(SupportedModes),
-    commandManager : new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
 
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
@@ -332,6 +330,9 @@ module.exports = ext.register("ext/code/code", {
 
     hook: function() {
         var _self = this;
+        
+        ide.commandManager.addCommands(defaultCommands);
+        ide.commandManager.addCommands(MultiSelectCommands);
 
         //Settings Support
         ide.addEventListener("loadsettings", function(e) {
@@ -404,188 +405,97 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("Edit/Convert Case/", null, c += 100)
         );
         
-        function addEditorMenu(path, key, commandName) {
-            if (typeof key != "string")
-                key = key[apf.isMac ? 0 : 1]; // TODO: Don't hardcode this
-
+        function addEditorMenu(path, commandName) {
             return menus.addItemByPath(path, new apf.item({
-                hotkey : key,
-                onclick : function() {
-                    var editor = ceEditor.$editor;
-                    editor.commands.exec(commandName, editor);
-                }
+                command : commandName
             }), c += 100);
         }
         
         c = 0;
         this.menus.push(
-            addEditorMenu("Edit/Line/Indent", "Tab", "indent"),
-
-            addEditorMenu("Edit/Line/Outdent", "Shift-Tab", "outdent"),
-
-            addEditorMenu("Edit/Line/Move Line Up", ["Option-Up", "Alt-Up"], "movelinesup"),
-
-            addEditorMenu("Edit/Line/Move Line Down", ["Option-Down", "Alt-Down"], "movelinesdown"),
-
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
-
-            addEditorMenu("Edit/Line/Copy Lines Up", [
-                "Command-Option-Up", "Ctrl-Alt-Up"
-            ], "copylinesup"),
-
-            addEditorMenu("Edit/Line/Copy Lines Down", [
-                "Command-Option-Down", "Ctrl-Alt-Down"
-            ], "copylinesdown"),
+            addEditorMenu("Edit/Line/Indent", "indent"),
+            addEditorMenu("Edit/Line/Outdent", "outdent"),
+            addEditorMenu("Edit/Line/Move Line Up", "movelinesup"),
+            addEditorMenu("Edit/Line/Move Line Down", "movelinesdown"),
             
             menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
-
-            addEditorMenu("Edit/Line/Remove Line", ["Command-D", "Ctrl-D"], "removeline"),
-
-            addEditorMenu("Edit/Line/Remove to Line End", ["Ctrl-K", "Alt-Delete"], "removetolineend"),
-
-            addEditorMenu("Edit/Line/Remove to Line Start", [
-                "Option-Backspace", "Alt-Backspace"
-            ], "removetolinestart"),
+            addEditorMenu("Edit/Line/Copy Lines Up", "copylinesup"),
+            addEditorMenu("Edit/Line/Copy Lines Down", "copylinesdown"),
+            
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
+            addEditorMenu("Edit/Line/Remove Line", "removeline"),
+            addEditorMenu("Edit/Line/Remove to Line End", "removetolineend"),
+            addEditorMenu("Edit/Line/Remove to Line Start", "removetolinestart"),
 
             menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
-
-            addEditorMenu("Edit/Line/Split Line", [
-                "Ctrl-O", ""
-            ], "splitline")
+            addEditorMenu("Edit/Line/Split Line", "splitline")
         )
         
         c = 0;
         this.menus.push(
-            addEditorMenu("Edit/Comment/Toggle Comment", [
-                "Command-7", "Ctrl-7"
-            ], "togglecomment")
+            addEditorMenu("Edit/Comment/Toggle Comment", "togglecomment")
         );
         
         c = 0;
         this.menus.push(
-            addEditorMenu("Edit/Text/Remove Word Right", [
-                "Alt-Delete", "Alt-Delete"
-            ], "removewordright"),
-
-            addEditorMenu("Edit/Text/Remove Word Left", [
-                "Alt-Backspace", "Alt-Backspace"
-            ], "removewordleft"),
+            addEditorMenu("Edit/Text/Remove Word Right", "removewordright"),
+            addEditorMenu("Edit/Text/Remove Word Left", "removewordleft"),
 
             menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
-
-            addEditorMenu("Edit/Text/Transpose Letters", [
-                "Ctrl-T", "Ctrl-T"
-            ], "transposeletters")
+            addEditorMenu("Edit/Text/Transpose Letters", "transposeletters")
         );
 
         c = 0;
         this.menus.push(
-            addEditorMenu("Edit/Code Folding/Fold", [
-                "Alt-L", "Alt-L"
-            ], "fold"),
-
-            addEditorMenu("Edit/Code Folding/Unfold", [
-                "Shift-Alt-L", "Shift-Alt-L"
-            ], "unfold"),
+            addEditorMenu("Edit/Code Folding/Fold", "fold"),
+            addEditorMenu("Edit/Code Folding/Unfold", "unfold"),
         
             menus.addItemByPath("Edit/Code Folding/~", new apf.divider(), c += 100),
-            
-            addEditorMenu("Edit/Code Folding/Fold All", [
-                "Option-0", "Alt-0"
-            ], "foldall"),
-
-            addEditorMenu("Edit/Code Folding/Unfold All", [
-                "Option-Shift-0", "Alt-Shift-0"
-            ], "unfoldall")
+            addEditorMenu("Edit/Code Folding/Fold All", "foldall"),
+            addEditorMenu("Edit/Code Folding/Unfold All", "unfoldall")
         );
         
         c = 0;
         this.menus.push(
-            addEditorMenu("Edit/Convert Case/Upper Case",[
-                "Ctrl-U", "Ctrl-U"
-            ], "touppercase"),
-
-            addEditorMenu("Edit/Convert Case/Lower Case", [
-                "Ctrl-Shift-U", "Ctrl-Shift-U"
-            ], "tolowercase")
+            addEditorMenu("Edit/Convert Case/Upper Case", "touppercase"),
+            addEditorMenu("Edit/Convert Case/Lower Case", "tolowercase")
         );
         
         c = 0;
         this.menus.push(
-            addEditorMenu("Selection/Select All",[
-                "Command-A", "Ctrl-A"
-            ], "selectall"),
-            
-            addEditorMenu("Selection/Single Selection", "Esc", "singleSelection"),
+            addEditorMenu("Selection/Select All", "selectall"),
+            addEditorMenu("Selection/Split Into Lines", "splitIntoLines"),
+            addEditorMenu("Selection/Single Selection", "singleSelection"),
             
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
-            
             menus.addItemByPath("Selection/Multiple Selections/", null, c += 100),
+            
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            addEditorMenu("Selection/Select Word Right", "selectwordright"),
+            addEditorMenu("Selection/Select Word Left", "selectwordleft"),
 
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
-
-            addEditorMenu("Selection/Select Word Right", [
-                "Option-Shift-Right", "Ctrl-Shift-Right" 
-            ], "selectwordright"),
-
-            addEditorMenu("Selection/Select Word Left", [
-                "Option-Shift-Left", "Ctrl-Shift-Left"
-            ], "selectwordleft"),
+            addEditorMenu("Selection/Select to Line End", "selecttolineend"),
+            addEditorMenu("Selection/Select to Line Start", "selecttolinestart"),
 
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
-
-            addEditorMenu("Selection/Select to Line End", [
-                "Command-Shift-Right", "Shift-End|Alt-Shift-Right"
-            ], "selecttolineend"),
-
-            addEditorMenu("Selection/Select to Line Start", [
-                "Command-Shift-Left", "Shift-Home|Alt-Shift-Left"
-            ], "selecttolinestart"),
-
-            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
-
-            addEditorMenu("Selection/Select to Document Start", [
-                "Command-Shift-Up", "Ctrl-Shift-Home|Alt-Shift-Up" 
-            ], "selecttostart"),
-
-            addEditorMenu("Selection/Select to Document End", [
-                "Command-Shift-Down", "Ctrl-Shift-End|Alt-Shift-Down" 
-            ], "selecttoend")
+            addEditorMenu("Selection/Select to Document Start", "selecttostart"),
+            addEditorMenu("Selection/Select to Document End", "selecttoend")
         );
         
         c = 0;
         this.menus.push(
-            addEditorMenu("Selection/Multiple Selections/Add Cursor Up", [
-                "Ctrl-Alt-Up", "Ctrl-Alt-Up"
-            ], "addCursorAbove"),
-            
-            addEditorMenu("Selection/Multiple Selections/Add Cursor Down", [
-                "Ctrl-Alt-Down", "Ctrl-Alt-Down"
-            ], "addCursorBelow"),
-            
-            addEditorMenu("Selection/Multiple Selections/Move Active Cursor Up", [
-                "Shift-Ctrl-Alt-Up", "Shift-Ctrl-Alt-Up"
-            ], "addCursorAboveSkipCurrent"),
-            
-            addEditorMenu("Selection/Multiple Selections/Move Active Cursor Down", [
-                "Shift-Ctrl-Alt-Down", "Shift-Ctrl-Alt-Down"
-            ], "addCursorBelowSkipCurrent"),
+            addEditorMenu("Selection/Multiple Selections/Add Cursor Up", "addCursorAbove"),
+            addEditorMenu("Selection/Multiple Selections/Add Cursor Down", "addCursorBelow"),
+            addEditorMenu("Selection/Multiple Selections/Move Active Cursor Up", "addCursorAboveSkipCurrent"),
+            addEditorMenu("Selection/Multiple Selections/Move Active Cursor Down", "addCursorBelowSkipCurrent"),
 
             menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
-            
-            addEditorMenu("Selection/Multiple Selections/Add Next Selection Match", [
-                "Ctrl-Alt-Right", "Ctrl-Alt-Right"
-            ], "selectMoreAfter"),
-            
-            addEditorMenu("Selection/Multiple Selections/Add Previous Selection Match", [
-                "Ctrl-Alt-Left", "Ctrl-Alt-Left"
-            ], "selectMoreBefore"),
+            addEditorMenu("Selection/Multiple Selections/Add Next Selection Match", "selectMoreAfter"),
+            addEditorMenu("Selection/Multiple Selections/Add Previous Selection Match", "selectMoreBefore"),
 
             menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
-            
-            addEditorMenu("Selection/Multiple Selections/Merge Selection Range", [
-                "Ctrl-Shift-L", ""
-            ], "splitIntoLines")
+            addEditorMenu("Selection/Multiple Selections/Merge Selection Range", "splitIntoLines")
         );
             
         /**** View ****/
@@ -735,8 +645,7 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.show();
 
         this.ceEditor = this.amlEditor = ceEditor;
-        ceEditor.$editor.commands = this.commandManager;
-        ceEditor.$editor.commands.addCommands(MultiSelectCommands);
+        ceEditor.$editor.commands = ide.commandManager;
 
         // preload common language modes
         var noop = function() {}; 

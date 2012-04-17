@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
- 
+
 module.exports = ext.register("ext/undo/undo", {
     dev    : "Ajax.org",
     name   : "Undo",
@@ -37,6 +37,7 @@ module.exports = ext.register("ext/undo/undo", {
     },
 
     undo: function() {
+        alert(apf.activeElement);
         var _tabPage;
         if(_tabPage = tabEditors.getPage())
             _tabPage.$at.undo();

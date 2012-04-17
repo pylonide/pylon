@@ -91,7 +91,10 @@ module.exports = ext.register("ext/console/console", {
     css    : css + theme,
     height : 200,
     hidden : true,
+    hiddenInput : true,
+    
     nodes : [],
+    
     minHeight : 150,
     collapsedHeight : 30,
     $collapsedHeight : 0,
@@ -114,7 +117,6 @@ module.exports = ext.register("ext/console/console", {
             hint: "send a message to the server"
         }
     },
-    hotitems : {},
 
     messages: {
         cd: function(message) {
@@ -300,6 +302,7 @@ module.exports = ext.register("ext/console/console", {
     hook: function() {
         var _self = this;
         
+        //@todo this should be done via ide.commandManager instead
         // Listen for new extension registrations to add to the
         // hints
         ide.addEventListener("ext.register", function(e){
@@ -307,66 +310,53 @@ module.exports = ext.register("ext/console/console", {
                 apf.extend(_self.allCommands, e.ext.commands);
         });
         
+        ide.commandManager.addCommand({
+            name: "toggleconsole",
+            exec: function () {
+                if (_self.hidden)
+                    _self.show();
+                else
+                    _self.hide();
+            }
+        });
+        
+        ide.commandManager.addCommand({
+            name: "toggleinputbar",
+            exec: function () {
+                if (_self.hiddenInput)
+                    _self.showInput();
+                else
+                    _self.hideInput();
+            }
+        });
+        
         this.nodes.push(
             this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
                 type    : "check",
-                onclick : function() {
-                    if (_self.hidden)
-                        _self.show();
-                    else
-                        _self.hide();
-                }
+                command : "toggleconsole",
+                checked : "[{require('ext/settings/settings').model}::auto/console/@show]"
             }), 700),
             this.mnuItemInput = menus.addItemByPath("View/Command Line", new apf.item({
-                type: "check",
-                checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]",
-                "onprop.checked" : function(e) {
-                    if (apf.isTrue(e.value))
-                        _self.showInput();
-                    else
-                        _self.hideInput();
-                }
+                type    : "check",
+                command : "toggleinputbar",
+                checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]"
             }), 800)
         );
 
         menus.addItemByPath("Tools/~", new apf.divider(), 30000),
-
         menus.addItemByPath("Tools/Git/", null, 40000),
-
-        menus.addItemByPath("Tools/Git/Push", new apf.item({
-        }), 1000),
-
-        menus.addItemByPath("Tools/Git/Pull", new apf.item({
-
-        }), 2000),
-
-        menus.addItemByPath("Tools/Git/Stash", new apf.item({
-
-        }), 3000),
-
-        menus.addItemByPath("Tools/Git/Commit", new apf.item({
-
-        }), 4000),
-
-        menus.addItemByPath("Tools/Git/Checkout", new apf.item({
-
-        }), 5000),
+        menus.addItemByPath("Tools/Git/Push", new apf.item({}), 1000),
+        menus.addItemByPath("Tools/Git/Pull", new apf.item({}), 2000),
+        menus.addItemByPath("Tools/Git/Stash", new apf.item({}), 3000),
+        menus.addItemByPath("Tools/Git/Commit", new apf.item({}), 4000),
+        menus.addItemByPath("Tools/Git/Checkout", new apf.item({}), 5000),
 
         // should probably do HG, too...
 
         menus.addItemByPath("Tools/~", new apf.divider(), 50000),
-
         menus.addItemByPath("Tools/NPM/", null, 60000),
-
-        menus.addItemByPath("Tools/NPM/Install", new apf.item({
-
-        }), 1000),
-
-        menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({
-
-        }), 2000)
-        
-        this.hotitems.switchconsole = [this.mnuItemConsoleExpanded];
+        menus.addItemByPath("Tools/NPM/Install", new apf.item({}), 1000),
+        menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({}), 2000)
         
         ide.addEventListener("loadsettings", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
@@ -378,10 +368,8 @@ module.exports = ext.register("ext/console/console", {
                 _self.show(true);
                 _self.maximize();
             }
-            else {
-                if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
-                    _self.show(true);
-            }
+            else if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
+                _self.show(true);
             
             if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
                 _self.showInput();
@@ -517,6 +505,9 @@ module.exports = ext.register("ext/console/console", {
     },
     
     showInput : function(){
+        if (!this.hiddenInput)
+            return;
+        
         ext.initExtension(this);
         
         this.$collapsedHeight = this.collapsedHeight;
@@ -524,10 +515,12 @@ module.exports = ext.register("ext/console/console", {
             winDbgConsole.setAttribute("height", this.collapsedHeight + "px")
         txtConsoleInput.parentNode.show();
         apf.layout.forceResize();
+        
+        this.hiddenInput = false;
     },
     
     hideInput : function(){
-        if (!this.inited)
+        if (!this.inited || this.hiddenInput)
             return;
         
         this.$collapsedHeight = 0;
@@ -535,6 +528,8 @@ module.exports = ext.register("ext/console/console", {
             winDbgConsole.setAttribute("height", "0")
         txtConsoleInput.parentNode.hide();
         apf.layout.forceResize();
+        
+        this.hiddenInput = true;
     },
 
     show: function(immediate) { ext.initExtension(this); this._show(true, immediate); },
@@ -595,7 +590,6 @@ module.exports = ext.register("ext/console/console", {
             apf.layout.forceResize();
 
             settings.model.setQueryValue("auto/console/@expanded", shouldShow);
-            _self.mnuItemConsoleExpanded[cfg.mnuItemLabel]();
         };
 
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));

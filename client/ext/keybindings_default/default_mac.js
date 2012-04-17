@@ -36,21 +36,9 @@ return keys.onLoad({
             "run" : "F5",
             "stop" : "Shift-F5"
         },
-        "debugger": {
-            "resume": "F8",
-            "stepinto": "F11",
-            "stepover": "F10",
-            "stepout": "Shift-F11"
-        },
         "zen": {
             "zen": "Option-Z",
             "zenslow": "Shift-Option-Z"
-        },
-        "gotoline": {
-           "gotoline": "Command-L"
-        },
-        "beautify": {
-            "beautify": "Shift-Command-B"
         },
         "gotofile": {
             "_gotofilelegacy": "Option-Shift-R",
