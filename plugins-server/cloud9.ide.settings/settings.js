@@ -18,14 +18,13 @@ var name = "settings";
 var SETTINGS_PATH;
 
 module.exports = function setup(options, imports, register) {
-    assert(options.workspaceId, "option 'workspaceId' is required");
+    assert(options.settingsPath, "option 'settingsPath' is required");
     SETTINGS_PATH = options.settingsPath;
 
     imports.ide.register(name, SettingsPlugin, register);
-
 };
 
-var SettingsPlugin = function(ide, workspace) {
+var SettingsPlugin = module.exports.SettingsPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = name;

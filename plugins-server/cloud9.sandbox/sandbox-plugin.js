@@ -1,7 +1,6 @@
 "use strict";
 
 var assert = require("assert");
-var path = require("path");
 
 module.exports = function(options, imports, register) {
 
