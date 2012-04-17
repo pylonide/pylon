@@ -1,6 +1,6 @@
 var assert = require("assert");
 var utils = require("connect").utils;
-
+var error = require("http-error");
 var IdeServer = require("./ide");
 
 module.exports = function setup(options, imports, register) {
@@ -74,15 +74,13 @@ module.exports = function setup(options, imports, register) {
 
     hub.on("containersDone", function() {
         ide.init(serverPlugins);
-        connect.useAuth(baseUrl, function(req, res, next) {
 
-            if (!req.session.uid) {
-                // TODO: We can put this back in once the local version has a login dialog.
-//                return next(new error.Unauthorized());
-                req.session.uid = "owner_" + req.sessionID;
-            }
+        connect.useAuth(baseUrl, function(req, res, next) {
+            if (!req.session.uid)
+                return next(new error.Unauthorized());
 
             var pause = utils.pause(req);
+
             initUserAndProceed(req.session.uid, function(err) {
                 if (err) {
                     next(err);
