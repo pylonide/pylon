@@ -60,7 +60,7 @@
                                       }
                                     </ul>
                                     {
-                                      if ([@loading_preview] == 'true' or [@loading] == 'true') {
+                                      if ([@loading_preview] == 'true' || [@loading] == 'true') {
                                           <button class="btnRecover" disabled="disabled"></button>
                                       }
                                       else {
