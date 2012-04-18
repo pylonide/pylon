@@ -1,10 +1,6 @@
 /**
  * File Tree for the Cloud9 IDE
  *
- * @TODO
- * - Reorganize expanded dir state to be top-down rather than FIFO
- * - Comment everything
- * 
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -426,6 +422,9 @@ module.exports = ext.register("ext/tree/tree", {
      */
     loadProjectTree : function(callback) {
         var _self = this;
+
+        this.expandedNodes.sort();
+
         this.loading = true;
 
         var numFoldersLoaded = 0;
