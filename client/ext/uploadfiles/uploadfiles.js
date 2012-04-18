@@ -38,6 +38,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var _self = this;
         apf.importCssString(_self.css);
         
+        /* disabled download project since it doesn't work anymore due to runvm changes
         if(ide.infraEnv) {
             this.nodes.push(
                 ide.mnuFile.appendChild(new apf.item({
@@ -59,7 +60,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             btnUploadFiles.setProperty("right", "81");
         }
-        
+        */
         this.nodes.push(
             ide.mnuFile.appendChild(new apf.item({
                 caption : "Upload Files",
