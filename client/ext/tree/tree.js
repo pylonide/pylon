@@ -484,6 +484,11 @@ module.exports = ext.register("ext/tree/tree", {
                     return;
                 }
             }
+
+            // If we didn't find any parent nodes and all the folders have been
+            // loaded, then it must mean the parent was collapsed
+            if (numFoldersLoaded === _self.expandedNodes.length)
+                return onFinish();
         }
 
         function loadFolder(path) {
