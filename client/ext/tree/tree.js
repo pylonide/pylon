@@ -2,7 +2,7 @@
  * File Tree for the Cloud9 IDE
  *
  * @TODO
- * - Load same-level dirs in parallel
+ * - Reorganize expanded dir state to be top-down rather than FIFO
  * - Comment everything
  * 
  * @copyright 2012, Cloud9 IDE, Inc.
@@ -446,12 +446,7 @@ module.exports = ext.register("ext/tree/tree", {
         }
 
         function appendXmlToNode(parentNode, dataXml) {
-            for (var x = 0, xmlLen = dataXml.childNodes.length; x < xmlLen; x++) {
-                // Since appendChild removes the node from the array, we
-                // must first clone the node and then append it to the parent
-                var clonedNode = dataXml.childNodes[x].cloneNode(true);
-                apf.xmldb.appendChild(parentNode, clonedNode);
-            }
+            trFiles.insert(dataXml, { insertPoint: parentNode });
 
             // Set the load status to "loaded" so APF doesn't assume the child
             // nodes still need to be loaded
@@ -483,7 +478,7 @@ module.exports = ext.register("ext/tree/tree", {
                     // a tick so the new nodes have time to expand
                     setTimeout(function() {
                         tryAppendingOrphansToTree();
-                    }, 20);
+                    });
                     return;
                 }
             }
