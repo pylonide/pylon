@@ -29,8 +29,8 @@ module.exports = function setup(options, imports, register) {
         });
     });
 
-    function initUserAndProceed(uid, callback) {
-        permissions.getPermissions(uid, function(err, perm) {
+    function initUserAndProceed(uid, workspaceId, callback) {
+        permissions.getPermissions(uid, workspaceId, function(err, perm) {
             if (err) {
                 callback(err);
                 return;
@@ -88,7 +88,7 @@ module.exports = function setup(options, imports, register) {
 
             var pause = utils.pause(req);
 
-            initUserAndProceed(req.session.uid, function(err) {
+            initUserAndProceed(req.session.uid, ide.options.workspaceId, function(err) {
                 if (err) {
                     next(err);
                     pause.resume();
