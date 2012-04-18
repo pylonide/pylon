@@ -12465,7 +12465,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40680)TIME(Fri, 13 Apr 2012 10:39:08 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40794)TIME(Wed, 18 Apr 2012 17:31:46 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12758,6 +12758,8 @@ apf.xmldb = new (function(){
                         return;
                     
                     if(model.$propBinds[sUId[1]][sUId[2]]) {
+                        if (!apf.isChildOf(model.data, xmlNode, true)) 
+                            return false;
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
                         var node  = xpath
                             ? apf.queryNode(model.data, xpath)
@@ -61604,7 +61606,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5164)TIME(Thu, 12 Jan 2012 18:40:18 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5172)TIME(Wed, 18 Apr 2012 15:09:23 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

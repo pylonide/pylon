@@ -250,7 +250,7 @@ module.exports = ext.register("ext/code/code", {
             var fileName = node.getAttribute("name");
 
             if (fileName.lastIndexOf(".") != -1)
-                mime = contentTypes[fileName.split(".").pop()];
+                mime = contentTypes[fileName.split(".").pop().toLowerCase()];
             else
                 mime = contentTypes["*" + fileName];
         }
@@ -671,7 +671,7 @@ module.exports = ext.register("ext/code/code", {
             else
                 _self.disable();
         });
-        
+
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);

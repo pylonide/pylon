@@ -27,7 +27,7 @@
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
-                staticUrl: <%staticUrl%>,
+                staticUrl: "[%staticUrl%]/",
                 socketIoUrl: <%socketIoUrl%>,
                 settings: <%settingsXml%>
             };
@@ -62,9 +62,9 @@
                         var aceConfig = require("ace/config");
 
                         aceConfig.set("packaged", true);
-                        aceConfig.set("workerPath", "static/build/worker");
-                        aceConfig.set("modePath", "static/build/mode");
-                        aceConfig.set("themePath", "static/build/theme");
+                        aceConfig.set("workerPath", "/static/build/worker");
+                        aceConfig.set("modePath", "/static/build/mode");
+                        aceConfig.set("themePath", "/static/build/theme");
                         
                         //loader.animateLoader(50);
                         apf.addEventListener("load", function(){

@@ -9010,7 +9010,8 @@
             border-width : 1px 0 0 0;
         }
 
-        .tb_console .sbtb_middle INPUT {
+        .tb_console .sbtb_middle INPUT,
+        .consoleInputCloned {
             border           : 0;
             height           : 17px;
             line-height      : 15px;

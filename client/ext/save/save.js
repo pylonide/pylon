@@ -323,7 +323,7 @@ module.exports = ext.register("ext/save/save", {
 
             ide.dispatchEvent("track_action", {
                 type: "save as filetype",
-                fileType: node.getAttribute("name").split(".").pop(),
+                fileType: node.getAttribute("name").split(".").pop().toLowerCase(),
                 success: state != apf.SUCCESS ? "false" : "true"
             });
 

@@ -249,7 +249,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         }
 
         _self.$model.clear();
-        trSFResult.$ext.getElementsByClassName("empty")[0].innerText = "Searching for '" + query + "'...";
+        _self.$panel.setAttribute("caption", _self.pageTitle);
+        trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
 
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
