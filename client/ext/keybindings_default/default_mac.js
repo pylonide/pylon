@@ -50,25 +50,6 @@ return keys.onLoad({
         "formatjson" : {
             "format" : "Shift-Command-J"
         },
-        "tabbehaviors" : {
-            "closetab": "Option-W",
-            "closealltabs": "Option-Shift-W",
-            "closeallbutme": "Option-Command-W",
-            "gototabright": "Command-]",
-            "gototableft": "Command-[",
-            "tab1": "Command-1",
-            "tab2": "Command-2",
-            "tab3": "Command-3",
-            "tab4": "Command-4",
-            "tab5": "Command-5",
-            "tab6": "Command-6",
-            "tab7": "Command-7",
-            "tab8": "Command-8",
-            "tab9": "Command-9",
-            "revealtab": "Shift-Command-L",
-            "nexttab": "Option-Tab",
-            "previoustab": "Option-Shift-Tab"
-        },
         "tabsessions" : {
             "savetabsession": "Command-Alt-S"
         },

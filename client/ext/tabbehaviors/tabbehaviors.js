@@ -26,65 +26,69 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     $tabAccessCycle : 2,
     sep        : null,
     more       : null,
-    menuOffset : 4, //This is fucking stupid
-    commands   : {
-        "closetab": {hint: "close the tab that is currently active", msg: "Closing active tab."},
-        "closealltabs": {hint: "close all opened tabs", msg: "Closing all tabs."},
-        "closeallbutme": {hint: "close all opened tabs, but the tab that is currently active", msg: "Closing tabs."},
-        "gototabright": {hint: "navigate to the next tab, right to the tab that is currently active", msg: "Switching to right tab."},
-        "gototableft": {hint: "navigate to the next tab, left to the tab that is currently active", msg: "Switching to left tab."},
-        "tab1": {hint: "navigate to the first tab", msg: "Switching to tab 1."},
-        "tab2": {hint: "navigate to the second tab", msg: "Switching to tab 2."},
-        "tab3": {hint: "navigate to the third tab", msg: "Switching to tab 3."},
-        "tab4": {hint: "navigate to the fourth tab", msg: "Switching to tab 4."},
-        "tab5": {hint: "navigate to the fifth tab", msg: "Switching to tab 5."},
-        "tab6": {hint: "navigate to the sixth tab", msg: "Switching to tab 6."},
-        "tab7": {hint: "navigate to the seventh tab", msg: "Switching to tab 7."},
-        "tab8": {hint: "navigate to the eighth tab", msg: "Switching to tab 8."},
-        "tab9": {hint: "navigate to the ninth tab", msg: "Switching to tab 9."},
-        "tab10": {hint: "navigate to the tenth tab", msg: "Switching to tab 10."},
-        "revealtab": {hint: "reveal current tab in the file tree"},
-        "nexttab": {hint: "navigate to the next tab in the stack of accessed tabs"},
-        "previoustab": {hint: "navigate to the previous tab in the stack of accessed tabs"}
-    },
-    hotitems   : {},
+    menuOffset : 4, //@todo this should use new menus api
 
     nodes      : [],
 
     init : function(amlNode){
         var _self = this;
-
+        
+        [
+            ["closetab", "Option-W", "Ctrl-W", "close the tab that is currently active", "Closing active tab."],
+            ["closealltabs", "Option-Shift-W", "Ctrl-Shift-W", "close all opened tabs", "Closing all tabs."],
+            ["closeallbutme", "Option-Ctrl-W", "Ctrl-Alt-W", "close all opened tabs, but the tab that is currently active", "Closing tabs."],
+            ["gototabright", "Command-]", "Ctrl-]", "navigate to the next tab, right to the tab that is currently active", "Switching to right tab."],
+            ["gototableft", "Command-[", "Ctrl-[", "navigate to the next tab, left to the tab that is currently active", "Switching to left tab."],
+            ["tab1", "Command-1", "Ctrl-1", "navigate to the first tab", "Switching to tab 1."],
+            ["tab2", "Command-2", "Ctrl-2", "navigate to the second tab", "Switching to tab 2."],
+            ["tab3", "Command-3", "Ctrl-3", "navigate to the third tab", "Switching to tab 3."],
+            ["tab4", "Command-4", "Ctrl-4", "navigate to the fourth tab", "Switching to tab 4."],
+            ["tab5", "Command-5", "Ctrl-5", "navigate to the fifth tab", "Switching to tab 5."],
+            ["tab6", "Command-6", "Ctrl-6", "navigate to the sixth tab", "Switching to tab 6."],
+            ["tab7", "Command-7", "Ctrl-7", "navigate to the seventh tab", "Switching to tab 7."],
+            ["tab8", "Command-8", "Ctrl-8", "navigate to the eighth tab", "Switching to tab 8."],
+            ["tab9", "Command-9", "Ctrl-9", "navigate to the ninth tab", "Switching to tab 9."],
+            ["tab9", "Command-0", "Ctrl-0", "navigate to the tenth tab", "Switching to tab 10."],
+            ["revealtab", "Shift-Command-L", "Ctrl-Shift-L", "reveal current tab in the file tree"],
+            ["nexttab", "Option-Tab", "Ctrl-Tab", "navigate to the next tab in the stack of accessed tabs"],
+            ["previoustab", "Option-Shift-Tab", "Ctrl-Shift-Tab", "navigate to the previous tab in the stack of accessed tabs"]
+        ].each(function(item){
+            commands.addCommand({
+                name: item[0],
+                bindKey: {mac: item[1], win: item[2]},
+                hint: item[3],
+                msg: item[4],
+                exec: function () {
+                    _self[item[0]]();
+                }
+            });
+        });
+        
         var mnuContext, itmLeft, itmRight, itmStackLeft, itmStackRight;
-        var itmCloseFile, itemCloseAllFiles, itmClosetab, itmCloseAllTabs, itmCloseOtherTabs;
+        var itmCloseFile, itmCloseAllFiles, itmCloseTab, itmCloseAllTabs, itmCloseOtherTabs;
         this.nodes.push(
             this.mnuTabs = menus.addItemByPath("View/Tabs/", null, 175),
             
             menus.addItemByPath("File/~", new apf.divider(), 100000),
             itmCloseFile = menus.addItemByPath("File/Close File", new apf.item({
-                onclick : function() {
-                    _self.closetab(tabEditors.contextPage);
-                },
+                command: "closetab",
                 disabled : "{!!!tabEditors.activepage}"
             }), 110000),
             itmCloseAllFiles = menus.addItemByPath("File/Close All Files", new apf.item({
-                onclick : this.closealltabs.bind(this),
+                command : "closealltabs",
                 disabled : "{!!!tabEditors.activepage}"
             }), 120000),
             
             itmCloseTab = menus.addItemByPath("View/Tabs/Close Tab", new apf.item({
-                onclick : function() {
-                    _self.closetab(tabEditors.contextPage);
-                },
+                command : "closetab",
                 disabled : "{!!!tabEditors.activepage}"
             }), 100),
             itmCloseAllTabs = menus.addItemByPath("View/Tabs/Close All Tabs", new apf.item({
-                onclick : this.closealltabs.bind(this),
+                command : "closealltabs",
                 disabled : "{!!!tabEditors.activepage}"
             }), 200),
             itmCloseOtherTabs = menus.addItemByPath("View/Tabs/Close All But Current Tab", new apf.item({
-                onclick : function() {
-                    _self.closeallbutme(tabEditors.$activePage);
-                },
+                command : "closeallbutme",
                 disabled : "{!!!tabEditors.activepage}"
             }), 300),
 
@@ -93,77 +97,53 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             menus.addItemByPath("Goto/Switch File/", null, 301),
 
             itmLeft = menus.addItemByPath("Goto/Switch File/Next File", new apf.item({
-                hotkey : apf.isMac ? "Option-Tab" : "Ctrl-Tab", // TODO: Don't hardcode this,
-                onclick : function(){ _self.gototabright(); }
+                command : "gototabright"
             }), 100),
 
             itmRight = menus.addItemByPath("Goto/Switch File/Previous File", new apf.item({
-                hotkey : apf.isMac ? "Option-Shift-Tab" : "Ctrl-Shift-Tab", // TODO: Don't hardcode this
-                onclick : function(){ _self.gototableft(); }
+                command : "gototableft"
             }), 200),
             
             menus.addItemByPath("Goto/Switch File/~", new apf.divider(), 300),
 
             itmStackLeft = menus.addItemByPath("Goto/Switch File/Next File in Stack", new apf.item({
-                onclick : function(){ _self.nexttab(); }
+                command : "nexttab"
             }), 400),
 
             itmStackRight = menus.addItemByPath("Goto/Switch File/Previous File in Stack", new apf.item({
-                onclick : function(){ _self.previoustab(); }
+                command : "previoustab"
             }), 500),
             
             mnuContext = new apf.menu({id : "mnuContextTabs"})
         );
         
         var itmReveal = menus.addItemByPath("Reveal in File Tree", new apf.item({
-            onclick : function() {
-                _self.revealtab(tabEditors.contextPage);
-            },
+            command : "revealtab",
             disabled : "{!!!tabEditors.activepage}"
         }), 100, mnuContext);
         menus.addItemByPath("~", new apf.divider(), 200, mnuContext);
         var itmClose = menus.addItemByPath("Close Tab", new apf.item({
-            onclick : function() {
-                _self.closetab(tabEditors.contextPage);
-            },
+            command : "closetab",
             disabled : "{!!!tabEditors.activepage}"
         }), 300, mnuContext);
         var itmCloseAll = menus.addItemByPath("Close All Tabs", new apf.item({
-            onclick : this.closealltabs.bind(this),
+            command : "closealltabs",
             disabled : "{!!!tabEditors.activepage}"
         }), 400, mnuContext);
         var itmCloseOther = menus.addItemByPath("Close Other Tabs", new apf.item({
-            onclick : function() {
-                _self.closeallbutme(tabEditors.$activePage);
-            },
+            command : "closeallbutme",
             disabled : "{!!!tabEditors.activepage}"
         }), 500, mnuContext);
         menus.addItemByPath("~", new apf.divider(), 600, mnuContext);
         var itmCloseRight = menus.addItemByPath("Close Tabs to the Right", new apf.item({
-            onclick : function() {
-                _self.closealltotheright();
-            },
+            command : "closealltotheright",
             disabled : "{!!!tabEditors.activepage}"
         }), 600, mnuContext);
         var itmCloseLeft = menus.addItemByPath("Close Tabs to the Left", new apf.item({
-            onclick : function() {
-                _self.closealltotheleft();
-            },
+            command : "closealltotheleft",
             disabled : "{!!!tabEditors.activepage}"
         }), 700, mnuContext);
         
-        this.hotitems.revealtab          = [itmReveal];
-        this.hotitems.closetab           = [itmCloseFile, itmCloseTab, itmClose];
-        this.hotitems.closealltabs       = [itmCloseAllTabs, itmCloseAllFiles, itmCloseAll];
-        this.hotitems.closeallbutme      = [itmCloseOtherTabs, itmCloseOther];
-        this.hotitems.closealltotheright = [itmCloseRight];
-        this.hotitems.closealltotheleftt = [itmCloseLeft];
-
-        this.hotitems.gototabright       = [itmRight];
-        this.hotitems.gototableft        = [itmLeft];
-        this.hotitems.nexttab            = [itmStackRight];
-        this.hotitems.previoustab        = [itmStackLeft];
-
         mnuContextTabs.addEventListener("prop.visible", function(e) {
             // If there are only 0 or 1 pages, disable both and return
             if (tabEditors.getPages().length <= 1) {
@@ -201,7 +181,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         ide.addEventListener("init.ext/editors/editors", function(e) {
             tabEditors.setAttribute("contextmenu", "mnuContextTabs");
-
+            
+            //@todo store the stack for availability after reload
+            
             tabEditors.addEventListener("close", function(e) {
                 if (!e || !e.htmlEvent)
                     return;
@@ -228,8 +210,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         _self.updateState();
                     }
                 }
-                else if (page.fake)
+                else if (page.fake) {
                     _self.addItem(page);
+                    if (_self.accessed.indexOf(page) == -1)
+                        _self.accessed.unshift(page);
+                }
             });
 
             tabEditors.addEventListener("DOMNodeRemoved", function(e) {
@@ -237,20 +222,18 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                     return;
 
                 var page = e.currentTarget;
-                _self.removeItem(page);
-
                 if (page.localName != "page" || e.relatedNode != this || page.nodeType != 1)
                     return;
 
-                if (!e.$doOnlyAdmin)
-                    _self.accessed.remove(page);
+                _self.removeItem(page);
+                _self.accessed.remove(page);
             });
 
-            var cycleKeyPressed, cycleKey = apf.isMac ? 18 : 17;
+            var cycleKey = apf.isMac ? 18 : 17, tabKey = 9;
             tabEditors.addEventListener("afterswitch", function(e) {
                 var page = e.nextPage;
 
-                if (!cycleKeyPressed) {
+                if (!_self.cycleKeyPressed) {
                     _self.accessed.remove(page);
                     _self.accessed.push(page);
                 }
@@ -262,19 +245,26 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
 
             apf.addEventListener("keydown", function(eInfo) {
-                if (eInfo.keyCode == cycleKey)
-                    cycleKeyPressed = true;
+                if (eInfo.keyCode == cycleKey) {
+                    _self.cycleKeyPressed = true;
+                }
             });
 
             apf.addEventListener("keyup", function(eInfo) {
-                if (eInfo.keyCode == cycleKey && cycleKeyPressed) {
-                    var page = tabEditors.getPage();
-                    if (page) {
-                        _self.accessed.remove(page);
-                        _self.accessed.push(page);
+                if (eInfo.keyCode == cycleKey && _self.cycleKeyPressed) {
+                    _self.cycleKeyPressed = false;
+                    
+                    if (_self.$dirtyNextTab) {
+                        _self.$tabAccessCycle = 2;
+                        
+                        var page = tabEditors.getPage();
+                        if (_self.accessed[_self.accessed.length - 1] != page) {
+                            _self.accessed.remove(page);
+                            _self.accessed.push(page);
+                        }
+                        
+                        _self.$dirtyNextTab = false;
                     }
-                    _self.$tabAccessCycle = 2;
-                    cycleKeyPressed = false;
                 }
             });
 
@@ -443,7 +433,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (tabEditors.getPages().length === 1) {
             return;
         }
-        
+
         var n = this.accessed.length - this.$tabAccessCycle++;
         if (n < 0) {
             n = this.accessed.length - 1;
@@ -455,6 +445,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             return this.nexttab();
 
         tabEditors.set(next);
+        
+        this.$dirtyNextTab = true;
     },
 
     previoustab : function(){
@@ -662,10 +654,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if ((item = this.nodes[i]).relPage == page.id) {
                 item.destroy(true, true);
                 this.nodes.splice(i, 1);
-                idx   = i - this.menuOffset + 1;
-                keyId = "tab" + (idx == 10 ? 0 : idx);
-                if (this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
-                    apf.hotkeys.remove(this.commands[keyId].hotkey);
 
                 setTimeout(function(){
                     _self.updateState();
@@ -701,15 +689,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }));
         }
 
-        // update hotkeys and hotitems:
+        // update menu items:
         var keyId, pages = tabEditors.getPages();
         for (var i = 0, l = pages.length; i < l; ++i) {
-            keyId = "tab" + (i + 1 == 10 ? 0 : i + 1);
-            this.hotitems[keyId] = [pages[i].$tabMenu];
-            if (pages[i].$tabMenu && this.commands[keyId] && typeof this.commands[keyId].hotkey != "undefined")
-                pages[i].$tabMenu.setAttribute("hotkey", this.commands[keyId].hotkey);
-            else
-                pages[i].$tabMenu.removeAttribute("hotkey");
+            keyId = "tab" + (i == 9 ? 0 : i + 1);
+            if (pages[i].$tabMenu && i < 10)
+                pages[i].$tabMenu.setAttribute("command", keyId);
+            else if (pages[i].$tabMenu)
+                pages[i].$tabMenu.removeAttribute("command");
         }
     },
 

@@ -266,7 +266,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
         
         var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-        var hasChanged = tabEditors.getPage().getModel().queryValue("@changed") == 1;
+        var page = tabEditors.getPage();
+        var model = page && page.getModel();
+        var hasChanged = model && model.queryValue("@changed") == 1;
         
         if (autoSaveEnabled && hasChanged) {
             btnSave.setCaption("Saving...");
