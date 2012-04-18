@@ -347,7 +347,7 @@
 
         <!-- include all components -->
         <!--p:define name="__ENABLE_BUTTON_ACTIONS" value="1" /-->
-        <!--p:define name="__ENABLE_TEXTBOX_MASKING" value="1" /-->
+        <p:define name="__ENABLE_TEXTBOX_MASKING" value="1" />
         <p:define name="__ENABLE_TABSCROLL" value="1" />
         <p:define name="__ENABLE_TAB_ORDER" value="1" />
 
