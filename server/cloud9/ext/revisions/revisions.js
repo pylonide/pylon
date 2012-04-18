@@ -337,9 +337,10 @@ require("util").inherits(RevisionsPlugin, Plugin);
     };
 
     this.saveQueue = function() {
+        var f = function(){};
         while (this.docQueue.length > 0) {
             var doc = this.docQueue.shift();
-            this.saveRevisionFromMsg(doc[0], doc[1], function() {});
+            this.saveRevisionFromMsg(doc[0], doc[1], f);
         }
     };
 
@@ -354,7 +355,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
             }
 
             if (typeof currentDoc !== "string") {
-                return callback(new Error("The contents for document '" + path + "' could not be retrieved"))
+                return callback(new Error("The contents for document '" + path + "' could not be retrieved"));
             }
 
             var patch = Diff.patch_make(previousRev, currentDoc);

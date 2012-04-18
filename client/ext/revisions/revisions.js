@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var fs = require("ext/filesystem/filesystem");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 
@@ -21,8 +20,6 @@ var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/revisions/settings.xml");
 
 // Ace dependencies
-var Range = require("ace/range").Range;
-var Anchor = require('ace/anchor').Anchor;
 var EditSession = require("ace/edit_session").EditSession;
 var Document = require("ace/document").Document;
 var ProxyDocument = require("ext/code/proxydocument");
@@ -31,94 +28,8 @@ var markup = require("text!ext/revisions/revisions.xml");
 var skin = require("text!ext/revisions/skin.xml");
 
 var BAR_WIDTH = 200;
-
-// Faster implementation of `Array.reduce` than the native ones in webkit,
-// chrome 18 and Firefox 12
-Array.prototype.__reduce = function(func, initial) {
-    var value, idx;
-    if (initial !== null) {
-        value = initial;
-        idx = 0;
-    }
-    else if (this) {
-        value = this[0];
-        idx = 1;
-    }
-    else {
-        return null;
-    }
-
-    var len = this.length;
-    for (; idx < len; idx++) { value = func(value, this[idx]); }
-
-    return value;
-};
-
-/**
- * addCodeMarker(editor, type, range)
- * - session(Object): Editor session where we should put the markers
- * - doc(Object): Document object where to anchor the markers, passed as
- *   a parameter for convenience in case the function is called in a loop.
- * - type(String): type of the marker. It can be 'add' or 'remove'
- * - range(Object): range of text covered by the marker
- *
- * Adds a code marker to the given document, and puts it in a particular range
- * in the source. The type determines its appearance, since different classes
- * are defined in the CSS.
- **/
-var addCodeMarker = function(session, doc, type, range) {
-    if (!session.revAnchors) {
-        session.revAnchors = [];
-    }
-
-    var markerId;
-    // var markerStrike
-    var anchor = new Anchor(doc, range.fromRow, range.fromCol);
-    session.revAnchors.push(anchor);
-
-    var colDiff = range.toCol - range.fromCol;
-    var rowDiff = range.toRow - range.fromRow;
-    var updateFloat = function() {
-        if (markerId) {
-            session.removeMarker(markerId);
-        }
-
-        var startPoints = anchor.getPosition();
-        var endPoints = {
-            row: anchor.row + rowDiff,
-            column: anchor.column + colDiff
-        };
-
-        var range = Range.fromPoints(startPoints, endPoints);
-        if (range.isEmpty())
-            return;
-
-        markerId = session.addMarker(range, "revision_hl_" + type, "background");
-        /*
-         * Uncomment the following to get strikethrough on deleted text.
-         *
-         * if (markerStrike) {
-         *     session.removeMarker(markerStrike);
-         * }
-         *
-         * if (type === "delete") {
-         *     if (!range.isMultiLine()) {
-         *         endPoints.row += 1;
-         *         endPoints.column = 0;
-         *         range = Range.fromPoints(startPoints, endPoints);
-         *     }
-
-         *     markerStrike = session.addMarker(range, "revision_hl_delete_strike", "text");
-         * }
-        **/
-    };
-
-    updateFloat();
-    anchor.on("change", updateFloat);
-};
-
 var INTERVAL = 60000;
-var CHANGE_TIMEOUT = 2000;
+var CHANGE_TIMEOUT = 10000;
 
 module.exports = ext.register("ext/revisions/revisions", {
     name: "Revisions",
@@ -126,27 +37,16 @@ module.exports = ext.register("ext/revisions/revisions", {
     alone: true,
     type: ext.GENERAL,
     markup: markup,
-    deps: [fs],
     offline: true,
     nodes: [],
-
     skin: skin,
-    model: new apf.model(),
 
-    commands : {
-        "revisions": {hint: "Show revisions panel"}
-    },
+    commands: { "revisions": { hint: "Show revisions panel" } },
     hotitems: {},
 
-    realSession: {},
-    originalContents: {},
+    rawRevisions: {},
     revisionsData: {},
     docChangeTimeout: null,
-    allTimestamps: [],
-    allRevisions: {},
-    compactRevisions: {},
-    useCompactList: true,
-    groupedRevisionIds: [],
     docChangeListeners: {},
 
     toggle: function() {
@@ -163,7 +63,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var mnuItem;
         this.nodes.push(
-            this.mnuSave = new apf.menu({ id : "mnuSave" }),
+            this.mnuSave = new apf.menu({ id: "mnuSave" }),
             menus.addItemByPath("File/~", new apf.divider(), 800),
             mnuItem = menus.addItemByPath("File/File Revision History...", new apf.item({
                 type: "check",
@@ -173,20 +73,23 @@ module.exports = ext.register("ext/revisions/revisions", {
             }), 900),
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
-        
+
         settings.addSettings("General", markupSettings);
+        /*
         ide.addEventListener("loadsettings", function(e) {
             var revisionVisible = e.model.queryValue("general/@revisionsvisible");
             if (apf.isTrue(revisionVisible)) {
                 ide.addEventListener("init.ext/editors/editors", function (e) {
-                    tabEditors.addEventListener("afterswitch", function() {
-                        if (self.ceEditor)
+                    tabEditors.addEventListener("afterswitch", function afterswitch() {
+                        if (self.ceEditor) {
                             _self.show();
-                        tabEditors.removeEventListener("afterswitch", arguments.callee);
+                        }
+                        tabEditors.removeEventListener("afterswitch", afterswitch);
                     });
                 });
             }
         });
+        */
 
         btnSave.removeAttribute("icon");
         btnSave.setAttribute("caption", "");
@@ -194,32 +97,29 @@ module.exports = ext.register("ext/revisions/revisions", {
         btnSave.setAttribute("margin", "0 20 0 20");
         btnSave.setAttribute("submenu", "mnuSave");
         btnSave.removeAttribute("command");
-        
+
         this.$onMessageFn = this.onMessage.bind(this);
-        ide.addEventListener("socketMessage", this.$onMessageFn);
-        
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onFileSaveFn = this.onFileSave.bind(this);
 
+        ide.addEventListener("socketMessage", this.$onMessageFn);
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
 
         var c = 0;
         menus.addItemToMenu(this.mnuSave, new apf.item({
-            caption : "Save Now",
-            onclick : function(){
-                Save.quicksave();
-            }
+            caption: "Save Now",
+            onclick: function() { Save.quicksave(); }
         }), c += 100);
-        
+
         menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "Enable Auto-Save",
             type    : "check",
             checked : "{[{require('core/settings').model}::general/@autosaveenabled] != '' ? [{require('core/settings').model}::general/@autosaveenabled] : 'true'}"
         }), c += 100);
-        
+
         menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
         menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "About Auto-Save",
@@ -227,10 +127,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }), c += 100);
 
         this.hotitems.revisions = [mnuItem];
-
-        this.defaultUser = {
-            email: null
-        };
+        this.defaultUser = { email: null };
 
         // This is the main interval. Whatever it happens, every `INTERVAL`
         // milliseconds, the plugin will attempt to save every file that is
@@ -260,16 +157,16 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (caption) {
             return btnSave.setCaption(caption);
         }
-        
+
         if (!tabEditors.activepage) {
             btnSave.setCaption("");
         }
-        
+
         var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
         var page = tabEditors.getPage();
         var model = page && page.getModel();
         var hasChanged = model && model.queryValue("@changed") == 1;
-        
+
         if (autoSaveEnabled && hasChanged) {
             btnSave.setCaption("Saving...");
         }
@@ -283,6 +180,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     init: function() {
         var self = this;
+
+        var page = tabEditors.getPage();
+        if (page) {
+            this.$switchToPageModel(page);
+        }
 
         this.panel = new apf.bar({
             id: "revisionsPanel",
@@ -311,7 +213,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
             }
 
-            self.loadRevision(node.getAttribute("id"), "preview");
+            var id = node.getAttribute("id");
+            self.loadRevision(id, "preview");
+            tabEditors.getPage().$selectedRevision = id;
         };
 
         lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
@@ -334,6 +238,49 @@ module.exports = ext.register("ext/revisions/revisions", {
         };
     },
 
+    $switchToPageModel: function(page) {
+        if (!page) {
+            return;
+        }
+
+        if (!page.$mdlRevisions) {
+            page.$mdlRevisions = new apf.model();
+        }
+
+        this.model = page.$mdlRevisions;
+        this.model.addEventListener("afterload", this.$afterModelUpdate);
+        return this.model;
+    },
+
+    $afterModelUpdate: function(e) {
+        var model = e.currentTarget;
+        if (!model || !model.data || model.data.childNodes.length === 0) {
+            //console.log("fail")
+            return;
+        }
+
+        if (typeof lstRevisions !== "undefined") {
+            lstRevisions.setModel(model);
+
+            if (tabEditors.getPage().$showRevisions === true) {
+                var node = model.data.firstChild;
+                if (node) {
+                    lstRevisions.select(node);
+                }
+            }
+        }
+    },
+
+    $getRevisionObject: function(path) {
+        var revObj = this.rawRevisions[path];
+        if (!revObj) {
+            revObj = this.rawRevisions[path] = {};
+            revObj.useCompactList = true;
+            revObj.groupedRevisionIds = [];
+        }
+        return revObj;
+    },
+
     /////////////////////
     // Event listeners //
     /////////////////////
@@ -341,7 +288,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     onOpenFile: function(data) {
         if (!data || !data.doc)
             return;
-            
+
         var self = this;
         var doc = data.doc;
         // TODO: Unregister events on unloading file
@@ -349,11 +296,14 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
         var path = data.node.getAttribute("path");
+        console.log("PATH", path)
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
                 self.onDocChange.call(self, e, doc);
             };
         }
+
+        this.$switchToPageModel(doc.$page);
 
         ide.send({
             command: "revisions",
@@ -370,12 +320,13 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onSwitchFile: function(e) {
-        var self = this;
+        this.$switchToPageModel(e.nextPage);
 
+        var self = this;
         // This is the wrong way to do it. We should assume than when switching
         // the revisions are already there.
         // We should cache the revisions for each file and destroy them when
-        // closing. Otherwise there is a communication overhead
+        // closing. Otherwise there is a communication overhead.
         ide.send({
             command: "revisions",
             subCommand: "getRevisionHistory",
@@ -395,6 +346,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    onFileSave: function(e) {
+        this.saveRevision(e.doc, e.silentsave);
+    },
+
     onCloseFile: function(e) {
         var self = this;
 
@@ -402,9 +357,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             self.setSaveButtonCaption();
         });
 
-        var path = this.$getDocPath();
-        if (this.originalContents[path]) {
-            delete this.originalContents[path];
+        var path = this.$getDocPath(e.page);
+        if (this.rawRevisions[path]) {
+            delete rawRevisions[path];
         }
 
         var path = e.page.name;
@@ -467,14 +422,17 @@ module.exports = ext.register("ext/revisions/revisions", {
         var message = e.message;
         if (message.type !== "revision")
             return;
-            
+
         switch (message.subtype) {
             case "getRevisionHistory":
+                var revObj = this.$getRevisionObject(message.path);
+                revObj.revision = message.body
+
                 if (message.originalContent) {
-                    this.originalContents[message.path] = message.originalContent;
+                    revObj.originalContent = message.originalContent;
                 }
 
-                this.buildRevisionsList(message.body);
+                this.generateCache(revObj);
                 this.populateModel();
 
                 break;
@@ -486,7 +444,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (!revision)
                     return;
 
-                this.originalContents[message.path] = message.body; // WTF alert
+                var revObj = this.$getRevisionObject(message.path);
+                revObj.originalContent = message.body;
 
                 // If there is no further actions such as "preview" or "apply",
                 // we have nothing else to do here.
@@ -495,11 +454,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 var data;
                 var self = this;
-                var len = this.groupedRevisionIds.length;
-                if (this.useCompactList && len > 0) {
+                var len = revObj.groupedRevisionIds.length;
+                if (revObj.useCompactList && len > 0) {
                     var group = {};
                     for (var i = 0; i < len; i++) {
-                        var groupedRevs = this.groupedRevisionIds[i];
+                        var groupedRevs = revObj.groupedRevisionIds[i];
                         if (groupedRevs.indexOf(parseInt(message.id, 10)) !== -1) {
                             groupedRevs.forEach(function(ts) {
                                 group[ts] = self.getRevision.call(self, ts);
@@ -542,56 +501,45 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
-    onFileSave: function(e) {
-        this.saveRevision(e.doc, e.silentsave);
-    },
-
     /**
-     * Revisions#buildRevisionsList(revObj)
+     * Revisions#generateTimestamps(page)
      * - revObj(Object): Body of the message coming from the server
      *
      * This function is called every time the server sends an `update` message.
      * It generates the revision objects and the revision timestamp arrays used
      * throughout the extension.
      **/
-    buildRevisionsList: function(revObj) {
-        this.allRevisions = {};
-        this.compactRevisions = {};
+    generateCache: function(revObj) {
+        if (!revObj.revision)
+            return;
+
+        revObj.allRevisions = {};
+        revObj.compactRevisions = {};
 
         // Create an array of the numeric timestamps and populate `allRevisions`
         // with the timestamps as keys and the revObjs as values.
         // `allTimestamps` will store the numeric array. This is the only place
         // where `allTimestamps should be modified.
-        this.allTimestamps = revObj.revisions
+        revObj.allTimestamps = revObj.revision.revisions
             .map(function(rev) {
-                this.allRevisions[rev.ts] = rev;
+                revObj.allRevisions[rev.ts] = rev;
                 return rev.ts;
-            }, this)
+            })
             .sort(function(a, b) { return a - b; });
 
-        // `generateCompactList` will generate `compactTimestamps` on its own
-        this.generateCompactList();
-    },
-
-    /**
-     * Revisions#generateCompactList()
-     *
-     * Generate a compacted version of the revision list, where revisions are
-     * grouped by close periods of time.
-     **/
-    generateCompactList: function() {
-        // Generate compact revisions. Change `compactTimestamps` to
+        // Generate a compacted version of the revision list, where revisions are
+        // grouped by close periods of time.
+        // Changes `compactTimestamps` to
         // reflect the ones in the compact list.
-        this.compactRevisions = this.getCompactRevisions();
-        this.compactTimestamps =
-            Object
-                .keys(this.compactRevisions)
-                .map(function(ts) { return parseInt(ts, 10); })
-                .sort(function(a, b) { return a - b; });
+        revObj.compactRevisions = this.getCompactRevisions(revObj);
+        revObj.compactTimestamps = Object.keys(revObj.compactRevisions)
+            .map(function(ts) { return parseInt(ts, 10); })
+            .sort(function(a, b) { return a - b; });
     },
 
     toggleListView: function() {
-        this.useCompactList = !!!this.useCompactList;
+        var revObj = this.rawRevisions[this.$getDocPath()];
+        revObj.useCompactList = !!!revObj.useCompactList;
         this.$setRevisionListClass();
     },
 
@@ -601,15 +549,19 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Populates the revisions model with the current revision list and attributes.
      **/
     populateModel: function() {
-        var revisions, timestamps;
+        var revObj = this.rawRevisions[this.$getDocPath()];
+        if (!revObj) {
+            return console.log("pop fail");
+        }
 
-        if (this.useCompactList && this.compactRevisions && this.compactTimestamps) {
-            revisions = this.compactRevisions;
-            timestamps = this.compactTimestamps;
+        var revisions, timestamps;
+        if (revObj.useCompactList && revObj.compactRevisions && revObj.compactTimestamps) {
+            revisions = revObj.compactRevisions;
+            timestamps = revObj.compactTimestamps;
         }
         else {
-            revisions = this.allRevisions;
-            timestamps = this.allTimestamps;
+            revisions = revObj.allRevisions;
+            timestamps = revObj.allTimestamps;
         }
 
         var revsXML = "";
@@ -650,16 +602,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     getRevision: function(id, content) {
         id = parseInt(id, 10);
 
-        /*
-        if (this.useCompactList) {
-            // In case we have compacted revisions as the view, we must retrieve
-            // the first revision in the group, because we want to go back to the
-            // first revision of the grouped revisions.
-            id = this.compactRevisions[id].first;
-        }*/
-
-        var tstamps = this.allTimestamps.slice(0);
+        var revObj = this.rawRevisions[this.$getDocPath()];
+        var tstamps = revObj.allTimestamps.slice(0);
         var revision = tstamps.indexOf(id);
+
         if (revision !== -1) {
             var data = {
                 content: content,
@@ -670,7 +616,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             };
 
             for (var t = 0, l = tstamps.length; t < l; t++) {
-                data.tsValues[tstamps[t]] = this.allRevisions[tstamps[t]].patch;
+                data.tsValues[tstamps[t]] = revObj.allRevisions[tstamps[t]].patch;
             }
             return data;
         }
@@ -695,14 +641,15 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var path = this.$getDocPath();
-        if (this.originalContents[path]) {
+        var revObj = this.rawRevisions[path];
+        if (revObj && revObj.originalContent) {
             return this.onMessage({
                 message: {
                     id: id,
                     type: "revision",
                     subtype: "getOriginalContent",
                     nextAction: nextAction,
-                    body: this.originalContents[path]
+                    body: revObj.originalContent
                 }
             });
         }
@@ -728,13 +675,13 @@ module.exports = ext.register("ext/revisions/revisions", {
      *
      * Assumes that `allRevisions` is populated at this point.
      **/
-    getCompactRevisions: function() {
-        var timestamps = this.allTimestamps.slice(0);
-        if (!this.allRevisions || timestamps.length === 0) {
+    getCompactRevisions: function(revObj) {
+        var timestamps = revObj.allTimestamps.slice(0);
+        if (!revObj.allRevisions || timestamps.length === 0) {
             return {};
         }
 
-        var all = this.allRevisions;
+        var all = revObj.allRevisions;
         var compactRevisions = {};
         var finalTS = [];
         var isResto = function(id) { return all[id] && all[id].restoring; };
@@ -756,7 +703,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             finalTS.push.apply(finalTS, ts.__reduce(repack, [[]]));
         });
 
-        this.groupedRevisionIds = finalTS;
+        revObj.groupedRevisionIds = finalTS;
 
         finalTS.forEach(function(tsGroup) {
             // The property name will be the id of the last timestamp in the group.
@@ -836,12 +783,14 @@ module.exports = ext.register("ext/revisions/revisions", {
         var session = editor.getSession();
         var path = this.$getDocPath();
 
-        if (session.previewRevision !== true && !this.realSession[path]) {
-            this.realSession[path] = session;
+        var revObj = this.$getRevisionObject(path);
+        // TODO: delete realSession on close. attach to rawRevisions
+        if (session.previewRevision !== true && !revObj.realSession) {
+            revObj.realSession = session;
         }
 
         var doc = new ProxyDocument(new Document(value || ""));
-        var newSession = new EditSession(doc, this.realSession[path].getMode());
+        var newSession = new EditSession(doc, revObj.realSession.getMode());
         newSession.previewRevision = true;
         editor.setSession(newSession);
         editor.setReadOnly(true);
@@ -853,7 +802,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         ranges.forEach(function(range) {
-            addCodeMarker(newSession, doc, range[4], {
+            Util.addCodeMarker(newSession, doc, range[4], {
                 fromRow: range[0],
                 fromCol: range[1],
                 toRow: range[2],
@@ -880,9 +829,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (typeof ceEditor === "undefined")
             return;
 
-        var realSession = this.realSession[this.$getDocPath()];
-        if (realSession) {
-            ceEditor.$editor.setSession(realSession);
+        var revObj = this.$getRevisionObject(this.$getDocPath());
+        if (revObj.realSession) {
+            ceEditor.$editor.setSession(revObj.realSession);
         }
         ceEditor.$editor.setReadOnly(false);
         ceEditor.show();
@@ -952,18 +901,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         // in a worker istead of sending over to the server. Later on, we'll
         // send the new revision to the server.
         if (!this.isCollab(doc)) {
+            var revObj = this.rawRevisions[docPath];
             data.type = "newRevision";
             data.lastContent = doc.getValue();
-            data.originalContent = this.originalContents[docPath];
-            data.revisions = this.allRevisions;
+            data.originalContent = revObj.originalContent;
+            data.revisions = revObj.allRevisions;
             // To not have to extract and sort timestamps from allRevisions
-            data.timestamps = this.allTimestamps;
+            data.timestamps = revObj.allTimestamps;
 
             return this.worker.postMessage(data);
         }
 
         ide.send(data);
-
         this.$resetEditingUsers(docPath);
     },
 
@@ -1066,7 +1015,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $setRevisionListClass: function() {
-        if (this.useCompactList === true) {
+        var revObj = this.rawRevisions[this.$getDocPath()];
+        if (revObj.useCompactList === true) {
             apf.setStyleClass(lstRevisions.$ext, "compactView");
         }
         else {
@@ -1081,34 +1031,24 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         settings.model.setQueryValue("general/@revisionsvisible", true);
 
+        ceEditor.$editor.container.style.right = BAR_WIDTH + "px";
+        this.panel.show();
+
+        lstRevisions.setModel(this.model);
+        if (!this.model.data || this.model.data.length === 0) {
+            this.populateModel();
+        }
+
+        //var node = this.model.data.firstChild;
+        //if (node && lstRevisions) {
+            //lstRevisions.select(node);
+        /*}*/
+
+        tabEditors.getPage().$showRevisions = true;
         ide.dispatchEvent("revisions.visibility", {
             visibility: "shown",
             width: BAR_WIDTH
         });
-
-        ceEditor.$editor.container.style.right = BAR_WIDTH + "px";
-
-        this.panel.show();
-        this.populateModel();
-
-        var all = this.allTimestamps;
-        var cmp = this.compactTimestamps;
-
-        var lastTimeStamp;
-        if (this.useCompactList === true && cmp && cmp.length > 0) {
-            lastTimeStamp = cmp[cmp.length - 1];
-        }
-        else if (all && all.length > 0) {
-            lastTimeStamp = all[all.length - 1];
-        }
-
-        if (lastTimeStamp) {
-            var node = this.model.queryNode("revision[@id='" + lastTimeStamp + "']");
-            if (node) {
-                lstRevisions.select(node);
-            }
-        }
-        tabEditors.getPage().$showRevisions = true;
     },
 
     hide: function() {
@@ -1208,6 +1148,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                     page.$doc.acedoc.removeEventListener(listener);
                 }
             }
+            if (page.$mdlRevisions) {
+                delete page.$mdlRevisions;
+            }
         }, this);
 
         this.disableEventListeners();
@@ -1217,8 +1160,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         menus.remove("File/File revisions");
         menus.remove("File/~", 1000);
 
-        if (this.saveInterval)
+        if (this.saveInterval) {
             clearInterval(this.saveInterval);
+        }
 
         this.disableEventListeners();
 
@@ -1229,6 +1173,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (page.$doc.acedoc) {
                     page.$doc.acedoc.removeEventListener(listener);
                 }
+            }
+            if (page.$mdlRevisions) {
+                delete page.$mdlRevisions;
             }
         }, this);
 
