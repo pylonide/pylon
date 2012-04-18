@@ -423,8 +423,8 @@ module.exports = ext.register("ext/tree/tree", {
     loadProjectTree : function(callback) {
         var _self = this;
 
-        if (!this.expandedNodes.length)
-            this.expandedNodes = [ide.davPrefix];
+        if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
+            this.expandedNodes.unshift(ide.davPrefix);
         else
             this.expandedNodes.sort();
 
