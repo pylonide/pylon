@@ -35,11 +35,6 @@ return keys.onLoad({
             "zen": "Alt-E",
             "zenslow": "Alt-Shift-E"
         },
-        "newresource": {
-            "newfile": "Ctrl-N",
-            "newfiletemplate": "Ctrl-Shift-N",
-            "newfolder": "Ctrl-Alt-N"
-        },
         "searchreplace" : {
             //"search": "Ctrl-Shift-F",
             "searchreplace": "Alt-Shift-F"
@@ -55,9 +50,6 @@ return keys.onLoad({
         },
         "tree" : {
             "show" : "Ctrl-U"
-        },
-        "openfiles" : {
-            "show" : "Shift-Ctrl-U"
         },
         "settings": {
             "show": "Ctrl-,"

@@ -41,9 +41,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     nodes: [],
     skin: skin,
 
-    commands: { "revisions": { hint: "Show revisions panel" } },
-    hotitems: {},
-
     rawRevisions: {},
     revisionsData: {},
     docChangeTimeout: null,
@@ -61,15 +58,23 @@ module.exports = ext.register("ext/revisions/revisions", {
     hook: function() {
         var _self = this;
 
-        var mnuItem;
+        commands.addCommand({
+            name: "revisionpanel",
+            hint: "Show revisions panel",
+            bindKey: {mac: "Command-B", win: "Ctrl-B"},
+            exec: function () {
+                _self.toggle();
+            }
+        });
+
         this.nodes.push(
             this.mnuSave = new apf.menu({ id: "mnuSave" }),
             menus.addItemByPath("File/~", new apf.divider(), 800),
-            mnuItem = menus.addItemByPath("File/File Revision History...", new apf.item({
+            menus.addItemByPath("File/File Revision History...", new apf.item({
                 type: "check",
                 checked: "[{require('ext/settings/settings').model}::general/@revisionsvisible]",
                 disabled: "{!tabEditors.length}",
-                onclick: function() { _self.toggle(); }
+                command: "revisionpanel"
             }), 900),
             menus.addItemByPath("File/~", new apf.divider(), 910)
         );
@@ -107,7 +112,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-
+        
         var c = 0;
         menus.addItemToMenu(this.mnuSave, new apf.item({
             caption: "Save Now",
@@ -126,7 +131,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             onclick : function() {}
         }), c += 100);
 
-        this.hotitems.revisions = [mnuItem];
         this.defaultUser = { email: null };
 
         // This is the main interval. Whatever it happens, every `INTERVAL`
@@ -359,7 +363,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var path = this.$getDocPath(e.page);
         if (this.rawRevisions[path]) {
-            delete rawRevisions[path];
+            delete this.rawRevisions[path];
         }
 
         var path = e.page.name;

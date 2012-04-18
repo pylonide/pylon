@@ -23,7 +23,6 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
     commands : {
         "quickwatch": {hint: "quickly inspect the variable that is under the cursor"}
     },
-    hotitems: {},
 
     nodes   : [],
 

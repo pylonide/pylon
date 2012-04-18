@@ -35,11 +35,6 @@ return keys.onLoad({
             "zen": "Option-Z",
             "zenslow": "Shift-Option-Z"
         },
-        "newresource": {
-            "newfile": "Option-Shift-N",
-            "newfiletemplate": "Option-Ctrl-N",
-            "newfolder": "Option-Ctrl-Shift-N"
-        },
         "searchreplace" : {
             //"search": "Shift-Command-F",
             "searchreplace": "Option-Command-F"
@@ -55,9 +50,6 @@ return keys.onLoad({
         },
         "tree" : {
             "show" : "Command-U"
-        },
-        "openfiles" : {
-            "show" : "Shift-Command-U"
         },
         "settings": {
             "show": "Command-,"

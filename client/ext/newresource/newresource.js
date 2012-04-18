@@ -22,46 +22,53 @@ module.exports = ext.register("ext/newresource/newresource", {
     type    : ext.GENERAL,
     markup  : markup,
     deps    : [fs],
-    commands : {
-        "newfile": {
-            hint: "create a new file resource",
-            msg: "New file created."
-        },
-        "newfolder": {
-            hint: "create a new directory resource",
-            msg: "New directory created."
-        },
-        "newfiletemplate": {hint: "open the new file template dialog"}
-    },
-    hotitems: {},
 
     nodes   : [],
 
     hook : function(amlNode){
         var _self = this;
 
+        commands.addCommand({
+            name: "newfile",
+            hint: "create a new file resource",
+            msg: "New file created.",
+            bindKey: {mac: "Option-Shift-N", win: "Ctrl-N"},
+            exec: function () {
+                _self.newfile();
+            }
+        });
+        
+        commands.addCommand({
+            name: "newfiletemplate",
+            hint: "create a new directory resource",
+            msg: "New directory created.",
+            bindKey: {mac: "Option-Ctrl-N", win: "Ctrl-Alt-N"},
+            exec: function () {
+                _self.newfiletemplate();
+            }
+        });
+        
+        commands.addCommand({
+            name: "newfolder",
+            hint: "open the new file template dialog",
+            bindKey: {mac: "Option-Ctrl-Shift-N", win: "Ctrl-N"},
+            exec: function () {
+                _self.newfolder();
+            }
+        });
+
         this.nodes.push(
             menus.addItemByPath("File/New File", new apf.item({
-                onclick : function(){
-                    _self.newfile();
-                }
+                command : "newfile",
             }), 100),
             menus.addItemByPath("File/New From Template...", new apf.item({
-                onclick : function(){
-                    _self.newfiletemplate();
-                }
+                command : "newfiletemplate"
             }), 200),
             menus.addItemByPath("File/New Folder", new apf.item({
-                onclick : function(){
-                    _self.newfolder();
-                }
+                command : "newfolder"
             }), 300),
             menus.addItemByPath("File/~", new apf.divider(), 400)
         );
-
-        this.hotitems.newfile = [this.nodes[0]];
-        this.hotitems.newfiletemplate = [this.nodes[1]];
-        this.hotitems.newfolder = [this.nodes[2]];
     },
     
     init : function(){

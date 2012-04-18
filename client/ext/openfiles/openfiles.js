@@ -23,19 +23,23 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     
     defaultWidth    : 130,
     
-    commands : {
-        "show": {hint: "show the open files panel"}
-    },
-    hotitems : {},
-
     hook : function(){
+        var _self = this;
+        
         panels.register(this, {
             position : 2000,
             caption: "Open Files",
             "class": "open_files"
         });
         
-        this.hotitems.show = [this.mnuItem];
+        commands.addCommand({
+            name: "openfilepanel",
+            hint: "show the open files panel",
+            bindKey: {mac: "Shift-Command-U", win: "Shift-Ctrl-U"},
+            exec: function () {
+                _self.show();
+            }
+        });
         
         var model = this.model = new apf.model().load("<files />");
         
