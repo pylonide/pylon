@@ -27,10 +27,6 @@ return keys.onLoad({
         "quickwatch": {
             "quickwatch": "Ctrl-Q"
         },
-        "runpanel": {
-            "run" : "Ctrl-F5",
-            "stop" : "Shift-F5"
-        },
         "zen": {
             "zen": "Alt-E",
             "zenslow": "Alt-Shift-E"

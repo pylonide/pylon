@@ -73,6 +73,7 @@ module.exports = ext.register("ext/menus/menus", {
                     apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
         }
         
+        apf.splitbutton.prototype.$propHandlers["command"] = 
         apf.button.prototype.$propHandlers["command"] = 
         apf.item.prototype.$propHandlers["command"] = function(value){
             this.setAttribute("hotkey", 

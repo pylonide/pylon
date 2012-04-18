@@ -85,7 +85,7 @@
                   </a:hbox>
                   <a:hbox>
                     <a:label width="100" skin="black_label">File Path</a:label>
-                    <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
+                    <a:textbox skin = "black_textbox" flex="1" value="[@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
                     <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
                     
                     <!--a:divider span="2" skin="c9-divider-hor" /-->
@@ -113,7 +113,7 @@
                     </a:hbox>
                     <a:hbox>
                       <a:label width="100" skin="black_label">Cmd Line Args</a:label>
-                      <a:textbox skin = "black_textbox" id="txtRunCfgName" flex="1" value="[@args]" disabled="{!!!lstRunCfg.selected}"/>
+                      <a:textbox skin = "black_textbox" flex="1" value="[@args]" disabled="{!!!lstRunCfg.selected}"/>
                     </a:hbox>
                 </a:vbox>
             </a:bar>

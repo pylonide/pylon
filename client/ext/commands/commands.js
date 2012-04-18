@@ -42,7 +42,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 //@todo this needs a better abstraction
                 var page = self.tabEditors && tabEditors.getPage();
                 editor = page && page.$editor;
-                if (editor.ceEditor)
+                if (editor && editor.ceEditor)
                     editor = editor.ceEditor.$editor;
             }
             

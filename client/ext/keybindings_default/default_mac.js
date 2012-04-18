@@ -27,10 +27,6 @@ return keys.onLoad({
         "quickwatch": {
             "quickwatch": "Option-Q"
         },
-        "runpanel": {
-            "run" : "F5",
-            "stop" : "Shift-F5"
-        },
         "zen": {
             "zen": "Option-Z",
             "zenslow": "Shift-Option-Z"

@@ -474,6 +474,19 @@ module.exports = ext.register("ext/console/console", {
         };
 
         apf.extend(this.allCommands, ext.commandsLut);
+        
+        if (this.logged.length)
+            this.logged.forEach(function(text){
+                txtConsole.addValue(text);
+            });
+    },
+    
+    logged : [],
+    log : function(text){
+        if (this.inited) 
+            txtConsole.addValue(text);
+        else
+            this.logged.push(text);
     },
 
     maximize: function(){

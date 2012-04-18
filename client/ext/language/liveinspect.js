@@ -23,13 +23,6 @@ module.exports = (function () {
             // listen to changes that affect the debugger, so we can toggle the visibility based on this
             stRunning.addEventListener("prop.active", checkDebuggerActive);
             stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
-            
-            // when hovering over the inspector window we should ignore all further listeners
-            apf.addListener(datagridHtml, "mouseover", function() {
-                if (activeTimeout) {
-                    clearTimeout(activeTimeout);
-                }
-            });
         });
     }
     
@@ -45,6 +38,13 @@ module.exports = (function () {
                 type: "live inspect code",
                 expression: currentExpression || "no expression available yet."
             });
+        });
+        
+        // when hovering over the inspector window we should ignore all further listeners
+        apf.addListener(datagridHtml, "mouseover", function() {
+            if (activeTimeout) {
+                clearTimeout(activeTimeout);
+            }
         });
         
         ide.addEventListener("language.worker", function(e){
@@ -216,7 +216,7 @@ module.exports = (function () {
         if (!stRunning.active && stDebugProcessRunning.active) {
             // debugger running
         }
-        else {
+        else if (self.winLiveInspect) {
             winLiveInspect.hide();
         }
     };
