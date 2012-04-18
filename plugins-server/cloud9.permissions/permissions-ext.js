@@ -4,7 +4,7 @@ module.exports = function startup(options, imports, register) {
 
     register(null, {
         "workspace-permissions": {
-            getPermissions: function(uid, callback) {
+            getPermissions: function(uid, workspaceId, callback) {
                 if (!uid)
                     return callback(new Error("Invalid user id: " + uid));
 

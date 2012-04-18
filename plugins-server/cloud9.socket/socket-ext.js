@@ -11,7 +11,7 @@ module.exports = function setup(options, imports, register) {
     socket.listen(imports.http.getServer());
     socket.on("attach", function(client, message) {
         var uid = message.session.uid;
-        permissions.getPermissions(uid, function(err, userPermissions) {
+        permissions.getPermissions(uid, message.workspaceId, function(err, userPermissions) {
             if (err) {
                 return client.send(JSON.stringify({
                     "type": "error",

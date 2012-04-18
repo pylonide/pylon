@@ -16,10 +16,15 @@ module.exports = function setup(options, imports, register) {
 
     imports.sandbox.getProjectDir(function(err, projectDir) {
         if (err) return register(err);
-        init(projectDir);
+
+        imports.sandbox.getWorkspaceId(function(err, workspaceId) {
+            if (err) return register(err);
+
+            init(projectDir, workspaceId);
+        });
     });
 
-    function init(projectDir) {
+    function init(projectDir, workspaceId) {
 
         var mountDir = path.normalize(projectDir);
 
@@ -32,14 +37,14 @@ module.exports = function setup(options, imports, register) {
             standalone: false
         };
 
-    var filewatch = new DavFilewatch();
+        var filewatch = new DavFilewatch();
 
         var davServer = jsDAV.mount(davOptions);
         davServer.plugins["codesearch"].GREP_CMD = gnutools.GREP_CMD;
         davServer.plugins["filesearch"].FIND_CMD = gnutools.FIND_CMD;
         davServer.plugins["filelist"].FIND_CMD = gnutools.FIND_CMD;
         davServer.plugins["permission"] = DavPermission;
-    davServer.plugins["filewatch"] = filewatch.getPlugin();
+        davServer.plugins["filewatch"] = filewatch.getPlugin();
 
         imports.connect.useAuth(function(req, res, next) {
             if (req.url.indexOf(options.urlPrefix) !== 0)
@@ -49,7 +54,7 @@ module.exports = function setup(options, imports, register) {
                 return next(new error.Unauthorized());
 
             var pause = utils.pause(req);
-            permissions.getPermissions(req.session.uid, function(err, permissions) {
+            permissions.getPermissions(req.session.uid, workspaceId, function(err, permissions) {
                 if (err) {
                     next(err);
                     pause.resume();
