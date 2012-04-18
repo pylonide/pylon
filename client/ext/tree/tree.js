@@ -425,8 +425,8 @@ module.exports = ext.register("ext/tree/tree", {
 
         if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
             this.expandedNodes.unshift(ide.davPrefix);
-        else
-            this.expandedNodes.sort();
+
+        this.expandedNodes.sort();
 
         this.loading = true;
 
