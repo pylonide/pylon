@@ -44,12 +44,9 @@ module.exports = ext.register("ext/revisions/revisions", {
     commands: { "revisions": { hint: "Show revisions panel" } },
     hotitems: {},
 
-    realSession: {},
+    rawRevisions: {},
     revisionsData: {},
     docChangeTimeout: null,
-    rawRevisions: {},
-    useCompactList: true,
-    groupedRevisionIds: [],
     docChangeListeners: {},
 
     toggle: function() {
@@ -274,6 +271,16 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    $getRevisionObject: function(path) {
+        var revObj = this.rawRevisions[path];
+        if (!revObj) {
+            revObj = this.rawRevisions[path] = {};
+            revObj.useCompactList = true;
+            revObj.groupedRevisionIds = [];
+        }
+        return revObj;
+    },
+
     /////////////////////
     // Event listeners //
     /////////////////////
@@ -418,11 +425,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         switch (message.subtype) {
             case "getRevisionHistory":
-                if (!this.rawRevisions[message.path]) {
-                    this.rawRevisions[message.path] = {};
-                }
-
-                var revObj = this.rawRevisions[message.path];
+                var revObj = this.$getRevisionObject(message.path);
                 revObj.revision = message.body
 
                 if (message.originalContent) {
@@ -441,11 +444,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (!revision)
                     return;
 
-                if (!this.rawRevisions[message.path]) {
-                    this.rawRevisions[message.path] = {};
-                }
-
-                this.rawRevisions[message.path].originalContent = message.body; // WTF alert
+                var revObj = this.$getRevisionObject(message.path);
+                revObj.originalContent = message.body;
 
                 // If there is no further actions such as "preview" or "apply",
                 // we have nothing else to do here.
@@ -454,11 +454,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 var data;
                 var self = this;
-                var len = this.groupedRevisionIds.length;
-                if (this.useCompactList && len > 0) {
+                var len = revObj.groupedRevisionIds.length;
+                if (revObj.useCompactList && len > 0) {
                     var group = {};
                     for (var i = 0; i < len; i++) {
-                        var groupedRevs = this.groupedRevisionIds[i];
+                        var groupedRevs = revObj.groupedRevisionIds[i];
                         if (groupedRevs.indexOf(parseInt(message.id, 10)) !== -1) {
                             groupedRevs.forEach(function(ts) {
                                 group[ts] = self.getRevision.call(self, ts);
@@ -538,7 +538,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     toggleListView: function() {
-        this.useCompactList = !!!this.useCompactList;
+        var revObj = this.rawRevisions[this.$getDocPath()];
+        revObj.useCompactList = !!!revObj.useCompactList;
         this.$setRevisionListClass();
     },
 
@@ -549,13 +550,12 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     populateModel: function() {
         var revObj = this.rawRevisions[this.$getDocPath()];
-
         if (!revObj) {
             return console.log("pop fail");
         }
 
         var revisions, timestamps;
-        if (this.useCompactList && revObj.compactRevisions && revObj.compactTimestamps) {
+        if (revObj.useCompactList && revObj.compactRevisions && revObj.compactTimestamps) {
             revisions = revObj.compactRevisions;
             timestamps = revObj.compactTimestamps;
         }
@@ -703,7 +703,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             finalTS.push.apply(finalTS, ts.__reduce(repack, [[]]));
         });
 
-        this.groupedRevisionIds = finalTS;
+        revObj.groupedRevisionIds = finalTS;
 
         finalTS.forEach(function(tsGroup) {
             // The property name will be the id of the last timestamp in the group.
@@ -783,13 +783,14 @@ module.exports = ext.register("ext/revisions/revisions", {
         var session = editor.getSession();
         var path = this.$getDocPath();
 
+        var revObj = this.$getRevisionObject(path);
         // TODO: delete realSession on close. attach to rawRevisions
-        if (session.previewRevision !== true && !this.realSession[path]) {
-            this.realSession[path] = session;
+        if (session.previewRevision !== true && !revObj.realSession) {
+            revObj.realSession = session;
         }
 
         var doc = new ProxyDocument(new Document(value || ""));
-        var newSession = new EditSession(doc, this.realSession[path].getMode());
+        var newSession = new EditSession(doc, revObj.realSession.getMode());
         newSession.previewRevision = true;
         editor.setSession(newSession);
         editor.setReadOnly(true);
@@ -828,9 +829,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (typeof ceEditor === "undefined")
             return;
 
-        var realSession = this.realSession[this.$getDocPath()];
-        if (realSession) {
-            ceEditor.$editor.setSession(realSession);
+        var revObj = this.$getRevisionObject(this.$getDocPath());
+        if (revObj.realSession) {
+            ceEditor.$editor.setSession(revObj.realSession);
         }
         ceEditor.$editor.setReadOnly(false);
         ceEditor.show();
@@ -1014,7 +1015,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $setRevisionListClass: function() {
-        if (this.useCompactList === true) {
+        var revObj = this.rawRevisions[this.$getDocPath()];
+        if (revObj.useCompactList === true) {
             apf.setStyleClass(lstRevisions.$ext, "compactView");
         }
         else {
@@ -1146,6 +1148,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                     page.$doc.acedoc.removeEventListener(listener);
                 }
             }
+            if (page.$mdlRevisions) {
+                delete page.$mdlRevisions;
+            }
         }, this);
 
         this.disableEventListeners();
@@ -1155,8 +1160,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         menus.remove("File/File revisions");
         menus.remove("File/~", 1000);
 
-        if (this.saveInterval)
+        if (this.saveInterval) {
             clearInterval(this.saveInterval);
+        }
 
         this.disableEventListeners();
 
@@ -1167,6 +1173,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (page.$doc.acedoc) {
                     page.$doc.acedoc.removeEventListener(listener);
                 }
+            }
+            if (page.$mdlRevisions) {
+                delete page.$mdlRevisions;
             }
         }, this);
 
