@@ -34,6 +34,10 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         },
         
         exec : function(command, editor, args, e){
+            if (command.context 
+              && command.context.indexOf(apf.activeElement) == -1) //or should this be apf.xmldb.isChildOf?
+                return; //Disable commands for other contexts
+            
             if (!editor) {
                 //@todo this needs a better abstraction
                 var page = self.tabEditors && tabEditors.getPage();
@@ -58,7 +62,32 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 this.setProperty(command.name, command.bindKey[this.platform]);
         },
         
-        removeCommand : function(command){
+        addCommands : function(commands, context){
+            commands && Object.keys(commands).forEach(function(name) {
+                var command = commands[name];
+                if (typeof command === "string")
+                    return this.bindKey(command, name);
+    
+                if (typeof command === "function")
+                    command = { exec: command };
+    
+                if (!command.name)
+                    command.name = name;
+                
+                if (context)
+                    command.context = context;
+    
+                this.addCommand(command, context);
+            }, this);
+        },
+        
+        removeCommands : function(commands, context){
+            Object.keys(commands).forEach(function(name) {
+                this.removeCommand(commands[name], context);
+            }, this);
+        },
+        
+        removeCommand : function(command, context){
             if (this[command.name])
                 this.setProperty(command.name, "");
             removeCommand.apply(this, arguments);

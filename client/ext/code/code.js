@@ -633,6 +633,13 @@ module.exports = ext.register("ext/code/code", {
 
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = commands;
+        
+        defaultCommands.each(function(command){
+            command.context = [ceEditor];
+        });
+        MultiSelectCommands.each(function(command){
+            command.context = [ceEditor];
+        });
 
         // preload common language modes
         var noop = function() {}; 

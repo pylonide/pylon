@@ -26,7 +26,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     type     : ext.GENERAL,
     markup   : markup,
     skin     : {
-        id   : "statusbar",
+        id   : "c9statusbar",
         data : skin,
         "media-path" : ide.staticPrefix + "ext/main/style/images/",
         "icon-path"  : ide.staticPrefix + "ext/main/style/icons/"

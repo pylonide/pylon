@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:bar id="barIdeStatus" 
       skin    = "bar-status" 
-      skinset = "statusbar"
+      skinset = "c9statusbar"
       class   = "expanded"
       visible = "[{require('core/settings').model}::auto/statusbar/@show]"
       height  = "28"
@@ -27,7 +27,7 @@
             <a:hbox id="hboxStatusBarSettings">
                 <a:button id="btnSbPrefs"
                   skin    = "btn-statusbar-icon" 
-                  skinset = "statusbar"
+                  skinset = "c9statusbar"
                   height  = "23"
                   icon    = "pref-ico.png" 
                   submenu = "mnuStatusBarPrefs"/>

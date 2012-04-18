@@ -88,13 +88,14 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["folding"]                  = true;
     this.$booleanProperties["wrapmode"]                 = true;
     this.$booleanProperties["wrapmodeViewport"]         = true;
-    this.$booleanProperties["animatedscroll"]         = true;
+    this.$booleanProperties["animatedscroll"]           = true;
+    this.$booleanProperties["globalcommands"]           = true;
     
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
-        "behaviors", "folding", "newlinemode");
+        "behaviors", "folding", "newlinemode", "globalcommands");
 
     this.$getCacheKey = function(value) {
         if (typeof value == "string") {
@@ -475,6 +476,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             //@todo Update document
         }
     });
+    
+    this.addEventListener("keydown", function(e){
+        if (e.keyCode == 9)
+            return false;
+    });
 
     /**** Public Methods ****/
 
@@ -590,7 +596,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.$editor.resize();
         });
 
-        this.$editor = new Editor(new VirtualRenderer(this.$input));
+        this.$editor = new Editor(new VirtualRenderer(this.$input), null, 
+            apf.isTrue(this.getAttribute("globalcommands")) && document.documentElement);
         new MultiSelect(this.$editor);
 
         // read defaults...

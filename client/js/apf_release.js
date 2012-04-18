@@ -15756,7 +15756,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22466)TIME(Sun, 15 Apr 2012 15:15:00 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22581)TIME(Wed, 18 Apr 2012 12:38:56 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15912,6 +15912,9 @@ apf.AmlElement = function(struct, tagName){
     
             if (self[this.name] == this)
                 self[this.name] = null
+    
+            if (self[value])
+                throw new Error("ID collision of APF element: '" + value + "'");
     
             if (!self[value] || !self[value].hasFeature) {
                 try {
