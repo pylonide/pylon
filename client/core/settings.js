@@ -115,12 +115,12 @@ module.exports = {
             xml = localStorage[sIdent];
 
         // Load from template
-        else if (!apf.IdeSettings || apf.IdeSettings == "defaults")
+        else if (!cloud9config.settings || cloud9config.settings == "defaults")
             xml = template
 
         // Load from parsed settings in the index file
-        else if (apf.IdeSettings)
-            xml = apf.IdeSettings;
+        else if (cloud9config.settings)
+            xml = cloud9config.settings;
 
         if (!xml) {
             ide.addEventListener("socketMessage", function(e){
