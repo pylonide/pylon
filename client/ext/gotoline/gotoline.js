@@ -31,7 +31,6 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     commands : {
         "gotoline": {hint: "enter a linenumber and jump to it in the active document"}
     },
-    hotitems: {},
 
     nodes   : [],
 
@@ -58,8 +57,6 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                 _self.gotoline();
             }
         });
-
-        this.hotitems.gotoline = [this.nodes[0]];
     },
 
     init : function() {

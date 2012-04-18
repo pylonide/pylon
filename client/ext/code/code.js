@@ -613,29 +613,15 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("Goto/~", new apf.divider(), c = 399),
 
-            addEditorMenu("Goto/Word Right", [
-                "Option-Right", "Ctrl-Right"
-            ], "gotowordright"),
-
-            addEditorMenu("Goto/Word Left", [
-                "Option-Left", "Ctrl-Left"
-            ], "gotowordleft"),
-
+            addEditorMenu("Goto/Word Right", "gotowordright"),
+            addEditorMenu("Goto/Word Left", "gotowordleft"),
             menus.addItemByPath("Goto/~", new apf.divider(), 600),
 
-            addEditorMenu("Goto/Line End", [
-                "Command-Right|End|Ctrl-E", "Alt-Right|End"
-            ], "gotolineend"),
-
-            addEditorMenu("Goto/Line Start", [
-                "Command-Left|Home|Ctrl-A", "Alt-Left|Home"
-            ], "gotolinestart"),
-            
+            addEditorMenu("Goto/Line End", "gotolineend"),
+            addEditorMenu("Goto/Line Start", "gotolinestart"),
             menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
             
-            addEditorMenu("Goto/Scroll to Selection", [
-                "Ctrl-L", ""
-            ], "centerselection")
+            addEditorMenu("Goto/Scroll to Selection", "centerselection")
         );
 
         this.disable();

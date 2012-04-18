@@ -44,8 +44,6 @@ module.exports = ext.register("ext/language/language", {
         "renameVar": {hint: "Rename variable"}
     },
 
-    hotitems: {},
-
     hook : function() {
 		var _self = this;
 
