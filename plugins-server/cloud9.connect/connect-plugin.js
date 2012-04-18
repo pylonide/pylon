@@ -29,6 +29,9 @@ module.exports = function startup(options, imports, register) {
 
     api.addRoute = server.addRoute;
     api.use = api.useStart;
+    
+    api.on = server.on;
+    api.emit = server.emit;
 
     server.listen(options.port, options.host, function(err) {
         if (err)
