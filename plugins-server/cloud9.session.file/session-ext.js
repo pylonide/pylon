@@ -102,13 +102,21 @@ FileStore.prototype.get = function(sid, fn){
 
 FileStore.prototype.set = function(sid, sess, fn){
   var self = this;
-  // TODO: Write file to tmp and rename to avoid corrupted sessions when writing and reading overlaps.
-  fs.writeFile(self.basePath + "/" + sid, JSON.stringify(sess), function(err) {
+  var path = self.basePath + "/" + sid;
+  var tmpPath = path + "~" + new Date().getTime();
+  fs.writeFile(path, JSON.stringify(sess), function(err) {
       if (err) {
           fn && fn(err);
       }
       else {
-          fn && fn();
+          fs.rename(tmpPath, path, function(err) {
+              if (err) {
+                  fn && fn(err);
+              }
+              else {
+                  fn && fn();
+              }
+          });
       }
   });
 };
