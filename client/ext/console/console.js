@@ -58,7 +58,7 @@ var execAction = function(cmd, data) {
 // This object is a simple FIFO queue that keeps track of the list of commands
 // introduced by the user at any given time and allows the console to go back and forward.
 var cmdHistory = {
-    _history: [],
+    _history: [""],
     _index: 0,
 
     push: function(cmd) {
@@ -196,12 +196,12 @@ module.exports = ext.register("ext/console/console", {
     },
 
     keyupHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode) === -1)
+        if (actionCodes.indexOf(e.keyCode) !== -1)
             return this.commandTextHandler(e);
     },
 
     keydownHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode) !== -1)
+        if (actionCodes.indexOf(e.keyCode) === -1)
             return this.commandTextHandler(e);
     },
 
@@ -410,16 +410,12 @@ module.exports = ext.register("ext/console/console", {
         });
 
         this.keyEvents[KEY_UP] = function(input) {
-            var newVal = cmdHistory.getPrev();
-            if (newVal)
-                input.setValue(newVal);
+            var newVal = cmdHistory.getPrev() || "";
+            input.setValue(newVal);
         };
         this.keyEvents[KEY_DOWN] = function(input) {
-            var newVal = cmdHistory.getNext();
-            if (newVal)
-                input.setValue(newVal);
-            else
-                input.setValue("");
+            var newVal = cmdHistory.getNext() || "";
+            input.setValue(newVal);
         };
         this.keyEvents[KEY_CR] = function(input) {
             var inputVal = input.getValue().trim();
@@ -437,7 +433,7 @@ module.exports = ext.register("ext/console/console", {
             return;
         this.maximized = true;
 
-        apf.document.body.appendChild(winDbgConsole);
+        apf.document.documentElement.appendChild(winDbgConsole);
         winDbgConsole.setAttribute('anchors', '0 0 0 0');
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');

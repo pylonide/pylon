@@ -148,7 +148,7 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
         
-        apf.document.body.appendChild(tab);
+        apf.document.documentElement.appendChild(tab);
 
         tabEditors.$buttons.appendChild(btn.$ext);
         tabEditors.addEventListener("DOMNodeInserted",function(e){
@@ -223,7 +223,7 @@ module.exports = ext.register("ext/editors/editors", {
             return false;
 
         var fileExtensions = editor.fileExtensions;
-        var fileExtension = (tabEditors.getPage(page).$model.queryValue("@path") || "").split(".").pop();
+        var fileExtension = (tabEditors.getPage(page).$model.queryValue("@path") || "").split(".").pop().toLowerCase();
         var isEnabled = fileExtensions.indexOf(fileExtension) > -1;
         
         if (!isEnabled && this.fileExtensions["default"] == editor)
@@ -291,7 +291,7 @@ module.exports = ext.register("ext/editors/editors", {
             return;
         }
 
-        var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop();
+        var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
         var editor = this.fileExtensions[fileExtension] 
           && this.fileExtensions[fileExtension][0] 
           || this.fileExtensions["default"];
@@ -500,7 +500,7 @@ module.exports = ext.register("ext/editors/editors", {
         
         toHandler.$itmEditor.select();
         
-        var fileExtension = (path || "").split(".").pop();
+        var fileExtension = (path || "").split(".").pop().toLowerCase();
         var editor = this.fileExtensions[fileExtension] 
           && this.fileExtensions[fileExtension][0] 
           || this.fileExtensions["default"];
@@ -547,7 +547,7 @@ module.exports = ext.register("ext/editors/editors", {
                 tabEditors.set(page);
         });
         
-        apf.document.body.appendChild(new apf.menu({
+        apf.document.documentElement.appendChild(new apf.menu({
             id : "mnuEditors"
         }));
         
@@ -688,7 +688,7 @@ module.exports = ext.register("ext/editors/editors", {
 
                     var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
-                        copy.setAttribute("state", apf.serialize(state));
+                        copy.setAttribute("state", JSON.stringify(state));
 
                     //@todo the second part of this if can be removed as soon
                     //as the collab team implements stored changed settings

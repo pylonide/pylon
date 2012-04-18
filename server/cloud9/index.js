@@ -70,6 +70,7 @@ exports.main = function(options) {
             workspaceId: name,
             name: name,
             version: options.version,
+            real: options.real,
             exec: options.exec
         };
         var ide = new IdeServer(serverOptions, server, exts);
@@ -110,7 +111,8 @@ exports.main = function(options) {
 };
 
 process.on("uncaughtException", function(e) {
-    console.log("uncaught exception:");
+    console.log("uncaught exception: ");
+    console.log(e);
     console.log(e.stack + "");
 });
 

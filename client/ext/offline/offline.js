@@ -54,7 +54,7 @@ module.exports = ext.register("ext/offline/offline", {
 
         // preload the offline image programmatically:
         var img = new Image();
-        img.src = ide.staticPrefix + "/style/images/offline.png";
+        img.src = ide.staticPrefix + "ext/main/style/images/offline.png";
 
         //Replace http checking because we already have a socket
         //offline.isSiteAvailable = function(){};

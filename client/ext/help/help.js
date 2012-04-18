@@ -92,7 +92,7 @@ define(function(require, exports, module) {
                 caption: "Help",
                 skin: "c9-menu-btn",
                 margin: "1 0 0 0"
-            })), mnuWindows);
+            })));
 
             if (window.location.host.indexOf("c9.io") >= 0 || window.location.host.indexOf("stage.io") >= 0) {                
                 var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
@@ -101,7 +101,7 @@ define(function(require, exports, module) {
                     method: "GET",
                     contentType: "application/json",
                     async: true,
-                    data: apf.serialize({
+                    data: JSON.stringify({
                         agent: navigator.userAgent,
                         type: "C9 SERVER EXCEPTION"
                     }),

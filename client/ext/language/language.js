@@ -52,34 +52,37 @@ module.exports = ext.register("ext/language/language", {
             _self.setPath();
         });
 
-        var worker = this.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "worker.js", "ext/language/worker", "LanguageWorker");
-        complete.setWorker(worker);
+        // We have to wait until the paths for ace are set - a nice module system will fix this
+        ide.addEventListener("extload", function(){
+            var worker = _self.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "worker.js", "ext/language/worker", "LanguageWorker");
+            complete.setWorker(worker);
 
-        //ide.addEventListener("init.ext/code/code", function(){
-        ide.addEventListener("afteropenfile", function(event){
-            if (!event.node)
-                return;
-            if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
-                return;
-            ext.initExtension(_self);
-            var path = event.node.getAttribute("path");
-            worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
-            event.doc.addEventListener("close", function() {
-                worker.emit("documentClose", {data: path});
+            //ide.addEventListener("init.ext/code/code", function(){
+            ide.addEventListener("afteropenfile", function(event){
+                if (!event.node)
+                    return;
+                if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
+                    return;
+                ext.initExtension(_self);
+                var path = event.node.getAttribute("path");
+                worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
+                event.doc.addEventListener("close", function() {
+                    worker.emit("documentClose", {data: path});
+                });
+                // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
+                deferred.cancel().schedule(100);
             });
-            // This is necessary to know which file was opened last, for some reason the afteropenfile events happen out of sequence
-            deferred.cancel().schedule(100);
-        });
 
-        // Language features
-        marker.hook(this, worker);
-        complete.hook(this, worker);
-        refactor.hook(this, worker);
+            // Language features
+            marker.hook(_self, worker);
+            complete.hook(_self, worker);
+            refactor.hook(_self, worker);
 
-        ide.dispatchEvent("language.worker", {worker: worker});
-        ide.addEventListener("$event.language.worker", function(callback){
-            callback({worker: worker});
-        });
+            ide.dispatchEvent("language.worker", {worker: worker});
+            ide.addEventListener("$event.language.worker", function(callback){
+                callback({worker: worker});
+            });
+        }, true);
 
         require("ext/settings/settings").addSettings("Language Support", markupSettings );
     },
@@ -192,7 +195,12 @@ module.exports = ext.register("ext/language/language", {
     },
 
     registerLanguageHandler: function(modulePath, className) {
-        this.worker.call("register", [modulePath, className]);
+        var _self = this;
+
+        // We have to wait until the paths for ace are set - a nice module system will fix this
+        ide.addEventListener("extload", function(){
+            _self.worker.call("register", [modulePath, className]);
+        });
     },
 
     onCursorChangeDefer: function() {

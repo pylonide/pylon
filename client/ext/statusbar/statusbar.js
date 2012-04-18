@@ -1,10 +1,10 @@
 /**
  * Editor status bar for Cloud9 IDE
- * 
+ *
  * @TODO
- * 
+ *
  * Error icon from acebugs
- * 
+ *
  * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
@@ -27,8 +27,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     skin     : {
         id   : "statusbar",
         data : skin,
-        "media-path" : ide.staticPrefix + "/style/images/",
-        "icon-path"  : ide.staticPrefix + "/style/icons/"
+        "media-path" : ide.staticPrefix + "ext/main/style/images/",
+        "icon-path"  : ide.staticPrefix + "ext/main/style/icons/"
     },
     expanded: false,
     nodes : [],
@@ -78,6 +78,15 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
 
         ide.addEventListener("minimap.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = e.width;
+            else
+                _self.offsetWidth = 0;
+
+            _self.setPosition();
+        });
+
+        ide.addEventListener("revisions.visibility", function(e) {
             if (e.visibility === "shown")
                 _self.offsetWidth = e.width;
             else
@@ -148,16 +157,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(pItem.item);
         }
 
-        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();	
+        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
         wrapMode.addEventListener("click", function(e) {
-            if (e.currentTarget.checked) {    
-                wrapModeViewport.enable();     
+            if (e.currentTarget.checked) {
+                wrapModeViewport.enable();
              }
             else {
                 wrapModeViewport.disable();
-             }      
+             }
         });
-        
+
         var editor = ceEditor.$editor;
         var theme = editor && editor.getTheme() || "ace/theme/textmate";
         this.checkTheme(theme);
@@ -205,7 +214,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(menuItem);
         }
     },
-    
+
     setSelectionLength : function() {
         if (typeof lblSelectionLength === "undefined")
             return;
@@ -311,3 +320,4 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 });
 
 });
+
