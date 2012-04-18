@@ -51,7 +51,7 @@ module.exports = ext.register("ext/tree/tree", {
 
     deps             : [fs],
 
-    currentSettings  : [],
+    expandedNodes    : [],
     loadedSettings   : 0,
     expandedList     : {},
     treeSelection    : { path : null, type : null },
@@ -99,10 +99,10 @@ module.exports = ext.register("ext/tree/tree", {
             var strSettings = model.queryValue("auto/projecttree");
             if (strSettings) {
                 try {
-                    _self.currentSettings = JSON.parse(strSettings);
+                    _self.expandedNodes = JSON.parse(strSettings);
                 }
                 catch (ex) {
-                    _self.currentSettings = [ide.davPrefix];
+                    _self.expandedNodes = [ide.davPrefix];
                 }
 
                 // Get the last selected tree node
@@ -131,7 +131,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return;
 
             var expandedNodes = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
-            _self.currentSettings = [];
+            _self.expandedNodes = [];
 
             var path, id;
 
@@ -144,11 +144,11 @@ module.exports = ext.register("ext/tree/tree", {
                     delete _self.expandedList[id];
                 }
                 else {
-                    _self.currentSettings.push(path);
+                    _self.expandedNodes.push(path);
                 }
             }
 
-            expandedNodes.nodeValue = JSON.stringify(_self.currentSettings);
+            expandedNodes.nodeValue = JSON.stringify(_self.expandedNodes);
             _self.changed = false;
             return true;
         });
@@ -418,84 +418,128 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     /**
-     * Loads the project tree based on currentSettings, which is an array of
+     * Loads the project tree based on expandedNodes, which is an array of
      * folders that were previously expanded, otherwise it contains only the
      * root identifier (i.e. ide.davPrefix)
      * 
-     * @param callback callback Called fired when the tree is fully loaded
+     * @param callback function Called when the tree is fully loaded
      */
     loadProjectTree : function(callback) {
+        var _self = this;
         this.loading = true;
 
-        var currentSettings = this.currentSettings;
-        var _self = this;
+        var numFoldersLoaded = 0;
 
-        /**
-         * Called recursively. `i` is used as the iterator moving through
-         * the currentSettings array
-         * 
-         * @param number i The iterator for referencing currentSettings' elements
+        // Stores child nodes of parents who do not exist in the tree yet
+        var orphanedChildren = [];
+
+        // Get the parent node of the new items. If the path is the
+        // same as `ide.davPrefix`, then we append to root
+        function getParentNodeFromPath(path) {
+            var parentNode;
+            if (path === ide.davPrefix)
+                parentNode = trFiles.queryNode("folder[@root=1]");
+            else
+                parentNode = trFiles.queryNode('//folder[@path="' + path + '"]');
+
+            return parentNode;
+        }
+
+        function appendXmlToNode(parentNode, dataXml) {
+            for (var x = 0, xmlLen = dataXml.childNodes.length; x < xmlLen; x++) {
+                // Since appendChild removes the node from the array, we
+                // must first clone the node and then append it to the parent
+                var clonedNode = dataXml.childNodes[x].cloneNode(true);
+                apf.xmldb.appendChild(parentNode, clonedNode);
+            }
+
+            // Set the load status to "loaded" so APF doesn't assume the child
+            // nodes still need to be loaded
+            trFiles.$setLoadStatus(parentNode, "loaded");
+
+            // Slide open the folder
+            trFiles.slideToggle(apf.xmldb.getHtmlNode(parentNode, trFiles), 1, true, null, null);
+        }
+
+        /* Go through the orphaned children and attempt to append them to
+         * the tree
+         *
+         * Called after XML has been added
          */
-        function getLoadPath(i) {
-            if (i >= currentSettings.length)
+        function tryAppendingOrphansToTree() {
+            // If all the folder children have been loaded and there are no
+            // more orphans to append, then finish
+            if (numFoldersLoaded === _self.expandedNodes.length && !orphanedChildren.length)
                 return onFinish();
 
-            var path = currentSettings[i];
+            for (var ic = 0; ic < orphanedChildren.length; ic++) {
+                cleanParentPath = orphanedChildren[ic].cleanParentPath;
+                parentNode = getParentNodeFromPath(cleanParentPath);
+                if (parentNode) {
+                    appendXmlToNode(parentNode, orphanedChildren[ic].dataXml);
+                    orphanedChildren.splice(ic, 1);
 
+                    // We just appended new nodes, so run this again. But, wait
+                    // a tick so the new nodes have time to expand
+                    setTimeout(function() {
+                        tryAppendingOrphansToTree();
+                    }, 20);
+                    return;
+                }
+            }
+        }
+
+        function loadFolder(path) {
             // At some point davProject.realWebdav is set but you'll note that
             // tree.xml is able ot use just davProject (which is an intended
             // global). Why we cannot use that here escapes me, so we have to
             // check which one is available for us to use (and yes, realWebdav
             // can sometimes not be set on initial load)
             (davProject.realWebdav || davProject).readdir(path, function(data, state, extra) {
-                // Folder not found
+                numFoldersLoaded++;
+
                 if (extra.status === 404) {
                     _self.changed = true;
-                    currentSettings.splice(i, 1);
-                    return getLoadPath(i);
-                }
-
-                // Strip the extra "/" that webDav adds on
-                var realPath = extra.url.substr(0, extra.url.length-1);
-
-                // Get the parent node of the new items. If the path is the
-                // same as `ide.davPrefix`, then we append to root
-                var parentNode;
-                if (realPath === ide.davPrefix)
-                    parentNode = trFiles.queryNode("folder[@root=1]");
-                else
-                    parentNode = trFiles.queryNode('//folder[@path="' + realPath + '"]');
-
-                // Hmm? Folder deleted?
-                if (!parentNode) {
-                    _self.changed = true;
-                    currentSettings.splice(i, 1);
-                    return getLoadPath(i);
+                    return;
                 }
 
                 var dataXml = apf.getXml(data);
-                for (var x = 0, xmlLen = dataXml.childNodes.length; x < xmlLen; x++) {
-                    // Since appendChild removes the node from the array, we
-                    // must first clone the node and then append it to the parent
-                    var clonedNode = dataXml.childNodes[x].cloneNode(true);
-                    apf.xmldb.appendChild(parentNode, clonedNode);
+
+                // Strip the extra "/" that webDav adds on
+                var cleanParentPath = extra.url.substr(0, extra.url.length-1);
+                var parentNode = getParentNodeFromPath(cleanParentPath);
+
+                // If we can't find the parent node in the tree, then store
+                // the the result to add later
+                if (!parentNode) {
+                    orphanedChildren.push({
+                        cleanParentPath : cleanParentPath,
+                        dataXml : dataXml
+                    });
+                }
+                else {
+                    appendXmlToNode(parentNode, dataXml);
+                    tryAppendingOrphansToTree();
                 }
 
-                // If the load status is not set, then APF assumes the child
-                // nodes still need to be loaded and the folder icon is replaced
-                // with a perennial spinner
-                trFiles.$setLoadStatus(parentNode, "loaded");
-
-                // Slide open the folder and then get the next cached folder's
-                // contents
-                trFiles.slideToggle(apf.xmldb.getHtmlNode(parentNode, trFiles), 1, true, null, function() {
-                    getLoadPath(++i);
-                });
+                // If all the folder children have been loaded and there are no
+                // more orphans to append, then finish
+                if (numFoldersLoaded === _self.expandedNodes.length && !orphanedChildren.length)
+                    return onFinish();
             });
         }
 
+        // Iterate through this.expandedNodes to load up the saved list of
+        // project tree folders
+        for (var i = 0; i < this.expandedNodes.length; i++)
+            loadFolder(this.expandedNodes[i]);
+
         // Called when every cached node has been loaded
         function onFinish() {
+            // There is the possibility that we are calling this twice
+            if (!_self.loading)
+                return;
+
             _self.loading = false;
 
             // Re-select the last selected item
@@ -522,9 +566,6 @@ module.exports = ext.register("ext/tree/tree", {
             if (callback)
                 return callback();
         }
-
-        // Let's kick this sucker off!
-        getLoadPath(0);
     },
 
     /**
