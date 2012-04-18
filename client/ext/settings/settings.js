@@ -30,11 +30,6 @@ module.exports = ext.register("ext/settings/settings", {
     
     defaultWidth : 250,
     
-    commands : {
-        "show": {hint: "show the settings panel"}
-    },
-    hotitems : {},
-
     nodes : [],
 
     //Backwards compatible
@@ -70,10 +65,18 @@ module.exports = ext.register("ext/settings/settings", {
         panels.register(this, {
             position : 100000,
             caption: "Preferences",
-            "class": "preferences"
+            "class": "preferences",
+            command: "opensettingspanel"
         });
         
-        this.hotitems.show = [this.mnuItem];
+        commands.addCommand({
+            name: "opensettingspanel",
+            hint: "show the open settings panel",
+            bindKey: {mac: "Command-,", win: "Ctrl-,"},
+            exec: function () {
+                _self.show();
+            }
+        });
         
         //Backwards compatible
         this.model = settings.model;

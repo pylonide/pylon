@@ -44,16 +44,28 @@ module.exports = ext.register("ext/zen/zen", {
     handleLeftMove : false,
     handleRightMove : false,
 
-    commands : {
-        "zen": {hint: "toggle zen mode"},
-        "zenslow": {hint: "toggle zen mode in slow-motion"}
-    },
-    hotitems : {},
-
     nodes : [],
 
     hook : function(){
         var _self = this;
+        
+        commands.addCommand({
+            name: "zen",
+            hint: "toggle zen mode",
+            bindKey: {mac: "Option-Z", win: "Alt-Z"},
+            exec: function () {
+                _self.zen();
+            }
+        });
+        
+        commands.addCommand({
+            name: "zenslow",
+            hint: "toggle zen mode in slow-motion",
+            bindKey: {mac: "Shift-Option-Z", win: "Shift-Alt-Z"},
+            exec: function () {
+                _self.zenslow();
+            }
+        });
 
         ide.addEventListener("loadsettings", function(e){
             var strSettings = e.model.queryValue("auto/zen");
@@ -104,12 +116,8 @@ module.exports = ext.register("ext/zen/zen", {
         this.mnuItem = menus.addItemByPath("View/Zen Mode", new apf.item({
             caption : "Zen Mode",
             type    : "check",
-            onclick : function(){
-                _self.toggleFullscreenZen();
-            }
+            command : "zen"
         }), 200000);
-        
-        this.hotitems.zen = [this.mnuItem];
     },
 
     init : function(){
@@ -352,7 +360,8 @@ module.exports = ext.register("ext/zen/zen", {
                 }, 0.5);
 
                 setTimeout(function() {
-                    if (activeElement && activeElement.getHeight())
+                    if (activeElement && activeElement.$focus 
+                      && activeElement.getHeight())
                         activeElement.$focus();
                 }, 100);
             });
@@ -405,7 +414,8 @@ module.exports = ext.register("ext/zen/zen", {
             apf.layout.forceResize();
 
             setTimeout(function() {
-                if (activeElement && activeElement.getHeight())
+                if (activeElement && activeElement.$focus
+                  && activeElement.getHeight())
                     activeElement.$focus();
             }, 100);
         }

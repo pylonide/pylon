@@ -16,29 +16,38 @@ module.exports = ext.register("ext/undo/undo", {
     name   : "Undo",
     alone  : true,
     type   : ext.GENERAL,
-    commands: {
-        "undo": {hint: "undo one edit step in the active document"},
-        "redo": {hint: "redo one edit step in the active document"}
-    },
 
     nodes : [],
 
     init : function(amlNode){
-        var mnuItemUndo = menus.addItemByPath("Edit/Undo", new apf.item({
-            onclick : this.undo
+        commands.addCommand({
+            name: "undo",
+            hint: "undo one edit step in the active document",
+            bindKey: {mac: "Command-Z", win: "Ctrl-Z"},
+            exec: function () {
+                _self.undo();
+            }
+        });
+        
+        commands.addCommand({
+            name: "redo",
+            hint: "redo one edit step in the active document",
+            bindKey: {mac: "Command-Z", win: "Ctrl-Z"},
+            exec: function () {
+                _self.undo();
+            }
+        });
+        
+        menus.addItemByPath("Edit/Undo", new apf.item({
+            command : "undo"
         }), 100);
-        var mnuItemRedo = menus.addItemByPath("Edit/Redo", new apf.item({
-            onclick : this.redo
+        menus.addItemByPath("Edit/Redo", new apf.item({
+            command : "redo"
         }), 200);
-
-        this.hotitems = {
-            "undo" : [mnuItemUndo],
-            "redo" : [mnuItemRedo]
-        };
     },
 
     undo: function() {
-        alert(apf.activeElement);
+        console.log(apf.activeElement);
         var _tabPage;
         if(_tabPage = tabEditors.getPage())
             _tabPage.$at.undo();

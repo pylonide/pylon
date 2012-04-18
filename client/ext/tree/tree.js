@@ -48,11 +48,6 @@ module.exports = ext.register("ext/tree/tree", {
     type             : ext.GENERAL,
     markup           : markup,
 
-    commands : {
-        "show": {hint: "show the tree panel"}
-    },
-    hotitems : {},
-
     defaultWidth     : 200,
 
     deps             : [fs],
@@ -75,10 +70,18 @@ module.exports = ext.register("ext/tree/tree", {
         panels.register(this, {
             position : 1000,
             caption: "Project Files",
-            "class": "project_files"
+            "class": "project_files",
+            commands: "opentreepanel"
         });
         
-        this.hotitems.show = [this.mnuItem];
+        commands.addCommand({
+            name: "opentreepanel",
+            hint: "show the open settings panel",
+            bindKey: {mac: "Command-U", win: "Ctrl-U"},
+            exec: function () {
+                _self.show();
+            }
+        });
 
         var _self = this;
 

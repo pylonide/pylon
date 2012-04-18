@@ -27,11 +27,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     alone   : true,
     css     : css,
     markup  : markup,
-    commands : {
-        "search": {hint: "search for a string inside the active document"},
-        "searchreplace": {hint: "search for a string inside the active document and replace it"}
-    },
-    hotitems: {},
 
     currentRange: null,
     
@@ -42,13 +37,30 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
         commands.addCommand({
             name: "replace",
+            hint: "search for a string inside the active document and replace it",
             exec: function(env, args, request) {
                 _self.toggleDialog(true, true);
             }
         });
+        
+        commands.addCommand({
+            name: "replacenext",
+            exec: function(env, args, request) {
+                commands.exec("findnext");
+                commands.exec("replace");
+            }
+        });
+        
+        commands.addCommand({
+            name: "replaceprevious",
+            exec: function(env, args, request) {
+                commands.exec("findprevious");
+                commands.exec("replace");
+            }
+        });
 
         this.nodes.push(
-            mnuFind = menus.addItemByPath("Find/Find...", new apf.item({
+            menus.addItemByPath("Find/Find...", new apf.item({
                 onclick : function() {
                     _self.toggleDialog(false);
                 }
@@ -64,9 +76,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 command : "replace"
             }), 500),
             menus.addItemByPath("Find/Replace Next", new apf.item({
-                onclick : function() {
-                    
-                }
+                command : "replacenext",
+            }), 600),
+            menus.addItemByPath("Find/Replace Previous", new apf.item({
+                command : "replaceprevious",
             }), 600),
             menus.addItemByPath("Find/Replace All", new apf.item({
                 command : "replaceall"

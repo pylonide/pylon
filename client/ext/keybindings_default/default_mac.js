@@ -35,20 +35,11 @@ return keys.onLoad({
             //"search": "Shift-Command-F",
             "searchreplace": "Option-Command-F"
         },
-        "searchinfiles" : {
-            "searchinfiles": "Shift-Command-F"
-        },
         "formatjson" : {
             "format" : "Shift-Command-J"
         },
         "tabsessions" : {
             "savetabsession": "Command-Alt-S"
-        },
-        "tree" : {
-            "show" : "Command-U"
-        },
-        "settings": {
-            "show": "Command-,"
         },
         "splitview" : {
             "mergetableft": "Option-Command-[",

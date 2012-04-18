@@ -347,11 +347,6 @@ module.exports = ext.register("ext/splitview/splitview", {
     alone    : true,
     type     : ext.GENERAL,
     
-    commands : {
-        "mergetableft": {hint: "Add the page on the left of the currently active page to a split view"},
-        "mergetabright": {hint: "Add the page on the right of the currently active page to a split view"}
-    },
-    hotitems : [],
     nodes    : [],
     
     splits   : [],
@@ -360,6 +355,12 @@ module.exports = ext.register("ext/splitview/splitview", {
         apf.importCssString(css || "");
         
         var _self = this;
+        
+        //@todo add commands
+//        "mergetableft": {hint: "Add the page on the left of the currently active page to a split view"},
+//        "mergetabright": {hint: "Add the page on the right of the currently active page to a split view"}
+        
+        //@todo add menus
         
         var parent = Tabbehaviors.nodes[Tabbehaviors.nodes.length - 1];
         this.nodes.push(

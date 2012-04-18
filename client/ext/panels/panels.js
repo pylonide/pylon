@@ -33,6 +33,7 @@ module.exports = ext.register("ext/panels/panels", {
                 type    : "radio",
                 value   : panelExt.path,
                 group   : this.group,
+                hotkey  : "{ide.commandManager." + options.command + "}",
                 onclick : function(){
                     if (panelExt.show)
                         panelExt.show();

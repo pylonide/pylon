@@ -32,29 +32,29 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         data : skin,
         "media-path" : ide.staticPrefix + "/ext/searchinfiles/images/"
     },
-    commands  : {
-        "searchinfiles": {hint: "search for a string through all files in the current workspace"}
-    },
     pageTitle: "Search Results",
     pageID   : "pgSFResults",
-    hotitems : {},
 
     nodes    : [],
 
     hook : function(){
         var _self = this;
 
-        var mnuItem;
+        commands.addCommand({
+            name: "searchinfiles",
+            hint: "search for a string through all files in the current workspace",
+            bindKey: {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
+            exec: function () {
+                _self.toggleDialog(false);
+            }
+        });
+
         this.nodes.push(
             menus.addItemByPath("Find/~", new apf.divider(), 10000),
-            mnuItem = menus.addItemByPath("Find/Find in Files...", new apf.item({
-                onclick : function() {
-                    _self.toggleDialog(false);
-                }
+            menus.addItemByPath("Find/Find in Files...", new apf.item({
+                command : "searchinfiles"
             }), 20000)
         );
-
-        this.hotitems.searchinfiles = [mnuItem];
     },
 
     init : function(amlNode){
@@ -70,16 +70,18 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
         this.txtFind.$ext.cols = this.txtFind.cols;
 
-        winSearchInFiles.onclose = function() {
-            if (typeof ceEditor != "undefined") {
-                ceEditor.focus();
-            }
-            trFiles.removeEventListener("afterselect", _self.setSearchSelection);
-        };
-        winSearchInFiles.onshow = function() {
-            trFiles.addEventListener("afterselect", _self.setSearchSelection);
-            _self.setSearchSelection();
-        };
+        ide.addEventListener("init.ext/tree/tree", function(e){
+            winSearchInFiles.onclose = function() {
+                if (typeof ceEditor != "undefined")
+                    ceEditor.focus();
+                trFiles.removeEventListener("afterselect", _self.setSearchSelection);
+            };
+
+            winSearchInFiles.onshow = function() {
+                trFiles.addEventListener("afterselect", _self.setSearchSelection);
+                _self.setSearchSelection();
+            };
+        });
 
         txtSFFind.addEventListener("keydown", function(e) {
             switch (e.keyCode){
@@ -204,8 +206,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             this.$model.addEventListener("afterload", function() {
                 tabConsole.set(_self.pageID);
                 trSFResult.addEventListener("afterselect", function(e) {
-                    var root = trFiles.xmlRoot.selectSingleNode("folder[1]"),
-                        node = trSFResult.selected,
+                    var node = trSFResult.selected,
                         line = 0,
                         text = "",
                         path;
@@ -220,7 +221,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                         path = node.getAttribute("path");
                     }
 
-                    editors.showFile(root.getAttribute("path") + "/" + path, line, 0, text);
+                    editors.showFile(ide.davPrefix + "/" + path, line, 0, text);
                 });
             });
 

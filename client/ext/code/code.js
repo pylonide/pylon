@@ -396,6 +396,13 @@ module.exports = ext.register("ext/code/code", {
                 ceEditor.afterOpenFile(ceEditor.getSession());
         });
         
+        c = 20000;
+        this.menus.push(
+            menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
+            addEditorMenu("Tools/Record Macro", "togglerecording"), //@todo this needs some more work
+            addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
+        );
+        
         var c = 600;
         this.menus.push(
             menus.addItemByPath("Edit/~", new apf.divider(), c += 100),
@@ -619,6 +626,9 @@ module.exports = ext.register("ext/code/code", {
 
             addEditorMenu("Goto/Line End", "gotolineend"),
             addEditorMenu("Goto/Line Start", "gotolinestart"),
+            menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
+            
+            addEditorMenu("Goto/Jump to Matching Brace", "jumptomatching"),
             menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
             
             addEditorMenu("Goto/Scroll to Selection", "centerselection")

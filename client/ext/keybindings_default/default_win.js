@@ -35,20 +35,11 @@ return keys.onLoad({
             //"search": "Ctrl-Shift-F",
             "searchreplace": "Alt-Shift-F"
         },
-        "searchinfiles" : {
-            "searchinfiles": "Ctrl-Shift-F"
-        },
         "formatjson" : {
             "format" : "Ctrl-Shift-J"
         },
         "tabsessions" : {
             "savetabsession": "Ctrl-Alt-S"
-        },
-        "tree" : {
-            "show" : "Ctrl-U"
-        },
-        "settings": {
-            "show": "Ctrl-,"
         },
         "splitview" : {
             "mergetableft": "Ctrl-Alt-[",

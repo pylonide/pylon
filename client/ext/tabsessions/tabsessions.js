@@ -28,13 +28,21 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
     markup     : markup,
     css         : css,
     nodes      : [],
-    commands   : {
-        "savetabsession": {hint: "save the current tab state as a new session", msg: "Save tab session."},
-    },
-    hotitems   : [],
     
     hook : function(){
         var _self = this;
+        
+        commands.addCommand({
+            name: "savetabsession",
+            hint: "save the current tab state as a new session", 
+            msg: "Save tab session.",
+            bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
+            exec: function () {
+                ext.initExtension(_self);
+                winSaveSessionAs.show();
+            }
+        });
+        
         ide.addEventListener("loadsettings", function(e) {            
             var model = e && e.model || settings.model;
         
@@ -53,12 +61,9 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                 })
             }, 800);
                 
-            var itmSaveSessions = menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
+            menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
                 caption : "Save Tab Session",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    winSaveSessionAs.show();
-                },
+                command : "savetabsession",
                 disabled : "{!!!tabEditors.activepage}"
             }), 900);
                 
@@ -92,8 +97,6 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
                     value   : name
                 }));
             });
-    
-            _self.hotitems["savetabsession"] = [itmSaveSessions];
         });
     },
     

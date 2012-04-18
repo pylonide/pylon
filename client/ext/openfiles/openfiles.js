@@ -29,7 +29,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         panels.register(this, {
             position : 2000,
             caption: "Open Files",
-            "class": "open_files"
+            "class": "open_files",
+            command: "openfilepanel"
         });
         
         commands.addCommand({
