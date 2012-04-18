@@ -399,7 +399,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
             revObj.revisions.push(revision);
 
             self.saveToDisk(path, callback);
-            self.broadcastRevisions.call(self, revObj);
+            self.broadcastRevisions.call(self, revObj, null, { path: path });
         });
     };
 

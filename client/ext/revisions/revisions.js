@@ -433,7 +433,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 revObj.revision = message.body
 
                 if (message.originalContent) {
-                    revObj.originalContent = message.originalContent;
+                    revObj.originalContent = message.originalContent || "";
                 }
 
                 this.generateCache(revObj);
@@ -449,7 +449,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     return;
 
                 var revObj = this.$getRevisionObject(message.path);
-                revObj.originalContent = message.body;
+                revObj.originalContent = message.body || "";
 
                 // If there is no further actions such as "preview" or "apply",
                 // we have nothing else to do here.
