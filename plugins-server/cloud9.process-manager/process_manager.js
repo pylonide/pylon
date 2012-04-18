@@ -70,12 +70,15 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
             return onStart("cannot run script - the process manager has already been disposed");
 
         var self = this;
+        
+        console.log("this.runners", runnerId, this.runners[runnerId]);
 
         var runnerFactory = this.runners[runnerId];
         if (!runnerFactory)
             return onStart("Could not find runner with ID " + runnerId);
 
         var child = runnerFactory(options, this.eventEmitter, "");
+        console.log("child", child);
         child.exec(function(err, pid) {
             if (err)
                 return onStart(err);
