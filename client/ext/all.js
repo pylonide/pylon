@@ -55,8 +55,8 @@ var extAll = define([
     "ext/tabsessions/tabsessions",
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker",
-    "ext/revisions/revisions"
+    "ext/colorpicker/colorpicker"
+    //"ext/revisions/revisions"
     //"ext/minimap/minimap"
     //"ext/acebugs/acebugs"
 ]);
