@@ -36,7 +36,7 @@ module.exports = function setup(options, imports, register) {
                 return;
             }
             ide.addUser(uid, perm);
-            callback(null);
+            callback(null, ide.$users[uid]);
         });
     }
 
@@ -85,6 +85,8 @@ module.exports = function setup(options, imports, register) {
         connect.useAuth(baseUrl, function(req, res, next) {
             if (!req.session.uid)
                 return next(new error.Unauthorized());
+
+            // NOTE: This gets called multiple times!
 
             var pause = utils.pause(req);
 
