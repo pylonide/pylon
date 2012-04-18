@@ -1,0 +1,16 @@
+{
+    "name": "lib.requirejs",
+    "version": "0.0.1",
+    "main": "requirejs-plugin.js",
+    "private": true,
+
+    "dependencies": {
+    },
+
+    "plugin": {
+        "provides": ["lib.requirejs"],
+        "consumes": [
+            "static"
+        ]
+    }
+}
