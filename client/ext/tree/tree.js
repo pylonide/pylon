@@ -470,8 +470,8 @@ module.exports = ext.register("ext/tree/tree", {
                 return onFinish();
 
             for (var ic = 0; ic < orphanedChildren.length; ic++) {
-                cleanParentPath = orphanedChildren[ic].cleanParentPath;
-                parentNode = getParentNodeFromPath(cleanParentPath);
+                var cleanParentPath = orphanedChildren[ic].cleanParentPath;
+                var parentNode = getParentNodeFromPath(cleanParentPath);
                 if (parentNode) {
                     appendXmlToNode(parentNode, orphanedChildren[ic].dataXml);
                     orphanedChildren.splice(ic, 1);
