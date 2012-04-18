@@ -1,4 +1,7 @@
 define(function(require, exports, module) {
+    
+var Range = require("ace/range").Range;
+var Anchor = require('ace/anchor').Anchor;
 
 var TIMELAPSE = 10 * 60 * 1000;
 exports.compactRevisions = function(timestamps) {
@@ -33,6 +36,91 @@ exports.compactRevisions = function(timestamps) {
             }
         }
     });
+};
+
+// Faster implementation of `Array.reduce` than the native ones in webkit,
+// chrome 18 and Firefox 12
+Array.prototype.__reduce = function(func, initial) {
+    var value, idx;
+    if (initial !== null) {
+        value = initial;
+        idx = 0;
+    }
+    else if (this) {
+        value = this[0];
+        idx = 1;
+    }
+    else {
+        return null;
+    }
+
+    var len = this.length;
+    for (; idx < len; idx++) { value = func(value, this[idx]); }
+
+    return value;
+};
+
+/**
+ * addCodeMarker(editor, type, range)
+ * - session(Object): Editor session where we should put the markers
+ * - doc(Object): Document object where to anchor the markers, passed as
+ *   a parameter for convenience in case the function is called in a loop.
+ * - type(String): type of the marker. It can be 'add' or 'remove'
+ * - range(Object): range of text covered by the marker
+ *
+ * Adds a code marker to the given document, and puts it in a particular range
+ * in the source. The type determines its appearance, since different classes
+ * are defined in the CSS.
+ **/
+exports.addCodeMarker = function(session, doc, type, range) {
+    if (!session.revAnchors) {
+        session.revAnchors = [];
+    }
+
+    var markerId;
+    // var markerStrike
+    var anchor = new Anchor(doc, range.fromRow, range.fromCol);
+    session.revAnchors.push(anchor);
+
+    var colDiff = range.toCol - range.fromCol;
+    var rowDiff = range.toRow - range.fromRow;
+    var updateFloat = function() {
+        if (markerId) {
+            session.removeMarker(markerId);
+        }
+
+        var startPoints = anchor.getPosition();
+        var endPoints = {
+            row: anchor.row + rowDiff,
+            column: anchor.column + colDiff
+        };
+
+        var range = Range.fromPoints(startPoints, endPoints);
+        if (range.isEmpty())
+            return;
+
+        markerId = session.addMarker(range, "revision_hl_" + type, "background");
+        /*
+         * Uncomment the following to get strikethrough on deleted text.
+         *
+         * if (markerStrike) {
+         *     session.removeMarker(markerStrike);
+         * }
+         *
+         * if (type === "delete") {
+         *     if (!range.isMultiLine()) {
+         *         endPoints.row += 1;
+         *         endPoints.column = 0;
+         *         range = Range.fromPoints(startPoints, endPoints);
+         *     }
+
+         *     markerStrike = session.addMarker(range, "revision_hl_delete_strike", "text");
+         * }
+        **/
+    };
+
+    updateFloat();
+    anchor.on("change", updateFloat);
 };
 
 exports.localDate = function(ts) {
