@@ -52,6 +52,16 @@ UTIL.inherits(RemoteControlPlugin, PLUGIN);
 
     this.triggerAction = function(name, args) {
         if (name === "openfile" || name === "opendir") {
+            
+// TMP: Needed to troubleshoot why files sometimes load in wrong workspace!            
+console.log("Sending remotecontrol message to '" + this.workspace.workspaceId + " (" + this.workspace.workspaceDir + ")': ", {
+    "type": NAME,
+    "action": name,
+    "args": {
+        "path": this.ide.options.davPrefix + args.path
+    }
+});
+            
             this.send({
                 "type": NAME,
                 "action": name,
