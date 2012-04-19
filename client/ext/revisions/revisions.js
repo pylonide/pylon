@@ -400,6 +400,12 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.previewRevision(content.id, content.value, content.ranges);
                 break;
             case "newRevision":
+                // We don't save revision if it doesn't contain any patches
+                // (i.e. nothing new was saved)
+                if (e.data.revision.patch[0].length === 0) {
+                    return;
+                }
+
                 var data = {
                     command: "revisions",
                     subCommand: "saveRevision",
