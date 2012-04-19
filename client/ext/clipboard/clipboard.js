@@ -59,12 +59,8 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             apf.clipboard.cutSelection(trFiles);
         }
         else {
-            if (this.editor == null) {
-                this.editor = editors.currentEditor.ceEditor.$editor;
-            }
             var ace = this.$getAce();
-            this.text = ace.getCopyText();
-            ace.remove(ace.getSelectionRange());
+            //ace.textInput.emitCut(ace);
         }
     },
 
@@ -74,7 +70,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            this.text = ace.getCopyText();
+            //ace.textInput.emitCopy(ace);
         }
     },
 
@@ -84,7 +80,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            ace.getSession().replace(ace.getSelectionRange(), this.text);
+            //ace.getSession().replace(ace.getSelectionRange(), this.text);
         }
     },
 
