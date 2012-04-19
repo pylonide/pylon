@@ -967,8 +967,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      * save.
      **/
     $pageHasChanged: function(page) {
-         var model = page.getModel();
-         return model && model.queryValue("@changed") == 1;
+        if (!page) {
+            return;
+        }
+        var model = page.getModel();
+        return model && model.queryValue("@changed") == 1;
      },
 
     $getDocPath: function(page) {
@@ -1024,6 +1027,15 @@ module.exports = ext.register("ext/revisions/revisions", {
             visibility: "shown",
             width: BAR_WIDTH
         });
+
+        var model = page.$mdlRevisions;
+        if (lstRevisions && model) {
+            lstRevisions.setModel(model);
+        }
+
+        if (model && (!model.data || this.model.data.length === 0)) {
+            this.populateModel();
+        }
 
         this.$restoreSelection(page);
     },
