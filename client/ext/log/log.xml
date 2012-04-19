@@ -1,0 +1,31 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winLog"
+      title     = "Communications Log"
+      icon      = ""
+      center    = "true"
+      resizable = "true"
+      buttons   = "close"
+      modal     = "false"
+      skin      = "bk-window"
+      width     = "660"
+      height    = "400"
+      kbclose   = "true"
+      draggable = "true">
+        <a:vbox anchors="0 0 0 0" edge="0 0 11 0">
+            <a:datagrid id = "dgLog"
+              flex       = "1"
+              model      = "{require('ext/log/log').model}"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
+              autoselect = "false"
+              each       = "[event]"
+              empty-message = "Empty log">
+                <a:column width="15%" value="[@time]" caption="Time" />
+                <a:column width="15%" value="[@type]" caption="Type" />
+                <a:column width="30%" value="[@url]" caption="Url" />
+                <a:column width="40%" value="[text()]" caption="Message" />
+            </a:datagrid>
+        </a:vbox>
+    </a:window>
+</a:application>
