@@ -250,28 +250,18 @@ module.exports = ext = {
         else
             cmd = "";
 
-        var oCmd = this.commandsLut[cmd];
-        if (!oCmd || !oCmd.ext) {
-            return;
-        }
+        var commands = self["req"+"uire"]("ext/commands/commands");
+        var c9console = self["requ"+"ire"]("ext/console/console");
 
-        var oExt = require(oCmd.ext);
-        if (oExt && typeof oExt[cmd] === "function") {
-            self["requ"+"ire"](["ext/console/console"], function(consoleExt) {
-                if (oExt.commands[cmd].msg)
-                    consoleExt.write(oExt.commands[cmd].msg);
-            });
-            var res = oExt[cmd](data);
+        var command = commands.commands[cmd];
+        if (!command || !command.exec)
+            return;
+
+        if (command.msg)
+            c9console.write([command.msg]);
             
-            // if the command specifies a return value, then pass that back
-            if (typeof res !== "undefined") {
-                return res;
-            }
-            
-            // otherwise respond with 'false'
-            // I would expected true here but soit; console.js checks explicitly for 'false'
-            return false;
-        }
+        var res = commands.exec(cmd, null, data);
+        return res === undefined ? false : res;
     }
 };
 
