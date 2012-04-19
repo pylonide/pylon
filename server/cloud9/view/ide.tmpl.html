@@ -47,9 +47,7 @@
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
                 apf.addEventListener("load", function(){
-                    var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/main/main", "ext/editors/editors"];
-                    
-                    list.push("ace/editor");
+                    var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/main/main", "ext/editors/editors", "ace/editor"];
 
                     apf.IdeSettings = <%settingsXml%>
                     //loader.animateLoader(20);
