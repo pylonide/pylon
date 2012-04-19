@@ -564,10 +564,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     revealfile : function(docNode) {
+        panels.activate(require("ext/tree/tree"));
+        
         var path = docNode.getAttribute('path');
         var node = trFiles.queryNode('//file[@path="' + path + '"]');
-
-        panels.activate(require("ext/tree/tree"));
 
         if (node) {
             trFiles.expandAndSelect(node);
