@@ -60,10 +60,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         commands.addCommand({
             name: "revisionpanel",
-            hint: "Show revisions panel",
-            bindKey: {mac: "Command-B", win: "Ctrl-B"},
-            exec: function () {
-                _self.toggle();
+            hint: "File Revision History...",
+            bindKey: { mac: "Command-B", win: "Ctrl-B" },
+            exec: function () { 
+                _self.toggle(); 
             }
         });
 
@@ -80,21 +80,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
 
         settings.addSettings("General", markupSettings);
-        /*
-        ide.addEventListener("loadsettings", function(e) {
-            var revisionVisible = e.model.queryValue("general/@revisionsvisible");
-            if (apf.isTrue(revisionVisible)) {
-                ide.addEventListener("init.ext/editors/editors", function (e) {
-                    tabEditors.addEventListener("afterswitch", function afterswitch() {
-                        if (self.ceEditor) {
-                            _self.show();
-                        }
-                        tabEditors.removeEventListener("afterswitch", afterswitch);
-                    });
-                });
-            }
-        });
-        */
 
         btnSave.removeAttribute("icon");
         btnSave.setAttribute("caption", "");
@@ -335,20 +320,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onSwitchFile: function(e) {
         this.$switchToPageModel(e.nextPage);
-
-        // var self = this;
-        // This is the wrong way to do it. We should assume than when switching
-        // the revisions are already there.
-        // We should cache the revisions for each file and destroy them when
-        // closing. Otherwise there is a communication overhead.
-//        ide.send({
-//            command: "revisions",
-//            subCommand: "getRevisionHistory",
-//            path: self.$getDocPath(e.nextPage),
-//            // Send over the original revision of the file as well. This is
-//            // only for the first time and won't ever change.
-//            getOriginalContent: false
-//        });
     },
 
     onAfterSwitch: function(e) {
@@ -774,7 +745,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         var path = this.$getDocPath();
 
         var revObj = this.$getRevisionObject(path);
-        // TODO: delete realSession on close. attach to rawRevisions
         if (session.previewRevision !== true && !revObj.realSession) {
             revObj.realSession = session;
         }
@@ -1005,6 +975,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     $setRevisionListClass: function() {
         var revObj = this.rawRevisions[this.$getDocPath()];
+        if (!revObj) {
+            return;
+        }
+
         if (revObj.useCompactList === true) {
             apf.setStyleClass(lstRevisions.$ext, "compactView");
         }
