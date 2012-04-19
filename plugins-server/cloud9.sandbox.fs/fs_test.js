@@ -2,7 +2,6 @@
 
 var assert = require("assert");
 var sinon = require("sinon");
-var Sandbox = require("../cloud9.sandbox/sandbox-plugin");
 var SandboxFs = require("./fs");
 
 var Path = require("path");
@@ -13,20 +12,31 @@ module.exports = {
     timeout: 5000,
 
     setUp: function(next) {
-        var self = this;
+        this.fs = new SandboxFs("/usr/jan/1299", 987);
         
-        new Sandbox({
-            projectDir: "/usr/jan/1299",
-            workspaceId: "/usr/jan/ws/1299",
-            unixId: 987
-        }, {}, function (err, plugin) {
-            assert.equal(err, null);
-            
-            self.sandbox = plugin.sandbox;
-            self.fs = new SandboxFs(self.sandbox);
-            
-            next();
+        var backup = { Path: {}, Fs: {} };
+        Object.keys(Path).forEach(function (k) {
+            backup.Path[k] = Path[k];
         });
+        Object.keys(Fs).forEach(function (k) {
+            backup.Fs[k] = Fs[k];
+        });
+        this.backup = backup;
+        
+        next();
+    },
+    
+    tearDown: function(next) {
+        var backup = this.backup;
+        
+        Object.keys(backup.Path).forEach(function (k) {
+            Path[k] = backup.Path[k];
+        });
+        Object.keys(backup.Fs).forEach(function (k) {
+            Fs[k] = backup.Fs[k];
+        });
+        
+        next();
     },
 
     "test exists true": function (next) {
@@ -111,9 +121,10 @@ module.exports = {
     "test writeFile without unixId shouldnt chown": function (next) {
         var writeF = Fs.writeFile = sinon.stub().callsArgWith(2, null);
         var chown = Fs.chown = sinon.stub().callsArgWith(3, null);
-        var getUnixId = this.sandbox.getUnixId = sinon.stub().callsArgWith(0, null, null);
         
-        this.fs.writeFile("hello.js", "Hi there", function (err) {
+        var fs = new SandboxFs("/usr/jan/1299", null);
+        
+        fs.writeFile("hello.js", "Hi there", function (err) {
             assert.equal(err, null);
             sinon.assert.calledWith(writeF, "/usr/jan/1299/hello.js", "Hi there");
             assert.equal(chown.called, 0, "Chown shouldnt get called");
