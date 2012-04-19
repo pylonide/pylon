@@ -1,9 +1,9 @@
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/apf.js)SIZE(96111)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/apf.js)SIZE(96111)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -171,9 +171,7 @@ VERSION:'3.0beta',
     OFFLINE : 4,
 
     
-    debug         : true,
-    debugType     : "Memory",
-    debugFilter   : "!teleport",
+    debug         : false,
     
 
     includeStack  : [],
@@ -489,15 +487,6 @@ VERSION:'3.0beta',
     },
 
     
-    /**
-     * Restarts the application.
-     */
-    reboot : function(){
-        apf.console.info("Restarting application...");
-
-        location.href = location.href;
-    },
-    
 
     /**
      * Extends an object with one or more other objects by copying all their
@@ -598,9 +587,6 @@ VERSION:'3.0beta',
         this.host     = location.hostname && sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
 
-        
-        apf.console.info("Starting Ajax.org Platform Application...");
-        apf.console.warn("Debug build of Ajax.org Platform " + (apf.VERSION ? "version " + apf.VERSION : ""));
         
 
         //mozilla root detection
@@ -755,23 +741,11 @@ VERSION:'3.0beta',
         // for speed, we check for the most common  case first
         if (arguments.length == 1) {
             
-            if (!classRef) {
-                throw new Error(apf.formatErrorString(0, this,
-                    "Implementing class",
-                    "Could not implement from '" + classRef[i] + "'", this));
-            }
-            
             classRef.call(this);//classRef
         }
         else {
             for (var a, i = 0, l = arguments.length; i < l; i++) {
                 a = arguments[i];
-                
-                if (!a) {
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Implementing class",
-                        "Could not implement from '" + arguments[i] + "'", this));
-                }
                 
                 arguments[i].call(this);//classRef
             }
@@ -846,196 +820,6 @@ VERSION:'3.0beta',
      */
     console : {
         
-        /**
-         * @private
-         */
-        data : {
-            time  : {
-                messages : {}
-            },
-
-            log   : {
-                messages : {}
-            },
-            
-            custom   : {
-                messages : {}
-            },
-
-            warn  : {
-                messages : {}
-            },
-
-            error : {
-                messages : {}
-            },
-            
-            repeat : {
-                messages : {}
-            }
-        },
-
-        /**
-         * @private
-         */
-        toggle : function(node, id){
-            var sPath = apf.$debugwin ? apf.$debugwin.resPath : apf.basePath + "core/debug/resources/";
-            if (node.style.display == "block") {
-                node.style.display = "none";
-                node.parentNode.style.backgroundImage = "url(" + sPath + "splus.gif)";
-                node.innerHTML = "";
-            }
-            else {
-                node.style.display = "block";
-                node.parentNode.style.backgroundImage = "url(" + sPath + "smin.gif)";
-                node.innerHTML = this.cache[id]
-                    .replace(/\&/g, "&amp;")
-                    .replace(/\t/g,"&nbsp;&nbsp;&nbsp;")
-                    .replace(/ /g,"&nbsp;")
-                    .replace(/\</g, "&lt;")
-                    .replace(/\n/g, "<br />");
-
-                var p  = node.parentNode.parentNode.parentNode,
-                    el = node.parentNode.parentNode;
-                if(p.scrollTop + p.offsetHeight < el.offsetTop + el.offsetHeight)
-                    p.scrollTop = el.offsetTop + el.offsetHeight - p.offsetHeight;
-            }
-        },
-
-        cache : [],
-        history : [],
-        typeLut : {time: "log", repeat: "log"},
-        $lastmsg : "",
-        $lastmsgcount : 0,
-
-        $detectSameMessage : function(){
-            apf.console.$lastmsg = "";
-            if (apf.console.$lastmsgcount) {
-                var msg = apf.console.$lastmsgcount + " times the same message";
-                apf.console.$lastmsgcount = 0;
-                apf.console.write(msg, "repeat");
-                clearTimeout(apf.console.$timer);
-            }
-        },
-        
-        teleportList : [],
-        teleport : function(log){
-            if (this.teleportModel)
-                log.setXml(this.teleportModel.data);
-            
-            this.teleportList.push(log);
-        },
-        setTeleportModel : function(mdl){
-            if (this.teleportModel == mdl)
-                return;
-            
-            this.teleportModel = mdl;
-            var xml = apf.getXml("<teleport />");
-            for (var i = 0; i < this.teleportList.length; i++) {
-                this.teleportList[i].setXml(xml);
-            }
-            
-            mdl.load(xml);
-        },
-
-        /**
-         * @private
-         * @event debug Fires when a message is sent to the console.
-         *   object:
-         *      {String} message the content of the message.
-         */
-        write : function(msg, type, subtype, data, forceWin, nodate){
-            clearTimeout(this.$timer);
-            if (msg == this.$lastmsg) {
-                this.$lastmsgcount++;
-                this.$timer = $setTimeout(this.$detectSameMessage, 1000);
-                return;
-            }
-
-            this.$detectSameMessage();
-            this.$lastmsg = msg;
-            this.$timer = $setTimeout(this.$detectSameMessage, 1000);
-            
-            //if (!apf.debug) return;
-            if (!Number.prototype.toPrettyDigit) {
-                Number.prototype.toPrettyDigit = function() {
-                    var n = this.toString();
-                    return (n.length == 1) ? "0" + n : n;
-                }
-            }
-
-            var dt   = new Date(),
-                ms   = String(dt.getMilliseconds());
-            while (ms.length < 3)
-                ms += "0";
-            var date = dt.getHours().toPrettyDigit()   + ":"
-                     + dt.getMinutes().toPrettyDigit() + ":"
-                     + dt.getSeconds().toPrettyDigit() + "." + ms;
-
-            msg = (!nodate ? "<span class='console_date'>[" + date + "]</span> " : "")
-                    + String(msg)
-                        .replace(/(<[^>]+>)| /g, function(m, tag, sp){
-                            if (tag) return tag;
-                            return "&nbsp;";
-                        })
-                        //.replace(/\n/g, "\n<br />")
-                        .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
-            var sPath = apf.$debugwin && apf.$debugwin.resPath
-                ? apf.$debugwin.resPath
-                : apf.basePath + "core/debug/resources/";
-
-            if (data) {
-                msg += "<blockquote style='margin:2px 0 0 0;"
-                    +  "background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>"
-                    +  "<strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' "
-                    +  "onmousedown='(self.apf || window.opener.apf).console.toggle(this.nextSibling, "
-                    +  (this.cache.push(data) - 1) + ")'>More information"
-                    +  "</strong><div style='display:none;background-color:#EEEEEE;"
-                    +  "padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>"
-                    +  "</div></blockquote>";
-            }
-
-            msg = "<div class='console_line console_" 
-                + type + "' >" + msg + "</div>"; //\n<br style='line-height:0'/>
-
-            //deprecated
-            if (!subtype)
-                subtype = "default";
-
-            this.history.push([this.typeLut[type] || type, msg]);
-
-            if (this.win && !this.win.closed)
-                this.showWindow(msg);
-
-            //if (apf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
-            //    return;
-
-            this.debugInfo.push(msg);
-
-            if (self.console && (!document.all || apf.config.debug)) {
-                console[type == "warn" ? "warn" : 
-                    (type == "error" ? "error" : "log")]
-                        (apf.html_entity_decode(msg.replace(/<[^>]*>/g, "")));
-            }
-
-            if (apf.dispatchEvent)
-                apf.dispatchEvent("debug", {message: msg, type: type});
-        },
-        
-        clear : function(){
-            this.history = [];
-        },
-        
-        getAll : function(err, wrn, log) {
-            var hash = {"error": err, "warn": wrn, "log": log, "custom": 1};
-            var out = [];
-            for (var i = 0, l = this.history.length; i < l; i++) {
-                if (hash[this.history[i][0]])
-                    out.push(this.history[i][1]);
-            }
-            return out.join("");
-        },
-        
 
         /**
          * Writes a message to the console.
@@ -1044,8 +828,6 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         debug : function(msg, subtype, data){
-            
-            this.write(msg, "time", subtype, data);
             
         },
 
@@ -1057,8 +839,6 @@ VERSION:'3.0beta',
          */
         time : function(msg, subtype, data){
             
-            this.write(msg, "time", subtype, data);
-            
         },
 
         /**
@@ -1068,8 +848,6 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         log : function(msg, subtype, data){
-            
-            this.write(apf.htmlentities(msg).replace(/\n/g, "<br />"), "log", subtype, data);
             
         },
 
@@ -1082,8 +860,6 @@ VERSION:'3.0beta',
          */
         info : function(msg, subtype, data){
             
-            this.log(apf.htmlentities(msg).replace(/\n/g, "<br />"), subtype, data);
-            
         },
 
         /**
@@ -1095,8 +871,6 @@ VERSION:'3.0beta',
          */
         warn : function(msg, subtype, data){
             
-            this.write(apf.htmlentities(msg).replace(/\n/g, "<br />"), "warn", subtype, data);
-            
         },
 
         /**
@@ -1107,8 +881,6 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         error : function(msg, subtype, data){
-            
-            this.write(msg.replace(/\n/g, "<br />"), "error", subtype, data);
             
         },
 
@@ -1131,35 +903,6 @@ VERSION:'3.0beta',
         }
         
         
-        ,
-        debugInfo : [],
-        debugType : "",
-
-        /**
-         * Shows a browser window with the contents of the console.
-         * @param {String} msg a new message to add to the new window.
-         */
-        showWindow : function(msg){
-            if (!this.win || this.win.closed) {
-                this.win = window.open("", "debug");
-                this.win.document.write(
-                    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
-                  + '<body style="margin:0;font-family:Verdana;font-size:8pt;"></body>');
-            }
-            if (!this.win) {
-                if (!this.haspopupkiller)
-                    alert("Could not open debug window, please check your popupkiller");
-                this.haspopupkiller = true;
-            }
-            else {
-                this.win.document.write((msg || this.debugInfo.join(""))
-                    .replace(/\{imgpath\}/g, apf.debugwin
-                        ? apf.debugwin.resPath
-                        : apf.basePath + "core/debug/resources/"));
-            }
-        }
-
-        
     },
 
     html_entity_decode : function(s){return s},
@@ -1175,68 +918,8 @@ VERSION:'3.0beta',
      */
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         
-        var str = [];
-        if (amlContext && amlContext.ownerDocument) {
-            if (amlContext.nodeType == 9)
-                amlContext = amlContext.documentElement;
-
-            //Determine file context
-            if (amlContext.ownerDocument.documentElement) {
-                var file = amlContext.ownerDocument.documentElement.getAttribute("filename");
-                if (!file && amlContext.ownerDocument.documentElement.tagName == "html")
-                    file = location.href;
-                file = file
-                    ? apf.removePathContext(apf.hostPath, file)
-                    : "Unkown filename";
-            }
-            else file = "Unknown filename";
-
-            //Get serialized version of context
-            if (apf.$debugwin)
-                var amlStr = apf.$debugwin.$serializeObject(amlContext);
-            else
-                var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
-                    .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
-                    .replace(/xmlns:a="[^"]*"\s*/g, "");
-
-            //Determine line number
-            var diff, linenr = 0, w = amlContext.previousSibling
-                || amlContext.parentNode && amlContext.parentNode.previousSibling;
-            while (w && w[apf.TAGNAME] != "body") {
-                diff    = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
-                linenr += diff - 1;
-                w       = w.previousSibling || w.parentNode && w.parentNode.previousSibling;
-            }
-            if (w && w[apf.TAGNAME] != "body")
-                linenr = "unknown";
-            else if(amlContext.ownerDocument 
-              && amlContext.ownerDocument.documentElement.tagName == "html")
-                linenr += apf.lineBodyStart;
-
-            //Grmbl line numbers are wrong when \n's in attribute space
-
-            //Set file and line number
-            str.push("aml file: [line: " + linenr + "] " + file);
-        }
-
-        if (control)
-            str.push("Element: "
-              + (apf.$debugwin && !apf.isDebugWindow
-                ? apf.$debugwin.$serializeObject(control)
-                : "'" + (control.name
-                    || (control.$aml ? control.getAttribute("id") : null)
-                    || "{Anonymous}")
-                    + "' [" + control.tagName + "]"));
-        if (process)
-            str.push("Process: " + process.replace(/ +/g, " "));
-        if (message)
-            str.push("Message: [" + number + "] " + message.replace(/ +/g, " "));
-        if (outputname)
-            str.push(outputname + ": " + output);
-        if (amlContext && amlStr)
-            str.push("Related Markup: " + amlStr);
-
-        return (apf.lastErrorMessage = str.join("\n"));
+        apf.lastErrorMessage = message;
+        return message;
         
     },
 
@@ -1286,9 +969,6 @@ VERSION:'3.0beta',
      * @type  {void}
      */
     include : function(sourceFile, doBase, type, text, callback){
-        
-        if (apf.started)
-            apf.console.info("including js file: " + sourceFile);
         
         
         var sSrc = doBase ? apf.getAbsolutePath(apf.basePath || "", sourceFile) : sourceFile;
@@ -1429,9 +1109,6 @@ VERSION:'3.0beta',
           .split(">", 1)[0]
           .indexOf(apf.ns.aml) == -1) {
             
-            apf.console.warn("The aml namespace declaration wasn't found. "
-                           + "No aml elements were found in the body. Exiting");
-            
             return false;
         }
 
@@ -1440,8 +1117,6 @@ VERSION:'3.0beta',
             return apf.oHttp.get((apf.alternativeAml 
               || document.body && document.body.getAttribute("xmlurl") 
               || location.href).split(/#/)[0], {
-                
-                type : "markup",
                 
                 callback: function(xmlString, state, extra){
                     if (state != apf.SUCCESS) {
@@ -1455,9 +1130,6 @@ VERSION:'3.0beta',
                         throw oError;
                     }
 
-                    
-                    apf.lineBodyStart = (xmlString.replace(/\n/g, "\\n")
-                        .match(/(.*)<body/) || [""])[0].split("\\n").length;
                     
 
                     //@todo apf3.0 rewrite this flow
@@ -1701,8 +1373,6 @@ VERSION:'3.0beta',
      */
     unload : function(exclude){
         
-        apf.console.info("Initiating self destruct...");
-        
 
         this.isDestroying = true;
 
@@ -1792,7 +1462,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/class.js)SIZE(45673)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/class.js)SIZE(45673)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2209,16 +1879,13 @@ apf.Class.prototype = new (function(){
         else if (exclNr === 0) {
             options = {
                 parsecode : true
-                , nothrow : this.target.match(/-debug$/) ? true : false 
+                
             };
         }
         
         if (this.liveedit)
             (options || (options = {})).liveedit = true;
         
-        
-        if (apf.config.debugLm)
-            (options || (options = {})).nothrow = true;
         
 
         //Compile pValue through JSLT parser
@@ -2230,9 +1897,6 @@ apf.Class.prototype = new (function(){
         //Special case for model due to needed extra signalling
         if (prop == MODEL)
             (this.$modelParsed = fParsed).instruction = pValue
-        
-        else if (exclNr === 0)
-            this.$lastFParsed = fParsed;
         
 
         //if it's only text return setProperty()
@@ -2603,9 +2267,6 @@ apf.Class.prototype = new (function(){
         }
         else {*/
             
-            if (options && !options.bubbles && options.currentTarget && options.currentTarget != this)
-                throw new Error("Invalid use of options detected in dispatch Event");
-            
         
             //@todo rewrite this and all dependencies to match w3c
             if ((!e || !e.currentTarget) && (!options || !options.currentTarget)) {
@@ -2664,8 +2325,6 @@ apf.Class.prototype = new (function(){
         if (--apf.$eventDepth == 0 && this.ownerDocument 
           && !this.ownerDocument.$domParser.$parseContext
           && !apf.isDestroying && apf.loaded
-          
-          && eventName != "debug"
           
           && apf.queue
         ) {
@@ -2850,12 +2509,6 @@ apf.Class.prototype = new (function(){
         }
 
         
-        if (deep !== false && this.childNodes && this.childNodes.length) {
-            apf.console.warn("You have destroyed an Aml Node without destroying "
-                           + "it's children. Please be aware that if you don't "
-                           + "maintain a reference, memory might leak");
-        }
-        
         
         //Remove id from global js space
         try {
@@ -2875,7 +2528,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10920)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10920)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3118,7 +2771,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3144,7 +2797,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3288,7 +2941,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3377,7 +3030,7 @@ apf.delcookie = function (name, domain){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25965)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25965)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4159,7 +3812,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4185,7 +3838,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4211,7 +3864,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6514)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6514)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -4308,10 +3961,7 @@ apf.hotkeys = {};
         }
 
         
-        if (!hashId)
-            console.warn("missing modifier keys for hotkey: " + hotkey);
-        if (!key)
-            throw new Error("missing key for hotkey: " + hotkey);
+        if (!key) return;
         
 
         if (!_self.$keys[hashId])
@@ -4425,7 +4075,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4451,7 +4101,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4479,7 +4129,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4515,9 +4165,6 @@ apf.nameserver = {
             this.lookup[type] = [];
         
         
-        if(this.onchange)
-            this.onchange(type, item);
-        
         
         return this.lookup[type].push(item) - 1;
     },
@@ -4526,9 +4173,6 @@ apf.nameserver = {
         if (!this.lookup[type])
             this.lookup[type] = {};
 
-        
-        if (this.onchange)
-            this.onchange(type, item, id);
         
         
         if (this.waiting[id]) {
@@ -4598,7 +4242,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4623,7 +4267,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(8624)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(8624)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4855,7 +4499,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(12703)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(12703)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5217,7 +4861,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5243,7 +4887,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18536)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18536)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5352,13 +4996,6 @@ apf.setStyleClass = function(oHtml, className, exclusion, userAction){
     if (!oHtml || userAction && this.disabled)
         return;
 
-    
-    if (oHtml.nodeFunc) {
-        throw new Error(apf.formatErrorString(0, this,
-            "Setting style class",
-            "Trying to set style class on aml node. Only xml or html nodes can \
-             be passed to this function"));
-    }
     
 
     if (className) {
@@ -5749,7 +5386,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5774,7 +5411,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5800,7 +5437,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(14497)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(14497)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5957,16 +5594,7 @@ apf.parseExpression = function(str){
         return str;
 
     
-    try {
-    
         return eval(RegExp.$1);
-    
-    }
-    catch(e) {
-        throw new Error(apf.formatErrorString(0, null,
-            "Parsing Expression",
-            "Invalid expression given '" + str + "'"));
-    }
     
 };
 apf.parseExpression.regexp = /^\{([\s\S]*)\}$/;
@@ -6253,18 +5881,6 @@ apf.getNode = function(data, tree){
  */
 apf.getFirstElement = function(xmlNode){
     
-    try {
-        xmlNode.firstChild.nodeType == 1
-            ? xmlNode.firstChild
-            : xmlNode.firstChild.nextSibling
-    }
-    catch (e) {
-        throw new Error(apf.formatErrorString(1052, null,
-            "Xml Selection",
-            "Could not find element:\n"
-            + (xmlNode ? xmlNode.xml : "null")));
-    }
-    
 
     return xmlNode.firstChild.nodeType == 1
         ? xmlNode.firstChild
@@ -6278,18 +5894,6 @@ apf.getFirstElement = function(xmlNode){
  * @throw error when no child element is found.
  */
 apf.getLastElement = function(xmlNode){
-    
-    try {
-        xmlNode.lastChild.nodeType == 1
-            ? xmlNode.lastChild
-            : xmlNode.lastChild.nextSibling
-    }
-    catch (e) {
-        throw new Error(apf.formatErrorString(1053, null,
-            "Xml Selection",
-            "Could not find last element:\n"
-            + (xmlNode ? xmlNode.xml : "null")));
-    }
     
 
     return xmlNode.lastChild.nodeType == 1
@@ -6313,7 +5917,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6475,7 +6079,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(49534)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(49534)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7027,17 +6631,6 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
         //Temp hack
         var isAddId = paths[i].match(/(\w+)\[@([\w-]+)=(\w+)\]/);
         
-        if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
-            throw new Error(apf.formatErrorString(1041, this,
-                "Select via xPath",
-                "Could not use xPath to create xmlNode: " + xPath));
-        }
-        if (!isAddId && paths[i].match(/\/\//)) {
-            throw new Error(apf.formatErrorString(1041, this,
-                "Select via xPath",
-                "Could not use xPath to create xmlNode: " + xPath));
-        }
-        
 
         if (isAddId)
             paths[i] = isAddId[1];
@@ -7418,11 +7011,6 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 
     if (xmlNode.nodeType != 2 && !xmlNode.parentNode && !xmlNode.ownerElement) {
         
-        throw new Error(apf.formatErrorString(0, null,
-            "Converting XML to Xpath",
-            "Error xml node without parent and non matching context cannot\
-             be converted to xml.", xmlNode));
-        
 
         return false;
     }
@@ -7453,11 +7041,6 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 //for RDB: Xpath statement --> xmlNode
 apf.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
-        
-        throw new Error(apf.formatErrorString(0, null,
-            "Converting Xpath to XML",
-            "Error context xml node is empty, thus xml node cannot \
-             be found for '" + xpath + "'"));
         
 
         return false;
@@ -7910,7 +7493,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7935,7 +7518,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8015,7 +7598,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8294,7 +7877,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8175)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8175)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8430,14 +8013,6 @@ apf.extend(apf.config, {
         
         "debug" : function(value) {
             
-            if (value) {
-                apf.$debugwin.activate();
-                apf.addEventListener("load", function(){
-                    //$setTimeout("apf.$debugwin.activate();", 200) //@todo has a bug in gecko, chrome
-                    apf.removeEventListener("load", arguments.callee);
-                });
-            }
-            
             apf.debug = value;
         }
     }
@@ -8453,7 +8028,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(19757)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(19757)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8483,7 +8058,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8509,7 +8084,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8535,7 +8110,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8561,7 +8136,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8587,7 +8162,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7009)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7009)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8613,7 +8188,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7979)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7979)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8639,7 +8214,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9781)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9781)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8665,7 +8240,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/data.js)SIZE(16420)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/data.js)SIZE(16420)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8823,14 +8398,7 @@ apf.getData = function(instruction, options){
     var result, chr = instruction.charAt(0), callback = options.callback;
 
     
-    var gCallback  = function(data, state, extra){
-        var _self = this;
-        $setTimeout(function(){
-            s2.call(_self, data, state, extra);
-        });
-    }
-    
-    var s2 = 
+    var gCallback = 
     
 
     function(data, state, extra){
@@ -8898,21 +8466,10 @@ apf.getData = function(instruction, options){
             }
             
             
-            if (!model) {
-                throw new Error("Could not find model '" + model + "' in " + instruction); //@todo apf3.0 make proper error
-            }
-            
         
             return gCallback(model.data.selectSingleNode(xpath), apf.SUCCESS, {});
         }
         else {
-            
-            if (!options.xmlNode) {
-                return apf.console.error(apf.formatErrorString(0, null,
-                    "Loading data",
-                    "Xpath found without model and no xmlNode specified" 
-                    + instruction));
-            }
             
             
             return gCallback(options.xmlNode.data.selectSingleNode(fParsed.xpaths[1]), apf.SUCCESS, {});
@@ -9016,8 +8573,6 @@ apf.setModel = function(instruction, amlNode){
         //@todo apf3.0 check here if string is valid url (relative or absolute)
         if (instruction.indexOf(".") == -1 && instruction.indexOf("/") == -1) {
             
-            apf.console.warn("Could not find model '" + instruction + "'");
-            
             return;
         }
     }
@@ -9029,21 +8584,11 @@ apf.setModel = function(instruction, amlNode){
             if (fParsed.xpaths.length == 2 && fParsed.xpaths[0] != '#' && fParsed.xpaths [1] != '#') {
                 
                 
-                if (!apf.nameserver.get("model", fParsed.xpaths[0])) {
-                    throw new Error("Could not find model '" + fParsed.xpaths[0] + "' in " + instruction); //@todo apf3.0 make proper error
-                }
-                
                 
                 apf.nameserver.get("model", fParsed.xpaths[0]).register(amlNode, fParsed.xpaths[1]);
                 
                 return;
             }
-        }
-        
-        else {
-            //throw new Error(apf.formatErrorString(0, amlNode,
-            apf.console.warn("Xpath found without model. This might fail if no\
-                context is specified using local(): " + instruction);
         }
         
     }
@@ -9098,7 +8643,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/date.js)SIZE(40737)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/date.js)SIZE(40737)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10164,7 +9709,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10188,33 +9733,7 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10240,7 +9759,33 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10266,7 +9811,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15340)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15340)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10292,7 +9837,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10318,7 +9863,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(13658)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(13658)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10744,7 +10289,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10770,7 +10315,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(3138)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(3138)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10879,7 +10424,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11275,7 +10820,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11300,7 +10845,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11325,7 +10870,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12336)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12336)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11547,12 +11092,6 @@ apf.skins = {
         var type = skinName[1];
 
         
-        if (!this.skins[name]) {
-            throw new Error(apf.formatErrorString(1076, null,
-                "Retrieving Skin",
-                "Could not find skin '" + name + "'", amlNode.$aml));
-        }
-        
 
         amlNode.iconPath  = this.skins[name].iconPath;
         amlNode.mediaPath = this.skins[name].mediaPath;
@@ -11568,10 +11107,6 @@ apf.skins = {
                 return false;
             
             
-            throw new Error(apf.formatErrorString(1077, null,
-                "Retrieving Template",
-                "Could not find skin '" + name + "'"));
-            
             
             return false;
         }
@@ -11584,12 +11119,6 @@ apf.skins = {
         if (!originals) {
             originals = this.skins[name].originals[type] = {};
 
-            
-            if (!$xmlns(skin, "presentation", apf.ns.aml)[0]) {
-                throw new Error(apf.formatErrorString(1078, null,
-                    "Retrieving Template",
-                    "Missing presentation tag in '" + name + "'"));
-            }
             
 
             var nodes = $xmlns(skin, "presentation", apf.ns.aml)[0].childNodes;
@@ -11666,8 +11195,6 @@ apf.skins = {
         //Assuming image url
         {
             
-            //@todo check here if it is really a url
-            
 
             oHtml.style.backgroundImage = "url(" + (iconPath || "")
                 + strQuery + ")";
@@ -11677,7 +11204,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11732,13 +11259,6 @@ apf.Sort = function(xmlNode){
         else if (xmlNode["sort-method"]) {
             settings.method = self[xmlNode["sort-method"]];
             
-            
-            if (!settings.method) {
-                throw new Error(apf.formatErrorString(0, null, 
-                    "Sorting nodes",
-                    "Invalid or missing sort function name provided '" 
-                    + xmlNode["sort-method"] + "'", xmlNode));
-            }
             
         }
         else
@@ -11912,7 +11432,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11938,7 +11458,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35621)TIME(Fri, 13 Apr 2012 14:26:30 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35621)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12298,12 +11818,6 @@ var ID        = "id",
                     : modules.htmlcss;
 
         
-        if (!info.method)
-            throw new Error(apf.formatErrorString(0, this,
-                "Single Value Tween",
-                "Could not find method for tweening operation '"
-                + info.type + "'"));
-        
 
         if (useCSSAnim) {
             var type = CSSPROPS[info.type];
@@ -12485,12 +11999,6 @@ var ID        = "id",
                             : modules.htmlcss;
 
 
-            
-            if (!data.method)
-                throw new Error(apf.formatErrorString(0, this,
-                    "Multi Value Tween",
-                    "Could not find method for tweening operation '"
-                    + data.type + "'"));
             
 
             if (animCSS) {
@@ -12929,13 +12437,13 @@ return {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(397)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(397)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12961,7 +12469,7 @@ return {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40794)TIME(Wed, 18 Apr 2012 10:31:42 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40794)TIME(Thu, 19 Apr 2012 19:22:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13235,11 +12743,6 @@ apf.xmldb = new (function(){
     // make sure that "0" is never a listener index
     this.$listeners = [null];
     this.addNodeListener = function(xmlNode, o, uId){
-        
-        if (!o || (!o.$xmlUpdate && !o.setProperty))
-            throw new Error(apf.formatErrorString(1040, null,
-                "Adding Node listener",
-                "Interface not supported."));
         
 
         var id, listen = String(xmlNode.getAttribute(this.xmlListenTag) || "");
@@ -13983,7 +13486,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14007,7 +13510,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14032,7 +13535,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14056,32 +13559,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.js)SIZE(9669)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14106,7 +13584,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.js)SIZE(9669)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14131,7 +13609,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10315)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14156,8 +13634,7 @@ apf.xmldb = new (function(){
 
 
 
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15459)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10315)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14183,7 +13660,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12314)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15459)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14209,7 +13686,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8229)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12314)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14235,7 +13712,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10210)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8229)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14261,7 +13738,33 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(36015)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10210)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(36015)TIME(Mon, 16 Apr 2012 22:10:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14512,24 +14015,9 @@ apf.http = function(){
             httpUrl = autoroute ? this["route-server"] : url;
 
         
-        if (!options.hideLogMessage) {
-            apf.console.teleport(this.queue[id].log = new apf.teleportLog({
-                id      : id,
-                tp      : this,
-                type    : options.type,
-                method  : this.method || options.method || "GET",
-                url     : url,
-                route   : autoroute ? httpUrl : "",
-                data    : new String(data && data.xml ? data.xml : data),
-                start   : new Date()
-            }));
-        }
-        
         var headers = [];
         
         function setRequestHeader(name, value){
-            
-            headers.push(name + ": " + value);
             
             http.setRequestHeader(name, value);
         }
@@ -14620,25 +14108,12 @@ apf.http = function(){
         }
         
         
-        if (!options.hideLogMessage)
-            this.queue[id].log.request(headers);
-        
 
         function handleError(){
             var msg = self.navigator && self.navigator.onLine
                 ? "File or Resource not available " + url
                 : "Browser is currently working offline";
 
-            
-            apf.console.warn(msg, "teleport");
-            if (!options.hideLogMessage)
-                _self.queue[id].log.response({
-                    
-                    end     : new Date(),
-                    
-                    message : msg,
-                    http    : http
-                });
             
 
             var state = self.navigator && navigator.onLine
@@ -14819,22 +14294,10 @@ apf.http = function(){
         }
         
         
-        if (!qItem.options.hideLogMessage) {
-            apf.console.info("[HTTP] Receiving [" + id + "]"
-                + (http.isCaching
-                    ? "[<span style='color:orange'>cached</span>]"
-                    : "")
-                + " from " + qItem.url,
-                "teleport",
-                http.responseText);
-        }
-        
 
         //Gonna check for validity of the http response
         var errorMessage = [],
             extra = {
-                
-                end      : new Date(),
                 
                 tpModule : this,
                 http     : http,
@@ -14906,9 +14369,6 @@ apf.http = function(){
             extra.message = errorMessage.join("\n");
 
             
-            if (qItem.log)
-                qItem.log.response(extra);
-            
 
             // Send callback error state
             if (!callback || !callback(extra.data, apf.ERROR, extra))
@@ -14919,9 +14379,6 @@ apf.http = function(){
 
         
 
-        
-        if (qItem.log)
-            qItem.log.response(extra);
         
 
         //Http call was successfull Success
@@ -14956,13 +14413,9 @@ apf.http = function(){
         http.abort();
 
         
-        apf.console.info("HTTP Timeout [" + id + "]", "teleport");
-        
 
         var extra;
         var noClear = callback ? callback(null, apf.TIMEOUT, extra = {
-            
-            end     : new Date(),
             
             userdata: qItem.options.userdata,
             http    : http,
@@ -14973,9 +14426,6 @@ apf.http = function(){
             retries : qItem.retries || 0
         }) : false;
         
-        
-        if (qItem.log)
-            qItem.log.response(extra);
         
         
         if (!noClear)
@@ -15069,8 +14519,6 @@ apf.http = function(){
         
 
         
-        apf.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
-        
 
         qItem.retries++;
         qItem.options.id = id;
@@ -15158,7 +14606,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15183,7 +14631,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15209,24 +14657,24 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(21922)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(21922)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder/playback.js)SIZE(28844)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/playback.js)SIZE(28844)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(18237)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(18237)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15333,12 +14781,6 @@ apf.DOMParser.prototype = new (function(){
             if (options.host)
                 doc.$parentNode = options.host; //This is for sub docs that need to access the outside tree
             
-            
-            //Check for children in Aml node
-            /*if (!xmlNode.childNodes.length) {
-                apf.console.warn("DOMParser got markup without any children");
-                return (docFrag || doc);
-            }*/
             
             
             //Let's start building our tree
@@ -15571,23 +15013,9 @@ apf.DOMParser.prototype = new (function(){
                 }
 
                 
-                if (!namespaceURI) {
-                    throw new Error("Missing namespace definition."); //@todo apf3.0 make proper error
-                }
-                if (!apf.namespaces[namespaceURI]) {
-                    if (this.allowAnyElement)
-                        namespaceURI = apf.ns.xhtml;
-                    else 
-                        throw new Error("Missing namespace handler for '" + namespaceURI + "'"); //@todo apf3.0 make proper error
-                }
-                
                 
                 var els = apf.namespaces[namespaceURI].elements;
 
-                
-                if (!(els[nodeName] || els["@default"])) {
-                    throw new Error("Missing element constructor: " + nodeName); //@todo apf3.0 make proper error
-                }
                 
                 
                 o = new (els[nodeName] || els["@default"])(null, nodeName);
@@ -15639,10 +15067,6 @@ apf.DOMParser.prototype = new (function(){
                 break;
             case 7:
                 var target = nodeName || xmlNode && xmlNode.nodeName;
-                
-                if(!apf.aml.processingInstructions[target])
-                    throw new Error(apf.formatErrorString(0, null,
-                        "The processing instruction does not exist", "Could not find the processing instruction with target: " + target));
                 
                 o = new apf.aml.processingInstructions[target]();
 
@@ -15709,7 +15133,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15752,7 +15176,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22559)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22559)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15986,12 +15410,6 @@ apf.AmlNode = function(){
      */
     this.insertBefore = function(amlNode, beforeNode, noHtmlDomEdit){
         
-        if (!amlNode || !amlNode.hasFeature || !amlNode.hasFeature(apf.__AMLNODE__)){
-            throw new Error(apf.formatErrorString(1072, this,
-                "Insertbefore DOM operation",
-                "Invalid argument passed. Expecting an AmlElement."));
-        }
-        
 
         if (this.nodeType == this.NODE_DOCUMENT) {
             if (this.childNodes.length) {
@@ -16028,15 +15446,6 @@ apf.AmlNode = function(){
         if (beforeNode) {
             index = this.childNodes.indexOf(beforeNode);
             if (index < 0) {
-                
-                if (beforeNode == this)
-                    throw new Error(apf.formatErrorString(1072, this,
-                        "Insertbefore DOM operation",
-                        "Before node is the same node as inserted node"));
-                else 
-                    throw new Error(apf.formatErrorString(1072, this,
-                        "Insertbefore DOM operation",
-                        "Before node is not a child of the parent node specified"));
                 
 
                 return false;
@@ -16171,23 +15580,10 @@ apf.AmlNode = function(){
      */
     this.removeNode = function(doOnlyAdmin, noHtmlDomEdit){
         
-        if (doOnlyAdmin && typeof doOnlyAdmin != "boolean") {
-            throw new Error(apf.formatErrorString(0, this,
-                "Removing node from parent",
-                "Invalid DOM Call. removeNode() does not take any arguments."));
-        }
-        
 
         if (!this.parentNode || !this.parentNode.childNodes)
             return this;
 
-        
-        if (!this.parentNode.childNodes.contains(this)) {
-            /*throw new Error(apf.formatErrorString(0, this,
-                "Removing node from parent",
-                "Passed node is not a child of this node.", this.$aml));*/
-            return false;
-        }
         
 
         this.parentNode.childNodes.remove(this);
@@ -16231,12 +15627,6 @@ apf.AmlNode = function(){
      * supported.
      */
     this.removeChild = function(childNode) {
-        
-        if (!childNode || !childNode.hasFeature || !childNode.hasFeature(apf.__AMLNODE__)) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Removing a child node",
-                "Invalid Argument. removeChild() requires one argument of type AMLElement."));
-        }
         
 
         childNode.removeNode();
@@ -16368,7 +15758,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21964)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21964)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16508,12 +15898,6 @@ apf.AmlElement = function(struct, tagName){
          */
         "id": function(value){
             
-            if (value == "apf") {
-                throw new Error(apf.formatErrorString(0, this, 
-                    "Setting Name of Element",
-                    "Cannot set name of element to 'apf'"));
-            }
-            
             
             if (this.name == value)
                 return;
@@ -16527,16 +15911,7 @@ apf.AmlElement = function(struct, tagName){
                 }
                 catch(ex) {
                     
-                    var error = true;
-                    
                 }
-            }
-            
-            if (error && value in self) {
-                apf.console.warn("trying to set a value in the global scope with "
-                                + "a reserved name '" + value + "'.\nNothing wrong "
-                                + "with that, except that you will not be able to "
-                                + "reference\nthe object from the global scope in JS.")
             }
             
             
@@ -16732,8 +16107,6 @@ apf.AmlElement = function(struct, tagName){
      */
     this.replaceMarkup = function(amlDefNode, options) {
         
-        apf.console.info("Remove all children from element");
-        
 
         if (!options)
             options = {};
@@ -16780,8 +16153,6 @@ apf.AmlElement = function(struct, tagName){
      *    clear
      */
     this.insertMarkup = function(amlDefNode, options){
-        
-        apf.console.info("Loading sub markup from external source");
         
 
         
@@ -16926,12 +16297,6 @@ apf.AmlElement = function(struct, tagName){
             value = apf.isTrue(value);
 
         
-        if (typeof this[prop] == "function") {
-            throw new Error("Could not set property/attribute '" + prop
-                + "' which has the same name as a method on this object: '"
-                + this.toString() + "'");
-        }
-        
 
         this[prop] = value;
 
@@ -16964,7 +16329,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17028,7 +16393,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(3974)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(3974)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17128,7 +16493,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4514)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4514)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17252,7 +16617,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17289,7 +16654,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/comment.js)SIZE(1509)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/comment.js)SIZE(1509)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17335,7 +16700,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17376,7 +16741,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9508)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9508)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17562,7 +16927,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17596,7 +16961,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/event.js)SIZE(2086)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/event.js)SIZE(2086)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17667,7 +17032,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17778,7 +17143,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17874,10 +17239,6 @@ apf.AmlProcessingInstruction = function(isPrototype){
         this.$setDynamicProperty("calcdata", this.data);
         
         
-        if (this.target.match(/\-debug$/)) {
-            apf.console.info(this.$lastFParsed.toString());
-        }
-        
     }, true);
     
     /*this.addEventListener("DOMNodeRemovedFromDocument", function(e){
@@ -17891,7 +17252,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/range.js)SIZE(15809)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/range.js)SIZE(15809)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17916,7 +17277,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/selection.js)SIZE(8861)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/selection.js)SIZE(8861)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17941,7 +17302,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17985,7 +17346,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18036,7 +17397,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18193,7 +17554,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18244,7 +17605,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18325,7 +17686,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18361,7 +17722,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18422,7 +17783,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18465,7 +17826,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18527,7 +17888,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd.js)SIZE(12998)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd.js)SIZE(12998)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18553,7 +17914,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18578,7 +17939,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18603,7 +17964,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18628,7 +17989,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/length.js)SIZE(1527)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/length.js)SIZE(1527)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18653,7 +18014,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/list.js)SIZE(1215)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/list.js)SIZE(1215)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18678,7 +18039,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18703,7 +18064,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18728,7 +18089,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18753,7 +18114,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18778,7 +18139,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18803,7 +18164,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18828,7 +18189,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18853,7 +18214,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18878,7 +18239,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18903,7 +18264,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18928,7 +18289,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18953,7 +18314,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18978,7 +18339,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19003,7 +18364,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xsd/union.js)SIZE(2331)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/union.js)SIZE(2331)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19028,7 +18389,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/html5.js)SIZE(3232)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/html5.js)SIZE(3232)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19063,7 +18424,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xforms.js)SIZE(4191)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xforms.js)SIZE(4191)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19096,7 +18457,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude.js)SIZE(1325)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xinclude.js)SIZE(1325)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19138,7 +18499,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19163,7 +18524,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(6818)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(6818)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19294,13 +18655,9 @@ apf.aml.setElement("include", apf.XiInclude);
     
     function loadIncludeFile(path){
         
-        apf.console.info("Loading include file: " + path);
-        
 
         var _self = this;
         apf.getData(path, apf.extend(this.options || {}, {
-            
-            type : "markup",
             
             callback : function(xmlString, state, extra){
                 if (state != apf.SUCCESS) {
@@ -19340,8 +18697,6 @@ apf.aml.setElement("include", apf.XiInclude);
                 xmlNode.setAttribute("filename", extra.url);
 
                 
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
-                
 
                 finish.call(_self, xmlNode); //@todo add recursive includes support here
             },
@@ -19352,7 +18707,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19378,7 +18733,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34638)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34638)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19405,7 +18760,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19431,7 +18786,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19457,7 +18812,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19483,7 +18838,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19509,7 +18864,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19535,7 +18890,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19561,7 +18916,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19587,7 +18942,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19613,7 +18968,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19639,7 +18994,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19665,7 +19020,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19691,7 +19046,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19718,7 +19073,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19744,7 +19099,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19770,7 +19125,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19796,7 +19151,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19822,7 +19177,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19848,7 +19203,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19874,7 +19229,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19900,7 +19255,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19926,7 +19281,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19952,7 +19307,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19978,7 +19333,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20004,7 +19359,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20030,7 +19385,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(18882)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(18882)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20528,7 +19883,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20554,7 +19909,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33152)TIME(Fri, 13 Apr 2012 16:12:00 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33152)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20936,9 +20291,6 @@ apf.GuiElement = function(){
             this.visible = true;
 
         
-        if (apf.debug && this.$ext && this.$ext.nodeType)
-            this.$ext.setAttribute("uniqueId", this.$uniqueId);
-        
 
         
         if (this.$focussable && typeof this.focussable == "undefined")
@@ -21033,11 +20385,6 @@ apf.GuiElement = function(){
 
                     if (!self[menuId]) {
                         
-                        throw new Error(apf.formatErrorString(0, this,
-                            "Showing contextmenu",
-                            "Could not find contextmenu by name: '" + menuId + "'"),
-                            this.$aml);
-                        
                         
                         return;
                     }
@@ -21067,11 +20414,6 @@ apf.GuiElement = function(){
                 : this.contextmenus[0].getAttribute("menu")
 
             if (!self[menuId]) {
-                
-                throw new Error(apf.formatErrorString(0, this,
-                    "Showing contextmenu",
-                    "Could not find contextmenu by name: '" + menuId + "'",
-                    this.$aml));
                 
                 
                 return;
@@ -21358,7 +20700,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20758)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20758)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21835,25 +21177,11 @@ apf.Presentation = function(){
 
     this.$getNewContext = function(type, amlNode){
         
-        if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
-        }
-
-        if (!this.$originalNodes[type]) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Getting new skin item",
-                "Missing node in skin description '" + type + "'"));
-        }
-        
 
         this.$pNodes[type] = this.$originalNodes[type].cloneNode(true);
     };
 
     this.$hasLayoutNode = function(type){
-        
-        if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
-        }
         
 
         return this.$originalNodes[type] ? true : false;
@@ -21861,25 +21189,9 @@ apf.Presentation = function(){
 
     this.$getLayoutNode = function(type, section, htmlNode){
         
-        if (type != type.toLowerCase()) {
-            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
-        }
-        if (!this.$pNodes) {
-            throw new Error("Skin not loaded for :" + this.serialize(true));
-        }
-        
 
         var node = this.$pNodes[type] || this.$originalNodes[type];
         if (!node) {
-            
-            if (!this.$dcache)
-                this.$dcache = {}
-
-            if (!this.$dcache[type + "." + this.skinName]) {
-                this.$dcache[type + "." + this.skinName] = true;
-                apf.console.info("Could not find node '" + type
-                                 + "' in '" + this.skinName + "'", "skin");
-            }
             
             return false;
         }
@@ -21988,7 +21300,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/validation.js)SIZE(27683)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/validation.js)SIZE(27683)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22693,20 +22005,10 @@ apf.ValidationGroup = function(name){
 
         if (page) {
             
-            try {
-            
                 if (page.validation && !eval(page.validation)) {
                     alert(page.invalidmsg);
                     found = true;
                 }
-            
-            }
-            catch(e) {
-                throw new Error(apf.formatErrorString(0, this,
-                    "Validating Page",
-                    "Error in javascript validation string of page: '"
-                    + page.validation + "'", page.$aml));
-            }
             
         }
 
@@ -22724,7 +22026,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58946)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58946)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22936,15 +22238,11 @@ apf.DataBinding = function(){
         }
         
         
-        if (!attr) {
-            apf.console.error("Could not find attribute handler for property '" 
-                + prop + "' on " + this.localName + ":" + (this.id || ""));
-            return;
-        }
-        
         
         
 
+        
+        try {
         
             if (attr.cvalue.asyncs) { //if async
                 var _self = this;
@@ -22958,6 +22256,13 @@ apf.DataBinding = function(){
             else {
                 var value = attr.cvalue.call(this, xmlNode);
             }
+        
+        }
+        catch(e){
+            apf.console.warn("[400] Could not execute binding for property "
+                + prop + "\n\n" + e.message);
+            return;
+        }
         
         
         this.setProperty(prop, undoObj && undoObj.extra.range || value, true); //@todo apf3.0 range
@@ -23150,13 +22455,6 @@ apf.DataBinding = function(){
             }
             
             
-            if (this.$amlLoaded && !this.$attrBindings) {
-                apf.console.warn("Could not load data yet in " + (this.localName
-                  ? this.localName + "[" + (this.name || "") + "]"
-                  : this.nodeName) + ". The loaded data is queued "
-                      + "until smartbinding rules are loaded or set manually.");
-            }
-            
             
             return this.$loadqueue = [xmlNode, cacheId];
         }
@@ -23167,10 +22465,6 @@ apf.DataBinding = function(){
             this.dataParent.parent.signalXmlUpdate[this.$uniqueId] = !xmlNode;
 
         if (!xmlNode && (!cacheId || !this.$isCached || !this.$isCached(cacheId))) {
-            
-            apf.console.warn("No xml root node was given to load in "
-                + this.localName + "[" + (this.name || '') + "]. Clearing any "
-                + "loaded xml in this component");
             
 
             this.clear(noClearMsg);
@@ -23197,11 +22491,6 @@ apf.DataBinding = function(){
         if (this.dispatchEvent("beforeload", {xmlNode : xmlNode}) === false)
             return false;
 
-        
-        apf.console.info("Loading XML data in "
-          + (this.localName 
-            ? this.localName + "[" + (this.name || '') + "]"
-            : this.nodeName));
         
 
         this.clear(true, true);
@@ -23293,9 +22582,6 @@ apf.DataBinding = function(){
 
             //||apf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
-            
-            if (!mdl)
-                throw new Error("Could not find model");
             
 
             var amlNode = this;
@@ -23751,11 +23037,6 @@ apf.DataBinding = function(){
             return;
         
         
-        if (!apf.nameserver.get(prop, value))
-            throw new Error(apf.formatErrorString(1064, this,
-                "Setting " + prop,
-                "Could not find " + prop + " by name '" + value + "'"));
-        
 
         apf.nameserver.get(prop, value).register(this);
         
@@ -23775,10 +23056,6 @@ apf.DataBinding = function(){
         if (fParsed.models) {
             
             if (this.hasFeature(apf.__MULTISELECT__)) {
-                
-                if (eachBinds[prop]) {
-                    //throw new Error("Cannot use external model inside " + prop + " rule"); //@todo apf3.0 convert to apf error
-                }
                 
             }
             
@@ -24113,11 +23390,6 @@ apf.DataBinding = function(){
                 var xpath = apf.xmlToXpath(value, null, true) || ".";
                 
                 
-                if (model.queryNode(xpath) != value) {
-                    throw new Error("xml data node is not attached to model (" 
-                        + xpath + ") : " + value + ":" + (value && value.xml));
-                }
-                
                 
                 model.register(this, xpath);
                 return;
@@ -24192,7 +23464,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24326,13 +23598,6 @@ apf.MultiselectBinding = function(){
                     var htmlNode = apf.xmldb.findHtmlNode(sNodes[i], _self);
 
                     
-                    if (!_self.$findContainer){
-                        throw new Error(apf.formatErrorString(_self,
-                            "Sorting Nodes",
-                            "This component does not \
-                             implement _self.$findContainer"));
-                    }
-                    
 
                     var container = _self.$findContainer(htmlNode);
 
@@ -24425,11 +23690,6 @@ apf.MultiselectBinding = function(){
      * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
      */
     this.getTraverseNodes = function(xmlNode){
-        
-        if (!this.each) {
-            throw new Error("Could not render bound data. Missing 'each' rule for " 
-                + this.localName + (this.id && "[" + this.id + "]" || "")); //@todo apf3.0 make into proper apf error
-        }
         
         
         
@@ -24941,11 +24201,6 @@ apf.MultiselectBinding = function(){
             this.$fill(result);
 
             
-            if (this.selectable && !this.xmlRoot.selectSingleNode(this.each))
-                apf.console.warn("No traversable nodes were found for "
-                                 + this.name + " [" + this.localName + "]\n\
-                                  Traverse Rule : " + this.$getBindRule("each")[4].getAttribute("match"));
-            
 
             if (this.selectable && (length === 0 || !this.xmlRoot.selectSingleNode(this.each)))
                 return;
@@ -25028,12 +24283,6 @@ apf.MultiselectBinding = function(){
                 //Set Component in listening state until data becomes available again.
                 var model = this.getModel(true);
 
-                
-                if (!model)
-                    throw new Error(apf.formatErrorString(0, this,
-                        "Setting change notifier on component",
-                        "Component without a model is listening for changes",
-                        this.$aml));
                 
 
                 return model.$waitForXml(this);
@@ -25121,13 +24370,6 @@ apf.MultiselectBinding = function(){
      * representation is created via $add().
      */
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth, action){
-        
-        if (!this.each) {
-            throw new Error(apf.formatErrorString(1060, this,
-                "adding Nodes for load",
-                "No each SmartBinding rule was specified. This rule is \
-                 required for a " + this.localName + " component.", this.$aml));
-        }
         
 
         var htmlNode, lastNode;
@@ -25261,10 +24503,6 @@ apf.MultiselectBinding = function(){
         if (this.xmlRoot && !this.$bindRuleTimer && this.$amlLoaded) {
             var _self = this;
             apf.queue.add("reload" + this.$uniqueId, function(){
-                
-                apf.console.log("Reloading multiselect based on attribute '" 
-                                 + prop + "' bind change to value '" 
-                                 + value + "'\n\n" + _self.serialize(true));
                 
                 _self.reload();
             });
@@ -25425,7 +24663,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25529,15 +24767,6 @@ apf.StandardBinding = function(){
             
             if (retreatToListenMode || this.xmlRoot == xmlNode) {
                 
-                //RLD: Disabled because sometimes indeed components do not 
-                //have a model when their xmlRoot is removed.
-                if (!model) {
-                    throw new Error(apf.formatErrorString(0, this, 
-                        "Setting change notifier on component", 
-                        "Component without a model is listening for changes", 
-                        this.$aml));
-                }
-                
 
                 //Set Component in listening state untill data becomes available again.
                 return model.$waitForXml(this);
@@ -25604,7 +24833,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25873,14 +25102,6 @@ apf.MultiSelect = function(){
             return;
 
         
-        //We're not removing the XMLRoot, that would be suicide ;)
-        if (nodeList.contains(this.xmlRoot)) {
-            throw new Error(apf.formatErrorString(0,
-                "Removing nodes",
-                "You are trying to delete the xml root of this \
-                 element. This is not allowed."));
-        }
-        
 
         var changes = [];
         for (var i = 0; i < nodeList.length; i++) {
@@ -26092,13 +25313,6 @@ apf.MultiSelect = function(){
                 addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); 
 
             
-            if (!pNode) {
-                throw new Error(apf.formatErrorString(0, amlNode,
-                    "Executing add action",
-                    "Missing parent node. You can only add nodes to a list if it\
-                     has data loaded. Unable to perform action."));
-            }
-            
 
             if (amlNode.$executeAction("appendChild",
               [pNode, addXmlNode, beforeNode], "add", addXmlNode) !== false
@@ -26117,11 +25331,6 @@ apf.MultiSelect = function(){
             if (rule.get)
                 return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
             else {
-                
-                throw new Error(apf.formatErrorString(0, this,
-                    "Executing add action",
-                    "Missing add action defined in action rules. Unable to \
-                     perform action."));
                 
             }
         }
@@ -26181,16 +25390,6 @@ apf.MultiSelect = function(){
             if (!this.bindingRules && !this.caption) 
                 return false;
 
-            
-            if (!this.caption && !this.bindingRules[this.$mainBind] && !this.bindingRules["caption"]) {
-                if (noError)
-                    return false;
-                
-                throw new Error(apf.formatErrorString(1074, this,
-                    "Retrieving the value of this component.",
-                    "No value rule has been defined. There is no way \
-                     to determine the value of the selected item."));
-            }
             
 
             return this.$applyBindRule(this.$mainBind, xmlNode || this.selected, null, true)
@@ -26282,10 +25481,6 @@ apf.MultiSelect = function(){
 
         /**** Type Detection ****/
         if (!xmlNode) {
-            
-            throw new Error(apf.formatErrorString(1075, this,
-                "Making a selection",
-                "No selection was specified"))
             
 
             return false;
@@ -26558,10 +25753,6 @@ apf.MultiSelect = function(){
             }
 
             if (!xmlNode) {
-                
-                apf.console.warn("Component : " + this.name + " ["
-                    + this.localName + "]\nMessage : xmlNode whilst selecting a "
-                    + "list of xmlNodes could not be found. Ignoring.")
                 
                 continue;
             }
@@ -26945,25 +26136,6 @@ apf.MultiSelect = function(){
         }
         
         
-        var rule = this.$getBindRule("value", this.xmlRoot);
-        if (rule) {
-            /*var compiled = rule.cvalue || rule.cmatch;
-            if (compiled.type != 3) {
-                throw new Error(apf.formatErrorString(0,
-                    "Setting value attribute",
-                    "Value attribute does not have legal value."));
-            }*/
-
-            if (rule.models[0] == this.$model && rule.cvalue.xpaths[0] != "#") {
-                throw new Error(apf.formatErrorString(0, this,
-                    "Setting value attribute",
-                    "Value should not point to the same model where the items\
-                     are loaded from. Please use value=\"[mdlName::xpath]\" to\
-                     specify the value. Use selected=\"[xpath]\" to just select\
-                     a node without making a databinding to it."));
-            }
-        }
-        
 
         if (value || value === 0 || this["default"])
             this.select(String(value) || this["default"]);
@@ -27024,11 +26196,6 @@ apf.MultiSelect = function(){
                 return;
         }
         
-        
-        if (prop == "selection" && (this.getAttribute("selection") || "*").substr(0, 1) != "*"){
-            apf.console.warn("Selection attribute (" + this.getAttributeNode("selection") 
-                + ") should select multiple nodes. Please prefix xpath query with a * (ex.: *[item]).");
-        }
         
 
         if (this.$isSelecting) {
@@ -27478,7 +26645,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27584,7 +26751,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(26805)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(26805)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27744,15 +26911,6 @@ apf.DataAction = function(){
         var actionRule = this.$actions && this.$actions.getRule(name, xmlContext);
         if (!actionRule && apf.config.autoDisableActions && this.$actions) {
             
-            if (!xmlContext) {
-                apf.console.warn("Tried starting new action but no xml \
-                    context was specified.");
-            }
-            else {
-                apf.console.warn("Tried starting new action but no '" + name
-                    + "' action rule was found.");
-            }
-            
 
             return false;
         }
@@ -27815,9 +26973,6 @@ apf.DataAction = function(){
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         
 
-        
-        apf.console.info("Executing action '" + action + "' for " + (this.name || "")
-                         + " [" + (this.localName || "") + "]");
         
 
         //Get Rules from Array
@@ -27899,13 +27054,6 @@ apf.DataAction = function(){
         //recompile bindrule to create nodes
         if (!rule) {
             
-            if (this.$getBindRule(setName))
-                throw new Error("There is no rule that matches the xml node for this operation.\
-                                 Please make sure you are matching a node and using the value to \
-                                 specify it's value <a:" + setName + " match='person' \
-                                 value='[@name]' /> : " + xmlNode.xml); //@todo make apf Error
-            else
-            
                 return false;
         }
 
@@ -27922,9 +27070,6 @@ apf.DataAction = function(){
                 compiled = null;
         });
 
-        
-        if (!compiled)
-            throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make apf Error
         
 
         var atAction, model, node,
@@ -28124,7 +27269,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12532)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12532)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28490,7 +27635,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15023)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15023)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28904,7 +28049,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28931,7 +28076,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29006,8 +28151,7 @@ apf.BaseButton = function(){
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);
         
-        if (!oNode)
-            return apf.console.warn("No background defined in the Button skin", "button");
+        if (!oNode) return;
         
 
         if (value) {
@@ -29250,7 +28394,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(39271)TIME(Fri, 13 Apr 2012 16:12:00 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(39271)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29992,12 +29136,6 @@ apf.BaseList = function(){
             }
             else {
                 
-                apf.console.warn("No add action rule is defined for element while more='true'.");
-                /*throw new Error(apf.formatErrorString(0, this,
-                    "Could not start more",
-                    "No add action rule is defined for this component",
-                    this.$aml));*/
-                
                 //return false;
                 xmlNode = "<item />";
             }
@@ -30152,7 +29290,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30209,7 +29347,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30875,7 +30013,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57877)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57877)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31072,26 +30210,17 @@ apf.BaseTab = function(){
             }
             
             
-            apf.console.warn("Setting tab page which doesn't exist, \
-                              referenced by name: '" + next + "'");
-            
 
             return false;
         }
 
         if (page.parentNode != this) {
             
-            apf.console.warn("Setting active page on page component which \
-                              isn't a child of this tab component. Cancelling.");
-            
 
             return false;
         }
 
         if (!page.visible || page.disabled) {
-            
-            apf.console.warn("Setting active page on page component which \
-                              is not visible or disabled. Cancelling.");
             
 
             return false;
@@ -32289,7 +31418,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(53431)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(53431)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33659,7 +32788,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33811,7 +32940,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(56134)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(56134)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34337,9 +33466,6 @@ apf.DragDrop = function(){
      * @private
      */
     this.enableDragDrop = function(){
-        
-        apf.console.info("Initializing Drag&Drop for " + this.localName
-            + "[" + (this.name || '') + "]");
         
 
         //Set cursors
@@ -35295,7 +34421,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35400,7 +34526,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30523)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30523)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36191,7 +35317,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36219,7 +35345,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36246,7 +35372,7 @@ apf.__MULTICHECK__ = 1 << 22;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/teleport.js)SIZE(8790)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/teleport.js)SIZE(8790)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36468,50 +35594,13 @@ apf.__TELEPORT__ = 1 << 28;
 }).call(apf.Teleport.prototype = new apf.AmlElement());
 
 
-apf.teleportLog = function(extra){
-    var xml, request = extra.method + " " + extra.url + " HTTP/1.1\n\n" + extra.data;
-
-    this.setXml = function(pNode){
-        if (!xml) {
-            var doc = pNode.ownerDocument;
-            xml = doc.createElement(extra.tp.localName || extra.type || "http");
-            xml.appendChild(doc.createElement("request")).appendChild(doc.createTextNode(request || "-"));
-            xml.appendChild(doc.createElement("response")).appendChild(doc.createTextNode(response || "-"));
-        }
-
-        apf.xmldb.appendChild(pNode, xml);
-    }
-
-    this.request = function(headers){
-        request = request.replace(/\n\n/, "\n" + headers.join("\n") + "\n\n");
-
-        if (xml)
-            apf.setQueryValue(xml, "request/text()", request);
-
-        this.request = function(){}
-    }
-
-    var response = "";
-    this.response = function(extra){
-        try {
-            var headers = extra.http.getAllResponseHeaders();
-            response = "HTTP/1.1 " + extra.status + " " + extra.statusText + "\n"
-                + (headers ? headers + "\n" : "\n")
-                + extra.http.responseText;
-
-            if (xml)
-                apf.setQueryValue(xml, "response/text()", response);
-        } catch(ex) {}
-    }
-}
-
 
 
 
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/transaction.js)SIZE(23494)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/transaction.js)SIZE(23494)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36538,7 +35627,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(31748)TIME(Wed, 18 Apr 2012 09:40:19 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(31748)TIME(Fri, 13 Apr 2012 23:42:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37285,7 +36374,7 @@ apf.$viewportVirtual = function(amlNode){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/xforms.js)SIZE(9367)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/xforms.js)SIZE(9367)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37313,7 +36402,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37419,7 +36508,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37445,7 +36534,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37470,7 +36559,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37495,58 +36584,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/window-o3.js)SIZE(5461)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37572,7 +36610,58 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/window.js)SIZE(50596)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/window-o3.js)SIZE(5461)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/window.js)SIZE(50596)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37754,12 +36843,6 @@ apf.window = function(){
             list    = fParent.$tabList;
 
         
-        if (list[tabindex]) {
-            apf.console.warn("Aml node already exist for tabindex " + tabindex
-                             + ". Will insert " + amlNode.tagName + " ["
-                             + (amlNode.name || "") + "] before existing one");
-        }
-        
 
         if (!amlNode.$isWindowContainer)
             amlNode.$focusParent = fParent;
@@ -37796,8 +36879,6 @@ apf.window = function(){
             return; //or maybe when force do $focus
 
         
-        var hadAlreadyFocus = aEl == amlNode;
-        
 
         this.$settingFocus = amlNode;
 
@@ -37829,10 +36910,6 @@ apf.window = function(){
         
 
         
-        if (!hadAlreadyFocus)
-            apf.console.info("Focus given to " + amlNode.localName +
-                " [" + (amlNode.name || "") + "]");
-        
 
         
     };
@@ -37842,9 +36919,6 @@ apf.window = function(){
         if (aEl != amlNode)
             return false;
 
-        
-        apf.console.info(aEl.localName + " ["
-            + (aEl.name || "") + "] was blurred.");
         
 
         aEl.$focusParent.$lastFocussed = null;
@@ -38044,9 +37118,6 @@ apf.window = function(){
         if (amlNode && (switchWindows || amlNode != apf.document.documentElement)) {
             start   = (list || []).indexOf(amlNode);
             if (start == -1) {
-                
-                apf.console.warn("Moving focus from element which isn't in the list\
-                                  of it's parent. This should never happen.");
                 
 
                 return;
@@ -38610,10 +37681,6 @@ apf.window = function(){
         
 
          
-        apf.console.info("Start parsing main application");
-        
-        
-        apf.Latometer.start();
         
         
         //Put this in callback in between the two phases
@@ -38662,13 +37729,7 @@ apf.window = function(){
                 //END OF ENTIRE APPLICATION STARTUP
         
                 
-                apf.console.info("Initialization finished");
                 
-                
-                
-                apf.Latometer.end();
-                apf.Latometer.addPoint("Total load time");
-                apf.Latometer.start(true);
                 
           }
         }); //async
@@ -38725,11 +37786,11 @@ apf.window = new apf.window();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/gears.js)SIZE(1391)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/gears.js)SIZE(1391)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/gecko.js)SIZE(6753)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/gecko.js)SIZE(6753)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38874,9 +37935,6 @@ apf.runGecko = function(){
      ****************************************************************************/
     function Error(nr, msg){
         
-        if (!apf.$debugwin.nativedebug) 
-            apf.$debugwin.errorHandler(msg, "", 0);
-        
         
         this.message = msg;
         this.nr = nr;
@@ -38921,7 +37979,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/ie.js)SIZE(14081)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/ie.js)SIZE(14081)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39104,10 +38162,6 @@ apf.runIE = function(){
         }
         catch(e) {
             
-            apf.console.warn("Warning found block element inside a " 
-              + pNode.tagName 
-              + " element. Rendering will give unexpected results");
-            
             
             pNode.insertAdjacentHTML("afterEnd", str);
             return pNode.nextSibling;
@@ -39177,7 +38231,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/iphone.js)SIZE(11827)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/iphone.js)SIZE(11827)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39202,7 +38256,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24354)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24354)TIME(Mon, 16 Apr 2012 22:14:05 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39559,12 +38613,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/o3.js)SIZE(9017)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/o3.js)SIZE(9017)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6583)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6583)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39590,7 +38644,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(8405)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(8405)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39767,11 +38821,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/crypto/barrett.js)SIZE(2650)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/barrett.js)SIZE(2650)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /**
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -39792,7 +38846,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/crypto/base64.js)SIZE(6758)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/base64.js)SIZE(6758)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40005,7 +39059,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/crypto/bigint.js)SIZE(20439)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/bigint.js)SIZE(20439)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /**
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -40059,7 +39113,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/crypto/blowfish.js)SIZE(26046)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/blowfish.js)SIZE(26046)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40085,7 +39139,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/crypto/md4.js)SIZE(9799)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/md4.js)SIZE(9799)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40111,7 +39165,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/crypto/md5.js)SIZE(10997)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/md5.js)SIZE(10997)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40369,7 +39423,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/crypto/rsa.js)SIZE(5048)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/rsa.js)SIZE(5048)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /**
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -40391,7 +39445,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/crypto/sha1.js)SIZE(5258)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/sha1.js)SIZE(5258)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40574,293 +39628,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/debug/debug.js)SIZE(9811)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/**
- * Returns a string giving information on a javascript object.
- *
- * @param {mixed} obj the object to investigate
- */
-apf.dump =
-apf.vardump = function(obj, o, depth, stack){
-	o = o || {};
-	if(o.maxdepth === undefined)o.maxdepth = 99;
-
-    if (apf.isWebkit) //@todo RIK please fix this issue.
-        return "";
-    if (!obj) return obj + "";
-    if (!stack) stack = "";
-    if (!depth) depth = 0;
-    var str;
-    switch (obj.dataType) {
-        case apf.STRING:
-            return "\"" + (o.clip?(obj.length>o.clip?(obj.slice(0,o.clip)+"..."):obj):obj).replace(/[\"]/g,"'") + "\"";
-        case apf.NUMBER:
-            return obj;
-        case apf.BOOLEAN:
-            return (obj ? "true" : "false");
-        case apf.DATE:
-            return "Date(\"" + obj + "\)";
-        case apf.ARRAY:
-            if(obj[obj.length-2]=='$__vardump'){
-                return "this"+obj[obj.length-1]; 
-            }
-            obj.push('$__vardump',stack);
-            str = ["[ "];
-            for (var i = 0; i < obj.length-2; i++) {
-                str.push( str.length>1?",":"",
-                    (depth >= o.maxdepth ? typeof(obj[i]) :
-                    apf.vardump(obj[i], o, depth + 1, stack+'['+i+']')) );
-            }
-            str.push( " ]");
-            obj.pop();obj.pop();
-            return str.join('');
-        default:
-            if (typeof obj == "function")
-                return "function";
-        	if (obj.nodeType !== undefined)
-                return o.xml?(str=obj.xml,o.clip?((str=str.replace(/\s*[\r\n]\s*/g,"")).length>o.clip?str.slice(0,o.clip)+"...>":str):str):("<" + obj.tagName+"../>") ;
-                //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-            if (depth >= o.maxdepth)
-                return "object";
-
-            //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-            if (obj['$__vardump']) return "this"+obj['$__vardump']+"";
-            obj['$__vardump'] = stack;
-            str = ["{"+(o.clip?"":"\n")];
-            for (var prop in obj) if(prop!='$__vardump'){
-            	if(o.clipobj && str.join('').length>o.clipobj){str.push( ", ..."); break;}
-                try {
-                    var propname = prop;
-                    if(str.length>1)str.push(o.clip?", ":",\n");
-                    str.push( o.clip?"":("\t".repeat(depth+1)), propname, ": ",
-                      (depth >= o.maxdepth ? typeof(obj[prop]):
-                        apf.vardump(obj[prop], o, depth + 1, stack+'.'+prop)) );
-                } catch(e) {
-                    str.push( o.clip?"":("\t".repeat(depth+1)) , prop , ": dumperror");
-                }
-            }
-            str.push(o.clip?"":"\n", o.clip?"":("\t".repeat(depth)), "}");
-            
-            function cleanup(obj){
-                if(obj['$__vardump']!== undefined)
-                    delete obj['$__vardump'];
-                else return;
-                for(var prop in obj){
-                    var v = obj[prop];
-                    if(typeof(v)=='object' && v) cleanup(v);
-                }
-            }
-            cleanup(obj);
-            
-            return str.join('');
-    }
-};
-
-if (apf.isOpera) {
-    window.console = {};
-    ["log", "debug", "info", "warn", "error"].forEach(function(type) {
-        window.console[type] = function() {
-            if (typeof arguments === "undefined") return null;
-            if (arguments.length === 1) { // single argument provided
-                opera.postError(type + ": " + arguments[0]);
-                return type + ": " + arguments[0];
-            }
-            var s      = arguments[0],
-                // string substitution patterns of firebug console
-                regexp = /%([sdifo])/g,
-                i      = 0,
-                match  = null;
-            // replace found matches with given arguments
-            while (match = regexp.exec(s)) {
-                s = s.replace(match[0], String(arguments[++i]));
-            }
-            // display log messages
-            var len = arguments.length;
-            while (len > i++) {
-                if (arguments[i]) {
-                    s += ' ';
-                    s += String(arguments[i]);
-                }
-            }
-            opera.postError(type + ": " + s);
-        };
-    });
-}
-
-/**
- * Returns a string giving more detailed informations on a javascript object.
- *
- * @param {mixed} obj the object to investigate
- */
-apf.dump2 =
-apf.vardump2 = function (obj, depth, recur, stack){
-    if(!obj) return obj + "";
-    if(!depth) depth = 0;
-
-    switch(obj.dataType){
-        case "string":    return "\"" + obj + "\"";
-        case "number":    return obj;
-        case "boolean": return obj ? "true" : "false";
-        case "date": return "Date[" + new Date() + "]";
-        case "array":
-            var str = "{\n";
-            for(var i=0;i < obj.length;i++){
-                str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : apf.vardump(obj[i], depth+1, !recur)) + "\n";
-            }
-            str += "     ".repeat(depth) + "}";
-            
-            return str;
-        default:
-            if(typeof obj == "function") return "function";
-            //if(obj.xml) return depth==0 ? "[ " + obj.xml + " ]" : "XML Element";
-            if(obj.xml || obj.serialize) return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
-            
-            if(!recur && depth>0) return "object";
-        
-            //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
-            var str = "{\n";
-            for(prop in obj){
-                try{
-                    str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : apf.vardump(obj[prop], depth+1, !recur)) + "\n";
-                }catch(e){
-                    str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
-                }
-            }
-            str += "     ".repeat(depth) + "}";
-            
-            return str;
-    }
-}
-
-String.prototype.s = function(){
-    return this.replace(/[\r\n]/g, "");
-}
-
-/**
- * Alerts string giving information on a javascript object.
- * This is older version of this function
- *
- * @param {mixed} obj the object to investigate
- */
-apf.alert_r = function(obj, recur){
-    alert(apf.vardump(obj, null, recur));
-}
-
-/**
- * Alerts string giving information on a javascript object.
- *
- * @param {mixed} obj the object to investigate
- */
-apf.alert_r2 = function(obj, recur){
-    alert(apf.vardump2(obj, null, !recur));
-}
-
-/**
- * Object timing the time between one point and another.
- *
- * @param {Boolean} nostart whether the profiler should start measuring at creation.
- * @constructor
- */
-apf.ProfilerClass = function(nostart){
-    this.totalTime = 0;
-
-    /**
-     * Starts the timer.
-     * @param {Boolean} clear resets the total time.
-     */
-    this.start = function(clear){
-        if (clear) this.totalTime = 0;
-        this.startTime = new Date().getTime();
-
-        this.isStarted = true;
-    }
-
-    /**
-     * Stops the timer.
-     * @method
-     */
-    this.stop =
-    this.end = function(){
-        if (!this.startTime) return;
-        this.totalTime += new Date().getTime() - this.startTime;
-        this.isStarted = false;
-    }
-
-    /**
-     * Sends the total time to the console.
-     * @param {String} msg Message displayed in the console.
-     */
-    this.addPoint = function(msg){
-        this.end();
-        apf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
-        this.start(true);
-    }
-
-    if (!nostart)
-        this.start();
-};
-
-apf.Latometer = new apf.ProfilerClass(true);//backward compatibility
-
-if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
-    window.console = {};
-    ["log", "debug", "info", "warn", "error"].forEach(function(type) {
-        window.console[type] = function() {
-            if (typeof arguments === "undefined") return null;
-            if (arguments.length === 1) { // single argument provided
-                opera.postError(type + ": " + arguments[0]);
-                return type + ": " + arguments[0];
-            }
-            var s      = arguments[0],
-                // string substitution patterns of firebug console
-                regexp = /%([sdifo])/g,
-                i      = 0,
-                match  = null;
-            // replace found matches with given arguments
-            while (match = regexp.exec(s)) {
-                s = s.replace(match[0], String(arguments[++i]));
-            }
-            // display log messages
-            var len = arguments.length;
-            while (len > i++) {
-                if (arguments[i]) {
-                    s += ' ';
-                    s += String(arguments[i]);
-                }
-            }
-            opera.postError(type + ": " + s);
-        };
-    });
-}
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/debug/debugwin.js)SIZE(42735)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/debug/debug.js)SIZE(9811)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40886,12 +39654,7 @@ if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/debug/profiler.js)SIZE(24827)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/parsers/js.js)SIZE(9016)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/debug/debugwin.js)SIZE(42735)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40917,7 +39680,38 @@ if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(113264)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/debug/profiler.js)SIZE(24827)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/parsers/js.js)SIZE(9016)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(113264)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42901,10 +41695,10 @@ apf.lm_exec = new (function(){
     // value of node by xpath
     function __val(n, x){
         if (!n)
-            return (wlvl > 1 && wnode(x),"")
+            return ("")
         return (n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || (wlvl > 2 && wxpath(x, "_val"),"");
+          && n.nodeValue || ("");
     }
 
     var __valattrrx = /(["'])/g;
@@ -42913,10 +41707,10 @@ apf.lm_exec = new (function(){
     }
     function __valattr(n, x){
         if (!n)
-            return (wlvl > 1 && wnode(x),"")
+            return ("")
         return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (wlvl > 2 && wxpath(x, "_val"),"");
+          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || ("");
     }
 
     
@@ -42926,18 +41720,18 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (wlvl > 0 && wmodel(m, x, "_valm"),"");
+            return ("");
         return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || (wlvl > 2 && wxpath(x),"");
+          && n.nodeValue || ("");
     }
 
     function __nod(n, x){           // node by xpath
-        return n ? n.selectSingleNode(x) : (wlvl > 1 && wnode(x, "_nod"),null);
+        return n ? n.selectSingleNode(x) : (null);
     }
 
     function _nods(n, x){           // array of nodes by xpath
-        return n ? n.selectNodes(x) : (wlvl > 1 && wnode(x, "_nods"),[]);
+        return n ? n.selectNodes(x) : ([]);
     }
 
     function __nodm(m, x){          // node of model by xpath
@@ -42945,7 +41739,7 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (wlvl > 0 && wmodel(m, x, "_nodm"),null);
+            return (null);
 
         return n.selectSingleNode(x);
     }
@@ -42955,13 +41749,13 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (wlvl > 0 && wmodel(m, x, "_nodsm"),[]);
+            return ([]);
 
         return n.selectNodes(x);
     }
 
     function __cnt(n, x){        // count nodes by xpath
-        return n ? n.selectNodes(x).length:(wlvl > 1 && wnode(x, "_cnt"),0);
+        return n ? n.selectNodes(x).length:(0);
     }
 
     function __cntm(m, x){      // count nodes from model by xpath
@@ -42969,7 +41763,7 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (wlvl>0&&wmodel(m,x,"_cntm"),0);
+            return (0);
 
         return n.selectNodes(x).length;
     }
@@ -43006,10 +41800,10 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (wlvl>0&&wmodel(m,x,"_xml"),"");
+            return ("");
 
         return (n && (n = n.selectSingleNode(x))) && n.xml ||
-        (wlvl>0&&!n&&wnode(x,"_xml"),"");
+        ("");
     }
 
     function _xmls(n, m, x){    // serialize nodes by xpath with .xml concatenated
@@ -43017,7 +41811,7 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (wlvl>0&&wmodel(m,x,"_xmls"),"");
+            return ("");
         for(var i = 0,j = ((n=n.selectNodes(x))).length,o = [];i<j;i++)
             o[i] = n[i].xml;
         return o.join("");
@@ -43028,7 +41822,7 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (wlvl>0&&wmodel(m,x,"_valcr"),"");
+            return ("");
 
         if(cr){
             apf.createNodeFromXpath( ni, x );
@@ -43037,7 +41831,7 @@ apf.lm_exec = new (function(){
             return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) &&
                 (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n))) && n.nodeValue || ""
         }
-        return (wlvl>2&&wxpath(x,"_valcr"),"");
+        return ("");
     }
 
     function _nodcr(n, cr, m, x){ // node with create flag
@@ -43045,14 +41839,14 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (wlvl>0&&wmodel(m,x,"_nodcr"),null);
+            return (null);
         return n.selectSingleNode(x) || (cr && apf.createNodeFromXpath( n, x ));
     }
 
     function _valst(n, x){      // a value with state holding
         var m = apf.xmldb.findModel(n);
         if(!m)
-            return (wlvl>0&&wmodel(m,x,"_valst"),"");
+            return ("");
         return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + (!x || x == "." ? "" : "/" + x) + "]";
     }
 
@@ -43089,7 +41883,7 @@ apf.lm_exec = new (function(){
         // check what n is.. if string parse
         if(n && n.charAt && n.charAt(0)=="<")
             return apf.getXmlDom(n).documentElement;
-        if(!n && wlvl>1)wnode("-","_local");
+        
         return n;
     }
 
@@ -43372,7 +42166,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/parsers/url.js)SIZE(4570)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/parsers/url.js)SIZE(4570)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43494,7 +42288,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/core/parsers/xpath.js)SIZE(21971)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/parsers/xpath.js)SIZE(21971)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 /**
@@ -43987,11 +42781,6 @@ apf.XPath = {
             this.cache[sExpr] = this.compile(sExpr);
 
         
-        if (sExpr.length > 20) {
-            this.lastExpr    = sExpr;
-            this.lastCompile = this.cache[sExpr];
-        }
-        
         
         if (typeof this.cache[sExpr] == "string"){
             if (this.cache[sExpr] == ".")
@@ -44125,7 +42914,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44319,12 +43108,6 @@ apf.BindingRule = function(struct, tagName){
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         
-        if (!this.match && (!this.value && !this.childNodes.length && !this.get
-          || this.localName == "each") || this.select) {
-            throw new Error(apf.formatErrorString(0, this, "Bindingrule",
-                "Missing attribute 'match'")); //@todo apf3.0 turn this into a good error
-        }
-        
 
         var first;
         if (!this.value && this.localName != "each" && (first = this.$aml 
@@ -44382,7 +43165,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/accordion.js)SIZE(22288)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/accordion.js)SIZE(22288)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44407,7 +43190,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/actionrule.js)SIZE(4035)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actionrule.js)SIZE(4035)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44532,7 +43315,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/actions.js)SIZE(3251)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actions.js)SIZE(3251)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44636,7 +43419,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36828)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36828)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44993,9 +43776,6 @@ apf.actiontracker = function(struct, tagName){
             if (!UndoObj) return;
 
             
-            if (id != undoStack.length - 1) //@todo callstack got corrupted?
-                throw new Error("callstack got corrupted");
-            
             undoStack.length--;
             redoStack.push(UndoObj); //@todo check: moved from outside if(single)
 
@@ -45022,8 +43802,6 @@ apf.actiontracker = function(struct, tagName){
             return;
 
         
-        this.log && this.log("Executing " + (undo ? "undo" : "redo"));
-        
 
         //Undo the last X places - where X = id;
         if (id == -1)
@@ -45037,12 +43815,6 @@ apf.actiontracker = function(struct, tagName){
             if (!undoStack[undoStack.length - 1]) {
                 undoStack.length--;
 
-                
-                apf.console.error("The actiontracker is in an invalid \
-                                   state. The entire undo and redo stack will \
-                                   be cleared to prevent further corruption\
-                                   This is a serious error, please contact \
-                                   the system administrator.");
                 
 
                 this.$undostack = [];
@@ -45080,11 +43852,6 @@ apf.actiontracker = function(struct, tagName){
                   bubbles : true
               })) === false) {
 
-                
-                this.log && this.log("You have cancelled the automatic undo \
-                    process! Please be aware that if you don't retry this call \
-                    the queue will fill up and none of the other actions will \
-                    be sent through.");
                 
 
                 return true; //don't delete the call from the queue
@@ -45242,7 +44009,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/application.js)SIZE(1834)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/application.js)SIZE(1834)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45297,7 +44064,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/appsettings.js)SIZE(9304)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/appsettings.js)SIZE(9304)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45458,7 +44225,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/audio.js)SIZE(12958)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/audio.js)SIZE(12958)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45484,7 +44251,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/auth.js)SIZE(23999)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/auth.js)SIZE(23999)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45865,8 +44632,6 @@ apf.aml.setElement("auth", apf.auth);
             return false;
 
         
-        apf.console.info("Retrying login...", "auth");
-        
 
         //@todo shouldn't I be using inProces here?
         var name, pos = 0, len = 0, _self = this,
@@ -45896,9 +44661,6 @@ apf.aml.setElement("auth", apf.auth);
         
 
         
-        apf.console.info("Logging " + type + " on service '"
-            + service + "'", "auth");
-        
 
         //Execute login call
         options.callback = function(data, state, extra){
@@ -45927,9 +44689,6 @@ apf.aml.setElement("auth", apf.auth);
                 if (isRelogin) //If we're retrying then we'll step out here
                     return _self.authRequired();
 
-                
-                apf.console.info("Log " + type + " failure for service '"
-                    + service + "'", "auth");
                 
 
                 var commError = new Error(apf.formatErrorString(0, null,
@@ -45985,9 +44744,6 @@ apf.aml.setElement("auth", apf.auth);
             }));
 
             
-            apf.console.info("Log " + type + " success for service '"
-                + service + "'", "auth");
-            
             
             _self.setProperty("authenticated", true);
         };
@@ -46018,12 +44774,6 @@ apf.aml.setElement("auth", apf.auth);
             else if (qItem.id)
                 qItem.tpModule.retry(qItem.id);
 
-            
-            //Dunno what's up, lets tell the developer
-            else
-                apf.console.warn("Unable to retry queue item after "
-                  + "successfull logging in. It seems the protocol that sent "
-                  + "the message doesn't allow it.");
             
         }
 
@@ -46106,7 +44856,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/axis.js)SIZE(14009)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/axis.js)SIZE(14009)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46131,7 +44881,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bar.js)SIZE(4205)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bar.js)SIZE(4205)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46259,7 +45009,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46330,7 +45080,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(21698)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(21698)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46937,7 +45687,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3623)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3623)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47055,7 +45805,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindingeachrule.js)SIZE(11503)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingeachrule.js)SIZE(11503)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47385,7 +46135,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindingloadrule.js)SIZE(1529)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingloadrule.js)SIZE(1529)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47434,7 +46184,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47741,7 +46491,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindings.js)SIZE(8618)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindings.js)SIZE(8618)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48006,7 +46756,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48068,7 +46818,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/body.js)SIZE(1861)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/body.js)SIZE(1861)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48124,7 +46874,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/browser.js)SIZE(6466)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/browser.js)SIZE(6466)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48337,7 +47087,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/button.js)SIZE(31193)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/button.js)SIZE(31193)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48543,8 +47293,7 @@ apf.button  = function(struct, tagName){
 
     this.$propHandlers["icon"] = function(value){
         
-        if (!this.oIcon)
-            return apf.console.warn("No icon defined in the Button skin", "button");
+        if (!this.oIcon) return;
         
 
         if (value)
@@ -48671,12 +47420,6 @@ apf.button  = function(struct, tagName){
             this.$setState("Down", {});
 
         
-        if (!menu) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Showing submenu",
-                "Could not find submenu '" + this.submenu + "'"));
-        }
-        
 
         var menuPressed = this.parentNode.menuIsPressed;
         if (menuPressed && menuPressed != this) {
@@ -48735,12 +47478,6 @@ apf.button  = function(struct, tagName){
         this.parentNode.menuIsPressed = this;
 
         
-        if (!menu) {
-            throw new Error(apf.formatErrorString(0, this,
-                "Showing submenu",
-                "Could not find submenu '" + this.submenu + "'"));
-        }
-        
 
         var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
 
@@ -48767,11 +47504,7 @@ apf.button  = function(struct, tagName){
         if (!value){
             if (this.value && this.parentNode) {
                 
-                try{
-                
                 menuDown.call(this);
-                
-                }catch(ex){}
                 
             }
 
@@ -48975,7 +47708,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36424)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36424)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49001,7 +47734,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/calendar.js)SIZE(28862)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/calendar.js)SIZE(28862)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49026,7 +47759,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49052,7 +47785,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49077,7 +47810,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49348,7 +48081,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49373,7 +48106,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/colorpicker.js)SIZE(12736)TIME(Wed, 18 Apr 2012 10:34:18 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/colorpicker.js)SIZE(12736)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49754,7 +48487,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/colorpicker2.js)SIZE(16009)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/colorpicker2.js)SIZE(16009)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50177,7 +48910,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/comment.js)SIZE(1324)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/comment.js)SIZE(1324)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50219,7 +48952,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/contextmenu.js)SIZE(2557)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/contextmenu.js)SIZE(2557)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50296,7 +49029,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/datagrid.js)SIZE(53921)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/datagrid.js)SIZE(53921)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50768,9 +49501,6 @@ apf.datagrid = function(struct, tagName){
         for (var h, i = 0, l = rules.length; i < l; i++) {
             h = rules[i];
             
-            
-            if (!h.$width)
-                throw new Error("missing width"); //temporary check
             
             
             if (h.visible !== false) {
@@ -51473,7 +50203,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51499,7 +50229,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/divider.js)SIZE(2882)TIME(Wed, 18 Apr 2012 09:40:19 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/divider.js)SIZE(2882)TIME(Fri, 13 Apr 2012 23:42:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51592,7 +50322,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15434)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15434)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52043,7 +50773,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/editor.js)SIZE(18601)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/editor.js)SIZE(18601)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52069,7 +50799,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52253,7 +50983,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/event.js)SIZE(2115)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/event.js)SIZE(2115)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52278,7 +51008,7 @@ apf.aml.setElement("errorbox", apf.errorbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52319,7 +51049,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/flashplayer.js)SIZE(5856)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/flashplayer.js)SIZE(5856)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52344,33 +51074,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52396,7 +51100,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/frame.js)SIZE(4838)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/frame.js)SIZE(4838)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52545,7 +51275,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/gallery.js)SIZE(27418)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/gallery.js)SIZE(27418)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52570,7 +51300,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/graph.js)SIZE(21525)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/graph.js)SIZE(21525)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52595,7 +51325,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/hbox.js)SIZE(41632)TIME(Fri, 13 Apr 2012 16:12:00 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/hbox.js)SIZE(41632)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53588,7 +52318,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/iconmap.js)SIZE(3244)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/iconmap.js)SIZE(3244)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53614,7 +52344,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/img.js)SIZE(7692)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/img.js)SIZE(7692)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53860,7 +52590,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/item.js)SIZE(24653)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/item.js)SIZE(24653)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54365,10 +53095,6 @@ apf.item  = function(struct, tagName){
         var menu = self[this.submenu];
         if (!menu) {
             
-            throw new Error(apf.formatErrorString(0, this,
-                "Displaying submenu",
-                "Could not find submenu '" + this.submenu + "'", this.$aml));
-            
 
             return;
         }
@@ -54577,7 +53303,7 @@ apf.item  = function(struct, tagName){
 apf.aml.setElement("item",  apf.item);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54664,7 +53390,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/label.js)SIZE(4978)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/label.js)SIZE(4978)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54822,7 +53548,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54848,7 +53574,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55207,7 +53933,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/loader.js)SIZE(3558)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/loader.js)SIZE(3558)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55323,7 +54049,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55349,7 +54075,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55375,7 +54101,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(55951)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(55951)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55401,7 +54127,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/menu.js)SIZE(19229)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/menu.js)SIZE(19229)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55970,7 +54696,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/method.js)SIZE(3973)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/method.js)SIZE(3973)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56078,7 +54804,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24684)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24684)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56710,7 +55436,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/model.js)SIZE(42606)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/model.js)SIZE(42606)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57630,8 +56356,6 @@ apf.model = function(struct, tagName){
         this.dispatchEvent("beforeretrieve");
 
         
-        var amlNode = options.amlNode;
-        
 
         var callback = options.callback, _self = this;
         options.callback = function(data, state, extra){
@@ -57643,12 +56367,6 @@ apf.model = function(struct, tagName){
             if (state != apf.SUCCESS) {
                 var oError;
 
-                
-                oError = new Error(apf.formatErrorString(0,
-                    _self, "Inserting xml data", "Could not insert data\n"
-                  + "Instruction:" + instruction + "\n"
-                  + "Url: " + extra.url + "\n"
-                  + "Info: " + extra.message + "\n\n" + data));
                 
 
                 if (extra.tpModule.retryTimeout(extra, state, 
@@ -57716,12 +56434,6 @@ apf.model = function(struct, tagName){
             options.insertPoint = this.data;
 
         
-        if (!options.insertPoint) {
-            throw new Error(apf.formatErrorString(0, amlNode || _self,
-                "Inserting data", "Could not determine insertion point for "
-              + "instruction: " + instruction));
-        }
-        
 
         //if(this.dispatchEvent("beforeinsert", parentXMLNode) === false) return false;
 
@@ -57771,13 +56483,6 @@ apf.model = function(struct, tagName){
         if (!xmlNode)
             xmlNode = this.data;
 
-        
-        if (!xmlNode) {
-            throw new Error(apf.formatErrorString(0, this, 
-                "Submitting model",
-                "Could not submit data, because no data was passed and the "
-              + "model does not have data loaded."));
-        }
         
 
         if (!type)
@@ -57835,7 +56540,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15297)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15297)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57861,7 +56566,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/page.js)SIZE(27085)TIME(Wed, 18 Apr 2012 09:40:19 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/page.js)SIZE(27085)TIME(Fri, 13 Apr 2012 16:36:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57982,10 +56687,6 @@ apf.page = function(struct, tagName){
                 }, false);
 
                 btncontainer.appendChild(elBtnClose);
-            }
-            
-            else {
-                apf.console.warn("Missing close button in tab skin");
             }
             
         }
@@ -58622,7 +57323,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/pager.js)SIZE(9037)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/pager.js)SIZE(9037)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58648,7 +57349,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/palette.js)SIZE(5945)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/palette.js)SIZE(5945)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58673,7 +57374,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/param.js)SIZE(1681)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/param.js)SIZE(1681)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58716,7 +57417,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/persist.js)SIZE(17598)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/persist.js)SIZE(17598)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58742,7 +57443,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58767,7 +57468,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/progressbar.js)SIZE(8709)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/progressbar.js)SIZE(8709)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59040,7 +57741,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/propedit.js)SIZE(46649)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/propedit.js)SIZE(46649)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59067,7 +57768,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59231,8 +57932,7 @@ apf.radiobutton = function(struct, tagName){
      */
     this.$propHandlers["icon"] = function(value){
         
-        if (!this.oIcon)
-            return apf.console.warn("No icon defined in the Button skin", "button");
+        if (!this.oIcon) return;
         
 
         if (value)
@@ -59621,7 +58321,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/remote.js)SIZE(20970)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/remote.js)SIZE(20970)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59647,7 +58347,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59923,9 +58623,6 @@ apf.rpc = function(struct, tagName){
         
         if (!apf[value]) {
             
-            throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass",
-                "Could not find Ajax.org Teleport RPC Component '" + value + "'", this));
-            
             return;
         }
         var _self = this;
@@ -59953,10 +58650,6 @@ apf.rpc = function(struct, tagName){
      */
     this.setCallback = function(name, func){
         
-        if (!this.$methods[name])
-            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
-                "Trying to set callback: method not found."));
-        
             
         this.$methods[name].callback = func;
     };
@@ -59973,10 +58666,6 @@ apf.rpc = function(struct, tagName){
      * @param {String} url  the target url of method defined on this object.
      */
     this.setUrl = function(name, url) {
-        
-        if (!this.$methods[name])
-            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
-                "Trying to set callback: method not found."));
         
 
         this.$methods[name].setProperty("url", url);
@@ -60113,11 +58802,6 @@ apf.rpc = function(struct, tagName){
      */
     this.purge = function(callback, userdata, async, extradata){
         
-        if (!this.stack[this.url] || !this.stack[this.url].length) {
-            throw new Error(apf.formatErrorString(0, null, "Executing a multicall", 
-                "No RPC calls where executed before calling purge()."));
-        }
-        
 
         // Get Data
         var data = this.createMessage("multicall", [this.stack[this.url]]), //function of module
@@ -60161,10 +58845,6 @@ apf.rpc = function(struct, tagName){
      */
     this.$addMethod = function(amlNode){
         if (amlNode.localName != "method"){
-            
-            throw new Error(apf.formatErrorString(0, this,
-                "Parsing RPC Teleport node",
-                "Found element which is not a method", this));
             
             return false;
         }
@@ -60233,11 +58913,6 @@ apf.rpc = function(struct, tagName){
     
         //Set information later neeed
         
-        if (!this[method])
-            throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
-                "Could not find RPC function by name '" + method + "' in data "
-              + "instruction '" + options.instruction + "'"));
-        
         
         var props = this.$methods[method];
 
@@ -60295,7 +58970,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/script.js)SIZE(3679)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/script.js)SIZE(3679)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60410,7 +59085,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(32603)TIME(Wed, 18 Apr 2012 09:40:19 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(32603)TIME(Fri, 13 Apr 2012 23:42:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60666,8 +59341,6 @@ apf.scrollbar = function(struct, tagName){
     
     this.setScrollPosition = function(position, preventEvent) {
         if (position == NaN) {
-            
-            apf.console.warn("Scrollbar is hidden while scrolling.");
             
             return;
         }
@@ -61347,7 +60020,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/services.js)SIZE(1488)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/services.js)SIZE(1488)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61373,7 +60046,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/skin.js)SIZE(9698)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/skin.js)SIZE(9698)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61459,15 +60132,6 @@ apf.aml.setElement("skin", apf.skin);
         }
 
         
-        if (!found) {
-            throw new Error(apf.formatErrorString(0, null,
-                "Checking for the aml namespace",
-                "The Ajax.org Platform xml namespace was not found in "
-                + (xmlNode.getAttribute("filename")
-                    ? "in '" + xmlNode.getAttribute("filename") + "'"
-                    : "")));
-        }
-        
 
         return found;
     }
@@ -61503,16 +60167,12 @@ apf.aml.setElement("skin", apf.skin);
     
     function loadSkinFile(path){
         
-        apf.console.info("Loading include file: " + path);
-        
 
         var _self = this;
         
         apf.getData(
         
           path, {
-          
-          type : "skin",
           
           callback: function(xmlString, state, extra){
              if (state != apf.SUCCESS) {
@@ -61543,8 +60203,6 @@ apf.aml.setElement("skin", apf.skin);
             var xmlNode = apf.getXml(xmlString);//apf.getAmlDocFromString(xmlString);
             
             
-            checkForAmlNamespace(xmlNode);
-            
             
             if (!xmlNode) {
                 throw new Error(apf.formatErrorString(0, _self,
@@ -61556,8 +60214,6 @@ apf.aml.setElement("skin", apf.skin);
             
             
             {
-                
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
                 
                 
                 finish.call(_self, xmlNode);
@@ -61587,7 +60243,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/slider.js)SIZE(32341)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/slider.js)SIZE(32341)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61612,7 +60268,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/slideshow.js)SIZE(47089)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/slideshow.js)SIZE(47089)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61637,7 +60293,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62357,12 +61013,6 @@ apf.smartbinding = function(struct, tagName){
         this[prop] = value;
         
         
-        /*if (!apf.nameserver.get(name, attr[i].nodeValue))
-            throw new Error(apf.formatErrorString(1036, this, 
-                "Connecting " + name, 
-                "Could not find " + name + " by name '" 
-                + attr[i].nodeValue + "'"));*/
-        
     };
     
     this.add = function(node){
@@ -62484,10 +61134,6 @@ apf.smartbinding = function(struct, tagName){
             this.register(this.parentNode);
 
         
-        apf.console.info(this.name
-            ? "Creating SmartBinding [" + this.name + "]"
-            : "Creating implicitly assigned SmartBinding");
-        
     });
 }).call(apf.smartbinding.prototype = new apf.AmlElement());
 
@@ -62495,7 +61141,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62550,7 +61196,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/spinner.js)SIZE(16965)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/spinner.js)SIZE(16965)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63090,7 +61736,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(5164)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(5164)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63245,7 +61891,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/splitter.js)SIZE(16644)TIME(Fri, 13 Apr 2012 16:12:00 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/splitter.js)SIZE(16644)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63663,7 +62309,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63756,7 +62402,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/state.js)SIZE(10893)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/state.js)SIZE(10893)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63966,13 +62612,6 @@ apf.state = function(struct, tagName){
             for (var i = 0; i < q.length; i++) {
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
                     
-                    /*throw new Error(apf.formatErrorString(1013, this,
-                        "Setting State",
-                        "Could not find object to give state: '"
-                        + q[i][0] + "' on property '" + q[i][1] + "'"));*/
-                    apf.console.warn("Could not find object to give state: " 
-                        + q[i][0] + "' on property '" + q[i][1] + "'");
-                    
                     
                     continue;
                 }
@@ -63994,8 +62633,6 @@ apf.state = function(struct, tagName){
             this.dispatchEvent("activate");
 
             
-            apf.console.info("Setting state '" + this.name + "' to ACTIVE");
-            
         }
 
         //Deactivate State
@@ -64003,8 +62640,6 @@ apf.state = function(struct, tagName){
             this.setProperty("active", false);
             this.dispatchEvent("deactivate");
 
-            
-            apf.console.info("Setting state '" + this.name + "' to INACTIVE");
             
         }
     };
@@ -64092,7 +62727,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64118,7 +62753,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64143,7 +62778,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64169,7 +62804,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64268,7 +62903,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/table.js)SIZE(17204)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/table.js)SIZE(17204)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64384,8 +63019,6 @@ apf.table = function(struct, tagName){
     
     this.$propHandlers["columns"] = function(value){
         if (!value.match(/^((?:\d+\%?|\*)\s*(?:,\s*|\s*$))+$/)) {
-            
-            apf.console.warn("Invalid column string found for table: " + value);
             
             return;
         }
@@ -64747,7 +63380,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64776,7 +63409,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64802,7 +63435,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/text.js)SIZE(12619)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/text.js)SIZE(12619)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65158,7 +63791,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/textbox.js)SIZE(28629)TIME(Fri, 13 Apr 2012 16:12:00 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/textbox.js)SIZE(28629)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65987,7 +64620,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66013,7 +64646,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66107,7 +64740,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/tree.js)SIZE(17445)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/tree.js)SIZE(17445)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66455,7 +65088,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66480,33 +65113,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66532,7 +65139,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66558,7 +65165,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50167)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50167)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66852,12 +65485,6 @@ apf.webdav = function(struct, tagName){
         }
 
         
-        try{
-            apf.console.error(extra.message.toString() + " (username: " + extra.username
-                              + ", server: " + extra.server + ")", "webdav");
-        }
-        catch(ex){}
-        
 
         return this.dispatchEvent("authfailure", extra);
     }
@@ -66886,9 +65513,6 @@ apf.webdav = function(struct, tagName){
             unregister.call(this, "auth-callback");
         }
 
-        
-        apf.console.error(extra.message + " (username: " + extra.username
-                          + ", server: " + extra.server + ")", "webdav");
         
 
         return this.dispatchEvent("connectionerror", extra);
@@ -67541,8 +66165,6 @@ apf.webdav = function(struct, tagName){
 
         this.doRequest(function(data, state, extra) {
             
-            apf.console.dir(data);
-            
         }, sPath, buildPropertiesBlock.call(this, oPropsSet, oPropsDel),
            sLock ? {"If": "<" + sLock + ">"} : null, true);
     };
@@ -67783,9 +66405,6 @@ apf.webdav = function(struct, tagName){
                 break;
             default:
                 
-                throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
-                    "Invalid WebDAV method '" + method + "'"));
-                
                 break;
         }
     };
@@ -67862,7 +66481,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101266)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101266)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67888,7 +66507,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68029,7 +66648,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68285,7 +66904,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68310,7 +66929,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68335,7 +66954,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68361,7 +66980,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68574,7 +67193,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/header.js)SIZE(3062)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/header.js)SIZE(3062)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68600,7 +67219,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jphp.js)SIZE(5874)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/jphp.js)SIZE(5874)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68626,7 +67245,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3126)TIME(Fri, 13 Apr 2012 14:26:35 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3126)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68652,7 +67271,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68678,7 +67297,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68776,9 +67395,6 @@ apf.rest = function(){
         var options = this.$methods[functionName];
 
         
-        if ("NOTIFY|SEND|POST|PUT".indexOf(options["http-method"]) > -1)
-            apf.console.log("Found method " + options["http-method"] + ". Taking body from last argument");
-        
         
         var body = "NOTIFY|SEND|POST|PUT".indexOf(options["http-method"].toUpperCase()) > -1 ? args.pop() : "",
             url;
@@ -68808,7 +67424,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68834,7 +67450,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(10831)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(10831)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68860,7 +67476,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68886,7 +67502,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68912,12 +67528,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(12869)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(12869)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69361,7 +67977,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69386,7 +68002,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69411,7 +68027,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69436,7 +68052,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69461,7 +68077,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69486,33 +68102,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69538,7 +68128,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69564,7 +68154,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69590,7 +68180,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69616,7 +68206,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69642,7 +68232,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69668,7 +68258,33 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4360)TIME(Fri, 13 Apr 2012 16:18:04 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4360)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69788,7 +68404,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/jpack_end.js)SIZE(773)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/jpack_end.js)SIZE(773)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 
 
@@ -69820,7 +68436,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69845,33 +68461,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Tue, 20 Mar 2012 12:24:24 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69897,7 +68487,33 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/loader.js)SIZE(15799)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/loader.js)SIZE(15799)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69930,7 +68546,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/linh81/cloud9infra/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Tue, 20 Mar 2012 12:24:25 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

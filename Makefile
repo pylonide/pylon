@@ -9,6 +9,7 @@ endif
 apf:
 	cd support/packager; ../node-builds-v4/$(nodeToUse) package.js projects/apf_cloud9.apr
 	cd support/packager; cp build/apf_release.js ../../client/js/apf_release.js
+	cd support/packager; cp build/apf_debug.js ../../client/js/apf_debug.js
 
 # packages core, then ext
 ext:

@@ -40,17 +40,17 @@
             var DEBUG   = "debug";
             var FILES   = "files";
 
-            var VERSION = window.cloud9config.debug ? FILES : RELEASE;
+            var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
 
-            var apfLoc = VERSION == FILES
-                ? "[%staticUrl%]/support/apf/apf.js"
+            var apfLoc = VERSION == DEBUG
+                ? "[%staticUrl%]/js/apf_debug.js"
                 : "[%staticUrl%]/js/apf_" + VERSION + ".js";
 
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
                 apf.addEventListener("load", function(){
                     var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/main/main", "ext/editors/editors"];
-                    if (VERSION == RELEASE)
+                    //if (VERSION == RELEASE)
                         list.push("ace/editor");
 
                     apf.IdeSettings = <%settingsXml%>
