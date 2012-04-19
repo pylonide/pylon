@@ -268,7 +268,7 @@
                 
                 .revision_hl_delete {
                     position: absolute;
-                    background: rgb(102, 87, 87);
+                    background: rgb(243, 207, 207);
                 }
 
                 /*
