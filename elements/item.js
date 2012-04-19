@@ -282,7 +282,7 @@ apf.item  = function(struct, tagName){
             ? value.split("\|")
             : (value || [1, 0]);
 
-        this.$propHandlers["value"].call(this, value);
+        this.$propHandlers["value"].call(this, this.value);
     };
     
     this.$propHandlers["value"] = function(value){
