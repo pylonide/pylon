@@ -141,11 +141,42 @@
             top: 8px;
             width: 152px;
         }
+        
+        /***********************************************************************
+         * ERASE ME
+         **********************************************************************/
+        .c9-mbar-cont > .hbox {
+            height: 15px;
+            border-bottom: 1px solid black;
+            overflow: hidden;
+        }
+        
+        .hidetabs + .tabRightClick {
+            display : block !important;
+            z-index : 999;
+            box-shadow: 0 0 0 5px #303133, 5px 0px 0 5px #303133;
+        }
+        
+        body > .basic {
+            top: 6px !important;
+        }
+
+        #c9LogoOverlay {
+            background: url(http://dl.dropbox.com/u/3269118/logoc9.png) no-repeat 50% 50%;
+            height: 30px;
+            width: 72px;
+            position: absolute;
+            right: 0;
+            top: 6px;
+            z-index: 999999;
+
+        }
     ]]></a:style>
 
     <a:presentation>
         <a:main container="div/div/div[1]">
             <div class="c9-menu-bar">
+            <div id="c9LogoOverlay"></div>
                 <div class="c9-mbar-logo">
                     <div class="c9-mbar-bcont">
                         <div class="c9-mbar-cont"> </div>
@@ -1004,7 +1035,7 @@
     ]]></a:style>
     <a:presentation>
         <a:main caption="." label="." background="." icon=".">
-            <div class="btn_icon_only"> </div>
+            <div class="btn_icon_only tabRightClick"> </div>
         </a:main>
     </a:presentation>
 </a:button>
@@ -8104,15 +8135,31 @@
     }
     
     .editor_tab.hidetabs {
-        padding-top : 0;
+        padding-top : 11px;
     }
     .editor_tab.hidetabs .editor_bg, 
     .editor_tab.hidetabs .session_page {
-        top : 0;
+        top : 11px;
     }
     
     .editor_tab.hidetabs .btnsesssioncontainer{
-        display : none;
+        z-index: 999;
+        position: relative;
+        height: 8px;
+        top: 21px;
+        overflow: hidden;
+        -webkit-transition: height 0.1s ease 0s;
+    }
+    .editor_tab.hidetabs .btnsesssioncontainer:hover {
+        height: 25px;
+    }
+    .editor_tab.hidetabs .btnsesssioncontainer .sessiontab_title{
+        text-indent: 100%;
+        overflow: hidden;
+        white-space: no-wrap;
+    }
+    .editor_tab.hidetabs .btnsesssioncontainer:hover .sessiontab_title{
+        text-indent: 0;
     }
 ]]></a:style>
 
