@@ -484,6 +484,11 @@ module.exports = ext.register("ext/tree/tree", {
                     return;
                 }
             }
+
+            // If we didn't find any parent nodes and all the folders have been
+            // loaded, then it must mean the parent was collapsed
+            if (numFoldersLoaded === _self.expandedNodes.length)
+                return onFinish();
         }
 
         function loadFolder(path) {
@@ -497,26 +502,36 @@ module.exports = ext.register("ext/tree/tree", {
 
                 if (extra.status === 404) {
                     _self.changed = true;
-                    return;
-                }
 
-                var dataXml = apf.getXml(data);
-
-                // Strip the extra "/" that webDav adds on
-                var cleanParentPath = extra.url.substr(0, extra.url.length-1);
-                var parentNode = getParentNodeFromPath(cleanParentPath);
-
-                // If we can't find the parent node in the tree, then store
-                // the the result to add later
-                if (!parentNode) {
-                    orphanedChildren.push({
-                        cleanParentPath : cleanParentPath,
-                        dataXml : dataXml
-                    });
+                    // Go through the orphaned children and remove those that
+                    // start with the path of the folder not found
+                    for (var oi = 0; oi < orphanedChildren.length; /* blank */) {
+                        var child = orphanedChildren[oi];
+                        if ((child.cleanParentPath + "/").indexOf(extra.url) === 0)
+                            orphanedChildren.splice(oi, 1);
+                        else
+                            oi++;
+                    }
                 }
                 else {
-                    appendXmlToNode(parentNode, dataXml);
-                    tryAppendingOrphansToTree();
+                    var dataXml = apf.getXml(data);
+
+                    // Strip the extra "/" that webDav adds on
+                    var cleanParentPath = extra.url.substr(0, extra.url.length-1);
+                    var parentNode = getParentNodeFromPath(cleanParentPath);
+
+                    // If we can't find the parent node in the tree, then store
+                    // the the result to add later
+                    if (!parentNode) {
+                        orphanedChildren.push({
+                            cleanParentPath : cleanParentPath,
+                            dataXml : dataXml
+                        });
+                    }
+                    else {
+                        appendXmlToNode(parentNode, dataXml);
+                        tryAppendingOrphansToTree();
+                    }
                 }
 
                 // If all the folder children have been loaded and there are no
