@@ -423,9 +423,14 @@ module.exports = ext.register("ext/tree/tree", {
     loadProjectTree : function(callback) {
         var _self = this;
 
+        // If the root node has been removed, add it back in. It would be removed
+        // from expandedNodes if the user collapsed it
         if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
             this.expandedNodes.unshift(ide.davPrefix);
 
+        // Sort the cached list so it's more probable that nodes near the top of
+        // the tree are loaded first, giving the user more visual feedback that
+        // something is happening
         this.expandedNodes.sort();
 
         this.loading = true;
@@ -464,11 +469,6 @@ module.exports = ext.register("ext/tree/tree", {
          * Called after XML has been added
          */
         function tryAppendingOrphansToTree() {
-            // If all the folder children have been loaded and there are no
-            // more orphans to append, then finish
-            if (numFoldersLoaded === _self.expandedNodes.length && !orphanedChildren.length)
-                return onFinish();
-
             for (var ic = 0; ic < orphanedChildren.length; ic++) {
                 var cleanParentPath = orphanedChildren[ic].cleanParentPath;
                 var parentNode = getParentNodeFromPath(cleanParentPath);
@@ -491,13 +491,14 @@ module.exports = ext.register("ext/tree/tree", {
                 return onFinish();
         }
 
-        function loadFolder(path) {
+        // Load up the saved list of project tree folders in this.expandedNodes
+        for (var i = 0; i < this.expandedNodes.length; i++) {
             // At some point davProject.realWebdav is set but you'll note that
-            // tree.xml is able ot use just davProject (which is an intended
+            // tree.xml is able to use just davProject (which is an intended
             // global). Why we cannot use that here escapes me, so we have to
             // check which one is available for us to use (and yes, realWebdav
             // can sometimes not be set on initial load)
-            (davProject.realWebdav || davProject).readdir(path, function(data, state, extra) {
+            (davProject.realWebdav || davProject).readdir(this.expandedNodes[i], function(data, state, extra) {
                 numFoldersLoaded++;
 
                 if (extra.status === 404) {
@@ -541,14 +542,9 @@ module.exports = ext.register("ext/tree/tree", {
             });
         }
 
-        // Iterate through this.expandedNodes to load up the saved list of
-        // project tree folders
-        for (var i = 0; i < this.expandedNodes.length; i++)
-            loadFolder(this.expandedNodes[i]);
-
         // Called when every cached node has been loaded
         function onFinish() {
-            // There is the possibility that we are calling this twice
+            // There is the possibility that we are calling this more than once
             if (!_self.loading)
                 return;
 
