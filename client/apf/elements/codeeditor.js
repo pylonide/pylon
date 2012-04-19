@@ -99,13 +99,17 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         "behaviors", "folding", "newlinemode", "globalcommands");
 
     this.$getCacheKey = function(value) {
-        if (typeof value == "string") {
-            var key = this.xmlRoot
-                ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
-                : value;
+        var key;
+        if (typeof value === "string") {
+            if (this.xmlRoot) {
+                key = this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag);
+            }
+            else {
+                key = value;
+            }
         }
         else if (value.nodeType) {
-            var key = value.getAttribute(apf.xmldb.xmlIdTag);
+            key = value.getAttribute(apf.xmldb.xmlIdTag);
         }
 
         return key;
@@ -571,7 +575,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         if (!this.$ext)
             return;
 
-        this.syncValue();
+        // Removed because it was causing problems in some plugins by 
+        // reloading sessions upon the editor losing focus and it is unknown 
+        // what's the reasoning behind. Tests show no difference.
+        // this.syncValue(); 
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
         this.$editor.blur();
