@@ -85,7 +85,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
                     }
-
                     var self = this;
                     this.getRevisions(message.path, function(err, revObj) {
                         if (err) {
@@ -95,26 +94,14 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         }
 
                         self.broadcastRevisions.call(self, revObj, user, {
+                            id: message.id || null,
+                            nextAction: message.nextAction,
                             path: message.path,
                             getOriginalContent: message.getOriginalContent
                         });
                     });
                     break;
 
-                // The client requests the original contents of a particular file.
-                // The original contents means the text of the document before
-                // any diff was applied.
-                case "getOriginalContent":
-                    if (!message.path) {
-                        return console.error("No revision path in the parameters");
-                    }
-
-                    this.broadcastOriginalContent(message.path, user, {
-                        nextAction: message.nextAction,
-                        id: message.id
-                    });
-
-                    break;
                 case "closeFile":
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
@@ -173,8 +160,9 @@ require("util").inherits(RevisionsPlugin, Plugin);
         Path.exists(absPath, function(exists) {
             if (exists) {
                 Fs.readFile(absPath, function(err, data) {
-                    if (err)
+                    if (err) {
                         return callback(err);
+                    }
 
                     try {
                         revObj = JSON.parse(data);
@@ -201,8 +189,9 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         // on the first revision save.
                         revObj.originalContent = data.toString();
                         Fs.writeFile(absPath, JSON.stringify(revObj), function(err) {
-                            if (err)
+                            if (err) {
                                 return callback(err);
+                            }
 
                             cacheRevision(filePath, revObj, callback);
                         });
@@ -307,24 +296,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
         receiver.broadcast(JSON.stringify(data));
     };
 
-    this.broadcastOriginalContent = function(path, user, options) {
-        var receiver = user || this.ide;
-        var data = {
-            type: "revision",
-            subtype: "getOriginalContent",
-            body: this.getOriginalDoc(path),
-            path: path
-        };
-
-        if (options) {
-            Object.keys(options).forEach(function(key) {
-                data[key] = options[key];
-            });
-        }
-
-        receiver.broadcast(JSON.stringify(data));
-    };
-
     this.enqueueDoc = function(user, message, client) {
         var path = message.path;
         var docExists = this.docQueue.some(function(doc) {
@@ -395,7 +366,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
         this.getRevisions(path, function(err, revObj) {
             if (err)
                 return callback(new Error("Couldn't retrieve revisions for " + path));
-                
+
             revObj.revisions.push(revision);
 
             self.saveToDisk(path, callback);
