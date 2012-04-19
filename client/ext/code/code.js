@@ -314,6 +314,24 @@ module.exports = ext.register("ext/code/code", {
                     return;
 
                 //??? destroy doc.acesession
+                doc.acedoc.doc.$lines = [];
+                doc.acedoc.doc._eventRegistry = null;
+                doc.acedoc.doc._defaultHandlers = null;
+                doc.acedoc._eventRegistry = null;
+                doc.acedoc._defaultHandlers = null;
+                doc.acedoc = null;
+                doc.acesession.$stopWorker();
+                doc.acesession.bgTokenizer.lines = [];
+                doc.acesession.bgTokenizer.tokenizer = null;
+                doc.acesession.bgTokenizer = null;
+                doc.acesession.$rowCache = null;
+                doc.acesession.$mode = null;
+                doc.acesession.$origMode = null;
+                doc.acesession.$breakpoints = null;
+                doc.acesession.$annotations = null;
+                doc.acesession.languageAnnos = null;
+                doc.acesession = null;
+                doc = null;
             });
         }
         ceEditor.setProperty("value", doc.acesession);
