@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
 var css = require("text!ext/uploadfiles/uploadfiles.css");
+var skin = require("text!ext/uploadfiles/skin.xml");
 var markup = require("text!ext/uploadfiles/uploadfiles.xml");
 var fs   = require("ext/filesystem/filesystem");
 
@@ -22,6 +23,11 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     dev         : "Ajax.org",
     name        : "Upload Files",
     alone       : true,
+    skin    : {
+        id  : "uploadfiles",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/uploadfiles/style/images/"
+    },
     type        : ext.GENERAL,
     css         : css,
     markup      : markup,
@@ -84,22 +90,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             this.filebrowser = fileUploadSelect.$ext;
             this.filebrowser.addEventListener('change', handleFileSelect, false);
             
-            this.filebrowser.addEventListener("mouseover", function() {
-                apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
-            });
-            
-            this.filebrowser.addEventListener("mouseout", function() {
-                apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Over"]);
-            });
-            
-            this.filebrowser.addEventListener("mousedown", function() {
-                apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Down");
-            });
-            
-            this.filebrowser.addEventListener("mouseup", function() {
-                apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Down"]);
-            });
-            
             // enable webkit folder upload
             if (apf.isWebkit) {
                 hboxUploadNoFolders.hide();
@@ -110,22 +100,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 this.folderbrowser = folderUploadSelect.$ext;
                 this.folderbrowser.style.display = "block";
                 this.folderbrowser.addEventListener('change', handleFileSelect, false);
-                
-                this.folderbrowser.addEventListener("mouseover", function() {
-                    apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
-                });
-                
-                this.folderbrowser.addEventListener("mouseout", function() {
-                    apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Over"]);
-                });
-                
-                this.folderbrowser.addEventListener("mousedown", function() {
-                    apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Down");
-                });
-                
-                this.folderbrowser.addEventListener("mouseup", function() {
-                    apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Down"]);
-                });
             }
         });
         
@@ -135,10 +109,16 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.startUpload(files);
         };
         
-        //@todo new apf.vbox
         ide.addEventListener("init.ext/tree/tree", function(){
+            winFilesViewer.appendChild(new apf.vbox({
+                id : "vboxTreeContainer",
+                anchors: "0 0 0 0"
+            }));
+        
+            vboxTreeContainer.appendChild(trFiles);
             vboxTreeContainer.appendChild(boxUploadActivity);
         });
+        
         
         apf.addEventListener("http.uploadprogress", this.$onProgressFn);
         
@@ -155,7 +135,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 
             _self.lockHideQueue = false;
             _self.clearCompletedUploads();
-
         });
     },
 
@@ -327,7 +306,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             }
         }, function() {
             if (!_self.uploadInProgress)
-            _self.uploadNextFile();
+                _self.uploadNextFile();
         });
         
         // add a file to the upload queue 

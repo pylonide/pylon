@@ -109,8 +109,10 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     tree.focus();
                     _self.webdav.exec("mkdir", [path, name], function(data) {
                         // @todo: in case of error, show nice alert dialog
-                        if (!data || data instanceof Error)
+                        if (!data || data instanceof Error) {
+                            callback && callback();
                             throw Error;
+                        }
                         
                         // parse xml
                         var nodesInDirXml = apf.getXml(data);
