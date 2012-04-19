@@ -95,26 +95,14 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         }
 
                         self.broadcastRevisions.call(self, revObj, user, {
+                            id: message.id || null,
+                            nextAction: message.nextAction,
                             path: message.path,
                             getOriginalContent: message.getOriginalContent
                         });
                     });
                     break;
 
-                // The client requests the original contents of a particular file.
-                // The original contents means the text of the document before
-                // any diff was applied.
-                case "getOriginalContent":
-                    if (!message.path) {
-                        return console.error("No revision path in the parameters");
-                    }
-
-                    this.broadcastOriginalContent(message.path, user, {
-                        nextAction: message.nextAction,
-                        id: message.id
-                    });
-
-                    break;
                 case "closeFile":
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
@@ -299,24 +287,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 delete options.getOriginalContent;
             }
 
-            Object.keys(options).forEach(function(key) {
-                data[key] = options[key];
-            });
-        }
-
-        receiver.broadcast(JSON.stringify(data));
-    };
-
-    this.broadcastOriginalContent = function(path, user, options) {
-        var receiver = user || this.ide;
-        var data = {
-            type: "revision",
-            subtype: "getOriginalContent",
-            body: this.getOriginalDoc(path),
-            path: path
-        };
-
-        if (options) {
             Object.keys(options).forEach(function(key) {
                 data[key] = options[key];
             });
