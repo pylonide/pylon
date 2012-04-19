@@ -634,13 +634,8 @@ apf.webdav = function(struct, tagName){
                     bubbles : true
                   }) === false && !callback)
                     throw oError;
-                callback && callback.call(this, data, state, extra);
             }
-            else {
-                // nodes needs to be added to the cache, callback passed through
-                // to notify listener(s)
-                this.getProperties(sTo, 0, callback);
-            }
+            callback && callback.call(this, data, state, extra);
         }, sFrom, null, oHeaders);
     };
 
