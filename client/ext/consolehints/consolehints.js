@@ -85,8 +85,14 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     hook : function(){
         var _self = this;
         
-        ide.addEventListener("init.ext/console/console", function(){
+        ide.addEventListener("init.ext/console/console", function(e){
             ext.initExtension(_self);
+            
+            var hideInput = e.ext.hideInput;
+            e.ext.hideInput = function(){
+                _self.hide();
+                hideInput.apply(Console, arguments);
+            }
         });
     },
 

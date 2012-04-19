@@ -122,11 +122,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             disabled : "{!!!tabEditors.activepage}"
         }), 100, mnuContext);
         menus.addItemByPath("~", new apf.divider(), 200, mnuContext);
-        var itmClose = menus.addItemByPath("Close Tab", new apf.item({
+        menus.addItemByPath("Close Tab", new apf.item({
             command : "closetab",
             disabled : "{!!!tabEditors.activepage}"
         }), 300, mnuContext);
-        var itmCloseAll = menus.addItemByPath("Close All Tabs", new apf.item({
+        menus.addItemByPath("Close All Tabs", new apf.item({
             command : "closealltabs",
             disabled : "{!!!tabEditors.activepage}"
         }), 400, mnuContext);
@@ -288,14 +288,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         tabEditors.remove(page);
         
-        if (!isLast)
-            this.resizeTabs();
+        this.resizeTabs(isLast);
         
         return false;
     },
     
-    resizeTabs : function(){
+    resizeTabs : function(cancel){
         clearTimeout(this.closeTimer);
+        
+        if (cancel)
+            return;
         
         this.closeTimer = setTimeout(function(){
             tabEditors.$waitForMouseOut = false;
