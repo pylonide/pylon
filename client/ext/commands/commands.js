@@ -92,6 +92,9 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         addCommand : function(command){
             this[command.name] = "";
             
+            if (command.readOnly == undefined)
+                command.readOnly = true;
+            
             addCommand.apply(this, arguments);
             
             if (command.bindKey)
