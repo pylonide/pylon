@@ -1,7 +1,8 @@
 var Path = require("path");
 var Fs = require("fs");
 
-module.exports = function (sandbox) {
+module.exports = function (projectDir, unixId) {
+    
     this.$normalizeCallback = function (fn) {
         if (typeof fn !== "function") {
             return function () {};
@@ -14,18 +15,14 @@ module.exports = function (sandbox) {
      * Resolves the path given a path relative to a project folder
      */
     this.$resolvePath = function (relativePath, callback) {
-        sandbox.getProjectDir(function (err, projectDir) {
-            if (err) return callback(err);
-            
-            var path = Path.join(projectDir, relativePath);
-            path = Path.normalize(path);
-            
-            if (path.indexOf(projectDir) !== 0) {
-                return callback("Can't step out project dir... " + path);
-            }
-            
-            callback(null, path);
-        });
+        var path = Path.join(projectDir, relativePath);
+        path = Path.normalize(path);
+        
+        if (path.indexOf(projectDir) !== 0) {
+            return callback("Can't step out project dir... " + path);
+        }
+        
+        callback(null, path);
     };
     
     /**
@@ -45,12 +42,7 @@ module.exports = function (sandbox) {
         });
     };
     
-    /**
-     * Wrapper around fs.readFile
-     */
-    this.readFile = function () {
-        var fnArgs = arguments;
-        
+    this.$simpleWrapper = function (name, fnArgs) {    
         var path = fnArgs[0];
         var callback = this.$normalizeCallback(fnArgs[fnArgs.length - 1]);
         
@@ -59,8 +51,15 @@ module.exports = function (sandbox) {
             
             // first copy the array with slice(0), then remove the first arg
             var args = [].slice.call(fnArgs).slice(1);
-            Fs.readFile.apply(Fs, [path].concat(args));
-        });
+            Fs[name].apply(Fs, [path].concat(args));
+        });        
+    };
+    
+    /**
+     * Wrapper around fs.readFile
+     */
+    this.readFile = function () {
+        return this.$simpleWrapper.call(this, "readFile", arguments);
     };
     
     /**
@@ -84,16 +83,16 @@ module.exports = function (sandbox) {
                 lastArg = function (err) {
                     if (err) return callback(err);
                     
-                    sandbox.getUnixId(function (err, unixId) {
-                        if (err || !unixId) return callback(err);
+                    if (!unixId) {
+                        return callback();
+                    }
+                    
+                    Fs.chown(path, unixId, unixId, function (err) {
+                        if (err) return callback(err);
                         
-                        Fs.chown(path, unixId, unixId, function (err) {
-                            if (err) return callback(err);
-                            
-                            // @todo, do a chmod here?
-                            
-                            callback();
-                        });
+                        // @todo, do a chmod here?
+                        
+                        callback();
                     });
                 };
             }
@@ -106,17 +105,13 @@ module.exports = function (sandbox) {
      * Wrapper around chmod
      */
     this.chmod = function () {
-        var fnArgs = arguments;
-        
-        var path = fnArgs[0];
-        var callback = this.$normalizeCallback(fnArgs[fnArgs.length - 1]);
-        
-        this.$resolvePath(path, function (err, path) {
-            if (err) return callback(err);
-            
-            // first copy the array with slice(0), then remove the first arg
-            var args = [].slice.call(fnArgs).slice(1);
-            Fs.chmod.apply(Fs, [path].concat(args));
-        });
+        return this.$simpleWrapper.call(this, "chmod", arguments);
+    };
+    
+    /**
+     * Wrapper around readdir
+     */
+    this.readdir = function () {
+        return this.$simpleWrapper.call(this, "readdir", arguments);     
     };
 };
