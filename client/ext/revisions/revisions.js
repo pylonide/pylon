@@ -249,27 +249,41 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
+        this.$afterModelUpdate = this.afterModelUpdate.bind(this);
         this.model = page.$mdlRevisions;
+        this.$restoreSelection(page);
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
     },
 
-    $afterModelUpdate: function(e) {
+    $restoreSelection: function(page) {
+        setTimeout(function(self) {
+            var model = page.$mdlRevisions;
+            if (model && page.$showRevisions === true) {
+                var node;
+                console.log("restoring ", page.name)
+                if (page.$selectedRevision) {
+                    node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
+                }
+                else {
+                    node = model.data.firstChild;
+                }
+                if (node) {
+                    lstRevisions.select(node);
+                }
+            }
+        }, 0, this);
+    },
+
+    afterModelUpdate: function(e) {
         var model = e.currentTarget;
         if (!model || !model.data || model.data.childNodes.length === 0) {
-            //console.log("fail")
             return;
         }
 
         if (typeof lstRevisions !== "undefined") {
             lstRevisions.setModel(model);
-
-            if (tabEditors.getPage().$showRevisions === true) {
-                var node = model.data.firstChild;
-                if (node) {
-                    lstRevisions.select(node);
-                }
-            }
+            this.$restoreSelection(tabEditors.getPage());
         }
     },
 
@@ -1016,11 +1030,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!this.model.data || this.model.data.length === 0) {
             this.populateModel();
         }
-
-        //var node = this.model.data.firstChild;
-        //if (node && lstRevisions) {
-            //lstRevisions.select(node);
-        /*}*/
 
         tabEditors.getPage().$showRevisions = true;
         ide.dispatchEvent("revisions.visibility", {
