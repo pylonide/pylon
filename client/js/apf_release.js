@@ -12465,7 +12465,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40893)TIME(Thu, 19 Apr 2012 12:37:04 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40895)TIME(Thu, 19 Apr 2012 13:41:49 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12761,9 +12761,10 @@ apf.xmldb = new (function(){
                     if (!model)
                         return;
                     
-                    if(model.$propBinds[sUId[1]][sUId[2]]) {
+                    if (model.$propBinds[sUId[1]][sUId[2]]) {
                         if (!apf.isChildOf(model.data, xmlNode, true)) 
                             return false;
+
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
                         var node  = xpath
                             ? apf.queryNode(model.data, xpath)
@@ -52458,7 +52459,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25144)TIME(Mon, 16 Apr 2012 09:17:07 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25149)TIME(Thu, 19 Apr 2012 13:38:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52752,7 +52753,7 @@ apf.item  = function(struct, tagName){
             ? value.split("\|")
             : (value || [1, 0]);
 
-        this.$propHandlers["value"].call(this, value);
+        this.$propHandlers["value"].call(this, this.value);
     };
     
     this.$propHandlers["value"] = function(value){
