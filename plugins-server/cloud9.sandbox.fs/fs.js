@@ -120,18 +120,3 @@ module.exports = function (sandbox) {
         });
     };
 };
-
-/*
-Filesystem plugin
-
-* exists
-* readFile
-* writeFile (auto-chown)
-* chmod
-
-"/package.json" -> /User/jan/workspaces/1234/package.json
-
-Path.join(root, file)
-Path.normalize()
-do prefix check
-*/
