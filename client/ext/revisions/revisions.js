@@ -200,8 +200,18 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
             }
 
-            var id = node.getAttribute("id");
-            self.loadRevision(id, "preview");
+            var revObj = self.$getRevisionObject(self.$getDocPath());
+            var id = parseInt(node.getAttribute("id"), 10);
+            var cache = revObj.previewCache;
+            if (cache && cache[id]) {
+                self.previewRevision(id, cache[id][0], cache[id][1]);
+            }
+            else {
+                if (!cache) {
+                    cache = revObj.previewCache = {};
+                }
+                self.loadRevision(id, "preview");
+            }
             tabEditors.getPage().$selectedRevision = id;
         };
 
@@ -234,14 +244,14 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
+        this.$restoreSelection(page);
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
         this.model = page.$mdlRevisions;
-        this.$restoreSelection(page);
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
     },
 
-    $restoreSelection: function(page) {
+    $restoreSelection:  function(page) {
         setTimeout(function(self) {
             var model = page.$mdlRevisions;
             if (model && page.$showRevisions === true) {
@@ -777,6 +787,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Look for the node that references the revision we are loading and
         // update its state to loaded.
         this.$setRevisionNodeAttribute(id, "loading_preview", "false");
+        if (!revObj.previewCache) {
+            revObj.previewCache = {};
+        }
+        if (!revObj.previewCache[id]) {
+            revObj.previewCache[id] = [value, ranges];
+        }
     },
 
     /**
@@ -1007,7 +1023,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             lstRevisions.setModel(model);
         }
 
-        if (model && (!model.data || this.model.data.length === 0)) {
+        if (model && (!model.data || model.data.length === 0)) {
             this.populateModel();
         }
 
