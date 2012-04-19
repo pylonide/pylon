@@ -60,9 +60,9 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     this.workspaceRe = new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
     this.$users = {};
-    
+
     this.nodeCmd = options.exec || process.argv[0];
-    
+
     var davOptions = {
         node: this.options.mountDir,
         mount: this.options.davPrefix,
