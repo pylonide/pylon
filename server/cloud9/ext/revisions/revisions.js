@@ -85,7 +85,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
                     }
-
                     var self = this;
                     this.getRevisions(message.path, function(err, revObj) {
                         if (err) {
@@ -161,8 +160,9 @@ require("util").inherits(RevisionsPlugin, Plugin);
         Path.exists(absPath, function(exists) {
             if (exists) {
                 Fs.readFile(absPath, function(err, data) {
-                    if (err)
+                    if (err) {
                         return callback(err);
+                    }
 
                     try {
                         revObj = JSON.parse(data);
@@ -189,8 +189,9 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         // on the first revision save.
                         revObj.originalContent = data.toString();
                         Fs.writeFile(absPath, JSON.stringify(revObj), function(err) {
-                            if (err)
+                            if (err) {
                                 return callback(err);
+                            }
 
                             cacheRevision(filePath, revObj, callback);
                         });
@@ -365,7 +366,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
         this.getRevisions(path, function(err, revObj) {
             if (err)
                 return callback(new Error("Couldn't retrieve revisions for " + path));
-                
+
             revObj.revisions.push(revision);
 
             self.saveToDisk(path, callback);

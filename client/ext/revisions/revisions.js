@@ -647,8 +647,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
 
-        console.log("loadRevision")
-
         // We haven't cached the original content. Let's load it from the server.
         ide.send({
             command: "revisions",
@@ -1015,34 +1013,33 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     show: function() {
+        var page = tabEditors.getPage();
         ext.initExtension(this);
 
         settings.model.setQueryValue("general/@revisionsvisible", true);
-
-        ceEditor.$editor.container.style.right = BAR_WIDTH + "px";
+        ceEditor.$ext.style.right = BAR_WIDTH + "px";
+        page.$showRevisions = true;
         this.panel.show();
-
-        lstRevisions.setModel(this.model);
-        if (!this.model.data || this.model.data.length === 0) {
-            this.populateModel();
-        }
-
-        tabEditors.getPage().$showRevisions = true;
         ide.dispatchEvent("revisions.visibility", {
             visibility: "shown",
             width: BAR_WIDTH
         });
+
+        this.$restoreSelection(page);
     },
 
     hide: function() {
         settings.model.setQueryValue("general/@revisionsvisible", false);
-        ceEditor.$editor.container.style.right = "0";
+        ceEditor.$ext.style.right = "0";
+        tabEditors.getPage().$showRevisions = false;
         this.panel.hide();
+        ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
+
+        if (lstRevisions) {
+            lstRevisions.selectList([]); // Unselect everything
+        }
 
         this.goToEditView();
-
-        ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
-        tabEditors.getPage().$showRevisions = false;
     },
 
     disableEventListeners: function() {
