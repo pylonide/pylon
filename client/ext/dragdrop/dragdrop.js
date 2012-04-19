@@ -62,14 +62,16 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         });
 
         ide.addEventListener("init.ext/uploadfiles/uploadfiles", function(){
-            _self.nodes.push(uploadDropArea);
-            //decorateNode(uploadDropArea.$ext);
-
-            uploadDropArea.addEventListener("dragenter", dragEnter, false);
-            uploadDropArea.addEventListener("dragleave", dragLeave, false);
-            uploadDropArea.addEventListener("drop", dragDrop, false);
-            ["dragexit", "dragover"].forEach(function(e) {
-                uploadDropArea.addEventListener(e, noopHandler, false);
+            winUploadFiles.addEventListener("afterrender", function(){
+                _self.nodes.push(uploadDropArea);
+                //decorateNode(uploadDropArea.$ext);
+    
+                uploadDropArea.addEventListener("dragenter", dragEnter, false);
+                uploadDropArea.addEventListener("dragleave", dragLeave, false);
+                uploadDropArea.addEventListener("drop", dragDrop, false);
+                ["dragexit", "dragover"].forEach(function(e) {
+                    uploadDropArea.addEventListener(e, noopHandler, false);
+                });
             });
         });
 

@@ -34,6 +34,24 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     uploadQueue : [], // list of all files that are queued for upload
     lockHideQueueItems: [], // list of completed downloads that still needs to be removed from the upload queue
     
+    hook : function(){
+        var _self = this;
+        
+        this.$onProgressFn = this.onProgress.bind(this);
+        
+        this.nodes.push(
+            ide.mnuFile.appendChild(new apf.item({
+                caption : "Upload Files",
+                onclick : function(){
+                    ext.initExtension(_self);
+                    
+                    winUploadFiles.show();
+                }
+            })),
+            ide.mnuFile.appendChild(new apf.divider())
+        );
+    },
+    
     init : function(){
         var _self = this;
         apf.importCssString(_self.css);
@@ -61,36 +79,54 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             btnUploadFiles.setProperty("right", "81");
         }
         */
-        this.nodes.push(
-            ide.mnuFile.appendChild(new apf.item({
-                caption : "Upload Files",
-                onclick : function(){
-                    winUploadFiles.show();
-                }
-            })),
-            ide.mnuFile.appendChild(new apf.divider())
-        );
         
-        this.filebrowser = fileUploadSelect.$ext;
-        this.filebrowser.addEventListener('change', handleFileSelect, false);
-        /*
-        this.folderbrowser = folderUploadSelect.$ext;
-        this.folderbrowser.addEventListener('change', handleFileSelect, false);
-        */
-        this.filebrowser.addEventListener("mouseover", function() {
-            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
-        });
-        
-        this.filebrowser.addEventListener("mouseout", function() {
-            apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Over"]);
-        });
-        
-        this.filebrowser.addEventListener("mousedown", function() {
-            apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Down");
-        });
-        
-        this.filebrowser.addEventListener("mouseup", function() {
-            apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Down"]);
+        winUploadFiles.addEventListener("afterrender", function(){
+            this.filebrowser = fileUploadSelect.$ext;
+            this.filebrowser.addEventListener('change', handleFileSelect, false);
+            
+            this.filebrowser.addEventListener("mouseover", function() {
+                apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
+            });
+            
+            this.filebrowser.addEventListener("mouseout", function() {
+                apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Over"]);
+            });
+            
+            this.filebrowser.addEventListener("mousedown", function() {
+                apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Down");
+            });
+            
+            this.filebrowser.addEventListener("mouseup", function() {
+                apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Down"]);
+            });
+            
+            // enable webkit folder upload
+            if (apf.isWebkit) {
+                hboxUploadNoFolders.hide();
+                hboxUploadWithFolders.show();
+                
+                apf.setStyleClass(fileUploadSelectBtn.$ext, "uploadWithFolders")
+                
+                this.folderbrowser = folderUploadSelect.$ext;
+                this.folderbrowser.style.display = "block";
+                this.folderbrowser.addEventListener('change', handleFileSelect, false);
+                
+                this.folderbrowser.addEventListener("mouseover", function() {
+                    apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Over");
+                });
+                
+                this.folderbrowser.addEventListener("mouseout", function() {
+                    apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Over"]);
+                });
+                
+                this.folderbrowser.addEventListener("mousedown", function() {
+                    apf.setStyleClass(fileUploadSelectBtn.$ext, "btn-default-css3Down");
+                });
+                
+                this.folderbrowser.addEventListener("mouseup", function() {
+                    apf.setStyleClass(fileUploadSelectBtn.$ext, null, ["btn-default-css3Down"]);
+                });
+            }
         });
         
         function handleFileSelect(e){
@@ -99,12 +135,12 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.startUpload(files);
         };
         
-        setTimeout(function() {
+        //@todo new apf.vbox
+        ide.addEventListener("init.ext/tree/tree", function(){
             vboxTreeContainer.appendChild(boxUploadActivity);
-        }, 200);
-        //trFiles.setAttribute("anchors", "0 0 " + lstUploadActivity.$ext.offsetHeight + " 0");
+        });
         
-        apf.addEventListener("http.uploadprogress", this.onProgress.bind(this));
+        apf.addEventListener("http.uploadprogress", this.$onProgressFn);
         
         lstUploadActivity.$ext.addEventListener("mouseover", function(e) {
             _self.lockHideQueue = true;
@@ -196,6 +232,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     onDrop: function(e) {
+        ext.initExtension(this);
+        
         var dt = e.dataTransfer;
         var files = dt.files;
 
@@ -206,7 +244,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var _self = this;
         this.numFilesUploaded = files.length;
         
-        trFiles.addEventListener("beforeselect", this.checkSelectableFile);
         var node = trFiles.selected;
         if (!node)
             node = trFiles.xmlRoot.selectSingleNode("folder");
@@ -221,6 +258,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         // show upload activity list
         boxUploadActivity.show();
         
+        // set hidden files to true to support hidden files and folders
+        (davProject.realWebdav || davProject).setAttribute("showhidden", true);
         
         // loop through all files to create the upload queue and create subfolders
         apf.asyncForEach(files, function(file, next) {
@@ -235,6 +274,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             
             // a folder is uploaded
             else {
+                //davProject.setProperty("showhidden", true);
                 folders.pop(); // remove filename from path
                 
                 var targetPath = folders.join("/");
@@ -266,6 +306,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         // subfolder does not exists, create first
                         else {
                             fs.createFolder(folder, trFiles, true, function(folder) {
+                                if (!folder)
+                                    return;
+                                
                                 // check if there are subfolders to be created
                                 trFiles.select(folder);
                                 subfolder = folder;
@@ -403,10 +446,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.uploadInProgress = false;
             _self.existingOverwriteAll = false;
             _self.existingSkipAll = false;
+            (davProject.realWebdav || davProject).setAttribute("showhidden", require('ext/settings/settings').model.queryValue("auto/projecttree/@showhidden"));
             this.hideUploadActivityTimeout = setTimeout(function() {
                 mdlUploadActivity.load("<data />");
                 boxUploadActivity.hide();
-                trFiles.removeEventListener("beforeselect", _self.checkSelectableFile);
             }, 5000);
         }
     },
@@ -576,7 +619,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             item.enable();
         });
         
-        apf.addEventListener("http.uploadprogress", this.onProgress);
+        apf.addEventListener("http.uploadprogress", this.$onProgressFn);
     },
 
     disable : function(){
@@ -584,7 +627,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             item.disable();
         });
         
-        apf.removeEventListener("http.uploadprogress", this.onProgress);
+        apf.removeEventListener("http.uploadprogress", this.$onProgressFn);
     },
 
     destroy : function(){
@@ -593,7 +636,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         });
         this.nodes = [];
         
-        apf.removeEventListener("http.uploadprogress", this.onProgress);
+        apf.removeEventListener("http.uploadprogress", this.$onProgressFn);
     }
 });
 

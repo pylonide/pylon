@@ -33,6 +33,10 @@
     background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-select-text.png) no-repeat 0 0;
 }
 
+.txtUploadTargetFolder {
+    font-size: 11px;
+    color: #838383;
+}
 #fileUploadSelect {
     z-index: 9999;
 }
@@ -55,6 +59,7 @@
 }
 
 #folderUploadSelect {
+    display: none;
     position: absolute;
     top: 127px;
     left: 188px;

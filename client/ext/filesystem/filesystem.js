@@ -85,7 +85,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         if (!node && tree.xmlRoot)
             node = tree.xmlRoot.selectSingleNode("folder");
         if (!node)
-            return;
+            return callback && callback();
+
         if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
 

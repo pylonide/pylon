@@ -20,7 +20,7 @@
           skin="header-btn"
           right="56"
           icon="panel_upload.png"
-          onclick="winUploadFiles.show()"
+          onclick="require('core/ext').initExtension(require('ext/uploadfiles/uploadfiles'));winUploadFiles.show()"
           tooltip="Upload Files" />
         <a:button id="btnTreeRefresh"
           top="-22"
@@ -54,6 +54,7 @@
                     <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
                     <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
                     <a:icon match="[folder|project]" value="folder.png" />
+                    <a:selectable match="[folder|file[not(@type='fileupload')]]" />
                     <a:icon match="[file[@type='fileupload']]" value="file-tree-load-spinner.gif" />
                     <a:css match="[file[@type='fileupload']]" value="fileupload" />
                     <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
