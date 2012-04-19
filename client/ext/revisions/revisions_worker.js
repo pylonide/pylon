@@ -21,8 +21,6 @@ var startChar = {
 };
 
 var getLastAndAfterRevisions = function(data) {
-    "use strict";
-
     var group = data.group;
     // Ordered timestamps
     var keys = data.groupKeys;
@@ -147,7 +145,7 @@ self.onmessage = function(e) {
 
             packet.type = "apply";
             packet.content = {
-                id: e.data.data.id,
+                id: e.data.id,
                 value: afterRevision
             };
             break;

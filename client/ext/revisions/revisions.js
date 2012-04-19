@@ -261,7 +261,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             var model = page.$mdlRevisions;
             if (model && page.$showRevisions === true) {
                 var node;
-                console.log("restoring ", page.name)
                 if (page.$selectedRevision) {
                     node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
                 }
@@ -312,7 +311,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
         var path = self.$getDocPath(doc.$page);
-        console.log("PATH", path)
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
                 self.onDocChange.call(self, e, doc);
@@ -456,15 +454,17 @@ module.exports = ext.register("ext/revisions/revisions", {
                     break;
                 }
 
-                var revision = this.getRevision(message.id, revObj);
+                var revision = this.getRevision(message.id);
+                var group = {};
                 var data = {
                     id: message.id,
+                    group: group,
                     type: message.nextAction,
                     content: message.originalContent
                 };
+
                 var len = revObj.groupedRevisionIds.length;
                 if (revObj.useCompactList && len > 0) {
-                    var group = {};
                     for (var i = 0; i < len; i++) {
                         var groupedRevs = revObj.groupedRevisionIds[i];
                         if (groupedRevs.indexOf(parseInt(message.id, 10)) !== -1) {
@@ -480,7 +480,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                         .sort(function(a, b) { return a - b; });
 
                     if (keys.length > 1) {
-                        data.group = group;
                         data.groupKeys = keys;
                         data.data = this.getRevision(keys[0]);
                         this.worker.postMessage(data);
@@ -488,12 +487,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                     }
                 }
 
-                var groupData = {};
-                groupData[message.id] = revision;
-
-                data.group = groupData;
+                group[message.id] = revision;
                 data.groupKeys = [parseInt(message.id, 10)];
-                data.data = revision;
                 this.worker.postMessage(data);
                 break;
         }
@@ -645,6 +640,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     id: id,
                     type: "revision",
                     subtype: "getRevisionHistory",
+                    path: path,
                     nextAction: nextAction,
                     originalContent: revObj.originalContent
                 }
