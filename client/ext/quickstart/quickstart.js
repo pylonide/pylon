@@ -17,7 +17,7 @@ var markup = require("text!ext/quickstart/quickstart.xml");
 var jsonQuickStart = {
     identifiers: [
         {
-            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Project Files"]'),
+            el : winFilesViewer,
             name : "qsProjectBar",
             pos: "right"
         },
@@ -35,7 +35,7 @@ var jsonQuickStart = {
             }
         },
         {
-            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
+            el : winDbgConsole,
             name : "qsCLI",
             pos: "top"
         }
@@ -77,7 +77,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
                 else {
                     require("ext/settings/settings").model.setQueryValue("auto/help/@show", "true");
                     apf.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
-                    _self.launchQS();
+                    //_self.launchQS();
                 }
              }
          });
