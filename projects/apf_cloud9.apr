@@ -80,7 +80,7 @@
           filehead = "1" /-->
 
     </p:process>
-
+    
     <p:files>
         <p:node path="{platform}" mask="*.js" group="apf">
             <p:node path="jpack_begin.js" />
@@ -261,8 +261,8 @@
         <p:define name="__WITH_INLINE_DATABINDING" value="1" />
         <!--p:define name="__WITH_AML_BINDINGS" value="1" /-->
         <p:define name="__WITH_KEYBOARD" value="1" />
-    <!--p:define name="__ENABLE_SELENIUM_PLAYER" value="0" />
-    <p:define name="__ENABLE_UIRECORDER_HOOK" value="1" /-->
+	<!--p:define name="__ENABLE_SELENIUM_PLAYER" value="0" />
+	<p:define name="__ENABLE_UIRECORDER_HOOK" value="1" /-->
 
         <!--p:define name="__WITH_MODEL_VALIDATION" value="1" /-->
         <p:define name="__WITH_MOUSESCROLL" value="1" />>
@@ -306,8 +306,8 @@
 
         <!-- include all available Runtime Support objects (browsers) -->
         <!--p:define name="__SUPPORT_IE" value="1" /-->
-        <!--p:define name="__WITH_POPUP_IE" value="1" />
-        <p:define name="__SUPPORT_GECKO" value="1" /-->
+        <!--p:define name="__WITH_POPUP_IE" value="1" /-->
+        <p:define name="__SUPPORT_GECKO" value="1" />
         <!--p:define name="__WITH_ELEMENT_FROM_POINT" value="1" /-->
         <p:define name="__SUPPORT_WEBKIT" value="1" />
         <p:define name="__SUPPORT_CHROME" value="1" />
@@ -380,7 +380,7 @@
 
         <!-- include all components -->
         <!--p:define name="__ENABLE_BUTTON_ACTIONS" value="1" /-->
-        <!--p:define name="__ENABLE_TEXTBOX_MASKING" value="1" /-->
+        <p:define name="__ENABLE_TEXTBOX_MASKING" value="1" />
         <p:define name="__ENABLE_TABSCROLL" value="1" />
         <p:define name="__ENABLE_TAB_ORDER" value="1" />
 
