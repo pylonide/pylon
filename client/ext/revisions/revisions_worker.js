@@ -29,28 +29,30 @@ var getLastAndAfterRevisions = function(data) {
     var revision = group[keys[0]];
     var beforeRevision = data.content;
 
-    var i, patch, ts;
+    var i, ts;
+    var patches = [];
     for (i = 0; i <= revision.ts.length; i++) {
         ts = revision.ts[i];
         if (minKey == ts) {
             break;
         }
 
-        patch = revision.tsValues[ts][0];
-        beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
+        patches = patches.concat(revision.tsValues[ts][0]);
     }
+    beforeRevision = self.dmp.patch_apply(patches, beforeRevision)[0];
 
+    patches = [];
     var afterRevision = beforeRevision;
     for (i = 0; i <= keys.length; i++) {
         ts = keys[i];
         var rev = group[ts];
-        patch = rev.tsValues[ts][0];
-        afterRevision = self.dmp.patch_apply(patch, afterRevision)[0];
-
+        patches = patches.concat(rev.tsValues[ts][0]);
+        
         if (maxKey == ts) {
             break;
         }
     }
+    afterRevision = self.dmp.patch_apply(patches, afterRevision)[0];
 
     return [beforeRevision, afterRevision];
 };
