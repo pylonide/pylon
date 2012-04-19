@@ -510,11 +510,14 @@ apf.DataAction = function(){
                     : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
         }
         else {
-            if (!this.$createModel)
-                return false;
-
             atAction = "setValueByXpath";
             xpath    = sel[1];
+            
+            if (!this.$createModel || this.getModel() && !this.getModel().$createModel) {
+                throw new Error("Model data does not exist, and I am not "
+                    + "allowed to create the element for xpath '" 
+                    + xpath + "' and element " + this.serialize(true));
+            }
 
             if (!xmlNode) {
                 //Assuming this component is connnected to a model

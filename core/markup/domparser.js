@@ -381,13 +381,16 @@ apf.DOMParser.prototype = new (function(){
 
                     //attributes
                     var attr = xmlNode.attributes, n;
-                    for (var a, i = 0, l = attr.length; i < l; i++) {
-                        o.attributes.push(new apf.AmlAttr(o, 
+                    for (var a, na, i = 0, l = attr.length; i < l; i++) {
+                        o.attributes.push(na = new apf.AmlAttr(o, 
                             (n = (a = attr[i]).nodeName), a.nodeValue));
                         //#ifdef __WITH_DELAYEDRENDER
                         if (n == "render")
                             o.render = true;
+                        else
                         //#endif
+                        if (n.substr(0, 2) == "on")
+                            na.$triggerUpdate();
                     }
                 }
                 

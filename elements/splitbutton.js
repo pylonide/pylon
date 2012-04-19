@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __AMLBAR || __INC_ALL
+// #ifdef __AMLSPLITBUTTON || __INC_ALL
 
 /**
  * Element displaying a skinnable rectangle which can contain other 

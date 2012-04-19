@@ -528,7 +528,7 @@ apf.Class.prototype = new (function(){
 
                 if (!node || typeof node != OBJ || (!node.$regbase && node.$regbase !== 0)) {
                     bProp = o[1];
-                    node  = self[o[0]];
+                    node  = self[o[0]] || apf.nameserver.get("all", o[0]);
                 }
                 else {
                     o.push(bProp);
@@ -536,7 +536,7 @@ apf.Class.prototype = new (function(){
             }
             else {
                 bProp = o[1];
-                node  = self[o[0]] || o[0] == "this" && this;
+                node  = self[o[0]] || apf.nameserver.get("all", o[0]) || o[0] == "this" && this;
             }
 
             if (!node) {

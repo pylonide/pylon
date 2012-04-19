@@ -233,7 +233,7 @@ apf.BaseList = function(){
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 // #endif
                     
                 this.select(node, false, shiftKey);
@@ -245,7 +245,7 @@ apf.BaseList = function(){
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 // #endif
                 
                 this.select(node, false, shiftKey);
@@ -311,7 +311,7 @@ apf.BaseList = function(){
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 // #endif
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -369,7 +369,7 @@ apf.BaseList = function(){
 
                 // #ifdef __WITH_VIRTUALVIEWPORT
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 // #endif
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -409,7 +409,7 @@ apf.BaseList = function(){
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 // #endif
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -446,7 +446,7 @@ apf.BaseList = function(){
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 // #endif
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);

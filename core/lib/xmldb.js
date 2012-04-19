@@ -56,7 +56,11 @@ apf.xmldb = new (function(){
     this.garbageCollect = function(){
         var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
         for (var i = 0, l = cache.length; i < l; i++) {
-            xmlNode = cache[i]
+            xmlNode = cache[i];
+            
+            if (!xmlNode || xmlNode.nodeFunc)
+                continue;
+            
             docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
             model = apf.nameserver.get("model", docId);
             
@@ -293,9 +297,10 @@ apf.xmldb = new (function(){
                     if (!model)
                         return;
                     
-                    if(model.$propBinds[sUId[1]][sUId[2]]) {
+                    if (model.$propBinds[sUId[1]][sUId[2]]) {
                         if (!apf.isChildOf(model.data, xmlNode, true)) 
                             return false;
+
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
                         var node  = xpath
                             ? apf.queryNode(model.data, xpath)

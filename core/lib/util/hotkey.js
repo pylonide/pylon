@@ -54,7 +54,7 @@ apf.hotkeys = {};
         "option"   : "\u2325",
         "shift"    : "\u21E7", // ⇧
         "esc"      : "\u238B", // ⎋
-        "control"  : "\u2303", // ⌃
+        "ctrl"     : "\u2303", // ⌃
         "backspace": "\u232B", // ⌫
         "del"      : "\u2326", // ⌦
         "enter"    : "\u21A9"  // ↩
@@ -67,7 +67,7 @@ apf.hotkeys = {};
         "option"   : "&#8997;",
         "shift"    : "&#8679;", // ⇧
         "esc"      : "&#9099;", // ⎋
-        "control"  : "&#2303;", // ⌃ TODO
+        "ctrl"     : "&#2303;", // ⌃ TODO
         "backspace": "&#232B;", // ⌫ TODO
         "del"      : "&#2326;", // ⌦ TODO
         "enter"    : "&#21A9;"  // ↩ TODO

@@ -615,10 +615,10 @@ apf.GuiElement.propHandlers = {
             var _self     = this;
             //this.disabled = false;
 
-            apf.queue.add("disable" + this.$uniqueId, function(e){
-                _self.disabled = value;
-                apf.GuiElement.propHandlers.disabled.call(_self, value);
-            });
+            this.addEventListener("DOMNodeInsertedIntoDocument", 
+                this.$updateDisabled || (this.$updateDisabled = function(e){
+                    apf.GuiElement.propHandlers.disabled.call(_self, _self.disabled);
+                }));
             return;
         }
         else
@@ -726,7 +726,8 @@ apf.GuiElement.propHandlers = {
      * the mouse over the element.
      */
     "tooltip" : function(value){
-        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " (" + this.hotkey + ")" : ""));
+        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " ("
+            + (apf.isMac ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey) + ")" : ""));
     },
     
     //#ifdef __AMLCONTEXTMENU
