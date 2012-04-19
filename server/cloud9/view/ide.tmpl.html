@@ -36,12 +36,9 @@
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
 
-            var RELEASE = "release";
-            var DEBUG   = "debug";
+            var VERSION = window.cloud9config.debug ? "debug" : "release";
 
-            var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
-
-            var apfLoc = "[%staticUrl%]/js/apf_" + VERSION + ".js";
+            var apfLoc = "[%staticUrl%]/js/apf_" +  VERSION + ".js";
 
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
