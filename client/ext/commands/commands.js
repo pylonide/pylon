@@ -9,13 +9,22 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var CommandManager = require("support/ace/lib/ace/commands/command_manager").CommandManager;
+
+var event = require("ace/lib/event");
+var KeyBinding = require("ace/keyboard/keybinding").KeyBinding;
+var CommandManager = require("ace/commands/command_manager").CommandManager;
 var markupSettings = require("text!ext/commands/settings.xml");
 
 var commandManager = new CommandManager(apf.isMac ? "mac" : "win");
 var exec           = commandManager.exec;
 var addCommand     = commandManager.addCommand;
 var removeCommand  = commandManager.removeCommand;
+
+var kb = new KeyBinding({
+    commands : commandManager,
+    fake : true
+});
+event.addCommandKeyListener(document.documentElement, kb.onCommandKey.bind(kb));
 
 ide.commandManager = commandManager;
 
@@ -64,8 +73,9 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
               && command.context.indexOf(apf.activeElement) == -1) //or should this be apf.xmldb.isChildOf?
                 return; //Disable commands for other contexts
             
-            if (!editor) {
+            if (!editor || editor.fake) {
                 //@todo this needs a better abstraction
+                //@todo focus handling
                 var page = self.tabEditors && tabEditors.getPage();
                 editor = page && page.$editor;
                 if (editor && editor.ceEditor)

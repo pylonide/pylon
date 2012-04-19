@@ -64,6 +64,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         });
         
+        commands.addCommand({
+            name: "closealltotheright",
+            exec: function () { _self.closealltotheright(); }
+        });
+        
+        commands.addCommand({
+            name: "closealltotheleft",
+            exec: function () { _self.closealltotheleft(); }
+        });
+        
         var mnuContext, itmLeft, itmRight, itmStackLeft, itmStackRight;
         var itmCloseFile, itmCloseAllFiles, itmCloseTab, itmCloseAllTabs, itmCloseOtherTabs;
         this.nodes.push(

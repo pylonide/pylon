@@ -60,7 +60,7 @@ module.exports = ext.register("ext/save/save", {
         
         commands.addCommand({
             name: "reverttosaved",
-            bindKey: {mac: "Command-Q", win: "Ctrl-Shift-Q"},
+            bindKey: {mac: "Ctrl-Shift-Q", win: "Ctrl-Shift-Q"},
             exec: function () {
                 _self.reverttosaved();
             }

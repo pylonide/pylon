@@ -102,7 +102,6 @@ module.exports = ext.register("ext/console/console", {
 
     autoOpen : true,
     excludeParent : true,
-    allCommands: {},
     keyEvents: {},
 
     messages: {
@@ -140,13 +139,13 @@ module.exports = ext.register("ext/console/console", {
     },
 
     help: function() {
-        var words = Object.keys(this.allCommands);
+        var words = Object.keys(commands.commands);
         var tabs = "\t\t\t\t";
         var _self = this;
 
         Logger.logNodeStream(
             words.sort()
-                .map(function(w) { return w + tabs + _self.allCommands[w].hint; })
+                .map(function(w) { return w + tabs + commands.commands[w].hint; })
                 .join("\n"),
             null, null, ide
         );
@@ -299,7 +298,7 @@ module.exports = ext.register("ext/console/console", {
         // hints
         ide.addEventListener("ext.register", function(e){
             if (e.ext.commands)
-                apf.extend(_self.allCommands, e.ext.commands);
+                apf.extend(commands.commands, e.ext.commands);
         });
         
         commands.addCommand({
@@ -408,6 +407,15 @@ module.exports = ext.register("ext/console/console", {
         // Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.previousSibling.hide();
+        
+        commands.addCommand({
+            name: "escapeconsole",
+            bindKey: {mac: "Esc", win: "Esc"},
+            context : [txtConsoleInput],
+            exec: function () {
+                _self.switchconsole();
+            }
+        });
 
         stProcessRunning.addEventListener("activate", function() {
             _self.showOutput();
@@ -489,8 +497,6 @@ module.exports = ext.register("ext/console/console", {
             input.setValue("");
         };
 
-        apf.extend(this.allCommands, ext.commandsLut);
-        
         if (this.logged.length)
             this.logged.forEach(function(text){
                 txtConsole.addValue(text);

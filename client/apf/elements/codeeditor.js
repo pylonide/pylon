@@ -45,6 +45,7 @@ var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
 var Range = require("ace/range").Range;
 var MultiSelect = require("ace/multi_select").MultiSelect;
+
 require("ace/lib/fixoldbrowsers");
 
 apf.codeeditor = module.exports = function(struct, tagName) {
@@ -597,7 +598,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         });
 
         this.$editor = new Editor(new VirtualRenderer(this.$input), null, 
-            apf.isTrue(this.getAttribute("globalcommands")) && document.documentElement);
+            apf.isTrue(this.getAttribute("globalcommands")) && false);
         new MultiSelect(this.$editor);
 
         // read defaults...
