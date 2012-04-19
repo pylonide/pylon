@@ -35,18 +35,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         "icon-path" : ide.staticPrefix + "/ext/quicksearch/icons/"
     },
     markup  : markup,
-    commands : {
-        "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},
-        "find": {hint: "open the quicksearch dialog to quickly search for a phrase"},
-        "findnext": {
-            hint: "search for the next occurrence of the search query your entered last",
-            msg: "Navigating to next match."
-        },
-        "findprevious": {
-            hint: "search for the previous occurrence of the search query your entered last",
-            msg: "Navigating to previous match."
-        }
-    },
     defaultOffset : 30,
     offsetWidth : 30,
 
@@ -57,8 +45,14 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     hook : function(){
         var _self = this;
         
+        commands.commands["findnext"].hint = "search for the next occurrence of the search query your entered last";
+        commands.commands["findnext"].msg = "Navigating to next match.";
+        commands.commands["findprevious"].hint = "search for the previous occurrence of the search query your entered last";
+        commands.commands["findprevious"].msg = "Navigating to previous match.";
+        
         commands.addCommand({
             name: "find",
+            hint: "open the quicksearch dialog to quickly search for a phrase",
             bindKey: {mac: "Command-F", win: "Ctrl-F"},
             exec: function(env, args, request) {
                 _self.toggleDialog(1);
@@ -84,11 +78,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         });
         
         this.nodes.push(
-            menus.addItemByPath("Find/~", new apf.divider(), 700),
+            menus.addItemByPath("Find/~", new apf.divider(), 1000),
 
             menus.addItemByPath("Find/Quick Find", new apf.item({
                 command : "find"
-            }), 800)
+            }), 1100)
         );
     },
 

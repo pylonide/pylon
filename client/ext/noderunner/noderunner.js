@@ -14,7 +14,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var markup = require("text!ext/noderunner/noderunner.xml");
-var commands = require("ext/commands/commands");
 var c9console = require("ext/console/console");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
@@ -24,14 +23,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     alone   : true,
     offline : false,
     markup  : markup,
-    commands: {
-        "run": {
-            "hint": "run a node program on the server",
-            "commands": {
-                "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
-            }
-        }
-    },
 
     NODE_VERSION: "auto",
 

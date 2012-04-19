@@ -26,11 +26,6 @@ module.exports = ext.register("ext/save/save", {
     deps        : [fs],
     offline     : true,
 
-    commands    : {
-        "quicksave": {hint: "save the currently active file to disk"},
-        "saveas": {hint: "save the file to disk with a different filename"},
-        "reverttosaved": {hint: "downgrade the currently active file to the last saved version"}
-    },
     nodes       : [],
     saveBuffer  : {},
 
@@ -39,6 +34,7 @@ module.exports = ext.register("ext/save/save", {
         
         commands.addCommand({
             name: "quicksave",
+            hint: "save the currently active file to disk",
             bindKey: {mac: "Command-S", win: "Ctrl-S"},
             exec: function () {
                 _self.quicksave();
@@ -47,6 +43,7 @@ module.exports = ext.register("ext/save/save", {
         
         commands.addCommand({
             name: "saveas",
+            hint: "save the file to disk with a different filename",
             bindKey: {mac: "Command-Shift-S", win: "Ctrl-Shift-S"},
             exec: function () {
                 _self.saveas();
@@ -55,6 +52,7 @@ module.exports = ext.register("ext/save/save", {
 
         commands.addCommand({
             name: "saveall",
+            hint: "downgrade the currently active file to the last saved version",
             exec: function () {
                 _self.saveall();
             }

@@ -20,13 +20,20 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
     alone   : true,
     markup  : markup,
     deps   : [noderunner],
-    commands : {
-        "quickwatch": {hint: "quickly inspect the variable that is under the cursor"}
-    },
 
     nodes   : [],
 
     hook : function(){
+        var _self = this;
+        
+        commands.addCommand({
+            name : "quickwatch",
+            bindKey: {mac: "Option-Q", win: "Alt-Q"},
+            hint: "quickly inspect the variable that is under the cursor",
+            exec: function(){
+                _self.quickwatch();
+            }
+        });
     },
 
     init : function(amlNode){

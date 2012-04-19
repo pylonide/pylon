@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var CommandManager = require("support/ace/lib/ace/commands/command_manager").CommandManager;
+var markupSettings = require("text!ext/commands/settings.xml");
 
 var commandManager = new CommandManager(apf.isMac ? "mac" : "win");
 var exec           = commandManager.exec;
@@ -27,7 +28,32 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         alone   : true,
         type    : ext.GENERAL,
     
-        init : function(){},
+        init : function(){
+            var _self = this;
+            
+            ide.addEventListener("loadsettings", function(e){
+                e.ext.setDefaults("general/keybindings", [["preset", "auto"]]);
+                
+                var preset = e.model.queryValue("general/keybindings/@preset");
+                if (preset && preset != "auto")
+                    _self.changePlatform(preset);
+            });
+            
+            ide.addEventListener("init.ext/settings/settings", function(e){
+                e.ext.addSettings("General", markupSettings, function(){
+                    ddKeyBind.addEventListener("afterchange", function(){
+                        _self.changePlatform(this.selected.getAttribute("value"));
+                    });
+                });
+            });
+        },
+        
+        changePlatform : function(value){
+            this.platform = value == "auto"
+                ? (apf.isMac ? "mac" : "win")
+                : value;
+            this.addCommands(this.commands);
+        },
     
         getHotkey : function(command){
             return this.commands[command].bindKey[this.platform];

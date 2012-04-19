@@ -104,20 +104,6 @@ module.exports = ext.register("ext/console/console", {
     excludeParent : true,
     allCommands: {},
     keyEvents: {},
-    commands: {
-        "help": {
-            hint: "show general help information and a list of available commands"
-        },
-        "clear": {
-            hint: "clear all the messages from the console"
-        },
-        "switchconsole": {
-            hint: "toggle focus between the editor and the console"
-        },
-        "send": {
-            hint: "send a message to the server"
-        }
-    },
 
     messages: {
         cd: function(message) {
@@ -175,15 +161,20 @@ module.exports = ext.register("ext/console/console", {
     },
 
     switchconsole : function() {
-        if (apf.activeElement === txtConsoleInput) {
-            if (window.ceEditor) {
-                ceEditor.focus();
-                this.hide();
+        if (apf.activeElement === self.txtConsoleInput) {
+            var page = tabEditors.getPage();
+            if (page) {
+                if (page.$editor.focus)
+                    page.$editor.focus();
+                //this.hide();
             }
         }
         else {
-            this.show();
-            txtConsoleInput.focus()
+            if (this.hiddenInput)
+                this.showInput(true);
+            else
+                txtConsoleInput.focus();
+            //this.show();
         }
     },
 
@@ -312,7 +303,32 @@ module.exports = ext.register("ext/console/console", {
         });
         
         commands.addCommand({
+            name: "help",
+            hint: "show general help information and a list of available commands",
+            exec: function () {
+                _self.help();
+            }
+        });
+        
+        commands.addCommand({
+            name: "clear",
+            hint: "clear all the messages from the console",
+            exec: function () {
+                _self.clear();
+            }
+        });
+        commands.addCommand({
+            name: "switchconsole",
+            bindKey: {mac: "Shift-Esc", win: "Shift-Esc"},
+            hint: "toggle focus between the editor and the command line",
+            exec: function () {
+                _self.switchconsole();
+            }
+        });
+        
+        commands.addCommand({
             name: "toggleconsole",
+            bindKey: {mac: "Ctrl-Esc", win: "Ctrl-Esc"},
             exec: function () {
                 if (_self.hidden)
                     _self.show();
@@ -332,6 +348,10 @@ module.exports = ext.register("ext/console/console", {
         });
         
         this.nodes.push(
+            menus.addItemByPath("Goto/Switch to Command Line", new apf.item({
+                command : "switchconsole"
+            }), 350),
+            
             this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
                 type    : "check",
                 command : "toggleconsole",
@@ -514,7 +534,7 @@ module.exports = ext.register("ext/console/console", {
         btnConsoleMax.setValue(false);
     },
     
-    showInput : function(){
+    showInput : function(temporary){
         if (!this.hiddenInput)
             return;
         
@@ -526,11 +546,22 @@ module.exports = ext.register("ext/console/console", {
         txtConsoleInput.parentNode.show();
         apf.layout.forceResize();
         
-        this.hiddenInput = false;
+        if (temporary) {
+            var _self = this;
+            txtConsoleInput.addEventListener("blur", function(){
+                if (_self.hiddenInput)
+                    _self.hideInput(true);
+                txtConsoleInput.removeEventListener("blur", arguments.callee);
+            });
+            txtConsoleInput.focus()
+        }
+        else {
+            this.hiddenInput = false;
+        }
     },
     
-    hideInput : function(){
-        if (!this.inited || this.hiddenInput)
+    hideInput : function(force){
+        if (!force && (!this.inited || this.hiddenInput))
             return;
         
         this.$collapsedHeight = 0;

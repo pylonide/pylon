@@ -356,9 +356,22 @@ module.exports = ext.register("ext/splitview/splitview", {
         
         var _self = this;
         
-        //@todo add commands
-//        "mergetableft": {hint: "Add the page on the left of the currently active page to a split view"},
-//        "mergetabright": {hint: "Add the page on the right of the currently active page to a split view"}
+        commands.addCommand({
+            name: "mergetableft",
+            bindKey : {mac: "Option-Command-[", win: "Ctrl-Alt-["},
+            hint: "Add the page on the left of the currently active page to a split view",
+            exec: function(){
+                _self.mergetableft();
+            }
+        });
+        commands.addCommand({
+            name: "mergetabright",
+            bindKey : {mac: "Option-Command-]", win: "Ctrl-Alt-]"},
+            hint: "Add the page on the right of the currently active page to a split view",
+            exec: function(){
+                _self.mergetableft();
+            }
+        });
         
         //@todo add menus
         

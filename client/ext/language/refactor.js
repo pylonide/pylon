@@ -41,6 +41,7 @@ module.exports = {
         
         commands.addCommand({
             name: "renameVar",
+            hint: "Rename variable",
             bindKey: {mac: "Option-Command-R", win: "Ctrl-Alt-R"},
             exec: function(editor) {
                 _self.renameVariable();

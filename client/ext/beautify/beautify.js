@@ -29,13 +29,6 @@ module.exports = ext.register("ext/beautify/beautify", {
     alone: true,
     type: ext.GENERAL,
 
-    commands: {
-        "beautify": {
-            hint: "reformat selected JavaScript code in the editor",
-            msg: "Beautifying selection."
-        }
-    },
-
     nodes: [],
 
     beautify: function () {
@@ -139,6 +132,8 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         commands.addCommand({
             name: "beautify",
+            hint: "reformat selected JavaScript code in the editor",
+            msg: "Beautifying selection.",
             bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
             exec: function () {
                 _self.beautify();

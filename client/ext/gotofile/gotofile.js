@@ -23,10 +23,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     type    : ext.GENERAL,
     markup  : markup,
     offline : false,
-    commands : {
-        "_gotofilelegacy": {hint: "Legacy"},
-        "gotofile": {hint: "search for a filename and jump to it"}
-    },
 
     dirty   : true,
     nodes   : [],
@@ -40,6 +36,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         
         commands.addCommand({
             name: "gotofile",
+            hint: "search for a filename and jump to it",
             bindKey: {mac: "Command-E", win: "Ctrl-E"},
             exec: function () {
                 _self.toggleDialog(1);

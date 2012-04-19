@@ -1458,7 +1458,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(45673)TIME(Fri, 13 Apr 2012 10:38:48 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(45743)TIME(Wed, 18 Apr 2012 21:11:22 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1948,7 +1948,7 @@ apf.Class.prototype = new (function(){
 
                 if (!node || typeof node != OBJ || (!node.$regbase && node.$regbase !== 0)) {
                     bProp = o[1];
-                    node  = self[o[0]];
+                    node  = self[o[0]] || apf.nameserver.get("all", o[0]);
                 }
                 else {
                     o.push(bProp);
@@ -1956,7 +1956,7 @@ apf.Class.prototype = new (function(){
             }
             else {
                 bProp = o[1];
-                node  = self[o[0]] || o[0] == "this" && this;
+                node  = self[o[0]] || apf.nameserver.get("all", o[0]) || o[0] == "this" && this;
             }
 
             if (!node) {
@@ -12465,7 +12465,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40794)TIME(Wed, 18 Apr 2012 17:31:46 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40893)TIME(Thu, 19 Apr 2012 12:37:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12525,7 +12525,11 @@ apf.xmldb = new (function(){
     this.garbageCollect = function(){
         var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
         for (var i = 0, l = cache.length; i < l; i++) {
-            xmlNode = cache[i]
+            xmlNode = cache[i];
+            
+            if (!xmlNode || xmlNode.nodeFunc)
+                continue;
+            
             docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
             model = apf.nameserver.get("model", docId);
             
@@ -15758,7 +15762,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22581)TIME(Wed, 18 Apr 2012 12:38:56 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22832)TIME(Wed, 18 Apr 2012 21:08:06 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15912,11 +15916,16 @@ apf.AmlElement = function(struct, tagName){
             if (this.name == value)
                 return;
     
-            if (self[this.name] == this)
-                self[this.name] = null
+            if (self[this.name] == this) {
+                self[this.name] = null;
+                
+                apf.nameserver.remove(this.localName, this);
+                apf.nameserver.remove("all", this);
+                
+            }
     
             if (self[value])
-                throw new Error("ID collision of APF element: '" + value + "'");
+                console.warn("ID collision of APF element: '" + value + "'");
     
             if (!self[value] || !self[value].hasFeature) {
                 try {
@@ -15932,6 +15941,7 @@ apf.AmlElement = function(struct, tagName){
             //@todo old name disposal
             
             apf.nameserver.register(this.localName, value, this)
+            apf.nameserver.register("all", value, this)
             
             
             this.name = value;

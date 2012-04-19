@@ -53,7 +53,8 @@ module.exports = {
         if (window.onerror) {
             try {
                 ide.dispatchEvent("loadsettings", {
-                    model : this.model
+                    model : this.model,
+                    ext   : this
                 });
             } catch(e) {
                 self["requ"+"ire"]("ext/filesystem/filesystem")
@@ -62,13 +63,15 @@ module.exports = {
                 this.model.load(template);
 
                 ide.dispatchEvent("loadsettings", {
-                    model : this.model
+                    model : this.model,
+                    ext   : this
                 });
             }
         }
         else {
             ide.dispatchEvent("loadsettings", {
-                model : this.model
+                model : this.model,
+                ext   : this
             });
         }
 
@@ -78,7 +81,8 @@ module.exports = {
     },
 
     $loadsettings : function(cb){
-        cb({model : require('core/settings').model});
+        var _self = require('core/settings');
+        cb({model : _self.model, ext: _self});
     },
     
     setDefaults : function(path, attr){

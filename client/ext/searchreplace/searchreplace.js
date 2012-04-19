@@ -37,6 +37,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
         commands.addCommand({
             name: "replace",
+            bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
             hint: "search for a string inside the active document and replace it",
             exec: function(env, args, request) {
                 _self.toggleDialog(true, true);
@@ -80,10 +81,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             }), 600),
             menus.addItemByPath("Find/Replace Previous", new apf.item({
                 command : "replaceprevious",
-            }), 600),
+            }), 700),
             menus.addItemByPath("Find/Replace All", new apf.item({
                 command : "replaceall"
-            }), 700)
+            }), 800)
         );
     },
 

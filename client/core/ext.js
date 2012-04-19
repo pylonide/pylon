@@ -9,6 +9,29 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var util = require("core/util");
 
+//Prevent the introduction of globals
+//apf.AmlElement.prototype.$propHandlers.id = function(value){
+//    if (this.name == value)
+//        return;
+//
+//    if (this.name) {
+//        //#ifdef __WITH_NAMESERVER
+//        apf.nameserver.remove(this.localName, this);
+//        apf.nameserver.remove("all", this);
+//        //#endif
+//    }
+//
+//    if (apf.nameserver.get("all", value))
+//        console.warn("ID collision of APF element: '" + value + "'");
+//
+//    //#ifdef __WITH_NAMESERVER
+//    apf.nameserver.register(this.localName, value, this);
+//    apf.nameserver.register("all", value, this);
+//    //#endif
+//    
+//    this.name = value;
+//};
+
 var ext;
 module.exports = ext = {
     //Extension types
@@ -83,11 +106,11 @@ module.exports = ext = {
         if (oExtension.hook) {
             oExtension.hook();
             
-            ide.dispatchEvent("hook." + oExtension.path, {
-                ext : oExtension
-            });
             ide.addEventListener("$event.hook." + oExtension.path, function(callback){
                 callback.call(this, {ext : oExtension});
+            });
+            ide.dispatchEvent("hook." + oExtension.path, {
+                ext : oExtension
             });
         }
         
@@ -195,11 +218,11 @@ module.exports = ext = {
 
         oExtension.init(amlParent);
         
-        ide.dispatchEvent("init." + oExtension.path, {
-            ext : oExtension
-        });
         ide.addEventListener("$event.init." + oExtension.path, function(callback){
             callback.call(this, {ext : oExtension});
+        });
+        ide.dispatchEvent("init." + oExtension.path, {
+            ext : oExtension
         });
     },
 

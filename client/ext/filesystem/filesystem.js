@@ -19,20 +19,6 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     type   : ext.GENERAL,
     alone  : true,
     deps   : [],
-    commands: {
-        "open": {
-            "hint": "open a file to edit in a new tab",
-            "commands": {
-                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
-            }
-        },
-        "c9": {
-            "hint": "alias for 'open'",
-            "commands": {
-                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
-            }
-        }
-    },
 
     readFile : function (path, callback){
         if (!this.webdav) return;
@@ -327,6 +313,21 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     /**** Init ****/
 
     init : function() {
+        commands.addCommand({
+            name : "open",
+            hint: "open a file to edit in a new tab",
+            commands: {
+                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
+            }
+        });
+        commands.addCommand({
+            name: "c9",
+            hint: "alias for 'open'",
+            commands: {
+                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
+            }
+        });
+        
         this.model = new apf.model();
         this.model.load("<data><folder type='folder' name='" + ide.projectName +
             "' path='" + ide.davPrefix + "' root='1'/></data>");

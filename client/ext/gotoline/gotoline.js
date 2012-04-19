@@ -28,9 +28,6 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         "media-path" : ide.staticPrefix + "/ext/gotoline/images/"
     },
     markup  : markup,
-    commands : {
-        "gotoline": {hint: "enter a linenumber and jump to it in the active document"}
-    },
 
     nodes   : [],
 
@@ -40,6 +37,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         this.nodes.push(
             menus.addItemByPath("Goto/Goto Line...", new apf.item({
                 caption : "Goto Line...",
+                hint: "enter a linenumber and jump to it in the active document",
                 onclick : function(){
                     _self.gotoline();
                 }

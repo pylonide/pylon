@@ -45,24 +45,25 @@ module.exports = ext.register("ext/stripws/stripws", {
     alone: true,
     type: ext.GENERAL,
 
-    commands: {
-        "stripws": {
-            hint: "strip whitespace at the end of each line"
-        }
-    },
-
     nodes: [],
 
     init: function () {},
 
     hook: function () {
         var self = this;
+        
+        commands.addCommand({
+            name: "stripws",
+            hint: "strip whitespace at the end of each line",
+            exec: function(){
+                ext.initExtension(self);
+                self.stripws();
+            }
+        });
+        
         this.nodes.push(
             menus.addItemByPath("Tools/Strip Whitespace", new apf.item({
-                onclick: function () {
-                    ext.initExtension(self);
-                    self.stripws();
-                }
+                command : "stripws"
             }), 200)
         );
 

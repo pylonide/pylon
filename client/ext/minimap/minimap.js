@@ -20,11 +20,6 @@ return module.exports = ext.register("ext/minimap/minimap", {
     dev   : "Cloud9 IDE, Inc.",
     type  : ext.GENERAL,
     alone : true,
-    commands : {
-        "minimap": {
-            hint: "Hide or show the code minimap"
-        }
-    },
     nodes   : [],
     deps    : [editors],
     css     : css,
@@ -33,6 +28,9 @@ return module.exports = ext.register("ext/minimap/minimap", {
     map_enabled : false,
 
     hook : function() {
+        //hint: "Hide or show the code minimap"
+        //@todo command
+        
         var _self = this;
         this.menuItem = new apf.item({
             id      : "mnuItemShowMinimap",

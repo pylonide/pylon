@@ -58,12 +58,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     init : function(amlNode){
-        this.txtFind       = txtSFFind;
-        this.btnFind       = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
+        this.txtFind         = txtSFFind;
+        this.btnFind         = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.execFind.bind(this, false);
 
         this.txtReplace     = txtReplace;
-        this.btnReplaceAll = btnReplaceAll;
+        this.btnReplaceAll  = btnReplaceAll;
         this.btnReplaceAll.onclick = this.execFind.bind(this, true);
 
         var _self = this;
@@ -250,7 +250,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
         _self.$model.clear();
         _self.$panel.setAttribute("caption", _self.pageTitle);
-        trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
+        trSFResult.$ext.getElementsByClassName("empty")[0].innerText = "Searching for '" + query + "'...";
 
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset

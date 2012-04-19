@@ -36,7 +36,7 @@ var extAll = define([
     "ext/consolehints/consolehints",
     "ext/tabbehaviors/tabbehaviors",
     "ext/tabsessions/tabsessions",
-    "ext/keybindings/keybindings",
+    //"ext/keybindings/keybindings",
     "ext/keybindings_default/keybindings_default",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",

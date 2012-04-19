@@ -36,7 +36,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             name: "savetabsession",
             hint: "save the current tab state as a new session", 
             msg: "Save tab session.",
-            bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
+            bindKey: {mac: "Command-Shift-S", win: "Shift-Ctrl-S"},
             exec: function () {
                 ext.initExtension(_self);
                 winSaveSessionAs.show();

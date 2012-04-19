@@ -61,13 +61,14 @@ module.exports = ext.register("ext/tree/tree", {
     "default"        : true,
 
     hook : function(){
+        var _self = this;
 
         // Register this panel on the left-side panels
         panels.register(this, {
             position : 1000,
             caption: "Project Files",
             "class": "project_files",
-            commands: "opentreepanel"
+            command: "opentreepanel"
         });
         
         commands.addCommand({
@@ -78,8 +79,6 @@ module.exports = ext.register("ext/tree/tree", {
                 _self.show();
             }
         });
-
-        var _self = this;
 
         /**
          * Wait for the filesystem extension to load before we set up our

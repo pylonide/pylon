@@ -39,11 +39,6 @@ module.exports = ext.register("ext/language/language", {
     worker  : null,
     enabled : true,
 
-    commands : {
-        "complete": {hint: "code complete"},
-        "renameVar": {hint: "Rename variable"}
-    },
-
     hook : function() {
 		var _self = this;
 

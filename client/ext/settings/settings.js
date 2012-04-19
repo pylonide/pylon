@@ -62,6 +62,8 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     hook : function(){
+        var _self = this;
+        
         panels.register(this, {
             position : 100000,
             caption: "Preferences",
@@ -110,7 +112,7 @@ module.exports = ext.register("ext/settings/settings", {
         this.addSettings("General",  panelSettings );
     },
 
-    addSettings : function(group, markup) {
+    addSettings : function(group, markup, callback) {
         var _self = this;
         ide.addEventListener("init.ext/settings/settings", function(e) {
             var heading = e.ext.getHeading(group);
@@ -155,6 +157,8 @@ module.exports = ext.register("ext/settings/settings", {
                 }
                 return beforeNode;
             }
+            
+            callback && callback();
         });
         
         /*ide.addEventListener("init.ext/settings/settings", function(e) {

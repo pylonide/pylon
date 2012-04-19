@@ -22,9 +22,6 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    commands  : {
-        "format": {hint: "reformat the current JSON document"}
-    },
     
     nodes : [],
     
@@ -53,10 +50,15 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     hook : function(){
         var _self = this;
         
-        onclick : function(){
-                    ext.initExtension(_self);
-                    _self.winFormat.show();
-                }
+        commands.addCommand({
+            name : "formatjson",
+            bindKey : {mac: "Shift-Command-J", win: "Ctrl-Shift-J"},
+            hint: "reformat the current JSON document",
+            exec : function(){
+                ext.initExtension(_self);
+                _self.winFormat.show();
+            }
+        });
         
         var mnuItem;
         this.nodes.push(

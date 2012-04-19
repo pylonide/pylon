@@ -328,6 +328,10 @@ module.exports = ext.register("ext/code/code", {
 
         doc.editor = this;
     },
+    
+    focus : function(){
+        ceEditor.focus();
+    },
 
     hook: function() {
         var _self = this;

@@ -77,6 +77,7 @@ module.exports = {
         
         commands.addCommand({
             name: "complete",
+            hint: "code complete",
             bindKey: {mac: "Ctrl-Space|Alt-Space", win: "Ctrl-Space|Alt-Space"},
             exec: function(editor) {
                 _self.invoke();
