@@ -131,15 +131,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             _self.$populateMenu();
         });
 
-        //Settings Support
-        /*ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading("General");
-            heading.insertMarkup(markupSettings);
-        });*/
+        ide.addEventListener("loadsettings", function(){
+            settings.setDefaults("auto/node-version", [
+                ["version", "auto"]
+            ]);
+        });
 
-        require("ext/settings/settings").addSettings("General", markupSettings);
+        settings.addSettings("General", markupSettings);
         
-//        this.mnuRunCfg.addEventListener("prop.visible", function(){
         ide.addEventListener("loadsettings", function(e){
             var runConfigs = e.model.queryNode("auto/configurations");
             if (!runConfigs) {

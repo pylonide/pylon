@@ -21,7 +21,7 @@ var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
 var ProxyDocument = require("ext/code/proxydocument");
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
-var settings = require("core/settings");
+var settings = require("ext/settings/settings");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
 
@@ -372,6 +372,7 @@ module.exports = ext.register("ext/code/code", {
                 ["wrapmode", "false"],
                 ["wraplimitmin", ""],
                 ["wraplimitmax", ""],
+                ["wrapmodeViewport", "true"],
                 ["gutter", "true"],
                 ["folding", "true"],
                 ["newlinemode", "auto"],
@@ -390,10 +391,7 @@ module.exports = ext.register("ext/code/code", {
             _self.getCustomTypes(e.model);
         });
         
-        ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading("Code Editor");
-            heading.insertMarkup(markupSettings);
-        });
+        settings.addSettings("Code Editor", markupSettings);
 
         ide.addEventListener("afteropenfile", function(e) {
             if (_self.setState)

@@ -77,6 +77,15 @@ module.exports = ext.register("ext/language/language", {
                 callback({worker: worker});
             });
         }, true);
+        
+        ide.addEventListener("loadsettings", function(){
+            settings.setDefaults("language", [
+                ["jshint", "true"],
+                ["instanceHighlight", "true"],
+                ["undeclaredVars", "true"],
+                ["unusedFunctionArgs", "true"]
+            ]);
+        });
 
         settings.addSettings("Language Support", markupSettings );
     },

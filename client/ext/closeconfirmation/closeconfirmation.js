@@ -7,6 +7,7 @@
 
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/closeconfirmation/settings.xml");
@@ -22,17 +23,20 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
     
     nodes : [],
     
-    hook : function () {
+    init : function () {
         // when unloading the window
         window.onbeforeunload = this.onBeforeUnloadHandler;
+        
+        ide.addEventListener("loadsettings", function(){
+            settings.setDefaults("general", [
+                ["confirmexit", "false"]
+            ]);
+        });
  
-        require("ext/settings/settings").addSettings("General", markupSettings );
+        settings.addSettings("General", markupSettings );
      
         // init extension
         ext.initExtension(this);
-    },
-    
-    init : function () {
     },
     
     onBeforeUnloadHandler : function () {

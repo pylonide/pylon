@@ -98,7 +98,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         txtGoToFile.addEventListener("afterchange", function(e){
             _self.filter(txtGoToFile.value);
             
-            if (_self.dirty && txtGoToFile.value.length > 0) {
+            if (_self.dirty && txtGoToFile.value.length > 0 && _self.modelCache.data) {
                 _self.dirty = false;
                 _self.updateFileCache();
             }
@@ -186,15 +186,27 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             if (self.winGoToFile && winGoToFile.visible && _self.lastSearch) {
                 var search = _self.lastSearch;
-                _self.lastSearch = null; //invalidate cache
-                var sel = dgGoToFile.getSelection();
-                _self.filter(search);
                 
-                if (sel.length < 100) {
+                _self.lastSearch = null; //invalidate cache
+                var state = {
+                    sel : dgGoToFile.getSelection(), //store previous selection
+                    caret : dgGoToFile.caret,
+                    scrollTop : dgGoToFile.$viewport.getScrollTop()
+                };
+                
+                _self.filter(search, state.sel.length);
+                
+                if (state.sel.length && state.sel.length < 100) {
+                    var list = [], sel = state.sel;
                     for (var i = 0, l = sel.length; i < l; i++) {
-                        dgGoToFile.select(dgGoToFile.queryNode("//d:href[text()='" 
+                        list.push(dgGoToFile.queryNode("//d:href[text()='" 
                             + sel[i].firstChild.nodeValue + "']"));
                     }
+                    dgGoToFile.selectList(list);
+                    if (state.caret)
+                        dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
+                            + state.caret.firstChild.nodeValue + "']"));
+                    dgGoToFile.$viewport.setScrollTop(state.scrollTop);
                 }
             }
             else
@@ -206,7 +218,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      * Searches through the dataset
      * 
      */
-    filter : function(keyword){
+    filter : function(keyword, nosel){
         var data;
         
         if (!this.modelCache.data) {
@@ -238,13 +250,16 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         // See if there are open files that match the search results
         // and the first if in the displayed results
         
+        if (nosel)
+            return;
+        
         var pages = tabEditors.getPages(), hash = {};
         for (var i = pages.length - 1; i >= 0; i--) {
             hash[pages[i].id] = true;
         }
         
         var nodes = dgGoToFile.getTraverseNodes();
-        for (var i = Math.max(dgGoToFile.viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
+        for (var i = Math.max(dgGoToFile.$viewport.limit - 3, nodes.length - 1); i >= 0; i--) {
             if (hash[ide.davPrefix + nodes[i].firstChild.nodeValue]) {
                 dgGoToFile.select(nodes[i]);
                 return;

@@ -17,6 +17,7 @@ var menus = require("ext/menus/menus");
 var extSettings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/stripws/settings.xml");
 var commands = require("ext/commands/commands");
+var settings = require("ext/settings/settings");
 
 // Attaching to exports.module for testing purposes
 var strip = module.exports.strip = function () {
@@ -84,8 +85,14 @@ module.exports = ext.register("ext/stripws/stripws", {
             else
                 self.enable();
         });
+        
+        ide.addEventListener("loadsettings", function(){
+            settings.setDefaults("editors/code", [
+                ["stripws", "false"]
+            ]);
+        });
 
-        require("ext/settings/settings").addSettings("General", markupSettings);
+        settings.addSettings("General", markupSettings);
     },
 
     stripws: function() {

@@ -613,6 +613,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
             trFiles.focus();
             scrollToFile();
+
             // Hide spinner in active tab
             apf.xmldb.removeAttribute(docNode, "lookup");
         });

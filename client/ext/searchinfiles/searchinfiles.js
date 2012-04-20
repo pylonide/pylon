@@ -62,8 +62,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         this.btnFind         = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.execFind.bind(this, false);
 
-        this.txtReplace     = txtReplace;
-        this.btnReplaceAll  = btnReplaceAll;
+        this.txtReplace     = txtSFReplace;
+        this.btnReplaceAll  = btnSFReplaceAll;
         this.btnReplaceAll.onclick = this.execFind.bind(this, true);
 
         var _self = this;

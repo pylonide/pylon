@@ -612,6 +612,10 @@ VERSION:'3.0beta',
         
         
         
+        if (this.isGecko || !this.isIE && !apf.isWebkit && !this.isOpera)
+            apf.runGecko();
+            //this.importClass(apf.runGecko, true, self);
+        
 
         
 
@@ -15763,7 +15767,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22832)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22835)TIME(Fri, 20 Apr 2012 20:48:36 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15926,7 +15930,7 @@ apf.AmlElement = function(struct, tagName){
             }
     
             if (self[value])
-                console.warn("ID collision of APF element: '" + value + "'");
+                throw new Error("ID collision of APF element: '" + value + "'");
     
             if (!self[value] || !self[value].hasFeature) {
                 try {
@@ -37846,6 +37850,169 @@ apf.window = new apf.window();
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+
+
+/**
+ * Compatibility layer for Gecko based browsers.
+ * @private
+ */
+apf.runGecko = function(){
+    if (apf.runNonIe)
+        apf.runNonIe();
+
+    /* ***************************************************************************
+     XSLT
+     ****************************************************************************/
+    
+    
+    //XMLDocument.selectNodes
+    HTMLDocument.prototype.selectNodes = XMLDocument.prototype.selectNodes = function(sExpr, contextNode){
+        try {
+            var oResult = this.evaluate(sExpr, (contextNode || this),
+                this.createNSResolver(this.documentElement),
+                7, null); //XpathResult.ORDERED_NODE_ITERATOR_TYPE
+        }
+        catch(ex) {
+            var msg = ex.message;
+            if (ex.code == ex.INVALID_EXPRESSION_ERR)
+                msg = msg.replace(/the expression/i, "'" + sExpr + "'");
+            throw new Error(ex.lineNumber, "XPath error: " + msg);
+        }
+
+        var nodeList = new Array(oResult.snapshotLength);
+        nodeList.expr = sExpr;
+        for (var i = nodeList.length - 1; i >= 0; i--) 
+            nodeList[i] = oResult.snapshotItem(i);
+        return nodeList;
+    };
+    
+    //Element.selectNodes
+    Text.prototype.selectNodes =
+    Attr.prototype.selectNodes =
+    Element.prototype.selectNodes = function(sExpr){
+       return this.ownerDocument.selectNodes(sExpr, this);
+    };
+    
+    //XMLDocument.selectSingleNode
+    HTMLDocument.prototype.selectSingleNode = 
+    XMLDocument.prototype.selectSingleNode = function(sExpr, contextNode){
+        try {
+            var oResult = this.evaluate(sExpr, (contextNode || this),
+                this.createNSResolver(this.documentElement),
+                9, null); //XpathResult.FIRST_ORDERED_NODE_TYPE
+        }
+        catch(ex) {
+            var msg = ex.message;
+            if (ex.code == ex.INVALID_EXPRESSION_ERR)
+                msg = msg.replace(/the expression/i, "'" + sExpr + "'");
+            throw new Error(ex.lineNumber, "XPath error: " + msg);
+        }
+        
+        return oResult.singleNodeValue;
+    };
+    
+    //Element.selectSingleNode
+    Text.prototype.selectSingleNode =
+    Attr.prototype.selectSingleNode =
+    Element.prototype.selectSingleNode = function(sExpr){
+        return this.ownerDocument.selectSingleNode(sExpr, this);
+    };
+    
+    
+    
+    var serializer = new XMLSerializer();
+    var o = document.createElement("div");
+    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
+        var frag, l, node, i;
+        if (nodeList) {
+            frag = document.createDocumentFragment();
+            for (i = nodeList.length - 1; i >= 0; i--) {
+                node = nodeList[i];
+                frag.insertBefore(node, frag.firstChild);
+            }
+        }
+        
+        o.innerHTML = typeof s == "string" ? s : apf.html_entity_decode(serializer.serializeToString(frag))
+            .replace(/<([^>]+)\/>/g, "<$1></$1>");
+
+        frag = document.createDocumentFragment();
+        for (i = 0, l = o.childNodes.length; i < l; i++) {
+            node = o.childNodes[0];
+            frag.appendChild(node);
+        }
+
+        if (beforeNode)
+            htmlNode.insertBefore(frag, beforeNode);
+        htmlNode.appendChild(frag);
+    };
+
+    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+        if (htmlNode.nodeType != 11 && !htmlNode.style)
+            return htmlNode.appendChild(xmlNode);
+        
+        if (!s) {
+            s = apf.html_entity_decode(xmlNode.serialize
+                ? xmlNode.serialize(true)
+                : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
+                    ? xmlNode.nodeValue
+                    : serializer.serializeToString(xmlNode)));
+        }
+
+        o.innerHTML = s.replace(/<([^>]+)\/>/g, "<$1></$1>");
+
+        if (beforeNode)
+            htmlNode.insertBefore(o.firstChild, beforeNode);
+        else
+            htmlNode.appendChild(o.firstChild);
+
+        return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
+    };
+    
+    /* ******** Error Compatibility **********************************************
+     Error Object like IE
+     ****************************************************************************/
+    function Error(nr, msg){
+        
+        
+        this.message = msg;
+        this.nr = nr;
+    }
+    
+    apf.getHtmlLeft = function(oHtml){
+        return (oHtml.offsetLeft
+            + (parseInt(apf.getStyle(oHtml.parentNode, "borderLeftWidth")) || 0));
+    };
+
+    apf.getHtmlRight = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowWidth()
+          : p.offsetWidth)
+            - oHtml.offsetLeft - oHtml.offsetWidth
+            - (2 * (parseInt(apf.getStyle(p, "borderLeftWidth")) || 0))
+            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
+    };
+
+    apf.getHtmlTop = function(oHtml){
+        return (oHtml.offsetTop
+            + (parseInt(apf.getStyle(oHtml.parentNode, "borderTopWidth")) || 0));
+    };
+    
+    apf.getHtmlBottom = function(oHtml){
+        var p;
+        return (((p = oHtml.offsetParent).tagName == "BODY" 
+          ? apf.getWindowHeight()
+          : p.offsetHeight)
+            - oHtml.offsetTop - oHtml.offsetHeight
+            - (2 * (parseInt(apf.getStyle(p, "borderTopWidth")) || 0))
+            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
+    };
+
+    apf.getBorderOffset = function(oHtml){
+        return [-1 * (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0),
+            -1 * (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)];
+    };
+}
 
 
 
@@ -67439,6 +67606,424 @@ apf.rest = function(){
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+
+
+
+/**
+ * @constructor
+ * @private
+ */
+apf.textbox.masking = function(){
+    /*
+        Special Masking Values:
+        - PASSWORD
+        
+        <a:Textbox name="custref" mask="CS20999999" maskmsg="" validation="/CS200[3-5]\d{4}/" invalidmsg="" bind="custref/text()" />
+    */
+    
+    var _FALSE_ = 9128748732;
+
+    var _REF = {
+        "0" : "\\d",
+        "1" : "[12]",
+        "9" : "[\\d ]",
+        "#" : "[\\d +-]",
+        "L" : "[A-Za-z]",
+        "?" : "[A-Za-z ]",
+        "A" : "[A-Za-z0-9]",
+        "a" : "[A-Za-z0-9 ]",
+        "X" : "[0-9A-Fa-f]",
+        "x" : "[0-9A-Fa-f ]",
+        "&" : "[^\s]",
+        "C" : "."
+    };
+    
+    var lastPos = -1;
+    var masking = false;
+    var oInput = this.$input;
+    var pos = [];
+    var initial, myvalue, format, fcase, replaceChar;
+
+    this.setPosition = function(setpos){
+        setPosition(setpos || lastPos || 0);
+    };
+
+    this.addEventListener("$clear", function(){
+        this.value = "";
+        if (this.mask) 
+            return this.setValue("");
+    });
+    
+    this.$propHandlers["value"] = function(value){
+        var data = "";
+        if (this.includeNonTypedChars) {
+            for (var i = 0; i < initial.length; i++) {
+                if (initial.substr(i, 1) != value.substr(i, 1))
+                    data += value.substr(i, 1);//initial.substr(i,1) == replaceChar
+            }
+        }
+
+        this.$insertData(data || value);
+        setPosition(myvalue.length);
+    };
+    
+    //Char conversion
+    var numpadKeys = {
+        "96": "0",
+        "97": "1",
+        "98": "2",
+        "99": "3",
+        "100": "4",
+        "101": "5",
+        "102": "6",
+        "103": "7",
+        "104": "8",
+        "105": "9",
+        "106": "*",
+        "107": "+",
+        "109": "-",
+        "110": ".",
+        "110": "/"
+    };
+    
+    this.addEventListener("keydown", function(e){
+        var key  = e.keyCode,
+            stop = false;
+
+        switch (key) {
+            case 39:
+                //RIGHT
+                setPosition(lastPos + 1);
+                stop = true;
+                break;
+            case 37:
+                //LEFT
+                setPosition(lastPos - 1);
+                stop = true;
+                break;
+            case 35:
+            case 34:
+                setPosition(myvalue.length);
+                stop = true;
+                break;
+            case 33:
+            case 36:
+                setPosition(0);
+                stop = true;
+                break;
+            case 8:
+                //BACKSPACE
+                deletePosition(lastPos - 1);
+                setPosition(lastPos - 1);
+                stop = true;
+                break;
+            case 46:
+                //DEL
+                deletePosition(lastPos);
+                setPosition(lastPos);
+                stop = true;
+                break;
+            default:
+                if (key == 67 && e.ctrlKey) {
+                    window.clipboardData.setData("Text", this.getValue());  
+                    stop = true;
+                }
+            break;
+        }
+
+        //@todo why isnt the conversion not always good? Check backtick.
+        var chr = numpadKeys[key] || String.fromCharCode(key);
+        if (setCharacter(chr))
+            setPosition(lastPos + 1);
+
+        var value, pos = lastPos;
+        if (this.realtime && (value = this.getValue()) != this.value) {
+            this.change(value);
+            setPosition(pos);
+        }
+
+        if (apf.isCharacter(e.keyCode) || stop)
+            return false;
+    }, true);
+    
+    /* ***********************
+            Init
+    ************************/
+    
+    this.$initMasking = function(){
+        ///this.keyHandler = this._keyHandler;
+        this.$keyHandler = null; //temp solution
+        masking = true;
+
+        this.$input[apf.isIphone ? "onclick" : "onmouseup"] = function(e){
+            var pos = Math.min(calcPosFromCursor(), myvalue.length);
+            setPosition(pos);
+            return false;
+        };
+        
+        this.$input.onpaste = function(e){
+            e = e || window.event;
+            e.returnValue = false;
+            this.host.setValue(window.clipboardData.getData("Text") || "");
+            //setPosition(lastPos);
+            $setTimeout(function(){
+                setPosition(lastPos);
+            }, 1); //HACK good enough for now...
+        };
+        
+        this.getValue = function(){
+            if (this.includeNonTypedChars)
+                return initial == this.$input.value
+                    ? "" 
+                    : this.$input.value.replace(new RegExp(replaceChar, "g"), "");
+            else
+                return myvalue.join("");
+        };
+        
+        this.setValue = function(value){
+            this.$propHandlers["value"].call(this, value);
+        };
+    };
+    
+    this.setMask = function(m){
+        if (!masking)
+            this.$initMasking();
+        
+        m = m.split(";");
+        replaceChar = m.pop();
+        this.includeNonTypedChars = parseInt(m.pop(), 10) !== 0;
+        var mask = m.join(""); //why a join here???
+        var validation = "";
+        var visual = "";
+        var mode_case = "-";
+        var strmode = false;
+        var startRight = false;
+        var chr;
+        pos = [];
+        format = "";
+        fcase = "";
+        
+        for (var looppos = -1, i = 0; i < mask.length; i++) {
+            chr = mask.substr(i, 1);
+            
+            if (!chr.match(/[\!\'\"\>\<\\]/)) {
+                looppos++;
+            }
+            else {
+                if (chr == "!")
+                    startRight = true;
+                else if (chr == "<" || chr == ">")
+                    mode_case = chr;
+                else if (chr == "'" || chr == "\"")
+                    strmode = !strmode;
+                continue;
+            }
+            
+            if (!strmode && _REF[chr]) {
+                pos.push(looppos);
+                visual     += replaceChar;
+                format     += chr;
+                fcase      += mode_case;
+                validation += _REF[chr];
+            }
+            else
+                visual += chr;
+        }
+
+        this.$input.value = visual;
+        initial = visual;
+        //pos = pos;
+        myvalue = [];
+        //format = format;
+        //fcase = fcase;
+        replaceChar = replaceChar;
+        
+        //setPosition(0);//startRight ? pos.length-1 : 0);
+        
+        //validation..
+        //forgot \ escaping...
+    };
+    
+    function checkChar(chr, p){
+        var f = format.substr(p, 1);
+        var c = fcase.substr(p, 1);
+
+        if (chr.match(new RegExp(_REF[f])) == null)
+            return _FALSE_;
+        if (c == ">")
+            return chr.toUpperCase();
+        if (c == "<")
+            return chr.toLowerCase();
+        return chr;
+    }
+
+    function setPosition(p){
+        if (p < 0)
+            p = 0;
+
+        if (apf.hasMsRangeObject) {
+            var range = oInput.createTextRange();
+            range.expand("textedit");
+            range.select();
+
+            if (pos[p] == null) {
+                range.collapse(false);
+                range.select();
+                lastPos = pos.length;
+                return false;
+            }
+
+            range.collapse();
+            range.moveStart("character", pos[p]);
+            range.moveEnd("character", 1);
+            range.select();
+        }
+        else {
+            if (typeof pos[p] == "undefined") {
+                oInput.selectionStart = oInput.selectionEnd = pos[pos.length - 1] + 1;
+                lastPos = pos.length;
+                return false;
+            }
+            oInput.selectionStart = pos[p];
+            oInput.selectionEnd   = pos[p] + 1;
+        }
+
+        lastPos = p;
+    }
+    
+    function setCharacter(chr){
+        if (pos.length && pos[lastPos] == null)
+            return false;
+        
+        chr = checkChar(chr, lastPos);
+        if (chr == _FALSE_)
+            return false;
+
+        if (apf.hasMsRangeObject) {
+            var range = oInput.createTextRange();
+            range.expand("textedit");
+            range.collapse();
+            range.moveStart("character", pos[lastPos]);
+            range.moveEnd("character", 1);
+            range.text = chr;
+            if (apf.document.activeElement == this)
+                range.select();
+        }
+        else {
+            var val   = oInput.value;
+            var start = oInput.selectionStart;
+            var end   = oInput.selectionEnd;
+            oInput.value = val.substr(0, start) + chr + val.substr(end);
+            oInput.selectionStart = start;
+            oInput.selectionEnd   = end;
+        }
+        
+        myvalue[lastPos] = chr;
+        
+        return true;
+    }
+    
+    function deletePosition(p){
+        if (pos[p] == null)
+            return false;
+        
+        if (apf.hasMsRangeObject) {
+            var range = oInput.createTextRange();
+            range.expand("textedit");
+            range.collapse();
+
+            range.moveStart("character", pos[p]);
+            range.moveEnd("character", 1);
+            range.text = replaceChar;
+            range.select();
+        }
+        else {
+            var val   = oInput.value;
+            var start = pos[p];
+            var end   = pos[p] + 1;
+            oInput.value = val.substr(0, start) + replaceChar + val.substr(end);
+            oInput.selectionStart = start;
+            oInput.selectionEnd   = end;
+        }
+        
+        //ipv lastPos
+        myvalue[p] = " ";
+    }
+    
+    this.$insertData = function(str){
+        if (str == this.getValue())
+            return;
+
+        var i, j;
+        
+        try {
+            if (!apf.hasMsRangeObject && oInput.selectionStart == oInput.selectionEnd)
+                setPosition(0); // is this always correct? practice will show...
+        }
+        catch (ex) {
+            // in FF (as we know it), we cannot access the selectStart property
+            // when the control/ input doesn't have the focus or is not visible.
+            // A workaround is provided here...
+            if (!str)
+                return;
+            var chr, val;
+            for (i = 0, j = str.length; i < j; i++) {
+                lastPos = i;
+                if (pos[lastPos] == null)
+                    continue;
+                chr = checkChar(str.substr(i, 1), i);
+                if (chr == _FALSE_)
+                    continue;
+                val = oInput.value;
+                oInput.value = val.substr(0, pos[i]) + chr + val.substr(pos[i] + 1);
+            }
+            if (str.length)
+                lastPos++;
+            return; // job done, bail out
+        }
+
+        str = this.dispatchEvent("insert", { data : str }) || str;
+        
+        if (!str) {
+            if (!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared
+            for (i = this.getValue().length - 1; i >= 0; i--)
+                deletePosition(i);
+            setPosition(0);	
+            return;
+        }
+        
+        for (i = 0, j = str.length; i < j; i++) {
+            lastPos = i;
+            setCharacter(str.substr(i, 1));
+            if (!apf.hasMsRangeObject)
+                setPosition(i + 1);
+        }
+        if (str.length)
+            lastPos++;
+    };
+    
+    function calcPosFromCursor(){
+        var range, lt = 0;
+
+        if (!apf.hasMsRangeObject) {
+            lt = oInput.selectionStart;
+        }
+        else {
+            range  = document.selection.createRange();
+            var r2 = range.duplicate();
+            r2.expand("textedit");
+            r2.setEndPoint("EndToStart", range);
+            lt = r2.text.length;
+        }
+    
+        for (var i = 0; i < pos.length; i++) {
+            if (pos[i] > lt)
+                return (i == 0) ? 0 : i - 1;
+        }
+
+        return myvalue.length; // always return -a- value...
+    }
+};
 
 
 

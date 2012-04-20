@@ -122,13 +122,19 @@ module.exports = ext.register("ext/vim/vim", {
         var self = this;
         var menuItem = new apf.item({
             type: "check",
-            checked: "[{require('ext/settings/settings').model}::editors/code/@vimmode]",
+            checked: "[{require('core/settings').model}::editors/code/@vimmode]",
             onclick: function() { self.toggle(); }
         });
         
         menus.addItemByPath("View/Vim Mode", menuItem, 150000);
+        
+        ide.addEventListener("loadsettings", function(){
+            settings.setDefaults("editors/code", [
+                ["vimmode", "false"]
+            ]);
+        });
 
-        require("ext/settings/settings").addSettings("Code Editor", markupSettings);
+        settings.addSettings("Code Editor", markupSettings);
 
         var tryEnabling = function () {
             if (settings.model) {
