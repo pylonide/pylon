@@ -1458,7 +1458,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(45743)TIME(Wed, 18 Apr 2012 21:11:22 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(45743)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3860,7 +3860,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Mon, 16 Apr 2012 11:59:16 GMT)*/
+/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -12465,7 +12465,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40895)TIME(Thu, 19 Apr 2012 13:41:49 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40895)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14675,7 +14675,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Sun, 15 Apr 2012 10:04:33 GMT)*/
+/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15180,7 +15180,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Sun, 15 Apr 2012 08:21:24 GMT)*/
+/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15763,7 +15763,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22832)TIME(Wed, 18 Apr 2012 21:08:06 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22832)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16517,7 +16517,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Sun, 15 Apr 2012 15:10:40 GMT)*/
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19938,7 +19938,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33273)TIME(Sun, 15 Apr 2012 17:30:36 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33273)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26781,7 +26781,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Sat, 14 Apr 2012 07:39:56 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28427,7 +28427,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Fri, 13 Apr 2012 22:42:59 GMT)*/
+/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35660,7 +35660,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31748)TIME(Fri, 13 Apr 2012 20:40:51 GMT)*/
+/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 19 Apr 2012 16:03:26 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36056,6 +36056,7 @@ apf.$viewportVirtual = function(amlNode){
     this.host   = this;
     this.cache  = null;
     this.inited = false;
+    this.virtual = true;
     
     this.setScrollbar = function(scrollbar, onscroll){
        this.scrollbar = scrollbar;
@@ -46957,7 +46958,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Sun, 15 Apr 2012 07:09:40 GMT)*/
+/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52459,7 +52460,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25149)TIME(Thu, 19 Apr 2012 13:38:51 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25149)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54006,7 +54007,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19339)TIME(Sun, 15 Apr 2012 08:48:19 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19339)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55318,7 +55319,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Sat, 14 Apr 2012 07:42:49 GMT)*/
+/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58966,7 +58967,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(elements/scrollbar.js)SIZE(32603)TIME(Fri, 13 Apr 2012 20:40:32 GMT)*/
+/*FILEHEAD(elements/scrollbar.js)SIZE(32649)TIME(Thu, 19 Apr 2012 16:13:53 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59133,11 +59134,13 @@ apf.scrollbar = function(struct, tagName){
     };
     
     this.$resize = function(){
-        if (!this.$viewport || !this.$viewport.isVisible())
+        if (!this.$viewport || !this.$viewport.isVisible()
+          || !this.$viewport.virtual)
             return;
         
         this.$recalc();
         this.$update();
+        
         this.setScrollPosition(this.position, true);
     }
     
@@ -61617,7 +61620,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5172)TIME(Wed, 18 Apr 2012 15:09:23 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5172)TIME(Thu, 19 Apr 2012 13:47:44 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
