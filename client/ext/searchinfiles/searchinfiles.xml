@@ -20,7 +20,7 @@
             </a:hbox>
             <a:hbox id="barReplace" align="center">
                 <a:label width="95">Replace With</a:label>
-                <a:textbox id="txtReplace" flex="1" />
+                <a:textbox id="txtSFReplace" flex="1" />
             </a:hbox>
             <a:hbox edge="10 0 5">
                 <a:fieldset flex="1" caption="Options" margin="0 0 1">
