@@ -661,10 +661,11 @@ if (!page.getAttribute("caption").trim()) debugger;
 
     removeItem: function(page) {
         var item, idx, keyId;
-        var i = this.menuOffset;
+        var i = 0;
         var l = this.nodes.length;
         var _self = this;
-        for (; i < l; ++i) {
+        
+        for (; i < l; i++) {
             if ((item = this.nodes[i]).relPage == page.id) {
                 item.destroy(true, true);
                 this.nodes.splice(i, 1);
