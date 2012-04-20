@@ -36,15 +36,13 @@ module.exports = ext.register("ext/log/log", {
         
         var send = ide.send;
         ide.send = function(msg){
-            _self.model.appendXml("<event time='" + new Date().getTime() 
-                + "' type='websocket'><![CDATA[" + JSON.stringify(msg) + "]]></event>");
+            _self.log(null, "websocket", msg);
                 
             send.apply(ide, arguments);
         }
 
         ide.addEventListener("socketMessage", function(e){
-            _self.model.appendXml("<event time='" + new Date().getTime() 
-                + "' type='websocket_receive' response='" + JSON.stringify(e.message) + "' />");
+            _self.log(null, "websocket_receive", null, e.message);
         });
 
         this.wrapHttp("apf.http", "http");
@@ -57,27 +55,8 @@ module.exports = ext.register("ext/log/log", {
         var http = eval(expr);
         var func = function(){
             var oHttp = new http();
-            var get = oHttp.get;
-            oHttp.get = function(url, options){
-                var callback = options.callback;
-                options.callback = function(data, state, extra){
-                    apf.xmldb.setAttribute(xmlNode, "response",
-                        JSON.stringify({
-                            state : state,
-                            data : data
-                        }));
 
-                    callback && callback.apply(this, arguments);
-                }
-
-                var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
-                    + "' url='" + url + "' type='" + type + "'><![CDATA[" 
-                    + JSON.stringify(options) + "]]></event>");
-
-                xmlNode = apf.xmldb.appendChild(_self.model.data, xmlNode);
-                
-                get.apply(oHttp, arguments);
-            }
+            _self.wrap(oHttp, type);
             return oHttp;
         }
         eval(expr + " = func");
@@ -87,6 +66,12 @@ module.exports = ext.register("ext/log/log", {
     wrapInstance : function(expr, type){
         var _self = this;
         var oHttp = eval(expr);
+        _self.wrap(oHttp, type);
+    },
+
+    wrap : function(oHttp, type){
+        var _self = this;
+
         var get = oHttp.get;
         oHttp.get = function(url, options){
             var callback = options.callback;
@@ -96,18 +81,26 @@ module.exports = ext.register("ext/log/log", {
                         state : state,
                         data : data
                     }));
-
+    
                 callback && callback.apply(this, arguments);
             }
-
-            var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
-                + "' url='" + url + "' type='" + type + "'><![CDATA[" 
-                + JSON.stringify(options) + "]]></event>");
-
-            xmlNode = apf.xmldb.appendChild(_self.model.data, xmlNode);
-            
+    
+            var xmlNode = _self.log(url, type, options);
+    
             get.apply(oHttp, arguments);
         }
+    },
+
+    log : function(url, type, request, response){
+        if (this.model.data.childNodes.length > 1000) {
+            apf.xmldb.removeChild(this.model.data.firstChild);
+        }
+
+        var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
+            + "' url='" + (url || "") + "' type='" + type + "' "
+            + "response='" + (response ? JSON.stringify(response) : "") + "'><![CDATA[" 
+            + (request ? JSON.stringify(request) : "") + "]]></event>");
+        return apf.xmldb.appendChild(this.model.data, xmlNode);
     },
 
     init : function(amlNode){},
