@@ -252,7 +252,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
 
-            var matches = parseInt(data.getAttribute("count"), 10);
+            var matches = data.getElementsByTagName("d:excerpt").length;
+            var queryDetails = data.getElementsByTagName("d:querydetail");
+            if(queryDetails.length === 1) {
+                queryDetails[0].setAttribute("count", ""+matches);
+                queryDetails[0].setAttribute("filecount", ""+data.getElementsByTagName("d:response").length);
+            }
             if (state !== apf.SUCCESS || !matches) {
                 var optionsDesc = [];
                 if (Util.isTrue(options.casesensitive)) {
