@@ -697,7 +697,7 @@ module.exports = ext.register("ext/editors/editors", {
 
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
-                    if(!pages[i] || !pages[i].$model)
+                    if (!pages[i] || !pages[i].$model)
                         continue;
                         
                     var file = pages[i].$model.data;
@@ -705,7 +705,8 @@ module.exports = ext.register("ext/editors/editors", {
                         continue;
 
                     var copy = apf.xmldb.cleanNode(file.cloneNode(false));
-                    //copy.removeAttribute("changed");
+                    if (!copy.getAttribute("newfile"))
+                        copy.removeAttribute("changed");
                     copy.removeAttribute("loading");
                     copy.removeAttribute("saving");
                     pNode.appendChild(copy);

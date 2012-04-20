@@ -40,31 +40,31 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
 };
 
 var ModesCaption = {
-    "C#" : true,
-    "C/C++" : true,
-    "Clojure" : true,
-    "CoffeeScript" : true,
-    "Coldfusion" : true,
-    "CSS" : true,
-    "Groovy" : true,
-    "Java" : true,
-    "JavaScript" : true,
-    "Latex" : true,
-    "Script" : true,
-    "Lua" : true,
-    "Markdown" : true,
-    "OCaml" : true,
-    "PHP" : true,
-    "Perl" : true,
-    "Powershell" : true,
-    "Python" : true,
-    "Ruby" : true,
-    "Scala" : true,
-    "SCSS" : true,
-    "SQL" : true,
-    "Textile" : true,
-    "HTML" : true,
-    "XML" : true
+    "C#" : "text/x-csharp",
+    "C/C++" : "text/x-c",
+    "Clojure" : "text/x-script.clojure",
+    "CoffeeScript" : "text/x-script.coffeescript",
+    "Coldfusion" : "text/x-coldfusion",
+    "CSS" : "text/css",
+    "Groovy" : "text/x-groovy",
+    "Java" : "text/x-java-source",
+    "JavaScript" : "application/javascript",
+    "Latex" : "application/x-latex",
+    "Script" : "text/x-script",
+    "Lua" : "text/x-lua",
+    "Markdown" : "text/x-markdown",
+    "OCaml" : "text/x-script.ocaml",
+    "PHP" : "application/x-httpd-php",
+    "Perl" : "text/x-script.perl",
+    "Powershell" : "text/x-script.powershell",
+    "Python" : "text/x-script.python",
+    "Ruby" : "text/x-script.ruby",
+    "Scala" : "text/x-scala",
+    "SCSS" : "text/x-scss",
+    "SQL" : "text/x-sql",
+    "Textile" : "text/x-web-textile",
+    "HTML" : "text/html",
+    "XML" : "application/xml"
 }
 
 var SupportedModes = {
@@ -535,7 +535,7 @@ module.exports = ext.register("ext/code/code", {
             
             menus.addItemByPath("View/~", new apf.divider(), 290000),
             
-            menus.addItemByPath("View/Syntax/", new apf.item({
+            menus.addItemByPath("View/Syntax/", new apf.menu({
                 onitemclick : function(e) {
                     var file = ide.getActivePageModel();
         
@@ -618,18 +618,24 @@ module.exports = ext.register("ext/code/code", {
         c = 0;
         this.menus.push(
             menus.addItemByPath("View/Syntax/Auto-Select", new apf.item({
+                type: "radio",
+                selected: true,
                 value: "auto"
             }), c += 100),
             
             menus.addItemByPath("View/Syntax/Plain Text", new apf.item({
+                type: "radio",
                 value: "text/plain"
-            }), c += 100)
+            }), c += 100),
+            
+            menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
         );
         
         for (var mode in ModesCaption) {
             this.menus.push(
                 menus.addItemByPath("View/Syntax/" + mode, new apf.item({
-                    value: contentTypes[mode.toLowerCase()]
+                    type: "radio",
+                    value: ModesCaption[mode]
                 }), c += 100)
             )
         }
