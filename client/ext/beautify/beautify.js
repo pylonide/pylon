@@ -14,7 +14,6 @@ define(function (require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var util = require("core/util");
-var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");

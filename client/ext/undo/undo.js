@@ -11,6 +11,8 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 
+var ta = {"INPUT":1, "TEXTAREA":1, "SELECT":1, "EMBED":1, "OBJECT":1};
+
 module.exports = ext.register("ext/undo/undo", {
     dev    : "Ajax.org",
     name   : "Undo",
@@ -20,6 +22,8 @@ module.exports = ext.register("ext/undo/undo", {
     nodes : [],
 
     init : function(amlNode){
+        var _self = this;
+        
         commands.addCommand({
             name: "undo",
             hint: "undo one edit step in the active document",
@@ -32,9 +36,9 @@ module.exports = ext.register("ext/undo/undo", {
         commands.addCommand({
             name: "redo",
             hint: "redo one edit step in the active document",
-            bindKey: {mac: "Command-Z", win: "Ctrl-Z"},
+            bindKey: {mac: "Shift-Command-Z", win: "Ctrl-Y"},
             exec: function () {
-                _self.undo();
+                _self.redo();
             }
         });
         
@@ -47,16 +51,33 @@ module.exports = ext.register("ext/undo/undo", {
     },
 
     undo: function() {
-        console.log(apf.activeElement);
-        var _tabPage;
-        if(_tabPage = tabEditors.getPage())
-            _tabPage.$at.undo();
+        if (document.activeElement && ta[document.activeElement.tagName])
+            return;
+        
+        if (apf.isChildOf(tabEditors, apf.activeElement, true)) {
+            var _tabPage;
+            if(_tabPage = tabEditors.getPage())
+                _tabPage.$at.undo();
+        }
+        else if (apf.activeElement == self.trFiles) {
+            //@todo the way undo is implemented doesn't work right now
+            //trFiles.getActionTracker().undo();
+        }
     },
 
     redo: function() {
-        var _tabPage;
-        if(_tabPage = tabEditors.getPage())
-            _tabPage.$at.redo();
+        if (document.activeElement && ta[document.activeElement.tagName])
+            return;
+        
+        if (apf.isChildOf(tabEditors, apf.activeElement, true)) {
+            var _tabPage;
+            if(_tabPage = tabEditors.getPage())
+                _tabPage.$at.redo();
+        }
+        else if (apf.activeElement == self.trFiles) {
+            //@todo the way undo is implemented doesn't work right now
+            //trFiles.getActionTracker().redo();
+        }
     },
 
     enable : function(){

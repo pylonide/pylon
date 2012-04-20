@@ -33,15 +33,6 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     nodes : [],
 
     init : function(amlNode){   
-        this.overlay = document.createElement("div");
-        this.overlay.setAttribute("style",
-            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;");
-        document.body.appendChild(this.overlay);
-    },
-    
-    hook : function(){
-        var _self = this;
-        
         jsonQuickStart = {
             identifiers: [
                 {
@@ -70,7 +61,15 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             ]
         };
         
-                
+        this.overlay = document.createElement("div");
+        this.overlay.setAttribute("style",
+            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;");
+        document.body.appendChild(this.overlay);
+    },
+    
+    hook : function(){
+        var _self = this;
+        
         ide.addEventListener("loadsettings", function(e) {
             var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
             if(showQS === "" || showQS == "true") {

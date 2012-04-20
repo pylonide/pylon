@@ -104,9 +104,6 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         addCommands : function(commands, context, asDefault){
             var _self = this;
             commands && Object.keys(commands).forEach(function(name) {
-                if (asDefault && _self.commands[name])
-                    return;
-                
                 var command = commands[name];
                 if (typeof command === "string")
                     return this.bindKey(command, name);
@@ -116,8 +113,11 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
     
                 if (!command.name)
                     command.name = name;
+                    
+                if (asDefault && _self.commands[command.name])
+                    return;
                 
-                if (context)
+                if (context && !command.context)
                     command.context = context;
     
                 this.addCommand(command, context);

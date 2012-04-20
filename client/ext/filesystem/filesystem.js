@@ -245,7 +245,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         node.setAttribute("oldpath", node.getAttribute("path"));
         node.setAttribute("path", newPath);
-        apf.xmldb.setAttribute(node, "name", name);
+        //apf.xmldb.setAttribute(node, "name", name);
 
         // when this is a copy action, then we don't want this to happen
         if (page && !isCopyAction)

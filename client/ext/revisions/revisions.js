@@ -29,7 +29,7 @@ var skin = require("text!ext/revisions/skin.xml");
 
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
-var CHANGE_TIMEOUT = 10000;
+var CHANGE_TIMEOUT = 5000;
 
 module.exports = ext.register("ext/revisions/revisions", {
     name: "Revisions",
@@ -80,6 +80,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
 
         settings.addSettings("General", markupSettings);
+
+        ide.addEventListener("loadsettings", function(e){
+            e.ext.setDefaults("general", [["autosaveenabled", "true"]]);
+        });
 
         btnSave.removeAttribute("icon");
         btnSave.setAttribute("caption", "");
