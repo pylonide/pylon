@@ -27,7 +27,7 @@
                   icon     = "{itmDebug.checked ? 'bug.png' : 'run.png'}"
                   caption  = "{itmDebug.checked ? 'debug' : 'run'}"
                   onclick  = "require('ext/runpanel/runpanel').run(itmDebug.checked)"
-                  visible  = "{!stProcessRunning.active and 1}"
+                  visible  = "{!stProcessRunning.active &amp;&amp; 1}"
                   skin     = "c9-toolbarbutton"
                   submenu  = "mnuRunCfg" />
                 <a:button
@@ -35,7 +35,7 @@
                   caption  = "stop"
                   skin     = "c9-toolbarbutton"
                   onclick  = "require('ext/runpanel/runpanel').stop()"
-                  visible  = "{stProcessRunning.active and 1}" /-->
+                  visible  = "{stProcessRunning.active &amp;&amp; 1}" /-->
             </a:hbox>
         </a:bar>
         
@@ -81,7 +81,7 @@
                       flex="1"
                       realtime="true"
                       value="[@name]"
-                      disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
+                      disabled="{!lstRunCfg.selected || [{lstRunCfg.selected}::@curfile]}"/>
                   </a:hbox>
                   <a:hbox>
                     <a:label width="100" skin="black_label">File Path</a:label>

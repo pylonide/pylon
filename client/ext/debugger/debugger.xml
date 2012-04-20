@@ -7,12 +7,12 @@
                   icon     = "play.png"
                   command  = "debugresume"
                   skin     = "c9-sidepanelsbutton"
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
                 <a:button  tooltip="Suspend"
                   skin     = "c9-sidepanelsbutton"
                   icon     = "pause.png"
                   onclick  = "dbg.suspend();"
-                  disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+                  disabled = "{!stDebugProcessRunning.active || !stRunning.active}"/>
                 <a:divider skin="c9-divider" />
                 <a:button id="btnStepOver" tooltip="Step Over"
                   icon     = "step.png"
@@ -43,7 +43,7 @@
               model      = "mdlDbgStack"
               class      = "noscrollbar"
               scrollbar  = "sbShared 20 2 2"
-              disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
+              disabled   = "{!stDebugProcessRunning.active || stRunning.active}"
               selected   = "{dbg.activeframe}">
                 <a:actions />
                 <a:each match="[frame]">
@@ -59,7 +59,7 @@
                 <a:toolbar>
                     <a:bar border="0 0 1 0">
                         <a:button
-                          disabled = "{!stDebugProcessRunning.active or stRunning.active}"
+                          disabled = "{!stDebugProcessRunning.active || stRunning.active}"
                           caption  = "Execute" 
                           tooltip  = "Ctrl+Enter"
                           onclick  = "
@@ -78,7 +78,7 @@
                           width      = "120"
                           maxitems   = "10"
                           model      = "mdlDbgSources"
-                          disabled   = "{!stDebugProcessRunning.active and 1}" 
+                          disabled   = "{!stDebugProcessRunning.active &amp;&amp; 1}" 
                           each       = "[file]"
                           caption    = "[@text]"
                           autoselect = "false"
@@ -87,7 +87,7 @@
                 </a:toolbar>
                 <a:codeeditor id="txtCode" 
                   flex      = "1"
-                  disabled  = "{stRunning.active or !stDebugProcessRunning.active}"
+                  disabled  = "{stRunning.active || !stDebugProcessRunning.active}"
                   onkeydown = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
                   realtime  = "true"
                   border    = "0" 
@@ -114,7 +114,7 @@
               prerender  = "false"
               caching    = "false"
               model      = "[{dbg.activeframe}::vars]"
-              disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
+              disabled   = "{!stDebugProcessRunning.active || stRunning.active}"
               loading-message = "Calculating...">
                 <a:actions />
                 <a:each match="[item|globals]" sort="[@name]">

@@ -112,16 +112,12 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 if (message.code == 1) {
                     stDebugProcessRunning.setProperty("active", false);
                     stProcessRunning.setProperty("active", true);
-
-                    //ide.send({"command": "state"});
                     break;
                 }
                 // debug process already running
                 else if (message.code == 5) {
                     stDebugProcessRunning.setProperty("active", true);
                     stProcessRunning.setProperty("active", true);
-
-                    //ide.send({"command": "state"});
                     break;
                 }
 
@@ -151,7 +147,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                     });
                 }
 
-                ide.send({"command": "state"});
+                ide.send({"command": "state", "action": "publish"});
                 break;
         }
     },
@@ -173,6 +169,8 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         dbg.registerManualAttach();
         if (stProcessRunning.active || !stServerConnected.active || typeof path != "string")
             return false;
+
+        stProcessRunning.activate()
 
         if (nodeVersion == 'default')
             nodeVersion = "";
@@ -202,6 +200,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             "runner" : "node",
             "pid"    : this.nodePid
         });
+        ide.send({"command": "state", "action": "publish"});
     },
 
     enable : function(){

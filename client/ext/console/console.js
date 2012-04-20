@@ -44,7 +44,7 @@ var execAction = function(cmd, data) {
 
         if (commandEvResult !== false && consoleEvResult !== false) {
             if (!ide.onLine)
-                this.write("Cannot execute command. You are currently offline.");
+                module.exports.write("Cannot execute command. You are currently offline.");
             else
                 ide.send(data);
         }
@@ -112,12 +112,12 @@ module.exports = ext.register("ext/console/console", {
                 this.write("Working directory changed.");
             }
         },
-        
+
         error: function(message) {
             Logger.log(message.body);
             Logger.log("", "divider");
         },
-        
+
         /**
          * Info does the same as error in this case
          * but it's here for the future, we might want to distinguise these
@@ -127,7 +127,7 @@ module.exports = ext.register("ext/console/console", {
             Logger.log(message.body);
             Logger.log("", "divider");
         },
-        
+
         __default__: function(message) {
             var res = message.body;
             if (res) {
@@ -155,7 +155,7 @@ module.exports = ext.register("ext/console/console", {
         if (txtConsole) {
             txtConsole.clear();
         }
-        
+
         return false;
     },
 
@@ -289,7 +289,7 @@ module.exports = ext.register("ext/console/console", {
 
         return "[" + u + "@cloud9]:" + this.$cwd + "$" + ((" " + suffix) || "");
     },
-    
+
     hook: function() {
         var _self = this;
         
@@ -403,7 +403,7 @@ module.exports = ext.register("ext/console/console", {
         this.$cwd  = "/workspace"; // code smell
         
         apf.importCssString(this.css);
-        
+
         // Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.previousSibling.hide();
@@ -590,7 +590,7 @@ module.exports = ext.register("ext/console/console", {
 
         if (this.$control)
             this.$control.stop();
-        
+
         var _self = this;
         var cfg;
         if (shouldShow) {
