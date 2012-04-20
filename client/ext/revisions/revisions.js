@@ -204,7 +204,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
             }
 
-            var revObj = self.$getRevisionObject(self.$getDocPath());
+            var path = self.$getDocPath();
+            var revObj = self.$getRevisionObject(path);
             var id = parseInt(node.getAttribute("id"), 10);
             var cache = revObj.previewCache;
             if (cache && cache[id]) {
