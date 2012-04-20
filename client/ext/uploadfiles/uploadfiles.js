@@ -307,9 +307,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         // subfolder does not exists, create first
                         else {
                             fs.createFolder(folder, trFiles, true, function(folder) {
-                                if (!folder)
-                                    return;
-                                
+                                if (!folder) {
+                                    _self.removeFromQueue(file.name);
+                                    next();
+                                }
                                 // check if there are subfolders to be created
                                 trFiles.select(folder);
                                 subfolder = folder;

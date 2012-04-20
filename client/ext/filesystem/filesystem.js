@@ -119,11 +119,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         // we expect the new created file in the directory listing
                         var fullFolderPath = path + "/" + name;
                         var folder = nodesInDirXml.selectSingleNode("//folder[@path='" + fullFolderPath + "']");
+                        
                         // not found? display an error
-
                         if (!folder) {
-                             return util.alert("Error", "Folder '" + name + "' could not be created",
+                            util.alert("Error", "Folder '" + name + "' could not be created",
                                  "An error occurred while creating a new folder, please try again.");
+                            callback && callback();
+                            return;
                         }
                         tree.slideOpen(null, node, true, function(data, flag, extra){
                             // empty data means it didn't trigger <insert> binding,
@@ -138,8 +140,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             if (!noRename)
                                 tree.startRename();
                             
-                            if (callback)
-                                callback(folder);
+                            callback && callback(folder);
                         });
                     });
                 }
