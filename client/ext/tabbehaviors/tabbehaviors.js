@@ -622,6 +622,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var htmlNode = apf.xmldb.getHtmlNode(tree.selected, tree);
             if (!htmlNode)
                 return;
+
             var itemPos = apf.getAbsolutePosition(htmlNode, tree.$container);
             var top = tree.$container.scrollTop;
             var bottom = top + tree.$container.offsetHeight;
@@ -640,8 +641,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     addItem: function(page) {
         if (this.more)
             return; // no more items allowed...
-
-if (!page.getAttribute("caption").trim()) debugger;
 
         var mnu = this.mnuTabs.appendChild(new apf.item({
             caption : page.getAttribute("caption"),
