@@ -5,7 +5,7 @@
       icon      = ""
       center    = "true"
       resizable = "true"
-      buttons   = "close"
+      buttons   = "max|close"
       modal     = "false"
       skin      = "bk-window"
       width     = "660"
@@ -24,7 +24,8 @@
                 <a:column width="15%" value="[@time]" caption="Time" />
                 <a:column width="15%" value="[@type]" caption="Type" />
                 <a:column width="30%" value="[@url]" caption="Url" />
-                <a:column width="40%" value="[text()]" caption="Message" />
+                <a:column width="20%" value="[text()]" caption="Request" />
+                <a:column width="20%" value="[@response]" caption="Response" />
             </a:datagrid>
         </a:vbox>
     </a:window>

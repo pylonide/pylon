@@ -41,18 +41,72 @@ module.exports = ext.register("ext/log/log", {
                 
             send.apply(ide, arguments);
         }
-        
-        var http = apf.http;
-        apf.http = function(){
+
+        ide.addEventListener("socketMessage", function(e){
+            _self.model.appendXml("<event time='" + new Date().getTime() 
+                + "' type='websocket_receive' response='" + JSON.stringify(e.message) + "' />");
+        });
+
+        this.wrapHttp("apf.http", "http");
+        this.wrapHttp("apf.webdav", "webdav");
+        this.wrapInstance("require('ext/filesystem/filesystem').webdav", "fswebdav");
+    },
+
+    wrapHttp : function(expr, type){
+        var _self = this;
+        var http = eval(expr);
+        var func = function(){
             var oHttp = new http();
             var get = oHttp.get;
             oHttp.get = function(url, options){
-                _self.model.appendXml("<event time='" + new Date().getTime() 
-                + "' url='" + url + "' type='http'><![CDATA[" + JSON.stringify(options) + "]]></event>");
+                var callback = options.callback;
+                options.callback = function(data, state, extra){
+                    apf.xmldb.setAttribute(xmlNode, "response",
+                        JSON.stringify({
+                            state : state,
+                            data : data
+                        }));
+
+                    callback && callback.apply(this, arguments);
+                }
+
+                var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
+                    + "' url='" + url + "' type='" + type + "'><![CDATA[" 
+                    + JSON.stringify(options) + "]]></event>");
+
+                xmlNode = apf.xmldb.appendChild(_self.model.data, xmlNode);
                 
                 get.apply(oHttp, arguments);
             }
             return oHttp;
+        }
+        eval(expr + " = func");
+        apf.extend(eval(expr), http);
+    },
+
+    wrapInstance : function(expr, type){
+        var _self = this;
+        var oHttp = eval(expr);
+        var get = oHttp.get;
+        oHttp.get = function(url, options){
+            var callback = options.callback;
+            options.callback = function(data, state, extra){
+                apf.xmldb.setAttribute(xmlNode, "response",
+                    JSON.stringify({
+                        state : state,
+                        data : data
+                    }));
+
+                callback && callback.apply(this, arguments);
+            }
+
+            var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
+                + "' url='" + url + "' type='" + type + "'><![CDATA[" 
+                + JSON.stringify(options) + "]]></event>");
+
+            xmlNode = apf.xmldb.appendChild(_self.model.data, xmlNode);
+            
+            get.apply(oHttp, arguments);
         }
     },
 
