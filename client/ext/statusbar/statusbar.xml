@@ -57,7 +57,9 @@
       </a:hbox>
       <a:hbox edge="0 5 2 0" align="center">
         <a:checkbox id="wrapMode" label="Wrap Lines" value="[{require('ext/settings/settings').model}::editors/code/@wrapmode]" flex="1" skin="checkbox-menu" />    
-        <a:checkbox id="wrapModeViewport" edge="0 0 0 5" label="To Viewport" value="[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]" flex="1" skin="checkbox-menu" />
+      </a:hbox>
+      <a:hbox edge="0 5 2 0" align="center">
+        <a:checkbox id="wrapModeViewport" margin="0 0 0 22" label="To Viewport" value="[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]" flex="1" skin="checkbox-menu" />
       </a:hbox>
       <a:hbox edge="0 5 2 0" align="center">
           <a:checkbox label="Soft Tabs" value="[{require('ext/settings/settings').model}::editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>

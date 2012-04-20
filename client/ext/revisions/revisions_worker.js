@@ -163,6 +163,11 @@ self.onmessage = function(e) {
             var lastContent = e.data.lastContent;
             var patch = self.dmp.patch_make(beforeRevision, lastContent);
 
+            // If there is no actual changes, let's return
+            if (patch.length === 0) {
+                return;
+            }
+
             packet.type = "newRevision";
             packet.revision = {
                 contributors: e.data.contributors,

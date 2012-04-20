@@ -4990,6 +4990,19 @@
             right: 5px;
         }
         
+        .menu-bk.mnuSbPrefs > div.menu_item.checked > u {
+            background-image: url(images/check.png);
+            background-repeat: no-repeat;
+            background-position: 2px -37px;
+        }
+        
+        .menu-bk.mnuSbPrefs .cbmcontainerChecked .checkbox {
+            background-image: url(images/check.png);
+            background-repeat: no-repeat;
+            background-position: 1px -37px;
+            left: 4px;
+        }
+        
         .menu-bk.mnuSbPrefs.downward .arrow, .menu-bk.mnuSbTools.downward .arrow {
             right: 4px;
         }
