@@ -378,6 +378,7 @@ module.exports = ext.register("ext/code/code", {
                 ["newlinemode", "auto"],
                 ["highlightselectedword", "true"],
                 ["autohidehorscrollbar", "true"],
+                ["fadefoldwidgets", "true"],
                 ["animatedscroll", "true"]
             ]);
 

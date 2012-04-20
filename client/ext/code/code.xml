@@ -26,6 +26,7 @@
       gutter            = "[{require('core/settings').model}::editors/code/@gutter]"
       highlightselectedword = "[{require('core/settings').model}::editors/code/@highlightselectedword]"
       autohidehorscrollbar  = "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]"
+      fadefoldwidgets   = "[{require('core/settings').model}::editors/code/@fadefoldwidgets]"
 
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
