@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var save = require("ext/save/save");
 var panels = require("ext/panels/panels");
 var menus = require("ext/menus/menus");
 var openfiles = require("ext/openfiles/openfiles");
@@ -641,6 +640,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     addItem: function(page) {
         if (this.more)
             return; // no more items allowed...
+
+if (!page.getAttribute("caption").trim()) debugger;
 
         var mnu = this.mnuTabs.appendChild(new apf.item({
             caption : page.getAttribute("caption"),
