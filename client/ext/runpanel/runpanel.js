@@ -31,6 +31,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     defaultWidth : 270,
 
     nodes : [],
+    model : new apf.model(),
 
     hook : function(){
         var _self = this;
@@ -96,7 +97,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 //                skin : "c9-divider"
 //            }), 300),
             
-            this.mdlRunConfigurations = new apf.model().load("<configurations />")
+            this.model = new apf.model().load("<configurations />")
         );
         
         var c = 0;
@@ -126,7 +127,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
         }), c += 100);
         
-        this.mdlRunConfigurations.addEventListener("afterload", function(e) {
+        this.model.addEventListener("afterload", function(e) {
             _self.$populateMenu();
         });
 
@@ -170,23 +171,23 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 runConfigs.insertBefore(cfg.node(), runConfigs.firstChild);
             }
 
-            _self.mdlRunConfigurations.load(runConfigs);
+            _self.model.load(runConfigs);
         });
 
         ide.addEventListener("init.ext/editors/editors", function(e) {
             var page = tabEditors.getPage();
             if (page && page.$model) {
                 var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                _self.mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                _self.mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
+                _self.model.setQueryValue("config[@curfile]/@path", path);
+                _self.model.setQueryValue("config[@curfile]/@name",
                     path.split("/").pop() + " (active file)");
             }
 
             tabEditors.addEventListener("afterswitch", function(e){
                 var page = e.nextPage;
                 var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                _self.mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                _self.mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
+                _self.model.setQueryValue("config[@curfile]/@path", path);
+                _self.model.setQueryValue("config[@curfile]/@name",
                     path.split("/").pop() + " (active file)");
             });
 
@@ -194,8 +195,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 var page = tabEditors.getPage();
                 if (page) {
                     var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                    _self.mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                    _self.mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
+                    _self.model.setQueryValue("config[@curfile]/@path", path);
+                    _self.model.setQueryValue("config[@curfile]/@name",
                         path.split("/").pop() + " (active file)");
                 }
             });
@@ -306,9 +307,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             .attr("extension", extension)
             .attr("args", "").node();
 
-        var node = this.mdlRunConfigurations.appendXml(cfg);
+        var node = this.model.appendXml(cfg);
         this.$addMenuItem(node);
-        lstRunCfg.select(cfg);
+        
+        lstRunCfg.select(node);
     },
 
     showRunConfigs : function() {
@@ -326,8 +328,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     run : function(debug) {
         this.runConfig(window.winRunPanel && winRunPanel.visible
             ? lstRunCfg.selected
-            : (this.mdlRunConfigurations.queryNode("node()[@last='true']")
-                || this.mdlRunConfigurations.queryNode("config[@curfile]")),
+            : (this.model.queryNode("node()[@last='true']")
+                || this.model.queryNode("config[@curfile]")),
             this.shouldRunInDebugMode());
         ide.dispatchEvent("track_action", {type: debug ? "debug" : "run"});
     },
@@ -342,7 +344,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         }
         var divider = item;
 
-        var configs = this.mdlRunConfigurations.queryNodes("config");
+        var configs = this.model.queryNodes("config");
         if (!configs.length)
             menu.insertBefore(new apf.item({disabled:true, caption: "No run history"}), divider);
         else {
@@ -356,7 +358,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var _self = this;
 
         if (!divider)
-            divider = this.mnuRunCfg.getElementsByTagNameNS(apf.ns.aml, "divider")[0];
+            divider = this.mnuRunCfg.getElementsByTagNameNS("", "divider")[0];
 
         this.mnuRunCfg.insertBefore(new apf.item({
             caption  : "[{this.node}::@name]",

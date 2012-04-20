@@ -43,7 +43,7 @@ module.exports = ext.register("ext/undo/undo", {
         });
         
         menus.addItemByPath("Edit/Undo", new apf.item({
-            command : "undo"
+            command : "undo",
         }), 100);
         menus.addItemByPath("Edit/Redo", new apf.item({
             command : "redo"

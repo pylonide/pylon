@@ -60,7 +60,7 @@
       
         <a:vbox anchors="0 0 0 0">
             <a:list id="lstRunCfg" 
-              model   = "mdlRunConfigurations"
+              model   = "{require('ext/runpanel/runpanel').model}"
               border  = "0"
               each    = "[config]"
               caption = "[@name]"
