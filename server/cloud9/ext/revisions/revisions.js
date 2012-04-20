@@ -28,11 +28,11 @@ var FILE_SUFFIX = "c9save";
 var SAVE_INTERVAL = 1000;
 
 /** related to: Revisions#revisions
- *  PURGE_INTERVAL = 43200000
+ *  PURGE_INTERVAL -> 1 hour
  *
- *  Revision cache will be purged every PURGE_INTERVAL to avoid unfreed memory.
+ *  Revision cache will be purged every PURGE_INTERVAL to clear up unfreed memory.
  **/
-var PURGE_INTERVAL = 12 * 60 * 60 * 1000;
+var PURGE_INTERVAL = 60 * 60 * 1000;
 var Diff = new Diff_Match_Patch();
 
 var RevisionsPlugin = module.exports = function(ide, workspace) {
@@ -97,7 +97,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
                             id: message.id || null,
                             nextAction: message.nextAction,
                             path: message.path,
-                            getOriginalContent: message.getOriginalContent
                         });
                     });
                     break;
@@ -184,10 +183,17 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     Spawn("mkdir", ["-p", parentDir]).on("exit", function() {
                         revObj = self.createEmptyStack(filePath);
                         // We just created the revisions file. Since we
-                        // don't have a 'previous revision, we will need
-                        // the original contents in order to diff properly
-                        // on the first revision save.
-                        revObj.originalContent = data.toString();
+                        // don't have a 'previous revision, our first revision will
+                        // consist of the previous contents of the file.
+                        var contents = data.toString();
+                        revObj.revisions.push({
+                            ts: Date.now(),
+                            silentsave: true,
+                            restoring: false,
+                            patch: [Diff.patch_make("", contents)],
+                            length: contents.length
+                        });
+
                         Fs.writeFile(absPath, JSON.stringify(revObj), function(err) {
                             if (err) {
                                 return callback(err);
@@ -215,12 +221,12 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 return callback(err);
             }
 
-            var content = rev.originalContent;
+            var content = "";
             rev.revisions.forEach(function(revision) {
                 content = Diff.patch_apply(revision.patch[0], content)[0];
             });
 
-            callback(null, content || rev.originalContent);
+            callback(null, content);
         });
     };
 
@@ -253,20 +259,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
     };
 
     /**
-     * RevisionsPlugin#getOriginalDoc(path) -> String
-     * - path (String): Relative path for the file to get the document from
-     *
-     * Retrieves the original content of the file. This is the base where the
-     * diffs are applied. It might return empty string if a new file was
-     * created after the revision system was in place.
-     **/
-    this.getOriginalDoc = function(path) {
-        if (this.revisions[path]) { // This should always exist
-            return this.revisions[path].originalContent;
-        }
-    };
-
-    /**
      * RevisionsPlugin#broadcastRevisions(revObj[, user])
      * - obj (Object): Object to be broadcasted.
      * - user (Object): Optional. Particular user to whom we want to broadcast
@@ -274,20 +266,15 @@ require("util").inherits(RevisionsPlugin, Plugin);
      *
      * Broadcast the given revision to all workspace clients.
      **/
-    this.broadcastRevisions = function(obj, user, options) {
+    this.broadcastRevisions = function(revObj, user, options) {
         var receiver = user || this.ide;
         var data = {
             type: "revision",
             subtype: "getRevisionHistory",
-            body: obj
+            body: revObj
         };
 
         if (options) {
-            if (options.getOriginalContent) {
-                data.originalContent = this.getOriginalDoc(options.path);
-                delete options.getOriginalContent;
-            }
-
             Object.keys(options).forEach(function(key) {
                 data[key] = options[key];
             });

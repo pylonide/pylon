@@ -15,9 +15,9 @@ var debug = function() {
 
 var rNL = /\r?\n/;
 var startChar = {
-    "equal": " ",
-    "delete": "-",
-    "insert": "+"
+    "equal" : "  ",
+    "delete": "- ",
+    "insert": "+ "
 };
 
 var getLastAndAfterRevisions = function(data) {
@@ -27,7 +27,7 @@ var getLastAndAfterRevisions = function(data) {
     var minKey = keys[0];
     var maxKey = keys[keys.length - 1];
     var revision = group[keys[0]];
-    var beforeRevision = data.content;
+    var beforeRevision = "";
 
     var i, ts;
     var patches = [];
@@ -47,7 +47,7 @@ var getLastAndAfterRevisions = function(data) {
         ts = keys[i];
         var rev = group[ts];
         patches = patches.concat(rev.tsValues[ts][0]);
-        
+
         if (maxKey == ts) {
             break;
         }
@@ -153,7 +153,7 @@ self.onmessage = function(e) {
             break;
 
         case "newRevision":
-            beforeRevision = e.data.originalContent
+            beforeRevision = "";
             var tss = e.data.timestamps;
             for (var i = 0, l = tss.length; i < l; i++) {
                 patch = e.data.revisions[tss[i]].patch[0];

@@ -62,8 +62,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             name: "revisionpanel",
             hint: "File Revision History...",
             bindKey: { mac: "Command-B", win: "Ctrl-B" },
-            exec: function () { 
-                _self.toggle(); 
+            exec: function () {
+                _self.toggle();
             }
         });
 
@@ -315,10 +315,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.send({
             command: "revisions",
             subCommand: "getRevisionHistory",
-            path: path,
-            // Send over the original revision of the file as well. This is
-            // only for the first time and won't ever change.
-            getOriginalContent: true
+            path: path
         });
 
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
@@ -422,10 +419,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 var revObj = this.$getRevisionObject(message.path);
                 revObj.revision = message.body
 
-                if (message.originalContent) {
-                    revObj.originalContent = message.originalContent || "";
-                }
-
                 this.generateCache(revObj);
 
                 if (!message.nextAction || !message.id) {
@@ -439,7 +432,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                     id: message.id,
                     group: group,
                     type: message.nextAction,
-                    content: message.originalContent
                 };
 
                 var len = revObj.groupedRevisionIds.length;
@@ -548,9 +540,15 @@ module.exports = ext.register("ext/revisions/revisions", {
                 "silentsave='" + rev.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
-            var contributors = rev.contributors.map(function(c) {
-                return "<contributor email='" + c + "' />";
-            }).join("");
+            var contributors;
+            if (rev.contributors && rev.contributors.length) {
+                contributors = rev.contributors.map(function(c) {
+                    return "<contributor email='" + c + "' />";
+                }).join("");
+            }
+            else {
+                contributors = "";
+            }
 
             revsXML += "<contributors>" + contributors + "</contributors></revision>";
         }
@@ -613,7 +611,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var path = this.$getDocPath();
         var revObj = this.rawRevisions[path];
-        if (revObj && revObj.originalContent) {
+        if (revObj) {
             return this.onMessage({
                 message: {
                     id: id,
@@ -621,7 +619,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                     subtype: "getRevisionHistory",
                     path: path,
                     nextAction: nextAction,
-                    originalContent: revObj.originalContent
                 }
             });
         }
@@ -633,7 +630,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             nextAction: nextAction,
             path: path,
             id: id,
-            getOriginalContent: true
         });
     },
 
@@ -761,7 +757,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             doc = new ProxyDocument(new Document(value || ""));
             newSession = new EditSession(doc, revObj.realSession.getMode());
             newSession.previewRevision = true;
-            
+
             ranges.forEach(function(range) {
                 Util.addCodeMarker(newSession, doc, range[4], {
                     fromRow: range[0],
@@ -770,7 +766,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     toCol: range[3]
                 });
             });
-            
+
             editor.setSession(newSession);
             var firstChange = 0;
             if (ranges.length > 0) {
@@ -883,7 +879,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             var revObj = this.rawRevisions[docPath];
             data.type = "newRevision";
             data.lastContent = doc.getValue();
-            data.originalContent = revObj.originalContent;
             data.revisions = revObj.allRevisions;
             // To not have to extract and sort timestamps from allRevisions
             data.timestamps = revObj.allTimestamps;
@@ -1011,9 +1006,9 @@ module.exports = ext.register("ext/revisions/revisions", {
     show: function() {
         var page = tabEditors.getPage();
         ext.initExtension(this);
-        
+
         settings.model.setQueryValue("general/@revisionsvisible", true);
-        
+
         if (!this.panel.visible) {
             ceEditor.$ext.style.right = BAR_WIDTH + "px";
             page.$showRevisions = true;
