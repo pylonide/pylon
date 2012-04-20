@@ -22,6 +22,9 @@ module.exports = ext.register("ext/keybindings/keybindings", {
         ide.addEventListener("loadsettings", function(e) {
             var value = e.model.queryValue("general/keybindings/@preset") 
                 || "default_" + (apf.isMac ? "mac" : "win");
+            
+            if (value == "auto")
+                value = "default_" + (apf.isMac ? "mac" : "win");
                 
             require(["ext/keybindings_default/" + value]);
         });
