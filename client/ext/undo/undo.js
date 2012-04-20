@@ -29,7 +29,7 @@ module.exports = ext.register("ext/undo/undo", {
             hint: "undo one edit step in the active document",
             bindKey: {mac: "Command-Z", win: "Ctrl-Z"},
             exec: function () {
-                _self.undo();
+                return _self.undo();
             }
         });
         
@@ -38,7 +38,7 @@ module.exports = ext.register("ext/undo/undo", {
             hint: "redo one edit step in the active document",
             bindKey: {mac: "Shift-Command-Z", win: "Ctrl-Y"},
             exec: function () {
-                _self.redo();
+                return _self.redo();
             }
         });
         
@@ -52,7 +52,7 @@ module.exports = ext.register("ext/undo/undo", {
 
     undo: function() {
         if (document.activeElement && ta[document.activeElement.tagName])
-            return;
+            return false;
         
         if (apf.isChildOf(tabEditors, apf.activeElement, true)) {
             var _tabPage;
@@ -67,7 +67,7 @@ module.exports = ext.register("ext/undo/undo", {
 
     redo: function() {
         if (document.activeElement && ta[document.activeElement.tagName])
-            return;
+            return false;
         
         if (apf.isChildOf(tabEditors, apf.activeElement, true)) {
             var _tabPage;
