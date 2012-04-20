@@ -41,13 +41,46 @@
           group    = "ace"
           out      = "{cwd}/../../client/js/ace.js"
           filehead = "1" /-->
-        <!--p:compress
+        <p:compress
           cmd      = "yuicompressor"
           in       = "{cwd}/build/apf_release.js"
           out      = "{cwd}/build/apf_release.js" />
--->
+
     </p:process>
 
+    <p:process>
+        <!--p:vcs
+          type       = "svn"
+          cmd        = "update"
+          repository = "{platform}" /-->
+
+        <p:combine
+          type     = "script"
+          defines  = "1"
+          group    = "apf"
+          out      = "{cwd}/build/apf_debug.js"
+          filehead = "1" />
+        <!--p:combine
+          type     = "script"
+          defines  = "1"
+          group    = "modules"
+          out      = "{cwd}/../../client/js/modules.js"
+          filehead = "1" /-->
+        <!--p:combine
+          type     = "script"
+          defines  = "1"
+          group    = "core"
+          out      = "{cwd}/../../client/js/core.js"
+          filehead = "1" /-->
+        <!--p:combine
+          type     = "script"
+          defines  = "1"
+          group    = "ace"
+          out      = "{cwd}/../../client/js/ace.js"
+          filehead = "1" /-->
+
+    </p:process>
+    
     <p:files>
         <p:node path="{platform}" mask="*.js" group="apf">
             <p:node path="jpack_begin.js" />
@@ -273,8 +306,8 @@
 
         <!-- include all available Runtime Support objects (browsers) -->
         <!--p:define name="__SUPPORT_IE" value="1" /-->
-        <!--p:define name="__WITH_POPUP_IE" value="1" />
-        <p:define name="__SUPPORT_GECKO" value="1" /-->
+        <!--p:define name="__WITH_POPUP_IE" value="1" /-->
+        <p:define name="__SUPPORT_GECKO" value="1" />
         <!--p:define name="__WITH_ELEMENT_FROM_POINT" value="1" /-->
         <p:define name="__SUPPORT_WEBKIT" value="1" />
         <p:define name="__SUPPORT_CHROME" value="1" />
@@ -347,7 +380,7 @@
 
         <!-- include all components -->
         <!--p:define name="__ENABLE_BUTTON_ACTIONS" value="1" /-->
-        <!--p:define name="__ENABLE_TEXTBOX_MASKING" value="1" /-->
+        <p:define name="__ENABLE_TEXTBOX_MASKING" value="1" />
         <p:define name="__ENABLE_TABSCROLL" value="1" />
         <p:define name="__ENABLE_TAB_ORDER" value="1" />
 
