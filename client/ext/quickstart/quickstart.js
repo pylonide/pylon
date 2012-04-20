@@ -14,36 +14,10 @@ var ide = require("core/ide");
 var skin = require("text!ext/quickstart/skin.xml");
 var markup = require("text!ext/quickstart/quickstart.xml");
 
-var jsonQuickStart = {
-    identifiers: [
-        {
-            el : winFilesViewer,
-            name : "qsProjectBar",
-            pos: "right"
-        },
-        {
-            el : logobar,
-            name : "qsMenuBar",
-            pos: "bottom"
-        },
-       {
-            el : tabEditors,
-            name : "qsToolbar",
-            pos: "left",
-            visible: function(){
-                return hboxDockPanel.childNodes[0];
-            }
-        },
-        {
-            el : winDbgConsole,
-            name : "qsCLI",
-            pos: "top"
-        }
-    ]
-};
-
 // require("ext/settings/settings").model.queryValue("auto/help/@show") == "false"
 //ide.addEventListener("loadsettings", function(){
+
+var jsonQuickStart;
 
 module.exports = ext.register("ext/quickstart/quickstart", {
     name     : "Quick Start",
@@ -67,6 +41,35 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     
     hook : function(){
         var _self = this;
+        
+        jsonQuickStart = {
+            identifiers: [
+                {
+                    el : winFilesViewer,
+                    name : "qsProjectBar",
+                    pos: "right"
+                },
+                {
+                    el : logobar,
+                    name : "qsMenuBar",
+                    pos: "bottom"
+                },
+               {
+                    el : tabEditors,
+                    name : "qsToolbar",
+                    pos: "left",
+                    visible: function(){
+                        return hboxDockPanel.childNodes[0];
+                    }
+                },
+                {
+                    el : winDbgConsole,
+                    name : "qsCLI",
+                    pos: "top"
+                }
+            ]
+        };
+        
                 
         ide.addEventListener("loadsettings", function(e) {
             var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");

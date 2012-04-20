@@ -354,8 +354,8 @@ module.exports = ext.register("ext/code/code", {
     hook: function() {
         var _self = this;
         
-        commands.addCommands(defaultCommands);
-        commands.addCommands(MultiSelectCommands);
+        commands.addCommands(defaultCommands, null, true);
+        commands.addCommands(MultiSelectCommands, null, true);
 
         //Settings Support
         ide.addEventListener("loadsettings", function(e) {

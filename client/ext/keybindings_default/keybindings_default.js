@@ -11,8 +11,8 @@ var ext = require("core/ext");
 var markup = require("text!ext/keybindings_default/keybindings_default.xml");
 var css = require("text!ext/keybindings_default/keybindings_default.css");
 
-var mac = require("text!ext/keybindings_default/default_mac.js");
-var win = require("text!ext/keybindings_default/default_win.js");
+//var mac = require("text!ext/keybindings_default/default_mac.js");
+//var win = require("text!ext/keybindings_default/default_win.js");
 
 function parseKeyBindings(txt) {
     var json;
