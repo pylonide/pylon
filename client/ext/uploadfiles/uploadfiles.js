@@ -54,15 +54,31 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     winUploadFiles.show();
                 }
             })),
-            ide.mnuFile.appendChild(new apf.divider())
+            winFilesViewer.insertBefore(new apf.button({
+                id : "btnUploadFiles",
+                top : "-22",
+                skin : "header-btn",
+                right : "56",
+                icon : "panel_upload.png",
+                onclick : "require('core/ext').initExtension(require('ext/uploadfiles/uploadfiles'));winUploadFiles.show()",
+                tooltip : "Upload Files"
+            }), btnTreeRefresh),
+            mnuCtxTree.insertBefore(new apf.item({
+                id : "mnuCtxTreeUpload",
+                match : "[folder]",
+                visible : "{trFiles.selected.getAttribute('type')=='folder'}",
+                caption : "Upload to this folder",
+                onclick : function(){
+                    ext.initExtension(_self);
+                    
+                    winUploadFiles.show();
+                }
+            }), itemCtxTreeNewFile),
+            mnuCtxTree.insertBefore(new apf.divider({
+                visible : "{mnuCtxTreeUpload.visible}"
+            }), itemCtxTreeNewFile)
         );
-    },
-    
-    init : function(){
-        var _self = this;
-        apf.importCssString(_self.css);
         
-        /* disabled download project since it doesn't work anymore due to runvm changes
         if(ide.infraEnv) {
             this.nodes.push(
                 ide.mnuFile.appendChild(new apf.item({
@@ -84,7 +100,13 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             btnUploadFiles.setProperty("right", "81");
         }
-        */
+    },
+    
+    init : function(){
+        var _self = this;
+        apf.importCssString(_self.css);
+        
+        // disabled download project since it doesn't work anymore due to runvm changes
         
         winUploadFiles.addEventListener("afterrender", function(){
             this.filebrowser = fileUploadSelect.$ext;

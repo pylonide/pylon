@@ -15,13 +15,6 @@
       modal    = "false"
       buttons  = "close"
       optimize = "true">
-        <a:button id="btnUploadFiles"
-          top="-22"
-          skin="header-btn"
-          right="56"
-          icon="panel_upload.png"
-          onclick="require('core/ext').initExtension(require('ext/uploadfiles/uploadfiles'));winUploadFiles.show()"
-          tooltip="Upload Files" />
         <a:button id="btnTreeRefresh"
           top="-22"
           skin="header-btn"
@@ -103,11 +96,7 @@
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />
-            <a:item id="mnuCtxTreeUpload" match="[folder]" visible="{trFiles.selected.getAttribute('type')=='folder'}" onclick="
-                winUploadFiles.show();
-            ">Upload to this folder</a:item>
-            <a:divider visible="{mnuCtxTreeUpload.visible}" />
-            <a:item match="[file|folder|project]" onclick="
+            <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" onclick="
                 require('ext/filesystem/filesystem').createFile();
             ">New File</a:item>
             <a:item match="[file|folder|project]" onclick="
