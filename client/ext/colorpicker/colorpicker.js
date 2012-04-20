@@ -76,7 +76,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
      * @type {void}
      */
     init: function() {
-        apf.document.body.insertMarkup(markup);
+        apf.document.documentElement.insertMarkup(markup);
         this.menu = mnuColorPicker;
         this.colorpicker = clrCodeTools;
         var divs = this.menu.$ext.getElementsByTagName("div");

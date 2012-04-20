@@ -55,11 +55,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     init : function(amlNode){
-        this.txtFind       = txtSFFind;
-        this.btnFind       = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
+        this.txtFind = txtSFFind;
+        this.btnFind = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.execFind.bind(this, false);
 
-        this.txtReplace     = txtReplace;
         this.btnReplaceAll = btnReplaceAll;
         this.btnReplaceAll.onclick = this.execFind.bind(this, true);
 
@@ -178,7 +177,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             casesensitive: matchCase,
             regexp: regex,
             replaceAll: _self.replaceAll ? "true" : "false",
-            replacement: txtReplace.value
+            replacement: txtSFReplace.value
         };
     },
 
@@ -246,6 +245,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
         var findValueSanitized = query.trim().replace(/([\[\]\{\}])/g, "\\$1");
         _self.$model.clear();
+        _self.$panel.setAttribute("caption", _self.pageTitle);
         trSFResult.setAttribute("empty-message", "Searching for '" + findValueSanitized + "'...");
 
         davProject.report(node.getAttribute("path"), "codesearch", options, function(data, state, extra){

@@ -27,8 +27,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     skin     : {
         id   : "statusbar",
         data : skin,
-        "media-path" : ide.staticPrefix + "/style/images/",
-        "icon-path"  : ide.staticPrefix + "/style/icons/"
+        "media-path" : ide.staticPrefix + "ext/main/style/images/",
+        "icon-path"  : ide.staticPrefix + "ext/main/style/icons/"
     },
     expanded: false,
     nodes : [],
@@ -157,16 +157,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 mnuStatusBarPrefs.appendChild(pItem.item);
         }
 
-        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();	
+        !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();
         wrapMode.addEventListener("click", function(e) {
-            if (e.currentTarget.checked) {    
-                wrapModeViewport.enable();     
+            if (e.currentTarget.checked) {
+                wrapModeViewport.enable();
              }
             else {
                 wrapModeViewport.disable();
-             }      
+             }
         });
-        
+
         var editor = ceEditor.$editor;
         var theme = editor && editor.getTheme() || "ace/theme/textmate";
         this.checkTheme(theme);

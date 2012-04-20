@@ -29,8 +29,8 @@ module.exports = ext.register("ext/zen/zen", {
     skin     : {
         id   : "zen",
         data : skin,
-        "media-path" : ide.staticPrefix + "/style/images/",
-        "icon-path"  : ide.staticPrefix + "/style/icons/"
+        "media-path" : ide.staticPrefix + "ext/main/style/images/",
+        "icon-path"  : ide.staticPrefix + "ext/main/style/icons/"
     },
     isFocused : false,
     neverShown : true,
@@ -440,7 +440,7 @@ module.exports = ext.register("ext/zen/zen", {
                 // Reset values
                 _self.resetTabEditorsParentStyles();
 
-                apf.document.body.appendChild(tabEditors.parentNode);
+                apf.document.documentElement.appendChild(tabEditors.parentNode);
 
                 editors.enableTabResizeEvent();
                 apf.layout.forceResize(tabEditors.parentNode.$ext);
@@ -463,7 +463,7 @@ module.exports = ext.register("ext/zen/zen", {
         else {
             this.resetTabEditorsParentStyles();
 
-            apf.document.body.appendChild(tabEditors.parentNode);
+            apf.document.documentElement.appendChild(tabEditors.parentNode);
 
             editors.enableTabResizeEvent();
             this.animateZen.style.display = "none";

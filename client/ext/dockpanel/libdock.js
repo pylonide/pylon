@@ -1632,7 +1632,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             resizeTimer;
 
         if (section.$menu)
-            return apf.document.body.appendChild(section.$menu);
+            return apf.document.documentElement.appendChild(section.$menu);
 
         var menu = new apf.menu({
             id        : menuId,
@@ -1750,9 +1750,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 })
             ]
         });
-
-        apf.document.body.appendChild(menu);
-
+        
+        apf.document.documentElement.appendChild(menu);
+        
         menu.show();
         menu.hide();
 
@@ -1873,9 +1873,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 tab.removeAttribute("activepage");
                 tab.setAttribute("buttons", "close"); //@todo bug in scale that doesnt resize
                 tab.removeAttribute("anchors");
-
-                apf.document.body.appendChild(tab);
-
+                
+                apf.document.documentElement.appendChild(tab);
+                
                 tab.setWidth(this.parentNode.$ext.offsetWidth - 6);
                 tab.setHeight(this.parentNode.$ext.offsetHeight - 6);
 
@@ -2035,7 +2035,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     placeHolder.$ext.style.height = (height - diff[1]) + "px";
 
                     section.setWidth(section.$ext.offsetWidth);
-                    apf.document.body.appendChild(section);
+                    apf.document.documentElement.appendChild(section);
                     section.setLeft(pos[0]);
                     section.setTop(pos[1]);
 
@@ -2213,7 +2213,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
                 var btn = this.cloneNode(true);
                 btn.removeAttribute("id");
-                apf.document.body.appendChild(btn);
+                apf.document.documentElement.appendChild(btn);
                 btn.setValue(true);
                 _setBtnIco(btn);
 

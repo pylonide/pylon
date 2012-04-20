@@ -46,7 +46,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
         ide.addEventListener("afteropenfile", function() {
             ext.initExtension(_self);
-            
+
         });
 
         ide.addEventListener("loadsettings", function(e) {
@@ -160,7 +160,9 @@ return module.exports = ext.register("ext/minimap/minimap", {
         this.setupChangeListener();
         this.map.enableListeners();
 
-        this.editor.container.style.right = this.map_width + "px";
+        this.panel.$ext.style.right = this.offsetWidth + "px";
+        this.editor.container.style.right = this.map_width + this.offsetWidth + "px";
+
         this.panel.show();
         this.updateMap();
         this.map_enabled = true;

@@ -12,8 +12,7 @@ client/common
 .settings.xml.old
 .DS_Store
 /nbproject
-support/packager/
 aut.js
 helloworld.js
-build/
 .*.gz
+.c9revisions

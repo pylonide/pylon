@@ -16,6 +16,7 @@ var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var useragent = require("ace/lib/useragent");
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
+var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
 var ProxyDocument = require("ext/code/proxydocument");
 var CommandManager = require("ace/commands/command_manager").CommandManager;
 var defaultCommands = require("ace/commands/default_commands").commands;
@@ -220,7 +221,7 @@ module.exports = ext.register("ext/code/code", {
             var fileName = node.getAttribute("name");
 
             if (fileName.lastIndexOf(".") != -1)
-                mime = contentTypes[fileName.split(".").pop()];
+                mime = contentTypes[fileName.split(".").pop().toLowerCase()];
             else
                 mime = contentTypes["*" + fileName];
         }
@@ -298,7 +299,7 @@ module.exports = ext.register("ext/code/code", {
 
         doc.editor = this;
     },
-    
+
     hook: function() {
         var _self = this;
 
@@ -330,7 +331,7 @@ module.exports = ext.register("ext/code/code", {
                 var editors = apf.createNodeFromXpath(model.data, "editors");
                 apf.xmldb.appendChild(editors, node);
             }
-            
+
             if (!model.queryNode("editors/code/@animatedscroll"))
                 model.setQueryValue("editors/code/@animatedscroll", "true");
 
@@ -371,9 +372,10 @@ module.exports = ext.register("ext/code/code", {
 
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = this.commandManager;
+        ceEditor.$editor.commands.addCommands(MultiSelectCommands);
 
         // preload common language modes
-        var noop = function() {};
+        var noop = function() {}; 
         ceEditor.getMode("javascript", noop);
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
@@ -398,16 +400,6 @@ module.exports = ext.register("ext/code/code", {
         });
 
         this.nodes.push(
-            //Add a panel to the statusbar showing whether the insert button is pressed
-            sbMain.appendChild(new apf.section({
-                caption : "{ceEditor.insert}"
-            })),
-
-            //Add a panel to the statusbar showing the length of the document
-            sbMain.appendChild(new apf.section({
-                caption : "Length: {ceEditor.value.length}"
-            })),
-
             mnuView.appendChild(new apf.divider()),
             mnuView.appendChild(menuSyntaxHighlight)
         );
@@ -431,7 +423,7 @@ module.exports = ext.register("ext/code/code", {
 
                     var mime = value.split(";")[0];
                     var fileExt = (fileName.lastIndexOf(".") != -1) ?
-                        fileName.split(".").pop() : null;
+                        fileName.split(".").pop().toLowerCase() : null;
 
                     if (fileExt && contentTypes[fileExt] !== mime)
                         delete contentTypes[fileExt];
