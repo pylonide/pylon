@@ -407,6 +407,7 @@
         <p:define name="__AMLTELEPORT" value="1" />
 
         <p:define name="__AMLLABEL" value="1" />
+	<p:define name="__AMLSPLITBUTTON"  value="1" />
         <p:define name="__AMLBUTTON" value="1" />
         <!--p:define name="__AMLSTATUSBAR" value="1" /-->
 
