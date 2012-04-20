@@ -55,11 +55,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     init : function(amlNode){
-        this.txtFind       = txtSFFind;
-        this.btnFind       = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
+        this.txtFind = txtSFFind;
+        this.btnFind = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.execFind.bind(this, false);
 
-        this.txtReplace     = txtReplace;
         this.btnReplaceAll = btnReplaceAll;
         this.btnReplaceAll.onclick = this.execFind.bind(this, true);
 
@@ -174,7 +173,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             casesensitive: matchCase,
             regexp: regex,
             replaceAll: _self.replaceAll ? "true" : "false",
-            replacement: txtReplace.value
+            replacement: txtSFReplace.value
         };
     },
 
