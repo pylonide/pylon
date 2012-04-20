@@ -195,7 +195,7 @@ exports.update = function(split, gridLayout) {
             for (var clone, i = 0, l = editors.length; i < l; ++i) {
                 clone = editors[i];
                 clone.hide();
-                apf.document.body.appendChild(clone);
+                apf.document.documentElement.appendChild(clone);
             }
         }
 
@@ -263,7 +263,7 @@ exports.mutate = function(split, page, type) {
         editor.removeAttribute("actiontracker");
         //removeEditorListeners(editor);
         editor.hide();
-        apf.document.body.appendChild(editor);
+        apf.document.documentElement.appendChild(editor);
         page.$deactivateButton();
         clearSplitViewStyles(page);
         editor.hide();
@@ -427,7 +427,7 @@ function createEditorClones(editor) {
         EditorClones.cloneEditor = editor.cloneNode(true);
         EditorClones.cloneEditor.removeAttribute("id");
         EditorClones.cloneEditor.setAttribute("visible", "false");
-        apf.document.body.appendChild(EditorClones.cloneEditor);
+        apf.document.documentElement.appendChild(EditorClones.cloneEditor);
         
         addEditorListeners.call(this, EditorClones.cloneEditor);
         
@@ -455,7 +455,7 @@ function createEditorClones(editor) {
         for (var clone, i = 0, l = EditorClones[id].length; i < l; ++i) {
             clone = EditorClones[id][i];
             clone.hide();
-            apf.document.body.appendChild(clone);
+            apf.document.documentElement.appendChild(clone);
         }
         return EditorClones[id];
     }
@@ -470,7 +470,7 @@ function createEditorClones(editor) {
         editor.removeAttribute("id");
         editor.setAttribute("visible", false);
         EditorClones[id].push(editor);
-        apf.document.body.appendChild(editor);
+        apf.document.documentElement.appendChild(editor);
         addEditorListeners.call(this, editor);
         if (isCodeEditor) {
             editor.$editor.commands = previousEditor.$editor.commands;

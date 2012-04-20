@@ -203,11 +203,11 @@ function createNodes(struct, splitters, parent) {
     if (struct.node)
         return;
 
-    parent = parent || apf.document.body;
+    parent = parent || apf.document.documentElement;
     (apf.isArray(struct) ? struct : Object.keys(struct)).forEach(function(nodeName) {
         var options = {};
         if ("vbox|hbox".indexOf(nodeName) > -1) {
-            if (parent === apf.document.body) {
+            if (parent === apf.document.documentElement) {
                 options.visible = false;
                 options.anchors = "2 0 0 0";
             }
@@ -227,7 +227,7 @@ function createNodes(struct, splitters, parent) {
             splitters.push(node);
         // if we just appended the main node to the document, set it as the grid's
         // main node
-        if (parent === apf.document.body)
+        if (parent === apf.document.documentElement)
             struct.node = node;
         // recurse down the structure's tree
         if (struct[nodeName] && struct[nodeName] !== 1)
