@@ -88,7 +88,7 @@
                         <a:each match="[folder|file]">
                            <a:insert
                              match = "[folder]"
-                             get   = "{location.host and davProject.readdir([@path])}" />
+                             get   = "{location.host &amp;&amp; davProject.readdir([@path])}" />
                            <a:caption match="[@name]" />
                            <a:icon
                              match = "[folder]"

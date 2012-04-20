@@ -56,7 +56,7 @@ var extAll = define([
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
     "ext/colorpicker/colorpicker",
-    "ext/revisions/revisions",
+    //"ext/revisions/revisions",
     "ext/splitview/splitview"
     //"ext/minimap/minimap"
     //"ext/acebugs/acebugs"

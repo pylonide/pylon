@@ -224,7 +224,7 @@ module.exports = ext.register("ext/editors/editors", {
             return false;
 
         var fileExtensions = editor.fileExtensions;
-        var fileExtension = (tabEditors.getPage(page).$model.queryValue("@path") || "").split(".").pop();
+        var fileExtension = (tabEditors.getPage(page).$model.queryValue("@path") || "").split(".").pop().toLowerCase();
         var isEnabled = fileExtensions.indexOf(fileExtension) > -1;
         
         if (!isEnabled && this.fileExtensions["default"] == editor)
@@ -295,7 +295,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
         }
 
-        var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop();
+        var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
         var editor = this.fileExtensions[fileExtension] 
           && this.fileExtensions[fileExtension][0] 
           || this.fileExtensions["default"];
@@ -513,7 +513,7 @@ module.exports = ext.register("ext/editors/editors", {
         
         toHandler.$itmEditor.select();
         
-        var fileExtension = (path || "").split(".").pop();
+        var fileExtension = (path || "").split(".").pop().toLowerCase();
         var editor = this.fileExtensions[fileExtension] 
           && this.fileExtensions[fileExtension][0] 
           || this.fileExtensions["default"];

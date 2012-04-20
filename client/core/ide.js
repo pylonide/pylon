@@ -90,7 +90,7 @@ define(function(require, exports, module) {
         // fire up the socket connection:
         var options = {
             "remember transport": false,
-            transports:  ["websocket", "htmlfile", "xhr-multipart", "xhr-polling"],
+            transports:  [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
             reconnect: false,
             resource: window.cloud9config.socketIoUrl,
             "connect timeout": 500,

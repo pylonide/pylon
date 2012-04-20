@@ -194,7 +194,7 @@ exports.getFileIcon = function(xmlNode) {
     var ext;
 
     if (name) {
-        ext = name.split(".").pop();
+        ext = name.split(".").pop().toLowerCase();
         icon = SupportedIcons[contentTypes[ext]] || "page_white_text";
     }
     return icon + ".png";
@@ -202,7 +202,7 @@ exports.getFileIcon = function(xmlNode) {
 
 
 exports.getContentType = function(filename) {
-    var type = filename.split(".").pop() || "";
+    var type = filename.split(".").pop().toLowerCase() || "";
     return contentTypes[type] || "text/plain";
 };
 

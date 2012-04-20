@@ -15,3 +15,4 @@ client/common
 aut.js
 helloworld.js
 .*.gz
+.c9revisions
