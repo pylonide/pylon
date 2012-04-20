@@ -5492,7 +5492,7 @@ break;}}_self.$down();_self.$up();_self.$click();});}};this.$propHandlers.icon=f
 }};this.$propHandlers.caption=function(value){if(this.$caption){apf.setNodeValue(this.$caption,value);
 }};this.$propHandlers.type=function(value){apf.setStyleClass(this.$ext,value,["item","check","radio"]);
 };this.$propHandlers.values=function(value){this.$values=typeof value=="string"?value.split("|"):(value||[1,0]);
-this.$propHandlers.value.call(this,value);};this.$propHandlers.value=function(value){if(this.type!="check"){return;
+this.$propHandlers.value.call(this,this.value);};this.$propHandlers.value=function(value){if(this.type!="check"){return;
 }value=(typeof value=="string"?value.trim():value);if(this.$values){this.checked=(typeof value!="undefined"&&value!==null&&value.toString()==this.$values[0].toString());
 }else{this.checked=apf.isTrue(value);}};this.$propHandlers.checked=function(value){if(this.type!="check"){return;
 }if(apf.isTrue(value)){apf.setStyleClass(this.$ext,"checked");}else{apf.setStyleClass(this.$ext,"",["checked"]);

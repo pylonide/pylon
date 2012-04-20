@@ -1,4 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:model id="mdlLiveInspect"/>
+    
     <a:bar id="winLiveInspect"
       modal     = "false" 
       center    = "false"
@@ -17,6 +19,7 @@
             scrollbar  = "sbShared 20 2 2"
             prerender  = "false"
             caching    = "false"
+            model      = "mdlLiveInspect"
             empty-message   = "Loading..."
             loading-message = "Calculating...">
               <a:actions />
