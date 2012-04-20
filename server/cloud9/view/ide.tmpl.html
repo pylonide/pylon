@@ -16,6 +16,7 @@
         <script type="text/javascript">
         //<![CDATA[
 
+            var baseUrl = window.location.host;
             window.cloud9config = {
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
@@ -27,7 +28,8 @@
                 projectName: <%projectName%>,
                 version: <%version%>,
                 staticUrl: "[%staticUrl%]/",
-                socketIoUrl: <%socketIoUrl%>
+                socketIoUrl: <%socketIoUrl%>,
+                hosted: baseUrl.indexOf("c9.io") >= 0 || baseUrl.indexOf("stage.io") >= 0 || baseUrl.indexOf("c9.dev") >= 0
             };
 
             // prevent console messages from crashing our app!

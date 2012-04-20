@@ -214,7 +214,8 @@ module.exports = ext.register("ext/console/console", {
         // Replace any quotes in the command
         argv[0] = argv[0].replace(/["'`]/g, "");
         cmdHistory.push(line);
-        Logger.log(this.getPrompt(line), "prompt");
+        var spinnerBtn = '<a href="#" class="prompt_spinner" onclick="require(\'ext/console/console\').cancelProcess(e)"></a>';
+        Logger.log(this.getPrompt(line), "prompt", spinnerBtn);
         tabConsole.set("console");
 
         var showConsole = true;
@@ -259,6 +260,7 @@ module.exports = ext.register("ext/console/console", {
 
     onMessage: function(e) {
         var message = e.message;
+        console.log(message, message.type.match(/-data$/));
         if (!message.type)
             return;
         if (message.type === "node-data")
@@ -426,6 +428,14 @@ module.exports = ext.register("ext/console/console", {
         };
 
         apf.extend(this.allCommands, ext.commandsLut);
+
+        // For now, until the local client gets upgraded
+        if (window.cloud9config.hosted)
+            apf.setStyleClass(txtConsole.$ext, "feedback");
+    },
+
+    cancelProcess : function() {
+        
     },
 
     maximize: function(){

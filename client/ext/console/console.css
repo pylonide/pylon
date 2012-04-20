@@ -4,6 +4,14 @@
 .console_text div {
     padding: 2px 10px;
 }
+.console_text.feedback div {
+    padding-left: 31px;
+}
+.console_text.feedback .console_prompt {
+    margin: 3px 0;
+    padding-left: 2px;
+}
+
 .cli_divider {
     display: block;
     border-top: 1px solid #444;
@@ -14,6 +22,15 @@
 }
 .console_text a:visited {
     color: #909090;
+}
+.prompt_spinner {
+    background-image: url(/static/ext/main/style/images/console_spinner_proc.gif);
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    width: 21px;
+    height: 14px;
+    padding: 4px 22px 4px 4px;
+    margin-left: 3px;
 }
 .cmd_msg > span { float: left; }
 .cmd_msg > span > span { margin:0 0 0 25px; }

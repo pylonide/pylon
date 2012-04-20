@@ -94,9 +94,9 @@ define(function(require, exports, module) {
                 margin: "1 0 0 0"
             })));
 
-            if (window.location.host.indexOf("c9.io") >= 0 || window.location.host.indexOf("stage.io") >= 0) {                
+            if (window.cloud9config.hosted) {
                 var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
-    
+
                 var response = apf.ajax(blogURL, {
                     method: "GET",
                     contentType: "application/json",
