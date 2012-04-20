@@ -6839,8 +6839,7 @@ if(this.dispatchEvent("error",{error:oError,bubbles:true})===false&&!callback){t
 }this.doRequest(function(data,state,extra){bLock&&unregisterLock.call(this,sFrom);
 var iStatus=parseInt(extra.status,10);if(iStatus==400||iStatus==403||iStatus==409||iStatus==412||iStatus==423||iStatus==424||iStatus==502||iStatus==507){var oError=WebDAVError.call(this,"Unable to copy file '"+sFrom+"' to '"+sTo+"'. Server says: "+apf.webdav.STATUS_CODES[String(iStatus)]);
 if(this.dispatchEvent("error",{error:oError,bubbles:true})===false&&!callback){throw oError;
-}callback&&callback.call(this,data,state,extra);}else{this.getProperties(sTo,0,callback);
-}},sFrom,null,oHeaders);};this.rename=this.move=function(sFrom,sTo,bOverwrite,bLock,callback){if(!sTo||sFrom==sTo){return(callback&&callback("",apf.SUCCESS,{}));
+}}callback&&callback.call(this,data,state,extra);},sFrom,null,oHeaders);};this.rename=this.move=function(sFrom,sTo,bOverwrite,bLock,callback){if(!sTo||sFrom==sTo){return(callback&&callback("",apf.SUCCESS,{}));
 }if(bLock){var oLock=this.lock(sFrom);if(!oLock.token){return updateLockedStack.call(this,oLock,"move",arguments);
 }}this.method="MOVE";var oHeaders={Destination:sTo||this.$server};if(typeof bOverwrite=="undefined"){bOverwrite=true;
 }if(!bOverwrite){oHeaders.Overwrite="F";}if(bLock&&oLock.token){oHeaders.If="<"+oLock.token+">";
