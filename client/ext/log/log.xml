@@ -33,7 +33,9 @@
                     try {
                         apf.escapeXML(JSON.stringify(JSON.parse([text()]), null, 4))
                     }
-                    catch (e) {}
+                    catch (e) {
+                        [text()]
+                    }
                 }</pre>
 
                 <h3>Response</h3>
@@ -41,7 +43,9 @@
                     try {
                         apf.escapeXML(JSON.stringify(JSON.parse([@response]), null, 4))
                     }
-                    catch (e) {}
+                    catch (e) {
+                        [@response]
+                    }
                 }</pre>
             </a:text>
         </a:hbox>
