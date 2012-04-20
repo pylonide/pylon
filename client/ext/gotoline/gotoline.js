@@ -225,7 +225,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
         ace.gotoLine(line);
         
-        if (preview) {
+        if (typeof preview != "undefined") {
             var animate = apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
             if (!animate)
                 return;
