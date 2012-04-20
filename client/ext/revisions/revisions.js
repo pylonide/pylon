@@ -200,8 +200,18 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
             }
 
-            var id = node.getAttribute("id");
-            self.loadRevision(id, "preview");
+            var revObj = self.$getRevisionObject(self.$getDocPath());
+            var id = parseInt(node.getAttribute("id"), 10);
+            var cache = revObj.previewCache;
+            if (cache && cache[id]) {
+                self.previewRevision(id, null, cache[id][1], cache[id][0]);
+            }
+            else {
+                if (!cache) {
+                    cache = revObj.previewCache = {};
+                }
+                self.loadRevision(id, "preview");
+            }
             tabEditors.getPage().$selectedRevision = id;
         };
 
@@ -234,29 +244,27 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
+        this.$restoreSelection(page);
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
         this.model = page.$mdlRevisions;
-        this.$restoreSelection(page);
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
     },
 
-    $restoreSelection: function(page) {
-        setTimeout(function(self) {
-            var model = page.$mdlRevisions;
-            if (model && page.$showRevisions === true) {
-                var node;
-                if (page.$selectedRevision) {
-                    node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
-                }
-                else {
-                    node = model.data.firstChild;
-                }
-                if (node) {
-                    lstRevisions.select(node);
-                }
+    $restoreSelection:  function(page) {
+        var model = page.$mdlRevisions;
+        if (model && page.$showRevisions === true) {
+            var node;
+            if (page.$selectedRevision) {
+                node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
             }
-        }, 0, this);
+            else {
+                node = model.data.firstChild;
+            }
+            if (node) {
+                lstRevisions.select(node);
+            }
+        }
     },
 
     afterModelUpdate: function(e) {
@@ -730,7 +738,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     /**
-     * Revisions#previewRevision(id, value, ranges)
+     * Revisions#previewRevision(id, value, ranges[, newSession])
      * - id(Number): Numeric timestamp identifier of the revision
      * - value(String): Contents of the document at the time of the revision
      * - ranges(Array): Range of differences showing what changes were introduced by this revision
@@ -739,44 +747,55 @@ module.exports = ext.register("ext/revisions/revisions", {
      * creates a new temporary Ace session and replaces the real document by this
      * read-only session.
      **/
-    previewRevision: function(id, value, ranges) {
+    previewRevision: function(id, value, ranges, newSession) {
         var editor = ceEditor.$editor;
         var session = editor.getSession();
-        var path = this.$getDocPath();
+        var revObj = this.$getRevisionObject(this.$getDocPath());
 
-        var revObj = this.$getRevisionObject(path);
         if (session.previewRevision !== true && !revObj.realSession) {
             revObj.realSession = session;
         }
 
-        var doc = new ProxyDocument(new Document(value || ""));
-        var newSession = new EditSession(doc, revObj.realSession.getMode());
-        newSession.previewRevision = true;
-        editor.setSession(newSession);
-        editor.setReadOnly(true);
-
-        var firstChange = 0;
-        if (ranges.length > 0) {
-            // Retrieve the first row of the first change in the changeset.
-            firstChange = ranges[0][0];
+        var doc;
+        if (!newSession) {
+            doc = new ProxyDocument(new Document(value || ""));
+            newSession = new EditSession(doc, revObj.realSession.getMode());
+            newSession.previewRevision = true;
+            
+            ranges.forEach(function(range) {
+                Util.addCodeMarker(newSession, doc, range[4], {
+                    fromRow: range[0],
+                    fromCol: range[1],
+                    toRow: range[2],
+                    toCol: range[3]
+                });
+            });
+            
+            editor.setSession(newSession);
+            var firstChange = 0;
+            if (ranges.length > 0) {
+                // Retrieve the first row of the first change in the changeset.
+                firstChange = ranges[0][0];
+            }
+            // Scroll to the first change, leaving it in the middle of the screen.
+            editor.renderer.scrollToRow(firstChange - (editor.$getVisibleRowCount() / 2));
+        }
+        else {
+            editor.setSession(newSession);
+            doc = newSession.doc;
         }
 
-        ranges.forEach(function(range) {
-            Util.addCodeMarker(newSession, doc, range[4], {
-                fromRow: range[0],
-                fromCol: range[1],
-                toRow: range[2],
-                toCol: range[3]
-            });
-        });
-
-        // Scroll to the first change, leaving it in the middle of the screen.
-        editor.renderer.scrollToRow(firstChange - (editor.$getVisibleRowCount() / 2));
         editor.selection.clearSelection()
 
         // Look for the node that references the revision we are loading and
         // update its state to loaded.
         this.$setRevisionNodeAttribute(id, "loading_preview", "false");
+        if (!revObj.previewCache) {
+            revObj.previewCache = {};
+        }
+        if (!revObj.previewCache[id]) {
+            revObj.previewCache[id] = [newSession, ranges];
+        }
     },
 
     /**
@@ -992,22 +1011,25 @@ module.exports = ext.register("ext/revisions/revisions", {
     show: function() {
         var page = tabEditors.getPage();
         ext.initExtension(this);
-
+        
         settings.model.setQueryValue("general/@revisionsvisible", true);
-        ceEditor.$ext.style.right = BAR_WIDTH + "px";
-        page.$showRevisions = true;
-        this.panel.show();
-        ide.dispatchEvent("revisions.visibility", {
-            visibility: "shown",
-            width: BAR_WIDTH
-        });
+        
+        if (!this.panel.visible) {
+            ceEditor.$ext.style.right = BAR_WIDTH + "px";
+            page.$showRevisions = true;
+            this.panel.show();
+            ide.dispatchEvent("revisions.visibility", {
+                visibility: "shown",
+                width: BAR_WIDTH
+            });
+        }
 
         var model = page.$mdlRevisions;
-        if (lstRevisions && model) {
+        if (lstRevisions && model && (lstRevisions.getModel() !== model)) {
             lstRevisions.setModel(model);
         }
 
-        if (model && (!model.data || this.model.data.length === 0)) {
+        if (model && (!model.data || model.data.length === 0)) {
             this.populateModel();
         }
 
