@@ -24,23 +24,23 @@ module.exports = ext.register("ext/undo/undo", {
     init : function(amlNode){
         var _self = this;
         
-        commands.addCommand({
-            name: "undo",
-            hint: "undo one edit step in the active document",
-            bindKey: {mac: "Command-Z", win: "Ctrl-Z"},
-            exec: function () {
-                return _self.undo();
-            }
-        });
-        
-        commands.addCommand({
-            name: "redo",
-            hint: "redo one edit step in the active document",
-            bindKey: {mac: "Shift-Command-Z", win: "Ctrl-Y"},
-            exec: function () {
-                return _self.redo();
-            }
-        });
+//        commands.addCommand({
+//            name: "undo",
+//            hint: "undo one edit step in the active document",
+//            bindKey: {mac: "Command-Z", win: "Ctrl-Z"},
+//            exec: function () {
+//                return _self.undo();
+//            }
+//        });
+//        
+//        commands.addCommand({
+//            name: "redo",
+//            hint: "redo one edit step in the active document",
+//            bindKey: {mac: "Shift-Command-Z", win: "Ctrl-Y"},
+//            exec: function () {
+//                return _self.redo();
+//            }
+//        });
         
         menus.addItemByPath("Edit/Undo", new apf.item({
             command : "undo",
