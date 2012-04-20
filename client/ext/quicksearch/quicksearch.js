@@ -55,7 +55,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             hint: "open the quicksearch dialog to quickly search for a phrase",
             bindKey: {mac: "Command-F", win: "Ctrl-F"},
             exec: function(env, args, request) {
-                _self.toggleDialog();
+                _self.toggleDialog(1);
             }
         });
 
@@ -289,6 +289,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         var _self = this;
 
         if (!force && !winQuickSearch.visible || force > 0) {
+            if (winQuickSearch.visible)
+                return;
+            
             this.position = -1;
 
             if (this.control && this.control.stop)

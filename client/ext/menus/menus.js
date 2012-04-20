@@ -76,10 +76,16 @@ module.exports = ext.register("ext/menus/menus", {
         apf.splitbutton.prototype.$propHandlers["command"] = 
         apf.button.prototype.$propHandlers["command"] = 
         apf.item.prototype.$propHandlers["command"] = function(value){
+            if (!value) {
+                this.removeAttribute("hotkey");
+                this.onclick = null;
+                return;
+            }
+            
             this.setAttribute("hotkey", 
                 value && "{ide.commandManager." + value + "}" || "");
             
-            this.onclick = value && function(){
+            this.onclick = function(){
                 commands.exec(value);
             } || null;
         }
