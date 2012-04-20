@@ -437,7 +437,7 @@ module.exports = ext.register("ext/console/console", {
             return;
         this.maximized = true;
 
-        apf.document.body.appendChild(winDbgConsole);
+        apf.document.documentElement.appendChild(winDbgConsole);
         winDbgConsole.setAttribute('anchors', '0 0 0 0');
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');

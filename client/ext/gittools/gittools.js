@@ -36,7 +36,7 @@ module.exports = ext.register("ext/gittools/gittools", {
         dock.register(this.name, "Git Tools", {
             menu : "Tools/Git Tools",
             primary : {
-                backgroundImage: ide.staticPrefix + "/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "ext/main/style/images/debugicons.png",
                 defaultState: { x: -6, y: -217 },
                 activeState: { x: -6, y: -217 }
             }

@@ -180,10 +180,12 @@ module.exports = ext.register("ext/watcher/watcher", {
             }
         });
 
-        tabEditors.addEventListener("afterswitch", function(e) {
-            if (_self.disabled) return;
+        ide.addEventListener("init.ext/editors/editors", function(e) {
+            tabEditors.addEventListener("afterswitch", function(e) {
+                if (_self.disabled) return;
 
-            checkPage();
+                checkPage();
+            });
         });
 
         ide.addEventListener("init.ext/tree/tree", function(){

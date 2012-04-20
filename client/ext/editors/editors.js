@@ -148,8 +148,7 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
         
-        apf.document.body.appendChild(tab);
-        
+        apf.document.documentElement.appendChild(tab);
         var tabs = tabEditors;
 
         tabs.$buttons.appendChild(btn.$ext);
@@ -561,7 +560,7 @@ module.exports = ext.register("ext/editors/editors", {
                 tabEditors.set(page);
         });
         
-        apf.document.body.appendChild(new apf.menu({
+        apf.document.documentElement.appendChild(new apf.menu({
             id : "mnuEditors"
         }));
         
@@ -703,7 +702,7 @@ module.exports = ext.register("ext/editors/editors", {
 
                     var state = pages[i].$editor.getState && pages[i].$editor.getState(pages[i].$doc);
                     if (state)
-                        copy.setAttribute("state", apf.serialize(state));
+                        copy.setAttribute("state", JSON.stringify(state));
 
                     //@todo the second part of this if can be removed as soon
                     //as the collab team implements stored changed settings

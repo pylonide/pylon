@@ -7,7 +7,6 @@
  
 define(function(require, exports, module) {
 
-var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/keybindings_default/keybindings_default.xml");
 var css = require("text!ext/keybindings_default/keybindings_default.css");
@@ -92,7 +91,7 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
     },
 
     init : function(amlNode){
-        apf.document.body.insertMarkup(markup);
+        apf.document.documentElement.insertMarkup(markup);
         
         var as = Array.prototype.slice.call(winKeyBindings.$ext.getElementsByTagName("a"));
         var _self = this;

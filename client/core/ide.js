@@ -16,15 +16,6 @@ define(function(require, exports, module) {
     };
 
     ide.start = function() {
-        //Set references to global elements - aka extension points
-        //this.tbMain       = tbMain;
-        this.mnuFile        = mnuFile;
-        this.mnuEdit        = mnuEdit;
-        //this.barMenu      = barMenu;
-        this.barTools       = barTools;
-        this.sbMain         = sbMain;
-        this.vbMain         = vbMain;
-
         this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
         this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
         this.staticPrefix   = window.cloud9config.staticUrl;
@@ -34,14 +25,6 @@ define(function(require, exports, module) {
         this.projectName    = window.cloud9config.projectName;
 
         this.loggedIn       = true;
-            //Set references to global elements - aka extension points
-            //this.tbMain       = tbMain;
-            this.mnuFile        = mnuFile;
-            this.mnuEdit        = mnuEdit;
-            //this.barMenu      = barMenu;
-            this.barTools       = barTools;
-            this.sbMain         = sbMain;
-            this.vbMain         = vbMain;
 
         this.onLine         = false;
         this.offlineFileSystemSupport = false;
@@ -63,7 +46,7 @@ define(function(require, exports, module) {
                 apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
-                    data        : apf.serialize({
+                    data        : JSON.stringify({
                         agent       : navigator.userAgent,
                         type        : "General Javascript Error",
                         e           : [m, u, l],
@@ -78,7 +61,7 @@ define(function(require, exports, module) {
                 apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
-                    data        : apf.serialize({
+                    data        : JSON.stringify({
                         agent       : navigator.userAgent,
                         type        : "APF Error",
                         message     : e.message,
@@ -101,9 +84,7 @@ define(function(require, exports, module) {
         }
     };
 
-    apf.addEventListener("load", function(){
-        ide.start();
-    });
+    ide.start();
 
     ide.addEventListener("extload", function() {
         // fire up the socket connection:

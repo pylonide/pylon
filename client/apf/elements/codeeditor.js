@@ -37,14 +37,15 @@
  */
 
 define(function(require, exports, module) {
+"use strict";
 
 var Editor = require("ace/editor").Editor;
 var EditSession = require("ace/edit_session").EditSession;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
 var Range = require("ace/range").Range;
+var MultiSelect = require("ace/multi_select").MultiSelect;
 require("ace/lib/fixoldbrowsers");
-
 
 apf.codeeditor = module.exports = function(struct, tagName) {
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
@@ -590,6 +591,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         });
 
         this.$editor = new Editor(new VirtualRenderer(this.$input));
+        new MultiSelect(this.$editor);
+
         // read defaults...
         var ed  = this.$editor;
 
@@ -611,8 +614,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         ed.addEventListener("gutterdblclick", function(e) {
             _self.dispatchEvent("gutterdblclick", e);
         });
-
-        apf.sanitizeTextbox(ed.renderer.container.getElementsByTagName("textarea")[0]);
     };
 
     this.$loadAml = function(){

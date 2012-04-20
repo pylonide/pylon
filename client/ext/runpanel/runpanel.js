@@ -57,7 +57,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             "class": "rundebug"
         });
 
-        apf.document.body.insertMarkup(buttonsMarkup);
+        apf.document.documentElement.insertMarkup(buttonsMarkup);
 
         this.nodes.push(
             mnuRunCfg
@@ -127,14 +127,16 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 path.split("/").pop() + " (active file)");
         }
 
-        pageSwitch(tabEditors.getPage());
-
-        tabEditors.addEventListener("afterswitch", function(e){
-            pageSwitch(e.nextPage);
-        });
-
-        ide.addEventListener("afterfilesave", function(e){
+        ide.addEventListener("init.ext/editors/editors", function(e) {
             pageSwitch(tabEditors.getPage());
+
+            tabEditors.addEventListener("afterswitch", function(e){
+                pageSwitch(e.nextPage);
+            });
+
+            ide.addEventListener("afterfilesave", function(e){
+                pageSwitch(tabEditors.getPage());
+            });
         });
 
         var hasBreaked = false;

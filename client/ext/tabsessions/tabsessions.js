@@ -38,13 +38,13 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             var model = e && e.model || settings.model;
         
             _self.nodes.push(
-                apf.document.body.appendChild(new apf.menu({
+                apf.document.documentElement.appendChild(new apf.menu({
                     id : "mnuTabLoadSessions",
                     onitemclick : function(e){
                         _self.loadSession(e.relatedNode.value);
                     }
                 })),
-                apf.document.body.appendChild(new apf.menu({
+                apf.document.documentElement.appendChild(new apf.menu({
                     id : "mnuTabDeleteSessions",
                     onitemclick : function(e){
                         _self.removeSession(e.relatedNode.value);
