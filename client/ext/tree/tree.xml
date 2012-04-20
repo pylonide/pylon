@@ -36,9 +36,9 @@
         
         <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
           contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-          onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
-          onbeforemove="this.disable();" autoselect="false"
+          disabled="{{!stServerConnected.active}}" autoselect="false"
           flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
+          onbeforeremove="return require('core/util').removeInteractive(this)" 
         >
             <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
                 <a:insert match="[folder]" get="" id="trFilesInsertRule" />
@@ -80,7 +80,8 @@
                     return apf.xmldb.cleanNode(node.cloneNode(false))
                 }));
                 apf.clipboard.copied = true;
-                apf.clipboard.pasteSelection(apf.activeElement, trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
+                apf.clipboard.pasteSelection(apf.activeElement, 
+                    trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
                 apf.clipboard.store = store;
             ">Duplicate</a:item>
             <a:divider />
