@@ -361,6 +361,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor.getSession().setFoldStyle(value ? "markbegin" : "manual");
     };
 
+    this.$propHandlers["fadefoldwidgets"] = function(value, prop, initial) {
+        this.$editor.setFadeFoldWidgets(value);
+    };
+
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
         this.$editor.getSession().setUseSoftTabs(value);
     };
