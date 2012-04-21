@@ -87,6 +87,9 @@ module.exports = ext.register("ext/menus/menus", {
             
             this.onclick = function(){
                 commands.exec(value);
+                var command = commands.commands[value];
+                if (command && command.focusContext)
+                    command.context[0].focus();
             } || null;
         }
     },

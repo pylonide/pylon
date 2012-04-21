@@ -355,9 +355,11 @@ module.exports = ext.register("ext/code/code", {
         
         defaultCommands.each(function(command) {
             command.readOnly = command.readOnly || false;
+            command.focusContext = true;
         });
         MultiSelectCommands.each(function(command) {
             command.readOnly = command.readOnly || false;
+            command.focusContext = true;
         });
         
         commands.addCommands(defaultCommands, null, true);
