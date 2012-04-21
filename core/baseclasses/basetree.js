@@ -416,12 +416,13 @@ apf.BaseTree = function(){
             }
         }
         
-        if(!this.getAttribute("animation")) {
+        if (!this.animation) {
             var diff = apf.getHeightDiff(container),
                 oInt = container;
 
             container.style.height = Math.max((height), 0) + "px";
-            oInt.scrollTop         = oInt.scrollHeight - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+            oInt.scrollTop = oInt.scrollHeight 
+                - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
             finishSlide();
         }
         else {

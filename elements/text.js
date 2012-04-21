@@ -346,7 +346,7 @@ apf.text = function(struct, tagName){
 
         this.oDrag = this.oIframe = this.oFocus = this.$container = this.$ext = null;
     });
-}).call(apf.text.prototype = new apf.MultiselectBinding());
+}).call(apf.text.prototype = new apf.StandardBinding());
 
 apf.aml.setElement("text", apf.text);
 // #endif

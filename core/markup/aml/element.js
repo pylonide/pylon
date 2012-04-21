@@ -165,7 +165,7 @@ apf.AmlElement = function(struct, tagName){
             }
     
             if (self[value])
-                console.warn("ID collision of APF element: '" + value + "'");
+                throw new Error("ID collision of APF element: '" + value + "'");
     
             if (!self[value] || !self[value].hasFeature) {
                 try {

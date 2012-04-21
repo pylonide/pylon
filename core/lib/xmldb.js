@@ -890,7 +890,7 @@ apf.xmldb = new (function(){
                 nextloop = null;
         }
 
-        if (undoObj && !this.delayUpdate) {
+        if (true || undoObj && !this.delayUpdate) {
             //Ok this was an action let's not delay execution
             apf.xmldb.notifyQueued();
         }
