@@ -7,7 +7,7 @@
 
 "use strict";
 
-var sys = require("sys");
+var util = require("util");
 var Plugin = require("cloud9/plugin");
 var Fs = require("fs");
 var Path = require("path");
@@ -21,7 +21,7 @@ var ShellPlugin = module.exports = function(ide, workspace) {
     this.name = "shell";
 };
 
-sys.inherits(ShellPlugin, Plugin);
+util.inherits(ShellPlugin, Plugin);
 
 (function() {
 

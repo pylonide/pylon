@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
-var sys = require("sys");
+var util = require("util");
 
 var AuthPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -13,7 +13,7 @@ var AuthPlugin = module.exports = function(ide, workspace) {
     this.name = "auth";
 };
 
-sys.inherits(AuthPlugin, Plugin);
+util.inherits(AuthPlugin, Plugin);
 
 (function() {
     

@@ -6,7 +6,7 @@
  */
 
 var fs      = require("fs");
-var sys     = require("sys");
+var util    = require("util");
 var Plugin  = require("cloud9/plugin");
 var async   = require("asyncjs");
 
@@ -33,7 +33,7 @@ var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     this.basePath  = ide.workspaceDir;
 }
 
-sys.inherits(cloud9WatcherPlugin, Plugin);
+util.inherits(cloud9WatcherPlugin, Plugin);
 
 (function() {
     this.unwatchFile = function(filename) {

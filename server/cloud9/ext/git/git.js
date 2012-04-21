@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
-var sys = require("sys");
+var util = require("util");
 var util = require("cloud9/util");
 
 var ShellGitPlugin = module.exports = function(ide, workspace) {
@@ -14,7 +14,7 @@ var ShellGitPlugin = module.exports = function(ide, workspace) {
     this.name = "git";
 };
 
-sys.inherits(ShellGitPlugin, Plugin);
+util.inherits(ShellGitPlugin, Plugin);
 
 (function() {
     var githelp     = "",
