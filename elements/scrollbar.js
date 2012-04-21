@@ -163,12 +163,14 @@ apf.scrollbar = function(struct, tagName){
     };
     
     this.$resize = function(){
-        if (!this.$viewport || !this.$viewport.isVisible()
-          || !this.$viewport.virtual)
+        if (!this.$viewport || !this.$viewport.isVisible())
             return;
-        
+            
         this.$recalc();
         this.$update();
+        
+        if (!this.$viewport.virtual)
+            return;
         
         this.setScrollPosition(this.position, true);
     }

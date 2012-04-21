@@ -852,6 +852,9 @@ apf.BaseTree = function(){
                             _self.$removeLoading(xmlNode);
                             _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 2, true);
                         }
+                        else {
+                            _self.slideOpen(null, xmlNode);
+                        }
                         
                         if (callback)
                             callback(data, state, extra);
