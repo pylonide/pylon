@@ -270,7 +270,7 @@
         <p:define name="__WITH_NS_SUPPORT" value="1" />
 
         <!--p:define name="__WITH_PARTIAL_AML_LOADING" value="1" /-->
-        <p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="1" />
+        <!--p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="0" /-->
         <p:define name="__WITH_PLANE" value="1" />
         <p:define name="__WITH_POPUP" value="1" />
 
