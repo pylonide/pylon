@@ -748,12 +748,7 @@ module.exports = ext.register("ext/editors/editors", {
             if (!acesession)
                 return;
                 
-            var sel         = acesession.getSelection();
-
-            sel.selectAll();
-            acesession.getUndoManager().ignoreChange = true;
-            acesession.replace(sel.getRange(), e.data);
-            sel.clearSelection();
+            acesession.doc.setValue(e.data);
 
             if (doc.state) {
                 var editor = doc.$page.$editor;
