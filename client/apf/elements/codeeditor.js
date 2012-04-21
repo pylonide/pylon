@@ -362,7 +362,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.$propHandlers["fadefoldwidgets"] = function(value, prop, initial) {
-        this.$editor.setFadeFoldWidgets(value);
+        this.$editor.setFadeFoldWidgets && this.$editor.setFadeFoldWidgets(value);
     };
 
     this.$propHandlers["softtabs"] = function(value, prop, initial) {

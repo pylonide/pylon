@@ -66,7 +66,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var path = (e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
             var fNode = model.queryNode('//node()[@path="' + path + '"]');
-            var trNode = trFiles.queryNode('//node()[@path="' + path + '"]');
+            if(!e.ignoreTree)
+                var trNode = trFiles.queryNode('//node()[@path="' + path + '"]');
             if (node && fNode && trNode) {
                 if (e.path)
                     apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
