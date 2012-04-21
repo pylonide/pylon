@@ -333,7 +333,7 @@ module.exports = ext.register("ext/tree/tree", {
             setTimeout(function () {
                 fs.beforeRename(args[1], null,
                     args[0].getAttribute("path").replace(/[\/]+$/, "") +
-                    "/" + filename, true);
+                    "/" + filename, true, count > 0);
                 args[1].removeAttribute("newname");
             });
         });
