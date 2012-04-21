@@ -353,6 +353,13 @@ module.exports = ext.register("ext/code/code", {
     hook: function() {
         var _self = this;
         
+        defaultCommands.each(function(command) {
+            command.readOnly = command.readOnly || false;
+        });
+        MultiSelectCommands.each(function(command) {
+            command.readOnly = command.readOnly || false;
+        });
+        
         commands.addCommands(defaultCommands, null, true);
         commands.addCommands(MultiSelectCommands, null, true);
 

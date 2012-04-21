@@ -608,9 +608,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.$editor.resize();
         });
 
-        this.$editor = new Editor(new VirtualRenderer(this.$input), null, 
-            apf.isTrue(this.getAttribute("globalcommands")) && false);
+        this.$editor = new Editor(new VirtualRenderer(this.$input), null);
         new MultiSelect(this.$editor);
+
+        if (apf.isTrue(this.getAttribute("globalcommands")))
+            this.$editor.keyBinding.setDefaultHandler(null);
 
         // read defaults...
         var ed  = this.$editor;
