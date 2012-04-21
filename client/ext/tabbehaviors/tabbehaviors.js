@@ -647,7 +647,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             model   : page.$model,
             relPage : page.id,
             onclick : function() {
-                tabEditors.set(this.relPage);
+                tabEditors.set(this.getAttribute("relPage"));
             }
         }));
         var no = this.nodes.push(mnu) - 1;
@@ -665,7 +665,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var _self = this;
         
         for (; i < l; i++) {
-            if ((item = this.nodes[i]).relPage == page.id) {
+            if ((item = this.nodes[i]).getAttribute("relPage") == page.id) {
                 item.destroy(true, true);
                 this.nodes.splice(i, 1);
 

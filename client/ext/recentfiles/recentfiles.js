@@ -113,7 +113,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             if (nodes[i].nodeType != 1) continue;
 
             if (nodes[i].localName == "item") {
-                if (nodes[i].value == def.value) {
+                if (nodes[i].getAttribute("value") == def.value) {
                     found = nodes[i];
                     break;
                 }
@@ -139,7 +139,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         }
 
         while (this.menu.childNodes.length > 12) {
-            this.menu.removeChild(this.divider.previousSibling);
+            this.divider.previousSibling.destroy(true, true);
         }
 
         this.changed = true;
@@ -149,7 +149,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         var nodes = this.menu.childNodes;
         for (var i = nodes.length - 1; i >= 0; i--) {
             if (nodes[0].localName == "item")
-                this.menu.removeChild(nodes[0]);
+                nodes[0].destroy(true, true);
             else break;
         }
     },
