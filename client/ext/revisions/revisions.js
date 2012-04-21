@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var editors = require("ext/editors/editors");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 
@@ -47,6 +48,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     docChangeListeners: {},
 
     toggle: function() {
+        if (!editors.currentEditor.ceEditor) {
+            return;
+        }
+
         ext.initExtension(this);
 
         if (this.panel.visible)
@@ -169,6 +174,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    $pageIsCode: function(page) {
+        return page.type === "ext/code/code";
+    },
+
     init: function() {
         var self = this;
 
@@ -241,7 +250,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $switchToPageModel: function(page) {
-        if (!page) {
+        if (!page || !this.$pageIsCode(page)) {
             return;
         }
 
@@ -256,7 +265,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         return this.model;
     },
 
-    $restoreSelection:  function(page) {
+    $restoreSelection: function(page) {
         var model = page.$mdlRevisions;
         if (model && page.$showRevisions === true) {
             var node;
@@ -304,7 +313,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var self = this;
         var doc = data.doc;
-        // TODO: Unregister events on unloading file
+        var page = doc.$page;
+        if (!this.$pageIsCode(page)) {
+            return;
+        }
 
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
@@ -333,6 +345,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterSwitch: function(e) {
+        if (!this.$pageIsCode(e.nextPage)) {
+            return;
+        }
+
         if (e.nextPage.$showRevisions === true) {
             return this.show();
         }
@@ -557,7 +573,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             revsXML += "<contributors>" + contributors + "</contributors></revision>";
         }
-        this.model.load("<revisions>" + revsXML + "</revisions>");
+
+        if (this.model) {
+            this.model.load("<revisions>" + revsXML + "</revisions>");
+        }
     },
 
     /**
@@ -836,7 +855,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
-        if (!page || !this.$pageHasChanged(page))
+        if (!page || !this.$pageHasChanged(page) || !this.$pageIsCode(page))
             return;
 
         ext.initExtension(this);
@@ -859,6 +878,10 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     saveRevision: function(doc, silentsave, restoring) {
         var page = doc.$page;
+        if (!this.$pageIsCode(page)) {
+            return;
+        }
+
         var docPath = this.$getDocPath(page);
         var contributors = this.$getEditingUsers(docPath);
 
@@ -1010,6 +1033,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     show: function() {
         var page = tabEditors.getPage();
+        if (!this.$pageIsCode(page)) {
+            return;
+        }
+
         ext.initExtension(this);
 
         settings.model.setQueryValue("general/@revisionsvisible", true);
