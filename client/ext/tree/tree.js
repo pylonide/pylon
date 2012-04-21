@@ -139,19 +139,34 @@ module.exports = ext.register("ext/tree/tree", {
             var expandedNodes = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
             _self.expandedNodes = [];
 
-            var path, id;
+            var path, id, lut = {};
 
             // expandedList keeps an active record of all the expanded nodes
             // so that on each save this gets serialized into the auto/projecttree
             // settings node
             for (id in _self.expandedList) {
                 path = _self.expandedList[id].getAttribute("path");
-                if (!path) {
+                if (!path)
                     delete _self.expandedList[id];
-                }
-                else {
+                else
+                    lut[path] = true;
+            }
+
+            // This checks that each expanded folder has a root that's already
+            // been saved
+            var cc, parts;
+            for (path in lut) {
+                parts = path.split("/");
+                cc = parts.shift();
+                do {
+                    if (!parts.length)
+                        break;
+
+                    cc += "/" + parts.shift();
+                } while(lut[cc]);
+
+                if (!parts.length)
                     _self.expandedNodes.push(path);
-                }
             }
 
             expandedNodes.nodeValue = JSON.stringify(_self.expandedNodes);
@@ -435,8 +450,8 @@ module.exports = ext.register("ext/tree/tree", {
 
         // If the root node has been removed, add it back in. It would be removed
         // from expandedNodes if the user collapsed it
-        if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
-            this.expandedNodes.unshift(ide.davPrefix);
+//        if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
+//            this.expandedNodes.unshift(ide.davPrefix);
 
         // Sort the cached list so it's more probable that nodes near the top of
         // the tree are loaded first, giving the user more visual feedback that
@@ -500,6 +515,9 @@ module.exports = ext.register("ext/tree/tree", {
             if (numFoldersLoaded === _self.expandedNodes.length)
                 return onFinish();
         }
+        
+        if (!this.expandedNodes.length)
+            return onFinish();
 
         // Load up the saved list of project tree folders in this.expandedNodes
         for (var i = 0; i < this.expandedNodes.length; i++) {
@@ -590,6 +608,8 @@ module.exports = ext.register("ext/tree/tree", {
      * Called when the user hits the refresh button in the Project Files header
      */
     refresh : function(){
+        settings.save(true);
+        
         // When we clear the model below, it dispatches a scroll event which
         // we don't want to process, so remove that event listener
         trFiles.removeEventListener("scroll", $trScroll);

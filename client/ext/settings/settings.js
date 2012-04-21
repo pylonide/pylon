@@ -33,8 +33,8 @@ module.exports = ext.register("ext/settings/settings", {
     nodes : [],
 
     //Backwards compatible
-    save : function() {
-        settings.save();
+    save : function(force) {
+        settings.save(force);
     },
 
     saveSettingsPanel: function() {

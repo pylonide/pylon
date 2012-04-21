@@ -154,10 +154,10 @@ module.exports = ext.register("ext/panels/panels", {
         //apf.setOpacity(toWinExt, 0);
         
         var options = {
-            steps : 8,
+            steps : 6,
             interval : apf.isChrome ? 0 : 5,
             control : this.animateControl = {},
-            anim : apf.tween.EASEOUT,
+            anim : win && toWin ? apf.tween.easeOutCubic : apf.tween.easeOutQuint,
             tweens : tweens,
             oneach: function(){
                 apf.layout.forceResize()

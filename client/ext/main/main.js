@@ -17,10 +17,8 @@ var nodes = document.body.childNodes;
 for (var i = nodes.length - 1; i >= 0; i--)
     nodes[i].parentNode.removeChild(nodes[i]);
 
-// #ifndef __SUPPORT_GWT
 document.documentElement.style.display = "block";
 document.body.style.display = "block"; //might wanna make this variable based on layout loading...
-// #endif
 
 //Start APF
 apf.initialize('<a:application xmlns:a="http://ajax.org/2005/aml" />');

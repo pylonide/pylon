@@ -631,10 +631,12 @@ module.exports = ext.register("ext/code/code", {
             }), 500000),
             
             menus.addItemByPath("View/Wrap To Viewport", new apf.item({
-                disabled : "{!apf.isTrue(this.wrapmode)}",
                 wrapmode : "[{require('core/settings').model}::editors/code/@wrapmode]",
                 type     : "check",
-                checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]"
+                checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
+                "onprop.wrapmode" : function(e){
+                    this.setAttribute("disabled", !apf.isTrue(e.value))
+                }
             }), 600000)
         );
         

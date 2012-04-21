@@ -183,7 +183,7 @@ module.exports = ext = {
         if (oExtension.inited)
             return;
             
-        oExtension.inited = true; // Prevent Re-entry∑
+        oExtension.inited = true; // Prevent Re-entry
 
         var skin = oExtension.skin;
         if (skin && typeof skin == "object") {

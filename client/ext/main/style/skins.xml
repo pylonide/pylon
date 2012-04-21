@@ -94,7 +94,7 @@
             position   : relative;
             overflow   : visible;
             height     : 35px;
-            margin-right:164px;
+            margin-right:30px;
         }
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-mbar-round {
@@ -136,7 +136,7 @@
             display: block;
             height: 21px;
             position: absolute;
-            right: -146px;
+            right: -143px;
             text-indent: -800em;
             top: 8px;
             width: 152px;

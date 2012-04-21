@@ -11,20 +11,33 @@ var template = "<settings />";
 
 module.exports = {
     model : new apf.model(),
-
-    save : function(){
-        if (!ide.inited || this.preventSave)
-            return;
-
+    
+    $checkSave : function() {
+        if (ide.dispatchEvent("savesettings", {
+            model : this.model
+        }) === true || this.dirty)
+            this.saveToFile();
+    },
+    
+    startTimer : function(){
         var _self = this;
-        clearTimeout(this.$customSaveTimer);
+        
+        clearInterval(this.$timer);
+        
+        var checkSave = function(){
+            _self.$checkSave();
+        };
+        this.$timer = setInterval(checkSave, 60000);
+    },
 
-        this.$customSaveTimer = setTimeout(function(){
-            _self.preventSave = true;
-            ide.dispatchEvent("savesettings", {model : _self.model});
-            _self.saveToFile();
-            _self.preventSave = false;
-        }, 100);
+    save : function(force){
+        this.dirty = true;
+        
+        if (force) {
+            ide.dispatchEvent("savesettings", { model : this.model });
+            this.saveToFile();
+            this.startTimer();
+        }
     },
 
     saveToFile : function() {
@@ -150,15 +163,11 @@ module.exports = {
 
         /**** Events ****/
 
-        var checkSave = function() {
-            if (ide.dispatchEvent("savesettings", {
-                model : _self.model
-            }) === true)
-                _self.saveToFile();
-        };
-        this.$timer = setInterval(checkSave, 60000);
+        this.startTimer();
 
-        apf.addEventListener("exit", checkSave);
+        apf.addEventListener("exit", function(){
+            _self.$checkSave();
+        });
 
         ide.addEventListener("afteronline", function(){
             _self.saveToFile(); //Save to file

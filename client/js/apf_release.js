@@ -1462,7 +1462,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(45743)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(45743)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3864,7 +3864,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -12469,7 +12469,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40903)TIME(Sat, 21 Apr 2012 10:14:32 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40903)TIME(Sat, 21 Apr 2012 15:32:24 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14679,7 +14679,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15184,7 +15184,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15767,7 +15767,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22835)TIME(Fri, 20 Apr 2012 20:48:36 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22835)TIME(Sat, 21 Apr 2012 15:32:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16521,7 +16521,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19942,7 +19942,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33273)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33273)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26785,7 +26785,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28431,7 +28431,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31455,7 +31455,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53431)TIME(Fri, 13 Apr 2012 10:38:48 GMT)*/
+/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53542)TIME(Sat, 21 Apr 2012 16:06:48 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31873,12 +31873,13 @@ apf.BaseTree = function(){
             }
         }
         
-        if(!this.getAttribute("animation")) {
+        if (!this.animation) {
             var diff = apf.getHeightDiff(container),
                 oInt = container;
 
             container.style.height = Math.max((height), 0) + "px";
-            oInt.scrollTop         = oInt.scrollHeight - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+            oInt.scrollTop = oInt.scrollHeight 
+                - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
             finishSlide();
         }
         else {
@@ -32301,6 +32302,9 @@ apf.BaseTree = function(){
                             _self.$setLoadStatus(xmlNode, "potential");
                             _self.$removeLoading(xmlNode);
                             _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 2, true);
+                        }
+                        else {
+                            _self.slideOpen(null, xmlNode);
                         }
                         
                         if (callback)
@@ -32977,7 +32981,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Fri, 20 Apr 2012 23:10:16 GMT)*/
+/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Sat, 21 Apr 2012 15:32:24 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35669,7 +35673,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 19 Apr 2012 16:03:26 GMT)*/
+/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Sat, 21 Apr 2012 15:32:24 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47130,7 +47134,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52632,7 +52636,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25149)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Sat, 21 Apr 2012 15:33:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53353,6 +53357,7 @@ apf.item  = function(struct, tagName){
 //apf.aml.setElement("radio", apf.radio);
 //apf.aml.setElement("check", apf.check);
 apf.aml.setElement("item",  apf.item);
+
 
 
 /*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Thu, 15 Dec 2011 00:34:58 GMT)*/
@@ -54179,7 +54184,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19339)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19339)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55491,7 +55496,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57822,7 +57827,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/radiobutton.js)SIZE(17132)TIME(Sat, 21 Apr 2012 10:59:22 GMT)*/
+/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Sat, 21 Apr 2012 11:02:17 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58284,7 +58289,6 @@ apf.aml.setElement("radiobutton", apf.radiobutton);
 
 apf.$group = apf.group = function(struct, tagName){
     this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
-    this.$amlLoaded = true;
     
     this.implement(
         apf.StandardBinding,
@@ -59140,7 +59144,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(elements/scrollbar.js)SIZE(32649)TIME(Thu, 19 Apr 2012 16:13:53 GMT)*/
+/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Sat, 21 Apr 2012 16:18:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59307,12 +59311,14 @@ apf.scrollbar = function(struct, tagName){
     };
     
     this.$resize = function(){
-        if (!this.$viewport || !this.$viewport.isVisible()
-          || !this.$viewport.virtual)
+        if (!this.$viewport || !this.$viewport.isVisible())
             return;
-        
+            
         this.$recalc();
         this.$update();
+        
+        if (!this.$viewport.virtual)
+            return;
         
         this.setScrollPosition(this.position, true);
     }
@@ -61793,7 +61799,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5172)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5172)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63492,7 +63498,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Fri, 20 Apr 2012 07:14:24 GMT)*/
+/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Sat, 21 Apr 2012 15:32:24 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65248,7 +65254,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/webdav.js)SIZE(50167)TIME(Fri, 13 Apr 2012 10:38:48 GMT)*/
+/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Sat, 21 Apr 2012 15:33:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65877,13 +65883,8 @@ apf.webdav = function(struct, tagName){
                     bubbles : true
                   }) === false && !callback)
                     throw oError;
-                callback && callback.call(this, data, state, extra);
             }
-            else {
-                // nodes needs to be added to the cache, callback passed through
-                // to notify listener(s)
-                this.getProperties(sTo, 0, callback);
-            }
+            callback && callback.call(this, data, state, extra);
         }, sFrom, null, oHeaders);
     };
 
