@@ -19,7 +19,9 @@ module.exports = ext.register("ext/themes/themes", {
     offline : false,
     type    : ext.GENERAL,
     nodes   : [],
-    currTheme : "",
+    
+    defaultTheme : "ace/theme/textmate", //Default Theme
+    currTheme : "", 
     saved   : false,
 
     register : function(themes){
@@ -27,13 +29,16 @@ module.exports = ext.register("ext/themes/themes", {
         
         for (var name in themes) {
             menus.addItemByPath("View/Themes/" + name, new apf.item({
-                type    : "item",
+                type    : "radio",
                 value   : themes[name],
+                //group   : this.group
+                
                 onmouseover: function(e) {
                     _self.currTheme = settings.model.queryValue("editors/code/@theme");
                     settings.model.setQueryValue("editors/code/@theme", this.value);
                     _self.saved = false;
                 },
+                
                 onmouseout: function(e) {
                     if (!_self.saved) {
                         settings.model.setQueryValue("editors/code/@theme", _self.currTheme);
@@ -46,11 +51,11 @@ module.exports = ext.register("ext/themes/themes", {
         this.themes = themes;
     },
 
-    set : function(path, dispatch){
-        //Save theme settings
+    set : function(path){
         settings.model.setQueryValue("editors/code/@theme", path);
-        settings.save();
+        
         ide.dispatchEvent("theme_change", {theme: path});
+        
         this.saved = true;
         ide.dispatchEvent("track_action", {type: "theme change", theme: path});
     },
@@ -58,15 +63,26 @@ module.exports = ext.register("ext/themes/themes", {
     init : function(){
         var _self = this;
         
+        this.nodes.push(
+            this.group = new apf.group()
+        );
+        
         var mnuThemes = menus.addItemByPath("View/Themes/", new apf.menu({
-            onitemclick : function(e){
+            "onprop.visible" : function(e){
+                if (e.value) {
+                    mnuThemes.select(null, 
+                      settings.model.queryValue("editors/code/@theme") 
+                        || _self.defaultTheme);
+                }
+            },
+            "onitemclick" : function(e){
                 _self.set(e.relatedNode.value);
             }
         }), 350000);
 
         ide.addEventListener("init.ext/code/code", function() {
             if (ceEditor && ceEditor.$editor)
-                mnuThemes.select(null, ceEditor.$editor.getTheme());
+                mnuThemes.select(null, _self.defaultTheme);
         });
     },
     

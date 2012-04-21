@@ -228,6 +228,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         ide.dispatchEvent("showpanel." + panelExt.path);
         
+        this.mnuPanelsNone.setAttribute("selected", false);
         panelExt.mnuItem.select(); //Will set setting too
     },
     
@@ -280,10 +281,10 @@ module.exports = ext.register("ext/panels/panels", {
             this.mnuPanelsNone = 
               menus.addItemByPath("View/Side Bar/None", new apf.item({
                 type: "radio",
+                selected : "true",
                 group: this.group,
-                "onprop.selected": function(e){
-                    if (e.value)
-                        _self.deactivate(null, true);
+                "onclick": function(e){
+                    _self.deactivate(null, true);
                 }
               }), 100),
             menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
@@ -305,10 +306,7 @@ module.exports = ext.register("ext/panels/panels", {
         var _self = this;
         this.$settings = {};
         ide.addEventListener("loadsettings", function(e){
-            var animateNode = e.model.queryNode("general/@animateui");
-            if (!animateNode)
-                e.model.setQueryValue("general/@animateui", 
-                    apf.isGecko ? false : true);
+            settings.setDefaults("general", [["animateui", apf.isGecko ? false : true]]);
         });
 
         var props = ["visible", "flex", "width", "height", "state"];

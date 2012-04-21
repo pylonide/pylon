@@ -354,7 +354,7 @@ module.exports = ext.register("ext/console/console", {
             this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
                 type    : "check",
                 command : "toggleconsole",
-                checked : "[{require('ext/settings/settings').model}::auto/console/@show]"
+                checked : "[{require('ext/settings/settings').model}::auto/console/@expanded]"
             }), 700),
             this.mnuItemInput = menus.addItemByPath("View/Command Line", new apf.item({
                 type    : "check",
@@ -562,6 +562,7 @@ module.exports = ext.register("ext/console/console", {
             txtConsoleInput.focus()
         }
         else {
+            settings.model.setQueryValue("auto/console/@showinput", true);
             this.hiddenInput = false;
         }
     },
@@ -576,6 +577,7 @@ module.exports = ext.register("ext/console/console", {
         txtConsoleInput.parentNode.hide();
         apf.layout.forceResize();
         
+        settings.model.setQueryValue("auto/console/@showinput", false);
         this.hiddenInput = true;
     },
 

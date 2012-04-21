@@ -12469,7 +12469,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40895)TIME(Fri, 20 Apr 2012 07:37:42 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40903)TIME(Sat, 21 Apr 2012 10:14:32 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13293,7 +13293,7 @@ apf.xmldb = new (function(){
                 nextloop = null;
         }
 
-        if (undoObj && !this.delayUpdate) {
+        if (true || undoObj && !this.delayUpdate) {
             //Ok this was an action let's not delay execution
             apf.xmldb.notifyQueued();
         }
@@ -57822,7 +57822,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Thu, 15 Dec 2011 00:34:58 GMT)*/
+/*FILEHEAD(elements/radiobutton.js)SIZE(17132)TIME(Sat, 21 Apr 2012 10:59:22 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58284,6 +58284,7 @@ apf.aml.setElement("radiobutton", apf.radiobutton);
 
 apf.$group = apf.group = function(struct, tagName){
     this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
+    this.$amlLoaded = true;
     
     this.implement(
         apf.StandardBinding,

@@ -183,7 +183,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             casesensitive: matchCase,
             regexp: regex,
             replaceAll: _self.replaceAll ? "true" : "false",
-            replacement: txtReplace.value
+            replacement: txtSFReplace.value
         };
     },
 

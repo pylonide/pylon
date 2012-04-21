@@ -26,11 +26,10 @@ var kb = new KeyBinding({
 });
 event.addCommandKeyListener(document.documentElement, kb.onCommandKey.bind(kb));
 
-ide.commandManager = commandManager;
+ide.commandManager = new apf.Class().$init();
 
 module.exports = ext.register("ext/commands/commands", apf.extend(
     commandManager,
-    new apf.Class().$init(), 
     {
         name    : "Keyboard Commands",
         dev     : "Ajax.org",
@@ -90,7 +89,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         },
         
         addCommand : function(command){
-            this[command.name] = "";
+            ide.commandManager[command.name] = "";
             
             if (command.readOnly == undefined)
                 command.readOnly = true;
@@ -98,7 +97,8 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             addCommand.apply(this, arguments);
             
             if (command.bindKey)
-                this.setProperty(command.name, command.bindKey[this.platform]);
+                ide.commandManager
+                    .setProperty(command.name, command.bindKey[this.platform]);
         },
         
         addCommands : function(commands, context, asDefault){
@@ -131,8 +131,8 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         },
         
         removeCommand : function(command, context){
-            if (this[command.name])
-                this.setProperty(command.name, "");
+            if (ide.commandManager[command.name])
+                ide.commandManager.setProperty(command.name, "");
             removeCommand.apply(this, arguments);
         },
     

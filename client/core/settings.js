@@ -13,15 +13,17 @@ module.exports = {
     model : new apf.model(),
 
     save : function(){
-        if (!ide.inited)
+        if (!ide.inited || this.preventSave)
             return;
 
         var _self = this;
         clearTimeout(this.$customSaveTimer);
 
         this.$customSaveTimer = setTimeout(function(){
+            _self.preventSave = true;
             ide.dispatchEvent("savesettings", {model : _self.model});
             _self.saveToFile();
+            _self.preventSave = false;
         }, 100);
     },
 
@@ -168,6 +170,10 @@ module.exports = {
         ide.addEventListener("afteroffline", function(){
             if (_self.loaded)
                 _self.saveToFile(); //Save in local storage
+        });
+        
+        this.model.addEventListener("update", function(){
+            _self.save();
         });
     }
 };

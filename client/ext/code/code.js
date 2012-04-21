@@ -525,18 +525,28 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
             addEditorMenu("Selection/Multiple Selections/Merge Selection Range", "splitIntoLines")
         );
+        
+        var grpSyntax, grpNewline;
             
         /**** View ****/
         this.menus.push(
             menus.addItemByPath("View/Gutter", new apf.item({
                 type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@gutter]"
+                checked : "[{require('core/settings').model}::editors/code/@gutter]"
             }), 500),
             
             menus.addItemByPath("View/~", new apf.divider(), 290000),
             
             menus.addItemByPath("View/Syntax/", new apf.menu({
-                onitemclick : function(e) {
+                "onprop.visible" : function(e){
+                    if (e.value && self.tabEditors) {
+                        var page = tabEditors.getPage();
+                        var node = page.$model.data;
+                        grpSyntax.setValue(node 
+                            && node.getAttribute("customtype") || "auto");
+                    }
+                },
+                "onitemclick" : function(e) {
                     var file = ide.getActivePageModel();
         
                     if (file) {
@@ -577,13 +587,26 @@ module.exports = ext.register("ext/code/code", {
                     }
                 }
             }), 300000),
-
-            menus.addItemByPath("View/Newline Mode/", null, 310000),
+            
+            grpNewline = new apf.group(),
+            
+            menus.addItemByPath("View/Newline Mode/", new apf.menu({
+                "onprop.visible" : function(e){
+                    if (e.value) {
+                        grpNewline.setValue(
+                            settings.model.queryValue("editors/code/@newlinemode"));
+                    }
+                },
+                "onitemclick" : function(e){
+                    settings.model.setQueryValue("editors/code/@newlinemode", 
+                        e.relatedNode.value);
+                }
+            }), 310000),
 
             menus.addItemByPath("View/Newline Mode/Auto", new apf.item({
                 type    : "radio",
                 value   : "auto",
-                selected : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+                group   : grpNewline
             }), 100),
             
             menus.addItemByPath("View/Newline Mode/~", new apf.divider(), 110),
@@ -591,41 +614,44 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("View/Newline Mode/Windows (CRLF)", new apf.item({
                 type    : "radio",
                 value   : "windows",
-                selected : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+                group   : grpNewline
             }), 200),
 
             menus.addItemByPath("View/Newline Mode/Unix (LF)", new apf.item({
                 type    : "radio",
                 value   : "unix",
-                selected : "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
+                group   : grpNewline
             }), 300),
 
             menus.addItemByPath("View/~", new apf.divider(), 400000),
             
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
+                checked : "[{require('core/settings').model}::editors/code/@wrapmode]"
             }), 500000),
             
             menus.addItemByPath("View/Wrap To Viewport", new apf.item({
                 disabled : "{!apf.isTrue(this.wrapmode)}",
-                wrapmode : "[{require('ext/settings/settings').model}::editors/code/@wrapmode]",
+                wrapmode : "[{require('core/settings').model}::editors/code/@wrapmode]",
                 type     : "check",
-                checked  : "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
+                checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]"
             }), 600000)
         );
         
         c = 0;
         this.menus.push(
+            grpSyntax = new apf.group(),
+            
             menus.addItemByPath("View/Syntax/Auto-Select", new apf.item({
                 type: "radio",
-                selected: true,
-                value: "auto"
+                value: "auto",
+                group : grpSyntax
             }), c += 100),
             
             menus.addItemByPath("View/Syntax/Plain Text", new apf.item({
                 type: "radio",
-                value: "text/plain"
+                value: "text/plain",
+                group : grpSyntax
             }), c += 100),
             
             menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
@@ -635,7 +661,8 @@ module.exports = ext.register("ext/code/code", {
             this.menus.push(
                 menus.addItemByPath("View/Syntax/" + mode, new apf.item({
                     type: "radio",
-                    value: ModesCaption[mode]
+                    value: ModesCaption[mode],
+                    group : grpSyntax
                 }), c += 100)
             )
         }
@@ -688,7 +715,7 @@ module.exports = ext.register("ext/code/code", {
         var menuShowInvisibles = new apf.item({
             type    : "check",
             caption : "Show Invisibles",
-            checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+            checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
         });
 
         ide.addEventListener("closefile", function(e){
@@ -728,14 +755,16 @@ module.exports = ext.register("ext/code/code", {
         if (typeof ext === "string") {
             node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
             if (!node)
-                settings.model.appendXml('<mime name="' + mime + '" ext="' + ext + '" />', "auto/customtypes");
+                node = settings.model.appendXml('<mime name="' 
+                    + mime + '" ext="' + ext + '" />', "auto/customtypes");
         } else {
             var name = ext.getAttribute("name") || "";
             node = settings.model.queryNode('auto/customtypes/mime[@filename="' + name + '"]');
             if (node)
                 apf.xmldb.removeAttribute(node, "ext");
             else
-                settings.model.appendXml('<mime name="' + mime + '" filename="' + name + '" />', "auto/customtypes");
+                node = settings.model.appendXml('<mime name="' 
+                    + mime + '" filename="' + name + '" />', "auto/customtypes");
         }
 
         apf.xmldb.setAttribute(node, "name", mime);
