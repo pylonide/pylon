@@ -136,10 +136,10 @@
             display: block;
             height: 21px;
             position: absolute;
-            right: -143px;
+            right: -24px;
             text-indent: -800em;
             top: 8px;
-            width: 152px;
+            width: 33px;
         }
     ]]></a:style>
 

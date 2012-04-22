@@ -282,6 +282,7 @@ module.exports = ext.register("ext/code/code", {
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
             doc.acesession = new EditSession(doc.acedoc);
             doc.acedoc = doc.acesession.getDocument();
+            doc.acesession.c9doc = doc;
 
             doc.acesession.setUndoManager(actiontracker);
 
@@ -293,10 +294,25 @@ module.exports = ext.register("ext/code/code", {
                     return;
 
                 doc.acesession.setValue(e.value || "");
+                
                 if (doc.state)
                     _self.setState(doc, doc.state);
+                
                 doc.isInited = true;
             });
+            
+            var initValue;
+            doc.addEventListener("prop.value", initValue = function(e, force) {
+                //abstraction leakage???
+                if (force || this.$page.id == this.$page.parentNode.activepage) {
+                    ceEditor.setProperty("value", doc.acesession);
+                    ceEditor.setProperty("syntax", ceEditor.docsyntax);
+                }
+                
+                doc.removeEventListener("prop.value", arguments.callee);
+            });
+            if (doc.value)
+                initValue.call(doc, null, true);
 
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self)
@@ -333,7 +349,10 @@ module.exports = ext.register("ext/code/code", {
                 doc = null;
             });
         }
-        ceEditor.setProperty("value", doc.acesession);
+        else {
+            ceEditor.setProperty("value", doc.acesession);
+            ceEditor.setProperty('syntax', ceEditor.docsyntax);
+        }
 
         if (doc.editor && doc.editor != this) {
             var value = doc.getValue();
@@ -751,6 +770,13 @@ module.exports = ext.register("ext/code/code", {
             // plugins that change keybindings have already changed them (i.e.
             // the vim plugin), we fire an event so these plugins can react to it.
             ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
+        });
+        
+        ide.addEventListener("closefile", function(e){
+            if (e.page.parentNode.getPages().length == 1) {
+                ceEditor.clear();
+                ceEditor.setProperty('syntax', "text/plain");
+            }
         });
     },
 
