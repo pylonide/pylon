@@ -438,7 +438,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         switch (message.subtype) {
             case "getRevisionHistory":
                 var revObj = this.$getRevisionObject(message.path);
-                revObj.revision = message.body
+                if (message.body && message.body.revisions) {
+                    revObj.allRevisions = message.body.revisions;
+                }
 
                 this.generateCache(revObj);
 
@@ -495,31 +497,25 @@ module.exports = ext.register("ext/revisions/revisions", {
      * throughout the extension.
      **/
     generateCache: function(revObj) {
-        if (!revObj.revision)
+        if (!revObj.allRevisions)
             return;
 
-        revObj.allRevisions = {};
-        revObj.compactRevisions = {};
+        var getTsAndSort = function(obj) {
+            return Object.keys(obj)
+                .map(function(ts) { return parseInt(ts, 10) })
+                .sort(function(a, b) { return a - b });
+        };
 
-        // Create an array of the numeric timestamps and populate `allRevisions`
-        // with the timestamps as keys and the revObjs as values.
-        // `allTimestamps` will store the numeric array. This is the only place
-        // where `allTimestamps should be modified.
-        revObj.allTimestamps = revObj.revision.revisions
-            .map(function(rev) {
-                revObj.allRevisions[rev.ts] = rev;
-                return rev.ts;
-            })
-            .sort(function(a, b) { return a - b; });
+        // Create an array of the numeric timestamps. `allTimestamps` will store
+        // the numeric array. This is the only place where `allTimestamps should
+        // be modified.
+        revObj.allTimestamps = getTsAndSort(revObj.allRevisions);
 
         // Generate a compacted version of the revision list, where revisions are
-        // grouped by close periods of time.
-        // Changes `compactTimestamps` to
+        // grouped by close periods of time. Changes `compactTimestamps` to
         // reflect the ones in the compact list.
         revObj.compactRevisions = this.getCompactRevisions(revObj);
-        revObj.compactTimestamps = Object.keys(revObj.compactRevisions)
-            .map(function(ts) { return parseInt(ts, 10); })
-            .sort(function(a, b) { return a - b; });
+        revObj.compactTimestamps = getTsAndSort(revObj.compactRevisions);
     },
 
     toggleListView: function() {
@@ -537,6 +533,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revObj) {
             revObj = this.rawRevisions[this.$getDocPath()];
         }
+
+        if (!revObj) { return; }
 
         var revisions, timestamps;
         if (revObj.useCompactList && revObj.compactRevisions && revObj.compactTimestamps) {
@@ -673,7 +671,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var all = revObj.allRevisions;
         var compactRevisions = {};
         var finalTS = [];
-        var isResto = function(id) { return all[id] && all[id].restoring; };
+        var isRestoring = function(id) { return all[id] && all[id].restoring; };
 
         // This extracts the timestamps that belong to 'restoring' revisions to
         // put them in their own slot, since we don't want them to be grouped in
@@ -681,7 +679,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         // not confuse the user.
         var repack = function(prev, id) {
             var last = prev[prev.length - 1];
-            if (last.length === 0 || (!isResto(id) && !isResto(last[0]))) {
+            if (last.length === 0 || (!isRestoring(id) && !isRestoring(last[0]))) {
                 last.push(id);
             }
             else { prev.push([id]); }
