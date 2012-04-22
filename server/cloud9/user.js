@@ -1,4 +1,4 @@
-var sys = require("sys");
+var util = require("util");
 var util = require("./util");
 var EventEmitter = require("events").EventEmitter;
 
@@ -18,7 +18,7 @@ var User = function (uid, permissions, data) {
     this.$server_exclude = {};
 };
 
-sys.inherits(User, EventEmitter);
+util.inherits(User, EventEmitter);
 
 User.OWNER_PERMISSIONS = {
     client_exclude: "",

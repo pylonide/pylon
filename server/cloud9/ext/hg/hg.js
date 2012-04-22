@@ -6,7 +6,7 @@
  */
 var Plugin = require("cloud9/plugin");
 var Util   = require("cloud9/util");
-var sys    = require("sys");
+var util   = require("util");
 
 var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -15,7 +15,7 @@ var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
     this.banned = ["serve"];
 };
 
-sys.inherits(ShellHgPlugin, Plugin);
+util.inherits(ShellHgPlugin, Plugin);
 
 (function() {
     var hghelp     = "";

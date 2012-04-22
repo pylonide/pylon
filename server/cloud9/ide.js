@@ -7,7 +7,7 @@ var DavPermission = require("./dav/permission");
 var Async = require("asyncjs");
 var User = require("./user");
 var fs = require("fs");
-var sys = require("sys");
+var util = require("util");
 var Url = require("url");
 var template = require("./template");
 var Workspace = require("cloud9/workspace");
@@ -91,7 +91,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     }
 };
 
-sys.inherits(Ide, EventEmitter);
+util.inherits(Ide, EventEmitter);
 
 var exts = require("../../client/ext/all");
 
