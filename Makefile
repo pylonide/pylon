@@ -10,10 +10,13 @@ apf:
 	cd support/packager; ../node-builds-v4/$(nodeToUse) package.js projects/apf_cloud9.apr
 	cd support/packager; cp build/apf_release.js ../../client/js/apf_release.js
 
-# packages core, then ext
-ext:
+# packages core
+core:
 	mkdir -p client/build
 	node r.js -o core.build.js
+
+# packages ext
+ext: core
 	mkdir -p client/build
 	node r.js -o app.build.js
 	#gzip client/build/packed.js

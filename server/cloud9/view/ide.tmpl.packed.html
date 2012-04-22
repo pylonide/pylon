@@ -49,9 +49,9 @@
                         var aceConfig = require("ace/config");
 
                         aceConfig.set("packaged", true);
-                        aceConfig.set("workerPath", "static/build/worker");
-                        aceConfig.set("modePath", "static/build/mode");
-                        aceConfig.set("themePath", "static/build/theme");
+                        aceConfig.set("workerPath", "/static/build/worker");
+                        aceConfig.set("modePath", "/static/build/mode");
+                        aceConfig.set("themePath", "/static/build/theme");
 
                         // Load extensions
                         ide.dispatchEvent("extload", {modules: plugins});
