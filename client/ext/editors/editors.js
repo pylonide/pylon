@@ -35,15 +35,18 @@ module.exports = ext.register("ext/editors/editors", {
                 require('ext/editors/editors').switchEditor(this.value);
             }
         }));*/
+        
+        var _self = this;
 
         //Add a menu item to the list of editors
         oExtension.$itmEditor = menus.addItemByPath("View/Editors/" + oExtension.name, new apf.item({
             type     : "radio",
             value    : oExtension.path,
+            group    : this.$itmGroup,
             disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" 
                 + oExtension.path + "')}",
             onclick  : function(){
-                require('ext/editors/editors').switchEditor(this.value);
+                _self.switchEditor(this.value);
             }
         }), 40000);
 
@@ -275,7 +278,7 @@ module.exports = ext.register("ext/editors/editors", {
         var lastType = page.type;
         
         var info;
-        if ((info = page.$doc.dispatchEvent("validate", info)) !== true) {
+        if ((info = page.$doc.dispatchEvent("validate", info)) === true) {
             util.alert(
                 "Could not switch editor",
                 "Could not switch editor because this document is invalid.",
@@ -288,7 +291,6 @@ module.exports = ext.register("ext/editors/editors", {
         if (!editor.inited)
             this.initEditor(editor);
 
-        editor.$itmEditor.select();
         //editor.$rbEditor.select();
 
         page.setAttribute("type", path);
@@ -297,7 +299,7 @@ module.exports = ext.register("ext/editors/editors", {
         this.currentEditor = editor;
 
         this.beforeswitch({nextPage: page});
-        this.afterswitch({nextPage: page, previousPage: {type: lastType}});
+        this.afterswitch({nextPage: page, previousPage: {type: lastType}, keepEditor : true});
     },
 
     openEditor : function(doc, init, active) {
@@ -373,7 +375,6 @@ module.exports = ext.register("ext/editors/editors", {
             //this.beforeswitch({nextPage: fake});
 
         editor.enable();
-        editor.$itmEditor.select();
         //editor.$rbEditor.select();
 
         this.currentEditor = editor;
@@ -517,25 +518,29 @@ module.exports = ext.register("ext/editors/editors", {
         }*/
         apf.history.setHash("!" + path);
         
-        toHandler.$itmEditor.select();
-        
-        var fileExtension = (path || "").split(".").pop().toLowerCase();
-        var editor = this.fileExtensions[fileExtension] 
-          && this.fileExtensions[fileExtension][0] 
-          || this.fileExtensions["default"];
-
-        if (!editor) {
-            util.alert(
-                "No editor is registered",
-                "Could not find an editor to display content",
-                "There is something wrong with the configuration of your IDE. No editor plugin is found.");
-            return;
+        if (!e.keepEditor) {
+            var fileExtension = (path || "").split(".").pop().toLowerCase();
+            var editor = this.fileExtensions[fileExtension] 
+              && this.fileExtensions[fileExtension][0] 
+              || this.fileExtensions["default"];
+    
+            if (!editor) {
+                util.alert(
+                    "No editor is registered",
+                    "Could not find an editor to display content",
+                    "There is something wrong with the configuration of your IDE. No editor plugin is found.");
+                return;
+            }
+    
+            if (!editor.inited)
+                this.initEditor(editor);
+            
+            this.currentEditor = editor;
         }
-
-        if (!editor.inited)
-            this.initEditor(editor);
+        else {
+            var editor = page.$editor;
+        }
         
-        this.currentEditor = editor;
         if (editor.ceEditor)
             editor.ceEditor.focus();
 
@@ -566,6 +571,13 @@ module.exports = ext.register("ext/editors/editors", {
                 tabEditors.set(page);
         });
         
+        menus.addItemByPath("View/Editors/", new apf.menu({
+            "onprop.visible" : function(e){
+                if (e.value)
+                    _self.$itmGroup.setValue(_self.currentEditor.path);
+            }
+        }), 190);
+        
         menus.addItemByPath("View/Tab Button", new apf.item({
             type: "check",
             checked : "[{require('ext/settings/settings').model}::auto/tabs/@show]",
@@ -592,7 +604,9 @@ module.exports = ext.register("ext/editors/editors", {
 
         var vbox  = colMiddle;
         this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
-        //this.splitter = vbox.appendChild(new apf.splitter());
+        
+        this.$itmGroup = new apf.group();
+        
         this.nodes.push(this.addTabSection());
 
         this.panel = this.hbox;
@@ -815,13 +829,13 @@ module.exports = ext.register("ext/editors/editors", {
         return node;
     },
 
-    showFile : function(path, row, column, text, state) {
+    showFile : function(path, row, column, text, animate) {
         var node = this.createFileNodeFromPath(path);
 
-        this.jump(node, row, column, text);
+        this.jump(node, row, column, text, animate);
     },
 
-    jump : function(fileEl, row, column, text, doc, page) {
+    jump : function(fileEl, row, column, text, doc, page, animate) {
         var path    = fileEl.getAttribute("path");
         var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
 
@@ -829,9 +843,9 @@ module.exports = ext.register("ext/editors/editors", {
             var jumpTo = function(){
                 setTimeout(function() {
                     // TODO move this to the editor
-                    ceEditor.$editor.gotoLine(row, column);
+                    ceEditor.$editor.gotoLine(row, column, false);
                     if (text)
-                        ceEditor.$editor.find(text);
+                        ceEditor.$editor.find(text, null, false);
                     ceEditor.focus();
                 }, 100);
             };
@@ -871,6 +885,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     destroy : function(){
         menus.remove("View/Tab Bar");
+        menus.remove("View/Editors/");
         
         this.hbox.destroy(true, true);
         //this.splitter.destroy(true, true);

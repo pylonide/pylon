@@ -775,7 +775,7 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("closefile", function(e){
             if (e.page.parentNode.getPages().length == 1) {
                 ceEditor.clear();
-                ceEditor.setProperty('syntax', "text/plain");
+                //ceEditor.setProperty('syntax', "text/plain");
             }
         });
     },

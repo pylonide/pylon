@@ -131,30 +131,14 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (ace.getSession().getDocument().getLength() > MAX_LINES)
                 return;
 
-            switch (e.keyCode) {
-                case 8: // Backspace is handled in "keyup", else isCharacter steals it
-                    return;
-                default:
-                    if (apf.isCharacter(e.keyCode) && !e.metaKey) {
-                        setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
-                            _self.execSearch(false, false);
-                        }, 20);
-                    }
-                    break;
+            if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
+                clearTimeout(this.$timer);
+                this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
+                    _self.execSearch(false, false, e.keyCode == 8);
+                }, 20);
             }
 
             return;
-        });
-
-        txtQuickSearch.addEventListener("keyup", function(e) {
-            var ace = _self.$getAce();
-            switch (e.keyCode) {
-                case 8: // Backspace
-                    var ace = _self.$getAce();
-                    if (ace.getSession().getDocument().getLength() < MAX_LINES)
-                        _self.execSearch(false, !!e.shiftKey, true);
-                    return false;
-            }
         });
 
         winQuickSearch.addEventListener("blur", function(e){

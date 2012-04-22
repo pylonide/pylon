@@ -65,7 +65,7 @@ module.exports = ext.register("ext/save/save", {
                 _self.reverttosaved();
             }
         });
-
+        
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("close", _self.$close = function(e) {
                 var at = e.page.$at;
@@ -75,13 +75,15 @@ module.exports = ext.register("ext/save/save", {
                 if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
                   || !at.undo_ptr && node.getAttribute("changed") == 1
                   && e.page.$doc.getValue()) {
-
+    
                     ext.initExtension(_self);
     
-                    if (apf.isTrue(require("ext/settings/settings").model.queryValue("general/@autosaveenabled"))) {
+                    if (ide.dispatchEvent("beforesavewarn", {
+                        page : e.page,
+                        doc  : e.page.$doc
+                    }) === false)
                         return;
-                    }
-
+    
                     var pages   = tabEditors.getPages(),
                     currIdx = pages.indexOf(e.page);
                     tabEditors.set(pages[currIdx].id); //jump to file

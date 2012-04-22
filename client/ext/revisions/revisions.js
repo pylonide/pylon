@@ -142,6 +142,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
             });
         }
+        
+        ide.addEventListener("beforesavewarn", function(e){
+            if (apf.isTrue(settings.model.queryValue("general/@autosaveenabled"))) {
+                _self.save();
+                
+                return false;
+            }
+        });
 
         this.$initWorker();
     },
@@ -819,7 +827,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     doAutoSave: function() {
         var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-        if (!tabEditors || !autoSaveEnabled)
+        if (!self.tabEditors || !autoSaveEnabled)
             return;
 
         tabEditors.getPages().forEach(this.save, this);
@@ -839,12 +847,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!page || !this.$pageHasChanged(page))
             return;
 
-        ext.initExtension(this);
-
         var node = page.$doc.getNode();
-        if (node.getAttribute("newfile") || node.getAttribute("debug")) {
+        if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
-        }
+            
+        ext.initExtension(this); //Why???
+            
         Save.quicksave(page, function(){}, true);
     },
 

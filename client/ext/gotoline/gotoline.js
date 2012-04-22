@@ -119,12 +119,14 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                     lstLineNumber.focus();
                 }
             }
-            else if (!e.ctrlKey && !e.metaKey && (e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
+            else if ((e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
                 return false;
-
-            setTimeout(function(){
-                _self.execGotoLine(null, true);
-            });
+            
+            if (!e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
+                setTimeout(function(){
+                    _self.execGotoLine(null, true);
+                });
+            }
         });
 
         winGotoLine.addEventListener("blur", function(e){

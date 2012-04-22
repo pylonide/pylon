@@ -91,12 +91,13 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["wrapmodeViewport"]         = true;
     this.$booleanProperties["animatedscroll"]           = true;
     this.$booleanProperties["globalcommands"]           = true;
+    this.$booleanProperties["fadefoldwidgets"]          = true;
     
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
-        "behaviors", "folding", "newlinemode", "globalcommands");
+        "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets");
 
     this.$getCacheKey = function(value) {
         var key;
@@ -362,7 +363,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.$propHandlers["fadefoldwidgets"] = function(value, prop, initial) {
-        this.$editor.setFadeFoldWidgets && this.$editor.setFadeFoldWidgets(value);
+        this.$editor.setFadeFoldWidgets(value);
     };
 
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
@@ -601,16 +602,22 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$draw = function(){
         //Build Main Skin
-        this.$ext   = this.$getExternal();
-        this.$input = this.$getLayoutNode("main", "content", this.$ext);
+        this.$ext    = this.$getExternal();
+        this.$input  = this.$getLayoutNode("main", "content", this.$ext);
+        this.$corner = this.$getLayoutNode("main", "corner", this.$ext);
 
         this.addEventListener("resize", function(e) {
             this.$editor.resize();
         });
-
+        
         this.$editor = new Editor(new VirtualRenderer(this.$input), null);
         new MultiSelect(this.$editor);
 
+        this.$editor.renderer.$gutterLayer.addEventListener("changeGutterWidth", 
+            function(width){
+                _self.$corner.style.left = (width - 5) + "px"
+            });
+            
         if (apf.isTrue(this.getAttribute("globalcommands")))
             this.$editor.keyBinding.setDefaultHandler(null);
 
