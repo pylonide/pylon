@@ -5,8 +5,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
-var Util   = require("cloud9/util");
-var util   = require("util");
+var Cloud9Util   = require("cloud9/util");
+var Util   = require("util");
 
 var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -15,7 +15,7 @@ var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
     this.banned = ["serve"];
 };
 
-util.inherits(ShellHgPlugin, Plugin);
+Util.inherits(ShellHgPlugin, Plugin);
 
 (function() {
     var hghelp     = "";
@@ -53,14 +53,14 @@ util.inherits(ShellHgPlugin, Plugin);
         }
 
         function onfinish() {
-            Util.extend(commands, hghelp);
+            Cloud9Util.extend(commands, hghelp);
             callback();
         }
     };
 
     this.augmentCommand = function(cmd, struct) {
         var map = commandsMap[cmd] || commandsMap["default"];
-        return Util.extend(struct, map || {});
+        return Cloud9Util.extend(struct, map || {});
     };
 
     this.command = function(user, message, client) {
