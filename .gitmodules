@@ -16,3 +16,6 @@
 [submodule "support/treehugger"]
     path = support/treehugger
     url = https://github.com/ajaxorg/treehugger.git
+[submodule "support/architect"]
+    path = support/architect
+    url = git://github.com/c9/architect.git
