@@ -219,6 +219,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                     }
                     else { // clicking on filename
                         path = node.getAttribute("path");
+                        line = apf.queryValue(node, "node()/@line");
+                        text = apf.queryValue(node, "node()/@query");
                     }
 
                     editors.showFile(ide.davPrefix + "/" + path, line, 0, text);
@@ -295,7 +297,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     destroy : function(){
-        menus.remove("Find/~");
+        menus.remove("Find/~", 10000);
         menus.remove("Find in Files...");
         
         this.nodes.each(function(item){
