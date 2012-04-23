@@ -81,7 +81,10 @@
             <a:divider />
             <a:item match="[file|folder|project]" onclick="
                 var store = apf.clipboard.store;
-                apf.clipboard.copySelection(apf.activeElement);
+                apf.clipboard.put(trFiles.getSelection().map(function (node) {
+                    return apf.xmldb.cleanNode(node.cloneNode(false))
+                }));
+                apf.clipboard.copied = true;
                 apf.clipboard.pasteSelection(apf.activeElement, trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
                 apf.clipboard.store = store;
             ">Duplicate</a:item>
@@ -90,7 +93,10 @@
                 apf.clipboard.cutSelection(apf.activeElement);
             ">Cut</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="
-                apf.clipboard.copySelection(apf.activeElement);
+                apf.clipboard.put(trFiles.getSelection().map(function (node) {
+                    return apf.xmldb.cleanNode(node.cloneNode(false))
+                }));
+                apf.clipboard.copied = true;
             ">Copy</a:item>
             <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" onclick="
                 apf.clipboard.pasteSelection(apf.activeElement);

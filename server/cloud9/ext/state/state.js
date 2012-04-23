@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
-var sys = require("sys");
+var util = require("util");
 
 var cloud9StatePlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -13,7 +13,7 @@ var cloud9StatePlugin = module.exports = function(ide, workspace) {
     this.name = "state";
 };
 
-sys.inherits(cloud9StatePlugin, Plugin);
+util.inherits(cloud9StatePlugin, Plugin);
 
 (function() {
     this.connect = function(user, message, client) {

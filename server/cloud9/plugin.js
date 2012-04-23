@@ -5,14 +5,14 @@
 
 var events = require("events");
 var Spawn  = require("child_process").spawn;
-var sys    = require("sys");
+var util   = require("util");
 
 var Plugin  = function(ide, workspace) {
     this.ide = ide;
     this.workspace = workspace;
 };
 
-sys.inherits(Plugin, events.EventEmitter);
+util.inherits(Plugin, events.EventEmitter);
 
 (function() {
     this.getHooks = function() {
