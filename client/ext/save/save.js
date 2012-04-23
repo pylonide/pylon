@@ -481,7 +481,7 @@ module.exports = ext.register("ext/save/save", {
 
         var self = this;
         var doSave = function() {
-            winConfirm.hide();
+            window.winConfirm && winConfirm.hide();
             winSaveAs.hide();
             self._saveAsNoUI(page, path, newPath, isReplace);
         };

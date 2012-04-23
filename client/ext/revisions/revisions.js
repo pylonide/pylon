@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var editors = require("ext/editors/editors");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 
@@ -47,6 +48,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     docChangeListeners: {},
 
     toggle: function() {
+        if (!editors.currentEditor.ceEditor) {
+            return;
+        }
+
         ext.initExtension(this);
 
         if (this.panel.visible)
@@ -177,6 +182,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    $pageIsCode: function(page) {
+        return page.type === "ext/code/code";
+    },
+
     init: function() {
         var self = this;
 
@@ -249,7 +258,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $switchToPageModel: function(page) {
-        if (!page) {
+        if (!page || !this.$pageIsCode(page)) {
             return;
         }
 
@@ -264,7 +273,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         return this.model;
     },
 
-    $restoreSelection:  function(page) {
+    $restoreSelection: function(page) {
         var model = page.$mdlRevisions;
         if (model && page.$showRevisions === true) {
             var node;
@@ -312,7 +321,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var self = this;
         var doc = data.doc;
-        // TODO: Unregister events on unloading file
+        var page = doc.$page;
+        if (!this.$pageIsCode(page)) {
+            return;
+        }
 
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
@@ -341,6 +353,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterSwitch: function(e) {
+        if (!this.$pageIsCode(e.nextPage)) {
+            return;
+        }
+
         if (e.nextPage.$showRevisions === true) {
             return this.show();
         }
@@ -430,7 +446,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         switch (message.subtype) {
             case "getRevisionHistory":
                 var revObj = this.$getRevisionObject(message.path);
-                revObj.revision = message.body
+                if (message.body && message.body.revisions) {
+                    revObj.allRevisions = message.body.revisions;
+                }
 
                 this.generateCache(revObj);
 
@@ -487,31 +505,25 @@ module.exports = ext.register("ext/revisions/revisions", {
      * throughout the extension.
      **/
     generateCache: function(revObj) {
-        if (!revObj.revision)
+        if (!revObj.allRevisions)
             return;
 
-        revObj.allRevisions = {};
-        revObj.compactRevisions = {};
+        var getTsAndSort = function(obj) {
+            return Object.keys(obj)
+                .map(function(ts) { return parseInt(ts, 10) })
+                .sort(function(a, b) { return a - b });
+        };
 
-        // Create an array of the numeric timestamps and populate `allRevisions`
-        // with the timestamps as keys and the revObjs as values.
-        // `allTimestamps` will store the numeric array. This is the only place
-        // where `allTimestamps should be modified.
-        revObj.allTimestamps = revObj.revision.revisions
-            .map(function(rev) {
-                revObj.allRevisions[rev.ts] = rev;
-                return rev.ts;
-            })
-            .sort(function(a, b) { return a - b; });
+        // Create an array of the numeric timestamps. `allTimestamps` will store
+        // the numeric array. This is the only place where `allTimestamps should
+        // be modified.
+        revObj.allTimestamps = getTsAndSort(revObj.allRevisions);
 
         // Generate a compacted version of the revision list, where revisions are
-        // grouped by close periods of time.
-        // Changes `compactTimestamps` to
+        // grouped by close periods of time. Changes `compactTimestamps` to
         // reflect the ones in the compact list.
         revObj.compactRevisions = this.getCompactRevisions(revObj);
-        revObj.compactTimestamps = Object.keys(revObj.compactRevisions)
-            .map(function(ts) { return parseInt(ts, 10); })
-            .sort(function(a, b) { return a - b; });
+        revObj.compactTimestamps = getTsAndSort(revObj.compactRevisions);
     },
 
     toggleListView: function() {
@@ -529,6 +541,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revObj) {
             revObj = this.rawRevisions[this.$getDocPath()];
         }
+
+        if (!revObj) { return; }
 
         var revisions, timestamps;
         if (revObj.useCompactList && revObj.compactRevisions && revObj.compactTimestamps) {
@@ -565,7 +579,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             revsXML += "<contributors>" + contributors + "</contributors></revision>";
         }
-        this.model.load("<revisions>" + revsXML + "</revisions>");
+
+        if (this.model) {
+            this.model.load("<revisions>" + revsXML + "</revisions>");
+        }
     },
 
     /**
@@ -662,7 +679,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var all = revObj.allRevisions;
         var compactRevisions = {};
         var finalTS = [];
-        var isResto = function(id) { return all[id] && all[id].restoring; };
+        var isRestoring = function(id) { return all[id] && all[id].restoring; };
 
         // This extracts the timestamps that belong to 'restoring' revisions to
         // put them in their own slot, since we don't want them to be grouped in
@@ -670,7 +687,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         // not confuse the user.
         var repack = function(prev, id) {
             var last = prev[prev.length - 1];
-            if (last.length === 0 || (!isResto(id) && !isResto(last[0]))) {
+            if (last.length === 0 || (!isRestoring(id) && !isRestoring(last[0]))) {
                 last.push(id);
             }
             else { prev.push([id]); }
@@ -844,7 +861,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
-        if (!page || !this.$pageHasChanged(page))
+        if (!page || !this.$pageHasChanged(page) || !this.$pageIsCode(page))
             return;
 
         var node = page.$doc.getNode();
@@ -867,6 +884,10 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     saveRevision: function(doc, silentsave, restoring) {
         var page = doc.$page;
+        if (!this.$pageIsCode(page)) {
+            return;
+        }
+
         var docPath = this.$getDocPath(page);
         var contributors = this.$getEditingUsers(docPath);
 
@@ -1018,6 +1039,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     show: function() {
         var page = tabEditors.getPage();
+        if (!this.$pageIsCode(page)) {
+            return;
+        }
+
         ext.initExtension(this);
 
         settings.model.setQueryValue("general/@revisionsvisible", true);

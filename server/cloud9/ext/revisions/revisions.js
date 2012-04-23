@@ -119,7 +119,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * a backup file is not found for the file in the `path`.
      **/
     this.createEmptyStack = function() {
-        return { "revisions": [] };
+        return { "revisions": {} };
     };
 
     /**
@@ -186,13 +186,14 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         // don't have a 'previous revision, our first revision will
                         // consist of the previous contents of the file.
                         var contents = data.toString();
-                        revObj.revisions.push({
-                            ts: Date.now(),
+                        var ts = Date.now();
+                        revObj.revisions[ts] = {
+                            ts: ts,
                             silentsave: true,
                             restoring: false,
                             patch: [Diff.patch_make("", contents)],
                             length: contents.length
-                        });
+                        };
 
                         Fs.writeFile(absPath, JSON.stringify(revObj), function(err) {
                             if (err) {
@@ -222,7 +223,9 @@ require("util").inherits(RevisionsPlugin, Plugin);
             }
 
             var content = "";
-            rev.revisions.forEach(function(revision) {
+            var timestamps = Object.keys(rev.revisions).sort(function(a, b) { return a - b });
+            timestamps.forEach(function(ts) {
+                var revision = rev.revisions[ts];
                 content = Diff.patch_apply(revision.patch[0], content)[0];
             });
 
@@ -354,7 +357,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
             if (err)
                 return callback(new Error("Couldn't retrieve revisions for " + path));
 
-            revObj.revisions.push(revision);
+            revObj.revisions[revision.ts] = revision;
 
             self.saveToDisk(path, callback);
             self.broadcastRevisions.call(self, revObj, null, { path: path });
