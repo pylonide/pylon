@@ -18,6 +18,6 @@ cd ../..
 
 npm link architect
 npm link ace
-npm link jsdav
+npm link jsDAV
 
 npm install
