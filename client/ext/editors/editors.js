@@ -126,7 +126,7 @@ module.exports = ext.register("ext/editors/editors", {
                         if (!ide.onLine && !ide.offlineFileSystemSupport) //For now prevent tabs from being closed
                             return false;
 
-                        _self.close(e.page);
+                        e.page.addEventListener("afterclose", _self.$close);
                     },
                     childNodes : [
                         btn = new apf.button({
@@ -422,9 +422,24 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
     },
+    
+    resizeTabs : function(cancel){
+        clearTimeout(this.closeTimer);
+        
+        if (cancel)
+            return;
+        
+        this.closeTimer = setTimeout(function(){
+            tabEditors.$waitForMouseOut = false;
+            tabEditors.$scaleinit(null, "sync");
+        }, 500);
+    },
 
     close : function(page) {
-        page.addEventListener("afterclose", this.$close);
+        var pages = tabEditors.getPages();
+        var isLast = (pages[pages.length - 1] == page);
+        tabEditors.remove(page);
+        this.resizeTabs(isLast);
     },
 
     $close : function() {

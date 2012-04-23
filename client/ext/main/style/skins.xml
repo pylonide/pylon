@@ -9738,6 +9738,9 @@
             position:relative;
             /*overflow:hidden;*/
         }
+        .filemgr-tree.openfile .item-fix .item{
+            /*padding-left : 2px;*/
+        }
 
         .filemgr-tree .item-fix.selected {
             background : url(images/tree_selected.png) repeat 0 0;
@@ -9792,8 +9795,43 @@
             height:10px;
             position:absolute;
             overflow:hidden;
+            text-indent : -2000px;
         }
-
+        
+        .filemgr-tree.openfile .item SPAN{
+            left: 3px;
+            display: block;
+            text-indent: 0;
+            line-height: 6px;
+            width: 7px;
+            height: 7px;
+            padding: 2px 3px 5px 3px;
+            font-family: Tahoma;
+            font-size: 11px;
+            top: 2px;
+            cursor: default;
+            z-index: 1000;
+            text-shadow: 1px 1px 0px white;
+            color: #999;
+        }
+        .filemgr-tree.openfile .item-fix SPAN:hover{
+            color : #555;
+        }
+        .filemgr-tree.openfile .item-fix.selected SPAN{
+            color : rgb(17,82,139);
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+        }
+        .filemgr-tree.openfile .item-fix.selected SPAN:hover{
+            color : #041b2f;
+        }
+        .filemgr-tree.openfile .item-fix SPAN:active{
+            color : red;
+            text-shadow: 1px 1px 0 rgba(255,0,0,0.3);
+        }
+        .filemgr-tree.openfile .item-fix.selected SPAN:active{
+            color : red;
+        }
+        
         .filemgr-tree U.root .item-fix.min .item SPAN,
         .filemgr-tree U.root .item-fix.minlast .item SPAN,
         .filemgr-tree U.root .item-fix.plus .item SPAN,
@@ -9931,6 +9969,12 @@
             white-space     : nowrap;
             text-shadow : #8394a2 0px 1px 0px;
         }
+        
+        .openfile .ldng, .openfile .message{
+            text-align : center;
+            font-size : 11px;
+            padding : 5px;
+        }
     ]]></a:style>
     <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
@@ -9964,7 +10008,7 @@
           container = "following-sibling::u">
             <div class="item-fix">
                 <div class="item">
-                    <span> </span>
+                    <span>x</span>
                     <div class="label-content">
                         <label>
                             <u class="caption">-</u>
@@ -9989,7 +10033,7 @@
         <a:loading>
             <div class="ldng">
                 <span> </span>
-                <label>Loading...</label>
+                <label></label>
             </div>
         </a:loading>
         <a:empty caption=".">

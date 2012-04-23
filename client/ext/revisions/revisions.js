@@ -183,7 +183,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $pageIsCode: function(page) {
-        return page.type === "ext/code/code";
+        return page && page.type === "ext/code/code";
     },
 
     init: function() {

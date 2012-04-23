@@ -30,7 +30,8 @@
                   skinset = "c9statusbar"
                   height  = "23"
                   icon    = "pref-ico.png" 
-                  submenu = "mnuStatusBarPrefs"/>
+                  submenu = "mnuStatusBarPrefs"
+                  submenudir = "up" />
             </a:hbox>
         </a:hbox>
     </a:bar>
