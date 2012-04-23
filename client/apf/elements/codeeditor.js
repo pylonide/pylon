@@ -75,6 +75,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.caching           = true;
 
     this.$booleanProperties["activeline"]               = true;
+    this.$booleanProperties["gutterline"]               = true;
     this.$booleanProperties["caching"]                  = true;
     this.$booleanProperties["readonly"]                 = true;
     this.$booleanProperties["activeline"]               = true;
@@ -97,7 +98,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
-        "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets");
+        "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
+        "gutterline");
 
     this.$getCacheKey = function(value) {
         var key;
@@ -320,6 +322,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["activeline"] = function(value) {
         this.$editor.setHighlightActiveLine(value);
+    };
+    
+    this.$propHandlers["gutterline"] = function(value) {
+        this.$editor.setHighlightGutterLine(value);
     };
 
     this.$propHandlers["selectstyle"] = function(value) {
@@ -662,6 +668,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.selectstyle = ed.getSelectionStyle();//"line";
         if (this.activeline === undefined)
             this.activeline = ed.getHighlightActiveLine();//true;
+        if (this.gutterline === undefined)
+            this.gutterline = ed.getHighlightGutterLine();//true;
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;
         if (this.showinvisibles === undefined)

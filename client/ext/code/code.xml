@@ -10,6 +10,7 @@
       behaviors         = "[{require('core/settings').model}::editors/code/@behaviors]"
       selectstyle       = "[{require('core/settings').model}::editors/code/@selectstyle]"
       activeline        = "[{require('core/settings').model}::editors/code/@activeline]"
+      gutterline        = "[{require('core/settings').model}::editors/code/@gutterline]"
       showinvisibles    = "[{require('core/settings').model}::editors/code/@showinvisibles]"
       showprintmargin   = "[{require('core/settings').model}::editors/code/@showprintmargin]"
       printmargincolumn = "[{require('core/settings').model}::editors/code/@printmargincolumn]"

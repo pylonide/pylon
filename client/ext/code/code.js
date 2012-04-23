@@ -390,6 +390,7 @@ module.exports = ext.register("ext/code/code", {
                 ["overwrite", "false"],
                 ["selectstyle", "line"],
                 ["activeline", "true"],
+                ["gutterline", "true"],
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
                 ["printmargincolumn", "80"],

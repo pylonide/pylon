@@ -3,6 +3,7 @@
     <a:checkbox position="2000" class="underlined" label="Code Folding" value="[editors/code/@folding]" skin="checkbox_grey" />
     <a:checkbox position="3000" class="underlined" label="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" skin="checkbox_grey" />
     <a:checkbox position="4000" class="underlined" label="Highlight Active Line" value="[editors/code/@activeline]" skin="checkbox_grey" />
+    <a:checkbox position="4000" class="underlined" label="Highlight Gutter Line" value="[editors/code/@gutterline]" skin="checkbox_grey" />
     <a:checkbox position="5000" class="underlined" id="cbsh"  label="Show Invisible Characters" value="[editors/code/@showinvisibles]" skin="checkbox_grey" />
     <a:checkbox position="6000" class="underlined" label="Show Gutter" value="[editors/code/@gutter]" skin="checkbox_grey" />
     <a:checkbox position="7000" class="underlined" label="Highlight Selected Word" value="[editors/code/@highlightselectedword]" skin="checkbox_grey" />
