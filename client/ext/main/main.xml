@@ -32,11 +32,11 @@
     <a:vbox anchors="0 0 0 0" id="vbMain">
         <a:bar skin="c9-menu-bar" id="logobar">
             <a:hbox>
-                <a:hbox id="barTools" edge="8 0 0 0" padding="3" align="center">
+                <a:hbox id="barTools" edge="0 0 0 0" padding="3" align="center">
                     <a:divider skin="c9-divider-double" />
                 </a:hbox>
                 <a:filler />
-                <a:hbox id="barExtras" edge="8 0 0 0" padding="3" align="center">
+                <a:hbox id="barExtras" edge="0 0 0 0" padding="3" align="center">
                     <a:divider skin="c9-divider" visible="false" />
                 </a:hbox>
             </a:hbox>

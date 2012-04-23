@@ -26,7 +26,7 @@ module.exports = ext.register("ext/menus/menus", {
     init : function(){
         this.nodes.push(
             this.menubar = logobar.firstChild.insertBefore(new apf.hbox({
-                edge    : "8 5 0 5",
+                edge    : "0 5 0 5",
                 padding : "3",
                 align   : "center"
             }), logobar.firstChild.firstChild),
