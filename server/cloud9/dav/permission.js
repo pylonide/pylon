@@ -1,5 +1,5 @@
 var jsDAV_ServerPlugin = require("DAV/plugin").jsDAV_ServerPlugin;
-var sys = require("sys");
+var util = require("util");
 var Exec = require("child_process").exec;
 
 var Permission = module.exports = function(handler) {
@@ -9,7 +9,7 @@ var Permission = module.exports = function(handler) {
     handler.addEventListener("beforeMethod", this.checkPermission.bind(this));
 };
 
-sys.inherits(Permission, jsDAV_ServerPlugin);
+util.inherits(Permission, jsDAV_ServerPlugin);
 
 (function() {
 

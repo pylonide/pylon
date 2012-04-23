@@ -1,5 +1,5 @@
-var sys = require("sys");
-var util = require("./util");
+var util = require("util");
+var Util = require("./util");
 var EventEmitter = require("events").EventEmitter;
 
 var User = function (uid, permissions, data) {
@@ -18,7 +18,7 @@ var User = function (uid, permissions, data) {
     this.$server_exclude = {};
 };
 
-sys.inherits(User, EventEmitter);
+util.inherits(User, EventEmitter);
 
 User.OWNER_PERMISSIONS = {
     client_exclude: "",
@@ -60,7 +60,7 @@ User.VISITOR_PERMISSIONS = {
 (function() {
 
     this.setPermissions = function(permissions) {
-        this.$server_exclude = util.arrayToMap(permissions.server_exclude.split("|"));
+        this.$server_exclude = Util.arrayToMap(permissions.server_exclude.split("|"));
         if (this.permissions === permissions)
             return;
 

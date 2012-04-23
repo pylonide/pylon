@@ -104,15 +104,7 @@ this.cond.combined[i]=null;}}},checkCombined:function(arr){for(var i=0;i<arr.len
 i++){if(!this.done[arr[i]]){return false;}}return true;},run:function(strObj){this.inited=this.done[strObj]=true;
 this.checkAllCombined();var data=strObj?this.cond[strObj]:this.queue;if(!data){return;
 }for(var i=0;i<data.length;i++){data[i][0].call(data[i][1]);}}},parseStrategy:0,parseAppMarkup:function(docElement){var isEmptyDocument=false;
-if(document.documentElement.getAttribute("skipParse")=="true"){return;}if(isEmptyDocument&&document.documentElement.outerHTML.split(">",1)[0].indexOf(apf.ns.aml)==-1){return false;
-}if(this.parseStrategy==21||!this.parseStrategy&&!docElement){return apf.oHttp.get((apf.alternativeAml||document.body&&document.body.getAttribute("xmlurl")||location.href).split(/#/)[0],{callback:function(xmlString,state,extra){if(state!=apf.SUCCESS){var oError=new Error(apf.formatErrorString(0,null,"Loading XML application data","Could not load XML from remote source: "+extra.message));
-if(extra.tpModule.retryTimeout(extra,state,null,oError)===true){return true;}throw oError;
-}var str=xmlString.replace(/\<\!DOCTYPE[^>]*>/,"").replace(/^[\r\n\s]*/,"");if(!apf.supportNamespaces){str=str.replace(/xmlns\=\"[^"]*\"/g,"");
-}if(self.ERROR_HAS_OCCURRED){return;}if(apf.isIE){document.body.innerHTML="";}else{var nodes=document.body.childNodes;
-for(var i=nodes.length-1;i>=0;i--){nodes[i].parentNode.removeChild(nodes[i]);}}document.documentElement.style.display="block";
-document.body.style.display="block";apf.initialize(str);},ignoreOffline:true});
-}else{document.body.style.display="block";if(!self.ERROR_HAS_OCCURRED){apf.initialize(docElement.outerHTML||docElement.xml);
-}}},namespaces:{},setNamespace:function(namespaceURI,oNamespace){this.namespaces[namespaceURI]=oNamespace;
+if(document.documentElement.getAttribute("skipParse")=="true"){return;}},namespaces:{},setNamespace:function(namespaceURI,oNamespace){this.namespaces[namespaceURI]=oNamespace;
 oNamespace.namespaceURI=namespaceURI;},initialize:function(xmlStr){apf.console.info("Initializing...");
 clearInterval(apf.Init.interval);apf.Init.run();var bodyMarginTop=parseFloat(apf.getStyle(document.body,"marginTop"));
 apf.doesNotIncludeMarginInBodyOffset=(document.body.offsetTop!==bodyMarginTop);
