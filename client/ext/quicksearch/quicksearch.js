@@ -88,6 +88,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     init : function(){
         var _self = this;
+        
+        commands.commands["findnext"].context.push(txtQuickSearch);
+        commands.commands["findprevious"].context.push(txtQuickSearch);
 
         txtQuickSearch.addEventListener("clear", function() {
             _self.execSearch(false, false, true);

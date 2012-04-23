@@ -151,7 +151,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
         
         ide.addEventListener("beforesavewarn", function(e){
-            if (apf.isTrue(settings.model.queryValue("general/@autosaveenabled"))) {
+            if (!apf.isTrue(e.doc.getNode().getAttribute("newfile"))
+              && apf.isTrue(settings.model.queryValue("general/@autosaveenabled"))) {
                 _self.save();
                 
                 return false;
