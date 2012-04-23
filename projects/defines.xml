@@ -599,7 +599,7 @@
           match=""
           short=""
           desc=""
-          requires="__TP_HTTP|__WITH_PARSE_DOC_BY_RELOADING|__PARSER_XHTML" /><!--This could be made conditionally-->
+          requires="__TP_HTTP|__PARSER_XHTML" /><!--This could be made conditionally-->
         <p:define name="__PARSER_AML"
           match=""
           short="AML Parser"

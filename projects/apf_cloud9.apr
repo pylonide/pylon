@@ -48,39 +48,6 @@
 
     </p:process>
 
-    <p:process>
-        <!--p:vcs
-          type       = "svn"
-          cmd        = "update"
-          repository = "{platform}" /-->
-
-        <p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "apf"
-          out      = "{cwd}/build/apf_debug.js"
-          filehead = "1" />
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "modules"
-          out      = "{cwd}/../../client/js/modules.js"
-          filehead = "1" /-->
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "core"
-          out      = "{cwd}/../../client/js/core.js"
-          filehead = "1" /-->
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "ace"
-          out      = "{cwd}/../../client/js/ace.js"
-          filehead = "1" /-->
-
-    </p:process>
-    
     <p:files>
         <p:node path="{platform}" mask="*.js" group="apf">
             <p:node path="jpack_begin.js" />
@@ -270,7 +237,7 @@
         <p:define name="__WITH_NS_SUPPORT" value="1" />
 
         <!--p:define name="__WITH_PARTIAL_AML_LOADING" value="1" /-->
-        <p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="1" />
+        <!--p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="0" /-->
         <p:define name="__WITH_PLANE" value="1" />
         <p:define name="__WITH_POPUP" value="1" />
 
