@@ -103,7 +103,7 @@ module.exports = ext.register("ext/save/save", {
             onclick  : this.quicksave.bind(this)
         })));
 
-        var saveItem, saveAsItem;
+        var saveItem, saveAsItem, itmRevertToSaved;
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
 
@@ -131,7 +131,7 @@ module.exports = ext.register("ext/save/save", {
 
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
 
-            ide.mnuFile.insertBefore(new apf.item({
+            itmRevertToSaved = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Revert to Saved",
                 onclick : function(){
                     _self.reverttosaved();
@@ -142,6 +142,14 @@ module.exports = ext.register("ext/save/save", {
 
         this.hotitems.quicksave = [saveItem];
         this.hotitems.saveas = [saveAsItem];
+        
+        ide.addEventListener("afteroffline", function(){
+            itmRevertToSaved.disable();
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            itmRevertToSaved.enable();
+        });
     },
 
     init : function(amlNode){

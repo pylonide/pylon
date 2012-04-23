@@ -1823,6 +1823,10 @@
             background-position : 0 0;
             background-repeat   : no-repeat;
         }
+        
+        .header-btnDisabled {
+            opacity : 0.3;
+        }
 
         .header-btnOver {
             background-position : 0 -15px;
@@ -1970,6 +1974,10 @@
         .mnubtnOver,
         .mnubtnDown {
             background : url(images/radiobutton_over.png) no-repeat 0 0;
+        }
+        
+        .mnubtnDisabled .icon, .mnubtnDisabled SPAN{
+            opacity : 0.3
         }
 
         .mnubtn .icon {
@@ -7998,6 +8006,10 @@
     .editor_tab .btnsesssioncontainer .curbtn.btnclose strong:active {
         background-position : -28px 0;
     }
+    
+    .editor_tab.offline .btnsesssioncontainer .btnclose strong{
+        display : none;
+    }
 
     .editor_tab .editor_bg {
         top : 32px;
@@ -9684,6 +9696,10 @@
             border-top:1px solid transparent;
             border-bottom:1px solid transparent;
             /*width:100%;*/
+        }
+        
+        .filemgr-treeDisabled .item-fix{
+            opacity : 0.3;
         }
 
         .filemgr-tree .item-fix .item {
