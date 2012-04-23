@@ -48,39 +48,35 @@
 
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
-                apf.addEventListener("load", function(){
-                    var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/main/main", "ext/editors/editors"];
-                    if (VERSION == RELEASE)
-                        list.push("ace/editor");
+                var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/main/main", "ext/editors/editors"];
+                if (VERSION == RELEASE)
+                    list.push("ace/editor");
 
-                    apf.IdeSettings = <%settingsXml%>
-                    //loader.animateLoader(20);
-                    require(list, function(ide, ext, util){
-                        var plugins = <%plugins%>;
+                apf.IdeSettings = <%settingsXml%>
+                //loader.animateLoader(20);
+                require(list, function(ide, ext, util){
+                    var plugins = <%plugins%>;
 
-                        var aceConfig = require("ace/config");
+                    var aceConfig = require("ace/config");
 
-                        aceConfig.set("packaged", true);
-                        aceConfig.set("workerPath", "/static/build/worker");
-                        aceConfig.set("modePath", "/static/build/mode");
-                        aceConfig.set("themePath", "/static/build/theme");
-                        
-                        //loader.animateLoader(50);
-                        apf.addEventListener("load", function(){
-                            //Load extensions
-//                            loader.animateLoader(20);
-                            require(plugins, function(){
-                                ide.dispatchEvent("extload", {modules: plugins});
-                                ide.addEventListener("$event.extload", function(cb){
-                                    cb();
-                                });
+                    aceConfig.set("packaged", true);
+                    aceConfig.set("workerPath", "/static/build/worker");
+                    aceConfig.set("modePath", "/static/build/mode");
+                    aceConfig.set("themePath", "/static/build/theme");
+                    
+                    //loader.animateLoader(50);
+                    apf.addEventListener("load", function(){
+                        //Load extensions
+                        // loader.animateLoader(20);
+                        require(plugins, function(){
+                            ide.dispatchEvent("extload", {modules: plugins});
+                            ide.addEventListener("$event.extload", function(cb){
+                                cb();
                             });
                         });
                     });
-                    preloaderImgs();
                 });
-                //if (apf.started)
-                //    apf.onstart();
+                preloaderImgs();
             });
             function preloaderImgs() {
                 var preloadImgs = [

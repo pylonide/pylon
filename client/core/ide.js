@@ -40,7 +40,7 @@ define(function(require, exports, module) {
             && loc.indexOf("dev") == -1
             && (loc.indexOf("cloud9ide.com") > -1 || loc.indexOf("c9.io") > -1))
         {
-            window.onerror = function(m, u, l) {
+            /*window.onerror = function(m, u, l) {
                 if (window.console)
                     console.log("An error occurred, the Cloud9 system admin has been notified.");
                 apf.ajax("/api/debug", {
@@ -54,10 +54,10 @@ define(function(require, exports, module) {
                     })
                 });
                 return true;
-            };
+            };*/
 
             //Catch all APF Routed errors
-            apf.addEventListener("error", function(e){
+            /*apf.addEventListener("error", function(e){
                 apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
@@ -72,7 +72,7 @@ define(function(require, exports, module) {
                         workspaceId : ide.workspaceId
                     })
                 });
-            });
+            });*/
         }
         else {
 //                window.onerror = function(m, u, l) {

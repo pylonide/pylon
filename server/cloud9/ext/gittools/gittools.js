@@ -6,7 +6,7 @@
  */
 var Plugin = require("cloud9/plugin");
 var Fs     = require("fs");
-var sys    = require("sys");
+var util   = require("util");
 
 var GitToolsPlugin = module.exports = function(ide) {
     this.ide   = ide;
@@ -14,7 +14,7 @@ var GitToolsPlugin = module.exports = function(ide) {
     this.name  = "gittools";
 };
 
-sys.inherits(GitToolsPlugin, Plugin);
+util.inherits(GitToolsPlugin, Plugin);
 
 (function() {
 

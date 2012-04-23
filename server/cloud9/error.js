@@ -1,4 +1,4 @@
-var sys = require("sys");
+var util = require("util");
 
 exports.HttpError = function(message, code) {
     Error.call(this, message);
@@ -6,7 +6,7 @@ exports.HttpError = function(message, code) {
     this.message = message;
     this.code = code;
 };
-sys.inherits(exports.HttpError, Error);
+util.inherits(exports.HttpError, Error);
 
 (function() {
 
@@ -85,7 +85,7 @@ for (var status in statusCodes) {
         };
     })(defaultMsg, status);
 
-    sys.inherits(error, exports.HttpError);
+    util.inherits(error, exports.HttpError);
 
     var className = toCamelCase(defaultMsg);
     exports[className] = error;
