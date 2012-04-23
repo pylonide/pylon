@@ -1,3 +1,5 @@
+.PHONY:	apf ext worker mode theme package test
+
 UNAME := $(shell uname)
 
 # don't know what the uname values are for other platforms 
@@ -39,3 +41,6 @@ theme:
 	cp `find support/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` client/js/theme
 
 package: apf ext worker mode theme
+
+test:
+	$(MAKE) -C test
