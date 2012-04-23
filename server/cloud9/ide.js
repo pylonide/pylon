@@ -33,6 +33,9 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         waitSeconds: 30
     };
 
+    if (options.plugins == undefined)
+        options.plugins = [];
+    
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
@@ -45,7 +48,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         workspaceId: options.workspaceId || "ide",
         context: options.context || null,
         db: options.db || null,
-        plugins: options.plugins || Ide.DEFAULT_PLUGINS,
+        plugins: options.plugins.length > 0 ? options.plugins : (options.real ? [ "build/packed" ] : Ide.DEFAULT_PLUGINS),
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
@@ -54,6 +57,8 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         remote: options.remote,
         real: options.real
     };
+    
+
     // precalc regular expressions:
     this.indexRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
     this.reconnectRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
@@ -93,9 +98,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
 
 sys.inherits(Ide, EventEmitter);
 
-var exts = require("../../client/ext/all");
-
-Ide.DEFAULT_PLUGINS = exts;
+Ide.DEFAULT_PLUGINS = require("../../client/ext/all");
 
 exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 

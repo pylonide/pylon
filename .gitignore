@@ -9,6 +9,7 @@ client/common
 .project
 .settings
 /demo
+/client/build
 .settings.xml.old
 .DS_Store
 /nbproject
