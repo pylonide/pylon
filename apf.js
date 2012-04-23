@@ -1049,7 +1049,7 @@
                     +  "background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>"
                     +  "<strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' "
                     +  "onmousedown='(self.apf || window.opener.apf).console.toggle(this.nextSibling, "
-                    +  (this.cache.push(data) - 1) + ")'>More information"
+                    +  (this.cache.push(data) - 1) + ")'>"
                     +  "</strong><div style='display:none;background-color:#EEEEEE;"
                     +  "padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>"
                     +  "</div></blockquote>";

@@ -281,7 +281,8 @@ apf.menu = function(struct, tagName){
                     allowTogether: openMenuId,
                     autohide     : !this.pinned,
                     noleft       : this.left !== undefined,
-                    setZindex    : this.zindex ? false : true
+                    setZindex    : this.zindex ? false : true,
+                    up           : (this.ref || opener).submenudir == "up"
                 });
             }
             else {

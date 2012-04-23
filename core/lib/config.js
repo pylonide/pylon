@@ -87,7 +87,6 @@ apf.extend(apf.config, {
     defaults           : {},
     baseurl            : "",
     
-    "model"            : "@default",
     "empty-message"    : "No items",
     "loading-message"  : "Loading...",
     "offline-message"  : "You are currently offline.",
