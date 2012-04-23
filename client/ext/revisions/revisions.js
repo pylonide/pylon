@@ -46,6 +46,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     revisionsData: {},
     docChangeTimeout: null,
     docChangeListeners: {},
+    // Revision Queue (its saving hasn't been confirmed by the server)
+    revisionQueue: {},
 
     toggle: function() {
         if (!editors.currentEditor.ceEditor) {
@@ -417,18 +419,21 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.previewRevision(content.id, content.value, content.ranges);
                 break;
             case "newRevision":
+                var revision = e.data.revision;
                 // We don't save revision if it doesn't contain any patches
                 // (i.e. nothing new was saved)
-                if (e.data.revision.patch[0].length === 0) {
+                if (revision.patch[0].length === 0) {
                     return;
                 }
 
                 var data = {
                     command: "revisions",
                     subCommand: "saveRevision",
-                    path: this.$getDocPath(),
-                    revision: e.data.revision
+                    path: e.data.path,
+                    revision: revision
                 };
+
+                this.revisionQueue[revision.ts] = revision;
 
                 ide.send(data);
                 break;
@@ -444,6 +449,20 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
 
         switch (message.subtype) {
+            case "confirmSave":
+                var revObj = this.$getRevisionObject(message.path);
+                var ts = message.ts;
+                if (this.revisionQueue[ts]) {
+                    this.revisionQueue[ts].saved = true;
+                    revObj.allRevisions[ts] = this.revisionQueue[ts];
+                    delete this.revisionQueue[ts];
+
+                    this.generateCache(revObj);
+                    if (this.$getDocPath() === message.path) {
+                        this.populateModel();
+                    }
+                }
+                break;
             case "getRevisionHistory":
                 var revObj = this.$getRevisionObject(message.path);
                 if (message.body && message.body.revisions) {
@@ -469,6 +488,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (revObj.useCompactList && len > 0) {
                     for (var i = 0; i < len; i++) {
                         var groupedRevs = revObj.groupedRevisionIds[i];
+                        console.log("groupedRevs", groupedRevs);
                         if (groupedRevs.indexOf(parseInt(message.id, 10)) !== -1) {
                             groupedRevs.forEach(function(ts) {
                                 group[ts] = this.getRevision(ts);
@@ -560,21 +580,20 @@ module.exports = ext.register("ext/revisions/revisions", {
             var rev = revisions[ts];
             var friendlyDate = Util.localDate(ts).toString("MMM d, h:mm tt");
             var restoring = rev.restoring || "";
+            var savedToDisk = rev.saved !== false;
 
             revsXML += "<revision " +
                 "id='" + rev.ts + "' " +
                 "name='" + friendlyDate + "' " +
+                "saved='" + savedToDisk + "' " +
                 "silentsave='" + rev.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
-            var contributors;
+            var contributors = "";
             if (rev.contributors && rev.contributors.length) {
                 contributors = rev.contributors.map(function(c) {
                     return "<contributor email='" + c + "' />";
                 }).join("");
-            }
-            else {
-                contributors = "";
             }
 
             revsXML += "<contributors>" + contributors + "</contributors></revision>";
@@ -890,7 +909,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var docPath = this.$getDocPath(page);
         var contributors = this.$getEditingUsers(docPath);
-
         if (contributors.length === 0 && this.defaultUser.email) {
             contributors.push(this.defaultUser.email);
         }
@@ -916,7 +934,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             data.revisions = revObj.allRevisions;
             // To not have to extract and sort timestamps from allRevisions
             data.timestamps = revObj.allTimestamps;
-
             return this.worker.postMessage(data);
         }
 

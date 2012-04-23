@@ -169,13 +169,15 @@ self.onmessage = function(e) {
             }
 
             packet.type = "newRevision";
+            packet.path = e.data.path;
             packet.revision = {
                 contributors: e.data.contributors,
                 patch: [patch],
                 silentsave: e.data.silentsave,
                 restoring: e.data.restoring,
                 ts: Date.now(),
-                length: lastContent.length
+                length: lastContent.length,
+                saved: false
             };
     }
     self.postMessage(packet);
