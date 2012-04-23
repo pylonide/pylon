@@ -128,7 +128,7 @@ module.exports = ext.register("ext/save/save", {
     
                     e.preventDefault();
                 }
-            });
+            }, true);
         });
 
         this.nodes.push(
@@ -549,7 +549,7 @@ module.exports = ext.register("ext/save/save", {
         });
         this.nodes = [];
 
-        tabEditors.removeEventListener("close", this.$close);
+        tabEditors.removeEventListener("close", this.$close, true);
     }
 });
 

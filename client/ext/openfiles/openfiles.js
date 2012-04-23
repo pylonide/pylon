@@ -62,6 +62,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var node = model.queryNode('//node()[@path="' 
                 + e.node.getAttribute("path").replace(/"/g, "&quot;") + '"]');
             
+            if (!e.doc.$page)
+                return;
+            
             var pgModel = e.doc.$page.$model;
             pgModel.addEventListener("update", 
               pgModel.$lstOpenFilesListener = function(){
@@ -79,9 +82,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 model.removeXml(node);
         });
         
-        ide.addEventListener("closefile", function(e){
+        tabEditors.addEventListener("close", function(e){
             var node = model.queryNode('//node()[@path="' 
-                + e.xmlNode.getAttribute("path").replace(/"/g, "&quot;") + '"]');
+                + e.page.id.replace(/"/g, "&quot;") + '"]');
             
             e.page.$model.removeEventListener("update", 
                 e.page.$model.$lstOpenFilesListener);
