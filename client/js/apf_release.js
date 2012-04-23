@@ -1105,71 +1105,6 @@ VERSION:'3.0beta',
         
 
         
-        if (isEmptyDocument && document.documentElement.outerHTML
-          .split(">", 1)[0]
-          .indexOf(apf.ns.aml) == -1) {
-            
-            return false;
-        }
-
-        //Load current HTML document as 'second DOM'
-        if (this.parseStrategy == 21 || !this.parseStrategy && !docElement) {
-            return apf.oHttp.get((apf.alternativeAml 
-              || document.body && document.body.getAttribute("xmlurl") 
-              || location.href).split(/#/)[0], {
-                
-                callback: function(xmlString, state, extra){
-                    if (state != apf.SUCCESS) {
-                        var oError = new Error(apf.formatErrorString(0, null,
-                            "Loading XML application data", "Could not load "
-                          + "XML from remote source: " + extra.message));
-
-                        if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
-                            return true;
-
-                        throw oError;
-                    }
-
-                    
-
-                    //@todo apf3.0 rewrite this flow
-                    var str = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
-                      .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ") //should be html2xmlentity conversion
-                    if (!apf.supportNamespaces)
-                        str = str.replace(/xmlns\=\"[^"]*\"/g, "");
-                    //var xmlNode = apf.getXmlDom(str);//apf.getAmlDocFromString(xmlString);
-
-                    if (self.ERROR_HAS_OCCURRED)
-                        return;
-
-                    //Clear Body
-                    if (apf.isIE)
-                        document.body.innerHTML ="";
-                    else {
-                        var nodes = document.body.childNodes;
-                        for (var i = nodes.length - 1; i >= 0; i--)
-                            nodes[i].parentNode.removeChild(nodes[i]);
-                    }
-
-                    
-                    document.documentElement.style.display = "block";
-                    document.body.style.display = "block"; //might wanna make this variable based on layout loading...
-                    
-
-                    apf.initialize(str);
-
-                }, ignoreOffline: true});
-        }
-        else {
-            
-            //might wanna make this variable based on layout loading...
-            document.body.style.display = "block";
-            
-
-            if (!self.ERROR_HAS_OCCURRED)
-                apf.initialize(docElement.outerHTML || docElement.xml);
-        }
-        
     },
     
     namespaces : {},
@@ -12469,7 +12404,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40903)TIME(Sat, 21 Apr 2012 15:32:24 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40903)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15767,7 +15702,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22835)TIME(Sat, 21 Apr 2012 15:32:41 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22835)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31455,7 +31390,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53542)TIME(Sat, 21 Apr 2012 16:06:48 GMT)*/
+/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53542)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32981,7 +32916,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Sat, 21 Apr 2012 15:32:24 GMT)*/
+/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35673,7 +35608,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Sat, 21 Apr 2012 15:32:24 GMT)*/
+/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52636,7 +52571,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Sat, 21 Apr 2012 15:33:04 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59144,7 +59079,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Sat, 21 Apr 2012 16:18:15 GMT)*/
+/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63498,7 +63433,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Sat, 21 Apr 2012 15:32:24 GMT)*/
+/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65254,7 +65189,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Sat, 21 Apr 2012 15:33:04 GMT)*/
+/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
