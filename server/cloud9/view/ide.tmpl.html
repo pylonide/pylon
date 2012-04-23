@@ -68,7 +68,6 @@
                     //loader.animateLoader(50);
                     apf.addEventListener("load", function(){
                         //Load extensions
-//                            loader.animateLoader(20);
                         require(plugins, function(){
                             ide.dispatchEvent("extload", {modules: plugins});
 
@@ -82,8 +81,6 @@
                     });
                 });
                 preloaderImgs();
-                //if (apf.started)
-                //    apf.onstart();
             });
             function preloaderImgs() {
                 var preloadImgs = [

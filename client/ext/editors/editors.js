@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var util = require("core/util");
 var settings = require("ext/settings/settings");
+var main = require("ext/main/main"); //Needed for execution sorting
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",

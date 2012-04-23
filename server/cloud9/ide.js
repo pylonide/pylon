@@ -7,12 +7,12 @@ var DavPermission = require("./dav/permission");
 var Async = require("asyncjs");
 var User = require("./user");
 var fs = require("fs");
-var sys = require("sys");
+var util = require("util");
 var Url = require("url");
 var template = require("./template");
 var Workspace = require("cloud9/workspace");
 var EventEmitter = require("events").EventEmitter;
-var util = require("./util");
+var Util = require("./util");
 
 var Ide = module.exports = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
@@ -55,9 +55,9 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         real: options.real
     };
     // precalc regular expressions:
-    this.indexRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
-    this.reconnectRe = new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
-    this.workspaceRe = new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
+    this.indexRe = new RegExp("^" + Util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
+    this.reconnectRe = new RegExp("^" + Util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
+    this.workspaceRe = new RegExp("^" + Util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
     this.$users = {};
 
@@ -72,7 +72,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     };
 
     if (options.remote)
-        util.extend(davOptions, options.remote);
+        Util.extend(davOptions, options.remote);
     else
         davOptions.path = this.options.mountDir;
 
@@ -91,7 +91,7 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     }
 };
 
-sys.inherits(Ide, EventEmitter);
+util.inherits(Ide, EventEmitter);
 
 var exts = require("../../client/ext/all");
 
@@ -149,13 +149,13 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
             });
 
             var permissions = _self.getPermissions(req);
-            var plugins = util.arrayToMap(_self.options.plugins);
+            var plugins = Util.arrayToMap(_self.options.plugins);
 
-            var client_exclude = util.arrayToMap(permissions.client_exclude.split("|"));
+            var client_exclude = Util.arrayToMap(permissions.client_exclude.split("|"));
             for (plugin in client_exclude)
                 delete plugins[plugin];
 
-            var client_include = util.arrayToMap((permissions.client_include || "").split("|"));
+            var client_include = Util.arrayToMap((permissions.client_include || "").split("|"));
             for (plugin in client_include)
                 if (plugin)
                     plugins[plugin] = 1;
