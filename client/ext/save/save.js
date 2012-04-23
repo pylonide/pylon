@@ -145,10 +145,12 @@ module.exports = ext.register("ext/save/save", {
         
         ide.addEventListener("afteroffline", function(){
             itmRevertToSaved.disable();
+            saveAsItem.disable();
         });
         
         ide.addEventListener("afteronline", function(){
             itmRevertToSaved.enable();
+            saveAsItem.enable();
         });
     },
 
