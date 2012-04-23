@@ -11,6 +11,7 @@ var Fs = require("fs");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var Spawn = require("child_process").spawn;
+var Async = require("asyncjs");
 
 /**
  *  FILE_SUFFIX = "c9save"
@@ -209,6 +210,44 @@ require("util").inherits(RevisionsPlugin, Plugin);
     };
 
     /**
+     * RevisionsPlugin#retrieveRevisionContent(revObj[, upperTSBound], callback)
+     * - revObj (Object): Object containing all the revisions in the document.
+     * - upperTSBound (Number): Timestamp of the revision to retrieve. Optional.
+     * - currentDoc (Function): Callback to pass the results to.
+     *
+     * Asynchronoulsy calculates the content of the documentat a particular
+     * revision, or defaults to the current content of the document according to
+     * the last revision.
+     **/
+    this.retrieveRevisionContent = function(revObj, upperTSBound, callback) {
+        var timestamps = Object.keys(revObj.revisions).sort(function(a, b) {
+            return a - b;
+        });
+
+        if (timestamps.length === 0) {
+            return callback(new Error("No revisions in the revisions Object"));
+        }
+
+        if (upperTSBound) {
+            var index = timestamps.indexOf(upperTSBound);
+            if (index > -1) {
+                timestamps = timestamps.slice(0, index + 1);
+            }
+        }
+
+        var content = "";
+        Async.list(timestamps)
+            .each(function(ts, next) {
+                var revision = revObj.revisions[ts];
+                content = Diff.patch_apply(revision.patch[0], content)[0];
+                next();
+            })
+            .end(function() {
+                callback(null, content);
+            });
+    };
+
+    /**
      * RevisionsPlugin#getPreviousRevisionContent(path, callback)
      * - path (String): Relative path for the file to retrieve contents from
      * - callback (Function): Function that will be called with the previous contents
@@ -217,19 +256,17 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * Retrieves the previous contents of the given file.
      **/
     this.getPreviousRevisionContent = function(path, callback) {
-        this.getRevisions(path, function(err, rev) {
+        this.getRevisions(path, function(err, revObj) {
             if (err) {
                 return callback(err);
             }
 
-            var content = "";
-            var timestamps = Object.keys(rev.revisions).sort(function(a, b) { return a - b });
-            timestamps.forEach(function(ts) {
-                var revision = rev.revisions[ts];
-                content = Diff.patch_apply(revision.patch[0], content)[0];
-            });
+            this.retrieveRevisionContent(revObj, null, function(err, content) {
+                if (err)
+                    return callback(err);
 
             callback(null, content);
+        });
         });
     };
 
