@@ -93,7 +93,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["animatedscroll"]           = true;
     this.$booleanProperties["globalcommands"]           = true;
     this.$booleanProperties["fadefoldwidgets"]          = true;
-    
+
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
@@ -190,7 +190,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.setWrapLimitRange(_self.wraplimitmin, null);
         }
         else {
-           doc.setWrapLimitRange(_self.wraplimitmin, _self.printmargincolumn); 
+           doc.setWrapLimitRange(_self.wraplimitmin, _self.printmargincolumn);
         }
         doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
         doc.setNewLineMode(_self.newlinemode);
@@ -302,7 +302,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["theme"] = function(value) {
         this.$editor.setTheme(value);
     };
-    
+
     this.$propHandlers["newlinemode"] = function(value) {
         this.newlinemode = value || "auto";
         this.$editor.getSession().setNewLineMode(this.newlinemode);
@@ -316,14 +316,14 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         syntax = (syntax || "text").toLowerCase();
         if (syntax.indexOf("/") == -1)
             syntax = "ace/mode/" + syntax;
-        
+
         return syntax;
     };
 
     this.$propHandlers["activeline"] = function(value) {
         this.$editor.setHighlightActiveLine(value);
     };
-    
+
     this.$propHandlers["gutterline"] = function(value) {
         this.$editor.setHighlightGutterLine(value);
     };
@@ -346,7 +346,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
     };
-    
+
     this.$propHandlers["animatedscroll"] = function(value, prop, initial) {
         this.$editor.setAnimatedScroll(value);
     };
@@ -492,7 +492,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             //@todo Update document
         }
     });
-    
+
     this.addEventListener("keydown", function(e){
         if (e.keyCode == 9)
             return false;
@@ -586,10 +586,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         if (!this.$ext)
             return;
 
-        // Removed because it was causing problems in some plugins by 
-        // reloading sessions upon the editor losing focus and it is unknown 
+        // Removed because it was causing problems in some plugins by
+        // reloading sessions upon the editor losing focus and it is unknown
         // what's the reasoning behind. Tests show no difference.
-        // this.syncValue(); 
+        // this.syncValue();
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
         this.$editor.blur();
@@ -615,17 +615,17 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.addEventListener("resize", function(e) {
             this.$editor.resize();
         });
-        
+
         this.$editor = new Editor(new VirtualRenderer(this.$input), null);
         new MultiSelect(this.$editor);
 
-        this.$editor.renderer.$gutterLayer.addEventListener("changeGutterWidth", 
+        this.$editor.renderer.$gutterLayer.addEventListener("changeGutterWidth",
             function(width){
                 _self.$corner.style.left = (width - 5) + "px"
             });
-            
-        if (apf.isTrue(this.getAttribute("globalcommands")))
-            this.$editor.keyBinding.setDefaultHandler(null);
+
+        //if (apf.isTrue(this.getAttribute("globalcommands")))
+            //this.$editor.keyBinding.setDefaultHandler(null);
 
         // read defaults...
         var ed  = this.$editor;
