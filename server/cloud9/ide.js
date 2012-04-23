@@ -156,7 +156,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                 delete plugins[plugin];
 
             var client_include = Util.arrayToMap((permissions.client_include || "").split("|"));
-            for (plugin in client_include)
+            for (plugin in client_include) {
                 if (plugin)
                     plugins[plugin] = 1;
             }
