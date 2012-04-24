@@ -23,8 +23,6 @@ module.exports = ext.register("ext/watcher/watcher", {
     deps    : [tree],
 
     init : function() {
-        // console.log("Initializing watcher");
-
         this.expandedPaths = {};
 
         var removedPaths = {};
@@ -32,7 +30,6 @@ module.exports = ext.register("ext/watcher/watcher", {
         var changedPaths = {};
         var changedPathCount = 0;
         var _self = this;
-
 
         function checkPage() {
             var page = tabEditors.getPage(),
@@ -123,7 +120,6 @@ module.exports = ext.register("ext/watcher/watcher", {
         ide.addEventListener("openfile", function(e) {
             var path = e.doc.getNode().getAttribute("path");
 
-            // console.log("Opened file " + path);
             _self.sendWatchFile(path);
         });
 
@@ -135,82 +131,87 @@ module.exports = ext.register("ext/watcher/watcher", {
         });
 
         ide.addEventListener("socketMessage", function(e) {
-            if (_self.disabled) return;
-
-            var pages = tabEditors.getPages();
             var message = e.message;
-            if ((message.type && message.type != "watcher") || !message.path)
+            if (_self.disabled || (message.type && message.type !== "watcher") || !message.path) {
                 return;
+            }
 
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
             path = path.replace(/\/$/, "");
 
-            if (_self.expandedPaths[path])
+            if (_self.expandedPaths[path]) {
                 return ide.dispatchEvent("treechange", {
-                    path    : path,
-                    files   : message.files
+                    path: path,
+                    files: message.files
                 });
-            if (!pages.some(function (page) {
-                return page.$model.data.getAttribute("path") == path;
-            }))
+            }
+
+            var getPagePath = function(page) {
+                return page.$model.data.getAttribute("path") === path;
+            };
+
+            var pages = tabEditors.getPages();
+            if (!pages.some(getPagePath)) {
                 return;
+            }
+
+            // allow another plugin to change the watcher behavior
+            if (ide.dispatchEvent("beforewatcherchange", { path: path }) === false) {
+                return;
+            }
+
             switch (message.subtype) {
-            case "create":
-                break;
-            case "remove":
-                if (!removedPaths[path]) {
-                    removedPaths[path] = path;
-                    ++removedPathCount;
-                    checkPage();
-                    /*
-                    ide.dispatchEvent("treeremove", {
-                        path : path
-                    });
-                    */
-                }
-                break;
-            case "change":
-                if (!changedPaths[path] &&
-                    (new Date(message.lastmod).getTime() != new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime())) {
-                    changedPaths[path] = path;
-                    ++changedPathCount;
-                    checkPage();
-                }
-                break;
+                case "create":
+                    break;
+                case "remove":
+                    if (!removedPaths[path]) {
+                        removedPaths[path] = path;
+                        removedPathCount += 1;
+                        checkPage();
+                    }
+                    break;
+                case "change":
+                    var messageLastMod = new Date(message.lastmod).getTime();
+                    var currentPageLastMod = new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime();
+                    if (!changedPaths[path] && (messageLastMod !== currentPageLastMod)) {
+                        changedPaths[path] = path;
+                        changedPathCount += 1;
+                        checkPage();
+                    }
+                    break;
             }
         });
 
         ide.addEventListener("init.ext/editors/editors", function(e) {
             tabEditors.addEventListener("afterswitch", function(e) {
-                if (_self.disabled) return;
-
+                if (_self.disabled) {
+                    return;
+                }
                 checkPage();
             });
         });
 
-        ide.addEventListener("init.ext/tree/tree", function(){
-            trFiles.addEventListener("expand", function(e) {
-                if (_self.disabled) return;
-
-                var node = e.xmlNode;
-                if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
+        ide.addEventListener("init.ext/tree/tree", function() {
+            var watcherFn = function(node, shouldWatch) {
+                if (node && (node.getAttribute("type") === "folder" || node.tagName === "folder")) {
                     var path = node.getAttribute("path");
 
                     _self.expandedPaths[path] = path;
-                    _self.sendWatchFile(path);
+                    _self[shouldWatch ? "sendWatchFile" : "sendUnwatchFile"](path);
                 }
+            };
+            trFiles.addEventListener("expand", function(e) {
+                if (_self.disabled) {
+                    return;
+                }
+                watcherFn(e.xmlNode, true);
             });
 
             trFiles.addEventListener("collapse", function (e) {
-                if (_self.disabled) return;
-
-                var node = e.xmlNode;
-                if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
-                    var path = node.getAttribute("path");
-
-                    delete _self.expandedPaths[path];
-                    _self.sendUnwatchFile(path);
+                if (_self.disabled) {
+                    return;
                 }
+                watcherFn(e.xmlNode, true);
             });
         });
     },
@@ -236,21 +237,22 @@ module.exports = ext.register("ext/watcher/watcher", {
 
         var _self = this;
         var pages = tabEditors.getPages();
-        pages.forEach(function (page) {
-            if (page.$model)
+        pages.forEach(function(page) {
+            if (page.$model) {
                 _self.sendWatchFile(page.$model.data.getAttribute("path"));
+            }
         });
-        for (var path in this.expandedPaths)
+
+        for (var path in this.expandedPaths) {
             this.sendWatchFile(path);
+        }
     },
 
     disable : function() {
         this.disabled = true;
     },
 
-    destroy : function() {
-
-    }
+    destroy : function() {}
 });
 
 });
