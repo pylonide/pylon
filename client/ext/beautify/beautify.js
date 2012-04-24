@@ -90,7 +90,7 @@ module.exports = ext.register("ext/beautify/beautify", {
             }
 
             setTimeout(function() {
-                if (editors.currentEditor.ceEditor) {
+                if (editors.currentEditor && editors.currentEditor.ceEditor) {
                     _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                     _self.editorSession.selection.addEventListener("changeSelection",
                         _self.$selectionEvent = function(e) {
