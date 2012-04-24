@@ -32,8 +32,8 @@ module.exports = ext.register("ext/watcher/watcher", {
         var _self = this;
 
         function checkPage() {
-            var page = tabEditors.getPage(),
-                data = page.$model.data;
+            var page = tabEditors.getPage();
+            var data = page.$model.data;
             if (!data || !data.getAttribute)
                 return;
 
@@ -119,7 +119,6 @@ module.exports = ext.register("ext/watcher/watcher", {
 
         ide.addEventListener("openfile", function(e) {
             var path = e.doc.getNode().getAttribute("path");
-
             _self.sendWatchFile(path);
         });
 
@@ -156,7 +155,13 @@ module.exports = ext.register("ext/watcher/watcher", {
             }
 
             // allow another plugin to change the watcher behavior
-            if (ide.dispatchEvent("beforewatcherchange", { path: path }) === false) {
+            var eventData = {
+                path: path,
+                changedPaths: changedPaths,
+                removedPaths: removedPaths
+            };
+
+            if (ide.dispatchEvent("beforewatcherchange", eventData) === false) {
                 return;
             }
 
