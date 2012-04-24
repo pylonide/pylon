@@ -175,11 +175,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 commands.exec("closealltotheleft", null, [page]);
             }
         }), 700, mnuContext);
-        
+
         tabEditors.setAttribute("contextmenu", "mnuContextTabs");
-        
+
         //@todo store the stack for availability after reload
-        
         tabEditors.addEventListener("close", function(e) {
             if (!e || !e.htmlEvent)
                 return;
@@ -266,7 +265,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         tabEditors.addEventListener("aftersavedialogcancel", function(e) {
             if (!_self.changedPages)
-                return
+                return;
 
             var i, l, page;
             for (i = 0, l = _self.changedPages.length; i < l; i++) {
@@ -344,7 +343,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                     return;
                 _self.changedPages.shift();
                 this.removeEventListener("aftersavedialogclosed", arguments.callee);
-                if (_self.changedPages.length == 0) {
+                if (_self.changedPages.length === 0) {
                     _self.closeUnchangedPages(function() {
                         if (callback)
                             callback();
@@ -440,7 +439,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             return;
         }
         
-        var n = this.accessed.length - --this.$tabAccessCycle;
+        var n = this.accessed.length - (this.$tabAccessCycle - 1);
         if (n ===  this.accessed.length) {
             n = 0;
             this.$tabAccessCycle = this.accessed.length;
@@ -540,6 +539,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     revealfile : function(docNode) {
         panels.activate(require("ext/tree/tree"));
         
+        var parts, file, pathList, str, xpath;
         var path = docNode.getAttribute('path');
         var node = trFiles.queryNode('//file[@path="' + path + '"]');
 
@@ -549,17 +549,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             scrollToFile();
         }
         else {
-            var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
-            var file = parts.pop();
-            var pathList = ["folder[1]"];
-            var str = "";
+            parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+            file = parts.pop();
+            pathList = ["folder[1]"];
+            str = "";
 
             parts.forEach(function(part) {
                 str += '/folder[@name="' + part + '"]';
                 pathList.push("folder[1]" + str);
             });
 
-            var xpath = pathList[pathList.length - 1];
+            xpath = pathList[pathList.length - 1];
 
             trFiles.expandList(pathList, function() {
                 trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
@@ -568,17 +568,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             });
         }
 
-        var parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
-        var file = parts.pop();
-        var pathList = ["folder[1]"];
-        var str = "";
+        parts = path.substr(ide.davPrefix.length).replace(/^\//, "").split("/");
+        file = parts.pop();
+        pathList = ["folder[1]"];
+        str = "";
 
         parts.forEach(function(part) {
             str += '/folder[@name="' + part + '"]';
             pathList.push("folder[1]" + str);
         });
 
-        var xpath = pathList[pathList.length - 1];
+        xpath = pathList[pathList.length - 1];
         //var docNode = page.$doc.getNode();
         // Show spinner in active tab the file is being looked up
         apf.xmldb.setAttribute(docNode, "lookup", "1");
@@ -606,7 +606,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (itemPos[1] >= top && itemPos[1] <= bottom) {
                 return;
             }
-            
+
             var center = (tree.$container.offsetHeight / 2) | 0;
             var newTop = itemPos[1] - center;
             tree.$ext.scrollTop = newTop;
@@ -638,15 +638,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var i = 0;
         var l = this.nodes.length;
         var _self = this;
-        
+
+        var updateState = function(){
+            _self.updateState();
+        };
+
         for (; i < l; i++) {
             if ((item = this.nodes[i]).getAttribute("relPage") == page.id) {
                 item.destroy(true, true);
                 this.nodes.splice(i, 1);
 
-                setTimeout(function(){
-                    _self.updateState();
-                });
+                setTimeout(updateState);
                 return;
             }
         }

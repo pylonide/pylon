@@ -114,7 +114,7 @@ module.exports = ext.register("ext/beautify/beautify", {
                 if (editor && editor.ceEditor) {
                     var range = editor.ceEditor.$editor.getSelectionRange();
                     return range.start.row != range.end.row 
-                      || range.start.column != range.end.column
+                      || range.start.column != range.end.column;
                 }
                 return false;
             },
