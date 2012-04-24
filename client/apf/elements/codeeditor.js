@@ -382,6 +382,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["gutter"] = function(value, prop, initial) {
         this.$editor.renderer.setShowGutter(value);
+        this.$corner.style.display = value ? "block" : "none";
     };
 
     this.$propHandlers["fontsize"] = function(value, prop, initial) {

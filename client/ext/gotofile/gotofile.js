@@ -237,9 +237,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 nodes = this.arrayCacheLastSearch;
             else
                 nodes = this.arrayCache;
-            var dt = new Date();
+                
             var cache = [], xml = search(nodes, keyword, cache);
-            console.log(new Date() - dt);
             data = apf.getXml(xml);
     
             this.arrayCacheLastSearch = cache;

@@ -82,9 +82,15 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 model.removeXml(node);
         });
         
-        tabEditors.addEventListener("close", function(e){
+        var $close = function(e){
+            if (e.returnValue === false)
+                return;
+            
             var node = model.queryNode('//node()[@path="' 
                 + e.page.id.replace(/"/g, "&quot;") + '"]');
+            
+            if (!node || !node.parentNode)
+                return;
             
             e.page.$model.removeEventListener("update", 
                 e.page.$model.$lstOpenFilesListener);
@@ -93,7 +99,10 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 _self.animateRemove(node);
             else
                 model.removeXml(node);
-        });
+        }
+        
+        ide.addEventListener("closefile", $close);
+        tabEditors.addEventListener("close", $close);
 
         ide.addEventListener("updatefile", function(e){
             var node = e.xmlNode;
