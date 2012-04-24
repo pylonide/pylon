@@ -154,7 +154,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             disabled : "{!!!tabEditors.activepage}"
         }), 700, mnuContext);
         
-        mnuContextTabs.addEventListener("prop.visible", function(e) {
+        mnuContext.addEventListener("prop.visible", function(e) {
             // If there are only 0 or 1 pages, disable both and return
             if (tabEditors.getPages().length <= 1) {
                 itmCloseOther.setAttribute('disabled', true);

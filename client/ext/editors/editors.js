@@ -12,7 +12,6 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var util = require("core/util");
 var settings = require("ext/settings/settings");
-var main = require("ext/main/main"); //Needed for execution sorting
 
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
@@ -631,11 +630,9 @@ module.exports = ext.register("ext/editors/editors", {
 
         this.$settings = {};
         ide.addEventListener("loadsettings", function(e){
-            if (!e.model.queryNode("auto/files"))
-                apf.createNodeFromXpath(e.model.data, "auto/files");
+            settings.setDefaults("auto/files", []);
             
-            if (!e.model.queryNode("auto/tabs/@show"))
-                e.model.setQueryValue("auto/tabs/@show", "true");
+            settings.setDefaults("auto/tabs", [["show", "true"]]);
             
             var showTab = settings.model.queryValue("auto/tabs/@show");
             _self.toggleTabs(apf.isTrue(showTab) ? 1 : -1);
@@ -778,13 +775,7 @@ module.exports = ext.register("ext/editors/editors", {
             if (!acesession)
                 return;
                 
-            var sel         = acesession.getSelection();
-
-            sel.selectAll();
-            acesession.getUndoManager().ignoreChange = true;
-            acesession.replace(sel.getRange(), e.data);
-            sel.clearSelection();
-
+            acesession.doc.setValue(e.data);
 
             if (doc.state) {
                 var editor = doc.$page.$editor;
