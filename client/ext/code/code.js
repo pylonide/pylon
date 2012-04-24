@@ -375,10 +375,12 @@ module.exports = ext.register("ext/code/code", {
         defaultCommands.each(function(command) {
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
+            command.context = "codeeditor";
         });
         MultiSelectCommands.each(function(command) {
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
+            command.context = "codeeditor";
         });
         
         commands.addCommands(defaultCommands, null, true);
@@ -727,13 +729,7 @@ module.exports = ext.register("ext/code/code", {
 
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = commands;
-        
-        defaultCommands.each(function(command){
-            command.context = [ceEditor];
-        });
-        MultiSelectCommands.each(function(command){
-            command.context = [ceEditor];
-        });
+        ceEditor.$editor.textInput.getElement().isCodeEditor = true;
 
         // preload common language modes
         var noop = function() {}; 
