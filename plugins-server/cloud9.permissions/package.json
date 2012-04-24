@@ -6,6 +6,9 @@
 
     "plugin": {
         "provides": ["workspace-permissions"],
-        "consumes": []
+        "consumes": [
+            "connect",
+            "session"
+        ]
     }
 }
