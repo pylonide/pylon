@@ -1,4 +1,5 @@
 var fs = require("fs");
+var argv = require('optimist').argv;
 
 var clientExtensions = {};
 var clientDirs = fs.readdirSync(__dirname + "/../plugins-client");
@@ -11,10 +12,10 @@ for (var i = 0; i < clientDirs.length; i++) {
     clientExtensions[name] = __dirname + "/../plugins-client/" + dir;
 }
 
-var projectDir = __dirname + "/../";
+var projectDir = argv.w || process.cwd();
 var fsUrl = "/workspace";
 
-var port = process.env.PORT || 3131;
+var port = argv.p || process.env.PORT || 3131;
 
 module.exports = {
     name: "Cloud9",
@@ -44,6 +45,7 @@ module.exports = {
             "./../plugins-client/lib.apf",
             "./../plugins-client/lib.treehugger",
             "./../plugins-client/lib.v8debug",
+            "./../plugins-client/lib.requirejs",
 
             // server plugins
             {
@@ -151,7 +153,10 @@ module.exports = {
             "./cloud9.ide.npm",
             "./cloud9.ide.run-node",
             "./cloud9.ide.run-python",
-            "./cloud9.ide.settings",
+            {
+                packagePath: "./cloud9.ide.settings",
+                settingsPath: __dirname + "/../.architect/settings"
+            },
             "./cloud9.ide.shell",
             "./cloud9.ide.state",
             "./cloud9.ide.watcher",
