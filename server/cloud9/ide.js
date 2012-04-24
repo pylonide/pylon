@@ -270,6 +270,7 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
             return this.workspace.error("No session for user " + username, 401, message, client);
 
         user.addClientConnection(client, message);
+        this.emit("clientConnection", client);
     };
 
     this.onUserMessage = function(user, message, client) {
