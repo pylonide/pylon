@@ -2739,6 +2739,10 @@
             background-position : 0 -68px;
         }
 
+        .cbgrey.cbcontainerChecked.cbcontainerDisabled .checkbox {
+            background-position : 0 -119px;
+        }
+
         .cbgrey.cbcontainerDisabled span {
             color : #bebebe;
         }

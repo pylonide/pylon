@@ -26,9 +26,9 @@ module.exports = ext.register("ext/settings/settings", {
         data : skin,
         "media-path" : ide.staticPrefix + "/ext/settings/images/"
     },
-    
+
     defaultWidth : 250,
-    
+
     commands : {
         "showsettings": {hint: "open the settings window"}
     },
@@ -71,24 +71,24 @@ module.exports = ext.register("ext/settings/settings", {
             caption: "Preferences",
             "class": "preferences"
         });
-        
+
         //Backwards compatible
         this.model = settings.model;
     },
-    
+
     headings : {},
     getHeading : function(name){
         if (this.headings[name])
             return this.headings[name];
-        
+
         var heading = barSettings.appendChild(new apf.bar({
             skin: "basic"
         }));
-        heading.$int.innerHTML = '<div class="header"><span></span><div>' 
+        heading.$int.innerHTML = '<div class="header"><span></span><div>'
             + name + '</div></div>';
-        
+
         this.headings[name] = heading;
-        
+
         return heading;
     },
 
@@ -96,7 +96,7 @@ module.exports = ext.register("ext/settings/settings", {
         this.panel = winSettings;
 
         colLeft.appendChild(winSettings);
-        
+
         this.nodes.push(winSettings);
 
         // this has to be done out here for some reason
@@ -108,35 +108,34 @@ module.exports = ext.register("ext/settings/settings", {
         ide.addEventListener("init.ext/settings/settings", function(e) {
             var heading = e.ext.getHeading(group);
             var last    = heading.lastChild;
-            
+
             heading.insertMarkup(markup);
-            
+
             if (!heading.$map)
                 heading.$map = {};
-            
+
             var nodes = [];
-            
+
             if (!last) {
                 last = heading.firstChild
                 nodes.push(last);
             }
-            while (!last) {
+            while (!last)
                 nodes.push(last = last.nextSibling);
-            }
-            
-            if (nodes.length == 0) {
-                nodes = heading.childNodes;
-            }
 
+            if (nodes.length == 0)
+                nodes = heading.childNodes;
+
+            var nextSibling;
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType == 1 && nodes[i].position) {
                     heading.$map[nodes[i].position] = nodes[i];
                     nextSibling = findNextSibling(nodes[i], heading);
-                    if (nextSibling !== undefined && nodes[i].nextSibling != nextSibling) 
+                    if (nextSibling !== undefined && nodes[i].nextSibling != nextSibling)
                         heading.insertBefore(nodes[i], nextSibling);
                 }
             }
-            
+
             function findNextSibling(node, heading){
                 var map = heading.$map, beforeNode, diff = 1000000;
                 for (var pos in map) {
@@ -149,7 +148,7 @@ module.exports = ext.register("ext/settings/settings", {
                 return beforeNode;
             }
         });
-        
+
         /*ide.addEventListener("init.ext/settings/settings", function(e) {
             var heading = e.ext.getHeading(group);
             var newGroup = (_self.headings[group].childNodes.length == 0);
@@ -174,7 +173,7 @@ module.exports = ext.register("ext/settings/settings", {
             });
         });*/
     },
-        
+
     showsettings: function(e) {
         panels.activate(this);
         this.enable();
@@ -200,13 +199,13 @@ module.exports = ext.register("ext/settings/settings", {
             pages[i].$at.undo(-1);
         }
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
         });
     },
-    
+
     disable : function(){
         this.nodes.each(function(item){
             item.disable();
@@ -218,7 +217,7 @@ module.exports = ext.register("ext/settings/settings", {
             item.destroy(true, true);
         });
         this.nodes = [];
-        
+
         panels.unregister(this);
     }
 });

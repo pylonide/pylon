@@ -41,7 +41,7 @@ module.exports = ext.register("ext/editors/editors", {
             type     : "radio",
             caption  : oExtension.name,
             value    : oExtension.path,
-            disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" 
+            disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '"
                 + oExtension.path + "')}",
             onclick  : function(){
                 require('ext/editors/editors').switchEditor(this.value);
@@ -120,6 +120,7 @@ module.exports = ext.register("ext/editors/editors", {
                             width : 30,
                             height : 17,
                             skin : "btn_icon_only",
+                            disabled: ide.readonly,
                             background : "plustabbtn.png|horizontal|3|30",
                             onclick : function(){
                                 require("ext/newresource/newresource").newfile();
@@ -148,7 +149,7 @@ module.exports = ext.register("ext/editors/editors", {
                 })*/
             ]
         });
-        
+
         apf.document.documentElement.appendChild(tab);
 
         tabEditors.$buttons.appendChild(btn.$ext);
@@ -226,9 +227,9 @@ module.exports = ext.register("ext/editors/editors", {
         var fileExtensions = editor.fileExtensions;
         var fileExtension = (tabEditors.getPage(page).$model.queryValue("@path") || "").split(".").pop().toLowerCase();
         var isEnabled = fileExtensions.indexOf(fileExtension) > -1;
-        
+
         if (!isEnabled && this.fileExtensions["default"] == editor)
-            return true; 
+            return true;
         else
             return isEnabled;
     },
@@ -255,7 +256,7 @@ module.exports = ext.register("ext/editors/editors", {
             return;
 
         var lastType = page.type;
-        
+
         var info;
         if ((info = page.$doc.dispatchEvent("validate", info)) !== true) {
             util.alert(
@@ -274,7 +275,7 @@ module.exports = ext.register("ext/editors/editors", {
         //editor.$rbEditor.select();
 
         page.setAttribute("type", path);
-        
+
         page.$editor = editor;
         this.currentEditor = editor;
 
@@ -293,8 +294,8 @@ module.exports = ext.register("ext/editors/editors", {
         }
 
         var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
-        var editor = this.fileExtensions[fileExtension] 
-          && this.fileExtensions[fileExtension][0] 
+        var editor = this.fileExtensions[fileExtension]
+          && this.fileExtensions[fileExtension][0]
           || this.fileExtensions["default"];
 
         if (!init && this.currentEditor)
@@ -394,7 +395,7 @@ module.exports = ext.register("ext/editors/editors", {
             if (fake.changed !== val) {
                 fake.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
-                
+
                 var node = fake.$doc.getNode();
                 ide.dispatchEvent("updatefile", {
                     changed : val ? 1 : 0,
@@ -488,7 +489,7 @@ module.exports = ext.register("ext/editors/editors", {
                 fromHandler.disable();
             toHandler.enable();
         }
-        
+
         var path = page.$model.data.getAttribute("path").replace(/^\/workspace/, "");
         /*if (window.history.pushState) {
             var p = location.pathname.split("/");
@@ -498,12 +499,12 @@ module.exports = ext.register("ext/editors/editors", {
             apf.history.setHash("!" + path);
         }*/
         apf.history.setHash("!" + path);
-        
+
         toHandler.$itmEditor.select();
-        
+
         var fileExtension = (path || "").split(".").pop().toLowerCase();
-        var editor = this.fileExtensions[fileExtension] 
-          && this.fileExtensions[fileExtension][0] 
+        var editor = this.fileExtensions[fileExtension]
+          && this.fileExtensions[fileExtension][0]
           || this.fileExtensions["default"];
 
         if (!editor) {
@@ -516,7 +517,7 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (!editor.inited)
             this.initEditor(editor);
-        
+
         this.currentEditor = editor;
         if(editor.ceEditor)
             editor.ceEditor.focus();
@@ -535,7 +536,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     init : function(){
         var _self = this;
-        
+
         window.onpopstate = function(e){
             var page = "/workspace" + e.state;
             if (tabEditors.activepage != page && tabEditors.getPage(page))
@@ -547,16 +548,16 @@ module.exports = ext.register("ext/editors/editors", {
             if (tabEditors.activepage != page && tabEditors.getPage(page))
                 tabEditors.set(page);
         });
-        
+
         apf.document.documentElement.appendChild(new apf.menu({
             id : "mnuEditors"
         }));
-        
+
         mnuView.insertBefore(new apf.item({
             caption : "Editor",
             submenu : "mnuEditors"
         }), mnuView.firstChild);
-        
+
         ext.addType("Editor", function(oExtension){
             _self.register(oExtension);
           }, function(oExtension){
@@ -586,7 +587,7 @@ module.exports = ext.register("ext/editors/editors", {
         ide.addEventListener("loadsettings", function(e){
             if (!e.model.queryNode("auto/files"));
                 apf.createNodeFromXpath(e.model.data, "auto/files");
-            
+
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){
                     var parent_path = apf.getDirname(path).replace(/\/$/, "");
@@ -605,7 +606,7 @@ module.exports = ext.register("ext/editors/editors", {
                             trFiles.removeEventListener("expand", expandEventListener);
                         }
                     };
-    
+
                     trFiles.addEventListener("expand", expandEventListener);
                 });
             }
@@ -676,7 +677,7 @@ module.exports = ext.register("ext/editors/editors", {
                 for (var i = 0, l = pages.length; i < l; i++) {
                     if(!pages[i] || !pages[i].$model)
                         continue;
-                        
+
                     var file = pages[i].$model.data;
                     if (!file || file.getAttribute("debug"))
                         continue;
@@ -720,10 +721,10 @@ module.exports = ext.register("ext/editors/editors", {
         ide.addEventListener("afterreload", function(e) {
             var doc         = e.doc;
             var acesession  = doc.acesession;
-            
+
             if (!acesession)
                 return;
-                
+
             var sel         = acesession.getSelection();
 
             sel.selectAll();
@@ -735,7 +736,7 @@ module.exports = ext.register("ext/editors/editors", {
                 var editor = doc.$page.$editor;
                 editor.setState && editor.setState(doc, doc.state);
             }
-            
+
             apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
     },

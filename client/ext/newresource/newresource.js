@@ -38,22 +38,27 @@ module.exports = ext.register("ext/newresource/newresource", {
     init : function(amlNode){
         var _self = this;
 
+        var readonly = ide.readonly;
+
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "New Folder",
+                disabled: readonly,
                 onclick : function(){
                     _self.newfolder();
                 }
             }), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "New From Template...",
+                disabled: readonly,
                 onclick : function(){
                     _self.newfiletemplate();
                 }
             }), ide.mnuFile.firstChild),
             ide.mnuFile.insertBefore(new apf.item({
                 caption : "New File",
+                disabled: readonly,
                 onclick : function(){
                     _self.newfile();
                 }
@@ -66,18 +71,20 @@ module.exports = ext.register("ext/newresource/newresource", {
     },
 
     newfile: function(type, value, path) {
+        if (ide.readonly)
+            return;
         if (!type) type = "";
 
         var node = apf.getXml("<file />");
-        
+
         if (!path && self.trFiles) {
             var sel = trFiles.selected;
-    
+
             if (!sel) {
                 trFiles.select(trFiles.$model.queryNode('folder'));
                 sel = trFiles.selected;
             }
-    
+
             if (sel) {
                 path = sel.getAttribute("path");
                 if (trFiles.selected.getAttribute("type") == "file" || trFiles.selected.tagName == "file")

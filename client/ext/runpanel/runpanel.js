@@ -49,6 +49,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     nodes : [],
 
     hook : function(){
+        if (ide.readonly)
+            return;
         var _self = this;
 
         panels.register(this, {
@@ -212,6 +214,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     init : function(amlNode){
+        if (ide.readonly)
+            return;
         this.panel = winRunPanel;
 
         colLeft.appendChild(winRunPanel);
@@ -239,10 +243,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     addConfig : function() {
         var path, name, file = ide.getActivePageModel();
         var extension = "";
-        
+
         if(!file)
             return;
-            
+
         path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
         name  = file.getAttribute("name").replace(/\.(js|py)$/,
             function(full, ext){ extension = ext; return ""; });

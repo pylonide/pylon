@@ -29,7 +29,7 @@
 
       contextmenu       = "mnuCtxEditor"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
-      readonly          = "{[@loading] || cloud9config.readonly || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
+      readonly          = "{[@loading] || require('core/ide').readonly || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 
     <a:menu id="mnuCtxEditor" render="runtime" onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
@@ -40,7 +40,7 @@
         <a:item onclick="{require('ext/clipboard/clipboard').copy()}">Copy</a:item>
         <a:item onclick="{require('ext/clipboard/clipboard').paste()}">Paste</a:item>
         <a:divider />
-        <a:item 
+        <a:item
           visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"
           onclick="
             require('ext/quickwatch/quickwatch').toggleDialog(1, true);

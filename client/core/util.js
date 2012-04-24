@@ -6,6 +6,8 @@
  */
 define(function(require, exports, module) {
 
+var ide = require("core/ide");
+
 exports.alert = function(title, header, msg, onhide) {
     winAlert.show();
     winAlert.setAttribute('title', title);
@@ -41,7 +43,7 @@ exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoa
 };
 
 exports.removeInteractive = function (amlNode) {
-    if (window.cloud9config.readonly == true)
+    if (ide.readonly == true)
         return false;
 
     if (amlNode.confirmed == undefined)

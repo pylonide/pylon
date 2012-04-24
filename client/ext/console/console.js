@@ -461,7 +461,7 @@ module.exports = ext.register("ext/console/console", {
     hide: function(immediate) { this._show(false, immediate); },
 
     _show: function(shouldShow, immediate) {
-        if (this.hidden != shouldShow)
+        if (this.hidden != shouldShow || ide.readonly)
             return;
 
         this.hidden = !shouldShow;
