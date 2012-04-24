@@ -38,19 +38,23 @@ Note you'll need a git version 1.7 or higher to use the stock shell script provi
 
 If you want to start it manually try:
 
-    $ node bin/cloud9.js
+    $ node server.js
 
 This runs the IDE with itself set as the workspace. When you open the url 
 
-    http://localhost:3000
+    http://localhost:3131
     
 in your browser, it will show the directory structure of the current workspace in a tree. Since none is provided by the startup command above, it will show the IDE directory contents as a default workspace.
 
 You can specify your own workspace as follows:
 
-    $ node bin/cloud9.js -w /path/to/your/awesome/workspace
+    $ node server.js -w /path/to/your/awesome/workspace
 
 And as a result the tree will display the contents of that directory.
+
+Use the `-p` option to specify the port:
+
+    $ node server.js -p 3987
 
 You can specify the ip cloud9 is listening to using:
 
