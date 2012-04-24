@@ -71,8 +71,17 @@ util.inherits(SettingsPlugin, Plugin);
     };
 
     this.storeSettings = function(user, settings, callback) {
+        var _self = this;
         // console.log("store settings", this.settingsPath);
-        fs.writeFile(this.settingsPath, settings, "utf8", callback);
+        // Atomic write (write to tmp file and rename) so we don't get corrupted reads if at same time.
+        var tmpPath = _self.settingsPath + "~" + new Date().getTime();
+        fs.writeFile(tmpPath, settings, "utf8", function(err) {
+            if (err) {
+                callback(err);
+                return;
+            }
+            fs.rename(tmpPath, _self.settingsPath, callback);
+        });
     };
 
 }).call(SettingsPlugin.prototype);
