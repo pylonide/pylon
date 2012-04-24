@@ -80,11 +80,11 @@
         }
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo {
-            width: 158px;
-            height: 70px;
+            width: 151px;
+            height: 63px;
             position: absolute;
-            top: 44px;
-            right: -161px;
+            top: 39px;
+            right: -156px;
             z-index: 50000;
             min-width: 0px;
             min-height: 0px;
@@ -94,10 +94,14 @@
             opacity: 1;
             padding: 7px;
             color: #BDBDBD;
-            padding-top: 15px;
+            padding-top: 24px;
+            line-height: 13px;
+            padding-left: 8px;
         }
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo .offlineInfoWarn{
+            position: relative;
+            top: -6px;
             color: #91c478;
         }
 

@@ -121,13 +121,13 @@
         .c9-menu-bar.offline .c9-mbar-logo .c9-mbar-bcont .c9-offline {
             display:block;
         }
-        
+
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo {
-            width: 158px;
-            height: 70px;
+            width: 151px;
+            height: 63px;
             position: absolute;
-            top: 44px;
-            right: -161px;
+            top: 39px;
+            right: -156px;
             z-index: 50000;
             min-width: 0px;
             min-height: 0px;
@@ -137,10 +137,14 @@
             opacity: 1;
             padding: 7px;
             color: #BDBDBD;
-            padding-top: 15px;
+            padding-top: 24px;
+            line-height: 13px;
+            padding-left: 8px;
         }
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo .offlineInfoWarn{
+            position: relative;
+            top: -6px;
             color: #91c478;
         }
 
@@ -174,7 +178,7 @@
                         <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
                         <div class="c9-mbar-round"></div>
                         <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"></div>
-                        <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk mnuSbPrefs upward moveleft menu-bkFocus">Keep working without internet. When you're back online, Cloud9 synchs your files for you!<p class="offlineInfoWarn">Some features are disabled.</p></div>
+                        <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk mnuSbPrefs upward moveleft menu-bkFocus">Keep working without internet. When you're back, Cloud9 will synch your files for you!<p class="offlineInfoWarn">Some features are disabled.</p></div>
                     </div>
                 </div>
             </div>
