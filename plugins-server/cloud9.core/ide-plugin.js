@@ -99,6 +99,6 @@ module.exports = function setup(options, imports, register) {
             });
         });
 
-        log.info("IDE server initialized");
+        log.info("IDE server initialized. Listening on " + connect.getHost() + ":" + connect.getPort());
     });
 };
