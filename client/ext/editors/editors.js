@@ -765,24 +765,8 @@ module.exports = ext.register("ext/editors/editors", {
 
         ide.addEventListener("reload", function(e) {
             var doc = e.doc;
-            doc.state = doc.$page.$editor.getState && doc.$page.$editor.getState(doc);
-        });
-
-        ide.addEventListener("afterreload", function(e) {
-            var doc         = e.doc;
-            var acesession  = doc.acesession;
-            
-            if (!acesession)
-                return;
-                
-            acesession.doc.setValue(e.data);
-
-            if (doc.state) {
-                var editor = doc.$page.$editor;
-                editor.setState && editor.setState(doc, doc.state);
-            }
-            
-            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
+            doc.state = doc.$page.$editor.getState 
+                && doc.$page.$editor.getState(doc);
         });
     },
 

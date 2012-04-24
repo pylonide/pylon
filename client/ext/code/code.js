@@ -375,12 +375,10 @@ module.exports = ext.register("ext/code/code", {
         defaultCommands.each(function(command) {
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
-            command.context = "codeeditor";
         });
         MultiSelectCommands.each(function(command) {
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
-            command.context = "codeeditor";
         });
         
         commands.addCommands(defaultCommands, null, true);
@@ -729,7 +727,13 @@ module.exports = ext.register("ext/code/code", {
 
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = commands;
-        ceEditor.$editor.textInput.getElement().isCodeEditor = true;
+        
+        defaultCommands.each(function(command){
+            command.context = [ceEditor];
+        });
+        MultiSelectCommands.each(function(command){
+            command.context = [ceEditor];
+        });
 
         // preload common language modes
         var noop = function() {}; 
@@ -750,6 +754,23 @@ module.exports = ext.register("ext/code/code", {
                 _self.enable();
             else
                 _self.disable();
+        });
+
+        ide.addEventListener("afterreload", function(e) {
+            var doc         = e.doc;
+            var acesession  = doc.acesession;
+            
+            if (!acesession)
+                return;
+                
+            acesession.doc.setValue(e.data);
+
+            if (doc.state) {
+                var editor = doc.$page.$editor;
+                editor.setState && editor.setState(doc, doc.state);
+            }
+            
+            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
 
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
