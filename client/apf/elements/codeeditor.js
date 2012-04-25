@@ -45,6 +45,8 @@ var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
 var Range = require("ace/range").Range;
 var MultiSelect = require("ace/multi_select").MultiSelect;
+var ProxyDocument = require("ext/code/proxydocument");
+var Document = require("ace/document").Document;
 
 require("ace/lib/fixoldbrowsers");
 
@@ -154,12 +156,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 apf.xmldb.addNodeListener(value.nodeType == 1
                     ? value : value.parentNode, this);
             }
-
-            doc = new EditSession(typeof value == "string"
+            
+            doc = new EditSession(new ProxyDocument(new Document(typeof value == "string"
               ? value
               : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
                     ? value.nodeValue
-                    : value.firstChild && value.firstChild.nodeValue || ""));
+                    : value.firstChild && value.firstChild.nodeValue || ""))));
 
             doc.cacheId = key;
             doc.setUndoManager(new UndoManager());
@@ -515,6 +517,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     //@todo cleanup and put initial-message behaviour in one location
     this.clear = function(){
         this.$propHandlers["value"].call(this, "", null, true);
+        this.$editor.resize();
 
         this.dispatchEvent("clear");//@todo this should work via value change
     };
