@@ -380,8 +380,12 @@ module.exports = ext.register("ext/code/code", {
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
              
+            var isAvailable = command.isAvailable;
             command.isAvailable = function(editor){
-                return apf.activeElement.localName == "codeeditor";
+                if (apf.activeElement.localName != "codeeditor")
+                    return false;
+                
+                return isAvailable ? isAvailable() : true;
             }
             var exec = command.exec;
             command.exec = function(editor, args){
