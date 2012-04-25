@@ -70,7 +70,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             hint: "File Revision History...",
             bindKey: { mac: "Command-B", win: "Ctrl-B" },
             available : function(editor){
-                return !!editor.ceEditor;
+                return editor && !!editor.ceEditor;
             },
             exec: function () {
                 _self.toggle();

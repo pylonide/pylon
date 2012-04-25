@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",

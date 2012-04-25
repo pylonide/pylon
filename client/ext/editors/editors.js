@@ -43,8 +43,6 @@ module.exports = ext.register("ext/editors/editors", {
             type     : "radio",
             value    : oExtension.path,
             group    : this.$itmGroup,
-            disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" 
-                + oExtension.path + "')}",
             onclick  : function(){
                 _self.switchEditor(this.value);
             }
@@ -471,6 +469,8 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.history.setHash("");
             }*/
             //apf.history.setHash("");
+            
+            require("ext/editors/editors").currentEditor = null;
         }
 
         //Destroy the app page if it has no application instance
@@ -588,8 +588,22 @@ module.exports = ext.register("ext/editors/editors", {
         
         menus.addItemByPath("View/Editors/", new apf.menu({
             "onprop.visible" : function(e){
-                if (e.value)
-                    _self.$itmGroup.setValue(_self.currentEditor.path);
+                if (e.value) {
+                    if (!_self.currentEditor)
+                        this.disable();
+                    else {
+                        this.enable();
+                        
+                        var nodes = this.childNodes;
+                        for (var i = nodes.length - 1; i >= 0; i--) {
+                            nodes[i].setAttribute("disabled", 
+                                !_self.isEditorAvailable(
+                                    tabEditors.activepage, nodes[i].value));
+                        }
+                        
+                        _self.$itmGroup.setValue(_self.currentEditor.path);
+                    }
+                }
             }
         }), 190);
         

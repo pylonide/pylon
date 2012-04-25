@@ -154,7 +154,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
     
                 setTimeout(function() {
-                    if(editors.currentEditor.ceEditor) {
+                    if (editors.currentEditor && editors.currentEditor.ceEditor) {
                         _self.setSelectionLength();
     
                         _self.editorSession = editors.currentEditor.ceEditor.$editor.session;

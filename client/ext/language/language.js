@@ -151,7 +151,7 @@ module.exports = ext.register("ext/language/language", {
         var currentPath = page.getAttribute("id");
 
         // Currently no code editor active
-        if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
+        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
         this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);

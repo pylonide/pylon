@@ -588,11 +588,17 @@ module.exports = ext.register("ext/code/code", {
             
             menus.addItemByPath("View/Syntax/", new apf.menu({
                 "onprop.visible" : function(e){
-                    if (e.value && self.tabEditors) {
-                        var page = tabEditors.getPage();
-                        var node = page.$model.data;
-                        grpSyntax.setValue(node 
-                            && node.getAttribute("customtype") || "auto");
+                    if (e.value) {
+                        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+                            this.disable();
+                        else {
+                            this.enable();
+                        
+                            var page = tabEditors.getPage();
+                            var node = page && page.$model.data;
+                            grpSyntax.setValue(node 
+                                && node.getAttribute("customtype") || "auto");
+                        }
                     }
                 },
                 "onitemclick" : function(e) {
@@ -676,7 +682,10 @@ module.exports = ext.register("ext/code/code", {
             
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
-                checked : "[{require('core/settings').model}::editors/code/@wrapmode]"
+                checked : "[{require('core/settings').model}::editors/code/@wrapmode]",
+                available : function(editor){
+                    return apf.activeElement.localName == "codeeditor";
+                }
             }), 500000),
             
             menus.addItemByPath("View/Wrap To Viewport", new apf.item({
@@ -684,7 +693,10 @@ module.exports = ext.register("ext/code/code", {
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
                 "onprop.wrapmode" : function(e){
-                    this.setAttribute("disabled", !apf.isTrue(e.value))
+                    this.setAttribute("disabled", !apf.isTrue(e.value) || !this.available())
+                },
+                available : function(editor){
+                    return apf.activeElement.localName == "codeeditor";
                 }
             }), 600000)
         );
