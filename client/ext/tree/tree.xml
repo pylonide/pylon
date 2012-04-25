@@ -35,6 +35,7 @@
         <a:menu id="mnuFilesSettings">
             
         </a:menu>
+
         <a:vbox id="vboxTreeContainer" anchors="0 0 0 0">
             <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
               contextmenu="mnuCtxTree" multiselect="true" reselectable="true"

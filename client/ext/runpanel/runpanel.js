@@ -23,7 +23,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    //offline : false,
+    offline : false,
     markup  : markup,
     deps    : [noderunner],
 
