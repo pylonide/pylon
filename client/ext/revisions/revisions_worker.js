@@ -204,7 +204,7 @@ self.onmessage = function(e) {
                     restoring: e.data.restoring,
                     ts: Date.now(),
                     patch: [patch],
-                    finalContent: lastContent,
+                    finalContent: currentContent,
                     realContent: realContent,
                     saved: false,
                     inDialog: true
