@@ -774,6 +774,12 @@ module.exports = ext.register("ext/code/code", {
             caption : "Show Invisibles",
             checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
         });
+        
+        ide.addEventListener("reload", function(e) {
+            var doc = e.doc;
+            doc.state = doc.$page.$editor.getState 
+                && doc.$page.$editor.getState(doc);
+        });
 
         ide.addEventListener("afterreload", function(e) {
             var doc         = e.doc;

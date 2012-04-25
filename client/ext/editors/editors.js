@@ -778,12 +778,6 @@ module.exports = ext.register("ext/editors/editors", {
             if (state != (pNode && pNode.xml))
                 return true;
         });
-
-        ide.addEventListener("reload", function(e) {
-            var doc = e.doc;
-            doc.state = doc.$page.$editor.getState 
-                && doc.$page.$editor.getState(doc);
-        });
     },
 
     /** Load any file from the hash, with optional some lines selected
