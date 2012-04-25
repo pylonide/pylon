@@ -31,7 +31,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             if (apf.activeElement.localName == "codeeditor")
                 return !(window.event instanceof KeyboardEvent);
             
-            return apf.activeElement == trFiles;
+            return self.trFiles && apf.activeElement == trFiles;
         };
         
         commands.addCommand({
@@ -74,7 +74,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     cut: function() {
-        if (apf.document.activeElement == trFiles) {
+        if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.cutSelection(trFiles);
         }
         else {
@@ -84,7 +84,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     copy: function() {
-        if (apf.document.activeElement == trFiles) {
+        if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.put(trFiles.getSelection().map(function (node) {
                 return apf.xmldb.cleanNode(node.cloneNode(false))
             }));
@@ -97,7 +97,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     paste: function() {
-       if (apf.document.activeElement == trFiles) {
+       if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.pasteSelection(trFiles);
         }
         else {

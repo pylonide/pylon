@@ -9,8 +9,9 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var menus = require("ext/menus/menus");
+var settings = require("ext/settings/settings");
 var Editors = require("ext/editors/editors");
+var codetools = require("ext/codetools/codetools");
 
 var Range = require("ace/range").Range;
 
@@ -24,6 +25,8 @@ var namedColors = apf.color.colorshex;
 var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
 var skin = require("text!ext/colorpicker/skin.xml");
+
+var markupSettings = require("text!ext/colorpicker/settings.xml");
 
 /**
  * Creates an ACE range object that points to the start of the color (row, column)
@@ -69,6 +72,27 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
     skin   : skin,
 
     nodes : [],
+    
+    hook : function(){
+        var _self = this;
+        
+        settings.addSettings("Code Tools", markupSettings);
+
+        ide.addEventListener("loadsettings", function(e){
+            settings.setDefaults("editors/codewidget", [
+                ["colorpicker", "false"]
+            ]);
+            
+            _self.updateSetting();
+        });
+    },
+    
+    updateSetting : function(){
+        this.enabled = apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker"));
+        
+        if (this.enabled)
+            this.setEvents();
+    },
 
     /**
      * Initializes the plugin; inserts markup and adds event listeners to different
@@ -156,7 +180,12 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
      * 
      * @type {void}
      */
-    hook: function() {
+    setEvents : function() {
+        if (this.hooked)
+            return;
+        
+        this.hooked = true;
+        
         apf.importCssString(css || "");
 
         // detect and return a list of colors found on a line from an ACE document.
@@ -180,6 +209,10 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         ide.addEventListener("codetools.columnchange", function(e) {
             clearTimeout(columnChangeTimer);
+            
+            if (!_self.enabled)
+                return;
+            
             var doc = e.doc;
             var pos = e.pos;
             var editor = e.editor;
@@ -202,6 +235,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         });
 
         ide.addEventListener("codetools.codeclick", function(e) {
+            if (!_self.enabled)
+                return;
+            
             var doc = e.doc;
             var pos = e.pos;
             var editor = e.editor;
@@ -224,6 +260,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         });
 
         ide.addEventListener("codetools.codedblclick", function(e) {
+            if (!_self.enabled)
+                return;
+            
             _self.hideColorTooltips(e.editor);
         });
 
@@ -248,6 +287,12 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 switchOrClose();
             }
         });
+        
+        codetools.register(this);
+    },
+    
+    removeEvents : function(){
+        //@todo
     },
 
     /**
