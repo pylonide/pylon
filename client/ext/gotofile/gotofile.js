@@ -75,7 +75,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 return false;
             }
             else if (dgGoToFile.xmlRoot) {
-                else if (e.keyCode == 38 && dgGoToFile.viewport.length) {
+                if (e.keyCode == 38 && dgGoToFile.viewport.length) {
                     if (dgGoToFile.selected == dgGoToFile.$cachedTraverseList[0])
                         return;
                     
@@ -86,7 +86,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                         e.preventDefault();
                     }
                 }
-                else if (e.keyCode == 40 && dgGoToFile.viewport.length) {
+                else if (e.keyCode == 40 && dgGoToFile.viewport.length && dgGoToFile.selected) {
                     var next = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected);
                     if (next) {
                         dgGoToFile.select(next, e.ctrlKey, e.shiftKey);
@@ -269,7 +269,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         }
         
-        dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
+        var selNode = dgGoToFile.getFirstTraverseNode();
+        if (selNode)
+            dgGoToFile.select(selNode);
     },
     
     openFile: function(noanim){
