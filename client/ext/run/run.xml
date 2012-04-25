@@ -19,11 +19,6 @@
         <a:page id="pgDebugNav">
             <a:hbox padding="3" edge="4 3 5">
                 <div class="expand-panel-bg"></div>
-        <!--        <a:button tooltip="Stop"
-                  icon     = "stop.png"
-                  skin     = "c9-sidepanelsbutton"
-                  onclick  = "require('ext/run/run').stop()"
-                  disabled = "{!stProcessRunning.active &amp;&amp; 1}" />-->
                 <a:button id="btnResume" tooltip="Resume"
                   icon     = "play.png"
                   onclick  = "dbg.continueScript();"
@@ -135,19 +130,6 @@
         
     <a:bar id="tbRun">
         <a:divider skin="c9-divider" />
-        <!--a:splitbutton
-          id       = "btnRun"
-          icon     = "run.png"
-          caption  = "run"
-          onclick  = "require('ext/run/run').run(false)"
-          disabled = "{stProcessRunning.active &amp;&amp; 1}"
-          submenu  = "mnuRunCfg" />
-        <a:button
-          icon     = "stop.png"
-          caption  = "stop"
-          skin     = "c9-toolbarbutton"
-          onclick  = "require('ext/run/run').stop()"
-          disabled = "{!stProcessRunning.active &amp;&amp; 1}" /-->
     </a:bar>
 
 </a:application>

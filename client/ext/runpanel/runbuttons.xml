@@ -20,6 +20,50 @@
         <configurations />
     </a:model>
 
+    <a:window id="runNotice"
+        title     = "Run and Debug Notice"
+        icon      = ""
+        center    = "true"
+        resizable = "false"
+        buttons   = "close"
+        modal     = "true"
+        skin      = "bk-window"
+        width     = "400"
+        height    = "250"
+        kbclose   = "true"
+        draggable = "true">
+        <a:vbox flex="1" anchors="0 0 0 0">
+            <a:text in="textRunNotice" flex="1" anchors="0 0 0 0">
+                The Cloud9 Run and Debug feature is currently available for Node.js
+                applications (server-side JavaScript). The file you are about to run
+                is:<br /><br />
+
+                file<br /><br />
+
+                Warning: this file extension is not ".js" and is likely not
+                Node.js code. To run a different file, make it the active tab
+                and click "run" again.
+                
+                For more information on Node.js see nodejs.org.<br /><br />
+
+                You will see this message only once; to re-enable it, please check
+                "Show notice on run" in the "Run" panel.
+            </a:text>
+            <a:hbox padding="10" pack="end" edge="10 10 10 20" align="center">
+                <a:button
+                  default = "2"
+                  skin    = "btn-default-simple"
+                  onclick = "runNotice.hide();">Cancel</a:button>
+                <a:button
+                  default = "2"
+                  class   = "btn-green"
+                  skin    = "btn-default-css3"
+                  visible = "true"
+                  onclick = "runNotice.hide();">Continue</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+
     <a:bar id="tbRun">
         <a:divider skin="c9-divider" id="divRun" />
         <a:splitbutton
