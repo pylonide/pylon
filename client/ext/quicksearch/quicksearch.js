@@ -99,7 +99,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (apf.activeElement == txtQuickSearch)
                 return true;
             
-            isAvailable.apply(this, arguments);
+            return isAvailable.apply(this, arguments);
         }
 
         txtQuickSearch.addEventListener("clear", function() {

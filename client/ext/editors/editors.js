@@ -443,9 +443,10 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     $close : function() {
-        var page = this;
-        var at   = page.$at;
-        var mdl  = page.$model;
+        var page   = this;
+        var at     = page.$at;
+        var editor = page.$editor;
+        var mdl    = page.$model;
 
         mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
@@ -472,6 +473,7 @@ module.exports = ext.register("ext/editors/editors", {
             }*/
             //apf.history.setHash("");
             
+            editor.clear && editor.clear();
             require("ext/editors/editors").currentEditor = null;
         }
 

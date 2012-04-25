@@ -185,7 +185,7 @@ module.exports = ext.register("ext/code/code", {
     menus : [],
 
     fileExtensions : Object.keys(contentTypes),
-    supportedModes: Object.keys(SupportedModes),
+    supportedModes : Object.keys(SupportedModes),
 
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
@@ -367,6 +367,10 @@ module.exports = ext.register("ext/code/code", {
         }
  
         doc.editor = this;
+    },
+    
+    clear : function(){
+        ceEditor.clear();
     },
     
     focus : function(){
@@ -813,13 +817,6 @@ module.exports = ext.register("ext/code/code", {
             // plugins that change keybindings have already changed them (i.e.
             // the vim plugin), we fire an event so these plugins can react to it.
             ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
-        });
-        
-        ide.addEventListener("closefile", function(e){
-            if (e.page.parentNode.getPages().length == 1) {
-                ceEditor.clear();
-                //ceEditor.setProperty('syntax', "text/plain");
-            }
         });
     },
 
