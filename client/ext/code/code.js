@@ -385,7 +385,7 @@ module.exports = ext.register("ext/code/code", {
                 if (apf.activeElement.localName != "codeeditor")
                     return false;
                 
-                return isAvailable ? isAvailable() : true;
+                return isAvailable ? isAvailable(editor) : true;
             }
             var exec = command.exec;
             command.exec = function(editor, args){

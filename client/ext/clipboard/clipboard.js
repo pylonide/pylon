@@ -28,11 +28,10 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         var _self = this;
         
         var isAvailable = function(){
-            if (window.event instanceof KeyboardEvent)
-                return false;
+            if (apf.activeElement.localName == "codeeditor")
+                return !(window.event instanceof KeyboardEvent);
             
-            return apf.activeElement.localName == "codeeditor"
-              || apf.activeElement == trFiles;
+            return apf.activeElement == trFiles;
         };
         
         commands.addCommand({
