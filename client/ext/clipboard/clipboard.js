@@ -79,14 +79,14 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            ace.textInput.emitCut();
+            ace.$nativeCommands.exec("cut", ace);
         }
     },
 
     copy: function() {
         if (apf.document.activeElement == trFiles) {
             apf.clipboard.put(trFiles.getSelection().map(function (node) {
-                return apf.xmldb.cleanNode(node.cloneNode(false))
+                return apf.xmldb.cleanNode(node.cloneNode(false))
             }));
             apf.clipboard.copied = true;
         }
