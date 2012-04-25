@@ -140,10 +140,6 @@ module.exports = ext.register("ext/editors/editors", {
                     ]
                 }),
                 new apf.button({
-                    top   : 8,
-                    left  : 5,
-                    width : 17,
-                    height : 17,
                     onmouseover : function(){
                         this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
                     },
@@ -151,7 +147,6 @@ module.exports = ext.register("ext/editors/editors", {
                     visible : "{apf.isTrue(this.showme)}", */
                     skin : "btn_icon_only",
                     "class" : "tabmenubtn",
-                    background : "tabdropdown.png|horizontal|3|17"
                 }) /*,
                 new apf.hbox({
                     id      : "barButtons",
