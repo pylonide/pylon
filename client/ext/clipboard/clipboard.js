@@ -27,37 +27,45 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     hook : function(){
         var _self = this;
         
-//        commands.addCommand({
-//            name: "cut",
-//            bindKey: {mac: "Command-X", win: "Ctrl-X"},
-//            isAvailable : function(){
-//                
-//            },
-//            exec: function(){
-//                _self.cut();
-//            }
-//        });
+        var isAvailable = function(){
+            if (window.event instanceof KeyboardEvent)
+                return false;
+            
+            return apf.activeElement.localName == "codeeditor"
+              || apf.activeElement == trFiles;
+        };
+        
+        commands.addCommand({
+            name: "cut",
+            bindKey: {mac: "Command-X", win: "Ctrl-X"},
+            isAvailable : isAvailable,
+            exec: function(){ _self.cut(); }
+        });
+        
+        commands.addCommand({
+            name: "copy",
+            bindKey: {mac: "Command-C", win: "Ctrl-C"},
+            isAvailable : isAvailable,
+            exec: function(){ _self.copy(); }
+        });
+        
+        commands.addCommand({
+            name: "paste",
+            bindKey: {mac: "Command-V", win: "Ctrl-V"},
+            isAvailable : isAvailable,
+            exec: function(){ _self.paste(); }
+        });
         
         this.nodes.push(
             menus.addItemByPath("Edit/~", new apf.divider(), 300),
             menus.addItemByPath("Edit/Cut", new apf.item({
-                hotkey : apf.isMac ? "Command-X" : "Ctrl-X", // TODO: Don't hardcode this
-                onclick : function() {
-                    _self.cut();
-                }
+                command : "cut"
             }), 400),
             menus.addItemByPath("Edit/Copy", new apf.item({
-                hotkey : apf.isMac ? "Command-C" : "Ctrl-C", // TODO: Don't hardcode this
-                onclick : function() { 
-                    _self.copy();
-                }
+                command : "copy"
             }), 500),
             menus.addItemByPath("Edit/Paste", new apf.item({
-                hotkey : apf.isMac ? "Command-V" : "Ctrl-V", // TODO: Don't hardcode this
-                caption : "Paste",
-                onclick : function() { 
-                    _self.paste();
-                }
+                command : "paste"
             }), 600)
         );
     },
