@@ -138,8 +138,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 var page = e.page;
                 if (page && page.$model) {
                     var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                    console.log(mdlRunConfigurations.queryNode('config[@path="' + path + '"]'))
-                    apf.xmldb.removeNode(mdlRunConfigurations.queryNode('config[@path="' + path + '" and @curfile="1"]'));
+                    var node = mdlRunConfigurations.queryNode('config[@path="' + path + '" and @curfile="1"]');
+                    if(node)
+                        apf.xmldb.removeNode(node);
                 }
             });
             
