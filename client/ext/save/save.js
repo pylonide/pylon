@@ -36,7 +36,7 @@ module.exports = ext.register("ext/save/save", {
             name: "quicksave",
             hint: "save the currently active file to disk",
             bindKey: {mac: "Command-S", win: "Ctrl-S"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return !!editor;
             },
             exec: function () {
@@ -48,7 +48,7 @@ module.exports = ext.register("ext/save/save", {
             name: "saveas",
             hint: "save the file to disk with a different filename",
             bindKey: {mac: "Command-Shift-S", win: "Ctrl-Shift-S"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return !!editor;
             },
             exec: function () {
@@ -59,7 +59,7 @@ module.exports = ext.register("ext/save/save", {
         commands.addCommand({
             name: "saveall",
             hint: "downgrade the currently active file to the last saved version",
-            available : function(editor){
+            isAvailable : function(editor){
                 return !!editor;
             },
             exec: function () {
@@ -70,7 +70,7 @@ module.exports = ext.register("ext/save/save", {
         commands.addCommand({
             name: "reverttosaved",
             bindKey: {mac: "Ctrl-Shift-Q", win: "Ctrl-Shift-Q"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return !!editor;
             },
             exec: function () {

@@ -54,7 +54,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             name: "find",
             hint: "open the quicksearch dialog to quickly search for a phrase",
             bindKey: {mac: "Command-F", win: "Ctrl-F"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {

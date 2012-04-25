@@ -79,7 +79,7 @@ module.exports = {
             name: "complete",
             hint: "code complete",
             bindKey: {mac: "Ctrl-Space|Alt-Space", win: "Ctrl-Space|Alt-Space"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return apf.activeElement.localName == "codeeditor";
             },
             exec: function(editor) {

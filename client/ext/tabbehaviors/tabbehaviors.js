@@ -60,7 +60,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 bindKey: {mac: item[1], win: item[2]},
                 hint: item[3],
                 msg: item[4],
-                available : item[5],
+                isAvailable : item[5],
                 exec: function () {
                     _self[item[0]]();
                 }
@@ -69,7 +69,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         commands.addCommand({
             name: "closealltotheright",
-            available : function(){
+            isAvailable : function(){
                 return tabEditors.length > 1 
                   && mnuContextTabs.$page.nextSibling.localName == "page";
             },
@@ -80,7 +80,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         commands.addCommand({
             name: "closealltotheleft",
-            available : function(){
+            isAvailable : function(){
                 return tabEditors.length > 1 
                   && mnuContextTabs.$page != tabEditors.getPage(0);
             },

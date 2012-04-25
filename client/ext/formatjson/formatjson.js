@@ -54,7 +54,7 @@ module.exports = ext.register("ext/formatjson/formatjson", {
             name : "formatjson",
             bindKey : {mac: "Shift-Command-J", win: "Ctrl-Shift-J"},
             hint: "reformat the current JSON document",
-            available : function(editor){
+            isAvailable : function(editor){
                 if (editor && editor.ceEditor) {
                     var range = editor.ceEditor.$editor.getSelectionRange();
                     return range.start.row == range.end.row 

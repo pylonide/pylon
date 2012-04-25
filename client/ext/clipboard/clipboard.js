@@ -30,7 +30,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
 //        commands.addCommand({
 //            name: "cut",
 //            bindKey: {mac: "Command-X", win: "Ctrl-X"},
-//            available : function(){
+//            isAvailable : function(){
 //                
 //            },
 //            exec: function(){

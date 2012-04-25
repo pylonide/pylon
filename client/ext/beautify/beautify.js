@@ -110,7 +110,7 @@ module.exports = ext.register("ext/beautify/beautify", {
             hint: "reformat selected JavaScript code in the editor",
             msg: "Beautifying selection.",
             bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
-            available : function(editor){
+            isAvailable : function(editor){
                 if (editor && editor.ceEditor) {
                     var range = editor.ceEditor.$editor.getSelectionRange();
                     return range.start.row != range.end.row 

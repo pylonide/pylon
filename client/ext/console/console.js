@@ -411,8 +411,8 @@ module.exports = ext.register("ext/console/console", {
         commands.addCommand({
             name: "escapeconsole",
             bindKey: {mac: "Esc", win: "Esc"},
-            available : function(){
-                apf.activeElement == txtConsoleInput;
+            isAvailable : function(){
+                return apf.activeElement == txtConsoleInput;
             },
             exec: function () {
                 _self.switchconsole();

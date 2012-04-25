@@ -43,7 +43,7 @@ module.exports = {
             name: "renameVar",
             hint: "Rename variable",
             bindKey: {mac: "Option-Command-R", win: "Ctrl-Alt-R"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return editor && editor.ceEditor;
             },
             exec: function(editor) {

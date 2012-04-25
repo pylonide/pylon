@@ -683,7 +683,7 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
                 checked : "[{require('core/settings').model}::editors/code/@wrapmode]",
-                available : function(editor){
+                isAvailable : function(editor){
                     return editor && editor.ceEditor;
                 }
             }), 500000),
@@ -695,7 +695,7 @@ module.exports = ext.register("ext/code/code", {
                 "onprop.wrapmode" : function(e){
                     this.setAttribute("disabled", !apf.isTrue(e.value) || !this.available())
                 },
-                available : function(editor){
+                isAvailable : function(editor){
                     return editor && editor.ceEditor;
                 }
             }), 600000)

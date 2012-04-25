@@ -8,6 +8,7 @@
       modal   = "false"
       center  = "true"
       width   = "450"
+      realtime = "true"
       kbclose = "true">
         <a:vbox edge="10" padding="5">
             <a:hbox>

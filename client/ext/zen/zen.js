@@ -53,7 +53,7 @@ module.exports = ext.register("ext/zen/zen", {
             name: "zen",
             hint: "toggle zen mode",
             bindKey: {mac: "Option-Z", win: "Alt-Z"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return !!editor;
             },
             exec: function () {
@@ -65,7 +65,7 @@ module.exports = ext.register("ext/zen/zen", {
             name: "zenslow",
             hint: "toggle zen mode in slow-motion",
             bindKey: {mac: "Shift-Option-Z", win: "Shift-Alt-Z"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return !!editor;
             },
             exec: function () {

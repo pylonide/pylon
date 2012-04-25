@@ -39,7 +39,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
             hint: "search for a string inside the active document and replace it",
-            available : function(editor){
+            isAvailable : function(editor){
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
@@ -49,7 +49,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         
         commands.addCommand({
             name: "replacenext",
-            available : function(editor){
+            isAvailable : function(editor){
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
@@ -60,7 +60,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         
         commands.addCommand({
             name: "replaceprevious",
-            available : function(editor){
+            isAvailable : function(editor){
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {

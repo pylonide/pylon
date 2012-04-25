@@ -49,7 +49,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         commands.addCommand({
             name: "gotoline",
             bindKey: {mac: "Command-L", win: "Ctrl-G"},
-            available : function(editor){
+            isAvailable : function(editor){
                 return editor && editor.ceEditor;
             },
             exec: function() {
