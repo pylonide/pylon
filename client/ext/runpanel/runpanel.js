@@ -98,7 +98,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 e.model.setQueryValue("auto/configurations/@autohide", true);
 
             if (!runConfigs.selectSingleNode("config[@curfile]")) {
-                var setLast = false;
+                /*var setLast = false;
                 if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
                     var config = e.model.queryNode("auto/configurations/config")
                     if (config)
@@ -113,6 +113,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (setLast)
                     cfg.attr("last", "true");
                 runConfigs.insertBefore(cfg.node(), runConfigs.firstChild);
+                */
             }
 
             mdlRunConfigurations.load(runConfigs);
