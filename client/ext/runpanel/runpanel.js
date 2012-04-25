@@ -263,7 +263,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
     
     setCurrentFileConf: function(path){
-        btnRun.enable();
         self["btnAddRunConf"] && btnAddRunConf.enable();
         if(this.canRunFile(path)) {
             if(!mdlRunConfigurations.queryNode("config[@curfile]")) {
@@ -284,7 +283,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             curfileNode && apf.xmldb.removeNode(curfileNode);
             if(mdlRunConfigurations.queryNodes('config').length == 0) {
                 mnuRunCfg.insertBefore(new apf.item({disabled:true, caption: "No run history"}), this.getMenuDivider());
-                btnRun.disable();
                 self["btnAddRunConf"] && btnAddRunConf.disable();
             }
         }
