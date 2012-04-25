@@ -665,7 +665,22 @@ module.exports = ext.register("ext/revisions/revisions", {
     toggleListView: function() {
         var revObj = this.rawRevisions[this.$getDocPath()];
         revObj.useCompactList = !!!revObj.useCompactList;
+
+        // We don't want to mix up compact/detailed preview caches
+        revObj.previewCache = {};
         this.$setRevisionListClass();
+
+        // Select first child upon change of list view
+        setTimeout(function() {
+            var model = tabEditors.getPage().$mdlRevisions;
+            if (!model) {
+                return;
+            }
+            var node = model.data.firstChild;
+            if (node) {
+                lstRevisions.select(node);
+            }
+        });
     },
 
     /**
