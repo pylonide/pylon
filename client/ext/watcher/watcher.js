@@ -25,9 +25,10 @@ module.exports = ext.register("ext/watcher/watcher", {
     init : function() {
         this.expandedPaths = {};
 
-        var removedPaths = {};
+        this.removedPaths = {};
+        this.changedPaths = {};
+
         var removedPathCount = 0;
-        var changedPaths = {};
         var changedPathCount = 0;
         var _self = this;
 
@@ -38,14 +39,14 @@ module.exports = ext.register("ext/watcher/watcher", {
                 return;
 
             var path = data.getAttribute("path");
-            if (removedPaths[path]) {
+            if (_self.removedPaths[path]) {
                 util.question(
                     "File removed, keep tab open?",
                     path + " has been deleted, or is no longer available.",
                     "Do you wish to keep the file open in the editor?",
                     function() { // Yes
                         apf.xmldb.setAttribute(data, "changed", "1");
-                        delete removedPaths[path];
+                        delete _self.removedPaths[path];
                         --removedPathCount;
                         winQuestion.hide();
                     },
@@ -55,13 +56,13 @@ module.exports = ext.register("ext/watcher/watcher", {
                         pages.forEach(function(page) {
                            apf.xmldb.setAttribute(page.$model.data, "changed", "1");
                         });
-                        removedPaths = {};
+                        _self.removedPaths = {};
                         removedPathCount = 0;
                         winQuestion.hide();
                     },
                     function() { // No
                         tabEditors.remove(page);
-                        delete removedPaths[path];
+                        delete _self.removedPaths[path];
                         --removedPathCount;
                         winQuestion.hide();
                     },
@@ -69,24 +70,25 @@ module.exports = ext.register("ext/watcher/watcher", {
                         var pages = tabEditors.getPages();
 
                         pages.forEach(function(page) {
-                            if (removedPaths[page.$model.data.getAttribute("path")])
+                            if (_self.removedPaths[page.$model.data.getAttribute("path")])
                                 tabEditors.remove(page);
                         });
-                        removedPaths = {};
+                        this.removedPaths = {};
                         removedPathCount = 0;
                         winQuestion.hide();
                     }
                 );
                 btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
                 btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
-            } else if (changedPaths[path]) {
+            } 
+            else if (_self.changedPaths[path]) {
                 util.question(
                     "File changed, reload tab?",
                     path + " has been changed by another application.",
                     "Do you want to reload it?",
                     function() { // Yes
                         ide.dispatchEvent("reload", {doc : page.$doc});
-                        delete changedPaths[path];
+                        delete _self.changedPaths[path];
                         --changedPathCount;
                         winQuestion.hide();
                     },
@@ -94,20 +96,20 @@ module.exports = ext.register("ext/watcher/watcher", {
                         var pages = tabEditors.getPages();
 
                         pages.forEach(function (page) {
-                            if (changedPaths[page.$model.data.getAttribute("path")])
+                            if (_self.changedPaths[page.$model.data.getAttribute("path")])
                                 ide.dispatchEvent("reload", {doc : page.$doc});
                         });
-                        changedPaths = {};
+                        _self.changedPaths = {};
                         changedPathCount = 0;
                         winQuestion.hide();
                     },
                     function() { // No
-                        delete changedPaths[path];
+                        delete _self.changedPaths[path];
                         --changedPathCount;
                         winQuestion.hide();
                     },
                     function() { // No to all
-                        changedPaths = {};
+                        _self.changedPaths = {};
                         changedPathCount = 0;
                         winQuestion.hide();
                     }
@@ -156,9 +158,7 @@ module.exports = ext.register("ext/watcher/watcher", {
 
             // allow another plugin to change the watcher behavior
             var eventData = {
-                path: path,
-                changedPaths: changedPaths,
-                removedPaths: removedPaths
+                path: path
             };
 
             if (ide.dispatchEvent("beforewatcherchange", eventData) === false) {
@@ -169,8 +169,8 @@ module.exports = ext.register("ext/watcher/watcher", {
                 case "create":
                     break;
                 case "remove":
-                    if (!removedPaths[path]) {
-                        removedPaths[path] = path;
+                    if (!_self.removedPaths[path]) {
+                        _self.removedPaths[path] = path;
                         removedPathCount += 1;
                         checkPage();
                     }
@@ -178,8 +178,8 @@ module.exports = ext.register("ext/watcher/watcher", {
                 case "change":
                     var messageLastMod = new Date(message.lastmod).getTime();
                     var currentPageLastMod = new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime();
-                    if (!changedPaths[path] && (messageLastMod !== currentPageLastMod)) {
-                        changedPaths[path] = path;
+                    if (!_self.changedPaths[path] && (messageLastMod !== currentPageLastMod)) {
+                        _self.changedPaths[path] = path;
                         changedPathCount += 1;
                         checkPage();
                     }

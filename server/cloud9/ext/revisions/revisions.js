@@ -55,6 +55,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
             return false;
         }
 
+        var self = this;
         if (message.subCommand) {
             switch (message.subCommand) {
                 // Let the server save a revision. The client is requesting the
@@ -75,7 +76,21 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
                     }
-                    this.saveRevision(message.path, message.revision, function() {});
+
+                    this.saveRevision(message.path, message.revision, function() {
+                        if (message.forceRevisionListResponse === true) {
+                            self.getRevisions(message.path, function(err, revObj) {
+                                if (err) {
+                                    return console.error(
+                                        "There was a problem retrieving the revisions" +
+                                        " for the file " + message.path + ":\n", err);
+                                }
+                                self.broadcastRevisions.call(self, revObj, user, {
+                                    path: message.path
+                                });
+                            });
+                        }
+                    });
                     break;
 
                 // The client requests the history of revisions for a particular
@@ -86,7 +101,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
                     }
-                    var self = this;
+
                     this.getRevisions(message.path, function(err, revObj) {
                         if (err) {
                             return console.error(
@@ -97,8 +112,24 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         self.broadcastRevisions.call(self, revObj, user, {
                             id: message.id || null,
                             nextAction: message.nextAction,
-                            path: message.path,
+                            path: message.path
                         });
+                    });
+                    break;
+
+                case "getRealFileContents":
+                    var path = PathUtils.getRealFile.call(this, message.path);
+                    Fs.readFile(path, "utf8", function (err, data) {
+                          if (err) {
+                              console.log(err);
+                          }
+
+                          user.broadcast(JSON.stringify({
+                              type: "revision",
+                              subtype: "getRealFileContents",
+                              path: message.path,
+                              contents: data
+                          }));
                     });
                     break;
 
@@ -334,7 +365,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
             path: path,
             ts: ts
         }));
-    },
+    };
 
     this.enqueueDoc = function(user, message, client) {
         var path = message.path;
