@@ -97,7 +97,12 @@ module.exports = {
 
     $loadsettings : function(cb){
         var _self = require('core/settings');
-        cb({model : _self.model, ext: _self});
+        try {
+            cb({model : require('core/settings').model});
+        }
+        catch(e){
+            console.error(e.message);
+        }
     },
     
     setDefaults : function(path, attr){
