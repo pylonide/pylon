@@ -263,6 +263,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
     
     setCurrentFileConf: function(path){
+        btnRun.enable();
+        self["btnAddRunConf"] && btnAddRunConf.enable();
         if(this.canRunFile(path)) {
             if(!mdlRunConfigurations.queryNode("config[@curfile]")) {
                 var cfg = apf.getXml('<config path="' + path 
@@ -280,8 +282,10 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         else {
             var curfileNode = mdlRunConfigurations.queryNode('config[@curfile]');
             curfileNode && apf.xmldb.removeNode(curfileNode);
-            if(mdlRunConfigurations.queryNodes('config[not(@curfile)]').length == 0) {
+            if(mdlRunConfigurations.queryNodes('config').length == 0) {
                 mnuRunCfg.insertBefore(new apf.item({disabled:true, caption: "No run history"}), this.getMenuDivider());
+                btnRun.disable();
+                self["btnAddRunConf"] && btnAddRunConf.disable();
             }
         }
     },
@@ -318,7 +322,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     $populateMenu : function() {
         var divider = this.getMenuDivider();
 
-        var configs = mdlRunConfigurations.queryNodes("config");
+        var configs = mdlRunConfigurations.queryNodes("config/@path");
         if (!configs.length)
             mnuRunCfg.insertBefore(new apf.item({disabled:true, caption: "No run history"}), divider);
         else {
