@@ -230,6 +230,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
     
     destroy : function(){
+        commands.removeCommandByName("openfilepanel");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

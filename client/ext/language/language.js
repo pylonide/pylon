@@ -218,13 +218,32 @@ module.exports = ext.register("ext/language/language", {
         this.worker.emit("cursormove", {data: this.editor.getCursorPosition()});
     },
 
-    enable : function() {
+    enable: function () {
+        this.nodes.each(function (item) {
+            item.enable();
+        });
+
+        this.disabled = false;
     },
 
-    disable : function() {
+    disable: function () {
+        this.nodes.each(function (item) {
+            item.disable();
+        });
+
+        this.disabled = true;
     },
 
-    destroy : function() {
+    destroy: function () {
+        // Language features
+        marker.destroy();
+        complete.destroy();
+        refactor.destroy();
+
+        this.nodes.each(function (item) {
+            item.destroy(true, true);
+        });
+        this.nodes = [];
     }
 });
 

@@ -231,6 +231,8 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("opensettingspanel");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

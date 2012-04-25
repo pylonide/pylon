@@ -658,6 +658,8 @@ module.exports = ext.register("ext/tree/tree", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("opentreepanel");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

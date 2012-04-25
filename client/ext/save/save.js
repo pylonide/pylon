@@ -537,12 +537,15 @@ module.exports = ext.register("ext/save/save", {
     },
 
     destroy : function(){
-        menus.remove("File/~", 1100),
-        menus.remove("File/Save All")
-        menus.remove("File/Save As...")
-        menus.remove("File/Save")
-        menus.remove("File/~", 800)
-        menus.remove("File/Revert to Saved")
+        menus.remove("File/~", 1100);
+        menus.remove("File/Save All");
+        menus.remove("File/Save As...");
+        menus.remove("File/Save");
+        menus.remove("File/~", 800);
+        menus.remove("File/Revert to Saved");
+        
+        commands.removeCommandsByName(
+            ["quicksave", "saveas", "saveall", "reverttosaved"]);
         
         this.nodes.each(function(item){
             item.destroy(true, true);

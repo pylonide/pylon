@@ -672,6 +672,8 @@ module.exports = ext.register("ext/zen/zen", {
     destroy : function(){
         menus.remove("View/Zen");
         
+        commands.removeCommandsByName(["zen", "zenslow"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

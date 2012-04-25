@@ -117,6 +117,7 @@ module.exports = ext.register("ext/stripws/stripws", {
 
     destroy: function () {
         menus.remove("Tools/Strip Whitespace");
+        commands.removeCommandByName("stripws");
 
         this.nodes.each(function (item) {
             item.destroy(true, true);

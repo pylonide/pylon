@@ -303,6 +303,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("gotoline");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

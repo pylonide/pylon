@@ -45,7 +45,7 @@ var execAction = function(cmd, data) {
         if (commandEvResult !== false && consoleEvResult !== false) {
             if (!ide.onLine)
                 module.exports.write("Cannot execute command. You are currently offline.");
-            else
+            else 
                 ide.send(data);
         }
         else {
@@ -411,7 +411,9 @@ module.exports = ext.register("ext/console/console", {
         commands.addCommand({
             name: "escapeconsole",
             bindKey: {mac: "Esc", win: "Esc"},
-            context : [txtConsoleInput],
+            available : function(){
+                apf.activeElement == txtConsoleInput;
+            },
             exec: function () {
                 _self.switchconsole();
             }
@@ -643,7 +645,7 @@ module.exports = ext.register("ext/console/console", {
 
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (!immediate && animOn) {
-            apf.tween.single(winDbgConsole.$ext, {
+            apf.tween.single(winDbgConsole.$ext, { 
                 control : this.$control = {},
                 type  : "height",
                 anim  : apf.tween[cfg.animTween],
@@ -668,6 +670,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     destroy: function(){
+        commands.removeCommandsByName(
+            ["help", "clear", "switchconsole", "toggleconsole", 
+             "escapeconsole", "toggleinputbar"]);
+        
         this.nodes.each(function(item) { item.destroy(true, true); });
         this.nodes = [];
     }

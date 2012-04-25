@@ -388,6 +388,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("gotofile");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

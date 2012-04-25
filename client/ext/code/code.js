@@ -305,9 +305,10 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", initValue = function(e, force) {
                 //abstraction leakage???
                 if (force || this.$page.id == this.$page.parentNode.activepage) {
-                    ceEditor.setProperty("value", doc.acesession);
+                    ceEditor.setProperty("value", ""); //Prevent highlighter to highlight wrong code
                     ceEditor.setProperty("syntax", 
                         _self.getSyntax(doc.getNode()));
+                    ceEditor.setProperty("value", doc.acesession);
                 }
                 
                 doc.removeEventListener("prop.value", arguments.callee);
@@ -351,9 +352,10 @@ module.exports = ext.register("ext/code/code", {
             });
         }
         else {
-            ceEditor.setProperty("value", doc.acesession);
+            ceEditor.setProperty("value", ""); //Prevent highlighter to highlight wrong code
             ceEditor.setProperty('syntax', 
                 _self.getSyntax(doc.getNode()));
+            ceEditor.setProperty("value", doc.acesession);
         }
 
         if (doc.editor && doc.editor != this) {
@@ -374,19 +376,33 @@ module.exports = ext.register("ext/code/code", {
     hook: function() {
         var _self = this;
         
-        defaultCommands.each(function(command) {
+        var fnWrap = function(command){
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
-            command.context = [];
-        });
-        MultiSelectCommands.each(function(command) {
-            command.readOnly = command.readOnly || false;
-            command.focusContext = true;
-            command.context = [];
-        });
+             
+            command.available = function(editor){
+                return apf.activeElement.localName == "codeeditor";
+            }
+            var exec = command.exec;
+            command.exec = function(editor, args){
+                if (editor && editor.ceEditor)
+                    editor = editor.ceEditor.$editor;
+                
+                exec.call(this, editor, args);
+            }
+        }
         
-        commands.addCommands(defaultCommands, null, true);
-        commands.addCommands(MultiSelectCommands, null, true);
+        if (!defaultCommands.wrapped) {
+            defaultCommands.each(fnWrap, defaultCommands);
+            defaultCommands.wrapped = true;
+        }
+        if (!MultiSelectCommands.wrapped) {
+            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
+            MultiSelectCommands.wrapped = true;
+        }
+        
+        commands.addCommands(defaultCommands, true);
+        commands.addCommands(MultiSelectCommands, true);
 
         //Settings Support
         ide.addEventListener("loadsettings", function(e) {
@@ -732,13 +748,6 @@ module.exports = ext.register("ext/code/code", {
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.commands = commands;
         
-        defaultCommands.each(function(command){
-            command.context.push(ceEditor);
-        });
-        MultiSelectCommands.each(function(command){
-            command.context.push(ceEditor);
-        });
-
         // preload common language modes
         var noop = function() {}; 
         ceEditor.getMode("javascript", noop);
@@ -883,6 +892,9 @@ module.exports = ext.register("ext/code/code", {
         this.menus.each(function(item){
             item.destroy(true, true);
         });
+        
+        commands.removeCommands(defaultCommands);
+        commands.removeCommands(MultiSelectCommands);
         
         this.nodes.each(function(item){
             item.destroy(true, true);

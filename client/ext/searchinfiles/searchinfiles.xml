@@ -70,7 +70,6 @@
           style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
           autoselect      = "false"
           reselectable    = "true"
-          singleopen      = "true"
           class           = "console_text">
             <a:model />
             <a:caption match="[d:querydetail]">[@count] {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in [@filecount] {[@filecount] == 1 ? "file" : "files"}{[@replacement].length &gt; 0 ? ", replaced as '" + apf.htmlentities([@replacement]) + "'" : ""} [@options]</a:caption>

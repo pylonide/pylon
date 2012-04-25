@@ -497,6 +497,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("find");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

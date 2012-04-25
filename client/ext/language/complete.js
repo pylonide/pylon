@@ -270,6 +270,10 @@ module.exports = {
             if(typeof barCompleterCont !== 'undefined')
                 barCompleterCont.$ext.style.display = "none";
         }
+    },
+    
+    destroy : function(){
+        commands.removeCommandByName("complete");
     }
 };
 

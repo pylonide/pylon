@@ -166,6 +166,9 @@ module.exports = {
         }
         if (foundOne)
             session._dispatchEvent("changeBackMarker");
+    },
+    
+    destroy : function(){
     }
 };
 

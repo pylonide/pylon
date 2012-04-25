@@ -83,6 +83,10 @@ module.exports = {
     
     renameVariable: function() {
         this.worker.emit("fetchVariablePositions", {data: ceEditor.$editor.getCursorPosition()});
+    },
+    
+    destroy : function(){
+        commands.removeCommandByName("renameVar");
     }
 };
 

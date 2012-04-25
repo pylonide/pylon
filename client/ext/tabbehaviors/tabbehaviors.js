@@ -28,31 +28,33 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     more       : null,
     menuOffset : 4, //@todo this should use new menus api
 
+    commands   : [
+        ["closetab", "Option-W", "Ctrl-W", "close the tab that is currently active", "Closing active tab."],
+        ["closealltabs", "Option-Shift-W", "Ctrl-Shift-W", "close all opened tabs", "Closing all tabs."],
+        ["closeallbutme", "Option-Ctrl-W", "Ctrl-Alt-W", "close all opened tabs, but the tab that is currently active", "Closing tabs."],
+        ["gototabright", "Command-]", "Ctrl-]", "navigate to the next tab, right to the tab that is currently active", "Switching to right tab."],
+        ["gototableft", "Command-[", "Ctrl-[", "navigate to the next tab, left to the tab that is currently active", "Switching to left tab."],
+        ["tab1", "Command-1", "Ctrl-1", "navigate to the first tab", "Switching to tab 1."],
+        ["tab2", "Command-2", "Ctrl-2", "navigate to the second tab", "Switching to tab 2."],
+        ["tab3", "Command-3", "Ctrl-3", "navigate to the third tab", "Switching to tab 3."],
+        ["tab4", "Command-4", "Ctrl-4", "navigate to the fourth tab", "Switching to tab 4."],
+        ["tab5", "Command-5", "Ctrl-5", "navigate to the fifth tab", "Switching to tab 5."],
+        ["tab6", "Command-6", "Ctrl-6", "navigate to the sixth tab", "Switching to tab 6."],
+        ["tab7", "Command-7", "Ctrl-7", "navigate to the seventh tab", "Switching to tab 7."],
+        ["tab8", "Command-8", "Ctrl-8", "navigate to the eighth tab", "Switching to tab 8."],
+        ["tab9", "Command-9", "Ctrl-9", "navigate to the ninth tab", "Switching to tab 9."],
+        ["tab9", "Command-0", "Ctrl-0", "navigate to the tenth tab", "Switching to tab 10."],
+        ["revealtab", "Shift-Command-L", "Ctrl-Shift-L", "reveal current tab in the file tree"],
+        ["nexttab", "Option-Tab", "Ctrl-Tab", "navigate to the next tab in the stack of accessed tabs"],
+        ["previoustab", "Option-Shift-Tab", "Ctrl-Shift-Tab", "navigate to the previous tab in the stack of accessed tabs"]
+    ],
+
     nodes      : [],
 
     init : function(amlNode){
         var _self = this;
         
-        [
-            ["closetab", "Option-W", "Ctrl-W", "close the tab that is currently active", "Closing active tab."],
-            ["closealltabs", "Option-Shift-W", "Ctrl-Shift-W", "close all opened tabs", "Closing all tabs."],
-            ["closeallbutme", "Option-Ctrl-W", "Ctrl-Alt-W", "close all opened tabs, but the tab that is currently active", "Closing tabs."],
-            ["gototabright", "Command-]", "Ctrl-]", "navigate to the next tab, right to the tab that is currently active", "Switching to right tab."],
-            ["gototableft", "Command-[", "Ctrl-[", "navigate to the next tab, left to the tab that is currently active", "Switching to left tab."],
-            ["tab1", "Command-1", "Ctrl-1", "navigate to the first tab", "Switching to tab 1."],
-            ["tab2", "Command-2", "Ctrl-2", "navigate to the second tab", "Switching to tab 2."],
-            ["tab3", "Command-3", "Ctrl-3", "navigate to the third tab", "Switching to tab 3."],
-            ["tab4", "Command-4", "Ctrl-4", "navigate to the fourth tab", "Switching to tab 4."],
-            ["tab5", "Command-5", "Ctrl-5", "navigate to the fifth tab", "Switching to tab 5."],
-            ["tab6", "Command-6", "Ctrl-6", "navigate to the sixth tab", "Switching to tab 6."],
-            ["tab7", "Command-7", "Ctrl-7", "navigate to the seventh tab", "Switching to tab 7."],
-            ["tab8", "Command-8", "Ctrl-8", "navigate to the eighth tab", "Switching to tab 8."],
-            ["tab9", "Command-9", "Ctrl-9", "navigate to the ninth tab", "Switching to tab 9."],
-            ["tab9", "Command-0", "Ctrl-0", "navigate to the tenth tab", "Switching to tab 10."],
-            ["revealtab", "Shift-Command-L", "Ctrl-Shift-L", "reveal current tab in the file tree"],
-            ["nexttab", "Option-Tab", "Ctrl-Tab", "navigate to the next tab in the stack of accessed tabs"],
-            ["previoustab", "Option-Shift-Tab", "Ctrl-Shift-Tab", "navigate to the previous tab in the stack of accessed tabs"]
-        ].each(function(item){
+        this.commands.each(function(item){
             commands.addCommand({
                 name: item[0],
                 bindKey: {mac: item[1], win: item[2]},
@@ -66,12 +68,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         
         commands.addCommand({
             name: "closealltotheright",
-            exec: function () { _self.closealltotheright(); }
+            exec: function (editor, args) { 
+                _self.closealltotheright(args[0]); 
+            }
         });
         
         commands.addCommand({
             name: "closealltotheleft",
-            exec: function () { _self.closealltotheleft(); }
+            exec: function (editor, args) { 
+                _self.closealltotheleft(args[0]); 
+            }
         });
         
         var mnuContext, itmLeft, itmRight, itmStackLeft, itmStackRight;
@@ -127,7 +133,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             mnuContext = new apf.menu({id : "mnuContextTabs"})
         );
         
-        var itmReveal = menus.addItemByPath("Reveal in File Tree", new apf.item({
+        menus.addItemByPath("Reveal in File Tree", new apf.item({
             command : "revealtab",
             disabled : "{!!!tabEditors.activepage}"
         }), 100, mnuContext);
@@ -146,12 +152,24 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }), 500, mnuContext);
         menus.addItemByPath("~", new apf.divider(), 600, mnuContext);
         var itmCloseRight = menus.addItemByPath("Close Tabs to the Right", new apf.item({
-            command : "closealltotheright",
-            disabled : "{!!!tabEditors.activepage}"
+            //command : "closealltotheright",
+            onclick : function(){
+                var page = apf.findHost(document.elementFromPoint(
+                    parseInt(mnuContextTabs.$ext.style.left), 
+                    parseInt(mnuContextTabs.$ext.style.top)));
+
+                commands.exec("closealltotheright", null, [page]);
+            }
         }), 600, mnuContext);
         var itmCloseLeft = menus.addItemByPath("Close Tabs to the Left", new apf.item({
-            command : "closealltotheleft",
-            disabled : "{!!!tabEditors.activepage}"
+            //command : "closealltotheleft",
+            onclick : function(){
+                var page = apf.findHost(document.elementFromPoint(
+                    parseInt(mnuContextTabs.$ext.style.left), 
+                    parseInt(mnuContextTabs.$ext.style.top)));
+
+                commands.exec("closealltotheleft", null, [page]);
+            }
         }), 700, mnuContext);
         
         mnuContext.addEventListener("prop.visible", function(e) {
@@ -167,7 +185,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 return;
             }
 
-            var page = tabEditors.getPage();
+            var page = apf.findHost(document.elementFromPoint(
+                window.event.clientX, 
+                window.event.clientY));
+
+            //var page = tabEditors.getPage();
             var pages = tabEditors.getPages();
 
             // be optimistic, reset menu items to disabled
@@ -396,8 +418,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             callback();
     },
 
-    closealltotheright : function() {
-        var page = tabEditors.getPage();
+    closealltotheright : function(page) {
+        if (!page)
+            page = tabEditors.getPage();
         var pages = tabEditors.getPages();
     
         var currIdx = pages.indexOf(page);
@@ -411,8 +434,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.closeallbutme(ignore);
     },
 
-    closealltotheleft : function() {
-        var page = tabEditors.getPage();
+    closealltotheleft : function(page) {
+        if (!page)
+            page = tabEditors.getPage();
         var pages = tabEditors.getPages();
     
         var currIdx = pages.indexOf(page);
@@ -715,6 +739,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     destroy : function(){
         menus.remove("View/Tabs");
         menus.remove(mnuContextTabs);
+        
+        commands.removeCommandsByName(["closealltotheright", "closealltotheleft"]);
+        
+        this.commands.each(function(item){
+            commands.removeCommandByName(item[0]);
+        });
         
         this.nodes.each(function(item){
             item.destroy(true, true);

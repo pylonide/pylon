@@ -418,6 +418,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     destroy : function(){
+        commands.removeCommandsByName(["run", "stop"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

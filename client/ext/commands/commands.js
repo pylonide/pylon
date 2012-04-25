@@ -68,22 +68,18 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         },
         
         exec : function(command, editor, args, e){
-            if (command.context 
-              && command.context.indexOf(apf.activeElement) == -1) //or should this be apf.xmldb.isChildOf?
-                return; //Disable commands for other contexts
-
             if (!editor || editor.fake) {
-                //@todo this needs a better abstraction
-                //@todo focus handling
-                var page = self.tabEditors && tabEditors.getPage();
+                //@todo focus handling for splitview
+                var page = self.tabEditors && tabEditors.$activepage;
                 editor = page && page.$editor;
-                if (editor && editor.ceEditor)
-                    editor = editor.ceEditor.$editor;
             }
             
+            if (command.available && !command.available(editor))
+                return; //Disable commands for other contexts
+
             if (exec.apply(this, [command, editor, args]) !== false && e) {
-                e.returnValue = false;
-                e.preventDefault();
+//                e.returnValue = false;
+//                e.preventDefault();
                 apf.queue.empty();
                 return true;
             }
@@ -102,7 +98,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                     .setProperty(command.name, command.bindKey[this.platform]);
         },
         
-        addCommands : function(commands, context, asDefault){
+        addCommands : function(commands, asDefault){
             var _self = this;
             commands && Object.keys(commands).forEach(function(name) {
                 var command = commands[name];
@@ -117,24 +113,36 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                     
                 if (asDefault && _self.commands[command.name])
                     return;
-                
-                if (context && !command.context)
-                    command.context = context;
     
-                this.addCommand(command, context);
+                this.addCommand(command);
             }, this);
         },
         
-        removeCommands : function(commands, context){
+        removeCommands : function(commands){
             Object.keys(commands).forEach(function(name) {
-                this.removeCommand(commands[name], context);
+                this.removeCommand(commands[name]);
             }, this);
         },
         
-        removeCommand : function(command, context){
+        removeCommand : function(command){
             if (ide.commandManager[command.name])
                 ide.commandManager.setProperty(command.name, "");
             removeCommand.apply(this, arguments);
+        },
+        
+        removeCommandByName : function(name){
+            var cmd = this.commands[name];
+            if (cmd)
+                this.removeCommand(cmd);
+        },
+        
+        removeCommandsByName : function(list){
+            var _self = this;
+            list.forEach(function(name){
+                var cmd = _self.commands[name];
+                if (cmd)
+                    _self.removeCommand(cmd);
+            });
         },
     
         enable : function(){

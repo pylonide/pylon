@@ -393,6 +393,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         menus.remove("Find/~", 200);
         menus.remove("Find/Replace...");
         
+        commands.removeCommandsByName(["replace", "replacenext", "replaceprevious"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

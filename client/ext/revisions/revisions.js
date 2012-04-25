@@ -1198,6 +1198,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     destroy : function() {
         menus.remove("File/File revisions");
         menus.remove("File/~", 1000);
+        
+        commands.removeCommandByName("revisionpanel");
 
         if (this.saveInterval) {
             clearInterval(this.saveInterval);

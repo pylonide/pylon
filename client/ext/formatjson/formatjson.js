@@ -85,6 +85,8 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     },
     
     destroy : function(){
+        commands.removeCommandByName("formatjson");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

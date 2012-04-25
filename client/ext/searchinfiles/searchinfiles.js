@@ -306,6 +306,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         menus.remove("Find/~", 10000);
         menus.remove("Find in Files...");
         
+        commands.removeCommandByName("searchinfiles");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
