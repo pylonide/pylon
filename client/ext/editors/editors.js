@@ -131,13 +131,8 @@ module.exports = ext.register("ext/editors/editors", {
                     childNodes : [
                         btn = new apf.button({
                             id : "plus_tab_button",
-                            style : "display:inline-block;margin: 0 0 5px 13px;",
-                            right : 5,
-                            top   : 8,
-                            width : 30,
-                            height : 17,
+                            "class" : "plus_tab_button",
                             skin : "btn_icon_only",
-                            background : "plustabbtn.png|horizontal|3|30",
                             onclick : function(){
                                 require("ext/newresource/newresource").newfile();
                             }
@@ -152,8 +147,8 @@ module.exports = ext.register("ext/editors/editors", {
                     onmouseover : function(){
                         this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
                     },
-                    showme  : "[{require('core/settings').model}::auto/tabs/@show]",
-                    visible : "{apf.isTrue(this.showme)}",
+                   /* showme  : "[{require('core/settings').model}::auto/tabs/@show]",
+                    visible : "{apf.isTrue(this.showme)}", */
                     skin : "btn_icon_only",
                     "class" : "tabmenubtn",
                     background : "tabdropdown.png|horizontal|3|17"

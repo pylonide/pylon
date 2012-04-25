@@ -7854,94 +7854,368 @@
         overflow: hidden;
         position:relative;
         padding-top: 32px;
-        background-color:#e8e8e8;
     }
     
     .editor_tab .btnsesssioncontainer {
         padding : 5px 45px 0 21px;
         z-index : 100;
-        height: 25px;
+        height: 22px;
         overflow: visible;
         white-space: nowrap;
         color: #f5f5f5;
         font-family : Arial;
         font-size : 12px;
-        border-bottom : 1px solid white;
-        background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #262829),color-stop(1, #2f3031));
-        background: -moz-linear-gradient(center bottom,#262829 0%, #2f3031 100%);
-        margin-top : -32px;
+        border-bottom : 1px solid #000;
+        background: rgba(26,26,26,.9) url(images/c9-noise.png);
+        margin-top : -33px;
         width : auto;
 
-        -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
         -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-        box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+           -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+                box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
     }
 
     .editor_tab .btnsesssioncontainer>div {
         cursor: default;
-        display: block;
         display : inline-block;
-        margin: 0 0 0 0;
-        padding: 0;
         position : relative;
         vertical-align : bottom;
     }
 
-    .editor_tab .btnsesssioncontainer .session_btn {
+    /* ------------------------------------------------------------------------------------------
+     * Tab shape
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .session_btn {
         padding      : 0 20px;
         position     : relative;
         margin-right : -20px;
         margin-top   : 0;
-        height:25px;
-        border-bottom:1px solid white;
+        height       : 21px;
+    }
+    .editor_tab .tab_middle {
+        height   : 18px;
+        position : relative;
+        padding  : 4px 0 0 0;
+    }
+    .editor_tab .scale .btn .tab_middle {
+        display : block;
+        overflow : hidden;
+        text-overflow : ellipsis;
+        white-space : nowrap;
+    }
+    .editor_tab .tab_middle:before,
+    .editor_tab .tab_middle:after {
+        background-color : inherit;
+        content          : "";
+        display          : block;
+        position         : absolute;
+        height           : 22px;
+        width            : 17px;
+        -webkit-mask     : url(images/c9-no-repeat.png) no-repeat;
+        top              : 0;
+    }
+        
+    .editor_tab .tab_middle:before {
+        left                  : -17px;
+        -webkit-mask-position : 0 -96px;
+    }
+    .editor_tab .tab_middle:after {
+        right                 : -17px;
+        -webkit-mask-position : -31px -96px;
     }
 
-    .editor_tab .btnsesssioncontainer .session_btn .tab_middle {
-        background-image    : url(images/editor_tab.png);
-        background-position : 0 -104px;
-        height              : 20px;
-        position            : relative;
-        overflow            : hidden;
-        padding             : 5px 0 0 0;
+    .editor_tab .sessiontab_saving {
+        position: absolute;
+        z-index: 10;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Unselected tab default state
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .session_btn:not(.curbtn) .tab_middle,
+    .editor_tab .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab .session_btn:not(.curbtn) .tab_middle:after {
+        box-shadow   : 0 -1px 0 0 #000 inset;
+    }
+    .editor_tab .session_btn .tab_middle {
+        background-image    : url(images/c9-repeat-x.png);
+        background-repeat   : repeat-x;
+        background-position : 0 -79px;
+    }
+    .editor_tab .session_btn .tab_middle {
+        background-color    : #2F2F2F;
+        color               : #cecece;
+    }
+
+    .editor_tab .session_btn .tab_middle:before {
+        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+        background-position : 0 -159px, 0 -79px;
+        background-repeat   : no-repeat, repeat-x;
+    }
+    .editor_tab .session_btn .tab_middle:after {
+        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+        background-position : -31px -159px, 0 -79px;
+        background-repeat   : no-repeat, repeat-x;
+    }
+
+    .editor_tab .btnclose .tab_middle > strong {
+        width               : 14px;
+        height              : 14px;
+        display             : block;
+        position            : absolute;
+        right               : -1px;
+        top                 : 5px;
+        background-image    : url(images/close_tab_btn.png);
+        background-repeat   : no-repeat;
+        background-position : 0 -14px;
+    }
+
+    .editor_tab .btnsesssioncontainer .loading .sessiontab_saving,
+    .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
+        background-image : url(images/tab-save-spinner-inactive.gif);
+        height           : 13px;
+        right            : 0px;
+        top              : 5px;
+        width            : 13px;
+    }
+    /* ------------------------------------------------------------------------------------------
+     * Unselected tab hover
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .session_btn.over:not(.curbtn) .tab_middle {
+        background-color: #000;
+    }
+
+    .editor_tab .btnclose .tab_middle > strong:hover {
+        background-position : -14px -14px;
+    }
+
+    .editor_tab .btnclose .tab_middle > strong:active {
+        background-position : -28px -14px;
+    }
+
+    .editor_tab .over .sessiontab_saving {
+        display: none;
+    }
+    /* ------------------------------------------------------------------------------------------
+     * Selected tab default state
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .curbtn {
+        cursor      : default;
+        height      : 22px;
+        text-shadow : 0px 1px 0px rgba(255, 255, 255, .4);
+        top         : 1px;
+        z-index     : 10;
+    }
+    .editor_tab .curbtn .tab_middle,
+    .editor_tab.hidetabs .curbtn .tab_middle:before {
+        background-image    : url(images/c9-repeat-x.png);
+        background-position : 0 -57px;
+        background-repeat   : repeat-x;
+    }
+    .editor_tab .curbtn .tab_middle {
+        background-color    : #e8e8e8;
+        color               : #000;
+        text-shadow         : 0 1px 0 0 rgba(255,255,255,.4);
+    }
+
+    .editor_tab .curbtn .tab_middle:before {
+        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+        background-position : 0 -127px, 0 -57px;
+    }
+    .editor_tab .curbtn .tab_middle:after {
+        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+        background-position : -31px -127px, 0 -57px;
+    }
+    .editor_tab .loading_active .sessiontab_saving,
+    .editor_tab .saving_active .sessiontab_saving {
+        background-image : url(images/tab-save-spinner-active.gif);
+        height           : 15px;
+        right            : -1px;
+        top              : 4px;
+        width            : 15px;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Selected tab hover
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .curbtn.over .tab_middle {
+        box-shadow: 0 0 0 1000px rgba(255,255,255,.1) inset;
+    }
+    .editor_tab .btnclose.curbtn .tab_middle > strong {
+        background-position : 0 0;
+        top : 4px;
+    }
+
+    .editor_tab .btnclose.curbtn .tab_middle > strong:hover {
+        background-position : -14px 0;
+    }
+
+    .editor_tab .btnclose.curbtn .tab_middle > strong:active {
+        background-position : -28px 0;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Tab elements
+     * --------------------------------------------------------------------------------------- */
+
+    .editor_tab .session_btn .sessiontab_title {
+        display : block;
+        overflow : hidden;
+        text-overflow : ellipsis;
+        white-space : nowrap;
+    }
+    .editor_tab .btnsesssioncontainer .session_btn.btnclose .tab_middle .sessiontab_title {
+        margin-right : 15px;
+        margin-left : 4px;
+    }
+    .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
+        overflow : hidden;
+        padding  : 0 0 0 0;
+           -moz-user-select: -moz-none;
+         -khtml-user-select: none;
+        -webkit-user-select: none;
+             -o-user-select: none;
+                user-select: none;
+    }
+     
+    .editor_tab #q5 {
+        top: 2px !important;
     }
 
     .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_icon {
-        height:8px;
-        left:0;
-        position:absolute;
-        top:10px;
-        width:5px;
+        display: none;
     }
 
+    .editor_tab .btnsesssioncontainer .plus_tab_button {
+		background-image: url(images/c9-no-repeat.png);
+		background-position: -58px -80px;
+		background-repeat: no-repeat;
+    	display: inline-block;
+		height: 17px;
+		margin: 0px 0px 5px 12px;
+		top: 2px;
+		width: 30px;
+    }
+    .editor_tab .btnsesssioncontainer .plus_tab_button:hover {
+		background-position: -58px -106px;
+    }
+    .editor_tab .btnsesssioncontainer .plus_tab_button:active {
+		background-position: -58px -132px;
+    }
+
+
+    /* ------------------------------------------------------------------------------------------
+     * minimized tabs
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab.hidetabs .btnsesssioncontainer {
+    	height: 11px;
+    	padding-top: 0;
+    }
+    .editor_tab.hidetabs .tab_middle *,
+    .editor_tab.hidetabs .btnclose .tab_middle > strong {
+    	display: none;
+    }
+    .editor_tab.hidetabs .tab_middle:before,
+    .editor_tab.hidetabs .tab_middle:after {
+		-webkit-mask-image  : none;
+		top                 : 0;
+		width: 19px;
+    }
+    .editor_tab.hidetabs .lastbtn.curbtn + .plus_tab_button {
+    	margin-left: 20px !important;
+    }
+    .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button {
+		background-position: -58px -158px;
+		height: 10px;
+		margin: 0px 0px 5px 3px;
+		top: 2px;
+    }
+    .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button:hover {
+		background-position: -58px -178px;
+    }
+    .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button:active {
+		background-position: -58px -198px;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Unselected tab default state
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab.hidetabs .session_btn:not(.curbtn) {
+    	height: 5px;
+    	overflow: hidden;
+    	top: -5px;
+    }
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
+    	background-color: #7A7A7A;
+        background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
+        background-position : 50% -125px, 0 -101px;
+        background-repeat   : no-repeat, repeat-x;
+    }
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:before {
+        background-image    : url(images/c9-repeat-x.png);
+        background-repeat   : repeat-x;
+        background-position : 0 -101px;
+    }
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:hover {
+    	background-position: 50% -125px, 0 -111px;
+    }
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:hover:before {
+    	background-position: 0 -111px;
+    }
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
+    	border-top-right-radius: 2px;
+    }
+    .editor_tab.hidetabs .tab_middle:before {
+    	border-top-left-radius: 2px;
+    }
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:after {
+    	display: none;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Unselected tab hover
+     * --------------------------------------------------------------------------------------- */
+
+    /* ------------------------------------------------------------------------------------------
+     * Selected tab default state
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab.hidetabs .curbtn {
+    	height: 7px;
+    	overflow: hidden;
+    	top: -3px;
+    }
+    .editor_tab .curbtn .tab_middle {
+        background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
+        background-position : 50% -125px, 0 -57px;
+        background-repeat   : no-repeat, repeat-x;
+    	border-top-right-radius: 2px;	
+    }
+    .editor_tab.hidetabs .curbtn .tab_middle:after {
+    		display: none;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Selected tab hover
+     * --------------------------------------------------------------------------------------- */
+
+
+
+
+    /* ------------------------------------------------------------------------------------------
+     * Other
+     * --------------------------------------------------------------------------------------- */
     .editor_tab .btnsesssioncontainer .session_btn .sessiontab_icon {
         background-repeat: no-repeat;
         background-position: 0 0;
     }
 
-    .editor_tab .btnsesssioncontainer .sessiontab_saving {
-        position: absolute;
-        right: 0;
-        top: 7px;
-        z-index: 10;
-    }
+    
 
-    .editor_tab .btnsesssioncontainer .loading_active .sessiontab_saving,
-    .editor_tab .btnsesssioncontainer .saving_active .sessiontab_saving {
-        height: 15px;
-        width: 15px;
-        background-image: url(images/tab-save-spinner-active.gif);
-    }
+    
 
-    .editor_tab .btnsesssioncontainer .loading .sessiontab_saving,
-    .editor_tab .btnsesssioncontainer .saving .sessiontab_saving {
-        height: 13px;
-        width: 13px;
-        background-image: url(images/tab-save-spinner-inactive.gif);
-    }
+    
 
-    .editor_tab .btnsesssioncontainer .over .sessiontab_saving {
-        display: none;
-    }
+    
 
     /*.editor_tab .btnsesssioncontainer .saving_active .sessiontab_icon {
         background-image: url(images/save-indicator-active-tab.gif);
@@ -7958,126 +8232,14 @@
     .editor_tab .btnsesssioncontainer .loading .sessiontab_icon {
         background-image: url(images/load-indicator-inactive-tab.gif);
     }*/
+  
 
-    .editor_tab .btnsesssioncontainer .session_btn .tab_middle .sessiontab_title {
-        overflow : hidden;
-        padding  : 0 0 0 0;
-        -moz-user-select: -moz-none;
-        -khtml-user-select: none;
-        -webkit-user-select: none;
-        -o-user-select: none;
-        user-select: none;
-    }
+    
 
-    .editor_tab .btnsesssioncontainer .session_btn.btnclose .tab_middle .sessiontab_title {
-        margin-right : 15px;
-        margin-left : 4px;
-    }
-
-    .editor_tab .scale .session_btn .sessiontab_title{
-        display : block;
-        overflow : hidden;
-        text-overflow : ellipsis;
-        white-space : nowrap;
-    }
-
-    .editor_tab .btnsesssioncontainer .tab_left,
-    .editor_tab .btnsesssioncontainer .tab_right {
-        position            : absolute;
-        height              : 25px;
-        width               : 20px;
-        background-image    : url(images/editor_tab.png);
-        background-repeat   : no-repeat;
-        top                 : 0;
-    }
-
-    .editor_tab .btnsesssioncontainer .tab_left {
-        background-position : 0 -78px;
-        left                : 0;
-    }
-    .editor_tab .btnsesssioncontainer .tab_right {
-        background-position : 0 -130px;
-        right               : 0;
-    }
 
     .editor_tab .btnsesssioncontainer div.down {
         text-shadow: none;
         color: #d9d9d9;
-    }
-
-    .editor_tab .btnsesssioncontainer div.over .tab_middle {
-        background-position : 0 -182px;
-    }
-    .editor_tab .btnsesssioncontainer div.over .tab_left {
-        background-position : 0 -156px;
-    }
-    .editor_tab .btnsesssioncontainer div.over .tab_right {
-        background-position : 0 -208px;
-    }
-
-    .editor_tab .btnsesssioncontainer div.curbtn {
-        color       : #333333;
-        cursor      : default;
-        text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-        z-index     : 10;
-        height:25px;
-        border-bottom:1px solid #e8e8e8;
-    }
-
-    .editor_tab .btnsesssioncontainer div.curbtn .tab_middle {
-        background-position : 0 -26px;
-        padding             : 6px 0 0 0;
-        height:19px;
-        color:#000000;
-    }
-    .editor_tab .btnsesssioncontainer div.curbtn .tab_left {
-        background-position : 0 0;
-    }
-    .editor_tab .btnsesssioncontainer div.curbtn .tab_right {
-        background-position : 0 -52px;
-    }
-
-    .editor_tab .scale .btn .tab_middle {
-        display : block;
-        overflow : hidden;
-        text-overflow : ellipsis;
-        white-space : nowrap;
-    }
-
-    .editor_tabFocus .curbtn{
-    }
-
-    .editor_tab .btnsesssioncontainer .btnclose strong {
-        width               : 14px;
-        height              : 14px;
-        display             : block;
-        position            : absolute;
-        right               : 0;
-        top                 : 7px;
-        background-image    : url(images/close_tab_btn.png);
-        background-repeat   : no-repeat;
-        background-position : 0 -14px;
-    }
-
-    .editor_tab .btnsesssioncontainer .btnclose strong:hover {
-        background-position : -14px -14px;
-    }
-
-    .editor_tab .btnsesssioncontainer .btnclose strong:active {
-        background-position : -28px -14px;
-    }
-
-    .editor_tab .btnsesssioncontainer .curbtn.btnclose strong {
-        background-position : 0 0;
-        top: 7px;
-    }
-
-    .editor_tab .btnsesssioncontainer .curbtn.btnclose strong:hover {
-        background-position : -14px 0;
-    }
-
-    .editor_tab .btnsesssioncontainer .curbtn.btnclose strong:active {
-        background-position : -28px 0;
     }
 
     .editor_tab .editor_bg {
@@ -8184,52 +8346,7 @@
         display : block;
     }
 
-    .editor_tab.hidetabs .editor_bg, 
-    .editor_tab.hidetabs .session_page {
-        top : 11px;
-        box-shadow: 0 1px 0 0 white inset;
-    }
-
-    .editor_tab.hidetabs > * {
-        -webkit-transition: all .2s ease 0;
-    }
-
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover){
-        height: 11px;
-        overflow: hidden;
-    }
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .session_btn .tab_middle{
-        overflow: hidden;
-        text-indent: 100%;
-    }
-
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .session_btn {
-        height: 5px;
-        padding: 0 9px;
-        top: -32px;
-    }
-
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .session_btn.curbtn {
-        top: -2px;
-        height: 25px;
-    }
-
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .session_btn .tab_left,
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .session_btn .tab_right {
-        width: 9px;
-    }
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .session_btn .tab_left,
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .session_btn .tab_middle,
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .session_btn .tab_right {
-        background: #828282;
-    }
-
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .curbtn .tab_left,
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .curbtn .tab_middle,
-    .editor_tab.hidetabs .btnsesssioncontainer:not(:hover) .curbtn .tab_right {
-        background: #e8e8e8;
-    }
-
+    
 /*
     .editor_tab.hidetabs .btnsesssioncontainer:hover {
         height: 32px;
@@ -8273,8 +8390,6 @@
                 <div class="sessiontab_title">-</div>
                 <div class="sessiontab_saving"> </div>
             </div>
-            <div class="tab_left"> </div>
-            <div class="tab_right"> </div>
         </div>
     </a:button>
     <a:btnclose>
