@@ -133,7 +133,16 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                     _self.setCurrentFileConf(path);
                 }
             });
-
+            
+            tabEditors.addEventListener("close", function(e) {
+                var page = e.page;
+                if (page && page.$model) {
+                    var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                    console.log(mdlRunConfigurations.queryNode('config[@path="' + path + '"]'))
+                    apf.xmldb.removeNode(mdlRunConfigurations.queryNode('config[@path="' + path + '" and @curfile="1"]'));
+                }
+            });
+            
             ide.addEventListener("afterfilesave", function(e){
                 var page = tabEditors.getPage();
                 if (page && page.$model) {
