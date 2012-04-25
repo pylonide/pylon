@@ -133,8 +133,8 @@
         </a:vbox>
     </a:window>
         
-    <a:bar id="tbRun">
-        <a:divider skin="c9-divider" />
+    <!--a:bar id="tbRun">
+        <a:divider skin="c9-divider" /-->
         <!--a:splitbutton
           id       = "btnRun"
           icon     = "run.png"
@@ -148,6 +148,6 @@
           skin     = "c9-toolbarbutton"
           onclick  = "require('ext/run/run').stop()"
           disabled = "{!stProcessRunning.active &amp;&amp; 1}" /-->
-    </a:bar>
+    <!--/a:bar-->
 
 </a:application>

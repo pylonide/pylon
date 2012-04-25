@@ -23,6 +23,8 @@ module.exports = ext.register("ext/keybindings/keybindings", {
             var value = e.model.queryValue("general/keybindings/@preset") 
                 || "default_" + (apf.isMac ? "mac" : "win");
                 
+            if(value == "auto")
+                value = "default_" + (apf.isMac ? "mac" : "win");
             require(["ext/keybindings_default/" + value]);
         });
     },
