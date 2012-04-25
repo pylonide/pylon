@@ -69,7 +69,7 @@ self.onmessage = function(e) {
     }
 
     var packet = {};
-    var afterRevision, beforeRevision;
+    var afterRevision, beforeRevision, lastContent;
     switch (e.data.type) {
         case "preview":
             var results = getLastAndAfterRevisions(e.data);
@@ -160,7 +160,7 @@ self.onmessage = function(e) {
                 beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
             }
 
-            var lastContent = e.data.lastContent;
+            lastContent = e.data.lastContent;
             var patch = self.dmp.patch_make(beforeRevision, lastContent);
 
             // If there is no actual changes, let's return
@@ -179,7 +179,28 @@ self.onmessage = function(e) {
                 length: lastContent.length,
                 saved: false
             };
+            break;
+        
+        case "recovery":
+            lastContent = e.data.lastContent;
+            beforeRevision = "";
+            packet = {
+                type: "recovery",
+                path: e.data.path,
+                revision: {
+                    contributors: e.data.contributors,
+                    silentsave: e.data.silentsave,
+                    restoring: e.data.restoring,
+                    ts: Date.now(),
+                    patch: [self.dmp.patch_make(lastContent, e.data.realContent)],
+                    inDialog: true,
+                    finalContent: lastContent,
+                    realContent: e.data.realContent,                    
+                    saved: false
+                }
+            };
+            
+            break;
     }
     self.postMessage(packet);
 };
-

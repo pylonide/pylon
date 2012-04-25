@@ -130,4 +130,14 @@ exports.localDate = function(ts) {
 
     return new Date(ts + getTZOffset());
 };
+
+exports.question = function(title, header, msg, onyes, onno, onadd) {
+    winQuestionRev.show();
+    winQuestionRev.setAttribute("title", title);
+    winQuestionRevHeader.$ext.innerHTML = header;
+    winQuestionRevMsg.$ext.innerHTML = msg;
+    btnQuestionRevYes.onclick = onyes;
+    btnQuestionRevNo.onclick = onno;
+};
+
 });

@@ -92,7 +92,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.addSettings("General", markupSettings);
 
         ide.addEventListener("loadsettings", function(e){
-            e.ext.setDefaults("general", [["autosaveenabled", "true"]]);
+            e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
         });
 
         btnSave.removeAttribute("icon");
@@ -152,12 +152,15 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
             });
         }
-        
+
+        this.$onExternalChange = this.onExternalChange.bind(this);
+        ide.addEventListener("beforewatcherchange", this.$onExternalChange);
+
         ide.addEventListener("beforesavewarn", function(e){
             if (!apf.isTrue(e.doc.getNode().getAttribute("newfile"))
               && apf.isTrue(settings.model.queryValue("general/@autosaveenabled"))) {
                 _self.save();
-                
+
                 return false;
             }
         });
@@ -220,6 +223,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
+
+        apf.document.documentElement.appendChild(winQuestionRev);
 
         this.$afterSelectFn = function(e) {
             var node = this.selected;
@@ -320,6 +325,65 @@ module.exports = ext.register("ext/revisions/revisions", {
     /////////////////////
     // Event listeners //
     /////////////////////
+
+    onExternalChange: function(e) {
+        var page = tabEditors.getPage();
+        var doc = page.$doc;
+
+        // We want to prevent autosave to keep saving while we are resolving
+        // this query.
+        this.prevAutoSaveValue = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
+        settings.model.setQueryValue("general/@autosaveenabled", false);
+
+        if (!this.isCollab(doc)) {
+            ide.send({
+                command: "revisions",
+                subCommand: "getRealFileContents",
+                path: this.$getDocPath(page)
+            });
+        }
+        return false;
+    },
+
+    showQuestionWindow: function(data) {
+        if (typeof winQuestionRev === "undefined") {
+            return;
+        }
+
+        var c9DocContent = data.revision.finalContent;
+        var serverContent = data.revision.realContent;
+        var doc = tabEditors.getPage().$doc;
+        var path = data.path;
+
+        var dataToSend = {
+            command: "revisions",
+            subCommand: "saveRevision",
+            path: path,
+            revision: data.revision,
+            forceRevisionListResponse: true
+        };
+
+        var finalize = function() {
+            //delete Watcher.changedPaths[path];
+            ide.send(dataToSend);
+            winQuestionRev.hide();
+            settings.model.setQueryValue("general/@autosaveenabled", this.prevAutoSaveValue || true);
+        };
+
+        Util.question(
+            "File changed, reload tab?",
+            path + " has been changed by another application.",
+            "Do you want to reload it?",
+            function() { // Yes
+                doc.setValue(serverContent);
+                finalize();
+            },
+            function() { // No
+                doc.setValue(c9DocContent);
+                finalize();
+            }
+        );
+    },
 
     onOpenFile: function(data) {
         if (!data || !data.doc)
@@ -430,6 +494,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                     return;
                 }
 
+                this.revisionQueue[revision.ts] = revision;
+
                 var data = {
                     command: "revisions",
                     subCommand: "saveRevision",
@@ -437,9 +503,12 @@ module.exports = ext.register("ext/revisions/revisions", {
                     revision: revision
                 };
 
-                this.revisionQueue[revision.ts] = revision;
-
                 ide.send(data);
+                break;
+            case "recovery":
+                if (e.data.revision.inDialog === true) {
+                    this.showQuestionWindow(e.data);
+                }
                 break;
             case "debug":
                 console.log("WORKER DEBUG\n", e.data.content);
@@ -467,6 +536,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     }
                 }
                 break;
+
             case "getRevisionHistory":
                 var revObj = this.$getRevisionObject(message.path);
                 if (message.body && message.body.revisions) {
@@ -492,7 +562,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 if (revObj.useCompactList && len > 0) {
                     for (var i = 0; i < len; i++) {
                         var groupedRevs = revObj.groupedRevisionIds[i];
-                        console.log("groupedRevs", groupedRevs);
                         if (groupedRevs.indexOf(parseInt(message.id, 10)) !== -1) {
                             groupedRevs.forEach(function(ts) {
                                 group[ts] = this.getRevision(ts);
@@ -517,6 +586,23 @@ module.exports = ext.register("ext/revisions/revisions", {
                 data.groupKeys = [parseInt(message.id, 10)];
                 this.worker.postMessage(data);
                 break;
+
+            case "getRealFileContents":
+                var page = tabEditors.getPage();
+                var doc = page.$doc;
+                var docPath = this.$getDocPath(page);
+                var revObj = this.rawRevisions[docPath];
+
+                this.worker.postMessage({
+                    inDialog: true,
+                    type: "recovery",
+                    lastContent: doc.getValue(),
+                    realContent: message.contents,
+                    revisions: revObj.allRevisions,
+                    path: message.path,
+                    // To not have to extract and sort timestamps from allRevisions
+                    timestamps: revObj.allTimestamps
+                });
         }
     },
 
@@ -890,9 +976,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         var node = page.$doc.getNode();
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
-            
+
         ext.initExtension(this); //Why???
-            
+
         Save.quicksave(page, function(){}, true);
     },
 
