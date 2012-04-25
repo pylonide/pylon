@@ -97,11 +97,17 @@ module.exports = {
 
     $loadsettings : function(cb){
         var _self = require('core/settings');
-        try {
-            cb({model : require('core/settings').model});
+        
+        if (cloud9config.debug) {
+            cb({model : _self.model, ext : _self});
         }
-        catch(e){
-            console.error(e.message);
+        else {
+            try {
+                cb({model : _self.model, ext : _self});
+            }
+            catch(e){
+                console.error(e.message);
+            }
         }
     },
     

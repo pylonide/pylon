@@ -11,6 +11,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/clipboard/clipboard", {
@@ -71,17 +72,20 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            //ace.textInput.emitCut(ace);
+            ace.textInput.emitCut(ace);
         }
     },
 
     copy: function() {
         if (apf.document.activeElement == trFiles) {
-            apf.clipboard.copySelection(trFiles);
+            apf.clipboard.put(trFiles.getSelection().map(function (node) {
+                return apf.xmldb.cleanNode(node.cloneNode(false))
+            }));
+            apf.clipboard.copied = true;
         }
         else {
             var ace = this.$getAce();
-            //ace.textInput.emitCopy(ace);
+            ace.textInput.emitCopy(ace);
         }
     },
 
@@ -91,7 +95,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            //ace.getSession().replace(ace.getSelectionRange(), this.text);
+            ace.getSession().replace(ace.getSelectionRange(), this.text);
         }
     },
 

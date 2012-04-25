@@ -85,18 +85,9 @@
                 apf.clipboard.store = store;
             ">Duplicate</a:item>
             <a:divider />
-            <a:item match="[file|folder[not(@root)]]" onclick="
-                apf.clipboard.cutSelection(apf.activeElement);
-            ">Cut</a:item>
-            <a:item match="[file|folder[not(@root)]]" onclick="
-                apf.clipboard.put(trFiles.getSelection().map(function (node) {
-                    return apf.xmldb.cleanNode(node.cloneNode(false))
-                }));
-                apf.clipboard.copied = true;
-            ">Copy</a:item>
-            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" onclick="
-                apf.clipboard.pasteSelection(apf.activeElement);
-            ">Paste</a:item>
+            <a:item match="[file|folder[not(@root)]]" command="cut">Cut</a:item>
+            <a:item match="[file|folder[not(@root)]]" command="copy">Copy</a:item>
+            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" command="paste">Paste</a:item>
             <a:divider />
             <a:item match="[file|folder|project]" onclick="
                 require('ext/filesystem/filesystem').createFile();
