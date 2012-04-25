@@ -760,6 +760,7 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.show();
 
         this.ceEditor = this.amlEditor = ceEditor;
+        ceEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         ceEditor.$editor.commands = commands;
         
         // preload common language modes

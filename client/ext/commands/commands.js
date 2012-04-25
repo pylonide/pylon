@@ -74,7 +74,18 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 editor = page && page.$editor;
             }
             
-            if (command.isAvailable && !command.isAvailable(editor))
+            if (Array.isArray(command)) {
+                for (var i = command.length; i--; ) {
+                    var cmd = command[i];
+                    if (!cmd.isAvailable || cmd.isAvailable(editor))
+                        break;
+                    else
+                        cmd = null;
+                }
+                if (!cmd)
+                    return;
+                command = cmd;
+            } else if (command.isAvailable && !command.isAvailable(editor))
                 return; //Disable commands for other contexts
 
             if (exec.apply(this, [command, editor, args]) !== false && e) {
@@ -124,12 +135,50 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             }, this);
         },
         
-        removeCommand : function(command){
-            if (ide.commandManager[command.name])
-                ide.commandManager.setProperty(command.name, "");
-            removeCommand.apply(this, arguments);
+        removeCommand : function(command, context){
+            var name = (typeof command === 'string' ? command : command.name);
+
+            if (ide.commandManager[name])
+                ide.commandManager.setProperty(name, "");
+
+            command = this.commands[name];
+            delete this.commands[name];
+
+        
+            var ckb = this.commmandKeyBinding;
+            for (var hashId in ckb) {
+                for (var key in ckb[hashId]) {
+                    var cl = ckb[hashId][key];
+                    if (cl == command) {
+                        delete ckb[hashId][key];
+                    } else if (cl && cl.indexOf && cl.splice) {
+                        var i = cl.indexOf(command);
+                        if (i != -1)
+                            cl.splice(i, 1);
+                    }
+                }
+            };
         },
         
+        bindKey: function(key, command) {
+            if(!key)
+                return;
+
+            var ckb = this.commmandKeyBinding;
+            key.split("|").forEach(function(keyPart) {
+                var binding = this.parseKeys(keyPart, command);
+                var hashId = binding.hashId;
+                var hash = (ckb[hashId] || (ckb[hashId] = {}))
+                
+                if (!hash[binding.key])
+                    hash[binding.key] = command;
+                else if (Array.isArray(hash[binding.key]))
+                    hash[binding.key].push(command);
+                else
+                    hash[binding.key] = [hash[binding.key], command];
+            }, this);
+        },
+         
         removeCommandByName : function(name){
             var cmd = this.commands[name];
             if (cmd)
