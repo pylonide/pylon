@@ -69,7 +69,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             name: "revisionpanel",
             hint: "File Revision History...",
             bindKey: { mac: "Command-B", win: "Ctrl-B" },
-            isAvailable : function(editor){
+            isAvailable: function(editor) {
                 return editor && !!editor.ceEditor;
             },
             exec: function () {
@@ -215,6 +215,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
         this.nodes.push(this.panel);
 
+        apf.document.documentElement.appendChild(winQuestionRev);
+
         /**
          * @todo the panel should move to the active editor tab using
          *       afterselect
@@ -223,8 +225,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
-
-        apf.document.documentElement.appendChild(winQuestionRev);
 
         this.$afterSelectFn = function(e) {
             var node = this.selected;
@@ -327,6 +327,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     /////////////////////
 
     onExternalChange: function(e) {
+        // It could happen early, when `winQuestionRev` hasn't yet been defined
+        ext.initExtension(this);
         var page = tabEditors.getPage();
         var doc = page.$doc;
 
@@ -372,7 +374,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         Util.question(
             "File changed, reload tab?",
-            path + " has been changed by another application.",
+            path + " has been modified while you were editing it.",
             "Do you want to reload it?",
             function() { // Yes
                 doc.setValue(serverContent);
@@ -521,9 +523,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (message.type !== "revision")
             return;
 
+        var revObj;
         switch (message.subtype) {
             case "confirmSave":
-                var revObj = this.$getRevisionObject(message.path);
+                revObj = this.$getRevisionObject(message.path);
                 var ts = message.ts;
                 if (this.revisionQueue[ts]) {
                     this.revisionQueue[ts].saved = true;
@@ -538,7 +541,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 break;
 
             case "getRevisionHistory":
-                var revObj = this.$getRevisionObject(message.path);
+                revObj = this.$getRevisionObject(message.path);
                 if (message.body && message.body.revisions) {
                     revObj.allRevisions = message.body.revisions;
                 }
@@ -555,7 +558,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 var data = {
                     id: message.id,
                     group: group,
-                    type: message.nextAction,
+                    type: message.nextAction
                 };
 
                 var len = revObj.groupedRevisionIds.length;
@@ -591,7 +594,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 var page = tabEditors.getPage();
                 var doc = page.$doc;
                 var docPath = this.$getDocPath(page);
-                var revObj = this.rawRevisions[docPath];
+                revObj = this.rawRevisions[docPath];
 
                 this.worker.postMessage({
                     inDialog: true,
@@ -620,8 +623,8 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var getTsAndSort = function(obj) {
             return Object.keys(obj)
-                .map(function(ts) { return parseInt(ts, 10) })
-                .sort(function(a, b) { return a - b });
+                .map(function(ts) { return parseInt(ts, 10); })
+                .sort(function(a, b) { return a - b; });
         };
 
         // Create an array of the numeric timestamps. `allTimestamps` will store
@@ -757,7 +760,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     type: "revision",
                     subtype: "getRevisionHistory",
                     path: path,
-                    nextAction: nextAction,
+                    nextAction: nextAction
                 }
             });
         }
@@ -768,7 +771,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             subCommand: "getRevisionHistory",
             nextAction: nextAction,
             path: path,
-            id: id,
+            id: id
         });
     },
 
@@ -920,7 +923,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             doc = newSession.doc;
         }
 
-        editor.selection.clearSelection()
+        editor.selection.clearSelection();
 
         // Look for the node that references the revision we are loading and
         // update its state to loaded.
@@ -1287,7 +1290,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     destroy : function() {
         menus.remove("File/File revisions");
         menus.remove("File/~", 1000);
-        
+
         commands.removeCommandByName("revisionpanel");
 
         if (this.saveInterval) {

@@ -69,7 +69,7 @@ self.onmessage = function(e) {
     }
 
     var packet = {};
-    var afterRevision, beforeRevision, lastContent;
+    var afterRevision, beforeRevision, lastContent, patch;
     switch (e.data.type) {
         case "preview":
             var results = getLastAndAfterRevisions(e.data);
@@ -161,29 +161,40 @@ self.onmessage = function(e) {
             }
 
             lastContent = e.data.lastContent;
-            var patch = self.dmp.patch_make(beforeRevision, lastContent);
+            patch = self.dmp.patch_make(beforeRevision, lastContent);
 
             // If there is no actual changes, let's return
             if (patch.length === 0) {
                 return;
             }
 
-            packet.type = "newRevision";
-            packet.path = e.data.path;
-            packet.revision = {
-                contributors: e.data.contributors,
-                patch: [patch],
-                silentsave: e.data.silentsave,
-                restoring: e.data.restoring,
-                ts: Date.now(),
-                length: lastContent.length,
-                saved: false
-            };
+            packet = {
+                type: "newRevision",
+                path: e.data.path,
+                revision: {
+                    contributors: e.data.contributors,
+                    silentsave: e.data.silentsave,
+                    restoring: e.data.restoring,
+                    ts: Date.now(),
+                    patch: [patch],
+                    length: lastContent.length,
+                    saved: false
+                }
+            }
             break;
-        
+
+        // Recovery is a special case for when a external application modifies
+        // the file the user is working on.
         case "recovery":
-            lastContent = e.data.lastContent;
-            beforeRevision = "";
+            var currentContent = e.data.lastContent;
+            var realContent = e.data.realContent;
+            patch = self.dmp.patch_make(currentContent, realContent);
+
+            // If there is no actual changes, let's return
+            if (patch.length === 0) {
+                return;
+            }
+
             packet = {
                 type: "recovery",
                 path: e.data.path,
@@ -192,14 +203,14 @@ self.onmessage = function(e) {
                     silentsave: e.data.silentsave,
                     restoring: e.data.restoring,
                     ts: Date.now(),
-                    patch: [self.dmp.patch_make(lastContent, e.data.realContent)],
-                    inDialog: true,
+                    patch: [patch],
                     finalContent: lastContent,
-                    realContent: e.data.realContent,                    
-                    saved: false
+                    realContent: realContent,
+                    saved: false,
+                    inDialog: true
                 }
             };
-            
+
             break;
     }
     self.postMessage(packet);
