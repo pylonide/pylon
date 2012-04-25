@@ -365,7 +365,7 @@ module.exports = ext.register("ext/code/code", {
                 doc.dispatchEvent("prop.value", {value : value});
             }
         }
-
+ 
         doc.editor = this;
     },
     

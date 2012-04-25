@@ -345,6 +345,8 @@ module.exports = ext.register("ext/editors/editors", {
             page.$doc    = doc;
             doc.$page    = page;
             page.$editor = editor;
+            page.setAttribute("autofocus", false);
+            //page.setAttribute("focussble", true);
             page.setAttribute("tooltip", "[@path]");
             page.setAttribute("class",
                 "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
@@ -556,8 +558,8 @@ module.exports = ext.register("ext/editors/editors", {
             var editor = page.$editor;
         }
         
-        if (editor.ceEditor)
-            editor.ceEditor.focus();
+        if (editor.focus)
+            editor.focus();
 
         //toHandler.$rbEditor.select();
 

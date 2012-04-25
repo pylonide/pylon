@@ -3,7 +3,7 @@
       disable-space             = "true"
       auto-hide-loading         = "true"
       allow-select              = "false"
-      allow-blur                = "true"
+      allow-blur                = "false"
       initdelay                 = "false"
       loaderAnimIndicator       = "animatedLoader"
       loaderWidth               = "300"
