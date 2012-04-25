@@ -39,6 +39,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
             hint: "search for a string inside the active document and replace it",
+            available : function(editor){
+                return apf.activeElement.localName == "codeeditor";
+            },
             exec: function(env, args, request) {
                 _self.toggleDialog(true, true);
             }
@@ -46,6 +49,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         
         commands.addCommand({
             name: "replacenext",
+            available : function(editor){
+                return apf.activeElement.localName == "codeeditor";
+            },
             exec: function(env, args, request) {
                 commands.exec("findnext");
                 commands.exec("replace");
@@ -54,6 +60,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         
         commands.addCommand({
             name: "replaceprevious",
+            available : function(editor){
+                return apf.activeElement.localName == "codeeditor";
+            },
             exec: function(env, args, request) {
                 commands.exec("findprevious");
                 commands.exec("replace");

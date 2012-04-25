@@ -38,9 +38,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             menus.addItemByPath("Goto/Goto Line...", new apf.item({
                 caption : "Goto Line...",
                 hint: "enter a linenumber and jump to it in the active document",
-                onclick : function(){
-                    _self.gotoline();
-                }
+                command : "gotoline"
             }), 200)
         );
 
@@ -51,6 +49,9 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         commands.addCommand({
             name: "gotoline",
             bindKey: {mac: "Command-L", win: "Ctrl-G"},
+            available : function(editor){
+                return apf.activeElement.localName == "codeeditor";
+            },
             exec: function() {
                 _self.gotoline();
             }

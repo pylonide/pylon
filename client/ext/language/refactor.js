@@ -43,6 +43,9 @@ module.exports = {
             name: "renameVar",
             hint: "Rename variable",
             bindKey: {mac: "Option-Command-R", win: "Ctrl-Alt-R"},
+            available : function(editor){
+                return apf.activeElement.localName == "codeeditor";
+            },
             exec: function(editor) {
                 _self.renameVariable();
             }

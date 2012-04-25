@@ -737,8 +737,6 @@ module.exports = ext.register("ext/code/code", {
             
             addEditorMenu("Goto/Scroll to Selection", "centerselection")
         );
-
-        this.disable();
     },
 
     init: function(amlPage) {
@@ -754,19 +752,10 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
 
-        var _self = this;
-
         var menuShowInvisibles = new apf.item({
             type    : "check",
             caption : "Show Invisibles",
             checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
-        });
-
-        ide.addEventListener("closefile", function(e){
-            if (tabEditors.length > 1)
-                _self.enable();
-            else
-                _self.disable();
         });
 
         ide.addEventListener("afterreload", function(e) {

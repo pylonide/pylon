@@ -56,6 +56,9 @@ module.exports = ext.register("ext/stripws/stripws", {
         commands.addCommand({
             name: "stripws",
             hint: "strip whitespace at the end of each line",
+            available : function(editor){
+                return apf.activeElement.localName == "codeeditor";
+            },
             exec: function(){
                 ext.initExtension(self);
                 self.stripws();

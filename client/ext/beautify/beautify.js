@@ -74,7 +74,9 @@ module.exports = ext.register("ext/beautify/beautify", {
             if (trim) value = value.trim();
         }
         catch (e) {
-            util.alert("Error", "This code could not be beautified", "Please correct any JavaScript errors and try again");
+            util.alert("Error", 
+                "This code could not be beautified", 
+                "Please correct any JavaScript errors and try again");
             return;
         }
 
@@ -83,6 +85,7 @@ module.exports = ext.register("ext/beautify/beautify", {
     },
 
     init: function () {
+        var _self = this;
         ide.addEventListener("revisions.visibility", function(e) {
             if (e.visibility === "shown")
                 _self.disable();

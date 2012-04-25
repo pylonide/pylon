@@ -109,6 +109,10 @@ module.exports = ext.register("ext/menus/menus", {
         return parent.insertBefore(item, beforeNode);
     },
     
+    $checkItems : function(){
+        console.log(apf.activeElement);
+    },
+    
     setRootMenu : function(name, index, item, menu){
         var items = this.items, menus = this.menus;
         
@@ -121,7 +125,8 @@ module.exports = ext.register("ext/menus/menus", {
             menu = menus[name];
             if (!menu) {
                 menu = menus[name] = new apf.menu({
-                    id : "mnuMenus" + ++this.count
+                    id : "mnuMenus" + ++this.count,
+                    "onprop.visible" : this.$checkItems
                 });
             }
         }
@@ -170,7 +175,8 @@ module.exports = ext.register("ext/menus/menus", {
             menu = menus[name];
             if (!menu) {
                 menu = menus[name] = new apf.menu({
-                    id : "mnuMenus" + ++this.count
+                    id : "mnuMenus" + ++this.count,
+                    "onprop.visible" : this.$checkItems
                 });
             }
         }

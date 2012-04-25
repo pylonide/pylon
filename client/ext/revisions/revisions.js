@@ -69,6 +69,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             name: "revisionpanel",
             hint: "File Revision History...",
             bindKey: { mac: "Command-B", win: "Ctrl-B" },
+            available : function(editor){
+                return !!editor.ceEditor;
+            },
             exec: function () {
                 _self.toggle();
             }
