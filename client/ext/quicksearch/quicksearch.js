@@ -92,14 +92,14 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     init : function(){
         var _self = this;
         
-        var available = commands.commands["findnext"].available;
+        var isAvailable = commands.commands["findnext"].isAvailable;
         
-        commands.commands["findnext"].available =
-        commands.commands["findprevious"].available = function(editor){
+        commands.commands["findnext"].isAvailable =
+        commands.commands["findprevious"].isAvailable = function(editor){
             if (apf.activeElement == txtQuickSearch)
                 return true;
             
-            available.apply(this, arguments);
+            isAvailable.apply(this, arguments);
         }
 
         txtQuickSearch.addEventListener("clear", function() {

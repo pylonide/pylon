@@ -74,7 +74,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 editor = page && page.$editor;
             }
             
-            if (command.available && !command.available(editor))
+            if (command.isAvailable && !command.isAvailable(editor))
                 return; //Disable commands for other contexts
 
             if (exec.apply(this, [command, editor, args]) !== false && e) {
