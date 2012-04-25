@@ -50,7 +50,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             name: "gotoline",
             bindKey: {mac: "Command-L", win: "Ctrl-G"},
             available : function(editor){
-                return apf.activeElement.localName == "codeeditor";
+                return editor && editor.ceEditor;
             },
             exec: function() {
                 _self.gotoline();

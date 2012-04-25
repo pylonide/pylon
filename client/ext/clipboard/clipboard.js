@@ -27,16 +27,16 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     hook : function(){
         var _self = this;
         
-        commands.addCommand({
-            name: "cut",
-            bindKey: {mac: "Command-X", win: "Ctrl-X"},
-            available : function(){
-                
-            },
-            exec: function(){
-                _self.cut();
-            }
-        });
+//        commands.addCommand({
+//            name: "cut",
+//            bindKey: {mac: "Command-X", win: "Ctrl-X"},
+//            available : function(){
+//                
+//            },
+//            exec: function(){
+//                _self.cut();
+//            }
+//        });
         
         this.nodes.push(
             menus.addItemByPath("Edit/~", new apf.divider(), 300),

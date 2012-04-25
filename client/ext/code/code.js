@@ -684,7 +684,7 @@ module.exports = ext.register("ext/code/code", {
                 type    : "check",
                 checked : "[{require('core/settings').model}::editors/code/@wrapmode]",
                 available : function(editor){
-                    return apf.activeElement.localName == "codeeditor";
+                    return editor && editor.ceEditor;
                 }
             }), 500000),
             
@@ -696,7 +696,7 @@ module.exports = ext.register("ext/code/code", {
                     this.setAttribute("disabled", !apf.isTrue(e.value) || !this.available())
                 },
                 available : function(editor){
-                    return apf.activeElement.localName == "codeeditor";
+                    return editor && editor.ceEditor;
                 }
             }), 600000)
         );

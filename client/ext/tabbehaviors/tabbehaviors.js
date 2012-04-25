@@ -43,7 +43,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         ["tab7", "Command-7", "Ctrl-7", "navigate to the seventh tab", "Switching to tab 7."],
         ["tab8", "Command-8", "Ctrl-8", "navigate to the eighth tab", "Switching to tab 8."],
         ["tab9", "Command-9", "Ctrl-9", "navigate to the ninth tab", "Switching to tab 9."],
-        ["tab9", "Command-0", "Ctrl-0", "navigate to the tenth tab", "Switching to tab 10."],
+        ["tab0", "Command-0", "Ctrl-0", "navigate to the tenth tab", "Switching to tab 10."],
         ["revealtab", "Shift-Command-L", "Ctrl-Shift-L", "reveal current tab in the file tree", function(){ return tabEditors.activepage }],
         ["nexttab", "Option-Tab", "Ctrl-Tab", "navigate to the next tab in the stack of accessed tabs", function(){ return tabEditors.length > 1 }],
         ["previoustab", "Option-Shift-Tab", "Ctrl-Shift-Tab", "navigate to the previous tab in the stack of accessed tabs", function(){ return tabEditors.length > 1 }]

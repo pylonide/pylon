@@ -111,10 +111,10 @@ module.exports = ext.register("ext/beautify/beautify", {
             msg: "Beautifying selection.",
             bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
             available : function(editor){
-                if (apf.activeElement.localName == "codeeditor") {
-                    var range = apf.activeElement.$editor.getSelectionRange();
-                    return range.start.row == range.end.row 
-                      && range.start.column == range.end.column
+                if (editor && editor.ceEditor) {
+                    var range = editor.ceEditor.$editor.getSelectionRange();
+                    return range.start.row != range.end.row 
+                      || range.start.column != range.end.column
                 }
                 return false;
             },

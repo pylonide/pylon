@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/menus/menus", {
@@ -89,7 +88,7 @@ module.exports = ext.register("ext/menus/menus", {
                 commands.exec(value);
                 var command = commands.commands[value];
                 if (command && command.focusContext)
-                    command.context[0].focus();
+                    self["req"+"uire"]("ext/editors/editors").currentEditor.focus();
             } || null;
         }
     },
@@ -118,7 +117,7 @@ module.exports = ext.register("ext/menus/menus", {
             for (var a, cmd, n, i = nodes.length - 1; i >= 0; i--) {
                 if (a = (cmd = (n = nodes[i]).command) 
                   && commands.commands[cmd].available || n.available)
-                    n[a() ? "enable" : "disable"](editor);
+                    n[a(editor) ? "enable" : "disable"]();
             }
         }
     },

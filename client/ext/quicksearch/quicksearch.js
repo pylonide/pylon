@@ -55,7 +55,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             hint: "open the quicksearch dialog to quickly search for a phrase",
             bindKey: {mac: "Command-F", win: "Ctrl-F"},
             available : function(editor){
-                return apf.activeElement.localName == "codeeditor";
+                return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
                 _self.toggleDialog(1);

@@ -55,8 +55,8 @@ module.exports = ext.register("ext/formatjson/formatjson", {
             bindKey : {mac: "Shift-Command-J", win: "Ctrl-Shift-J"},
             hint: "reformat the current JSON document",
             available : function(editor){
-                if (apf.activeElement.localName == "codeeditor") {
-                    var range = apf.activeElement.$editor.getSelectionRange();
+                if (editor && editor.ceEditor) {
+                    var range = editor.ceEditor.$editor.getSelectionRange();
                     return range.start.row == range.end.row 
                       && range.start.column == range.end.column
                 }
