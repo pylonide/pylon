@@ -159,7 +159,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     
                         _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                         _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
-                            _self.setSelectionLength();
+                            if (_self._timer)
+                                return;
+                            _self._timer = setTimeout(function() {
+                                _self.setSelectionLength();
+                            }, 50);
                         });
                     }
                 }, 200);
@@ -186,7 +190,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     mnuStatusBarPrefs.appendChild(pItem.item);
             }
     
-            !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();	
+            !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();    
             wrapMode.addEventListener("click", function(e) {
                 if (e.currentTarget.checked) {    
                     wrapModeViewport.enable();     
