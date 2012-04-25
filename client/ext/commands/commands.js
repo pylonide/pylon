@@ -68,17 +68,10 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         },
         
         exec : function(command, editor, args, e){
-            if (command.context) {
-                // apf.activeElement is unreliable menus can become active
-                // while other elements are focused
-                if (command.context == "codeeditor")
-                    var isWrongContext = !document.activeElement.isCodeEditor;
-                else //or should this be apf.xmldb.isChildOf?                	
-                    var isWrongContext = command.context.indexOf(apf.activeElement) == -1;
+            if (command.context 
+              && command.context.indexOf(apf.activeElement) == -1) //or should this be apf.xmldb.isChildOf?
+                return; //Disable commands for other contexts
 
-                if (isWrongContext)
-                    return; //Disable commands for other contexts
-            }
             if (!editor || editor.fake) {
                 //@todo this needs a better abstraction
                 //@todo focus handling

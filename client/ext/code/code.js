@@ -306,7 +306,8 @@ module.exports = ext.register("ext/code/code", {
                 //abstraction leakage???
                 if (force || this.$page.id == this.$page.parentNode.activepage) {
                     ceEditor.setProperty("value", doc.acesession);
-                    ceEditor.setProperty("syntax", ceEditor.docsyntax);
+                    ceEditor.setProperty("syntax", 
+                        _self.getSyntax(doc.getNode()));
                 }
                 
                 doc.removeEventListener("prop.value", arguments.callee);
@@ -351,7 +352,8 @@ module.exports = ext.register("ext/code/code", {
         }
         else {
             ceEditor.setProperty("value", doc.acesession);
-            ceEditor.setProperty('syntax', ceEditor.docsyntax);
+            ceEditor.setProperty('syntax', 
+                _self.getSyntax(doc.getNode()));
         }
 
         if (doc.editor && doc.editor != this) {
@@ -375,10 +377,12 @@ module.exports = ext.register("ext/code/code", {
         defaultCommands.each(function(command) {
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
+            command.context = [];
         });
         MultiSelectCommands.each(function(command) {
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
+            command.context = [];
         });
         
         commands.addCommands(defaultCommands, null, true);
@@ -729,10 +733,10 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.$editor.commands = commands;
         
         defaultCommands.each(function(command){
-            command.context = [ceEditor];
+            command.context.push(ceEditor);
         });
         MultiSelectCommands.each(function(command){
-            command.context = [ceEditor];
+            command.context.push(ceEditor);
         });
 
         // preload common language modes
