@@ -72,7 +72,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            ace.textInput.emitCut(ace);
+            ace.textInput.emitCut();
         }
     },
 
@@ -85,7 +85,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            ace.textInput.emitCopy(ace);
+            ace.textInput.emitCopy();
         }
     },
 
@@ -95,7 +95,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            ace.getSession().replace(ace.getSelectionRange(), this.text);
+            ace.textInput.emitPaste();
         }
     },
 
