@@ -36671,7 +36671,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/window.js)SIZE(50571)TIME(Wed, 25 Apr 2012 04:25:17 GMT)*/
+/*FILEHEAD(core/window.js)SIZE(50587)TIME(Wed, 25 Apr 2012 06:22:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36909,7 +36909,7 @@ apf.window = function(){
                 return false;
         }
 
-        if (amlNode.$focussable != apf.MENU) {
+        if (amlNode.$focussable != apf.MENU || !apf.activeElement) {
             apf.activeElement = 
             this.document.activeElement = 
             this.document.documentElement.$lastFocussed = amlNode;
@@ -37353,9 +37353,9 @@ apf.window = function(){
 //                        apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
 //                }
             }
-//            else {
-//                apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
-//            }
+            else {
+                apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+            }
     
             
         }
