@@ -231,7 +231,7 @@ module.exports = ext.register("ext/tree/tree", {
         })
         
         ide.addEventListener("afteronline", function(){
-            _self.selectable = true;
+            trFiles.selectable = true;
         })
 
         // This adds a "Show Hidden Files" item to the settings dropdown
