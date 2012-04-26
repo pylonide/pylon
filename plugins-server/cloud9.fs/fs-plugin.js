@@ -3,7 +3,7 @@ var path = require("path");
 var utils = require("connect").utils;
 var error = require("http-error");
 
-var jsDAV = require("jsdav");
+var jsDAV = require("jsDAV");
 var DavPermission = require("./dav/permission");
 var DavFilewatch = require("./dav/filewatch");
 var gnutools = require("gnu-tools");
