@@ -391,6 +391,13 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (self.docChangeListeners[path]) {
                 delete self.docChangeListeners[path];
             }
+
+            for (var rev in self.revisionQueue) {
+                var _path = self.revisionQueue[rev].path;
+                if (_path && _path === path) {
+                    delete self.revisionQueue[rev];
+                }
+            }
         }, 100);
 
         this.save(e.page);
@@ -398,7 +405,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     $makeNewRevision: function(rev) {
         var queue = this.offlineQueue;
-        var revObj = this.rawRevisions[rev.path];
+        var revObj = this.$getRevisionObject(rev.path);
         rev.revisions = revObj.allRevisions;
         // To not have to extract and sort timestamps from allRevisions
         rev.timestamps = revObj.allTimestamps;
@@ -621,7 +628,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 var page = tabEditors.getPage();
                 var doc = page.$doc;
                 var docPath = this.$getDocPath(page);
-                revObj = this.rawRevisions[docPath];
+                revObj = this.$getRevisionObject(docPath);
 
                 this.worker.postMessage({
                     inDialog: true,
@@ -722,7 +729,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     toggleListView: function() {
-        var revObj = this.rawRevisions[this.$getDocPath()];
+        var revObj = this.$getRevisionObject(this.$getDocPath());
         revObj.useCompactList = !!!revObj.useCompactList;
 
         // We don't want to mix up compact/detailed preview caches
@@ -811,7 +818,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     getRevision: function(id, content) {
         id = parseInt(id, 10);
 
-        var revObj = this.rawRevisions[this.$getDocPath()];
+        var revObj = this.$getRevisionObject(this.$getDocPath());
         var tstamps = revObj.allTimestamps.slice(0);
         var revision = tstamps.indexOf(id);
 
@@ -1128,7 +1135,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
             }
             else {
-                var revObj = this.rawRevisions[docPath];
+                var revObj = this.$getRevisionObject(docPath);
                 data.revisions = revObj.allRevisions;
                 // To not have to extract and sort timestamps from allRevisions
                 data.timestamps = revObj.allTimestamps;
@@ -1151,8 +1158,8 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     addUserToDocChangeList: function(user, doc) {
         if (user && doc) {
-            var origPath = this.$getDocPath(doc.$page);
-            var stack = this.revisionsData[origPath];
+            var path = this.$getDocPath(doc.$page);
+            var stack = this.revisionsData[path];
             if (stack && (stack.usersChanged.indexOf(user.user.email) === -1)) {
                 stack.usersChanged.push(user.user.email);
             }
