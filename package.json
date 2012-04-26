@@ -25,7 +25,7 @@
 
     "mappings": {
         "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/498cc1a89d22b6426aeb6589b8934147b69852a7"],
-        "apf":          ["tar", "https://github.com/ajaxorg/apf/tarball/800623c6dacc77dad6f1d270d9d307b3c0bc0841"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/8f3ac853d8d5cd9cf82e4bd600aa447c1aaa72b3"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/cd253a501d18a6be030c0dc160b0aa8be99fb06e"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsdav":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/5e3d927ede95f9e6889569c66fb39a3e6a8b89d7"],
@@ -43,6 +43,7 @@
     }],
 
     "scripts": {
+        "start": "sh ./bin/cloud9.sh",
         "postinstall": "node ./node_modules/mappings/scripts/postinstall-notice.js"
     }
 }

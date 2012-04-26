@@ -1,10 +1,6 @@
 #!/bin/sh
 
 cd `dirname $0`/..
-cd bin
-./npm-link-submodules.sh
-
-cd ..
 
 case `uname -a` in
 Linux*x86_64*)  echo "Linux 64 bit"   
