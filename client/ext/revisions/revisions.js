@@ -147,7 +147,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
         menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "About Auto-Save",
-            onclick : function() {}
+            onclick : function() {
+                self.showAbout();   
+            }
         }), c += 100);
 
         this.defaultUser = { email: null };
@@ -669,7 +671,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     /**
      * Revisions#showQuestionWindow(data) -> Void
-     * - data(Object): Data about the revision to be potentially submitted, and
+     * - data (Object): Data about the revision to be potentially submitted, and
      * the contents of the file before and after the external edit.
      *
      * Shows a dialog that lets the user choose whether to keep the current state
@@ -721,6 +723,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
     },
 
+    showAbout : function() {
+        ext.initExtension(this);
+        revisionInfo.show(); 
+    },
+    
     /**
      * Revisions#generateTimestamps(page)
      * - revObj(Object): Body of the message coming from the server

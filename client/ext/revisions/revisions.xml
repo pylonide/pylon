@@ -102,4 +102,25 @@
             " />
         </a:hbox>
     </a:vbox>
+
+     <a:window id = "revisionInfo"
+      title   = "About Revisions"
+      center  = "true"
+      modal   = "true"
+      buttons = "close"
+      kbclose = "true"
+      width   = "500"
+      skin    = "bk-window"
+      class   = "relative">
+        <a:vbox padding="10" edge="15">
+            <a:text id="revisionInfoText" class="tgDesc modal_text" value="Auto-Save is a feature designed to gave you extra relief when working on your code in Cloud9. Every revision of your file can be saved automatically by the server.&lt;br/>&lt;br/>However, none of your previous changes are lost throughout the course of your development.&lt;br/>&lt;br/>You can view your entire history of revisions at any time through the Revision History pane. Feel free to rollback to a previous state, or navigate through the revisions to make comparisons."/>
+        </a:vbox>
+       <a:hbox padding="10" pack="end" edge="10 10 10 20" align="center">
+            <a:button id="winTourButtonStart" 
+              default = "2" 
+              class   = "btn-green" 
+              skin    = "btn-default-css3" 
+              onclick = "revisionInfo.hide();">Got it!</a:button>
+        </a:hbox>
+    </a:window>
 </a:application>

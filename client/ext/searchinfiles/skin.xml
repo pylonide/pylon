@@ -27,7 +27,7 @@
           height: 18px;
           background: no-repeat 3px 4px;
           display: block;
-          margin-left: -15px;
+          margin-left: -13px;
       }
 
       .searchtree DIV.pluslast SPAN,
