@@ -225,8 +225,10 @@ apf.aml.setElement("auth", apf.auth);
         if (this.autostart && !this.$hasHost) {
             var _self = this;
             apf.addEventListener("load", function(){
-                _self.authRequired();
-                apf.removeEventListener("load", arguments.callee);
+                apf.addEventListener("login", function(){
+                    _self.authRequired();
+                    apf.removeEventListener("load", arguments.callee);
+                });
             });
         }
     });
