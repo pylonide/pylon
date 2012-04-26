@@ -42,21 +42,41 @@ module.exports = ext.register("ext/revisions/revisions", {
     nodes: [],
     skin: skin,
 
+    /**
+     * Revisions#rawRevisions -> Object
+     * Holds the cached revisions and some meta-data about them so Cloud9 can 
+     * access them fast in the client-side. It also minimizes the amount of communication 
+     * needed with the server in single-user mode.
+     */ 
     rawRevisions: {},
     revisionsData: {},
     docChangeTimeout: null,
     docChangeListeners: {},
-    // Revision Queue (its saving hasn't been confirmed by the server)
+    /**
+     * Revisions#revisionQueue -> Object
+     * Contains the revisions that have been sent to the server, but not yet
+     * confirmed to be saved.
+     */ 
     revisionQueue: {},
+    /**
+     * Revisions#offlineQueue -> Array
+     * Contains the revisions that have been saved during Cloud9 being offline.
+     * Its items are not revision objects, but hold their own format (for
+     * example, they have a generated timestamp of the moment of saving).
+     */ 
     offlineQueue: [],
 
+    /** related to: Revisions#show
+     * Revisions#toggle() -> Void
+     *
+     * Initializes the plugin if it is not initialized yet, and shows/hides its UI.
+     **/
     toggle: function() {
         if (!editors.currentEditor.ceEditor) {
             return;
         }
 
         ext.initExtension(this);
-
         if (this.panel.visible)
             this.hide();
         else
@@ -157,8 +177,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("beforewatcherchange", this.$onExternalChange);
 
         ide.addEventListener("beforesavewarn", function(e){
-            if (!apf.isTrue(e.doc.getNode().getAttribute("newfile"))
-              && apf.isTrue(settings.model.queryValue("general/@autosaveenabled"))) {
+            var isNewFile = apf.isTrue(e.doc.getNode().getAttribute("newfile"));
+            if (!isNewFile && this.$isAutoSaveEnabled()) {
                 self.save();
                 return false;
             }
@@ -180,10 +200,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             btnSave.setCaption("");
         }
 
-        var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
         var hasChanged = this.$pageHasChanged(tabEditors.getPage());
-
-        if (autoSaveEnabled && hasChanged) {
+        if (this.$isAutoSaveEnabled() && hasChanged) {
             btnSave.setCaption("Saving...");
         }
         else if (!hasChanged) {
@@ -244,9 +262,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         var worker = this.worker = new Worker("/static/ext/revisions/revisions_worker.js");
         worker.onmessage = this.onWorkerMessage.bind(this);
         worker.onerror = function(error) {
-            console.log("Worker error: " + error.message + "\n");
-            throw error;
+            console.error("Error from worker:\n" + error.message);
         };
+        // Preload diff libraries so they are available to the worker in case we
+        // go offline.
+        worker.postMessage({ type: "preloadlibs" });
     },
 
     $switchToPageModel: function(page) {
@@ -290,6 +310,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
         return revObj;
     },
+    
+    $isAutoSaveEnabled: function() {
+        return apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
+    },
 
     /////////////////////
     // Event listeners //
@@ -312,7 +336,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
-        this.prevAutoSaveValue = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
+        this.prevAutoSaveValue = this.$isAutoSaveEnabled();
         settings.model.setQueryValue("general/@autosaveenabled", false);
 
         if (!this.isCollab(doc)) {
@@ -403,7 +427,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $makeNewRevision: function(rev) {
-        var queue = this.offlineQueue;
         var revObj = this.$getRevisionObject(rev.path);
         rev.revisions = revObj.allRevisions;
         // To not have to extract and sort timestamps from allRevisions
@@ -423,6 +446,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (revApplyOn === savedTS) {
                 this.$makeNewRevision(queue[i]);
                 queue[i] = null;
+                continue;
             }
         }
     },
@@ -489,8 +513,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         clearTimeout(this.docChangeTimeout);
         this.docChangeTimeout = setTimeout(function(self) {
-            var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-            if (doc.$page && autoSaveEnabled) {
+            if (doc.$page && this.$isAutoSaveEnabled()) {
                 self.setSaveButtonCaption();
                 self.save(doc.$page);
             }
@@ -1060,8 +1083,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
-        var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-        if (!self.tabEditors || !autoSaveEnabled)
+        if (!self.tabEditors || !this.$isAutoSaveEnabled())
             return;
 
         tabEditors.getPages().forEach(this.save, this);

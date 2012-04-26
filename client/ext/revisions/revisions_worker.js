@@ -57,7 +57,7 @@ var getLastAndAfterRevisions = function(data) {
     return [beforeRevision, afterRevision];
 };
 
-self.onmessage = function(e) {
+var loadLibs = function() {
     if (!self.dmp) {
         importScripts("/static/ext/revisions/diff_match_patch.js");
         self.dmp = new diff_match_patch();
@@ -67,10 +67,15 @@ self.onmessage = function(e) {
         importScripts("/static/ext/revisions/lib/difflib.js");
         self.difflib = difflib;
     }
+};
 
+self.onmessage = function(e) {
     var packet = {};
     var afterRevision, beforeRevision, lastContent, patch;
     switch (e.data.type) {
+        case "preloadlibs":
+            loadLibs();
+            break;
         case "preview":
             var results = getLastAndAfterRevisions(e.data);
             beforeRevision = results[0];
