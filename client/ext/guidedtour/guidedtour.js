@@ -256,6 +256,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             else if (step.div == "ceEditor"){
                 _self.currentEl = ceEditor;
             }
+            else if (step.div == "ceEditorGutter") {
+                _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[1]/DIV[2]', ceEditor.$ext) 
+            }
             else if (step.div == "expandedDbg") {
                 _self.currentEl = expandedDbg;
             }
