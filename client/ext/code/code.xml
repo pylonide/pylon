@@ -34,13 +34,13 @@
       readonly          = "{[@loading] || cloud9config.readonly || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 
-    <a:menu id="mnuCtxEditor" render="runtime" onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
+    <a:menu id="mnuCtxEditor" render="runtime">
         <a:item command="undo">Undo</a:item>
         <a:item command="redo">Redo</a:item>
         <a:divider />
-        <a:item command="cut" onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
-        <a:item command="copy" onclick="{require('ext/clipboard/clipboard').copy()}">Copy</a:item>
-        <a:item command="paste" onclick="{require('ext/clipboard/clipboard').paste()}">Paste</a:item>
+        <a:item command="cut">Cut</a:item>
+        <a:item command="copy">Copy</a:item>
+        <a:item command="paste">Paste</a:item>
         <a:divider />
         <a:item 
           visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"

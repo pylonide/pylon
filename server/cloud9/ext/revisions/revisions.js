@@ -77,18 +77,25 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         return console.error("No path sent for the file to save");
                     }
 
-                    this.saveRevision(message.path, message.revision, function() {
-                        if (message.forceRevisionListResponse === true) {
-                            self.getRevisions(message.path, function(err, revObj) {
-                                if (err) {
-                                    return console.error(
-                                        "There was a problem retrieving the revisions" +
-                                        " for the file " + message.path + ":\n", err);
-                                }
+                    this.saveRevision(message.path, message.revision, function(err, savedRevisionInfo) {
+                        if (err) {
+                            return console.error();
+                        }
+
+                        var path = savedRevisionInfo.path;
+                        var ts = savedRevisionInfo.ts;
+                        var revObj = savedRevisionInfo.revObj;
+                        if (!self.isCollab()) {
+                            self.broadcastConfirmSave(path, ts);
+                            if (message.forceRevisionListResponse === true) {
                                 self.broadcastRevisions.call(self, revObj, user, {
                                     path: message.path
                                 });
-                            });
+                            }
+                        }
+                        else {
+                            // Probably change that
+                            self.broadcastRevisions.call(self, revObj, null, { path: path });
                         }
                     });
                     break;
@@ -273,6 +280,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 content = Diff.patch_apply(revision.patch[0], content)[0];
                 next();
             })
+            .delay(0)
             .end(function() {
                 callback(null, content);
             });
@@ -296,8 +304,8 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 if (err)
                     return callback(err);
 
-            callback(null, content);
-        });
+                callback(null, content);
+            });
         });
     };
 
@@ -439,24 +447,19 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 return callback(new Error("Couldn't retrieve revisions for " + path));
 
             revObj.revisions[revision.ts] = revision;
-            self.saveToDisk(path, function(err) {
+            self.saveToDisk(path, function(err, savedRevisionInfo) {
                 if (err)
                     callback(err);
 
-                if (!self.isCollab()) {
-                    self.broadcastConfirmSave(path, revision.ts);
-                }
-                else {
-                    //self.broadcastRevisions.call(self, revObj, null, { path: path });
-                }
-                callback();
+                savedRevisionInfo.ts = revision.ts;
+                callback(null, savedRevisionInfo);
             });
         });
     };
 
     this.saveToDisk = function(path, callback) {
         var revisions = this.revisions;
-        if (!path || !revisions[path]) {
+        if (!path || !revisions || !revisions[path]) {
             return callback(new Error("No path or no revision history in this filepath: " + path));
         }
 
@@ -469,7 +472,11 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 if (err)
                     return callback(new Error("Could not save backup file" + finalPath));
 
-                callback(null, finalPath, revisions[path]);
+                callback(null, {
+                    absPath: finalPath,
+                    path: path,
+                    revObj: revisions[path]
+                });
             });
         });
     };

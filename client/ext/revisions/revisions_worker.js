@@ -57,20 +57,25 @@ var getLastAndAfterRevisions = function(data) {
     return [beforeRevision, afterRevision];
 };
 
-self.onmessage = function(e) {
+var loadLibs = function() {
     if (!self.dmp) {
         importScripts("/static/ext/revisions/diff_match_patch.js");
         self.dmp = new diff_match_patch();
     }
 
     if (!self.difflib) {
-        importScripts("/static/ext/revisions/lib/difflib.js");
+        importScripts("/static/ext/revisions/difflib.js");
         self.difflib = difflib;
     }
+};
 
+self.onmessage = function(e) {
     var packet = {};
     var afterRevision, beforeRevision, lastContent, patch;
     switch (e.data.type) {
+        case "preloadlibs":
+            loadLibs();
+            break;
         case "preview":
             var results = getLastAndAfterRevisions(e.data);
             beforeRevision = results[0];
@@ -175,12 +180,12 @@ self.onmessage = function(e) {
                     contributors: e.data.contributors,
                     silentsave: e.data.silentsave,
                     restoring: e.data.restoring,
-                    ts: Date.now(),
+                    ts: e.data.ts || Date.now(),
                     patch: [patch],
                     length: lastContent.length,
                     saved: false
                 }
-            }
+            };
             break;
 
         // Recovery is a special case for when a external application modifies
