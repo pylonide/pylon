@@ -1,4 +1,4 @@
-var netutil = require("cloud9/plugins-server/cloud9.core/netutil");
+var netutil = require("../cloud9.core/netutil");
 var connect = require("connect");
 
 module.exports = function startup(options, imports, register) {
