@@ -45,11 +45,12 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var _self = this;
         
         this.worker = new Worker('/static/ext/uploadfiles/uploadworker.js');
-        this.worker.addEventListener("message", function(e) {  
+        this.worker.onmessage = function(e) {  
             var data = e.data;
-            if (!data.type)
-                return; //console.log(data);
-                
+            if (!data.type) {
+                //console.log(data);
+                return;
+            }
             switch(data.type) {
                 case "complete":
                     _self.onComplete();
@@ -67,7 +68,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     console.log("unknown message from uploadworker: ", data.type);
             }
             
-        }, false);  
+        };  
         
         this.nodes.push(
             ide.mnuFile.appendChild(new apf.item({
@@ -491,6 +492,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 
                 function upload(file) {
                     var file = file || _self.currentFile;
+                    var node = file.queueNode;
+                    apf.xmldb.setAttribute(node, "progress", 0);
                     _self.worker.postMessage({cmd: 'connect', id: file.name, file: file, path: file.path});
                 }
                 _self.upload = upload;

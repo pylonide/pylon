@@ -3,7 +3,7 @@ connections.length = 0;
 
 var BYTES_PER_CHUNK = 256 * 1024; // 256k chunk sizes.
 
-self.addEventListener("message", function (e) {  
+self.onmessage = function (e) {  
     var data = e.data;
     if (!data.cmd) {
         self.postMessage({value: "No cmd specified"});
@@ -37,20 +37,13 @@ self.addEventListener("message", function (e) {
             
                         var start = 0;
                         var end = BYTES_PER_CHUNK;
-                        
+                        if (end > blobsize)
+                            end = blobsize;
+                            
                         function next(error){
                             if (error) {
                                 self.postMessage({type: "paused", error: error, filepath: filepath});
                                 return;
-                            }
-                            
-                            self.postMessage({type: "progress", value: end/blobsize});
-                            
-                            if (start >= blobsize) {
-                                // file upload complete
-                                delete connections[filepath];
-                                connections.length--;
-                                return self.postMessage({type: "complete"});
                             }
                             
                             // Note: blob.slice has changed semantics and been prefixed. See http://goo.gl/U9mE5.
@@ -60,7 +53,7 @@ self.addEventListener("message", function (e) {
                                 var chunk = blob.webkitSlice(start, end);
                             }
                             
-                            self.uploadChunk(chunk, filepath, next);
+                            self.uploadChunk(chunk, filepath, end, blobsize, next);
                         
                             start = end;
                             end = start + BYTES_PER_CHUNK;
@@ -83,19 +76,26 @@ self.addEventListener("message", function (e) {
                 self.postMessage({value: "unknown cmd"});
         }
     }
-});
+};
 
 // uploading file in chunks
-self.uploadChunk = function(chunk, filepath, next) {
+self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
     var http = new XMLHttpRequest();
     http.open("PUT", filepath, true);
     http.onreadystatechange = function(){
         if (http.readyState != 4)
             return;
         
-        setTimeout(function(e) {
-            next(http.status < 200 || http.status > 299 ? http.status : 0);
-        }, 2000);
+        if (end == blobsize) {
+            // file upload complete
+            delete connections[filepath];
+            connections.length--;
+            return self.postMessage({type: "complete"});
+        }
+        
+        self.postMessage({type: "progress", value: end/blobsize});
+        
+        next(http.status < 200 || http.status > 299 ? http.status : 0);
     }
     /*
     http.setRequestHeader("Cache-Control", "no-cache");
@@ -105,51 +105,3 @@ self.uploadChunk = function(chunk, filepath, next) {
     */
     http.send(chunk);
 };
-
-/*
-self.addEventListener('message', function(e) {
-    var data = e.data;
-    switch (data.cmd) {
-        case "connect":
-            var file = data.file;
-            
-            var reader = new FileReader();
-            // Init the reader event handlers
-            reader.onloadend = function(e) {
-                var filename = file.name;
-                
-                var http = new XMLHttpRequest();
-                http.open("PUT", data.path + "/" + filename, true);
-                http.onreadystatechange = function(){
-                    if (http.readyState != 4)
-                        return;
-                    file.data = e.target.result
-                    self.postMessage({msg: "uploadcomplete", status: http.status, file: file});
-                }
-                http.setRequestHeader("Cache-Control", "no-cache");
-                http.setRequestHeader("X-File-Name", filename);
-                http.setRequestHeader("X-File-Size", file.size);
-                http.setRequestHeader("Content-Type", "application/octet-stream");
-
-                //http.send(e.target.result);
-                self.postMessage({msg: "result.length", val: e.target.result.length});
-                //http.send(e.target.result.substring(0, 2000000));
-            }
-            
-            reader.onload = function(e) {
-                self.postMessage({msg: "onload"});
-            }
-            
-            reader.onerror = function(e) {
-                self.postMessage({msg: "uploaderror", val: e.code});
-            }
-            
-            // Begin the read operation
-            reader.readAsBinaryString(data.file);
-            
-            break;
-        default:
-            self.postMessage({msg: "invalid cmd", val: data.cmd});
-    }
-});
-*/

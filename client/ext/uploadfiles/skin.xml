@@ -46,6 +46,11 @@
                 cursor      : default;
             }
             
+            .list-uploadactivity .item .uploadactivity-caption {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
             .list-uploadactivity .item .uploadactivity-caption.bold {
                 font-weight: bold;
             }
@@ -67,33 +72,10 @@
                 text-shadow : none;
             }
             
-            .list-uploadactivity .item.hover .uploadactivity-delete {
-                display: none;
-            }
-            .list-uploadactivity .item.hover .uploadactivity-delete {
-                display: block
-            }
-            
-            .list-uploadactivity .item.hover .uploadactivity-delete:hover {
-                background-position : 0 -14px;
-            }
-            
-            .list-uploadactivity .item.hover .icon {
-                background-position : 0 -16px;
-            }
-            
             .list-uploadactivity .item.selected {
                 cursor:default;
             }
             
-            .list-uploadactivity .item.selected .uploadactivity-delete {
-                background-position : 0 0;
-            }
-            
-            .list-uploadactivity .item.selected .icon {
-                background-position : 0 0;
-            }
-
             .list-uploadactivity .item .uploadactivity-delete {
                 width       : 13px;
                 height      : 14px;
@@ -105,9 +87,12 @@
                 display     : none;
             }
 
-            .list-uploadactivity .item.selected .uploadactivity-delete:hover {
-                background-position : 0 -52px;
-                cursor:pointer;
+            .list-uploadactivity .item.hover .uploadactivity-delete {
+                display: block;
+            }
+            
+            .list-uploadactivity .item.hover .uploadactivity-delete:hover {
+                background-position: 0 -14px;
             }
             
             .list-uploadactivity .message.empty {
