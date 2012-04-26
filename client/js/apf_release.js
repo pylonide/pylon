@@ -1,9 +1,9 @@
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/jpack_begin.js)SIZE(0)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/apf.js)SIZE(96111)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/apf.js)SIZE(96095)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1397,7 +1397,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/class.js)SIZE(45673)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/class.js)SIZE(45743)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1887,7 +1887,7 @@ apf.Class.prototype = new (function(){
 
                 if (!node || typeof node != OBJ || (!node.$regbase && node.$regbase !== 0)) {
                     bProp = o[1];
-                    node  = self[o[0]];
+                    node  = self[o[0]] || apf.nameserver.get("all", o[0]);
                 }
                 else {
                     o.push(bProp);
@@ -1895,7 +1895,7 @@ apf.Class.prototype = new (function(){
             }
             else {
                 bProp = o[1];
-                node  = self[o[0]] || o[0] == "this" && this;
+                node  = self[o[0]] || apf.nameserver.get("all", o[0]) || o[0] == "this" && this;
             }
 
             if (!node) {
@@ -2463,7 +2463,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10920)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/color.js)SIZE(10920)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2706,7 +2706,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2732,7 +2732,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/async.js)SIZE(4124)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2876,7 +2876,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/cookie.js)SIZE(3073)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2965,7 +2965,7 @@ apf.delcookie = function (name, domain){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25965)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/ecmaext.js)SIZE(25965)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3747,7 +3747,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/flash.js)SIZE(22995)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3773,7 +3773,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/hook.js)SIZE(10100)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3799,7 +3799,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6514)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/hotkey.js)SIZE(6514)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -3857,7 +3857,7 @@ apf.hotkeys = {};
         "option"   : "\u2325",
         "shift"    : "\u21E7", // ⇧
         "esc"      : "\u238B", // ⎋
-        "control"  : "\u2303", // ⌃
+        "ctrl"     : "\u2303", // ⌃
         "backspace": "\u232B", // ⌫
         "del"      : "\u2326", // ⌦
         "enter"    : "\u21A9"  // ↩
@@ -3870,7 +3870,7 @@ apf.hotkeys = {};
         "option"   : "&#8997;",
         "shift"    : "&#8679;", // ⇧
         "esc"      : "&#9099;", // ⎋
-        "control"  : "&#2303;", // ⌃ TODO
+        "ctrl"     : "&#2303;", // ⌃ TODO
         "backspace": "&#232B;", // ⌫ TODO
         "del"      : "&#2326;", // ⌦ TODO
         "enter"    : "&#21A9;"  // ↩ TODO
@@ -4010,7 +4010,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4036,7 +4036,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/json.js)SIZE(26243)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4064,7 +4064,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4177,7 +4177,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/o3.js)SIZE(8157)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4202,7 +4202,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(8624)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/plane.js)SIZE(8624)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4434,7 +4434,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(12703)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/popup.js)SIZE(13264)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4580,18 +4580,18 @@ apf.popup = {
                     ? pOverflow.offsetHeight 
                     : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
                 : pOverflow.offsetHeight + pOverflow.scrollTop);
-            moveUp = options.autoCorrect && (y
+            moveUp = options.up || options.autoCorrect && (y
                 + (options.height || o.height || o.content.offsetHeight))
                 > edgeY;
 
             if (moveUp) {
                 var value;
-                if (refNode)
+                if (options.ref)
                     value = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + 3;
                 else
-                    value = (edgeY - (options.height || o.height || o.content.offsetHeight));
+                    value = Math.max(0, edgeY - (options.height || o.height || o.content.offsetHeight));
                 
-                popup.style.top = value < 0 ? y : value + "px";
+                popup.style.top = (!options.up && value < 0 ? y : value) + "px";
             }
             else {
                 popup.style.top = y + "px";
@@ -4761,6 +4761,24 @@ apf.popup = {
         return typeof this.last == "number" && apf.lookup(this.last);
     },
     
+    $mousedownHandler : function(amlNode, e){
+        if (!this.last || (amlNode && this.last == amlNode.$uniqueId) || !this.cache[this.last])
+          return;
+
+        var htmlNode = e.srcElement || e.target;
+        
+        var uId = this.last;
+        
+        while (this.cache[uId]) {
+            if (apf.isChildOf(this.cache[uId].content, htmlNode, true))
+                return;
+            
+            uId = this.cache[uId].options.allowTogether;
+        }
+        
+        this.forceHide();
+    },
+    
     forceHide : function(){
         if (this.last 
           
@@ -4796,7 +4814,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4822,7 +4840,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18536)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/style.js)SIZE(18536)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5321,7 +5339,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/syntax.js)SIZE(12610)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5346,7 +5364,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5372,7 +5390,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(14497)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/utilities.js)SIZE(14497)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5852,7 +5870,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6014,7 +6032,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(49534)TIME(Mon, 16 Apr 2012 23:45:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/xml.js)SIZE(49534)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7428,7 +7446,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7453,7 +7471,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7533,7 +7551,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/history.js)SIZE(9996)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7812,7 +7830,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8175)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/config.js)SIZE(8137)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7869,7 +7887,6 @@ apf.extend(apf.config, {
     defaults           : {},
     baseurl            : "",
     
-    "model"            : "@default",
     "empty-message"    : "No items",
     "loading-message"  : "Loading...",
     "offline-message"  : "You are currently offline.",
@@ -7963,7 +7980,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(19757)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline.js)SIZE(19757)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7993,7 +8010,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/application.js)SIZE(11733)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8019,7 +8036,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/gears.js)SIZE(4771)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8045,7 +8062,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/detector.js)SIZE(4827)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8071,7 +8088,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/models.js)SIZE(5471)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8097,7 +8114,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7009)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/queue.js)SIZE(7009)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8123,7 +8140,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7979)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/state.js)SIZE(7979)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8149,7 +8166,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9781)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/offline/transactions.js)SIZE(9781)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8175,7 +8192,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/data.js)SIZE(16420)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/data.js)SIZE(16420)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8578,7 +8595,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/date.js)SIZE(40737)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/date.js)SIZE(40737)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9644,7 +9661,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/draw.js)SIZE(66997)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9668,33 +9685,7 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/flow.js)SIZE(71086)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9720,7 +9711,33 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/flow2.js)SIZE(70664)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/geolocation.js)SIZE(11303)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9746,7 +9763,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15340)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/html.js)SIZE(15340)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9772,7 +9789,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/language.js)SIZE(8586)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9798,7 +9815,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(13658)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/layout.js)SIZE(13658)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10224,7 +10241,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/printer.js)SIZE(5120)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10250,7 +10267,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(3138)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/queue.js)SIZE(3138)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10359,7 +10376,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/resize.js)SIZE(13139)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10755,7 +10772,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/resize2.js)SIZE(10417)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10780,7 +10797,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/selection.js)SIZE(32184)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10805,7 +10822,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12336)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/skins.js)SIZE(12336)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11139,7 +11156,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/sort.js)SIZE(8239)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11367,7 +11384,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage.js)SIZE(9036)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11393,7 +11410,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35621)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/tween.js)SIZE(35621)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12372,13 +12389,13 @@ return {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(397)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder.js)SIZE(397)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/vector.js)SIZE(46289)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12404,7 +12421,7 @@ return {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40794)TIME(Sat, 21 Apr 2012 22:46:38 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/xmldb.js)SIZE(40903)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12464,7 +12481,11 @@ apf.xmldb = new (function(){
     this.garbageCollect = function(){
         var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
         for (var i = 0, l = cache.length; i < l; i++) {
-            xmlNode = cache[i]
+            xmlNode = cache[i];
+            
+            if (!xmlNode || xmlNode.nodeFunc)
+                continue;
+            
             docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
             model = apf.nameserver.get("model", docId);
             
@@ -12696,9 +12717,10 @@ apf.xmldb = new (function(){
                     if (!model)
                         return;
                     
-                    if(model.$propBinds[sUId[1]][sUId[2]]) {
+                    if (model.$propBinds[sUId[1]][sUId[2]]) {
                         if (!apf.isChildOf(model.data, xmlNode, true)) 
                             return false;
+
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
                         var node  = xpath
                             ? apf.queryNode(model.data, xpath)
@@ -13223,7 +13245,7 @@ apf.xmldb = new (function(){
                 nextloop = null;
         }
 
-        if (undoObj && !this.delayUpdate) {
+        if (true || undoObj && !this.delayUpdate) {
             //Ok this was an action let's not delay execution
             apf.xmldb.notifyQueued();
         }
@@ -13421,7 +13443,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13445,7 +13467,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13470,7 +13492,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/draw/vml.js)SIZE(20284)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13494,32 +13516,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.js)SIZE(9669)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13544,7 +13541,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.js)SIZE(9669)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13569,7 +13566,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10315)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13594,8 +13591,7 @@ apf.xmldb = new (function(){
 
 
 
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15459)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/cookie.js)SIZE(10315)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13621,7 +13617,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12314)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/flash.js)SIZE(15459)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13647,7 +13643,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8229)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/gears.js)SIZE(12314)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13673,7 +13669,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10210)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/html5.js)SIZE(8229)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13699,7 +13695,33 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(36015)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/storage/memory.js)SIZE(10210)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/teleport/http.js)SIZE(36015)TIME(Mon, 16 Apr 2012 22:10:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14541,7 +14563,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14566,7 +14588,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14592,24 +14614,24 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(21922)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/capture.js)SIZE(21922)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/playback.js)SIZE(28844)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/playback.js)SIZE(28844)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(18237)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/domparser.js)SIZE(18376)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14965,13 +14987,16 @@ apf.DOMParser.prototype = new (function(){
 
                     //attributes
                     var attr = xmlNode.attributes, n;
-                    for (var a, i = 0, l = attr.length; i < l; i++) {
-                        o.attributes.push(new apf.AmlAttr(o, 
+                    for (var a, na, i = 0, l = attr.length; i < l; i++) {
+                        o.attributes.push(na = new apf.AmlAttr(o, 
                             (n = (a = attr[i]).nodeName), a.nodeValue));
                         
                         if (n == "render")
                             o.render = true;
+                        else
                         
+                        if (n.substr(0, 2) == "on")
+                            na.$triggerUpdate();
                     }
                 }
                 
@@ -15068,7 +15093,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml.js)SIZE(1478)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15111,7 +15136,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22559)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/node.js)SIZE(22631)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15496,8 +15521,9 @@ apf.AmlNode = function(){
         if (!doc || doc.$domParser.$isPaused(this))
             return amlNode;
 
-        if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT)
-            return; //We don't update the tree if this is a doc fragment
+        // Don't update the tree if this is a doc fragment or if this element is not inited yet
+        if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT || !this.$amlLoaded)
+            return amlNode; 
 
         //@todo review this...
         if (initialAppend && !amlNode.render) { // && (nNodes = node.childNodes).length ??
@@ -15693,7 +15719,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(21964)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/element.js)SIZE(22835)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15769,7 +15795,7 @@ apf.AmlElement = function(struct, tagName){
         
         //Parse struct to create attributes and child nodes
         if (struct) {
-            var nodes, prop, i, l;
+            var nodes, prop, i, l, attr;
             if (struct.childNodes) {
                 nodes = struct.childNodes;
                 delete struct.childNodes; //why delete?
@@ -15778,8 +15804,18 @@ apf.AmlElement = function(struct, tagName){
             //Attributes
             for (prop in struct){ 
                 if (prop == "htmlNode") continue;
+                
+                attr = new apf.AmlAttr(this, prop, struct[prop]);
+                
+                //These exceptions should be generalized
+                if (prop == "id")
+                    this.$propHandlers["id"].call(this, this.id = struct.id);
+                else if (prop == "hotkey")
+                    this.$propHandlers["hotkey"].call(this, this.hotkey = struct.hotkey);
+                else if (prop.substr(0, 2) == "on")
+                    attr.$triggerUpdate();
 
-                this.attributes.push(new apf.AmlAttr(this, prop, struct[prop]));
+                this.attributes.push(attr);
             }
             
             if (!this.ownerDocument) {
@@ -15837,8 +15873,16 @@ apf.AmlElement = function(struct, tagName){
             if (this.name == value)
                 return;
     
-            if (self[this.name] == this)
-                self[this.name] = null
+            if (self[this.name] == this) {
+                self[this.name] = null;
+                
+                apf.nameserver.remove(this.localName, this);
+                apf.nameserver.remove("all", this);
+                
+            }
+    
+            if (self[value])
+                throw new Error("ID collision of APF element: '" + value + "'");
     
             if (!self[value] || !self[value].hasFeature) {
                 try {
@@ -15854,6 +15898,7 @@ apf.AmlElement = function(struct, tagName){
             //@todo old name disposal
             
             apf.nameserver.register(this.localName, value, this)
+            apf.nameserver.register("all", value, this)
             
             
             this.name = value;
@@ -15923,7 +15968,7 @@ apf.AmlElement = function(struct, tagName){
         if (!a) {
             this.attributes.push(a = new apf.AmlAttr(this, name, value));
         
-            if (!this.$amlLoaded)
+            if (!this.$amlLoaded && name != "id" && name != "hotkey")
                 return;
             
             if (noTrigger)
@@ -16264,7 +16309,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16328,7 +16373,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(3974)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/text.js)SIZE(3974)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16428,7 +16473,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4514)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/attr.js)SIZE(4674)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16498,16 +16543,21 @@ apf.AmlAttr = function(ownerElement, name, value){
     this.$triggerUpdate = function(e, oldValue){
         var name  = this.name,
             value = this.value || this.nodeValue,
-            host  = this.ownerElement;
+            host  = this.ownerElement,
+            isEvent = name.substr(0, 2) == "on";
 
-        if (name == "id" && !this.specified && host.id) {
-            this.specified = true;
-            return;
+        if (!this.specified) {
+            //@todo This should be generalized
+            if (isEvent && this.$lastValue == value
+              || name == "id" && host.id) {
+                this.specified = true;
+                return;
+            }
         }
 
-        if (name.substr(0, 2) == "on") {
+        if (isEvent) {
             if (host.$events[name])
-                host.removeEventListener(name.replace(/^on/, ""), host.$events[name]);
+                host.removeEventListener(name.substr(2), host.$events[name]);
             if (value)
                 host.addEventListener(name, (host.$events[name] = 
                   (typeof value == "string"
@@ -16552,7 +16602,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16589,7 +16639,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/comment.js)SIZE(1509)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/comment.js)SIZE(1509)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16635,7 +16685,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16676,7 +16726,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9508)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/document.js)SIZE(9508)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16862,7 +16912,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16896,7 +16946,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/event.js)SIZE(2086)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/event.js)SIZE(2086)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16967,7 +17017,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17078,7 +17128,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17187,7 +17237,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/range.js)SIZE(15809)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/range.js)SIZE(15809)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17212,7 +17262,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/selection.js)SIZE(8861)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/selection.js)SIZE(8861)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17237,7 +17287,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17281,7 +17331,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml.js)SIZE(1530)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17332,7 +17382,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17489,7 +17539,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17540,7 +17590,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17621,7 +17671,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17657,7 +17707,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17718,7 +17768,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17761,7 +17811,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17823,7 +17873,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd.js)SIZE(12998)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd.js)SIZE(12998)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17849,7 +17899,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/element.js)SIZE(1869)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17874,7 +17924,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17899,7 +17949,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17924,7 +17974,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/length.js)SIZE(1527)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/length.js)SIZE(1527)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17949,7 +17999,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/list.js)SIZE(1215)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/list.js)SIZE(1215)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17974,7 +18024,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17999,7 +18049,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18024,7 +18074,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18049,7 +18099,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18074,7 +18124,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18099,7 +18149,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18124,7 +18174,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18149,7 +18199,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18174,7 +18224,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18199,7 +18249,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18224,7 +18274,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18249,7 +18299,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18274,7 +18324,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18299,7 +18349,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xsd/union.js)SIZE(2331)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xsd/union.js)SIZE(2331)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18324,7 +18374,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/html5.js)SIZE(3232)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/html5.js)SIZE(3232)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18359,7 +18409,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xforms.js)SIZE(4191)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xforms.js)SIZE(4191)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18392,7 +18442,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xinclude.js)SIZE(1325)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xinclude.js)SIZE(1325)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18434,7 +18484,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18459,7 +18509,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(6818)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xinclude/include.js)SIZE(6818)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18642,7 +18692,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18668,7 +18718,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34638)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit.js)SIZE(34638)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18695,7 +18745,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18721,7 +18771,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18747,7 +18797,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18773,7 +18823,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18799,7 +18849,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18825,7 +18875,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18851,7 +18901,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18877,7 +18927,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18903,7 +18953,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18929,7 +18979,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18955,7 +19005,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18981,7 +19031,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19008,7 +19058,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19034,7 +19084,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19060,7 +19110,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19086,7 +19136,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19112,7 +19162,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19138,7 +19188,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19164,7 +19214,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19190,7 +19240,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19216,7 +19266,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19242,7 +19292,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19268,7 +19318,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19294,7 +19344,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19320,7 +19370,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(18882)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/anchoring.js)SIZE(18882)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19818,7 +19868,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19844,7 +19894,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33152)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/guielement.js)SIZE(33273)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20440,10 +20490,10 @@ apf.GuiElement.propHandlers = {
             var _self     = this;
             //this.disabled = false;
 
-            apf.queue.add("disable" + this.$uniqueId, function(e){
-                _self.disabled = value;
-                apf.GuiElement.propHandlers.disabled.call(_self, value);
-            });
+            this.addEventListener("DOMNodeInsertedIntoDocument", 
+                this.$updateDisabled || (this.$updateDisabled = function(e){
+                    apf.GuiElement.propHandlers.disabled.call(_self, _self.disabled);
+                }));
             return;
         }
         else
@@ -20545,7 +20595,8 @@ apf.GuiElement.propHandlers = {
      * the mouse over the element.
      */
     "tooltip" : function(value){
-        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " (" + this.hotkey + ")" : ""));
+        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " ("
+            + (apf.isMac ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey) + ")" : ""));
     },
     
     
@@ -20635,7 +20686,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20758)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/presentation.js)SIZE(20758)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21235,7 +21286,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/validation.js)SIZE(27683)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/validation.js)SIZE(27683)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21961,7 +22012,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58946)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding.js)SIZE(58946)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23399,7 +23450,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24598,7 +24649,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24768,7 +24819,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/multiselect.js)SIZE(71734)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26580,7 +26631,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26686,7 +26737,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(26805)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/dataaction.js)SIZE(27069)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27055,11 +27106,14 @@ apf.DataAction = function(){
                     : [node.ownerElement || node.selectSingleNode(".."), node.nodeName, value]);
         }
         else {
-            if (!this.$createModel)
-                return false;
-
             atAction = "setValueByXpath";
             xpath    = sel[1];
+            
+            if (!this.$createModel || this.getModel() && !this.getModel().$createModel) {
+                throw new Error("Model data does not exist, and I am not "
+                    + "allowed to create the element for xpath '" 
+                    + xpath + "' and element " + this.serialize(true));
+            }
 
             if (!xmlNode) {
                 //Assuming this component is connnected to a model
@@ -27204,7 +27258,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12532)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/cache.js)SIZE(12532)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27570,7 +27624,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15023)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/rename.js)SIZE(15023)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27984,7 +28038,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28011,7 +28065,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28329,7 +28383,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(39271)TIME(Mon, 16 Apr 2012 23:45:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/baselist.js)SIZE(39277)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28533,7 +28587,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 
                     
                 this.select(node, false, shiftKey);
@@ -28545,7 +28599,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 
                 
                 this.select(node, false, shiftKey);
@@ -28611,7 +28665,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -28669,7 +28723,7 @@ apf.BaseList = function(){
 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -28709,7 +28763,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node);
+                    return this.$viewport.scrollIntoView(node);
                 
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -28746,7 +28800,7 @@ apf.BaseList = function(){
                 
                 
                 if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
-                    return this.viewport.scrollIntoView(node, true);
+                    return this.$viewport.scrollIntoView(node, true);
                 
                 
                 selHtml = apf.xmldb.findHtmlNode(node, this);
@@ -29225,7 +29279,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29282,7 +29336,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29948,7 +30002,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57877)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basetab.js)SIZE(57877)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31353,7 +31407,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(53431)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/basetree.js)SIZE(53542)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31771,12 +31825,13 @@ apf.BaseTree = function(){
             }
         }
         
-        if(!this.getAttribute("animation")) {
+        if (!this.animation) {
             var diff = apf.getHeightDiff(container),
                 oInt = container;
 
             container.style.height = Math.max((height), 0) + "px";
-            oInt.scrollTop         = oInt.scrollHeight - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
+            oInt.scrollTop = oInt.scrollHeight 
+                - oInt.offsetHeight - diff - (apf.isGecko ? 16 : 0);
             finishSlide();
         }
         else {
@@ -32199,6 +32254,9 @@ apf.BaseTree = function(){
                             _self.$setLoadStatus(xmlNode, "potential");
                             _self.$removeLoading(xmlNode);
                             _self.slideToggle(apf.xmldb.getHtmlNode(xmlNode, _self), 2, true);
+                        }
+                        else {
+                            _self.slideOpen(null, xmlNode);
                         }
                         
                         if (callback)
@@ -32723,7 +32781,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/delayedrender.js)SIZE(5249)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32875,7 +32933,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(56134)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/dragdrop.js)SIZE(56327)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33218,9 +33276,13 @@ apf.DragDrop = function(){
 
         if (this.disabled || !x || !x.length || !target) //!x[0] ???
             return false;
-        
-        if(!this.dragroot == false && this.xmlRoot.firstChild == x[0])
+            
+        if (!this.dragroot == false && this.xmlRoot.firstChild == x[0])
             return false;
+        
+        for (var i = x.length - 1; i >= 0; i--)
+            if (apf.isChildOf(x[i], target, true))
+                return false;
         
         var data, tgt, hasDropRule = this.$attrBindings && this.$attrBindings["drop"];
         if (this.drop && (!hasDropRule || hasDropRule.value == "true")) {
@@ -33279,10 +33341,6 @@ apf.DragDrop = function(){
     };
 
     this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event, forceCopy){
-        // @todo apf3.0 action not known here yet... should be moved down?
-        if (action == "tree-append" && isParent) 
-            return false;
-
         /*
             Possibilities:
 
@@ -33296,6 +33354,10 @@ apf.DragDrop = function(){
             action = (rule.caction || rule.compile("action"))(xmlNodeList[0]);
         else
             action = defaction;
+            
+        // @todo apf3.0 action not known here yet... should be moved down?
+        if (action == "tree-append" && isParent) 
+            return false;
 
         if (!event)
             event = {};
@@ -33903,7 +33965,8 @@ apf.DragServer = {
             if (o && o.$dragover) {
                 var parentNode = (elSel || o.xmlRoot).parentNode,
                     htmlParentNode;
-                if(parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
+                if (parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
+                    isParent = true;
                     candrop = checkPermission(parentNode);
                     el = htmlParentNode;
                 }
@@ -34356,7 +34419,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34461,7 +34524,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30523)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/interactive.js)SIZE(30523)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35252,7 +35315,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/media.js)SIZE(18898)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35280,7 +35343,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35307,7 +35370,7 @@ apf.__MULTICHECK__ = 1 << 22;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/teleport.js)SIZE(8790)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/teleport.js)SIZE(8790)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35535,7 +35598,7 @@ apf.__TELEPORT__ = 1 << 28;
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/transaction.js)SIZE(23494)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/transaction.js)SIZE(23494)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35562,7 +35625,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(31748)TIME(Mon, 16 Apr 2012 23:45:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35958,6 +36021,7 @@ apf.$viewportVirtual = function(amlNode){
     this.host   = this;
     this.cache  = null;
     this.inited = false;
+    this.virtual = true;
     
     this.setScrollbar = function(scrollbar, onscroll){
        this.scrollbar = scrollbar;
@@ -36309,7 +36373,7 @@ apf.$viewportVirtual = function(amlNode){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/xforms.js)SIZE(9367)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/xforms.js)SIZE(9367)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36337,7 +36401,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36443,7 +36507,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36469,7 +36533,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36494,7 +36558,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36519,58 +36583,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/window-o3.js)SIZE(5461)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36596,7 +36609,58 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/window.js)SIZE(50596)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/window-o3.js)SIZE(5461)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/window.js)SIZE(50381)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37220,10 +37284,7 @@ apf.window = function(){
               
             ;*/
         
-        if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
-          && apf.popup.cache[apf.popup.last] 
-          && !apf.isChildOf(apf.popup.cache[apf.popup.last].content, e.srcElement || e.target, true))
-            apf.popup.forceHide();
+        apf.popup.$mousedownHandler(amlNode, e);
         
 
         if (amlNode === false) 
@@ -37721,11 +37782,11 @@ apf.window = new apf.window();
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/gears.js)SIZE(1391)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/gears.js)SIZE(1391)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/gecko.js)SIZE(6753)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/gecko.js)SIZE(6753)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37914,7 +37975,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/ie.js)SIZE(14081)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/ie.js)SIZE(14081)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38166,7 +38227,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/iphone.js)SIZE(11827)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/iphone.js)SIZE(11827)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38191,7 +38252,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24354)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/non_ie.js)SIZE(24354)TIME(Mon, 16 Apr 2012 22:14:05 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38548,12 +38609,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/o3.js)SIZE(9017)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/o3.js)SIZE(9017)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6583)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/opera.js)SIZE(6583)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38579,7 +38640,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(8405)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/webkit.js)SIZE(8405)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38756,11 +38817,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/crypto/barrett.js)SIZE(2650)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/barrett.js)SIZE(2650)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /**
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -38781,7 +38842,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/crypto/base64.js)SIZE(6758)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/base64.js)SIZE(6758)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38994,7 +39055,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/crypto/bigint.js)SIZE(20439)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/bigint.js)SIZE(20439)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /**
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -39048,7 +39109,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/crypto/blowfish.js)SIZE(26046)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/blowfish.js)SIZE(26046)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39074,7 +39135,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/crypto/md4.js)SIZE(9799)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/md4.js)SIZE(9799)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39100,7 +39161,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/crypto/md5.js)SIZE(10997)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/md5.js)SIZE(10997)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39358,7 +39419,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/crypto/rsa.js)SIZE(5048)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/rsa.js)SIZE(5048)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /**
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -39380,7 +39441,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/crypto/sha1.js)SIZE(5258)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/crypto/sha1.js)SIZE(5258)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39563,7 +39624,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/debug/debug.js)SIZE(9811)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/debug/debug.js)SIZE(9811)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39589,7 +39650,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/debug/debugwin.js)SIZE(42735)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/debug/debugwin.js)SIZE(42735)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39615,12 +39676,12 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/debug/profiler.js)SIZE(24827)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/debug/profiler.js)SIZE(24827)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/parsers/js.js)SIZE(9016)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/parsers/js.js)SIZE(9016)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39646,7 +39707,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(113264)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/parsers/livemarkup.js)SIZE(113264)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42101,7 +42162,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/parsers/url.js)SIZE(4570)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/parsers/url.js)SIZE(4570)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42223,7 +42284,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/core/parsers/xpath.js)SIZE(21971)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/core/parsers/xpath.js)SIZE(21971)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 
 /**
@@ -42849,7 +42910,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingrule.js)SIZE(8842)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43100,7 +43161,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/accordion.js)SIZE(22288)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/accordion.js)SIZE(22288)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43125,7 +43186,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/actionrule.js)SIZE(4035)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actionrule.js)SIZE(4035)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43250,7 +43311,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/actions.js)SIZE(3251)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actions.js)SIZE(3251)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43354,7 +43415,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36828)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actiontracker.js)SIZE(36828)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43944,7 +44005,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/application.js)SIZE(1834)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/application.js)SIZE(1834)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43999,7 +44060,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/appsettings.js)SIZE(9304)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/appsettings.js)SIZE(9304)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44160,7 +44221,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/audio.js)SIZE(12958)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/audio.js)SIZE(12958)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44186,7 +44247,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/auth.js)SIZE(23999)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/auth.js)SIZE(24087)TIME(Thu, 26 Apr 2012 06:34:34 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44415,8 +44476,10 @@ apf.aml.setElement("auth", apf.auth);
         if (this.autostart && !this.$hasHost) {
             var _self = this;
             apf.addEventListener("load", function(){
-                _self.authRequired();
-                apf.removeEventListener("load", arguments.callee);
+                apf.addEventListener("login", function(){
+                    _self.authRequired();
+                    apf.removeEventListener("load", arguments.callee);
+                });
             });
         }
     });
@@ -44791,7 +44854,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/axis.js)SIZE(14009)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/axis.js)SIZE(14009)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44816,7 +44879,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bar.js)SIZE(4205)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bar.js)SIZE(4205)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44944,7 +45007,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45015,7 +45078,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(21698)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingcolumnrule.js)SIZE(21698)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45622,7 +45685,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3623)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingdndrule.js)SIZE(3623)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45740,7 +45803,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindingeachrule.js)SIZE(11503)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingeachrule.js)SIZE(11503)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46070,7 +46133,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindingloadrule.js)SIZE(1529)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingloadrule.js)SIZE(1529)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46119,7 +46182,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46426,7 +46489,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindings.js)SIZE(8618)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindings.js)SIZE(8618)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46691,7 +46754,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46753,7 +46816,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/body.js)SIZE(1861)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/body.js)SIZE(1861)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46809,7 +46872,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/browser.js)SIZE(6466)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/browser.js)SIZE(6466)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47022,7 +47085,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/button.js)SIZE(31193)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/button.js)SIZE(31088)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47383,7 +47446,6 @@ apf.button  = function(struct, tagName){
 
         this.parentNode.menuIsPressed = this;
 
-        //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
         menu.display(null, null, false, this,
             null, null, this.$ext.offsetWidth - 2);
 
@@ -47414,13 +47476,13 @@ apf.button  = function(struct, tagName){
 
         
 
-        var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
+        //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
 
 //        menu.display(pos[0],
 //            pos[1] + this.$ext.offsetHeight, true, this,
 //            null, null, this.$ext.offsetWidth - 2);
             
-        menu.display(null, pos[1] + this.$ext.offsetHeight, true, this,
+        menu.display(null, null, true, this,
             null, null, this.$ext.offsetWidth - 2);
 
         //apf.window.$focus(this);
@@ -47643,7 +47705,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36424)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/caldropdown.js)SIZE(36424)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47669,7 +47731,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/calendar.js)SIZE(28862)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/calendar.js)SIZE(28862)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47694,7 +47756,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/calendarlist.js)SIZE(15123)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47720,7 +47782,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/chart.js)SIZE(9687)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47745,7 +47807,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/checkbox.js)SIZE(8188)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48016,7 +48078,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/collection.js)SIZE(2383)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48041,7 +48103,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/colorpicker.js)SIZE(12736)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/colorpicker.js)SIZE(12736)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48422,7 +48484,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/colorpicker2.js)SIZE(16009)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/colorpicker2.js)SIZE(16009)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48845,7 +48907,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/comment.js)SIZE(1324)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/comment.js)SIZE(1324)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48887,7 +48949,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/contextmenu.js)SIZE(2557)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/contextmenu.js)SIZE(2557)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48964,7 +49026,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/datagrid.js)SIZE(53921)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/datagrid.js)SIZE(53921)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50138,7 +50200,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/defaults.js)SIZE(1838)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50164,7 +50226,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/divider.js)SIZE(2882)TIME(Mon, 16 Apr 2012 23:45:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/divider.js)SIZE(2882)TIME(Wed, 25 Apr 2012 23:54:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50257,7 +50319,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15434)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/dropdown.js)SIZE(15434)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50708,7 +50770,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/editor.js)SIZE(18601)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/editor.js)SIZE(18601)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50734,7 +50796,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/errorbox.js)SIZE(6106)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50918,7 +50980,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/event.js)SIZE(2115)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/event.js)SIZE(2115)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50943,7 +51005,7 @@ apf.aml.setElement("errorbox", apf.errorbox);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/filler.js)SIZE(1385)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50984,7 +51046,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/flashplayer.js)SIZE(5856)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/flashplayer.js)SIZE(5856)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51009,33 +51071,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/flowchart.js)SIZE(50799)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51061,7 +51097,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/frame.js)SIZE(4838)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/flowchart2.js)SIZE(45889)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/frame.js)SIZE(4838)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51210,7 +51272,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/gallery.js)SIZE(27418)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/gallery.js)SIZE(27418)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51235,7 +51297,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/graph.js)SIZE(21525)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/graph.js)SIZE(21525)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51260,7 +51322,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/hbox.js)SIZE(41632)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/hbox.js)SIZE(41632)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52253,7 +52315,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/iconmap.js)SIZE(3244)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/iconmap.js)SIZE(3244)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52279,7 +52341,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/img.js)SIZE(7692)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/img.js)SIZE(7692)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52525,7 +52587,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/item.js)SIZE(24653)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/item.js)SIZE(25150)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52739,7 +52801,15 @@ apf.item  = function(struct, tagName){
      * </code>
      */
     this.$propHandlers["hotkey"] = function(value){
-        if (this.$hotkey)
+        if (!this.$amlLoaded) {
+            var _self = this;
+            this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+                if (_self.$hotkey && _self.hotkey)
+                    apf.setNodeValue(this.$hotkey, apf.isMac 
+                      ? apf.hotkeys.toMacNotation(_self.hotkey) : _self.hotkey);
+            });
+        }
+        else if (this.$hotkey)
             apf.setNodeValue(this.$hotkey, apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
 
         if (this.$lastHotkey) {
@@ -52755,20 +52825,22 @@ apf.item  = function(struct, tagName){
                     return;
                 
                 //hmm not very scalable...
-                var buttons = apf.document.getElementsByTagNameNS(apf.ns.aml, "button");
-                for (var i = 0; i < buttons.length; i++) {
-                    if (buttons[i].submenu == _self.parentNode.name) {
-                        var btn = buttons[i];
-                        btn.$setState("Over", {});
-
-                        $setTimeout(function(){
-                            btn.$setState("Out", {});
-                        }, 200);
-
-                        break;
+                if (_self.parentNode) {
+                    var buttons = apf.document.getElementsByTagNameNS(apf.ns.aml, "button");
+                    for (var i = 0; i < buttons.length; i++) {
+                        if (buttons[i].submenu == _self.parentNode.name) {
+                            var btn = buttons[i];
+                            btn.$setState("Over", {});
+    
+                            $setTimeout(function(){
+                                btn.$setState("Out", {});
+                            }, 200);
+    
+                            break;
+                        }
                     }
                 }
-
+                
                 _self.$down();
                 _self.$up();
                 _self.$click();
@@ -52809,7 +52881,7 @@ apf.item  = function(struct, tagName){
             ? value.split("\|")
             : (value || [1, 0]);
 
-        this.$propHandlers["value"].call(this, value);
+        this.$propHandlers["value"].call(this, this.value);
     };
     
     this.$propHandlers["value"] = function(value){
@@ -53238,7 +53310,8 @@ apf.item  = function(struct, tagName){
 apf.aml.setElement("item",  apf.item);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/junction.js)SIZE(2555)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53325,7 +53398,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/label.js)SIZE(4978)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/label.js)SIZE(4978)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53483,7 +53556,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/lineselect.js)SIZE(4747)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53509,7 +53582,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/list.js)SIZE(14336)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53868,7 +53941,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/loader.js)SIZE(3558)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/loader.js)SIZE(3558)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53984,7 +54057,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/loadindicator.js)SIZE(5234)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54010,7 +54083,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/map.js)SIZE(21831)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54036,7 +54109,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(55951)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/markupedit.js)SIZE(55951)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54062,7 +54135,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/menu.js)SIZE(19229)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/menu.js)SIZE(19415)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54347,7 +54420,8 @@ apf.menu = function(struct, tagName){
                     allowTogether: openMenuId,
                     autohide     : !this.pinned,
                     noleft       : this.left !== undefined,
-                    setZindex    : this.zindex ? false : true
+                    setZindex    : this.zindex ? false : true,
+                    up           : (this.ref || opener).submenudir == "up"
                 });
             }
             else {
@@ -54387,6 +54461,9 @@ apf.menu = function(struct, tagName){
         }
         
         this.visible = false;
+        
+        if (!this.parentNode)
+            apf.document.documentElement.appendChild(this);
         
         if (this.$rendered !== false) {
             this.show();
@@ -54437,7 +54514,7 @@ apf.menu = function(struct, tagName){
             if (nodes[i].group != group)
                 continue;
 
-            if (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value)
+            if (value && (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value))
                 nodes[i].setProperty("selected", true, false, true);
                 //nodes[i].$handlePropSet("selected", true);
             else if (nodes[i].selected)
@@ -54631,7 +54708,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/method.js)SIZE(3973)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/method.js)SIZE(3973)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54739,7 +54816,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24684)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/modalwindow.js)SIZE(24684)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55371,7 +55448,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/model.js)SIZE(42606)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/model.js)SIZE(42646)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55484,18 +55561,12 @@ apf.model = function(struct, tagName){
     
     this.$listeners = {};
     this.$proplisteners = {};
-
-    if (!apf.globalModel) {
-        apf.globalModel = this;
-        
-        apf.nameserver.register("model", "@default", this);
-        
-    }
 };
 
 (function(){
-    this.$parsePrio = "020";
-    this.$isModel   = true;
+    this.$parsePrio   = "020";
+    this.$isModel     = true;
+    this.$createModel = true;
     
     this.canHaveChildren  = false;
     this.enablereset       = false;
@@ -55509,16 +55580,21 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["whitespace"] = true;
-    this.$booleanProperties["autoinit"]   = true;
-    this.$booleanProperties.enablereset   = true;
+    this.$booleanProperties["whitespace"]   = true;
+    this.$booleanProperties["create-model"] = true;
+    this.$booleanProperties["autoinit"]     = true;
+    this.$booleanProperties.enablereset     = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "enablereset", "remote", "whitespace"];
+        "enablereset", "remote", "whitespace", "create-model"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
         if (this.$amlLoaded)
             this.$loadFrom(value);
+    };
+    
+    this.$propHandlers["create-model"] = function(value, prop){
+        this.$createModel = value;
     };
 
     
@@ -56475,7 +56551,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15297)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/notifier.js)SIZE(15297)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56501,7 +56577,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/page.js)SIZE(27085)TIME(Mon, 16 Apr 2012 23:45:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/page.js)SIZE(27085)TIME(Fri, 13 Apr 2012 16:36:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57258,7 +57334,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/pager.js)SIZE(9037)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/pager.js)SIZE(9037)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57284,7 +57360,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/palette.js)SIZE(5945)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/palette.js)SIZE(5945)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57309,7 +57385,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/param.js)SIZE(1681)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/param.js)SIZE(1681)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57352,7 +57428,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/persist.js)SIZE(17598)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/persist.js)SIZE(17598)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57378,7 +57454,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/portal.js)SIZE(25076)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57403,7 +57479,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/progressbar.js)SIZE(8709)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/progressbar.js)SIZE(8709)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57676,7 +57752,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/propedit.js)SIZE(46649)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/propedit.js)SIZE(46649)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57703,7 +57779,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/radiobutton.js)SIZE(17104)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58256,7 +58332,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/remote.js)SIZE(20970)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/remote.js)SIZE(20970)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58282,7 +58358,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc.js)SIZE(21108)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58905,7 +58981,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/script.js)SIZE(3679)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/script.js)SIZE(3679)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59020,7 +59096,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(32603)TIME(Mon, 16 Apr 2012 23:45:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/scrollbar.js)SIZE(32682)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59189,9 +59265,13 @@ apf.scrollbar = function(struct, tagName){
     this.$resize = function(){
         if (!this.$viewport || !this.$viewport.isVisible())
             return;
-        
+            
         this.$recalc();
         this.$update();
+        
+        if (!this.$viewport.virtual)
+            return;
+        
         this.setScrollPosition(this.position, true);
     }
     
@@ -59955,7 +60035,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/services.js)SIZE(1488)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/services.js)SIZE(1488)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59981,7 +60061,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/skin.js)SIZE(9698)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/skin.js)SIZE(9698)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60178,7 +60258,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/slider.js)SIZE(32341)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/slider.js)SIZE(32341)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60203,7 +60283,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/slideshow.js)SIZE(47089)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/slideshow.js)SIZE(47089)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60228,7 +60308,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/smartbinding.js)SIZE(33619)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61076,7 +61156,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/source.js)SIZE(1566)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61131,7 +61211,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/spinner.js)SIZE(16965)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/spinner.js)SIZE(16965)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61671,7 +61751,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(5164)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/splitbutton.js)SIZE(5172)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61826,7 +61906,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/splitter.js)SIZE(16644)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/splitter.js)SIZE(16644)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62244,7 +62324,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/state-group.js)SIZE(3131)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62337,7 +62417,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/state.js)SIZE(10893)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/state.js)SIZE(10893)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62662,7 +62742,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/statusbar.js)SIZE(3824)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62688,7 +62768,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/style.js)SIZE(1888)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62713,7 +62793,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/submitform.js)SIZE(30092)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62739,7 +62819,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/tab.js)SIZE(2990)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62838,7 +62918,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/table.js)SIZE(17204)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/table.js)SIZE(17204)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63315,7 +63395,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/teleport.js)SIZE(1019)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63344,7 +63424,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/template.js)SIZE(2498)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63370,7 +63450,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/text.js)SIZE(12619)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/text.js)SIZE(12616)TIME(Thu, 26 Apr 2012 00:38:20 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63720,13 +63800,13 @@ apf.text = function(struct, tagName){
 
         this.oDrag = this.oIframe = this.oFocus = this.$container = this.$ext = null;
     });
-}).call(apf.text.prototype = new apf.MultiselectBinding());
+}).call(apf.text.prototype = new apf.StandardBinding());
 
 apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/textbox.js)SIZE(28629)TIME(Mon, 16 Apr 2012 23:45:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/textbox.js)SIZE(28629)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64555,7 +64635,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/toc.js)SIZE(8342)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64581,7 +64661,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/toolbar.js)SIZE(2787)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64675,7 +64755,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/tree.js)SIZE(17445)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/tree.js)SIZE(17445)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65023,7 +65103,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/upload.js)SIZE(28994)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65048,33 +65128,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/vectorflow.js)SIZE(65716)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65100,7 +65154,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video.js)SIZE(20319)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65126,7 +65180,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/webdav.js)SIZE(50167)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/viewport.js)SIZE(1796)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/webdav.js)SIZE(49954)TIME(Wed, 25 Apr 2012 23:54:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65755,13 +65835,8 @@ apf.webdav = function(struct, tagName){
                     bubbles : true
                   }) === false && !callback)
                     throw oError;
-                callback && callback.call(this, data, state, extra);
             }
-            else {
-                // nodes needs to be added to the cache, callback passed through
-                // to notify listener(s)
-                this.getProperties(sTo, 0, callback);
-            }
+            callback && callback.call(this, data, state, extra);
         }, sFrom, null, oHeaders);
     };
 
@@ -66416,7 +66491,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101266)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/xmpp.js)SIZE(101266)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66442,7 +66517,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66583,7 +66658,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66839,7 +66914,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/audio/type_flash.js)SIZE(12951)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66864,7 +66939,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/audio/type_native.js)SIZE(11013)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66889,7 +66964,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66915,7 +66990,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/cgi.js)SIZE(7168)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67128,7 +67203,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/header.js)SIZE(3062)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/header.js)SIZE(3062)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67154,7 +67229,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/jphp.js)SIZE(5874)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/jphp.js)SIZE(5874)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67180,7 +67255,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3126)TIME(Sun, 08 Apr 2012 23:01:15 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/jsonrpc.js)SIZE(3126)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67206,7 +67281,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/rdb.js)SIZE(8293)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67232,7 +67307,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/rest.js)SIZE(3962)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67359,7 +67434,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/soap.js)SIZE(10943)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67385,7 +67460,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(10831)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/xmlrpc.js)SIZE(10831)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67411,7 +67486,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/rpc/yql.js)SIZE(3962)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67437,7 +67512,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67463,12 +67538,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(12869)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/textbox/masking.js)SIZE(12869)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67912,7 +67987,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/upload/flash.js)SIZE(9564)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67937,7 +68012,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/upload/html4.js)SIZE(9512)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67962,7 +68037,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/upload/html5.js)SIZE(8910)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67987,7 +68062,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_flv.js)SIZE(17057)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68012,7 +68087,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_native.js)SIZE(10825)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68037,33 +68112,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_qt.js)SIZE(23357)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68089,7 +68138,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68115,7 +68164,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_vlc.js)SIZE(12493)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68141,7 +68190,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/video/type_wmp.js)SIZE(12632)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68167,7 +68216,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/xmpp/muc.js)SIZE(18991)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68193,7 +68242,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68219,7 +68268,33 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4360)TIME(Fri, 13 Apr 2012 23:32:03 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/elements/xmpp/roster.js)SIZE(13725)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/processinginstructions/livemarkup.js)SIZE(4360)TIME(Fri, 13 Apr 2012 16:35:58 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68339,7 +68414,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/jpack_end.js)SIZE(773)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/jpack_end.js)SIZE(773)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 
 
@@ -68371,7 +68446,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/apf-node.js)SIZE(1241)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68396,33 +68471,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/apf-o3.js)SIZE(14014)TIME(Fri, 13 Apr 2012 01:54:41 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68448,7 +68497,33 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/loader.js)SIZE(15799)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/loader-o3.js)SIZE(7470)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/loader.js)SIZE(15799)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68481,7 +68556,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/gjtorikian/Developer/cloud9infra/support/cloud9/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Wed, 14 Mar 2012 13:55:55 GMT)*/
+/*FILEHEAD(/Users/gjtorikian/Developer/cloud9/support/packager/lib/../support/apf/loader2.js)SIZE(18652)TIME(Fri, 13 Apr 2012 01:54:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
