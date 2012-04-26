@@ -10,6 +10,7 @@ build/
 .*.gz
 .architect/
 .sourcemint/
+/mapped_packages/
 
 plugins/cloud9.core/node_modules/
 plugins/cloud9.connect/node_modules/
