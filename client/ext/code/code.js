@@ -326,7 +326,7 @@ module.exports = ext.register("ext/code/code", {
                     return doc.acesession.getValue();
             });
 
-            doc.addEventListener("close", function(){
+            doc.addEventListener("close", function(e){
                 if (this.editor != _self)
                     return;
 
@@ -650,6 +650,9 @@ module.exports = ext.register("ext/code/code", {
                                 customType: customType
                             });
                         }
+                        
+                        if (self.ceEditor)
+                            ceEditor.setProperty("syntax", _self.getSyntax(file));
                     }
                 }
             }), 300000),
@@ -763,6 +766,8 @@ module.exports = ext.register("ext/code/code", {
     },
 
     init: function(amlPage) {
+        var _self = this;
+        
         amlPage.appendChild(ceEditor);
         ceEditor.show();
 
@@ -820,6 +825,11 @@ module.exports = ext.register("ext/code/code", {
             // plugins that change keybindings have already changed them (i.e.
             // the vim plugin), we fire an event so these plugins can react to it.
             ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
+        });
+        
+        ide.addEventListener("updatefile", function(e){
+            if (ceEditor.getDocument() == tabEditors.getPage().doc.acesession)
+                ceEditor.setProperty("syntax", _self.getSyntax(e.xmlNode));
         });
     },
 

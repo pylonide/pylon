@@ -136,9 +136,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         );
         
         mnuContext.addEventListener("prop.visible", function(e) {
-            this.$page = apf.findHost(document.elementFromPoint(
-                window.event.clientX, 
-                window.event.clientY));
+            if (e.value && window.event) {
+                this.$page = apf.findHost(document.elementFromPoint(
+                    window.event.clientX, 
+                    window.event.clientY));
+            }
         }, true);
         
         menus.addItemByPath("Reveal in File Tree", new apf.item({
@@ -453,10 +455,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     gototabright: function(e) {
-        // Right "Command" key on Mac calls this, don't know why, and don't
-        // want it to! In the meantime, this blocks it
-        if (e.keyCode === 93)
-            return;
         return this.cycleTab("right");
     },
 

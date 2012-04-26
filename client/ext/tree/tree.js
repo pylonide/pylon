@@ -583,10 +583,11 @@ module.exports = ext.register("ext/tree/tree", {
                 var xmlNode = trFiles.$model.queryNode('//node()[@path="' +
                     _self.treeSelection.path + '" and @type="' +
                     _self.treeSelection.type + '"]');
-                trFiles.select(xmlNode);
+                if (xmlNode)
+                    trFiles.select(xmlNode);
             }
             else {
-                trFiles.select(trFiles.$model.queryNode("node()"));
+                trFiles.select(trFiles.getFirstTraverseNode());
             }
 
             // Scroll to last set scroll pos
