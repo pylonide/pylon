@@ -55,12 +55,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var _self = this;
         
         this.commands.each(function(item){
+            var a = item[item.length - 1];
             commands.addCommand({
                 name: item[0],
                 bindKey: {mac: item[1], win: item[2]},
                 hint: item[3],
                 msg: item[4],
-                isAvailable : item[item.length - 1],
+                isAvailable : typeof a == "function" && a,
                 exec: function () {
                     _self[item[0]]();
                 }
