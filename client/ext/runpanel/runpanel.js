@@ -117,11 +117,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
 
             mdlRunConfigurations.load(runConfigs);
-            
-            setTimeout(function(){
-                if(!mdlRunConfigurations.queryNode('config'))
-                    btnRun.disable();
-            })
         });
 
         ide.addEventListener("init.ext/editors/editors", function(e) {
@@ -130,7 +125,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
                 _self.setCurrentFileConf(path);
             }
-
+            
             tabEditors.addEventListener("afterswitch", function(e){
                 var page = e.nextPage;
                 if (page && page.$model) {
@@ -264,7 +259,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             .attr("name", name)
             .attr("extension", extension)
             .attr("args", "").node();
-
         var node = mdlRunConfigurations.appendXml(cfg);
         this.$addMenuItem(node);
         lstRunCfg.select(cfg);
@@ -284,7 +278,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             if(!mdlRunConfigurations.queryNode("config[@curfile]")) {
                 var cfg = apf.getXml('<config path="' + path 
                             + '" name="' + path.split("/").pop() 
-                            + ' (active file)" curfile="1" last="true"/>')
+                            + ' (active file)" curfile="1" last="true"/>');
                 cfg = apf.xmldb.appendChild(mdlRunConfigurations.data, cfg, mdlRunConfigurations.data.firstChild);
                 this.$addMenuItem(cfg, this.getMenuDivider());
             }
@@ -344,6 +338,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 this.$addMenuItem(configs[i], divider);
             }
         }
+        
+        setTimeout(function(){
+            if(!mdlRunConfigurations.queryNode('config'))
+                btnRun.disable();
+        }, 500);
     },
 
     $addMenuItem : function(cfg, divider){
