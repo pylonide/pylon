@@ -160,7 +160,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (!apf.isTrue(e.doc.getNode().getAttribute("newfile"))
               && apf.isTrue(settings.model.queryValue("general/@autosaveenabled"))) {
                 self.save();
-
                 return false;
             }
         });
@@ -562,13 +561,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                     revision.saved = true;
                     revObj.allRevisions[ts] = revision;
                     delete this.revisionQueue[ts];
+
+                    this.generateCache(revObj);
                     ide.dispatchEvent("revisionSaved", {
                         ts: ts,
                         path: message.path,
                         revision: revision
                     });
 
-                    this.generateCache(revObj);
                     if (this.$getDocPath() === message.path) {
                         this.populateModel();
                     }
@@ -1409,7 +1409,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.disableEventListeners();
     },
 
-    destroy : function() {
+    destroy: function() {
         menus.remove("File/File revisions");
         menus.remove("File/~", 1000);
 

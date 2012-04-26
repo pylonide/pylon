@@ -162,7 +162,6 @@ self.onmessage = function(e) {
 
             lastContent = e.data.lastContent;
             patch = self.dmp.patch_make(beforeRevision, lastContent);
-            debug(beforeRevision);
 
             // If there is no actual changes, let's return
             if (patch.length === 0) {
