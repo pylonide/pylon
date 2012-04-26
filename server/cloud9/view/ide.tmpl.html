@@ -27,6 +27,7 @@
                 projectName: <%projectName%>,
                 version: <%version%>,
                 staticUrl: "[%staticUrl%]/",
+                settings: <%settingsXml%>,
                 socketIoUrl: <%socketIoUrl%>
             };
 
@@ -52,7 +53,6 @@
                 if (VERSION == RELEASE)
                     list.push("ace/editor");
 
-                apf.IdeSettings = <%settingsXml%>
                 //loader.animateLoader(20);
                 require(list, function(ide, ext, util){
                     var plugins = <%plugins%>;
