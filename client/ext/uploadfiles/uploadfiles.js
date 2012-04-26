@@ -48,17 +48,23 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         this.worker.addEventListener("message", function(e) {  
             var data = e.data;
             if (!data.type)
-                return console.log(data);
+                return; //console.log(data);
                 
             switch(data.type) {
                 case "complete":
-                    console.log("complete");
                     _self.onComplete();
                     break;
                 case "progress":
-                    console.log("progress");
                     _self.onProgress(data.value);
                     break;
+                case "paused":
+                    ide.addEventListener("afteronline", function(e) {
+                        // upload current file again
+                        _self.upload();
+                    });
+                    break;
+                default:
+                    console.log("unknown message from uploadworker: ", data.type);
             }
             
         }, false);  

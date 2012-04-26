@@ -28,21 +28,6 @@ self.addEventListener("message", function (e) {
                     var file = data.file;
                     var reader = new FileReader();
                     
-                    reader.onloadstart = function(e) {
-                        self.postMessage({type: "onloadstart"});
-                    }
-                    reader.onprogress = function(e) {
-                        self.postMessage({type: "onprogress"});
-                    }
-                    
-                    reader.onerror = function(e) {
-                        self.postMessage({type: "onerror"});
-                    }
-                    
-                    reader.onload = function(e) {
-                        self.postMessage({type: "onload"});
-                    }
-                    
                     reader.onloadend = function(e){
                         var filename = file.name;
                         var filepath = data.path + "/" + filename;
@@ -102,14 +87,15 @@ self.addEventListener("message", function (e) {
 
 // uploading file in chunks
 self.uploadChunk = function(chunk, filepath, next) {
-    self.postMessage({value: "uploadChunk"});
     var http = new XMLHttpRequest();
     http.open("PUT", filepath, true);
     http.onreadystatechange = function(){
         if (http.readyState != 4)
             return;
         
-        next(http.status < 200 || http.status > 299 ? http.status : 0);
+        setTimeout(function(e) {
+            next(http.status < 200 || http.status > 299 ? http.status : 0);
+        }, 2000);
     }
     /*
     http.setRequestHeader("Cache-Control", "no-cache");
