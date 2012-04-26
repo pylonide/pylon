@@ -521,7 +521,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                     break;
                 }
 
-                var revision = this.getRevision(message.id);
                 var group = {};
                 var data = {
                     id: message.id,
@@ -553,7 +552,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     }
                 }
 
-                group[message.id] = revision;
+                group[message.id] = this.getRevision(message.id);
                 data.groupKeys = [parseInt(message.id, 10)];
                 this.worker.postMessage(data);
                 break;
@@ -705,6 +704,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             timestamps = revObj.allTimestamps;
         }
 
+        var contributorToXml = function(c) {
+            return "<contributor email='" + c + "' />";
+        };
         var revsXML = "";
         for (var i = timestamps.length - 1; i >= 0; i--) {
             var ts = timestamps[i];
@@ -722,9 +724,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             var contributors = "";
             if (rev.contributors && rev.contributors.length) {
-                contributors = rev.contributors.map(function(c) {
-                    return "<contributor email='" + c + "' />";
-                }).join("");
+                contributors = rev.contributors.map(contributorToXml).join("");
             }
 
             revsXML += "<contributors>" + contributors + "</contributors></revision>";
