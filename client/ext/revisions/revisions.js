@@ -48,6 +48,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     docChangeListeners: {},
     // Revision Queue (its saving hasn't been confirmed by the server)
     revisionQueue: {},
+    offlineQueue: [],
 
     toggle: function() {
         if (!editors.currentEditor.ceEditor) {
@@ -164,6 +165,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         });
 
+        this.$onAfterOnline = this.onAfterOnline.bind(this);
+        ide.addEventListener("onafteronline", this.$onAfterOnline);
+        this.$onRevisionSaved = this.onRevisionSaved.bind(this);
+        ide.addEventListener("revisionSaved", this.$onRevisionSaved);
         this.$initWorker();
     },
 
@@ -391,6 +396,48 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.save(e.page);
     },
 
+    $makeNewRevision: function(rev) {
+        var queue = this.offlineQueue;
+        var revObj = this.rawRevisions[rev.path];
+        rev.revisions = revObj.allRevisions;
+        // To not have to extract and sort timestamps from allRevisions
+        rev.timestamps = revObj.allTimestamps;
+        this.worker.postMessage(rev);
+    },
+
+    onRevisionSaved: function(data) {
+        var queue = this.offlineQueue;
+        var savedTS = parseInt(data.ts, 10);
+        for (var i = 0, l = queue.length; i < l; i++) {
+            if (queue[i] === null) {
+                continue;
+            }
+
+            var revApplyOn = parseInt(queue[i].applyOn, 10);
+            if (revApplyOn === savedTS) {
+                this.$makeNewRevision(queue[i]);
+                queue[i] = null;
+            }
+        }
+    },
+
+    onAfterOnline: function(e) {
+        var queue = this.offlineQueue;
+        if (!queue || !queue.length) {
+            return;
+        }
+
+        var len = queue.length;
+        for (var i = 0; i < len; i++) {
+            var prev = queue[i - 1];
+            if (prev) {
+                queue[i].applyOn = prev.ts;
+            }
+        }
+        this.$makeNewRevision(queue[0]);
+        queue[0] = null;
+    },
+
     afterSelect: function(e) {
         var node = e.currentTarget.selected;
         if (!node || e.currentTarget.selection.length > 1) {
@@ -464,16 +511,12 @@ module.exports = ext.register("ext/revisions/revisions", {
                     return;
                 }
 
-                this.revisionQueue[revision.ts] = revision;
-
-                var data = {
-                    command: "revisions",
-                    subCommand: "saveRevision",
+                this.revisionQueue[revision.ts] = {
                     path: e.data.path,
                     revision: revision
                 };
 
-                ide.send(data);
+                this.$saveExistingRevision(e.data.path, revision);
                 break;
             case "recovery":
                 if (e.data.revision.inDialog === true) {
@@ -486,6 +529,17 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    $saveExistingRevision: function(path, revision) {
+        var data = {
+            command: "revisions",
+            subCommand: "saveRevision",
+            path: path,
+            revision: revision
+        };
+
+        ide.send(data);
+    },
+
     onMessage: function(e) {
         var message = e.message;
         if (message.type !== "revision")
@@ -496,10 +550,16 @@ module.exports = ext.register("ext/revisions/revisions", {
             case "confirmSave":
                 revObj = this.$getRevisionObject(message.path);
                 var ts = message.ts;
-                if (this.revisionQueue[ts]) {
-                    this.revisionQueue[ts].saved = true;
-                    revObj.allRevisions[ts] = this.revisionQueue[ts];
+                var revision = this.revisionQueue[ts].revision;
+                if (revision) {
+                    revision.saved = true;
+                    revObj.allRevisions[ts] = revision;
                     delete this.revisionQueue[ts];
+                    ide.dispatchEvent("revisionSaved", {
+                        ts: ts,
+                        path: message.path,
+                        revision: revision
+                    });
 
                     this.generateCache(revObj);
                     if (this.$getDocPath() === message.path) {
@@ -1059,13 +1119,22 @@ module.exports = ext.register("ext/revisions/revisions", {
         // in a worker istead of sending over to the server. Later on, we'll
         // send the new revision to the server.
         if (!this.isCollab(doc)) {
-            var revObj = this.rawRevisions[docPath];
             data.type = "newRevision";
             data.lastContent = doc.getValue();
-            data.revisions = revObj.allRevisions;
-            // To not have to extract and sort timestamps from allRevisions
-            data.timestamps = revObj.allTimestamps;
-            return this.worker.postMessage(data);
+
+            if (ide.onLine === false) {
+                data.ts = Date.now();
+                this.offlineQueue.push(data);
+                return;
+            }
+            else {
+                var revObj = this.rawRevisions[docPath];
+                data.revisions = revObj.allRevisions;
+                // To not have to extract and sort timestamps from allRevisions
+                data.timestamps = revObj.allTimestamps;
+                this.worker.postMessage(data);
+                return;
+            }
         }
 
         ide.send(data);

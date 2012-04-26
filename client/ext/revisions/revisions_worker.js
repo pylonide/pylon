@@ -162,6 +162,7 @@ self.onmessage = function(e) {
 
             lastContent = e.data.lastContent;
             patch = self.dmp.patch_make(beforeRevision, lastContent);
+            debug(beforeRevision);
 
             // If there is no actual changes, let's return
             if (patch.length === 0) {
@@ -175,12 +176,12 @@ self.onmessage = function(e) {
                     contributors: e.data.contributors,
                     silentsave: e.data.silentsave,
                     restoring: e.data.restoring,
-                    ts: Date.now(),
+                    ts: e.data.ts || Date.now(),
                     patch: [patch],
                     length: lastContent.length,
                     saved: false
                 }
-            }
+            };
             break;
 
         // Recovery is a special case for when a external application modifies
