@@ -84,8 +84,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             else if (e.keyCode == 38 && dgGoToFile.viewport.length) {
                 if (dgGoToFile.selected == dgGoToFile.$cachedTraverseList[0])
                     return;
-                
-                var prev = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected, false);
+                var selectedNode = dgGoToFile.selected;
+                if(!selectedNode)
+                    selectedNode = dgGoToFile.queryNode("//d:href")
+                var prev = dgGoToFile.getNextTraverseSelected(selectedNode, false);
                 if (prev) {
                     dgGoToFile.select(prev, e.ctrlKey, e.shiftKey);
                     dgGoToFile.focus();
@@ -93,7 +95,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 }
             }
             else if (e.keyCode == 40 && dgGoToFile.viewport.length) {
-                var next = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected);
+                var selectedNode = dgGoToFile.selected;
+                if(!selectedNode)
+                    selectedNode = dgGoToFile.queryNode("//d:href")
+                var next = dgGoToFile.getNextTraverseSelected(selectedNode);
                 if (next) {
                     dgGoToFile.select(next, e.ctrlKey, e.shiftKey);
                     dgGoToFile.focus();
