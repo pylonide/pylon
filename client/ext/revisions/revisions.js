@@ -515,7 +515,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         clearTimeout(this.docChangeTimeout);
         this.docChangeTimeout = setTimeout(function(self) {
-            if (doc.$page && this.$isAutoSaveEnabled()) {
+            if (doc.$page && self.$isAutoSaveEnabled()) {
                 self.setSaveButtonCaption();
                 self.save(doc.$page);
             }
