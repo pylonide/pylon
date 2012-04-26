@@ -73,16 +73,10 @@ module.exports = ext.register("ext/zen/zen", {
             }
         });
 
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             var strSettings = e.model.queryValue("auto/zen");
             if (strSettings)
                 _self.initialWidth = strSettings;
-        });
-
-        ide.addEventListener("savesettings", function(e){
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/zen/text()");
-            xmlSettings.nodeValue = _self.initialWidth;
-            return true;
         });
 
         ide.addEventListener("minimap.visibility", function(e) {
@@ -253,7 +247,8 @@ module.exports = ext.register("ext/zen/zen", {
                 return;
 
             if (_self.handleLeftMove || _self.handleRightMove)
-                settings.save();
+                settings.model.setQueryValue("auto/zen/text()", _self.initialWidth);
+
             _self.handleLeftMove = false;
             _self.handleRightMove = false;
             apf.layout.forceResize();

@@ -87,14 +87,14 @@ module.exports = ext.register("ext/tree/tree", {
         ide.addEventListener("init.ext/filesystem/filesystem", function(e) {
             _self.model = e.ext.model;
 
-            // loadedSettings is set after "loadsettings" is dispatched.
+            // loadedSettings is set after "settings.load" is dispatched.
             // Thus if we have our model setup and we have the cached expanded
             // folders, then we can load the project tree
             if (_self.loadedSettings > 0 && _self.inited)
                 _self.onReady();
         });
 
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             var model = e.model;
             (davProject.realWebdav || davProject).setAttribute("showhidden",
                 apf.isTrue(model.queryValue('auto/projecttree/@showhidden')));
@@ -132,7 +132,7 @@ module.exports = ext.register("ext/tree/tree", {
             }
         });
 
-        ide.addEventListener("savesettings", function(e){
+        ide.addEventListener("settings.save", function(e){
             if (!_self.changed)
                 return;
 
@@ -171,7 +171,6 @@ module.exports = ext.register("ext/tree/tree", {
 
             expandedNodes.nodeValue = JSON.stringify(_self.expandedNodes);
             _self.changed = false;
-            return true;
         });
 
         /**
@@ -260,6 +259,8 @@ module.exports = ext.register("ext/tree/tree", {
             onclick : function(e){
                 setTimeout(function() {
                     _self.changed = true;
+                    settings.save();
+                    
                     (davProject.realWebdav || davProject)
                         .setAttribute("showhidden", e.currentTarget.checked);
 
@@ -531,6 +532,7 @@ module.exports = ext.register("ext/tree/tree", {
 
                 if (extra.status === 404) {
                     _self.changed = true;
+                    settings.save();
 
                     // Go through the orphaned children and remove those that
                     // start with the path of the folder not found

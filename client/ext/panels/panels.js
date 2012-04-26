@@ -55,7 +55,7 @@ module.exports = ext.register("ext/panels/panels", {
             panelExt.panel.setAttribute("draggable", "false");
         });
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             if (!settings.model.queryNode("auto/panels/panel[@path='" 
                 + panelExt.path + "']")) {
                 settings.model.appendXml("<panel path='" 
@@ -304,54 +304,8 @@ module.exports = ext.register("ext/panels/panels", {
         /**** Support for state preservation ****/
         
         var _self = this;
-        this.$settings = {};
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             settings.setDefaults("general", [["animateui", apf.isGecko ? false : true]]);
-        });
-
-        var props = ["visible", "flex", "width", "height", "state"];
-        ide.addEventListener("savesettings", function(e){
-            var changed = false, 
-                xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/panel/text()");
-
-            var set, pset, path, parent, panel, p, i, l = props.length;
-            for (path in _self.panels) {
-                panel = _self.panels[path].panel;
-                if (!panel) continue;
-
-                if (!_self.$settings[path]) {
-                    _self.$settings[path] = {parent: {}};
-                    changed = true;
-                }
-                
-                parent = panel.parentNode;
-                set    = _self.$settings[path];
-                pset   = _self.$settings[path].parent;
-
-                for (i = 0; i < l; i++) {
-                    if (props[i] == "width") {
-                        if (set[p = props[i]] !== _self.panels[path].$lastWidth) {
-                            set[p] = _self.panels[path].$lastWidth;
-                            changed = true;
-                        }
-                        continue;
-                    }
-                        
-                    if (set[p = props[i]] !== panel[p]) {
-                        set[p] = panel[p];
-                        changed = true;
-                    }
-                    if (pset[p] !== parent[p]) {
-                        pset[p] = parent[p];
-                        changed = true;
-                    }
-                }
-            }
-            
-            if (changed) {
-                xmlSettings.nodeValue = JSON.stringify(_self.$settings);
-                return true;
-            }
         });
     },
     

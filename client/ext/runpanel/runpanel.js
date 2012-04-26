@@ -131,7 +131,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             _self.$populateMenu();
         });
 
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             settings.setDefaults("auto/node-version", [
                 ["version", "auto"]
             ]);
@@ -139,7 +139,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         settings.addSettings("General", markupSettings);
         
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             var runConfigs = e.model.queryNode("auto/configurations");
             if (!runConfigs) {
                 runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");

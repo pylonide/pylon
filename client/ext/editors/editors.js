@@ -353,7 +353,11 @@ module.exports = ext.register("ext/editors/editors", {
                 ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
             );
             page.setAttribute("model", page.$model = model);
-            page.$model.load(xmlNode);
+            
+            model.load(xmlNode);
+            model.addEventListener("update", function(){
+                settings.save();
+            });
         });
 
         if (init)
@@ -537,6 +541,8 @@ module.exports = ext.register("ext/editors/editors", {
         }*/
         apf.history.setHash("!" + path);
         
+        settings.save();
+        
         if (!e.keepEditor) {
             var fileExtension = (path || "").split(".").pop().toLowerCase();
             var editor = this.fileExtensions[fileExtension] 
@@ -647,7 +653,7 @@ module.exports = ext.register("ext/editors/editors", {
         /**** Support for state preservation ****/
 
         this.$settings = {};
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/files", []);
             
             settings.setDefaults("auto/tabs", [["show", "true"]]);
@@ -723,12 +729,11 @@ module.exports = ext.register("ext/editors/editors", {
             });
         });
 
-        ide.addEventListener("savesettings", function(e){
+        ide.addEventListener("settings.save", function(e){
             if (!e.model.data)
                 return;
 
             var pNode   = e.model.data.selectSingleNode("auto/files");
-            var state   = pNode && pNode.xml;
             var pages   = tabEditors.getPages();
 
             if (pNode) {
@@ -776,9 +781,6 @@ module.exports = ext.register("ext/editors/editors", {
                     }
                 }
             }
-
-            if (state != (pNode && pNode.xml))
-                return true;
         });
     },
 

@@ -125,7 +125,7 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         settings.addSettings("JS Beautify", markupSettings);
 
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             settings.setDefaults("beautify/jsbeautify", [
                 ["preserveempty", "true"],
                 ["keeparrayindentation", "false"],

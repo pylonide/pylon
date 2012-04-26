@@ -50,16 +50,18 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         }), 2000000);
         
         // Load up extensions the user added manually
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             ide.addEventListener("extload", function(){
                 var nodes = e.model.queryNodes("auto/extensions/plugin");
                 for (var n = 0; n < nodes.length; n++)
                     _self.loadExtension(nodes[n].getAttribute("path"));
             });
         });
+    },
 
+    init : function(amlNode){
         // Save the manually-loaded extensions
-        ide.addEventListener("savesettings", function(e){
+        ide.addEventListener("settings.save", function(e){
             var eNode = e.model.data.selectSingleNode("auto/extensions");
             if (eNode) {
                 eNode.parentNode.removeChild(eNode);
@@ -72,12 +74,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 var copy = apf.xmldb.cleanNode(userExtensions[u].cloneNode(false));
                 eNode.appendChild(copy);
             }
-
-            return true;
         });
     },
-
-    init : function(amlNode){},
 
     loadExtension : function(path) {
         if (path || tbModuleName.validate()) {
@@ -102,7 +100,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var extPath = dgExtUser.selected.getAttribute("path");
         var extension = require(extPath);
 
-        if(ext.unregister(extension)) {
+        if (ext.unregister(extension)) {
             ext.model.removeXml(ext.model.queryNode("plugin[@path='" + extPath + "']"));
             settings.save();
         }

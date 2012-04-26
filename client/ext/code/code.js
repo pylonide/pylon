@@ -416,7 +416,7 @@ module.exports = ext.register("ext/code/code", {
         commands.addCommands(MultiSelectCommands, true);
 
         //Settings Support
-        ide.addEventListener("loadsettings", function(e) {
+        ide.addEventListener("settings.load", function(e) {
             settings.setDefaults("editors/code", [
                 ["overwrite", "false"],
                 ["selectstyle", "line"],

@@ -89,7 +89,7 @@ module.exports = ext.register("ext/stripws/stripws", {
                 self.enable();
         });
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             settings.setDefaults("editors/code", [
                 ["stripws", "false"]
             ]);

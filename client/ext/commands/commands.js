@@ -39,7 +39,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         init : function(){
             var _self = this;
             
-            ide.addEventListener("loadsettings", function(e){
+            ide.addEventListener("settings.load", function(e){
                 e.ext.setDefaults("general/keybindings", [["preset", "auto"]]);
                 
                 var preset = e.model.queryValue("general/keybindings/@preset");

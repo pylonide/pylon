@@ -96,7 +96,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         
         ext.initExtension(require("ext/console/console"));
         
-        /*ide.addEventListener("loadsettings", function(e){
+        /*ide.addEventListener("settings.load", function(e){
             _self.animateui = settings.model.queryValue('general/@animateui');
             settings.model.setQueryValue('general/@animateui', false);
         });*/

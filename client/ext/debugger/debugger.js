@@ -80,7 +80,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             return false;
         });
 
-        ide.addEventListener("loadsettings", function (e) {
+        ide.addEventListener("settings.load", function (e) {
             // restore the breakpoints from the IDE settings
             var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
             // not there yet, create element

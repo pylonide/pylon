@@ -378,7 +378,7 @@ module.exports = ext.register("ext/console/console", {
         menus.addItemByPath("Tools/NPM/Install", new apf.item({}), 1000),
         menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({}), 2000)
         
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
                 e.model.setQueryValue("auto/console/@autoshow", true);
 

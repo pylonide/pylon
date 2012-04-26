@@ -78,7 +78,7 @@ module.exports = ext.register("ext/language/language", {
             });
         }, true);
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             settings.setDefaults("language", [
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],

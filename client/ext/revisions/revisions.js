@@ -90,7 +90,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
 
         settings.addSettings("General", markupSettings);
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
         });
 

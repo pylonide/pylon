@@ -128,7 +128,7 @@ module.exports = ext.register("ext/vim/vim", {
         
         menus.addItemByPath("View/Vim Mode", menuItem, 150000);
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             settings.setDefaults("editors/code", [
                 ["vimmode", "false"]
             ]);

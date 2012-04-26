@@ -9,13 +9,13 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var template = "<settings />";
 
+var INTERVAL = 2000; //I would like this at 60000, but save on exit is broken
+
 module.exports = {
     model : new apf.model(),
     
     $checkSave : function() {
-        if (ide.dispatchEvent("savesettings", {
-            model : this.model
-        }) === true || this.dirty)
+        if (this.dirty)
             this.saveToFile();
     },
     
@@ -27,22 +27,30 @@ module.exports = {
         var checkSave = function(){
             _self.$checkSave();
         };
-        this.$timer = setInterval(checkSave, 60000);
+        this.$timer = setInterval(checkSave, INTERVAL);
     },
 
     save : function(force){
         this.dirty = true;
         
         if (force) {
-            ide.dispatchEvent("savesettings", { model : this.model });
             this.saveToFile();
             this.startTimer();
         }
     },
 
     saveToFile : function() {
+        if (cloud9config.debug)
+            console.log("Saving Settings...");
+            
+        ide.dispatchEvent("settings.save", { model : this.model });
+        
+        this.model.data.setAttribute("time", new Date().getTime());
         var data = this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "";
+
         if (ide.onLine) {
+            this.dirty = false;
+            
             ide.send({
                 command: "settings",
                 action: "set",
@@ -65,9 +73,9 @@ module.exports = {
             this.model.load(template);
         }
 
-        if (window.onerror) {
+        if (!cloud9config.debug) {
             try {
-                ide.dispatchEvent("loadsettings", {
+                ide.dispatchEvent("settings.load", {
                     model : this.model,
                     ext   : this
                 });
@@ -77,20 +85,20 @@ module.exports = {
 
                 this.model.load(template);
 
-                ide.dispatchEvent("loadsettings", {
+                ide.dispatchEvent("settings.load", {
                     model : this.model,
                     ext   : this
                 });
             }
         }
         else {
-            ide.dispatchEvent("loadsettings", {
+            ide.dispatchEvent("settings.load", {
                 model : this.model,
                 ext   : this
             });
         }
 
-        ide.addEventListener("$event.loadsettings", this.$loadsettings);
+        ide.addEventListener("$event.settings.load", this.$loadsettings);
 
         this.loaded = true;
     },
@@ -169,7 +177,7 @@ module.exports = {
                 ide.send({command: "settings", action: "get"});
             return;
         }
-
+        
         this.load(xml);
 
         /**** Events ****/

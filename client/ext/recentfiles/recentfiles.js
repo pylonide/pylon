@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/recentfiles/recentfiles", {
@@ -19,7 +20,6 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
     deps        : [],
     offline     : true,
 
-    currentSettings : [],
     nodes       : [],
 
     init : function(){
@@ -39,7 +39,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             }), 2000000)
         );
         
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/recentfiles");
             if (strSettings) {
@@ -60,7 +60,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             }
         });
 
-        ide.addEventListener("savesettings", function(e){
+        ide.addEventListener("settings.save", function(e){
             if (!_self.changed)
                 return;
 
@@ -79,7 +79,6 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             }
 
             xmlSettings.nodeValue = JSON.stringify(currentSettings);
-            return true;
         });
 
         function evHandler(e){
@@ -97,9 +96,9 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 node    : node
             };
 
-            _self.currentSettings.shift(obj);
-
             _self.$add(obj);
+            
+            settings.save();
         }
 
         ide.addEventListener("afteropenfile", evHandler);

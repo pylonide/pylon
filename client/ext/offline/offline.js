@@ -343,7 +343,7 @@ module.exports = ext.register("ext/offline/offline", {
             }
         }
 
-        ide.addEventListener("savesettings", saveFiles);
+        ide.addEventListener("settings.save", saveFiles);
         apf.addEventListener("exit", saveFiles);
 
         /**** Init ****/

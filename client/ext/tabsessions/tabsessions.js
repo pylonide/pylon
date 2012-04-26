@@ -43,7 +43,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             }
         });
         
-        ide.addEventListener("loadsettings", function(e) {            
+        ide.addEventListener("settings.load", function(e) {            
             var model = e && e.model || settings.model;
         
             var sessions = model.queryNodes("auto/sessions/session");

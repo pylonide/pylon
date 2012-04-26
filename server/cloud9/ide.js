@@ -189,6 +189,8 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
             }
             else {
                 settingsPlugin.loadSettings(user, function(err, settings) {
+                    console.log("retrieve settings", settings.substr(0, 100));
+                    
                     replacements.settingsXml = err || !settings ? "defaults" : settings.replace(/]]>/g, '&#093;&#093;&gt;');
                     index = template.fill(index, replacements);
                     res.end(index);

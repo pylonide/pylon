@@ -41,15 +41,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     hook : function(){
         var _self = this;
 
-        ide.addEventListener("loadsettings", function(e){
-            /*var strSettings = e.model.queryValue("auto/statusbar");
-            if (strSettings === "true") {
-                if (_self.inited)
-                    _self.toggleStatusBar();
-                else
-                    _self.toggleOnInit = true;
-            }*/
-            
+        ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/statusbar/@show"))
                 e.model.setQueryValue("auto/statusbar/@show", "true");
 
@@ -61,12 +53,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             if (apf.isTrue(e.model.queryValue("auto/statusbar/@show")))
                 _self.preinit();
         });
-
-//        ide.addEventListener("savesettings", function(e){
-//            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/statusbar/text()");
-//            xmlSettings.nodeValue = _self.expanded;
-//            return true;
-//        });
 
         this.nodes.push(
             menus.addItemByPath("View/Status Bar", new apf.item({

@@ -78,7 +78,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         
         settings.addSettings("Code Tools", markupSettings);
 
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             settings.setDefaults("editors/codewidget", [
                 ["colorpicker", "false"]
             ]);
