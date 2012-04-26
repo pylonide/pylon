@@ -387,6 +387,13 @@ module.exports = ext.register("ext/offline/offline", {
             if (_ext.offline === false)
                 _ext.disable();
         }
+    },
+
+    toggleInfoDiv : function(show) {
+        if (show == true)
+            offlineInfoDiv.style.display = "block";
+        else
+            offlineInfoDiv.style.display = "none";
     }
 });
 

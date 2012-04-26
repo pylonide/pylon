@@ -78,7 +78,12 @@ module.exports = {
     },
 
     $loadsettings : function(cb){
-        cb({model : require('core/settings').model});
+        try {
+            cb({model : require('core/settings').model});
+        }
+        catch(e){
+            console.error(e.message);
+        }
     },
 
     /**
