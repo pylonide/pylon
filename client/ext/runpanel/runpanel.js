@@ -117,6 +117,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             }
 
             mdlRunConfigurations.load(runConfigs);
+            
+            setTimeout(function(){
+                if(!mdlRunConfigurations.queryNode('config'))
+                    btnRun.disable();
+            })
         });
 
         ide.addEventListener("init.ext/editors/editors", function(e) {
