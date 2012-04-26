@@ -10,14 +10,14 @@
       modal    = "false">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:hbox id="barTestTools" height="23">
-                <a:button
+                <a:button id="btnAddRunConf"
                   caption  = "add"
                   onclick  = "require('ext/runpanel/runpanel').addConfig()"
                   skin     = "c9-toolbarbutton" />
                 <a:button 
                   caption  = "remove"
                   skin     = "c9-toolbarbutton"
-                  onclick  = "lstRunCfg.remove()"
+                  onclick  = "apf.xmldb.removeNode(lstRunCfg.selected);"
                   disabled = "{!lstRunCfg.selected || !![{lstRunCfg.selected}::@curfile]}"/>
                   
                 <!--a:divider skin="c9-divider-double" /-->
