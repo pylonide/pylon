@@ -58,12 +58,11 @@
 <a:bar name="c9-header-bar">
     <a:style><![CDATA[
         .c9-header-bar{
-            position : relative;
-            background : url(images/headertbleft.png) no-repeat 0 0,
-                url(images/headertbright.png) no-repeat top right,
-                url(images/headertbrepeat.png) repeat-x;
-            padding : 4px 30px 0 30px;
+            position : absolute;
+            right: 30px;
+            top: -31px;
         }
+
     ]]></a:style>
 
     <a:presentation>
@@ -75,6 +74,10 @@
 </a:bar>
 <a:bar name="c9-menu-bar">
     <a:style><![CDATA[
+        body > .vbox,
+        .editor_tab .curbtn .tab_middle {
+        	background-color: #09cƒ !important; /*#E8E8E8*/
+        }
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar expanded
          * --------------------------------------------------------------------------------------- */
@@ -84,8 +87,7 @@
             overflow      : visible;
             background    : url(images/c9-repeat-x.png) repeat-x 0 0 #49a8fa;
         }
-
-        .c9-menu-bar .c9-mbar-bcont {
+ƒ        .c9-menu-bar .c9-mbar-bcont {
             position   : relative;
             overflow   : visible;
         }
@@ -156,6 +158,15 @@
             z-index: 999;
         }
 
+        .c9-menu-bar .c9-mbar-bcont .c9-activity {
+        	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
+        	height: 9px;
+        	left: 24px;
+        	position: absolute;
+        	top: 10px;
+        	width: 9px;
+        }
+
         .c9-menu-bar .mainlogo {
             background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
             display: block;
@@ -198,6 +209,7 @@
                         <div class="c9-mbar-round">
                             <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
                             <div class="c9-offline"></div>
+                            <div class="c9-activity"></div>
                         </div>
                     </div>
                 </div>
@@ -209,11 +221,14 @@
 <a:bar name="black-menu-bar">
     <a:style><![CDATA[
         .black-menu-bar {
-            width            : 65px;
-            overflow         : hidden;
-            position         : relative;
-            background       : url(images/dockLeftBackground.png) #2f3032;
-            border-right     : 1px solid #2E2E2E;
+			background   : rgba(26, 26, 26, .9);
+			border       : 1px solid #000;
+			border-right : 0 none;
+			height       : 27px !important;
+			overflow     : hidden;
+			padding      : 0 8px 0 37px !important;
+			position     : relative;
+			width        : 400px;
         }
 
         /*.deploy.mnubtn {
@@ -1858,25 +1873,57 @@
 <a:button name="header-btn">
     <a:style><![CDATA[
         .header-btn {
-            height              : 15px;
-            width               : 25px;
+            height              : 26px !important;
+            width               : 30px;
             overflow            : hidden;
             cursor              : pointer;
-            position            : relative;
+            position            : absolute;
             cursor              : default;
-            -moz-user-select    : none;
             -khtml-user-select  : none;
-            user-select         : none;
-            background-position : 0 0;
+              -moz-user-select  : none;
+                   user-select  : none;
+            background-image    : url(images/c9-no-repeat.png);
             background-repeat   : no-repeat;
+            top: -32px;
         }
 
-        .header-btnOver {
-            background-position : 0 -15px;
+        .panel-settings {
+        	background-position: 0px -270px;
+        	right: 0;
+        }
+        .panel-settings:hover,
+        .panel-settings.header-btnDown {
+        	background-position: -30px -270px;
+        }
+        .c9-header-plus {
+        	background-position: 0px -293px;
+        	right:31px;
+        	top: 0;
+        }
+        .c9-header-plus:hover {
+        	background-position: -30px -293px;
+        }
+        .c9-header-minus {
+        	background-position: 0px -321px;
+        	right: 1px;
+        	top: 0;
+        }
+        .c9-header-minus:hover {
+        	background-position: -30px -321px;
         }
 
-        .header-btnDown {
-            background-position : 0 -30px;
+        .c9-header-divider:before {
+        	background: url(images/c9-no-repeat.png) no-repeat -100px -293px;
+        	content: "";
+        	display: block;
+        	height: 26px;
+        	left: 0;
+        	position: absolute;
+        	top: 0;
+        	width: 2px;
+        }
+        .c9-header-divider:hover {
+        	background-color: rgba(255,255,255,.3);
         }
     ]]></a:style>
 
@@ -1927,7 +1974,7 @@
 
     <a:presentation>
         <a:main
-          caption      = "text()"
+          caption    = "text()"
           background = "."
           icon       = "span">
             <div class="browser-btn"><span> </span></div>
@@ -2004,19 +2051,29 @@
 <a:button name="mnubtn">
     <a:style><![CDATA[
         .mnubtn {
-            width               : 65px;
-            height              : 68px;
-            padding-top         : 47px;
-            border-bottom       : 1px solid #232323;
-            border-top          : 1px solid #3f3f41;
-            position            : relative;
-            cursor              : default;
-            overflow            : hidden;
+			height       : 26px;
+			padding-top  : 47px;
+			border-left  : 1px solid transparent;
+			border-right : 1px solid transparent;
+			position     : relative;
+			cursor       : default;
+			overflow     : hidden;
+			display: inline-block;
+			width: 20% !important;
         }
 
         .mnubtnOver,
+        .mnubtnDwon {
+        	background-image: url(images/c9-repeat-x.png);
+        	background-repeat: repeat-x;
+        	border-color: #000;
+        }
+        .mnubtnOver {
+        	background-position: 0 -181px;
+        }
         .mnubtnDown {
-            background : url(images/radiobutton_over.png) no-repeat 0 0;
+            
+        	background-position: 0 -217px;
         }
 
         .mnubtn .icon {
@@ -4621,6 +4678,18 @@
         .black_labelDisabled{
             color: #bebebe;
         }
+
+        .run-panel-info {
+        	background: #323332;
+			border-top: 1px solid #111;
+			padding: 10px;
+        }
+        .run-panel-info .black_label {
+        	color: #95b287;
+        }
+        .run-panel-info .hbox {
+        	padding-bottom: 5px !important;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -5366,48 +5435,46 @@
                 overflow : hidden;
                 z-index  : 10000;
                 padding  : 30px 0 0 0;
+                border-right: 1px solid rgba(43,43,43,0.5);
             }
 
             .fm-window .fm-header {
                 position : relative;
                 overflow : hidden;
-                height   : 30px;
+                height   : 32px;
                 top      : -30px;
             }
 
             .fm-window .fm-header .hcontent {
-                background    : url(images/header_backg.png)  repeat-x 0 0 #4f4f52;
-                margin-right  : 6px;
+                background    : url(images/c9-repeat-x.png)  repeat-x 0 -138px;
                 position      : relative;
                 overflow      : hidden;
-                height        : 23px;
+                height        : 26px;
                 padding       : 7px 0 0 7px;
                 font-family   : Arial;
-                font-size     : 12px;
-                line-height   : 16px;
-                font-weight   : bold;
-                color         : #e8e8e8;
-                text-shadow   : #2a2c2d 0px 1px 0px;
-            }
-
-            .fm-window .fm-header .right {
-                width:6px;
-                height:30px;
-                position:absolute;
-                top:0;
-                right:0;
-                background:url(images/header_right.png) no-repeat 0 0;
+                font-size     : 11.3px;
+                line-height   : 14px;
+                color         : #595959;
+                text-shadow   : #fff 0px 1px 0px;
+                box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.8) inset;
+                text-transform : uppercase;
             }
 
             .fm-window .fm-content {
                 position:absolute;
                 overflow:visible;
-                border-right:1px solid #7b7b7b;
                 left : 0;
-                top  : 30px;
+                top  : 32px;
                 right : 0;
                 bottom : 0;
-                background:url(images/panelBg.png) repeat-y right 0;
+                box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, /* top */
+                			-1px 0 0 0 rgba(255,255,255,.9) inset; /* right */
+                background-color: rgba(220, 220, 220, 0.8);
+                background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
+                					url(images/c9-noise-light-10.png),
+                					url(images/c9-noise-light-10.png),
+                					url(images/c9-noise-light-10.png), 
+                					url(images/c9-noise-light-10.png);
             }
         ]]></a:style>
 
@@ -5424,7 +5491,6 @@
                 <div class="fm-window">
                     <div class="fm-header">
                         <div class="hcontent">-<div class="icon"></div><div class="buttons"></div></div>
-                        <div class="right"></div>
                     </div>
                     <div class="fm-content"> </div>
                 </div>
@@ -7898,6 +7964,9 @@
         position : relative;
         padding  : 4px 0 0 0;
     }
+    .webkit .editor_tab .tab_middle {
+        overflow: visible;
+    }
     .webkit .editor_tab .tab_left,
     .webkit .editor_tab .tab_right {
     	display: none;
@@ -7908,8 +7977,8 @@
         text-overflow : ellipsis;
         white-space : nowrap;
     }
-    .webkit .editor_tab .tab_middle:before,
-    .webkit .editor_tab .tab_middle:after {
+    .editor_tab .tab_middle:before,
+    .editor_tab .tab_middle:after {
         background-color : inherit;
         content          : "";
         display          : block;
@@ -7920,16 +7989,16 @@
         top              : 0;
     }
         
-    .webkit .editor_tab .tab_middle:before {
+    .editor_tab .tab_middle:before {
         left                  : -17px;
         -webkit-mask-position : 0 -96px;
     }
-    .webkit .editor_tab .tab_middle:after {
+    .editor_tab .tab_middle:after {
         right                 : -17px;
         -webkit-mask-position : -31px -96px;
     }
 
-    .webkit .editor_tab .sessiontab_saving {
+    .editor_tab .sessiontab_saving {
         position: absolute;
         z-index: 10;
     }
@@ -8004,20 +8073,21 @@
     /* ------------------------------------------------------------------------------------------
      * Selected tab default state
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .curbtn {
+    .editor_tab .curbtn {;
         cursor      : default;
         height      : 22px;
         text-shadow : 0px 1px 0px rgba(255, 255, 255, .4);
         top         : 1px;
         z-index     : 10;
     }
-    .webkit .editor_tab .curbtn .tab_middle,
-    .webkit .editor_tab.hidetabs .curbtn .tab_middle:before {
+    .webkit .editor_tab .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -57px;
         background-repeat   : repeat-x;
+        color               : #000;
     }
-    .webkit .editor_tab .curbtn .tab_middle {
+
+    .editor_tab .curbtn .tab_middle {
         background-color    : #e8e8e8;
         color               : #000;
         text-shadow         : 0 1px 0 0 rgba(255,255,255,.4);
@@ -8123,6 +8193,72 @@
     	background-position: -98px -132px;
     }
 
+    /* ------------------------------------------------------------------------------------------
+	 * LEGACY CODE
+	 * --------------------------------------------------------------------------------------- */
+    .editor_tab .tab_middle {
+        background-image    : url(images/editor_tab.png);
+        background-position : 0 -104px;
+        height              : 20px;
+        position            : relative;
+        overflow            : hidden;
+        padding             : 5px 0 0 0;
+    }
+    .editor_tab .tab_left,
+    .editor_tab .tab_right {
+        position            : absolute;
+        height              : 25px;
+        width               : 20px;
+        background-image    : url(images/editor_tab.png);
+        background-repeat   : no-repeat;
+        top                 : 0;
+    }
+
+    .editor_tab .tab_left {
+        background-position : 0 -78px;
+        left                : 0;
+    }
+    .editor_tab .tab_right {
+        background-position : 0 -130px;
+        right               : 0;
+    }
+    .editor_tab .down {
+        text-shadow: none;
+        color: #d9d9d9;
+    }
+
+    .editor_tab .over .tab_middle {
+        background-position : 0 -182px;
+    }
+    .editor_tab .over .tab_left {
+        background-position : 0 -156px;
+    }
+    .editor_tab .over .tab_right {
+        background-position : 0 -208px;
+    }
+
+    .editor_tab .curbtn {
+        color       : #333333;
+        cursor      : default;
+        text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
+        z-index     : 10;
+    }
+
+    .editor_tab .curbtn .tab_middle {
+        background-position : 0 -26px;
+        color:#000000;
+    }
+    .editor_tab .curbtn .tab_left {
+        background-position : 0 0;
+    }
+    .editor_tab .curbtn .tab_right {
+        background-position : 0 -52px;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * END LEGACY CODE
+     * --------------------------------------------------------------------------------------- */
+
 
     /* ------------------------------------------------------------------------------------------
      * minimized tabs
@@ -8150,30 +8286,37 @@
     	overflow: hidden;
     	top: -5px;
     }
-    .webkit .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
+    .editor_tab.hidetabs .session_btn .tab_middle {
+    	overflow: visible;
+    }
+    .editor_tab.hidetabs .session_btn .tab_left,
+    .editor_tab.hidetabs .session_btn .tab_right {
+    	display: none;
+    }
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
     	background-color: #7A7A7A;
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
         background-position : 50% -125px, 0 -101px;
         background-repeat   : no-repeat, repeat-x;
     }
-    .webkit .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:before {
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
         background-repeat   : repeat-x;
         background-position : 0 -101px;
     }
-    .webkit .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:hover {
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:hover {
     	background-position: 50% -125px, 0 -111px;
     }
-    .webkit .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:hover:before {
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:hover:before {
     	background-position: 0 -111px;
     }
-    .webkit .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
     	border-top-right-radius: 2px;
     }
-    .webkit .editor_tab.hidetabs .tab_middle:before {
+    .editor_tab.hidetabs .tab_middle:before {
     	border-top-left-radius: 2px;
     }
-    .webkit .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:after {
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:after {
     	display: none;
     }
 
@@ -8189,13 +8332,18 @@
     	overflow: hidden;
     	top: -3px;
     }
-    .webkit .editor_tab.hidetabs .curbtn .tab_middle {
+    .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
         background-position : 50% -124px, 0 -57px;
         background-repeat   : no-repeat, repeat-x;
     	border-top-right-radius: 2px;	
     }
-    .webkit .editor_tab.hidetabs .curbtn .tab_middle:after {
+    .editor_tab.hidetabs .curbtn .tab_middle:before {
+        background-image    : url(images/c9-repeat-x.png);
+        background-position : 0 -57px;
+        background-repeat   : repeat-x;
+    }
+    .editor_tab.hidetabs .curbtn .tab_middle:after {
     		display: none;
     }
 
@@ -8241,67 +8389,6 @@
         background-position: 0 0;
     }
 
-	/* ------------------------------------------------------------------------------------------
-	 * LEGACY CODE
-	 * --------------------------------------------------------------------------------------- */
-    .editor_tab .btnsesssioncontainer .session_btn .tab_middle {
-        background-image    : url(images/editor_tab.png);
-        background-position : 0 -104px;
-        height              : 20px;
-        position            : relative;
-        overflow            : hidden;
-        padding             : 5px 0 0 0;
-    }
-    .editor_tab .btnsesssioncontainer .tab_left,
-    .editor_tab .btnsesssioncontainer .tab_right {
-        position            : absolute;
-        height              : 25px;
-        width               : 20px;
-        background-image    : url(images/editor_tab.png);
-        background-repeat   : no-repeat;
-        top                 : 0;
-    }
-
-    .editor_tab .btnsesssioncontainer .tab_left {
-        background-position : 0 -78px;
-        left                : 0;
-    }
-    .editor_tab .btnsesssioncontainer .tab_right {
-        background-position : 0 -130px;
-        right               : 0;
-    }
-    .editor_tab .btnsesssioncontainer div.down {
-        text-shadow: none;
-        color: #d9d9d9;
-    }
-
-    .editor_tab .btnsesssioncontainer div.over .tab_middle {
-        background-position : 0 -182px;
-    }
-    .editor_tab .btnsesssioncontainer div.over .tab_left {
-        background-position : 0 -156px;
-    }
-    .editor_tab .btnsesssioncontainer div.over .tab_right {
-        background-position : 0 -208px;
-    }
-
-    .editor_tab .btnsesssioncontainer div.curbtn {
-        color       : #333333;
-        cursor      : default;
-        text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
-        z-index     : 10;
-    }
-
-    .editor_tab .btnsesssioncontainer div.curbtn .tab_middle {
-        background-position : 0 -26px;
-        color:#000000;
-    }
-    .editor_tab .btnsesssioncontainer div.curbtn .tab_left {
-        background-position : 0 0;
-    }
-    .editor_tab .btnsesssioncontainer div.curbtn .tab_right {
-        background-position : 0 -52px;
-    }
 
     
 
@@ -8430,6 +8517,9 @@
         padding-top:3px;
         overflow: hidden;
         clear: both;
+    }
+    .editor_tab.hidetabs .session_page {
+    	top: 18px;
     }
 
     .editor_tab .session_page.curpage{
@@ -10045,7 +10135,7 @@
         }
 
         .filemgr-tree .item-fix.selected {
-            background : url(images/tree_selected.png) repeat 0 0;
+            background : rgba(0,0,0,0.04);
         }
 
         .filemgr-dragtree .item .caption,
@@ -10088,6 +10178,10 @@
         .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption,
         .filemgr-tree.openfile .item-fix.selected .item LABEL .caption{
             color:white;
+        }
+
+        .filemgr-treeFocus > .item-fix.selected:first-child {
+        	border-top-color:#166CAD;
         }
 
         .filemgr-tree .item SPAN {

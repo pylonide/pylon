@@ -40,7 +40,7 @@ module.exports = ext.register("ext/main/main", {
     nodes   : [],
 
     init : function(){
-        
+        document.body.className += "webkit";
     },
 
     enable : function(){

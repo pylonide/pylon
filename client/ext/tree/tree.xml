@@ -16,18 +16,10 @@
       buttons  = "close"
       optimize = "true">
         <a:button
-          top="-22"
           skin="header-btn"
           right="5"
-          icon="panel_settings.png"
+          class="panel-settings"
           submenu="mnuFilesSettings"/>
-        <a:button
-          top="-22"
-          skin="header-btn"
-          right="29"
-          icon="panel_refresh.png"
-          visible = "{trFiles.visible}"
-          onclick="require('ext/tree/tree').refresh()" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         
         <a:menu id="mnuFilesSettings">
