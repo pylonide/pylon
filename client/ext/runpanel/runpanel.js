@@ -98,7 +98,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 e.model.setQueryValue("auto/configurations/@autohide", true);
 
             if (!runConfigs.selectSingleNode("config[@curfile]")) {
-                var setLast = false;
+                /*var setLast = false;
                 if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
                     var config = e.model.queryNode("auto/configurations/config")
                     if (config)
@@ -113,6 +113,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (setLast)
                     cfg.attr("last", "true");
                 runConfigs.insertBefore(cfg.node(), runConfigs.firstChild);
+                */
             }
 
             mdlRunConfigurations.load(runConfigs);
@@ -122,26 +123,32 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             var page = tabEditors.getPage();
             if (page && page.$model) {
                 var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
-                    path.split("/").pop() + " (active file)");
+                _self.setCurrentFileConf(path);
             }
 
             tabEditors.addEventListener("afterswitch", function(e){
                 var page = e.nextPage;
-                var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
-                    path.split("/").pop() + " (active file)");
+                if (page && page.$model) {
+                    var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                    _self.setCurrentFileConf(path);
+                }
             });
-
+            
+            tabEditors.addEventListener("close", function(e) {
+                var page = e.page;
+                if (page && page.$model) {
+                    var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                    var node = mdlRunConfigurations.queryNode('config[@path="' + path + '" and @curfile="1"]');
+                    if(node)
+                        apf.xmldb.removeNode(node);
+                }
+            });
+            
             ide.addEventListener("afterfilesave", function(e){
                 var page = tabEditors.getPage();
-                if (page) {
+                if (page && page.$model) {
                     var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
-                    mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
-                    mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
-                        path.split("/").pop() + " (active file)");
+                    _self.setCurrentFileConf(path);
                 }
             });
         });
@@ -265,7 +272,49 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     autoHidePanel : function(){
         return apf.isTrue(settings.model.queryValue("auto/configurations/@autohide"));
     },
-
+    
+    setCurrentFileConf: function(path){
+        self["btnAddRunConf"] && btnAddRunConf.enable();
+        if(this.canRunFile(path)) {
+            if(!mdlRunConfigurations.queryNode("config[@curfile]")) {
+                var cfg = apf.getXml('<config path="' + path 
+                            + '" name="' + path.split("/").pop() 
+                            + ' (active file)" curfile="1" last="true"/>')
+                cfg = apf.xmldb.appendChild(mdlRunConfigurations.data, cfg, mdlRunConfigurations.data.firstChild);
+                this.$addMenuItem(cfg, this.getMenuDivider());
+            }
+            else {
+                mdlRunConfigurations.setQueryValue("config[@curfile]/@path", path);
+                mdlRunConfigurations.setQueryValue("config[@curfile]/@name",
+                    path.split("/").pop() + " (active file)");
+            }
+        }
+        else {
+            var curfileNode = mdlRunConfigurations.queryNode('config[@curfile]');
+            curfileNode && apf.xmldb.removeNode(curfileNode);
+            if(mdlRunConfigurations.queryNodes('config').length == 0) {
+                mnuRunCfg.insertBefore(new apf.item({disabled:true, caption: "No run history"}), this.getMenuDivider());
+                self["btnAddRunConf"] && btnAddRunConf.disable();
+            }
+        }
+    },
+    
+    getMenuDivider: function(){
+        var menu = mnuRunCfg;
+        var item = menu.firstChild;
+        while (item && item.tagName !== "a:divider") {
+            menu.removeChild(item);
+            item = menu.firstChild;
+        }
+        return item;
+    },
+    
+    canRunFile : function(file){
+        var allowedFilesLut = {"js": true};
+        file = file.replace(/.*\.(\w+)$/, "$1");
+        return allowedFilesLut[file] || false;
+    },
+    
     shouldRunInDebugMode : function(){
         return apf.isTrue(settings.model.queryValue('auto/configurations/@debug'));
     },
@@ -280,18 +329,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     $populateMenu : function() {
-        var menu = mnuRunCfg;
+        var divider = this.getMenuDivider();
 
-        var item = menu.firstChild;
-        while (item && item.tagName !== "a:divider") {
-            menu.removeChild(item);
-            item = menu.firstChild;
-        }
-        var divider = item;
-
-        var configs = mdlRunConfigurations.queryNodes("config");
+        var configs = mdlRunConfigurations.queryNodes("config/@path");
         if (!configs.length)
-            menu.insertBefore(new apf.item({disabled:true, caption: "No run history"}), divider);
+            mnuRunCfg.insertBefore(new apf.item({disabled:true, caption: "No run history"}), divider);
         else {
             for (var i =  0, l = configs.length; i < l; i++) {
                 this.$addMenuItem(configs[i], divider);
@@ -319,6 +361,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     runConfig : function(config, debug) {
+        if(!config)
+            return;
+            
         ext.initExtension(this);
         var model = settings.model;
         var saveallbeforerun = apf.isTrue(model.queryValue("general/@saveallbeforerun"));

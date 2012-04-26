@@ -20,9 +20,9 @@ module.exports = ext.register("ext/keybindings/keybindings", {
     init : function(amlNode) {
         // Fetch the default keybindings:
         ide.addEventListener("loadsettings", function(e) {
-            var value = e.model.queryValue("general/keybindings/@preset") 
-                || "default_" + (apf.isMac ? "mac" : "win");
-                
+            var value = e.model.queryValue("general/keybindings/@preset");                
+            if(!value || value === "auto")
+                value = "default_" + (apf.isMac ? "mac" : "win");
             require(["ext/keybindings_default/" + value]);
         });
     },

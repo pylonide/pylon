@@ -29,7 +29,7 @@
           onclick  = "require('ext/runpanel/runpanel').run()"
           visible  = "{!stProcessRunning.active &amp;&amp; 1}"
           tooltip  = "{itmDebug.checked ? 'Debug' : 'Run'}"
-          disabled = "{!ide.onLine}"
+          disabled = "{!#[mdlRunConfigurations::config]}"
           submenu  = "mnuRunCfg" />
         <a:button id="btnStop"
           icon     = "stop.png"
