@@ -60,7 +60,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 bindKey: {mac: item[1], win: item[2]},
                 hint: item[3],
                 msg: item[4],
-                isAvailable : item[5],
+                isAvailable : item[item.length - 1],
                 exec: function () {
                     _self[item[0]]();
                 }
@@ -132,7 +132,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 command : "previoustab"
             }), 500),
             
-            mnuContext = new apf.menu({id : "mnuContextTabs"})
+            mnuContext = new apf.menu({id : "mnuContextTabs", "onprop.visible" : menus.$checkItems})
         );
         
         mnuContext.addEventListener("prop.visible", function(e) {
@@ -159,6 +159,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         menus.addItemByPath("~", new apf.divider(), 600, mnuContext);
         menus.addItemByPath("Close Tabs to the Right", new apf.item({
             //command : "closealltotheright",
+            isAvailable : commands.commands["closealltotheright"].isAvailable,
             onclick : function(){
                 var page = apf.findHost(document.elementFromPoint(
                     parseInt(mnuContextTabs.$ext.style.left), 
@@ -169,6 +170,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         }), 600, mnuContext);
         menus.addItemByPath("Close Tabs to the Left", new apf.item({
             //command : "closealltotheleft",
+            isAvailable : commands.commands["closealltotheleft"].isAvailable,
             onclick : function(){
                 var page = apf.findHost(document.elementFromPoint(
                     parseInt(mnuContextTabs.$ext.style.left), 
