@@ -14,6 +14,8 @@ var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 
+var aceClipboardText = "";
+
 module.exports = ext.register("ext/clipboard/clipboard", {
     dev    : "Ajax.org",
     name   : "Clipboard",
@@ -79,6 +81,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
+            aceClipboardText = ace.getCopyText() || aceClipboardText;
             ace.$nativeCommands.exec("cut", ace);
         }
     },
@@ -92,7 +95,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            ace.textInput.emitCopy();
+            aceClipboardText = ace.getCopyText() || aceClipboardText;
         }
     },
 
@@ -102,30 +105,10 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            ace.textInput.emitPaste();
+            ace.onPaste(aceClipboardText);
         }
     },
 
-    // seems to be some bug--once the context menu pops up, 
-    // ace selection disappears.
-    keepRange : function() {
-        var ace = this.$getAce();
-        this.range = ace.getSelectionRange();
-    },
-    
-    showRange : function() {
-        var _self = this;
-        setInterval(function() {
-            if (!mnuCtxEditor.visible) {
-                clearInterval(this);
-            }
-            else {
-                var ace = _self.$getAce();
-                ace.getSelection().setSelectionRange(_self.range);
-            }
-        }, 10);
-    },
-    
     $getAce : function() {
         var editor = editors.currentEditor;
         if (!editor || !editor.ceEditor)
