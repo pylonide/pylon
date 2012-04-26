@@ -394,6 +394,14 @@ module.exports = ext.register("ext/console/console", {
             if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
                 _self.showInput();
         });
+        
+        stProcessRunning.addEventListener("activate", function() {
+            var autoshow = settings.model.queryValue("auto/console/@autoshow");
+            if (_self.autoOpen && apf.isTrue(autoshow))
+                _self.show();
+            
+            _self.showOutput();
+        });
     },
 
     init: function(amlNode){
@@ -417,14 +425,6 @@ module.exports = ext.register("ext/console/console", {
             exec: function () {
                 _self.switchconsole();
             }
-        });
-
-        stProcessRunning.addEventListener("activate", function() {
-            _self.showOutput();
-
-            var autoshow = settings.model.queryValue("auto/console/@autoshow");
-            if (_self.autoOpen && apf.isTrue(autoshow))
-                _self.show();
         });
 
         // before the actual run target gets called we clear the console

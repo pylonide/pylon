@@ -828,7 +828,8 @@ module.exports = ext.register("ext/code/code", {
         });
         
         ide.addEventListener("updatefile", function(e){
-            if (ceEditor.getDocument() == tabEditors.getPage().$doc.acesession)
+            var page = tabEditors.getPage();
+            if (page && ceEditor.getDocument() == page.$doc.acesession)
                 ceEditor.setProperty("syntax", _self.getSyntax(e.xmlNode));
         });
     },
