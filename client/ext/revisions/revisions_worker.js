@@ -64,7 +64,7 @@ var loadLibs = function() {
     }
 
     if (!self.difflib) {
-        importScripts("/static/ext/revisions/lib/difflib.js");
+        importScripts("/static/ext/revisions/difflib.js");
         self.difflib = difflib;
     }
 };
