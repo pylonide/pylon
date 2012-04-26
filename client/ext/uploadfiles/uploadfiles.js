@@ -44,8 +44,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     hook : function(){
         var _self = this;
         
-        this.worker = new SharedWorker('/static/ext/uploadfiles/uploadworker.js');
-        this.worker.port.addEventListener("message", function(e) {  
+        this.worker = new Worker('/static/ext/uploadfiles/uploadworker.js');
+        this.worker.addEventListener("message", function(e) {  
             var data = e.data;
             if (!data.type)
                 return console.log(data);
@@ -62,7 +62,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             }
             
         }, false);  
-        this.worker.port.start();
         
         this.nodes.push(
             ide.mnuFile.appendChild(new apf.item({
@@ -473,7 +472,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 
                 function upload(file) {
                     var file = file || _self.currentFile;
-                    _self.worker.port.postMessage({cmd: 'connect', id: file.name, file: file, path: file.path});
+                    _self.worker.postMessage({cmd: 'connect', id: file.name, file: file, path: file.path});
                 }
                 _self.upload = upload;
                 

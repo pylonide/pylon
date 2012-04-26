@@ -1,48 +1,73 @@
 var connections = new Array();  
 connections.length = 0;
 
-var BYTES_PER_CHUNK = 1024 * 1024; // 1MB chunk sizes.
-var CHUNK_UPLOAD = true;
-var port;
+var BYTES_PER_CHUNK = 256 * 1024; // 256k chunk sizes.
 
-self.addEventListener("connect", function (e) {  
-    port = e.ports[0];
-    
-    port.addEventListener("message", function (e) {  
-      var data = e.data;
-      if (!data.cmd) {
-        port.postMessage({value: "No cmd specified"});
-      } else {
+self.addEventListener("message", function (e) {  
+    var data = e.data;
+    if (!data.cmd) {
+        self.postMessage({value: "No cmd specified"});
+    } else {
         switch (data.cmd) {
-          case 'connect':
-            var filepath = data.path + "/" + data.file.name;
-            
-            if (!(filepath in connections)) {
-              connections[filepath] = null;
-              connections.length++;
-              port.postMessage({value: data.id + " has connected on port #" + connections.length + "."});
-            }        
-            port.postMessage({value: "Received cmd of '" + data.cmd + "' from " + data.id + "."});
-            port.postMessage({connections: connections.length});
-            if (connections.length == 1) {
-              port.postMessage({value: "Starting...", filename: data.file.name});
-              
-              // Processing ...
-              var file = data.file;
-                var reader = new FileReader();
-                // Init the reader event handlers
-                reader.onloadend = function(e){
-                    var filename = file.name;
-                    var filepath = data.path + "/" + filename;
+            case 'connect':
+                var filepath = data.path + "/" + data.file.name;
+                
+                if (!(filepath in connections)) {
+                    connections[filepath] = {};
+                    connections.length++;
                     
-                    if (CHUNK_UPLOAD) {
+                    if (connections.length > 1) {
+                        self.postMessage({value: "Error: Too many connections"});
+                        return; 
+                    }
+                    
+                    self.postMessage({value: data.id + " has connected on port #" + connections.length + "."});
+                    self.postMessage({value: "Starting...", filename: data.file.name});
+                    
+                    // Processing ...
+                    var file = data.file;
+                    var reader = new FileReader();
+                    
+                    reader.onloadstart = function(e) {
+                        self.postMessage({type: "onloadstart"});
+                    }
+                    reader.onprogress = function(e) {
+                        self.postMessage({type: "onprogress"});
+                    }
+                    
+                    reader.onerror = function(e) {
+                        self.postMessage({type: "onerror"});
+                    }
+                    
+                    reader.onload = function(e) {
+                        self.postMessage({type: "onload"});
+                    }
+                    
+                    reader.onloadend = function(e){
+                        var filename = file.name;
+                        var filepath = data.path + "/" + filename;
+                        
                         var blob = file;
                         var blobsize = blob.size;
             
                         var start = 0;
                         var end = BYTES_PER_CHUNK;
-                        port.postMessage({blobsize: blobsize, start: start});
-                        while(start < blobsize) {
+                        
+                        function next(error){
+                            if (error) {
+                                self.postMessage({type: "paused", error: error, filepath: filepath});
+                                return;
+                            }
+                            
+                            self.postMessage({type: "progress", value: end/blobsize});
+                            
+                            if (start >= blobsize) {
+                                // file upload complete
+                                delete connections[filepath];
+                                connections.length--;
+                                return self.postMessage({type: "complete"});
+                            }
+                            
                             // Note: blob.slice has changed semantics and been prefixed. See http://goo.gl/U9mE5.
                             if ('mozSlice' in blob) {
                                 var chunk = blob.mozSlice(start, end);
@@ -50,60 +75,41 @@ self.addEventListener("connect", function (e) {
                                 var chunk = blob.webkitSlice(start, end);
                             }
                             
-                            self.uploadChunk(chunk, filepath, blobsize, end);
+                            self.uploadChunk(chunk, filepath, next);
                         
                             start = end;
                             end = start + BYTES_PER_CHUNK;
+                            if (end > blobsize)
+                                end = blobsize;
                         }
+                        connections[filepath].next = next;
+                        
+                        next();
                     }
-                    else {
-                        var http = new XMLHttpRequest();
-                        http.open("PUT", filepath, true);
-                        http.onreadystatechange = function(){
-                            if (http.readyState != 4)
-                                return;
-            
-                            port.postMessage({type: 1, value: "file uploaded:" + http.status});
-                        }
-                        http.setRequestHeader("Cache-Control", "no-cache");
-                        http.setRequestHeader("X-File-Name", filename);
-                        http.setRequestHeader("X-File-Size", file.size);
-                        http.setRequestHeader("Content-Type", "application/octet-stream");
-                        http.send(e.target.result);
-                    }
+                    // Begin the read operation
+                    reader.readAsBinaryString(data.file);
                 }
-                // Begin the read operation
-                reader.readAsBinaryString(data.file);
-              
-            }
-            break;
-          case 'upload':
-              port.postMessage({value: "test"}); //data.file.name
-            break;
-          default:
-            port.postMessage({value: "unknown cmd"}); //data.file.name
+                else {
+                    connections[filepath].next();
+                }
+                
+                break;
+            default:
+                self.postMessage({value: "unknown cmd"});
         }
-      }
-    }, false);  
-    port.start();  
-}, false);
+    }
+});
 
 // uploading file in chunks
-self.uploadChunk = function(chunk, filepath, filesize, end) {
+self.uploadChunk = function(chunk, filepath, next) {
+    self.postMessage({value: "uploadChunk"});
     var http = new XMLHttpRequest();
     http.open("PUT", filepath, true);
     http.onreadystatechange = function(){
         if (http.readyState != 4)
             return;
         
-        // file upload complete
-        if (end < filesize)
-            port.postMessage({type: "progress", value: end/filesize});
-        else {
-            delete connections[filepath];
-            connections.length--;
-            port.postMessage({type: "complete"});
-        }
+        next(http.status < 200 || http.status > 299 ? http.status : 0);
     }
     /*
     http.setRequestHeader("Cache-Control", "no-cache");
