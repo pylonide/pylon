@@ -238,8 +238,21 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 "You can only drop " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
                 "Please try again with " + MAX_CONCURRENT_FILES + " or a lesser number of files."
             );
+            
             return false;
         }
+        /** Dropped item is a folder */
+        else if (e.dataTransfer.files.length == 0) {
+            ext.initExtension(this);
+            
+            winNoFolderSupport.show();
+            
+            if (!apf.isWebkit)
+                btnNoFolderSupportOpenDialog.hide();
+            
+            return false;
+        }
+        
         /** Check total filesize of dropped files */
         for (var size = 0, i = 0, l = e.dataTransfer.files.length; i < l; ++i)
             size += e.dataTransfer.files[i].size;

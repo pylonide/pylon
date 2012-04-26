@@ -12,7 +12,7 @@
       center  = "true"
       width   = "354"
       kbclose = "true">
-        <a:vbox edge="10" padding="5" align="center">
+        <a:vbox edge="10" padding="0" align="center">
             <div id="uploadDropArea" class="uploadDropArea"></div>
             <a:hbox id="hboxUploadNoFolders" class="uploadSelectButtons" padding="10" height="60" pack="center" align="center">
                 <div class="uploadOrText"></div>
@@ -24,7 +24,7 @@
                 <div class="uploadOrText"></div>
                 <a:button id="fileUploadSelectBtn" skin="btn-default-css3" disabled="true">a complete folder</a:button>
             </a:hbox>
-            <div class="txtUploadTargetFolder" margin="0 0 5 0">Your files will instantly start uploading to the <span id="uplTargetFolder"></span> directory</div>
+            <div class="txtUploadTargetFolder" margin="0 0 10">Upload folder: <span id="uplTargetFolder"></span></div>
         </a:vbox>
         <input id="fileUploadSelect" class="uploadWithFolders" type="file" multiple="multiple" />
         <input id="folderUploadSelect" type="file" webkitdirectory="" directory="" />
@@ -113,5 +113,40 @@
                     require('ext/uploadfiles/uploadfiles').skip()
                 ">Skip</a:button>
         </a:hbox>
+    </a:window>
+    
+    <a:window
+      id        = "winNoFolderSupport"
+      title     = "Browser limitations"
+      icon      = ""
+      skin      = "bk-window"
+      class     = "relative"
+      modal     = "false"
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "512">
+        <a:vbox width="100%">
+            <a:hbox edge="15 10 25 10" padding="10">
+                <div class="alertWarn" margin="0 10 0 10"/>
+                <a:vbox flex="1" padding="5">
+                    <h3>Folder Drag and Drop is currently not supported by any browser.</h3>
+                    <div class="alertMsg">Chrome-users can use our upload dialog to upload folders.</div>
+                </a:vbox>
+            </a:hbox>
+<!--            <a:divider skin="hordivider" />-->
+            <a:hbox edge="6 10 10" pack="end" padding="8">
+                <a:button id="btnNoFolderSupportOpenDialog" 
+                  onclick="
+                    winNoFolderSupport.hide();
+                    if (!winUploadFiles.visible) 
+                        winUploadFiles.show();
+                  " 
+                  skin="btn-default-css3"
+                  class="btn-green">Open Upload Dialog</a:button>
+                <a:button id="btnNoFolderSupportClose" onclick="winNoFolderSupport.hide();" skin="btn-default-css3">Close</a:button>
+            </a:hbox>
+        </a:vbox>
     </a:window>
 </a:application>

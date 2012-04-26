@@ -24,7 +24,7 @@
 .uploadOrText {
     height: 12px;
     width: 18px;
-    background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-text.png) no-repeat 0 0;
+    background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-text.png) no-repeat 0 1px;
 }
 
 .uploadOrSelectText {
