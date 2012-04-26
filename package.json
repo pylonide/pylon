@@ -7,25 +7,30 @@
     "author": "Ajax.org B.V. <info@ajax.org>",
 
     "dependencies": {
-        "architect": "0.0.x",
         
         "socket.io": "0.9.x",
         "socket.io-client": "0.9.x",
         "connect": "1.8.x",
         
-        "asyncjs": "~0.0.6",
-        "jsDAV": "0.1.x",
         "gnu-tools": "0.0.x",
         "sourcemint-loader-js": "0.x",
         "sourcemint-platform-nodejs": "0.x",
         "http-error": "~0.0.1",
         "simple-template": "~0.0.1",
         
-        "v8debug": "0.1.x",
-        "treehugger": "0.0.x",
-        "ace": "0.2.x",
+        "optimist": "~0.3.1",
+        
+        "mappings": "0.1.x"        
+    },
 
-        "optimist": "~0.3.1"
+    "mappings": {
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/498cc1a89d22b6426aeb6589b8934147b69852a7"],
+        "apf":          ["tar", "https://github.com/ajaxorg/apf/tarball/800623c6dacc77dad6f1d270d9d307b3c0bc0841"],
+        "architect":    ["npm", "https://github.com/c9/architect/tarball/cd253a501d18a6be030c0dc160b0aa8be99fb06e"],
+        "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
+        "jsdav":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/5e3d927ede95f9e6889569c66fb39a3e6a8b89d7"],
+        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"]
     },
 
     "repository" : {
@@ -35,5 +40,9 @@
     "licenses": [{
         "type": "GPLv3",
         "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
-    }]
+    }],
+
+    "scripts": {
+        "postinstall": "node ./node_modules/mappings/scripts/postinstall-notice.js"
+    }
 }
