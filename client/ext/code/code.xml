@@ -2,7 +2,6 @@
     <a:codeeditor id="ceEditor"
       flex              = "1"
       anchors           = "2 0 0 0"
-      visible           = "false"
       theme             = "[{require('core/settings').model}::editors/code/@theme]"
       overwrite         = "[{require('core/settings').model}::editors/code/@overwrite]"
       folding           = "[{require('core/settings').model}::editors/code/@folding]"

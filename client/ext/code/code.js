@@ -389,7 +389,7 @@ module.exports = ext.register("ext/code/code", {
              
             var isAvailable = command.isAvailable;
             command.isAvailable = function(editor){
-                if (apf.activeElement.localName != "codeeditor")
+                if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
                     return false;
                 
                 return isAvailable ? isAvailable(editor) : true;
@@ -768,7 +768,7 @@ module.exports = ext.register("ext/code/code", {
     init: function(amlPage) {
         var _self = this;
         
-        amlPage.appendChild(ceEditor);
+        //amlPage.appendChild(ceEditor);
         ceEditor.show();
 
         this.ceEditor = this.amlEditor = ceEditor;

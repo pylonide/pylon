@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(96190)TIME(Wed, 25 Apr 2012 04:08:26 GMT)*/
+/*FILEHEAD(apf.js)SIZE(96190)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1401,7 +1401,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(46109)TIME(Thu, 26 Apr 2012 23:25:36 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(46109)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9827,7 +9827,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/layout.js)SIZE(13677)TIME(Tue, 24 Apr 2012 22:13:53 GMT)*/
+/*FILEHEAD(core/lib/layout.js)SIZE(13677)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10279,7 +10279,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Tue, 24 Apr 2012 22:01:04 GMT)*/
+/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12440,7 +12440,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Tue, 24 Apr 2012 22:13:35 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15738,7 +15738,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22885)TIME(Thu, 26 Apr 2012 22:30:33 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16221,10 +16221,14 @@ apf.AmlElement = function(struct, tagName){
             
             //Remove any bounds if relevant
             this.$clearDynamicProperty(prop);
-    
-            if (isInherit)
-                this.$inheritProperties[prop] = 2;
-    
+            
+        }
+        
+        if (isInherit)
+            this.$inheritProperties[prop] = 2;
+        
+        if (value) {
+            
             if (typeof value == "string" 
               && (value.indexOf("{") > -1 || value.indexOf("[") > -1)) {
                 this.$setDynamicProperty(prop, value);
@@ -23468,7 +23472,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Wed, 25 Apr 2012 17:40:11 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47613)TIME(Fri, 27 Apr 2012 03:13:19 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23493,12 +23497,12 @@ apf.Init.run("databinding");
 
 
 /**
- * All elements inheriting from this {@link term.baseclass baseclass} can bind to data 
+ * All elements inheriting from this {@link term.baseclass baseclass} can bind to data
  * which contains multiple nodes.
  *
  * @allowchild  item, choices
- * @define  choices     Container for item nodes which receive presentation. 
- * This element is part of the XForms specification. It is not necesary for 
+ * @define  choices     Container for item nodes which receive presentation.
+ * This element is part of the XForms specification. It is not necesary for
  * the Ajax.org Markup Language.
  * Example:
  * <code>
@@ -23529,7 +23533,7 @@ apf.MultiselectBinding = function(){
 
 (function(){
     this.length = 0;
-    
+
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
         caption   : 2,
@@ -23572,9 +23576,9 @@ apf.MultiselectBinding = function(){
     this.resort = function(options, clear, noReload){
         if (!this.$sort)
             this.$sort = new apf.Sort();
- 
+
         this.$sort.set(options, clear);
-        
+
         if (this.clearAllCache)
             this.clearAllCache();
 
@@ -23658,23 +23662,23 @@ apf.MultiselectBinding = function(){
                     return this.$sort.apply(nodes);
                 }
                 
-                
+
                 return (xmlNode || this.xmlRoot).childNodes;
             };
-        
+
             this.getFirstTraverseNode = function(xmlNode){
                 return this.getTraverseNodes()[0];//(xmlNode || this.xmlRoot).childNodes[0];
             };
-        
+
             this.getLastTraverseNode = function(xmlNode){
                 var nodes = this.getTraverseNodes();//(xmlNode || this.xmlRoot).childNodes;
                 return nodes[nodes.length - 1];
             };
-        
+
             this.getTraverseParent = function(xmlNode){
-                if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
+                if (!xmlNode.parentNode || xmlNode == this.xmlRoot)
                     return false;
-                    
+
                 return xmlNode.parentNode;
             };
         }
@@ -23695,7 +23699,7 @@ apf.MultiselectBinding = function(){
      */
     this.getTraverseNodes = function(xmlNode){
         
-        
+
         
         if (this.$sort) {
             var nodes = apf.getArrayFromNodelist((xmlNode || this.xmlRoot).selectNodes(this.each));
@@ -23815,7 +23819,7 @@ apf.MultiselectBinding = function(){
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
-        
+
         var ind = i + (up ? -1 * count : count);
         return nodes[ind < 0 ? 0 : ind];
     };
@@ -23832,7 +23836,7 @@ apf.MultiselectBinding = function(){
      * @see  baseclass.multiselectbinding.binding.each
      */
     this.getTraverseParent = function(xmlNode){
-        if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
+        if (!xmlNode.parentNode || xmlNode == this.xmlRoot)
             return false;
 
         //@todo this can be removed when we have a new xpath implementation
@@ -23866,7 +23870,7 @@ apf.MultiselectBinding = function(){
             xmlNode.removeAttribute(apf.xmldb.xmlIdTag);
         return x;
     };
-    
+
     /**
      * Finds HTML presentation node in cache by ID
      *
@@ -23878,13 +23882,13 @@ apf.MultiselectBinding = function(){
             return this.$pHtmlDoc.getElementById(id);
         };
     }
-    
+
     this.$setClearMessage = function(msg, className, lastHeight){
         if (this.more && this.$addMoreItem) this.$addMoreItem();
         if (!this.$empty) {
             if (!this.$hasLayoutNode("empty"))
                 return;
-            
+
             this.$getNewContext("empty");
 
             var xmlEmpty = this.$getLayoutNode("empty");
@@ -23903,7 +23907,7 @@ apf.MultiselectBinding = function(){
 
         this.$empty.setAttribute("id", "empty" + this.$uniqueId);
         apf.setStyleClass(this.$empty, className, ["loading", "empty", "offline"]);
-        
+
         //@todo apf3.0 cleanup?
         var extH = apf.getStyle(this.$ext, "height");
         this.$empty.style.height = (lastHeight && (!extH || extH == "auto") && className != "empty")
@@ -23929,7 +23933,7 @@ apf.MultiselectBinding = function(){
         if (this.$empty && this.$empty.parentNode)
             this.$empty.parentNode.removeChild(this.$empty);
     };
-    
+
     /**
      * Set listeners, calls HTML creation methods and
      * initializes select and focus states of object.
@@ -23937,7 +23941,7 @@ apf.MultiselectBinding = function(){
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         apf.xmldb.addNodeListener(XMLRoot, this);
-        
+
         this.$isLoading = true;
 
         var length = this.getTraverseNodes(XMLRoot).length;
@@ -23950,7 +23954,7 @@ apf.MultiselectBinding = function(){
 
         //Build HTML
         this.$fill(nodes);
-        
+
         this.$isLoading = false;
 
         //Select First Child
@@ -24046,7 +24050,7 @@ apf.MultiselectBinding = function(){
                 loc[0].insertBefore(xmlNode, loc[1]);
             else
                 lastParent.removeChild(xmlNode);
-            
+
             if (!eachNode)
                 xmlNode = lastParent;
         }
@@ -24084,7 +24088,7 @@ apf.MultiselectBinding = function(){
                     action = "add";
                     break;
                 }
-                
+
                 else if (htmlNode
                   && (startNode != xmlNode || xmlNode == this.xmlRoot)) {
                     if (actionFeature[action] & 1)
@@ -24104,7 +24108,7 @@ apf.MultiselectBinding = function(){
             if (xmlNode == listenNode) {
                 if (actionFeature[action] & 128) //The change is not for us.
                     return;
-                
+
                 break;
             }
             xmlNode = xmlNode.parentNode;
@@ -24135,7 +24139,7 @@ apf.MultiselectBinding = function(){
             //Case for replacing the xmlroot or its direct parent
             if (UndoObj ? UndoObj.args[1] == this.xmlRoot : !this.xmlRoot.parentNode)
                 return this.load(UndoObj ? UndoObj.xmlNode : listenNode, {force: true});
-            
+
             //Case for replacing a node between the xmlroot and the traverse nodes
             var nodes = this.getTraverseNodes();
             for (var i = 0, l = nodes.length; i < l; i++) {
@@ -24181,7 +24185,7 @@ apf.MultiselectBinding = function(){
         if (action == "insert" && (this.$isTreeArch || xmlNode == this.xmlRoot)) {
             if (!xmlNode)
                 return;
-            
+
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(xmlNode);
 
@@ -24197,7 +24201,7 @@ apf.MultiselectBinding = function(){
             }
 
             result = this.$addNodes(xmlNode, null, true, false, null, null, "insert");//this.$isTreeArch??
-            
+
             this.$fillParentHtml = (this.$getParentNode
                 ? this.$getParentNode(htmlNode)
                 : htmlNode);
@@ -24211,16 +24215,16 @@ apf.MultiselectBinding = function(){
         }
         else if (action == "add") {// || !htmlNode (Check Add)
             var parentHTMLNode;
-            pNode = this.getTraverseParent(xmlNode);
+            pNode = this.getTraverseParent(xmlNode) || this.xmlRoot;
 
             if (pNode == this.xmlRoot)
                 parentHTMLNode = this.$container;
-            
+
             if (!parentHTMLNode && this.$isTreeArch) {
                 parentHTMLNode = this.$findHtmlNode(
-                    pNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId); 
+                    pNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
             }
-            
+
             //This should be moved into a function (used in setCache as well)
             
             if (!parentHTMLNode && this.getCacheItem)
@@ -24231,7 +24235,7 @@ apf.MultiselectBinding = function(){
             
 
             //Only update if node is in current representation or in cache
-            if (parentHTMLNode || this.$isTreeArch 
+            if (parentHTMLNode || this.$isTreeArch
               && pNode == this.xmlRoot) { //apf.isChildOf(this.xmlRoot, xmlNode)
                 parentHTMLNode = (this.$findContainer && parentHTMLNode && parentHTMLNode.nodeType == 1
                     ? this.$findContainer(parentHTMLNode)
@@ -24248,8 +24252,8 @@ apf.MultiselectBinding = function(){
             //&& (!xmlNode || foundNode == xmlNode && xmlNode.parentNode
             //if (!xmlNode || startNode != xmlNode) //@todo unsure if I can remove above commented out statement
                 //return;
-            //I've commented above code out, because it disabled removing a 
-            //subnode of a node that through an each rule makes the traverse 
+            //I've commented above code out, because it disabled removing a
+            //subnode of a node that through an each rule makes the traverse
             //node no longer a traverse node.
 
             //Remove HTML Node
@@ -24266,7 +24270,7 @@ apf.MultiselectBinding = function(){
             if (this.$sort)
                 this.$moveNode(xmlNode, htmlNode);
             
-            
+
             this.$updateNode(xmlNode, htmlNode);
 
             //Transaction 'niceties'
@@ -24292,12 +24296,12 @@ apf.MultiselectBinding = function(){
                 return model.$waitForXml(this);
             }
         }
-        
+
         
 
         //For tree based nodes, update all the nodes up
         pNode = xmlNode ? xmlNode.parentNode : lastParent;
-        if (this.$isTreeArch && !this.$preventRecursiveUpdate 
+        if (this.$isTreeArch && !this.$preventRecursiveUpdate
           && pNode && pNode.nodeType == 1) {
             do {
                 htmlNode = this.$findHtmlNode(pNode.getAttribute(
@@ -24386,12 +24390,12 @@ apf.MultiselectBinding = function(){
 
         
         var cId, cItem;
-        if (this.$isTreeArch && this.caching 
+        if (this.$isTreeArch && this.caching
           && (!this.$bindings || !this.$bindings.each || !this.$bindings.each.filter)
           && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
             if (this.$subTreeCacheContext || this.$needsDepth) {
                 //@todo
-                //We destroy the current items, because currently we 
+                //We destroy the current items, because currently we
                 //don't support multiple treecachecontexts
                 //and because datagrid needs to redraw depth
                 this.clearCacheItem(cId);
@@ -24407,7 +24411,7 @@ apf.MultiselectBinding = function(){
                 var htmlNode;
                 while (cItem.childNodes.length)
                     (parent || this.$container).appendChild(htmlNode = cItem.childNodes[0]);
-                
+
                 return nodes;
             }
         }
@@ -24474,31 +24478,31 @@ apf.MultiselectBinding = function(){
             value = value.charAt(0) == "[" && value.charAt(value.length - 1) == "]"
                 ? value.replace(/^\[|\]$/g, "")
                 : value;
-            
+
             if (value.match(/^\w+::/)) {
                 var model = value.split("::"); //@todo this is all very bad
                 if (!apf.xPathAxis[model[0]]) {
                     this.setProperty("model", model[0]);
                     this.each = model[1];
                 }
-                else 
+                else
                     this.each = value;
             }
             else
                 this.each = value;
-            
+
             if (this.each == this.$lastEach)
                 return;
-            
+
             this.$lastEach = value;
-            
+
             if (!this.$model && !this.$initingModel) {
                 this.$initingModel = true;
                 this.$setInheritedAttribute("model");
-                
+
                 return; //@experimental
             }
-            
+
             if (this.$checkLoadQueue() !== false) //@experimental
                 return;
         }
@@ -24512,7 +24516,7 @@ apf.MultiselectBinding = function(){
             });
         }
     };
-    
+
     this.$select = function(o){
         
         if (this.renaming)
@@ -24599,7 +24603,7 @@ apf.MultiselectBinding = function(){
      * </code>
      */
     this.$propHandlers["caption"]  =
-    
+
     /**
      * @attribute {String} valuerule the xpath statement that determines from
      * which xml node the value is retrieved.
@@ -24662,7 +24666,7 @@ apf.MultiselectBinding = function(){
      * </code>
      * @see  baseclass.multiselect.binding.select
      */
-    //this.$propHandlers["select"]   = 
+    //this.$propHandlers["select"]   =
     
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
@@ -36678,7 +36682,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/window.js)SIZE(50587)TIME(Wed, 25 Apr 2012 06:22:58 GMT)*/
+/*FILEHEAD(core/window.js)SIZE(50587)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54163,7 +54167,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Wed, 25 Apr 2012 04:07:18 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56605,7 +56609,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/page.js)SIZE(27212)TIME(Wed, 25 Apr 2012 17:31:59 GMT)*/
+/*FILEHEAD(elements/page.js)SIZE(27212)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional

@@ -335,18 +335,11 @@ module.exports = ext.register("ext/editors/editors", {
 
         var model = new apf.model();
         var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
-            /*page.addEventListener("afteropen", function(){
-                doc.dispatchEvent("editor.ready", {page: fake});
-                doc.addEventListener("$event.editor.ready", 
-                    function(fn){ fn({page: page}); });
-            });*/
-            
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
             doc.$page    = page;
             page.$editor = editor;
             page.setAttribute("autofocus", false);
-            //page.setAttribute("focussble", true);
             page.setAttribute("tooltip", "[@path]");
             page.setAttribute("class",
                 "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
