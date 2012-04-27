@@ -83,31 +83,35 @@ var onCursorMove = function() {
 
 var enableVim = function enableVim() {
     ext.initExtension(this);
-
-    var editor = ceEditor.$editor;
-    addCommands(editor, commands);
-    editor.renderer.container.addEventListener("click", onCursorMove, false);
-
-    // Set Vim's own keyboard handle and store the old one.
-    OLD_HANDLER = OLD_HANDLER || editor.getKeyboardHandler();
-    editor.setKeyboardHandler(handler);
-
-    // Set Vim in command (normal) mode
-    commands.stop.exec(editor);
-    VIM_ENABLED = true;
-        
-    ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: util.currentMode});
+    
+    ide.addEventListener("init.ext/code/code", function(){
+        var editor = ceEditor.$editor;
+        addCommands(editor, commands);
+        editor.renderer.container.addEventListener("click", onCursorMove, false);
+    
+        // Set Vim's own keyboard handle and store the old one.
+        OLD_HANDLER = OLD_HANDLER || editor.getKeyboardHandler();
+        editor.setKeyboardHandler(handler);
+    
+        // Set Vim in command (normal) mode
+        commands.stop.exec(editor);
+        VIM_ENABLED = true;
+            
+        ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: util.currentMode});
+    });
 };
 
 var disableVim = function() {
-    var editor = ceEditor.$editor;
-    removeCommands(editor, commands);
-    editor.setKeyboardHandler(OLD_HANDLER);
-    commands.start.exec(editor);
-    editor.renderer.container.removeEventListener("click", onCursorMove, false);
-    VIM_ENABLED = false;
-
-    ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
+    ide.addEventListener("init.ext/code/code", function(){
+        var editor = ceEditor.$editor;
+        removeCommands(editor, commands);
+        editor.setKeyboardHandler(OLD_HANDLER);
+        commands.start.exec(editor);
+        editor.renderer.container.removeEventListener("click", onCursorMove, false);
+        VIM_ENABLED = false;
+    
+        ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
+    });
 };
 
 module.exports = ext.register("ext/vim/vim", {

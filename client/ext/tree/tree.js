@@ -353,7 +353,7 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("beforerename", this.$beforerename = function(e){
             if (!ide.onLine && !ide.offlineFileSystemSupport) return false;
 
-            if(trFiles.$model.data.firstChild == trFiles.selected)
+            if (trFiles.$model.data.firstChild == trFiles.selected)
                 return false;
 
             // check for a path with the same name, which is not allowed to rename to:
