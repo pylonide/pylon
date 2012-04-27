@@ -540,9 +540,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     checkNumberOfFiles: function(files) {
         if (files.length > MAX_CONCURRENT_FILES) {
             util.alert(
-                "Could not upload files", "An error occurred while dropping this files",
+                "Could not upload files", "An error occurred while dropping these files",
                 "You can only drop " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
-                "Please try again with " + MAX_CONCURRENT_FILES + " or smaller number of files."
+                "Please try again with " + MAX_CONCURRENT_FILES + " or fewer files."
             );
             
             return false;
