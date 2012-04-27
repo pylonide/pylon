@@ -22,7 +22,7 @@
                 <div class="uploadOrSelectText"></div>
                 <a:button id="fileUploadSelectBtn" skin="btn-default-css3" disabled="true">files</a:button>
                 <div class="uploadOrText"></div>
-                <a:button id="fileUploadSelectBtn" skin="btn-default-css3" disabled="true">a complete folder</a:button>
+                <a:button id="folderUploadSelectBtn" skin="btn-default-css3" disabled="true">a complete folder</a:button>
             </a:hbox>
             <div class="txtUploadTargetFolder" margin="0 0 10">Upload folder: <span id="uplTargetFolder"></span></div>
         </a:vbox>
