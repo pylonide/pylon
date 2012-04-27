@@ -31,8 +31,8 @@ module.exports = ext.register("ext/zen/zen", {
     skin     : {
         id   : "zen",
         data : skin,
-        "media-path" : ide.staticPrefix + "ext/main/style/images/",
-        "icon-path"  : ide.staticPrefix + "ext/main/style/icons/"
+        "media-path" : ide.staticPrefix + "/ext/main/style/images/",
+        "icon-path"  : ide.staticPrefix + "/ext/main/style/icons/"
     },
     isFocused : false,
     neverShown : true,

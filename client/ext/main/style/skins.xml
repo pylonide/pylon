@@ -2255,7 +2255,7 @@
             text-shadow   : #626267 0px 1px 0px;
             color: #38383d;
         }
-
+        
         .btn-default-css3 .caption {
             border-top: 1px solid #93939B;
             padding: 3px 18px 4px;
@@ -6032,7 +6032,11 @@
             left: 0;
             z-index: 0;
         }
-
+        
+        .bk-window.dark-bg .bg-bk-content {
+            background:url(images/modalbg-dark.png) repeat 0 0;
+        }
+        
         .bk-window.nofooter .bg-bk-content {
             bottom: 0;
         }
@@ -9790,13 +9794,15 @@
         }
 
         .filemgr-dragtree .item .caption,
-        .filemgr-tree .item-fix.dragAppend .item {
+        .filemgr-tree .item-fix.dragAppend .item,
+        .filemgr-tree .item-fix.dragAppendUpload .item {
             color: white;
             margin-right: 5px;
         }
 
         .filemgr-dragtree .item .caption,
-        .filemgr-tree .item-fix.dragAppend .label-content {
+        .filemgr-tree .item-fix.dragAppend .label-content,
+        .filemgr-tree .item-fix.dragAppendUpload .label-content {
             -webkit-border-radius: 10px;
             -moz-border-radius: 10px;
             border-radius: 10px;
@@ -9805,7 +9811,12 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
-
+        
+        .filemgr-tree .item-fix.dragAppendUpload .label-content > LABEL {
+            background: url(images/tree_upload_icon.png) no-repeat 0 0 !important;
+            background-position: 3 0;
+        }
+        
         .filemgr-tree .item-fix.dragDenied {
 
         }
@@ -9825,9 +9836,12 @@
         }
 
         .filemgr-dragtree,
+        .filemgr-tree .item-fix.dragAppend .item LABEL .caption,
+        .filemgr-tree .item-fix.dragAppendUpload .item LABEL .caption,
         .filemgr-treeFocus .item-fix.selected .item LABEL .caption,
         .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption,
-        .filemgr-tree.openfile .item-fix.selected .item LABEL .caption{
+        .filemgr-tree.openfile .item-fix.selected .item LABEL .caption,
+        .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption {
             color:white;
         }
 
@@ -9917,6 +9931,11 @@
             white-space: nowrap;
         }
 
+        .filemgr-tree .fileupload .item LABEL .caption {
+            color: #a6a6a6;
+            text-shadow : #ffffff 0px 1px 0px;
+        }
+        
         .filemgr-tree .loading .item {
             background : url(images/file-tree-load-spinner.gif) no-repeat 16px 1px;
         }

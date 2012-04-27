@@ -135,7 +135,7 @@ module.exports = {
     /**
      * Initializes the settings. The settings can come from different sources:
      * - Template (used for when no settings have been stored previously)
-     * - Parsed into the index file (by the backend - apf.IdeSettings)
+     * - Parsed into the index file (by the backend - cloud9config.settings)
      * - LocalStorage (saved for use when starting in offline mode only)
      */
     init : function(){
