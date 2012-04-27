@@ -44,10 +44,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     /**
      * Revisions#rawRevisions -> Object
-     * Holds the cached revisions and some meta-data about them so Cloud9 can 
-     * access them fast in the client-side. It also minimizes the amount of communication 
+     * Holds the cached revisions and some meta-data about them so Cloud9 can
+     * access them fast in the client-side. It also minimizes the amount of communication
      * needed with the server in single-user mode.
-     */ 
+     */
     rawRevisions: {},
     revisionsData: {},
     docChangeTimeout: null,
@@ -56,14 +56,14 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Revisions#revisionQueue -> Object
      * Contains the revisions that have been sent to the server, but not yet
      * confirmed to be saved.
-     */ 
+     */
     revisionQueue: {},
     /**
      * Revisions#offlineQueue -> Array
      * Contains the revisions that have been saved during Cloud9 being offline.
      * Its items are not revision objects, but hold their own format (for
      * example, they have a generated timestamp of the moment of saving).
-     */ 
+     */
     offlineQueue: [],
 
     /** related to: Revisions#show
@@ -304,7 +304,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
         return revObj;
     },
-    
+
     /////////////////////
     // Event listeners //
     /////////////////////
@@ -394,7 +394,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         this.setSaveButtonCaption();
-        
+
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
@@ -427,10 +427,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onRevisionSaved: function(data) {
         var savedTS = parseInt(data.ts, 10);
-        var matches = this.offlineQueue.filter(function(rev) { 
+        var matches = this.offlineQueue.filter(function(rev) {
             return rev && (parseInt(rev.applyOn, 10) === savedTS);
         });
-        
+
         if (matches.length) {
             this.$makeNewRevision(matches[0]);
         }
@@ -559,9 +559,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                 revObj = this.$getRevisionObject(message.path);
                 var ts = message.ts;
                 // This could happen in edge cases, like the user having two browsers
-                // opened and active on the same file, and then saving. Only one 
+                // opened and active on the same file, and then saving. Only one
                 // of them will have the revision in the queue (in single user mode).
-                // In that case, we understand that there is some problem and 
+                // In that case, we understand that there is some problem and
                 // request the entire revision history to the server.
                 if (!this.revisionQueue[ts]) {
                     ide.send({
@@ -601,7 +601,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 this.generateCache(revObj);
                 if (!message.nextAction || !message.id) {
-                    if (Util.getDocPath(page) === message.path &&
+                    if (page && Util.getDocPath(page) === message.path &&
                         page.$showRevisions === true) {
                         this.populateModel(revObj, this.model);
                     }
@@ -720,7 +720,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         else
         	revisionsInfo.$ext.style.display = "none";
     },
-    
+
     /**
      * Revisions#generateTimestamps(page)
      * - revObj(Object): Body of the message coming from the server
@@ -774,9 +774,9 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Populates the revisions model with the current revision list and attributes.
      **/
     populateModel: function(revObj, model) {
-        if (!revObj || !model) { 
+        if (!revObj || !model) {
             console.error("Expected a parameter and a model");
-            return; 
+            return;
         }
 
         var revisions, timestamps;
