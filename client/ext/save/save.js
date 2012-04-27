@@ -178,9 +178,6 @@ module.exports = ext.register("ext/save/save", {
             }), 700)
         );
 
-        this.hotitems.quicksave = [saveItem];
-        this.hotitems.saveas = [saveAsItem];
-        
         ide.addEventListener("afteroffline", function(){
             itmRevertToSaved.disable();
             saveAsItem.disable();
