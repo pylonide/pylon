@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html [%offlineManifest%] xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+<html [%offlineManifest%] xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse="true">
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>[%projectName%] - Cloud9</title>
@@ -26,58 +26,42 @@
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
-                staticUrl: "[%staticUrl%]",
+                staticUrl: <%staticUrl%>,
                 settings: <%settingsXml%>,
                 socketIoUrl: <%socketIoUrl%>
             };
-
+            
             // prevent console messages from crashing our app!
             if (typeof window["console"] == "undefined") {
                 var K = function() {};
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
 
-            var RELEASE = "release";
-            var DEBUG   = "debug";
-            var FILES   = "files";
-
-            var VERSION = window.cloud9config.debug ? FILES : RELEASE;
-
-            var apfLoc = VERSION == FILES
-                ? "[%staticUrl%]/support/apf/apf.js"
-                : "[%staticUrl%]/apf-packaged/apf_" + VERSION + ".js";
-
             var config = <%requirejsConfig%>;
-            require(config, [apfLoc], function(){
-                var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/main/main", "ext/editors/editors"];
-                if (VERSION == RELEASE)
-                    list.push("ace/editor");
 
-                //loader.animateLoader(20);
-                require(list, function(ide, ext, util){
-                    var plugins = <%plugins%>;
+            require(config, function() {
+                    var list = <%plugins%>;
 
-                    var aceConfig = require("ace/config");
+                    require(list, function(ide, ext, util) {
+                        var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
+                        
+                        var aceConfig = require("ace/config");
 
-                    aceConfig.set("packaged", true);
-                    aceConfig.set("workerPath", "/static/ace/worker");
-                    aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
-                    aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
+                        aceConfig.set("packaged", true);
+                        aceConfig.set("workerPath", "/static/js/worker");
+                        aceConfig.set("modePath", "/static/js/mode");
+                        aceConfig.set("themePath", "/static/js/theme");
 
-                    //loader.animateLoader(50);
-                    apf.addEventListener("load", function(){
-                        //Load extensions
-                        // loader.animateLoader(20);
-                        require(plugins, function(){
-                            ide.dispatchEvent("extload", {modules: plugins});
-                            ide.addEventListener("$event.extload", function(cb){
-                                cb();
-                            });
-                        });
+                        // Load extensions
+                        ide.dispatchEvent("extload", {modules: list});
+                        ide.addEventListener("$event.extload", function(cb){
+                            cb();
+                         });
                     });
-                });
-                preloaderImgs();
+
+                    preloaderImgs();
             });
+
             function preloaderImgs() {
                 var preloadImgs = [
                     "[%staticUrl%]/ext/main/style/images/bg-overlay.png",

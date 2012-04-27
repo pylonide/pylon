@@ -61,9 +61,9 @@ module.exports = {
                 ],
                 clientPlugins: [
                     "ext/filesystem/filesystem",
-                    "ext/remotecontrol/remotecontrol",
                     "ext/settings/settings",
                     "ext/editors/editors",
+                    //"ext/connect/connect",
                     "ext/themes/themes",
                     "ext/themes_default/themes_default",
                     "ext/panels/panels",
@@ -82,6 +82,7 @@ module.exports = {
                     "ext/quicksearch/quicksearch",
                     "ext/gotoline/gotoline",
                     "ext/html/html",
+                    "ext/log/log",
                     "ext/help/help",
                     //"ext/ftp/ftp",
                     "ext/code/code",
@@ -108,7 +109,6 @@ module.exports = {
                     "ext/nodeunit/nodeunit",
                     "ext/zen/zen",
                     "ext/codecomplete/codecomplete",
-                    //"ext/autosave/autosave",
                     "ext/vim/vim",
                     "ext/guidedtour/guidedtour",
                     "ext/quickstart/quickstart",
@@ -118,6 +118,8 @@ module.exports = {
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker"
+                    //"ext/revisions/revisions"
+                    //"ext/minimap/minimap"
                     //"ext/acebugs/acebugs"
                 ]
             }, {

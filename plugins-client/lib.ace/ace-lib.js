@@ -10,6 +10,9 @@ module.exports = function setup(options, imports, register) {
     }, {
         path: base + "/build/src",
         mount: "/ace/build"
+    }, {
+        path: __dirname + "/www",
+        mount: "/ace"
     }]);
 
     register(null, {
