@@ -113,7 +113,7 @@
             position:absolute;
             background:url(images/offline.png) no-repeat 0 0;
             top:23px;
-            right:-30px;
+            right: -30px;
             display: none;
             z-index: 100000;
         }
@@ -127,7 +127,7 @@
             height: 63px;
             position: absolute;
             top: 39px;
-            right: -156px;
+            right: -30px;
             z-index: 50000;
             min-width: 0px;
             min-height: 0px;
@@ -135,9 +135,8 @@
             max-height: 9992px;
             display: none;
             opacity: 1;
-            padding: 7px;
             color: #BDBDBD;
-            padding-top: 24px;
+            padding-top: 15px;
             line-height: 13px;
             padding-left: 8px;
         }

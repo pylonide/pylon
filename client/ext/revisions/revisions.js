@@ -33,6 +33,7 @@ var BAR_WIDTH = 200;
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 5000;
 
+var isInfoActive = false;
 module.exports = ext.register("ext/revisions/revisions", {
     name: "Revisions",
     dev: "Cloud9",
@@ -42,7 +43,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
-
+    
     /**
      * Revisions#rawRevisions -> Object
      * Holds the cached revisions and some meta-data about them so Cloud9 can
@@ -123,27 +124,28 @@ module.exports = ext.register("ext/revisions/revisions", {
         btnSave.removeAttribute("command");
 
         btnSave.addEventListener("onmouseover", function(e) {
-            ext.initExtension(self);
-            apf.tween.single(revisionsInfo, {
-                from:0,
-                to:1,
-                steps: 10,
-                type     : "opacity",
-                anim     : apf.tween.easeInOutCubic,
-                interval: 30
-            });
+            setTimeout(function (e) {
+                ext.initExtension(self);
+                revisionsInfo.addEventListener("onmouseover", function(e) {
+                    isInfoActive = true;
+                });
+                revisionsInfo.addEventListener("onmouseout", function(e) {
+                    isInfoActive = false;
+                    self.hideRevisionsInfo();
+                });
+                apf.tween.single(revisionsInfo, {
+                    from:0,
+                    to:1,
+                    steps: 10,
+                    type     : "opacity",
+                    anim     : apf.tween.easeInOutCubic,
+                    interval: 30
+                });
+            }, 500);
         });
 
         btnSave.addEventListener("onmouseout", function(e) {
-            ext.initExtension(self);
-            apf.tween.single(revisionsInfo, {
-                from:1,
-                to:0,
-                steps: 10,
-                type     : "opacity",
-                anim     : apf.tween.easeInOutCubic,
-                interval: 30
-            });
+            self.hideRevisionsInfo();
         });
         
         btnSave.addEventListener("onclick", function(e) {
@@ -349,6 +351,24 @@ module.exports = ext.register("ext/revisions/revisions", {
         return false;
     },
 
+    hideRevisionsInfo : function() {
+        if (!isInfoActive) { 
+            setTimeout(function(e) {
+                ext.initExtension(self);
+                if (!isInfoActive) { 
+                    apf.tween.single(revisionsInfo, {
+                        from:1,
+                        to:0,
+                        steps: 10,
+                        type     : "opacity",
+                        anim     : apf.tween.easeInOutCubic,
+                        interval: 30
+                    });
+                }
+            }, 200);
+        }
+    },
+    
     onOpenFile: function(data) {
         if (!data || !data.doc)
             return;

@@ -104,14 +104,14 @@
         </a:hbox>
     </a:vbox>
     
-    <a:bar id="revisionsInfo" class="c9-revisionsInfo menu-bk mnuSbPrefs upward moveleft menu-bkFocus">
-        <a:vbox padding="10" edge="15">
+    <a:bar id="revisionsInfo" class="c9-revisionsInfo menu-bk downward menu-bkFocus">
+        <a:vbox class="revisionsInfoContainer">
+            <div class="arrow revisionsInfoArrow"></div>
             <a:text id="revisionsInfoText" class="revisionsInfoDesc">
-            Every change to your file is automatically saved. 
-            &lt;br />
-            You can view your history of revisions through the Revision History pane. Rollback to a previous state, or navigate through the revisions to compare them.
+            Changes to your file are automatically saved. 
+            &lt;br/>
+            View all your changes through <a href="javascript:void(0)" onclick="require('ext/revisions/revisions').toggle();" class="revisionsInfoLink">the Revision History pane</a>. Rollback to a previous state, or make comparisons.            
             </a:text>
 	    </a:vbox>
-        <div class="revisionsInfoArrow"></div>
 	</a:bar>
 </a:application>

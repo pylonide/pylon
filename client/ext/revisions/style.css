@@ -1,9 +1,9 @@
 .c9-revisionsInfo {
-	width: 290px;
-	height: 100px;
+	width: 240px;
+	height:63px;
     position: absolute;
-    left: 435px;
-    top: 45px;
+    top: 10px;
+    left: 450px;
     z-index: 50000;
     min-width: 0px;
     min-height: 0px;
@@ -11,23 +11,22 @@
     max-height: 9992px;
     opacity: 0;
     display: block;
-    padding: 0 7px 7px 7px;
-    color: white;
+    padding: 7px;
     line-height: 13px;
+    overflow: visible;
 }
 
 .revisionsInfoDesc {
-	color: white;
+    color: #BDBDBD;
 	background: transparent;
 	line-height: 16px;
+    position: relative;
 }
 
 .revisionsInfoArrow {
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    background: url(/static/ext/guidedtour/images/arrow.png) no-repeat 0 0;
-    left: -24px;
-    top: 43%;
-    background-position: 0 0;
+    left: 115px;
+}
+
+.revisionsInfoLink {
+    color :#BDBDBD;
 }

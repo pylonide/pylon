@@ -91,22 +91,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 caption  : "{this.checked ? 'debug' : 'run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
-                tooltip  : "{this.checked ? 'Debug' : 'Run'}",
                 disabled : "{!ide.onLine}",
-                submenu  : "mnuRunCfg",
-                onmouseover : function(e) {
-
-                },
-                onmouseout : function(e) {
-                    ext.initExtension(_self);
-                    /*apf.tween.single(debugInfo, {
-                        from:1,
-                        to:0,
-                        steps: 10,
-                        type:"fade",
-                        interval: 30
-                    }); */
-                } 
+                submenu  : "mnuRunCfg"
             }), 100),
             
             menus.$insertByIndex(barTools, new apf.button({
@@ -129,14 +115,27 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         );
         
         btnRun.$button1.addEventListener("onmouseover", function(e) {
+            setTimeout(function(e) {
+                ext.initExtension(_self);
+                apf.tween.single(debugInfo, {
+                    from:0,
+                    to:1,
+                    steps: 10,
+                    type:"fade",
+                    interval: 30
+                }); 
+            }, 500);
+        });
+
+       btnRun.$button1.addEventListener("onmouseout", function(e) {
             ext.initExtension(_self);
             apf.tween.single(debugInfo, {
-                from:0,
-                to:1,
+                from:1,
+                to:0,
                 steps: 10,
                 type:"fade",
                 interval: 30
-            }); 
+            });
         });
         
         var c = 0;

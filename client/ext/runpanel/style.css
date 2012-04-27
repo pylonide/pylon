@@ -1,9 +1,8 @@
 .c9-debugInfo {
-    width: 277px;
-    height: 95px;
-    position: absolute;
-    top: 39px;
-    left: 315px;
+    width: 223px;
+    height: 81px;    position: absolute;
+    top: 10px;
+    left: 345px;
     z-index: 50000;
     min-width: 0px;
     min-height: 0px;
@@ -11,13 +10,22 @@
     max-height: 9992px;
     opacity: 0;
     display: block;
-    padding: 7px;
-    color: white;
     line-height: 13px;
+    overflow: visible;
+}
+
+.debugInfoContainer {
+    padding: 5px 7px 1px 12px;
 }
 
 .debugInfoDesc {
-	color: white;
+	color: #BDBDBD;
 	background: transparent;
 	line-height: 16px;
+    position: relative;
+    padding-left: 5px;
+}
+
+.debugInfoArrow {
+    left: 98px;
 }
