@@ -222,10 +222,10 @@ module.exports = ext.register("ext/tree/tree", {
     onReady : function() {
         var _self = this;
         trFiles.setAttribute("model", this.model);
-        if(this.loadedSettings === 1) {
-            setTimeout(function() {
+        if (this.loadedSettings === 1) {
+            //setTimeout(function() {
                 _self.loadProjectTree();
-            }, 1000);
+            //}, 1000);
         }
 
         // If no settings were found, then we set the "get" attribute of
@@ -327,7 +327,11 @@ module.exports = ext.register("ext/tree/tree", {
             var count = 0;
             filename.match(/\.(\d+)$/, "") && (count = parseInt(RegExp.$1, 10));
             while (args[0].selectSingleNode('node()[@name="' + filename.replace(/"/g, "&quot;") + '"]')) {
-                filename = filename.replace(/\.(\d+)$/, "") + "." + ++count;
+                filename = filename.replace(/\.(\d+)$/, "");
+                
+                var idx  = filename.lastIndexOf(".");
+                var name = filename.substr(0, idx), ext = filename.substr(idx);
+                filename = name + "." + ++count + ext;
             }
             args[1].setAttribute("newname", filename);
 

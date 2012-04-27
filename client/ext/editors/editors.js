@@ -840,25 +840,25 @@ module.exports = ext.register("ext/editors/editors", {
         return node;
     },
 
-    showFile : function(path, row, column, text, animate) {
+    showFile : function(path, row, column, text) {
         var node = this.createFileNodeFromPath(path);
 
-        this.jump(node, row, column, text, animate);
+        this.jump(node, row, column, text);
     },
 
-    jump : function(fileEl, row, column, text, doc, page, animate) {
+    jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
         var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
 
         if (row !== undefined) {
             var jumpTo = function(){
-                setTimeout(function() {
+                //setTimeout(function() {
                     // TODO move this to the editor
                     ceEditor.$editor.gotoLine(row, column, false);
                     if (text)
                         ceEditor.$editor.find(text, null, false);
                     ceEditor.focus();
-                }, 100);
+                //}, 100);
             };
 
             if (hasData) {

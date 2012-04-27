@@ -327,7 +327,7 @@ module.exports = ext.register("ext/console/console", {
         
         commands.addCommand({
             name: "toggleconsole",
-            bindKey: {mac: "Ctrl-Esc", win: "Ctrl-Esc"},
+            bindKey: {mac: "Ctrl-Esc", win: "F6"},
             exec: function () {
                 if (_self.hidden)
                     _self.show();
