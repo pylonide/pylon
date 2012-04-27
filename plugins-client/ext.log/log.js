@@ -96,10 +96,20 @@ module.exports = ext.register("ext/log/log", {
             apf.xmldb.removeChild(this.model.data.firstChild);
         }
 
-        var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
-            + "' url='" + (url || "") + "' type='" + type + "' "
-            + "response='" + (response ? JSON.stringify(response) : "") + "'><![CDATA[" 
-            + (request ? JSON.stringify(request) : "") + "]]></event>");
+        var xmlNode = apf.getXml("<event/>");
+            
+        var attrs = {
+            time: new Date().getTime(),
+            url: url||"",
+            type: type,
+            response: (response && JSON.stringify(response)) || ""
+        };
+        Object.keys(attrs).forEach(function (k) {
+            xmlNode.setAttribute(k, attrs[k]);
+        });
+        
+        xmlNode.appendChild(xmlNode.parentNode.createCDATASection(request ? JSON.stringify(request) : ""));
+            
         return apf.xmldb.appendChild(this.model.data, xmlNode);
     },
 
