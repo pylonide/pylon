@@ -248,7 +248,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
 
         this.$onSwitchFileFn = this.onSwitchFile.bind(this);
-        ide.addEventListener("editorswitch", this.$onSwitchFile);
+        ide.addEventListener("editorswitch", this.$onSwitchFileFn);
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
@@ -276,23 +276,21 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
-        this.$restoreSelection(page);
+        this.$restoreSelection(page, page.$mdlRevisions);
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
         this.model = page.$mdlRevisions;
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
     },
 
-    $restoreSelection: function(page) {
-        var model = page.$mdlRevisions;
-        if (model && page.$showRevisions === true) {
+    $restoreSelection: function(page, model) {
+        if (page.$showRevisions === true && lstRevisions) {
+            var selection = lstRevisions.selection;
             var node = model.data.firstChild;
-            if (page.$selectedRevision) {
+            if (selection && selection.length === 0 && page.$selectedRevision) {
                 node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
             }
-            if (node) {
-                lstRevisions.select(node);
-            }
+            lstRevisions.select(node);
         }
     },
 
@@ -460,7 +458,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var revObj = this.$getRevisionObject(Util.getDocPath());
         var id = parseInt(node.getAttribute("id"), 10);
-        var cache = revObj.previewCache; //refactor
+        var cache = revObj.previewCache;
         if (cache[id]) {
             this.previewRevision(id, null, cache[id][1], cache[id][0]);
         }
@@ -478,7 +476,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         if (typeof lstRevisions !== "undefined") {
             lstRevisions.setModel(model);
-            this.$restoreSelection(tabEditors.getPage());
+            this.$restoreSelection(tabEditors.getPage(), model);
         }
     },
 
@@ -552,6 +550,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (message.type !== "revision")
             return;
 
+        var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
         switch (message.subtype) {
             case "confirmSave":
@@ -576,7 +575,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     // If we are on the page for the doc, let's populate the model,
                     // otherwise it is a waste of resources
                     if (Util.getDocPath() === message.path) {
-                        this.populateModel(revObj);
+                        this.populateModel(revObj, this.model);
                     }
                 }
                 break;
@@ -588,7 +587,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 this.generateCache(revObj);
                 if (!message.nextAction || !message.id) {
-                    this.populateModel(revObj);
+                    if (Util.getDocPath(page) === message.path &&
+                        page.$showRevisions === true) {
+                        this.populateModel(revObj, this.model);
+                    }
                     break;
                 }
 
@@ -629,13 +631,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                 break;
 
             case "getRealFileContents":
-                var page = tabEditors.getPage();
-                var doc = page.$doc;
-
                 this.worker.postMessage({
                     inDialog: true,
                     type: "recovery",
-                    lastContent: doc.getValue(),
+                    lastContent: page.$doc.getValue(),
                     realContent: message.contents,
                     revisions: revObj.allRevisions,
                     path: message.path,
@@ -738,7 +737,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         revObj.compactTimestamps = getTsAndSort(revObj.compactRevisions);
     },
 
-    toggleListView: function() {
+    toggleListView: function(model) {
         var revObj = this.$getRevisionObject(Util.getDocPath());
         revObj.useCompactList = !!!revObj.useCompactList;
 
@@ -748,10 +747,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // Select first child upon change of list view
         setTimeout(function() {
-            var model = tabEditors.getPage().$mdlRevisions;
-            if (!model) {
-                return;
-            }
             var node = model.data.firstChild;
             if (node) {
                 lstRevisions.select(node);
@@ -764,7 +759,7 @@ module.exports = ext.register("ext/revisions/revisions", {
      *
      * Populates the revisions model with the current revision list and attributes.
      **/
-    populateModel: function(revObj) {
+    populateModel: function(revObj, model) {
         if (!revObj || !model) { 
             console.error("Expected a parameter and a model");
             return; 
@@ -1235,7 +1230,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             apf.setStyleClass(lstRevisions.$ext, null, ["compactView"]);
         }
 
-        this.populateModel(revObj);
+        this.populateModel(revObj, this.model);
     },
 
     show: function() {
@@ -1263,11 +1258,14 @@ module.exports = ext.register("ext/revisions/revisions", {
             lstRevisions.setModel(model);
         }
 
-        if (model && (!model.data || model.data.length === 0)) {
-            this.populateModel(this.rawRevisions[Util.getDocPath()]);
+        if (model) {
+            if (!model.data || model.data.length === 0) {
+                this.populateModel(this.rawRevisions[Util.getDocPath()], model);
+            }
+            else {
+                this.$restoreSelection(page, model);
+            }
         }
-
-        this.$restoreSelection(page);
     },
 
     hide: function() {

@@ -98,7 +98,8 @@
                 checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
                 label   = "Show Details"
                 onafterchange = "
-                    require('ext/revisions/revisions').toggleListView()
+                    var model = tabEditors.getPage().$mdlRevisions;
+                    require('ext/revisions/revisions').toggleListView(model);
             " />
         </a:hbox>
     </a:vbox>
