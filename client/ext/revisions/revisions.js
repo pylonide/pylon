@@ -579,6 +579,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         var revObj;
         switch (message.subtype) {
             case "confirmSave":
+                if (!this.revisionQueue[ts])
+                    return;
+                
                 revObj = this.$getRevisionObject(message.path);
                 var ts = message.ts;
                 var revision = this.revisionQueue[ts].revision;
