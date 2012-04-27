@@ -80,7 +80,6 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     hidden : true,
     nodes  : [],
     autoOpen : true,
-    excludeParent : true,
 
     init: function() {
         var _self = this;
@@ -97,12 +96,12 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     _self.hide();
             });
             
-            Console.messages.commandhints = function(message) {
+            Console.onMessageMethods.commandhints = function(message) {
                 var cmds = message.body;
                 for (var cmd in cmds)
                     Console.allCommands[cmd] = cmds[cmd];
             };
-            Console.messages["internal-autocomplete"] = function(message) {
+            Console.onMessageMethods["internal-autocomplete"] = function(message) {
                 var cmds = message.body;
                 _self.show(txtConsoleInput, "", cmds.matches, txtConsoleInput.getValue().length - 1);
             };
@@ -171,7 +170,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             });
         };
         
-        if (Console && Console.messages) {
+        if (Console && Console.onMessageMethods) {
             initConsoleDeps();
         }
         else {

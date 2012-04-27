@@ -1,105 +1,52 @@
 /**
  * Console for the Cloud9 IDE
  *
- * The console plugin takes care of rendering a CLI at the bottom of the IDE and
- * of sending user input and parsing and outputting stdout in the
- * console.
- *
- * @copyright 2011, Ajax.org B.V.
+ * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  * @contributor Sergi Mansilla <sergi AT c9 DOT io>
  */
 
 define(function(require, exports, module) {
 
-var editors, parseLine, predefinedCmds; // These modules are loaded on demand
+var editors, parseLine; // These modules are loaded on demand
+var predefinedCmds = require("ext/console/output");
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var Logger = require("ext/console/logger");
+var code = require("ext/code/code");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
 var theme = require("text!ext/console/themes/arthur.css");
+var InputHistory = require("ext/console/input_history");
 
 // Some constants used throughout the plugin
 var RE_band = /^\s*!/;
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
-// Executes a command (presumably coming from the CLI).
-var execAction = function(cmd, data) {
-    ide.dispatchEvent("track_action", {
-        type: "console",
-        cmd: cmd,
-        argv: data.argv
-    });
-
-    if (ext.execCommand(cmd, data) !== false) {
-        var commandEvt = "consolecommand." + cmd;
-        var consoleEvt = "consolecommand";
-        var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
-        var consoleEvResult = ide.dispatchEvent(consoleEvt, { data: data });
-
-        if (commandEvResult !== false && consoleEvResult !== false) {
-            if (!ide.onLine)
-                module.exports.write("Cannot execute command. You are currently offline.");
-            else
-                ide.send(data);
-        }
-        else {
-            // If any of the `consolecommand` events returns false, it means
-            // that we don't want the console to show up.
-            return false;
-        }
-    }
-    return true;
-};
-
-// This object is a simple FIFO queue that keeps track of the list of commands
-// introduced by the user at any given time and allows the console to go back and forward.
-var cmdHistory = {
-    _history: [""],
-    _index: 0,
-
-    push: function(cmd) {
-        this._history.push(cmd);
-        this._index = this.length();
-    },
-    length: function() {
-        return this._history.length;
-    },
-    getNext: function() {
-        this._index += 1;
-        var cmd = this._history[this._index] || "";
-        this._index = Math.min(this.length(), this._index);
-
-        return cmd;
-    },
-    getPrev: function() {
-        this._index = Math.max(0, this._index - 1);
-        return this._history[this._index];
-    }
-};
-
 module.exports = ext.register("ext/console/console", {
     name   : "Console",
-    dev    : "Ajax.org",
+    dev    : "Cloud9 IDE, Inc.",
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
     css    : css + theme,
     height : 200,
     hidden : true,
-    nodes : [],
-    minHeight : 150,
-
+    nodes  : [],
     autoOpen : true,
-    excludeParent : true,
-    allCommands: {},
-    keyEvents: {},
-    commands: {
+    minHeight : 150,
+    inputHistory : new InputHistory(),
+
+    command_id_tracer : 1,
+    tracerToPidMap : {},
+
+    allCommands : {},
+    keyEvents   : {},
+    commands    : {
         "help": {
-            hint: "show general help information and a list of available commands"
+            hint: "output a list of available commands"
         },
         "clear": {
             hint: "clear all the messages from the console"
@@ -112,41 +59,41 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    messages: {
-        cd: function(message) {
+    onMessageMethods: {
+        cd: function(message, outputElDetails) {
             var res = message.body;
             if (res.cwd) {
                 this.$cwd = res.cwd.replace(ide.workspaceDir, "/workspace");
-                this.write("Working directory changed.");
+                Logger.logNodeStream("Working directory changed", null, outputElDetails, ide);
             }
         },
 
-        error: function(message) {
-            Logger.log(message.body);
-            Logger.log("", "divider");
+        error: function(message, outputElDetails) {
+            Logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
-        /**
-         * Info does the same as error in this case
-         * but it's here for the future, we might want to distinguise these
-         * on colors or something...
-         */
-        info: function (message) {
-            Logger.log(message.body);
-            Logger.log("", "divider");
+        info: function (message, outputElDetails) {
+            Logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
-        __default__: function(message) {
+        __default__: function(message, outputElDetails) {
             var res = message.body;
             if (res) {
-                res.out && Logger.logNodeStream(res.out, null, null, ide);
-                res.err && Logger.logNodeStream(res.err, null, null, ide);
-                res.code && Logger.log("", "divider"); // End of command
+                res.out && Logger.logNodeStream(res.out, null, outputElDetails, ide);
+                res.err && Logger.logNodeStream(res.err, null, outputElDetails, ide);
             }
         }
     },
 
-    help: function() {
+    getLogStreamOutObject : function(tracer_id) {
+        var id = "section" + tracer_id;
+        return {
+            $ext : document.getElementById("console_" + id),
+            id : id
+        };
+    },
+
+    help: function(data) {
         var words = Object.keys(this.allCommands);
         var tabs = "\t\t\t\t";
         var _self = this;
@@ -155,14 +102,13 @@ module.exports = ext.register("ext/console/console", {
             words.sort()
                 .map(function(w) { return w + tabs + _self.allCommands[w].hint; })
                 .join("\n"),
-            null, null, ide
+            null, this.getLogStreamOutObject(data.tracer_id), ide
         );
     },
 
     clear: function() {
-        if (txtConsole) {
+        if (txtConsole)
             txtConsole.clear();
-        }
 
         return false;
     },
@@ -187,12 +133,14 @@ module.exports = ext.register("ext/console/console", {
         return this.$cwd && this.$cwd.replace("/workspace", ide.workspaceDir);
     },
 
-    write: function(lines) {
+    write: function(lines, data) {
         if (typeof lines === "string")
             lines = lines.split("\n");
 
-        lines.forEach(function(line) { Logger.log(line, "log"); });
-        Logger.log("", "divider");
+        var lsOutObject = this.getLogStreamOutObject(data.tracer_id);
+        lines.forEach(function(line) {
+            Logger.logNodeStream(line, null, lsOutObject, ide);
+        });
     },
 
     keyupHandler: function(e) {
@@ -213,18 +161,31 @@ module.exports = ext.register("ext/console/console", {
 
         // Replace any quotes in the command
         argv[0] = argv[0].replace(/["'`]/g, "");
-        cmdHistory.push(line);
-        var spinnerBtn = '<a href="#" class="prompt_spinner" onclick="require(\'ext/console/console\').cancelProcess(e)"></a>';
-        Logger.log(this.getPrompt(line), "prompt", spinnerBtn);
+        this.inputHistory.push(line);
+
+        var spinnerBtn = ['<div class="prompt_spinner" ', 'id="spinner',
+            this.command_id_tracer,
+            '" onclick="return require(\'ext/console/console\').handleCliBlockAction(event)"></div>']
+            .join("");
+
+        var outputId = "console_section" + this.command_id_tracer;
+        Logger.log(this.getPrompt(line), "prompt", spinnerBtn,
+            '<div class="prompt_spacer"></div>', null, outputId);
+
+        var outputEl = document.getElementById(outputId);
+        apf.setStyleClass(outputEl, "loading");
+
         tabConsole.set("console");
 
         var showConsole = true;
         var cmd = argv[0];
 
-        predefinedCmds || (predefinedCmds = require("ext/console/output"));
         var defCmd = predefinedCmds.getPredefinedOutput(argv);
         if (defCmd !== "") {
-            this.write(defCmd);
+            this.commandCompleted(this.command_id_tracer);
+            Logger.logNodeStream(defCmd, null,
+                this.getLogStreamOutObject(this.command_id_tracer), ide);
+            this.command_id_tracer++;
         }
         else {
             if (cmd.trim().charAt(0) === "!") {
@@ -241,15 +202,57 @@ module.exports = ext.register("ext/console/console", {
                 // the requireshandling flag indicates that this message cannot
                 // be silently ignored by the server.
                 // An error event should be thrown if no plugin handles this message.
-                requireshandling: true
+                requireshandling: true,
+                tracer_id: this.command_id_tracer
             };
 
             if (cmd.trim() === "npm")
                 data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
 
-            showConsole = execAction(cmd, data);
+            showConsole = this.execAction(cmd, data);
         }
-        if (showConsole === true) this.show();
+
+        if (showConsole === true)
+            this.show();
+    },
+
+    // Executes a command (presumably coming from the CLI).
+    execAction : function(cmd, data) {
+        ide.dispatchEvent("track_action", {
+            type: "console",
+            cmd: cmd,
+            argv: data.argv
+        });
+
+        if (ext.execCommand(cmd, data) !== false) {
+            var commandEvt = "consolecommand." + cmd;
+            var consoleEvt = "consolecommand";
+            var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
+            var consoleEvResult = ide.dispatchEvent(consoleEvt, { data: data });
+
+            if (commandEvResult !== false && consoleEvResult !== false) {
+                if (!ide.onLine) {
+                    this.write("Cannot execute command. You are currently offline.", {
+                        tracer_id : this.command_id_tracer
+                    });
+                }
+                else {
+                    data.extra = {
+                        command_id : this.command_id_tracer
+                    };
+
+                    ide.send(data);
+                }
+            }
+            else {
+                // If any of the `consolecommand` events returns false, it means
+                // that we don't want the console to show up.
+                return false;
+            }
+        }
+
+        this.command_id_tracer++;
+        return true;
     },
 
     commandTextHandler: function(e) {
@@ -258,32 +261,93 @@ module.exports = ext.register("ext/console/console", {
             this.keyEvents[code](e.currentTarget);
     },
 
+    commandCompleted: function(id) {
+        var spinnerElement = document.getElementById("spinner" + id);
+        if (spinnerElement) {
+            var pNode = spinnerElement.parentNode;
+            if (pNode.className.indexOf("quitting") !== -1) {
+                apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
+                Logger.logNodeStream("Process successfully quit", null,
+                    this.getLogStreamOutObject(id), ide);
+            }
+
+            Firmin.animate(spinnerElement, {
+                opacity : 0,
+                delay : 0.2 },
+            0.3, function() {
+                spinnerElement.setAttribute("style", "");
+                apf.setStyleClass(spinnerElement.parentNode, "loaded", ["loading"]);
+                setTimeout(function() {
+                    spinnerElement.style.opacity = "1";
+                }, 100);
+            });
+        }
+    },
+
     onMessage: function(e) {
-        var message = e.message;
-        console.log(message, message.type.match(/-data$/));
-        if (!message.type)
+        if (!e.message.type)
             return;
-        if (message.type === "node-data")
-            return Logger.logNodeStream(message.data, message.stream, true, ide);
 
-        if (message.type === "node-exit")
-            return Logger.log("", "divider", null, null, true);
+        console.log(e.message);
+        var message = e.message;
+        var extra = message.extra;
+        if (!extra && message.body)
+            extra = message.body.extra;
 
-        if (message.type.match(/-data$/))
-            return Logger.logNodeStream(message.data, message.stream, false, ide);
+        switch(message.type) {
+            case "node-data":
+                Logger.logNodeStream(message.data, message.stream, true, ide);
+                return;
+            case "node-exit":
+                Logger.log("", "divider", null, null, true);
+                return;
+            case "kill":
+                if (message.err) {
+                    Logger.logNodeStream(message.err, null,
+                        this.getLogStreamOutObject(extra.command_id), ide);
+                }
+                break;
+            default:
+                if (message.type.match(/-start$/)) {
+                    this.tracerToPidMap[extra.command_id] = message.pid;
+                    var containerEl = this.getLogStreamOutObject(extra.command_id).$ext;
+                    containerEl.setAttribute("rel", extra.command_id);
+                    apf.setStyleClass(containerEl, "has_pid");
+                    return;
+                }
 
-        if (message.type.match(/-exit$/))
-            return Logger.log("", "divider", false);
+                if (message.type.match(/-data$/)) {
+                    Logger.logNodeStream(message.data, message.stream,
+                        this.getLogStreamOutObject(extra.command_id), ide);
+                    return;
+                }
+
+                if (message.type.match(/-exit$/)) {
+                    this.commandCompleted(extra.command_id);
+                    return;
+                }
+                break;
+        }
+
+        // If we get to this point and `extra` is available, it's a process that
+        // sends all its stdout _after_ it has quit. Thus, we complete it here
+        if (extra)
+            this.commandCompleted(extra.command_id);
 
         if (message.type !== "result")
             return;
 
-        if (this.messages[message.subtype])
-            this.messages[message.subtype].call(this, message);
+        var outputElDetails;
+        if (extra)
+            outputElDetails = this.getLogStreamOutObject(extra.command_id);
+        if (this.onMessageMethods[message.subtype])
+            this.onMessageMethods[message.subtype].call(this, message, outputElDetails);
         else
-            this.messages.__default__.call(this, message);
+            this.onMessageMethods.__default__.call(this, message, outputElDetails);
 
-        ide.dispatchEvent("consoleresult." + message.subtype, { data: message.body });
+        ide.dispatchEvent("consoleresult." + message.subtype, {
+            data: message.body
+        });
     },
 
     getPrompt: function(suffix) {
@@ -296,8 +360,7 @@ module.exports = ext.register("ext/console/console", {
 
     hook: function() {
         var _self = this;
-        // Listen for new extension registrations to add to the
-        // hints
+        // Listen for new extension registrations to add to the hints
         ide.addEventListener("ext.register", function(e){
             if (e.ext.commands)
                 apf.extend(_self.allCommands, e.ext.commands);
@@ -306,10 +369,8 @@ module.exports = ext.register("ext/console/console", {
         ext.initExtension(this);
     },
 
-    init: function(amlNode){
-
+    init: function(){
         var _self = this;
-        this.panel = tabConsole;
         this.$cwd  = "/workspace"; // code smell
 
         apf.importCssString(this.css);
@@ -412,11 +473,11 @@ module.exports = ext.register("ext/console/console", {
         });
 
         this.keyEvents[KEY_UP] = function(input) {
-            var newVal = cmdHistory.getPrev() || "";
+            var newVal = _self.inputHistory.getPrev() || "";
             input.setValue(newVal);
         };
         this.keyEvents[KEY_DOWN] = function(input) {
-            var newVal = cmdHistory.getNext() || "";
+            var newVal = _self.inputHistory.getNext() || "";
             input.setValue(newVal);
         };
         this.keyEvents[KEY_CR] = function(input) {
@@ -427,6 +488,22 @@ module.exports = ext.register("ext/console/console", {
             input.setValue("");
         };
 
+        // To be uncommented and fully implemented when merged with navbar
+        /*code.commandManager.addCommand({
+            name: "abortclicommand",
+            bindKey: {mac: "Ctrl-C", win: "Ctrl-C"},
+            available : function(){
+                return apf.activeElement === txtConsoleInput;
+            },
+            exec: function () {
+                var selection = window.getSelection();
+                var range = selection.getRangeAt(0);
+                console.log("range", range);
+                if (range.endOffset - range.startOffset === 0)
+                    _self.cancelCliAction();
+            }
+        });*/
+
         apf.extend(this.allCommands, ext.commandsLut);
 
         // For now, until the local client gets upgraded
@@ -434,8 +511,88 @@ module.exports = ext.register("ext/console/console", {
             apf.setStyleClass(txtConsole.$ext, "feedback");
     },
 
-    cancelProcess : function() {
-        
+    handleCliBlockAction : function(e) {
+        var pNode = e.target.parentNode;
+
+        if (pNode.className.indexOf("loaded") !== -1) {
+            if (pNode.className.indexOf("collapsed") !== -1)
+                this.expandCliBlock(pNode);
+            else
+                this.collapseCliBlock(pNode);
+        }
+        else {
+            this.cancelCliAction(pNode);
+        }
+    },
+
+    /**
+     * Cancel a CLI command. If `pNode` is undefined, it will subtract 1 from
+     * `this.command_id_tracer`. `pNode` would be undefined if the user pressed
+     * ctrl-c in the input area
+     * 
+     * @param DOMElement pNode The parent container block of the close button
+     */
+    cancelCliAction : function(pNode) {
+        var command_id;
+        if (typeof pNode === "undefined")
+            command_id = (this.command_id_tracer - 1)
+        else
+            command_id = parseInt(pNode.getAttribute("rel"), 10);
+
+        var pid = this.tracerToPidMap[command_id];
+        if (!pid)
+            return;
+
+        apf.setStyleClass(pNode, "quitting_proc");
+        Logger.logNodeStream("Killing this process...", null,
+            this.getLogStreamOutObject(command_id), ide);
+
+        ide.send({
+            command: "kill",
+            pid: pid
+        });
+    },
+
+    /**
+     * Expands a CLI block (prompt, stdin and stdout) from its collapsed state.
+     * This can happen from both clicking the expand arrow and also clicking on
+     * the collapsed block itself.
+     *
+     * @param DOMElement pNode The container block to be expanded
+     * @param Event e The click event
+     */
+    expandCliBlock : function(pNode, e) {
+        if (typeof e !== "undefined" && e.target.className.indexOf("prompt_spinner") !== -1)
+            return;
+
+        var height = parseInt(pNode.getAttribute("rel"), 10);
+        apf.setStyleClass(pNode, null, ["collapsed"]);
+        Firmin.animate(pNode, {
+            height : height + "px"
+        }, 0.2, function() {
+            apf.layout.forceResize(tabConsole.$ext);
+        });
+    },
+
+    /**
+     * Collapses a CLI block (prompt, stdin and stdout) down to just the prmompt
+     * and stdin line
+     *
+     * @param DOMElement pNode The container block to be collapsed
+     */
+    collapseCliBlock : function(pNode) {
+        // 20 = padding
+        var startingHeight = apf.getHtmlInnerHeight(pNode) - 20;
+        pNode.style.height = startingHeight + "px";
+        pNode.setAttribute("rel", startingHeight);
+        apf.setStyleClass(pNode, "collapsed");
+        Firmin.animate(pNode, {
+            height : "14px"
+        }, 0.2, function() {
+            apf.layout.forceResize(tabConsole.$ext);
+        });
+
+        pNode.setAttribute("onclick", 'require("ext/console/console").expandCliBlock(this, event)');
     },
 
     maximize: function(){
@@ -467,8 +624,13 @@ module.exports = ext.register("ext/console/console", {
         btnConsoleMax.setValue(false);
     },
 
-    show: function(immediate) { this._show(true, immediate); },
-    hide: function(immediate) { this._show(false, immediate); },
+    show: function(immediate) {
+        this._show(true, immediate);
+    },
+
+    hide: function(immediate) {
+        this._show(false, immediate);
+    },
 
     _show: function(shouldShow, immediate) {
         if (this.hidden != shouldShow)
@@ -544,6 +706,7 @@ module.exports = ext.register("ext/console/console", {
             finish();
         }
     },
+
     enable: function(){
         this.nodes.each(function(item) { item.enable(); });
     },

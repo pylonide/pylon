@@ -223,23 +223,24 @@ module.exports = ext = {
             cmd = "";
 
         var oCmd = this.commandsLut[cmd];
-        if (!oCmd || !oCmd.ext) {
+        if (!oCmd || !oCmd.ext)
             return;
-        }
 
         var oExt = require(oCmd.ext);
         if (oExt && typeof oExt[cmd] === "function") {
             self["requ"+"ire"](["ext/console/console"], function(consoleExt) {
                 if (oExt.commands[cmd].msg)
-                    consoleExt.write(oExt.commands[cmd].msg);
+                    consoleExt.write(oExt.commands[cmd].msg, data);
+                else
+                    consoleExt.write('"' + cmd + '" command executed', data);
+                consoleExt.commandCompleted(data.tracer_id);
             });
             var res = oExt[cmd](data);
-            
+
             // if the command specifies a return value, then pass that back
-            if (typeof res !== "undefined") {
+            if (typeof res !== "undefined")
                 return res;
-            }
-            
+
             // otherwise respond with 'false'
             // I would expected true here but soit; console.js checks explicitly for 'false'
             return false;

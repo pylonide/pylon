@@ -7,9 +7,14 @@
 .console_text.feedback div {
     padding-left: 31px;
 }
-.console_text.feedback .console_prompt {
-    margin: 3px 0;
-    padding-left: 2px;
+.console_text.feedback .output_section {
+    padding: 10px 0 10px 2px;
+    border-bottom: 1px solid #444;
+    overflow: hidden;
+}
+
+.output_section.collapsed:hover {
+    background: #38393a;
 }
 
 .cli_divider {
@@ -17,20 +22,45 @@
     border-top: 1px solid #444;
     margin: 6px 0 6px 0;
 }
+.console_text.feedback div.prompt_spacer {
+    padding-top: 5px;
+}
 .console_text a:link, .console_text a:hover, .console_text a:active {
     color: #86C2F6;
 }
 .console_text a:visited {
     color: #909090;
 }
-.prompt_spinner {
-    background-image: url(/static/ext/main/style/images/console_spinner_proc.gif);
-    background-repeat: no-repeat;
-    background-position: 0px 0px;
+.console_text.feedback .prompt_spinner {
+    background: url(/static/ext/main/style/images/console_spinner_proc.gif) no-repeat 0 0;
+    display: inline;
     width: 21px;
     height: 14px;
     padding: 4px 22px 4px 4px;
     margin-left: 3px;
 }
+.console_text.feedback .output_section.quit_proc {
+    background-color: #372a2a;
+    box-shadow: inset 0px 0px 0px 1px #372a2a, inset 6px 0px 0px 0px #b0423f;
+}
+.console_text.feedback .output_section.loading.has_pid:hover .prompt_spinner {
+    background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 0;
+}
+.console_text.feedback div.loaded .prompt_spinner {
+    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat 1px 1px;
+}
+
+.console_text.feedback div.loaded .prompt_spinner:hover {
+    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -23px 1px;
+}
+
+.console_text.feedback div.loaded.collapsed .prompt_spinner {
+    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -48px 1px
+}
+
+.console_text.feedback div.loaded.collapsed .prompt_spinner:hover {
+    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -73px 1px
+}
+
 .cmd_msg > span { float: left; }
 .cmd_msg > span > span { margin:0 0 0 25px; }
