@@ -42,7 +42,7 @@ var execAction = function(cmd, data) {
 
         if (commandEvResult !== false && consoleEvResult !== false) {
             if (!ide.onLine)
-                this.write("Cannot execute command. You are currently offline.");
+                module.exports.write("Cannot execute command. You are currently offline.");
             else
                 ide.send(data);
         }
@@ -58,7 +58,7 @@ var execAction = function(cmd, data) {
 // This object is a simple FIFO queue that keeps track of the list of commands
 // introduced by the user at any given time and allows the console to go back and forward.
 var cmdHistory = {
-    _history: [],
+    _history: [""],
     _index: 0,
 
     push: function(cmd) {
@@ -92,6 +92,7 @@ module.exports = ext.register("ext/console/console", {
     hidden : true,
     nodes : [],
     minHeight : 150,
+    maxHeight: window.innerHeight - 70,
 
     autoOpen : true,
     excludeParent : true,
@@ -120,12 +121,12 @@ module.exports = ext.register("ext/console/console", {
                 this.write("Working directory changed.");
             }
         },
-        
+
         error: function(message) {
             Logger.log(message.body);
             Logger.log("", "divider");
         },
-        
+
         /**
          * Info does the same as error in this case
          * but it's here for the future, we might want to distinguise these
@@ -135,7 +136,7 @@ module.exports = ext.register("ext/console/console", {
             Logger.log(message.body);
             Logger.log("", "divider");
         },
-        
+
         __default__: function(message) {
             var res = message.body;
             if (res) {
@@ -163,7 +164,7 @@ module.exports = ext.register("ext/console/console", {
         if (txtConsole) {
             txtConsole.clear();
         }
-        
+
         return false;
     },
 
@@ -196,12 +197,12 @@ module.exports = ext.register("ext/console/console", {
     },
 
     keyupHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode) === -1)
+        if (actionCodes.indexOf(e.keyCode) !== -1)
             return this.commandTextHandler(e);
     },
 
     keydownHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode) !== -1)
+        if (actionCodes.indexOf(e.keyCode) === -1)
             return this.commandTextHandler(e);
     },
 
@@ -291,7 +292,7 @@ module.exports = ext.register("ext/console/console", {
 
         return "[" + u + "@cloud9]:" + this.$cwd + "$" + ((" " + suffix) || "");
     },
-    
+
     hook: function() {
         var _self = this;
         // Listen for new extension registrations to add to the
@@ -311,7 +312,7 @@ module.exports = ext.register("ext/console/console", {
         this.$cwd  = "/workspace"; // code smell
 
         apf.importCssString(this.css);
-        
+
         // Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.previousSibling.hide();
@@ -410,16 +411,12 @@ module.exports = ext.register("ext/console/console", {
         });
 
         this.keyEvents[KEY_UP] = function(input) {
-            var newVal = cmdHistory.getPrev();
-            if (newVal)
-                input.setValue(newVal);
+            var newVal = cmdHistory.getPrev() || "";
+            input.setValue(newVal);
         };
         this.keyEvents[KEY_DOWN] = function(input) {
-            var newVal = cmdHistory.getNext();
-            if (newVal)
-                input.setValue(newVal);
-            else
-                input.setValue("");
+            var newVal = cmdHistory.getNext() || "";
+            input.setValue(newVal);
         };
         this.keyEvents[KEY_CR] = function(input) {
             var inputVal = input.getValue().trim();
@@ -441,6 +438,7 @@ module.exports = ext.register("ext/console/console", {
         winDbgConsole.setAttribute('anchors', '0 0 0 0');
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');
+        winDbgConsole.$ext.style.maxHeight = "10000px";
         winDbgConsole.$ext.style.zIndex = 900000;
 
         settings.model.setQueryValue("auto/console/@maximized", true);
@@ -454,7 +452,10 @@ module.exports = ext.register("ext/console/console", {
 
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.removeAttribute('anchors');
-        winDbgConsole.setAttribute('height', this.height);
+        this.maxHeight = window.innerHeight - 70;
+        winDbgConsole.$ext.style.maxHeight =  this.maxHeight + "px";
+        
+        winDbgConsole.setAttribute('height', this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height);
         winDbgConsole.$ext.style.zIndex = this.lastZIndex;
 
         settings.model.setQueryValue("auto/console/@maximized", false);
@@ -472,16 +473,20 @@ module.exports = ext.register("ext/console/console", {
 
         if (this.$control)
             this.$control.stop();
-        
+
         var _self = this;
         var cfg;
         if (shouldShow) {
             cfg = {
-                height: this.height,
+                height: this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height,
                 dbgVisibleMethod: "show",
                 chkExpandedMethod: "check",
-                animFrom: this.height*0.95,
-                animTo: this.height > this.minHeight ? this.height : this.minHeight,
+                animFrom: this.height * 0.95,
+                animTo: this.height > this.minHeight 
+                            ? (this.maxHeight && this.height > this.maxHeight 
+                                ? this.maxHeight 
+                                : this.height) 
+                            : this.minHeight,
                 animTween: "easeOutQuint"
             };
 
@@ -493,24 +498,30 @@ module.exports = ext.register("ext/console/console", {
                 height: 34,
                 dbgVisibleMethod: "hide",
                 chkExpandedMethod: "uncheck",
-                animFrom: this.height > this.minHeight ? this.height : this.minHeight,
+                animFrom: this.height > this.minHeight 
+                            ? (this.maxHeight && this.height > this.maxHeight 
+                                ? this.maxHeight 
+                                : this.height) 
+                            : this.minHeight,
                 animTo: 65,
                 animTween: "easeInOutCubic"
             };
-
             if (winDbgConsole.parentNode != mainRow)
                 this.restore();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
+            winDbgConsole.$ext.style.maxHeight = "10000px";
         }
 
         var finish = function() {
             if (!shouldShow)
                 tabConsole.hide();
-            else
+            else {
                 winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
-
+                this.maxHeight = window.innerHeight - 70;
+                winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
+            }
             winDbgConsole.height = cfg.height + 1;
             winDbgConsole.setAttribute("height", cfg.height);
             winDbgConsole.previousSibling[cfg.dbgVisibleMethod]();

@@ -122,6 +122,23 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }))
         );
         
+        var offlineList = [this.nodes[0], this.nodes[1], this.nodes[2],
+            mnuContextTabs.childNodes[1], mnuContextTabs.childNodes[2],
+            mnuContextTabs.childNodes[3], mnuContextTabs.childNodes[4],
+            mnuContextTabs.childNodes[5]];
+            
+        ide.addEventListener("afteroffline", function(){
+            offlineList.forEach(function(node){
+                node.disable();
+            });
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            offlineList.forEach(function(node){
+                node.enable();
+            });
+        });
+        
         this.hotitems.revealtab     = [mnuContextTabs.childNodes[0]];
         this.hotitems.closetab      = [this.nodes[0], mnuContextTabs.childNodes[2]];
         this.hotitems.closealltabs  = [this.nodes[1], mnuContextTabs.childNodes[3]];
@@ -608,10 +625,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     removeItem: function(page) {
         var item, idx, keyId;
-        var i = this.menuOffset;
+        var i = 0;
         var l = this.nodes.length;
         var _self = this;
-        for (; i < l; ++i) {
+        
+        for (; i < l; i++) {
             if ((item = this.nodes[i]).relPage == page.id) {
                 item.destroy(true, true);
                 this.nodes.splice(i, 1);

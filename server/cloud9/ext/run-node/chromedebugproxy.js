@@ -4,7 +4,7 @@
  */
 
 var net = require("net");
-var sys = require("sys");
+var util = require("util");
 var NodeSocket = require("v8debug/NodeSocket");
 var ChromeDebugMessageStream = require("v8debug/ChromeDebugMessageStream");
 var DevToolsMessage = require("v8debug/DevToolsMessage");
@@ -34,7 +34,7 @@ var DebugProxy = module.exports = function(port) {
     });
 };
 
-sys.inherits(DebugProxy, process.EventEmitter);
+util.inherits(DebugProxy, process.EventEmitter);
 
 (function() {
 

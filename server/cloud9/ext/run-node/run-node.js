@@ -9,7 +9,7 @@ var Path             = require("path"),
     NodeDebugProxy   = require("./nodedebugproxy"),
     ChromeDebugProxy = require("./chromedebugproxy"),
     Plugin           = require("cloud9/plugin"),
-    sys              = require("sys"),
+    util             = require("util"),
     netutil          = require("cloud9/netutil");
 
 var NodeRuntimePlugin = module.exports = function(ide, workspace) {
@@ -19,7 +19,7 @@ var NodeRuntimePlugin = module.exports = function(ide, workspace) {
     this.name = "node-runtime";
 };
 
-sys.inherits(NodeRuntimePlugin, Plugin);
+util.inherits(NodeRuntimePlugin, Plugin);
 
 (function() {
     this.init = function() {

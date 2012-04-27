@@ -5,8 +5,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
-var sys = require("sys");
-var util = require("cloud9/util");
+var Cloud9Util = require("cloud9/util");
+var util = require("util");
 
 var ShellGitPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -14,7 +14,7 @@ var ShellGitPlugin = module.exports = function(ide, workspace) {
     this.name = "git";
 };
 
-sys.inherits(ShellGitPlugin, Plugin);
+util.inherits(ShellGitPlugin, Plugin);
 
 (function() {
     var githelp     = "",
@@ -50,14 +50,14 @@ sys.inherits(ShellGitPlugin, Plugin);
         }
 
         function onfinish() {
-            util.extend(commands, githelp);
+            Cloud9Util.extend(commands, githelp);
             callback();
         }
     };
 
     this.augmentCommand = function(cmd, struct) {
         var map = commandsMap[cmd] || commandsMap["default"];
-        return util.extend(struct, map || {});
+        return Cloud9Util.extend(struct, map || {});
     };
 
     this.command = function(user, message, client) {

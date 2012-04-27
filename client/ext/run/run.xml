@@ -23,33 +23,33 @@
                   icon     = "stop.png"
                   skin     = "c9-sidepanelsbutton"
                   onclick  = "require('ext/run/run').stop()"
-                  disabled = "{!stProcessRunning.active and 1}" />-->
+                  disabled = "{!stProcessRunning.active &amp;&amp; 1}" />-->
                 <a:button id="btnResume" tooltip="Resume"
                   icon     = "play.png"
                   onclick  = "dbg.continueScript();"
                   skin     = "c9-sidepanelsbutton"
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
                 <a:button  tooltip="Suspend"
                   skin     = "c9-sidepanelsbutton"
                   icon     = "pause.png"
                   onclick  = "dbg.suspend();"
-                  disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+                  disabled = "{!stDebugProcessRunning.active || !stRunning.active}"/>
                 <a:divider skin="c9-divider" />
                 <a:button id="btnStepInto" tooltip="Step Into"
                   icon     = "stepinto.png" 
                   skin     = "c9-sidepanelsbutton"
                   onclick  = "dbg.stepInto();" 
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
                 <a:button id="btnStepOver" tooltip="Step Over"
                   icon     = "step.png"
                   skin     = "c9-sidepanelsbutton"
                   onclick  = "dbg.stepNext();"
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
                 <a:button id="btnStepOut" tooltip="Step Out"
                   icon     = "stepback.png" 
                   skin     = "c9-sidepanelsbutton"
                   onclick  = "dbg.stepOut();"
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
                 <a:divider skin="c9-divider" class="runcommandsdivider" />
             </a:hbox>
         </a:page>
@@ -132,22 +132,4 @@
             </a:hbox>        
         </a:vbox>
     </a:window>
-        
-    <a:bar id="tbRun">
-        <a:divider skin="c9-divider" />
-        <!--a:splitbutton
-          id       = "btnRun"
-          icon     = "run.png"
-          caption  = "run"
-          onclick  = "require('ext/run/run').run(false)"
-          disabled = "{stProcessRunning.active and 1}"
-          submenu  = "mnuRunCfg" />
-        <a:button
-          icon     = "stop.png"
-          caption  = "stop"
-          skin     = "c9-toolbarbutton"
-          onclick  = "require('ext/run/run').stop()"
-          disabled = "{!stProcessRunning.active and 1}" /-->
-    </a:bar>
-
 </a:application>
