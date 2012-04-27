@@ -14,6 +14,7 @@ var css = require("text!ext/uploadfiles/uploadfiles.css");
 var skin = require("text!ext/uploadfiles/skin.xml");
 var markup = require("text!ext/uploadfiles/uploadfiles.xml");
 var fs   = require("ext/filesystem/filesystem");
+var menus = require("ext/menus/menus");
 
 var MAX_UPLOAD_SIZE_FILE = 52428800;
 var MAX_OPENFILE_SIZE = 2097152;
@@ -45,14 +46,13 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var _self = this;
         ide.addEventListener("init.ext/tree/tree", function(){
             _self.nodes.push(
-                ide.mnuFile.appendChild(new apf.item({
-                    caption : "Upload Files",
+                menus.addItemByPath("File/~", new apf.divider(), 350),
+                menus.addItemByPath("File/Upload Files", new apf.item({
                     onclick : function(){
                         ext.initExtension(_self);
-                        
                         winUploadFiles.show();
                     }
-                })),
+                }), 370),
                 winFilesViewer.insertBefore(new apf.button({
                     id : "btnUploadFiles",
                     top : "-22",
@@ -61,31 +61,35 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     icon : "panel_upload.png",
                     onclick : "require('core/ext').initExtension(require('ext/uploadfiles/uploadfiles'));winUploadFiles.show()",
                     tooltip : "Upload Files"
-                }), btnTreeRefresh),
-                mnuCtxTree.insertBefore(new apf.item({
-                    id : "mnuCtxTreeUpload",
-                    match : "[folder]",
-                    visible : "{trFiles.selected.getAttribute('type')=='folder'}",
-                    caption : "Upload to this folder",
-                    onclick : function(){
-                        ext.initExtension(_self);
-                        
-                        winUploadFiles.show();
-                    }
-                }), itemCtxTreeNewFile),
-                mnuCtxTree.insertBefore(new apf.divider({
-                    visible : "{mnuCtxTreeUpload.visible}"
-                }), itemCtxTreeNewFile)
+                }), btnTreeRefresh)
             );
+            
+            mnuCtxTree.addEventListener("afterrender", function(){
+                _self.nodes.push(
+                    mnuCtxTree.insertBefore(new apf.item({
+                        id : "mnuCtxTreeUpload",
+                        match : "[folder]",
+                        visible : "{trFiles.selected.getAttribute('type')=='folder'}",
+                        caption : "Upload to this folder",
+                        onclick : function(){
+                            ext.initExtension(_self);
+                            
+                            winUploadFiles.show();
+                        }
+                    }), itemCtxTreeNewFile),
+                    mnuCtxTree.insertBefore(new apf.divider({
+                        visible : "{mnuCtxTreeUpload.visible}"
+                    }), itemCtxTreeNewFile)
+                )
+            });
             
             if(ide.infraEnv) {
                 _self.nodes.push(
-                    ide.mnuFile.appendChild(new apf.item({
-                        caption : "Download Project",
+                    menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
                             window.open("/api/project/download/zip/" + ide.projectName);
                         }
-                    })),
+                    }), 390),
                     winFilesViewer.insertBefore(new apf.button({
                         top: "-22",
                         skin: "header-btn",

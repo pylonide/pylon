@@ -10,6 +10,7 @@
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/log/log.xml");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/log/log", {
     name   : "Log",
@@ -25,13 +26,12 @@ module.exports = ext.register("ext/log/log", {
     hook : function(){
         var _self = this;
         this.nodes.push(
-            mnuWindows.insertBefore(new apf.item({
-                caption : "Log...",
+            menus.addItemByPath("Tools/Log...", new apf.item({
                 onclick : function(){
                     ext.initExtension(_self);
                     winLog.show();
                 }
-            }), mnuWindows.firstChild)
+            }), 1500000)
         );
         
         var send = ide.send;
