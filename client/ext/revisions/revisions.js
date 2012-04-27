@@ -393,8 +393,9 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
+        this.setSaveButtonCaption();
+        
         var self = this;
-        setTimeout(function() { self.setSaveButtonCaption(); });
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
             if (self.rawRevisions[path]) {
