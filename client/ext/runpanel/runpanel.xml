@@ -69,7 +69,7 @@
               autoselect    = "true"
               empty-message = "no run configurations"
               onafterchoose = "
-                require('ext/runpanel/runpanel').runConfig(lstRunCfg.selected, itmDebug.checked);
+                require('ext/runpanel/runpanel').run();
               " />
               
             <a:bar skin="basic" style="background:#323332;border-top:1px solid #111">

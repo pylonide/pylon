@@ -71,10 +71,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
         this.txtFind.$ext.cols = this.txtFind.cols;
 
-        ide.addEventListener("init.ext/tree/tree", function(){
-            winSearchInFiles.onshow();
-        });
-
         winSearchInFiles.onclose = function() {
             if (typeof ceEditor != "undefined")
                 ceEditor.focus();
@@ -87,6 +83,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 trFiles.addEventListener("afterselect", _self.setSearchSelection);
             _self.setSearchSelection();
         };
+
+        ide.addEventListener("init.ext/tree/tree", function(){
+            winSearchInFiles.onshow();
+        });
 
         txtSFFind.addEventListener("keydown", function(e) {
             switch (e.keyCode){
