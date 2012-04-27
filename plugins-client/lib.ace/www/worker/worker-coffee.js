@@ -1816,12 +1816,8 @@ var Document = function(text) {
 
         position = this.$clipPosition(position);
 
-<<<<<<< HEAD
         // only detect new lines if the document has no line break yet
         if (this.getLength() <= 1)
-=======
-        if (this.getLength() >= 1)
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
             this.$detectNewLine(text);
 
         var lines = this.$split(text);
@@ -5865,7 +5861,6 @@ define('ace/mode/coffee/nodes', ['require', 'exports', 'module' , 'ace/mode/coff
           return child.expressions = exps = flatten(exps);
         }
       });
-<<<<<<< HEAD
     };
 
     Class.prototype.hoistDirectivePrologue = function() {
@@ -5878,20 +5873,6 @@ define('ace/mode/coffee/nodes', ['require', 'exports', 'module' , 'ace/mode/coff
       return this.directives = expressions.splice(0, index);
     };
 
-=======
-    };
-
-    Class.prototype.hoistDirectivePrologue = function() {
-      var expressions, index, node;
-      index = 0;
-      expressions = this.body.expressions;
-      while ((node = expressions[index]) && node instanceof Comment || node instanceof Value && node.isString()) {
-        ++index;
-      }
-      return this.directives = expressions.splice(0, index);
-    };
-
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
     Class.prototype.ensureConstructor = function(name) {
       if (!this.ctor) {
         this.ctor = new Code;

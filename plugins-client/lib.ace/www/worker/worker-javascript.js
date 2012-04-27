@@ -1812,12 +1812,8 @@ var Document = function(text) {
 
         position = this.$clipPosition(position);
 
-<<<<<<< HEAD
         // only detect new lines if the document has no line break yet
         if (this.getLength() <= 1)
-=======
-        if (this.getLength() >= 1)
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
             this.$detectNewLine(text);
 
         var lines = this.$split(text);
@@ -3670,19 +3666,11 @@ var JSHINT = (function () {
         if (option.wsh) {
             combine(predefined, wsh);
         }
-<<<<<<< HEAD
 
         if (option.esnext) {
             useESNextSyntax();
         }
 
-=======
-
-        if (option.esnext) {
-            useESNextSyntax();
-        }
-
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
         if (option.globalstrict && option.strict !== false) {
             option.strict = true;
         }
@@ -6158,7 +6146,6 @@ loop:   for (;;) {
 
 // This Function is called when esnext option is set to true
 // it adds the `const` statement to JSHINT
-<<<<<<< HEAD
 
     useESNextSyntax = function () {
         var conststatement = stmt('const', function (prefix) {
@@ -6217,66 +6204,6 @@ loop:   for (;;) {
         // declaring a variable in a block can have unexpected consequences.
         var id, name, value;
 
-=======
-
-    useESNextSyntax = function () {
-        var conststatement = stmt('const', function (prefix) {
-            var id, name, value;
-
-            this.first = [];
-            for (;;) {
-                nonadjacent(token, nexttoken);
-                id = identifier();
-                if (funct[id] === "const") {
-                    warning("const '" + id + "' has already been declared");
-                }
-                if (funct['(global)'] && predefined[id] === false) {
-                    warning("Redefinition of '{a}'.", token, id);
-                }
-                addlabel(id, 'const');
-                if (prefix) {
-                    break;
-                }
-                name = token;
-                this.first.push(token);
-
-                if (nexttoken.id !== "=") {
-                    warning("const " +
-                      "'{a}' is initialized to 'undefined'.", token, id);
-                }
-
-                if (nexttoken.id === '=') {
-                    nonadjacent(token, nexttoken);
-                    advance('=');
-                    nonadjacent(token, nexttoken);
-                    if (nexttoken.id === 'undefined') {
-                        warning("It is not necessary to initialize " +
-                          "'{a}' to 'undefined'.", token, id);
-                    }
-                    if (peek(0).id === '=' && nexttoken.identifier) {
-                        error("Constant {a} was not declared correctly.",
-                                nexttoken, nexttoken.value);
-                    }
-                    value = expression(0);
-                    name.first = value;
-                }
-
-                if (nexttoken.id !== ',') {
-                    break;
-                }
-                comma();
-            }
-            return this;
-        });
-        conststatement.exps = true;
-    };
-
-    var varstatement = stmt('var', function (prefix) {
-        // JavaScript does not have block scope. It only has function scope. So,
-        // declaring a variable in a block can have unexpected consequences.
-        var id, name, value;
-
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
         if (funct['(onevar)'] && option.onevar) {
             warning("Too many var statements.");
         } else if (!funct['(global)']) {
@@ -7313,21 +7240,12 @@ if (typeof exports === 'object' && exports)
  */
 
 define('ace/narcissus/parser', ['require', 'exports', 'module' , 'ace/narcissus/lexer', 'ace/narcissus/definitions', 'ace/narcissus/options'], function(require, exports, module) {
-<<<<<<< HEAD
 
 var lexer = require('./lexer');
 var definitions = require('./definitions');
 var options = require('./options');
 var Tokenizer = lexer.Tokenizer;
 
-=======
-
-var lexer = require('./lexer');
-var definitions = require('./definitions');
-var options = require('./options');
-var Tokenizer = lexer.Tokenizer;
-
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
 var Dict = definitions.Dict;
 var Stack = definitions.Stack;
 
@@ -7714,7 +7632,6 @@ Pp.Statements = function Statements(n, topLevel) {
         throw e;
     }
 }
-<<<<<<< HEAD
 
 Pp.Block = function Block() {
     this.mustMatch(LEFT_CURLY);
@@ -7881,174 +7798,6 @@ Pp.Statement = function Statement() {
         this.mustMatch(RIGHT_CURLY);
         return n;
 
-=======
-
-Pp.Block = function Block() {
-    this.mustMatch(LEFT_CURLY);
-    var n = this.newNode(blockInit());
-    var x2 = this.x.update({ parentBlock: n }).pushTarget(n);
-    this.withContext(x2, function() {
-        this.Statements(n);
-    });
-    this.mustMatch(RIGHT_CURLY);
-    return n;
-}
-
-var DECLARED_FORM = 0, EXPRESSED_FORM = 1, STATEMENT_FORM = 2;
-
-/*
- * Export :: (binding node, boolean) -> Export
- *
- * Static semantic representation of a module export.
- */
-function Export(node, isDefinition) {
-    this.node = node;                 // the AST node declaring this individual export
-    this.isDefinition = isDefinition; // is the node an 'export'-annotated definition?
-    this.resolved = null;             // resolved pointer to the target of this export
-}
-
-/*
- * registerExport :: (Dict, EXPORT node) -> void
- */
-function registerExport(exports, decl) {
-    function register(name, exp) {
-        if (exports.has(name))
-            throw new SyntaxError("multiple exports of " + name);
-        exports.set(name, exp);
-    }
-
-    switch (decl.type) {
-      case MODULE:
-      case FUNCTION:
-        register(decl.name, new Export(decl, true));
-        break;
-
-      case VAR:
-        for (var i = 0; i < decl.children.length; i++)
-            register(decl.children[i].name, new Export(decl.children[i], true));
-        break;
-
-      case LET:
-      case CONST:
-        throw new Error("NYI: " + definitions.tokens[decl.type]);
-
-      case EXPORT:
-        for (var i = 0; i < decl.pathList.length; i++) {
-            var path = decl.pathList[i];
-            switch (path.type) {
-              case OBJECT_INIT:
-                for (var j = 0; j < path.children.length; j++) {
-                    // init :: IDENTIFIER | PROPERTY_INIT
-                    var init = path.children[j];
-                    if (init.type === IDENTIFIER)
-                        register(init.value, new Export(init, false));
-                    else
-                        register(init.children[0].value, new Export(init.children[1], false));
-                }
-                break;
-
-              case DOT:
-                register(path.children[1].value, new Export(path, false));
-                break;
-
-              case IDENTIFIER:
-                register(path.value, new Export(path, false));
-                break;
-
-              default:
-                throw new Error("unexpected export path: " + definitions.tokens[path.type]);
-            }
-        }
-        break;
-
-      default:
-        throw new Error("unexpected export decl: " + definitions.tokens[exp.type]);
-    }
-}
-
-/*
- * Module :: (node) -> Module
- *
- * Static semantic representation of a module.
- */
-function Module(node) {
-    var exports = node.body.exports;
-    var modDefns = node.body.modDefns;
-
-    var exportedModules = new Dict();
-
-    exports.forEach(function(name, exp) {
-        var node = exp.node;
-        if (node.type === MODULE) {
-            exportedModules.set(name, node);
-        } else if (!exp.isDefinition && node.type === IDENTIFIER && modDefns.has(node.value)) {
-            var mod = modDefns.get(node.value);
-            exportedModules.set(name, mod);
-        }
-    });
-
-    this.node = node;
-    this.exports = exports;
-    this.exportedModules = exportedModules;
-}
-
-/*
- * Statement :: () -> node
- *
- * Parses a Statement.
- */
-Pp.Statement = function Statement() {
-    var i, label, n, n2, p, c, ss, tt = this.t.get(true), tt2, x0, x2, x3;
-
-    var comments = this.t.blockComments;
-
-    // Cases for statements ending in a right curly return early, avoiding the
-    // common semicolon insertion magic after this switch.
-    switch (tt) {
-      case IMPORT:
-        if (!this.x.canImport())
-            this.fail("illegal context for import statement");
-        n = this.newNode();
-        n.pathList = this.ImportPathList();
-        this.x.parentScript.impDecls.push(n);
-        break;
-
-      case EXPORT:
-        if (!this.x.canExport())
-            this.fail("export statement not in module top level");
-        switch (this.peek()) {
-          case MODULE:
-          case FUNCTION:
-          case LET:
-          case VAR:
-          case CONST:
-            n = this.Statement();
-            n.blockComments = comments;
-            n.exported = true;
-            this.x.parentScript.expDecls.push(n);
-            registerExport(this.x.parentScript.exports, n);
-            return n;
-        }
-        n = this.newNode();
-        n.pathList = this.ExportPathList();
-        this.x.parentScript.expDecls.push(n);
-        registerExport(this.x.parentScript.exports, n);
-        break;
-
-      case FUNCTION:
-        // DECLARED_FORM extends funDecls of x, STATEMENT_FORM doesn't.
-        return this.FunctionDefinition(true, this.x.topLevel ? DECLARED_FORM : STATEMENT_FORM, comments);
-
-      case LEFT_CURLY:
-        n = this.newNode(blockInit());
-        x2 = this.x.update({ parentBlock: n }).pushTarget(n).nest();
-        this.withContext(x2, function() {
-            this.Statements(n);
-        });
-        this.mustMatch(RIGHT_CURLY);
-        return n;
-
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
       case IF:
         n = this.newNode();
         n.condition = this.HeadExpression();
@@ -8426,7 +8175,6 @@ Pp.Pragmas = function Pragmas() {
     this.MagicalSemicolon();
     return pragmas;
 }
-<<<<<<< HEAD
 
 /*
  * Pragmas :: () -> Array[token]
@@ -8455,36 +8203,6 @@ Pp.MagicalSemicolon = function MagicalSemicolon() {
 }
 
 /*
-=======
-
-/*
- * Pragmas :: () -> Array[token]
- */
-Pp.Pragma = function Pragma() {
-    var items = [];
-    var tt;
-    do {
-        tt = this.t.get(true);
-        items.push(this.t.token);
-    } while (isPragmaToken(this.peek()));
-    return items;
-}
-
-/*
- * MagicalSemicolon :: () -> void
- */
-Pp.MagicalSemicolon = function MagicalSemicolon() {
-    var tt;
-    if (this.t.lineno === this.t.token.lineno) {
-        tt = this.peekOnSameLine();
-        if (tt !== END && tt !== NEWLINE && tt !== SEMICOLON && tt !== RIGHT_CURLY)
-            this.fail("missing ; before statement");
-    }
-    this.match(SEMICOLON);
-}
-
-/*
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
  * ReturnOrYield :: () -> (RETURN | YIELD) node
  */
 Pp.ReturnOrYield = function ReturnOrYield() {
@@ -9231,17 +8949,10 @@ Pp.MultiplyExpression = function MultiplyExpression() {
 
     return n;
 }
-<<<<<<< HEAD
 
 Pp.UnaryExpression = function UnaryExpression() {
     var n, n2, tt;
 
-=======
-
-Pp.UnaryExpression = function UnaryExpression() {
-    var n, n2, tt;
-
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
     switch (tt = this.t.get(true)) {
       case DELETE: case VOID: case TYPEOF:
       case NOT: case BITWISE_NOT: case PLUS: case MINUS:
@@ -9279,17 +8990,10 @@ Pp.UnaryExpression = function UnaryExpression() {
 
     return n;
 }
-<<<<<<< HEAD
 
 Pp.MemberExpression = function MemberExpression(allowCallSyntax) {
     var n, n2, name, tt;
 
-=======
-
-Pp.MemberExpression = function MemberExpression(allowCallSyntax) {
-    var n, n2, name, tt;
-
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
     if (this.match(NEW)) {
         n = this.newNode();
         n.push(this.MemberExpression(false));
@@ -10265,11 +9969,7 @@ var strictKeywords = {
     "implements": true,
     "interface": true,
     "let": true,
-<<<<<<< HEAD
     //"module": true,
-=======
-    "module": true,
->>>>>>> Merge remote-tracking branch 'origin/master' into plugins
     "package": true,
     "private": true,
     "protected": true,
