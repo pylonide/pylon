@@ -91,6 +91,7 @@ self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
     http.setRequestHeader("X-File-Size", filesize);
     http.setRequestHeader("Content-Type", "application/octet-stream");
     */
+    http.setRequestHeader("x-file-size", blobsize);
     http.send(chunk);
 };
 
