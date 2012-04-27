@@ -15,7 +15,7 @@ var skin = require("text!ext/uploadfiles/skin.xml");
 var markup = require("text!ext/uploadfiles/uploadfiles.xml");
 var fs   = require("ext/filesystem/filesystem");
 
-var MAX_UPLOAD_SIZE = 52428800;
+var MAX_UPLOAD_SIZE_FILE = 52428800;
 var MAX_OPENFILE_SIZE = 2097152;
 var MAX_CONCURRENT_FILES = 2000;
 
@@ -155,6 +155,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         function handleFileSelect(e){
             var files = e.target.files;
             
+            if (!_self.checkUploadSize(files))
+                return false;
+
             _self.startUpload(files);
         };
         
@@ -237,9 +240,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         /** Check the number of dropped files exceeds the limit */
         if (e.dataTransfer.files.length > MAX_CONCURRENT_FILES) {
             util.alert(
-                "Could not upload file(s)", "An error occurred while dropping this file(s)",
+                "Could not upload files", "An error occurred while dropping this files",
                 "You can only drop " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
-                "Please try again with " + MAX_CONCURRENT_FILES + " or a lesser number of files."
+                "Please try again with " + MAX_CONCURRENT_FILES + " or smaller number of files."
             );
             
             return false;
@@ -256,18 +259,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             return false;
         }
         
-        /** Check total filesize of dropped files */
-        for (var size = 0, i = 0, l = e.dataTransfer.files.length; i < l; ++i)
-            size += e.dataTransfer.files[i].size;
-/* this checks the maximum upload size of all files combined
-        if (size > MAX_UPLOAD_SIZE) {
-            util.alert(
-                "Could not save document", "An error occurred while saving this document",
-                "The file(s) you dropped exceeds the maximum of 50MB and could therefore not be uploaded."
-            );
+        if (!this.checkUploadSize(e.dataTransfer.files))
             return false;
-        }
-*/
+
         if (e.dataTransfer.files.length < 1)
             return false;
         
@@ -324,7 +318,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 
                 var targetPath = folders.join("/");
                 var nodePath = node.getAttribute("path");
-                var targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + nodePath + "/" + targetPath + "']");
+                var targetFolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + apf.escapeXML(nodePath) + "/" + apf.escapeXML(targetPath) + "']");
                 
                 // check if folder with specified path already exists
                 if (targetFolder) {
@@ -341,7 +335,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     var currentPath = nodePath;
                     apf.asyncForEach(folders, function(folder, next2) {
                         currentPath += "/" + folder;
-                        subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + currentPath + "']");
+                        subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path='" + apf.escapeXML(currentPath) + "']");
                         
                         // subfolder is already created
                         if (subfolder) {
@@ -399,14 +393,14 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         
         // add node to file tree
         var xmlNode = "<file type='fileupload'" +
-            " name='" + file.name + "'" +
-            " path='" + path + "/" + file.name + "'" +
+            " name='" + apf.escapeXML(file.name) + "'" +
+            " path='" + apf.escapeXML(path) + "/" + apf.escapeXML(file.name) + "'" +
         "/>";
         
-        trFiles.add(xmlNode, parent);
+        file.treeNode = trFiles.add(xmlNode, parent);
         file.path = path;
         // add file to upload activity list
-        var queueNode = '<file name="' + file.name + '" />';
+        var queueNode = '<file name="' + apf.escapeXML(file.name) + '" />';
         
         file.queueNode = mdlUploadActivity.appendXml(queueNode);
         
@@ -426,8 +420,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     removeCurrentUploadFile: function(name) {
-        apf.xmldb.removeNode(mdlUploadActivity.queryNode("file[@name='" + name + "']"));
-        apf.xmldb.removeNode(trFiles.getModel().data.selectSingleNode("//file[@name='" + name + "'][@type='fileupload']"));
+        var file = this.currentFile;
+        apf.xmldb.removeNode(file.queueNode);
+        apf.xmldb.removeNode(file.treeNode);
         if (!mdlUploadActivity.data.childNodes.length) {
             boxUploadActivity.hide();
         }
@@ -516,6 +511,39 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         }
     },
     
+    checkUploadSize: function(files) {
+        var file;
+        var files_too_big = [];
+        for (var filesize, totalsize = 0, i = 0, l = files.length; i < l; ++i) {
+            file = files[i];
+            filesize = file.size;
+            totalsize += filesize;
+
+            if (filesize > MAX_UPLOAD_SIZE_FILE) {
+                files_too_big.push(file.name)
+            }
+        }
+        
+        if (files_too_big.length) {
+            if (files_too_big.length == 1) {
+                util.alert(
+                    "Maximum file-size exceeded", "A file exceeds our upload limit of 50MB per file.",
+                    "Please remove the file '" + files_too_big[0] + "' from the list to continue."
+                );
+            }
+            else {
+                util.alert(
+                    "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
+                    "Please remove all file larger that 50MB from the list to continue."
+                );
+            }
+            
+            return false;
+        }
+        
+        return true;
+    },
+    
     skip: function() {
         this.removeCurrentUploadFile(this.currentFile.name);
         this.uploadNextFile();
@@ -527,11 +555,12 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     overwrite: function() {
-        var node = this.currentFile.targetFolder;
+        var file = this.currentFile;
+        var node = file.targetFolder;
         var path     = node.getAttribute("path");
-        var filename = this.currentFile.name;
+        var filename = file.name;
         
-        apf.xmldb.removeNode(trFiles.queryNode('//file[@path="' + path + "/" + filename + '"]'));
+        apf.xmldb.removeNode(file.treeNode);
         fs.remove(path + "/" + filename, this.upload);
     },
     
@@ -560,17 +589,17 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 return _self.uploadNextFile();
             }
             
-            var strXml = data.match(new RegExp(("(<file path='" + path +
-                "/" + file.name + "'.*?>)").replace(/\//g, "\\/"))) ||
-                data.match(new RegExp(('(<file path="' + path +
-                "/" + file.name + '".*?>)').replace(/\//g, "\\/")));;
+            var strXml = data.match(new RegExp(("(<file path='" + apf.escapeXML(path) +
+                "/" + apf.escapeXML(file.name) + "'.*?>)").replace(/\//g, "\\/"))) ||
+                data.match(new RegExp(('(<file path="' + apf.escapeXML(path) +
+                "/" + apf.escapeXML(file.name) + '".*?>)').replace(/\//g, "\\/")));;
             
             if(!strXml) {
                 _self.uploadNextFile();
             }
 
             // change file from uploading to file to regular file in tree
-            apf.xmldb.setAttribute(trFiles.getModel().queryNode("//file[@path='" + path + "/" + file.name + "']"), "type", "file");
+            apf.xmldb.setAttribute(file.treeNode, "type", "file");
             
             // remove file from upload activity lilst
             setTimeout(function() {
