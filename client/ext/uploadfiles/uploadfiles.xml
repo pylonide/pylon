@@ -16,13 +16,13 @@
             <div id="uploadDropArea" class="uploadDropArea"></div>
             <a:hbox id="hboxUploadNoFolders" class="uploadSelectButtons" padding="10" height="60" pack="center" align="center">
                 <div class="uploadOrText"></div>
-                <a:button id="fileUploadSelectBtn" skin="btn-default-css3" disabled="true">Select files to upload</a:button>
+                <a:button skin="btn-default-css3" disabled="true">Select files to upload</a:button>
             </a:hbox>
             <a:hbox id="hboxUploadWithFolders" class="uploadSelectButtons" padding="5" height="60" pack="center" align="center" visible="false">
                 <div class="uploadOrSelectText"></div>
                 <a:button id="fileUploadSelectBtn" skin="btn-default-css3" disabled="true">files</a:button>
                 <div class="uploadOrText"></div>
-                <a:button id="fileUploadSelectBtn" skin="btn-default-css3" disabled="true">a complete folder</a:button>
+                <a:button skin="btn-default-css3" disabled="true">a complete folder</a:button>
             </a:hbox>
             <div class="txtUploadTargetFolder" margin="0 0 10">Upload folder: <span id="uplTargetFolder"></span></div>
         </a:vbox>
