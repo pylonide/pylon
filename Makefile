@@ -6,6 +6,9 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
 	nodeToUse := "node-darwin"
 endif
+ifeq ($(UNAME), SunOS)
+	nodeToUse := "node-sunos"
+endif
 
 # packages apf
 apf:
