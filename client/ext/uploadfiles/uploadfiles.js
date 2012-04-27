@@ -64,6 +64,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         _self.upload();
                     });
                     break;
+                case "debug":
+                    console.log(JSON.stringify(data));
                 default:
                     console.log("unknown message from uploadworker: ", data.type);
             }

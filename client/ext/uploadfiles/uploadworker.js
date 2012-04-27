@@ -25,47 +25,35 @@ self.onmessage = function (e) {
                     self.postMessage({value: "Starting...", filename: data.file.name});
                     
                     // Processing ...
-                    var file = data.file;
-                    var reader = new FileReader();
+                    var reader = new FileReaderSync();
+                    var file = reader.readAsArrayBuffer(data.file);
                     
-                    reader.onloadend = function(e){
-                        var filename = file.name;
-                        var filepath = data.path + "/" + filename;
+                    var blob = file;
+                    var blobsize = blob.byteLength;
+        
+                    var start = 0;
+                    var end = BYTES_PER_CHUNK;
+                    if (end > blobsize)
+                        end = blobsize;
                         
-                        var blob = file;
-                        var blobsize = blob.size;
-            
-                        var start = 0;
-                        var end = BYTES_PER_CHUNK;
+                    function next(error){
+                        if (error) {
+                            self.postMessage({type: "paused", error: error, filepath: filepath});
+                            return;
+                        }
+                        
+                        var chunk = blob.slice(start, end);
+                        
+                        self.uploadChunk(chunk, filepath, end, blobsize, next);
+                    
+                        start = end;
+                        end = start + BYTES_PER_CHUNK;
                         if (end > blobsize)
                             end = blobsize;
-                            
-                        function next(error){
-                            if (error) {
-                                self.postMessage({type: "paused", error: error, filepath: filepath});
-                                return;
-                            }
-                            
-                            // Note: blob.slice has changed semantics and been prefixed. See http://goo.gl/U9mE5.
-                            if ('mozSlice' in blob) {
-                                var chunk = blob.mozSlice(start, end);
-                            } else {
-                                var chunk = blob.webkitSlice(start, end);
-                            }
-                            
-                            self.uploadChunk(chunk, filepath, end, blobsize, next);
-                        
-                            start = end;
-                            end = start + BYTES_PER_CHUNK;
-                            if (end > blobsize)
-                                end = blobsize;
-                        }
-                        connections[filepath].next = next;
-                        
-                        next();
                     }
-                    // Begin the read operation
-                    reader.readAsBinaryString(data.file);
+                    connections[filepath].next = next;
+                    
+                    next();
                 }
                 else {
                     connections[filepath].next();
@@ -105,3 +93,14 @@ self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
     */
     http.send(chunk);
 };
+
+if (!ArrayBuffer.prototype.slice)
+    ArrayBuffer.prototype.slice = function (start, end) {
+        var that = new Uint8Array(this);
+        if (end == undefined) end = that.length;
+        var result = new ArrayBuffer(end - start);
+        var resultArray = new Uint8Array(result);
+        for (var i = 0; i < resultArray.length; i++)
+           resultArray[i] = that[i + start];
+        return result;
+    }
