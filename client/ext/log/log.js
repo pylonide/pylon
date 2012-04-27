@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
- define(function(require, exports, module) {
+define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -93,14 +93,17 @@ module.exports = ext.register("ext/log/log", {
 
     log : function(url, type, request, response){
         if (this.model.data.childNodes.length > 1000) {
-            apf.xmldb.removeChild(this.model.data.firstChild);
+            apf.xmldb.removeNode(this.model.data.firstChild);
         }
 
-        var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
-            + "' url='" + (url || "") + "' type='" + type + "' "
-            + "response='" + (response ? JSON.stringify(response) : "") + "'><![CDATA[" 
-            + (request ? JSON.stringify(request) : "") + "]]></event>");
-        return apf.xmldb.appendChild(this.model.data, xmlNode);
+        try {
+            var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
+                + "' url='" + (url || "") + "' type='" + type + "' "
+                + "response='" + (response ? apf.escapeXML(JSON.stringify(response)) : "") + "'><![CDATA[" 
+                + (request ? JSON.stringify(request).replace(/\]\]/g, "] ]") : "") + "]]></event>");
+            return apf.xmldb.appendChild(this.model.data, xmlNode);
+        }
+        catch(e){}
     },
 
     init : function(amlNode){},
