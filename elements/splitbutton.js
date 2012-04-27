@@ -19,7 +19,7 @@
  *
  */
 
-// #ifdef __AMLBAR || __INC_ALL
+// #ifdef __AMLSPLITBUTTON || __INC_ALL
 
 /**
  * Element displaying a skinnable rectangle which can contain other 
@@ -108,10 +108,14 @@ apf.splitbutton = function(struct, tagName){
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
                 _self.$button2.$setState("Over", {});
+                
+                _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 apf.setStyleClass(this.$ext, "", ["primary"]);
                 _self.$button2.$setState("Out", {});
+                
+                _self.dispatchEvent("mouseout", { button: this });
             },
             onclick: function(e) {
                 _self.dispatchEvent("click");
@@ -126,6 +130,8 @@ apf.splitbutton = function(struct, tagName){
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
                 _self.$button1.$setState("Over", {});
+                
+                _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 if(!_self.$button2.value) {
@@ -136,6 +142,8 @@ apf.splitbutton = function(struct, tagName){
                     apf.setStyleClass(this.$ext, "primary");
                     _self.$button1.$setState("Over", {});
                 }
+                
+                _self.dispatchEvent("mouseout", { button: this });
             }
         });
     };
