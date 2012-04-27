@@ -362,7 +362,8 @@ module.exports = ext.register("ext/code/code", {
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            if (e.nextPage && e.nextPage.$editor && e.nextPage.$editor.ceEditor)
+                ceEditor.afterOpenFile(ceEditor.getSession());
         });
     },
 
