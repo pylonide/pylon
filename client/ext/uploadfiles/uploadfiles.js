@@ -17,7 +17,7 @@ var fs   = require("ext/filesystem/filesystem");
 
 var MAX_UPLOAD_SIZE_FILE = 52428800;
 var MAX_OPENFILE_SIZE = 2097152;
-var MAX_CONCURRENT_FILES = 2000;
+var MAX_CONCURRENT_FILES = 1000;
 
 module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     dev         : "Ajax.org",
@@ -155,9 +155,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         function handleFileSelect(e){
             var files = e.target.files;
             
-            if (!_self.checkUploadSize(files))
+            if (!(_self.checkUploadSize(files) && _self.checkNumberOfFiles(files)))
                 return false;
-
+        
             _self.startUpload(files);
         };
         
@@ -237,18 +237,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             return false;
         }
-        /** Check the number of dropped files exceeds the limit */
-        if (e.dataTransfer.files.length > MAX_CONCURRENT_FILES) {
-            util.alert(
-                "Could not upload files", "An error occurred while dropping this files",
-                "You can only drop " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
-                "Please try again with " + MAX_CONCURRENT_FILES + " or smaller number of files."
-            );
-            
-            return false;
-        }
+        
         /** Dropped item is a folder */
-        else if (e.dataTransfer.files.length == 0) {
+        if (e.dataTransfer.files.length == 0) {
             ext.initExtension(this);
             
             winNoFolderSupport.show();
@@ -258,10 +249,10 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             
             return false;
         }
-        
-        if (!this.checkUploadSize(e.dataTransfer.files))
+        var files = e.dataTransfer.files;
+        if (!(this.checkUploadSize(files) && this.checkNumberOfFiles(files)))
             return false;
-
+        
         if (e.dataTransfer.files.length < 1)
             return false;
         
@@ -479,7 +470,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                                 btnUploadOverwriteAll.hide();
                                 btnUploadSkipAll.hide();
                             }
-                            uploadFileExistsMsg.$ext.innerHTML = "\"" + file.name + "\" already exists, do you want to replace it?. Replacing it will overwrite it's current contents.";
+                            uploadFileExistsMsg.$ext.innerHTML = "\"" + apf.escapeXML(file.name) + "\" already exists, do you want to replace it?. Replacing it will overwrite it's current contents.";
                         }
                     }
                     else {
@@ -511,6 +502,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         }
     },
     
+    /** Check for files exceeding filesize limit */
     checkUploadSize: function(files) {
         var file;
         var files_too_big = [];
@@ -537,6 +529,21 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     "Please remove all file larger that 50MB from the list to continue."
                 );
             }
+            
+            return false;
+        }
+        
+        return true;
+    },
+    
+    /** Check the number of dropped files exceeds the limit */
+    checkNumberOfFiles: function(files) {
+        if (files.length > MAX_CONCURRENT_FILES) {
+            util.alert(
+                "Could not upload files", "An error occurred while dropping this files",
+                "You can only drop " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
+                "Please try again with " + MAX_CONCURRENT_FILES + " or smaller number of files."
+            );
             
             return false;
         }
