@@ -37,3 +37,6 @@
 [submodule "support/packager"]
 	path = support/packager
 	url = https://github.com/ajaxorg/packager
+[submodule "support/lib-javadebug"]
+    path = support/lib-javadebug
+    url = git@github.com:ajaxorg/lib-javadebug.git

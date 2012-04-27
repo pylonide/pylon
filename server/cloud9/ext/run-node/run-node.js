@@ -25,8 +25,8 @@ sys.inherits(NodeRuntimePlugin, Plugin);
     this.init = function() {
         var _self = this;
         this.workspace.getExt("state").on("statechange", function(state) {
-            state.debugClient    = !!_self.debugClient;
-            state.processRunning = !!_self.child;
+            // state.debugClient    = !!_self.debugClient;
+            // state.processRunning = !!_self.child;
         });
     };
 
@@ -35,7 +35,8 @@ sys.inherits(NodeRuntimePlugin, Plugin);
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
-        if (!(/node/.test(message.runner)) && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
+        if (!(/default|auto|0\.6\.x|0\.4\.x/.test(message.runner))
+            && (cmd.indexOf("debug") != -1 && !this.nodeDebugProxy))
             return false;
 
         var _self = this;

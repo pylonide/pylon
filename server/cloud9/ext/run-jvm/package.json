@@ -1,0 +1,6 @@
+{
+    "name": "jvm_runtime",
+    "description": "Provides a sandboxed JVM runtime and java debugger",
+    "version": "0.1",
+    "author": "Mostafa Eweda"
+}

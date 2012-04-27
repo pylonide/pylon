@@ -4,6 +4,12 @@
             <element caption="Auto" value="auto" />
             <element caption="Node.js 0.6.x" value="0.6.x" />
             <element caption="Node.js 0.4.x" value="0.4.x" />
+            <element caption="Jython" value="jpy" />
+            <element caption="JRuby" value="jrb" />
+            <element caption="Groovy" value="groovy" />
+            <element caption="Java" value="java" />
+            <element caption="Java Web" value="java-web" />
+            <element caption="JS-Rhino" value="js-rhino" />
             <!--element caption="Python" value="py" /-->
         </data>
     </a:model>
