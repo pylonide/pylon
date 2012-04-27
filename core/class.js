@@ -1192,6 +1192,14 @@ apf.Class.prototype = new (function(){
         }
         catch (ex) {}
         
+        for (var prop in this.$captureStack) this.$captureStack[prop] = null;
+        for (var prop in this.$eventsStack) this.$eventsStack[prop] = null;
+        for (var prop in this.$funcHandlers) this.$funcHandlers[prop] = null;
+        
+        for (var i = this.$bufferEvents.length - 1; i >= 0; i--) {
+            this.$bufferEvents = null;
+        }
+        
         //#ifdef __WITH_NAMESERVER
         apf.nameserver.remove(this.localName, this);
         //#endif

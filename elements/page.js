@@ -44,6 +44,7 @@ apf.page = function(struct, tagName){
     //#endif
     this.$focussable     = false;
     this.closebtn        = false;
+    this.autofocus       = true;
 
     //#ifdef __WITH_CONTENTEDITABLE
     this.$getEditableCaption = function(){
@@ -94,8 +95,9 @@ apf.page = function(struct, tagName){
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
     this.$booleanProperties["closebtn"] = true;
+    this.$booleanProperties["autofocus"] = true;
     this.$supportedProperties.push("fake", "caption", "icon", "tooltip",
-        "type", "buttons", "closebtn", "trans-in", "trans-out");
+        "type", "buttons", "closebtn", "trans-in", "trans-out", "autofocus");
 
     //#ifdef __ENABLE_TAB_CLOSEBTN
     /**
@@ -465,7 +467,8 @@ apf.page = function(struct, tagName){
     
     function $btnSet(oHtml){
         this.parentNode.set(this);
-        this.canHaveChildren = 2;
+        if (this.autofocus)
+            this.canHaveChildren = 2;
         this.$setStyleClass(oHtml, "down", null, true);
     }
     

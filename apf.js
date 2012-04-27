@@ -138,6 +138,10 @@
      * @see baseclass.guielement.method.focus
      */
     KEYBOARD_MOUSE : true,
+    /**
+     * Constant for specifying that a widget is a menu
+     */
+    MENU           : 3,
 
     /**
      * Constant for specifying success.

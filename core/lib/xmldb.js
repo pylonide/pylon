@@ -895,7 +895,7 @@ apf.xmldb = new (function(){
             apf.xmldb.notifyQueued();
         }
         else if (runTimer) {
-            clearTimeout(notifyTimer);
+            apf.setZeroTimeout.clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
             this.$hasQueue = true;
             notifyTimer = apf.setZeroTimeout(function(){
@@ -918,7 +918,7 @@ apf.xmldb = new (function(){
         var myQueue = notifyQueue;
         notifyQueue = {};
         
-        clearTimeout(notifyTimer);
+        apf.setZeroTimeout.clearTimeout(notifyTimer);
         for (var uId in myQueue) {
             if (!uId) continue;
 

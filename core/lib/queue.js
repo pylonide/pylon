@@ -33,16 +33,21 @@ apf.setZeroTimeout = !window.postMessage
         // no time argument (always zero) and no arguments (you have to
         // use a closure).
         function setZeroTimeout(fn) {
-            timeouts.push(fn);
+            var id = timeouts.push(fn);
             window.postMessage(messageName, "*");
+            return id;
+        }
+        
+        setZeroTimeout.clearTimeout = function(id){
+            timeouts[id] = null;
         }
 
         function handleMessage(e) {
             if (!e) e = event;
             if (e.source == window && e.data == messageName) {
                 apf.stopPropagation(e);
-                if (timeouts.length > 0)
-                    timeouts.shift()();
+                if (timeouts.length > 0 && (t = timeouts.shift()))
+                    t();
             }
         }
 
@@ -84,7 +89,11 @@ apf.queue = {
     },
 
     empty : function(prop){
+        //#ifdef __WITH_ZERO_TIMEOUT
+        apf.setZeroTimeout.clearTimeout(this.timer);
+        /* #else
         clearTimeout(this.timer);
+        #endif */
         this.timer = null;
 
         //#ifdef __WITH_LAYOUT

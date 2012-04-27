@@ -164,8 +164,10 @@ apf.AmlElement = function(struct, tagName){
                 //#endif
             }
     
+            //#ifdef __DEBUG
             if (self[value])
                 throw new Error("ID collision of APF element: '" + value + "'");
+            //#endif
     
             if (!self[value] || !self[value].hasFeature) {
                 try {
@@ -502,10 +504,14 @@ apf.AmlElement = function(struct, tagName){
             //#ifdef __WITH_PROPERTY_BINDING
             //Remove any bounds if relevant
             this.$clearDynamicProperty(prop);
-    
-            if (isInherit)
-                this.$inheritProperties[prop] = 2;
-    
+            //#endif
+        }
+        
+        if (isInherit)
+            this.$inheritProperties[prop] = 2;
+        
+        if (value) {
+            //#ifdef __WITH_PROPERTY_BINDING
             if (typeof value == "string" 
               && (value.indexOf("{") > -1 || value.indexOf("[") > -1)) {
                 this.$setDynamicProperty(prop, value);

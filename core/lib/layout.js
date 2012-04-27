@@ -118,7 +118,7 @@ apf.layout = {
 
         this.dlist = [];
         
-        clearTimeout(this.timer);
+        apf.setZeroTimeout.clearTimeout(this.timer);
         this.timer = null;
     },
     

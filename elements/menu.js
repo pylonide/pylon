@@ -87,7 +87,7 @@ apf.menu = function(struct, tagName){
 };
 
 (function(){
-    this.$focussable  = apf.KEYBOARD;
+    this.$focussable  = apf.MENU;
     this.$positioning = "basic"
     //var _self         = this;
     //var blurring      = false;
