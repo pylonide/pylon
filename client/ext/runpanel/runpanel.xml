@@ -119,5 +119,14 @@
             </a:bar>
         </a:vbox>
     </a:window>
-
+    
+    <a:bar id="debugInfo" class="c9-debugInfo menu-bk mnuSbPrefs upward moveleft menu-bkFocus">
+        <a:vbox padding="10" edge="15">
+            <div class="arrow debugInfoArrow"></div>
+            <a:text id="debugInfoText" class="debugInfoDesc">
+            Run and Debug is currently only available for Node.js
+            applications.&lt;br/>For more help on running code,
+            check out our guided tour under the Help menu.</a:text>
+        </a:vbox>
+	</a:bar>
 </a:application>

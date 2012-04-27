@@ -27,6 +27,7 @@ var ProxyDocument = require("ext/code/proxydocument");
 
 var markup = require("text!ext/revisions/revisions.xml");
 var skin = require("text!ext/revisions/skin.xml");
+var cssString = require("text!ext/revisions/style.css");
 
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
@@ -119,9 +120,36 @@ module.exports = ext.register("ext/revisions/revisions", {
         btnSave.setAttribute("caption", "");
         btnSave.removeAttribute("tooltip");
         btnSave.setAttribute("margin", "0 20 0 20");
-        btnSave.setAttribute("submenu", "mnuSave");
         btnSave.removeAttribute("command");
 
+        btnSave.addEventListener("onmouseover", function(e) {
+            ext.initExtension(self);
+            apf.tween.single(revisionsInfo, {
+                from:0,
+                to:1,
+                steps: 10,
+                type     : "opacity",
+                anim     : apf.tween.easeInOutCubic,
+                interval: 30
+            });
+        });
+
+        btnSave.addEventListener("onmouseout", function(e) {
+            ext.initExtension(self);
+            apf.tween.single(revisionsInfo, {
+                from:1,
+                to:0,
+                steps: 10,
+                type     : "opacity",
+                anim     : apf.tween.easeInOutCubic,
+                interval: 30
+            });
+        });
+        
+        btnSave.addEventListener("onclick", function(e) {
+            Save.quicksave();
+        });
+        
         this.$onMessageFn = this.onMessage.bind(this);
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
@@ -131,26 +159,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-
-        var c = 0;
-        menus.addItemToMenu(this.mnuSave, new apf.item({
-            caption: "Save Now",
-            onclick: function() { Save.quicksave(); }
-        }), c += 100);
-
-        menus.addItemToMenu(this.mnuSave, new apf.item({
-            caption : "Enable Auto-Save",
-            type    : "check",
-            checked : "{[{require('core/settings').model}::general/@autosaveenabled] != '' ? [{require('core/settings').model}::general/@autosaveenabled] : 'true'}"
-        }), c += 100);
-
-        menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
-        menus.addItemToMenu(this.mnuSave, new apf.item({
-            caption : "About Auto-Save",
-            onclick: function(e) {
-                self.toggleInfoDiv(1);
-            }
-        }), c += 100);
 
         this.defaultUser = { email: null };
 
@@ -220,6 +228,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (page) {
             this.$switchToPageModel(page);
         }
+
+        apf.importCssString(cssString);
 
         this.nodes.push(this.panel = new apf.bar({
                 id: "revisionsPanel",
@@ -711,14 +721,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 finalize();
             }
         );
-    },
-
-    toggleInfoDiv : function(show) {
-    	ext.initExtension(this);
-    	if (show == true)
-        	revisionsInfo.$ext.style.display = "block";
-        else
-        	revisionsInfo.$ext.style.display = "none";
     },
 
     /**

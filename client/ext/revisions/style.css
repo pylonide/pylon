@@ -1,0 +1,33 @@
+.c9-revisionsInfo {
+	width: 290px;
+	height: 100px;
+    position: absolute;
+    left: 435px;
+    top: 45px;
+    z-index: 50000;
+    min-width: 0px;
+    min-height: 0px;
+    max-width: 9998px;
+    max-height: 9992px;
+    opacity: 0;
+    display: block;
+    padding: 0 7px 7px 7px;
+    color: white;
+    line-height: 13px;
+}
+
+.revisionsInfoDesc {
+	color: white;
+	background: transparent;
+	line-height: 16px;
+}
+
+.revisionsInfoArrow {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: url(/static/ext/guidedtour/images/arrow.png) no-repeat 0 0;
+    left: -24px;
+    top: 43%;
+    background-position: 0 0;
+}

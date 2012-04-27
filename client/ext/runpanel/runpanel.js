@@ -17,6 +17,7 @@ var dock = require("ext/dockpanel/dockpanel");
 var save = require("ext/save/save");
 var markup = require("text!ext/runpanel/runpanel.xml");
 var markupSettings = require("text!ext/runpanel/settings.xml");
+var cssString = require("text!ext/runpanel/style.css");
 var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/runpanel/runpanel", {
@@ -92,7 +93,20 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 visible  : "{!stProcessRunning.active and 1}",
                 tooltip  : "{this.checked ? 'Debug' : 'Run'}",
                 disabled : "{!ide.onLine}",
-                submenu  : "mnuRunCfg"
+                submenu  : "mnuRunCfg",
+                onmouseover : function(e) {
+
+                },
+                onmouseout : function(e) {
+                    ext.initExtension(_self);
+                    /*apf.tween.single(debugInfo, {
+                        from:1,
+                        to:0,
+                        steps: 10,
+                        type:"fade",
+                        interval: 30
+                    }); */
+                } 
             }), 100),
             
             menus.$insertByIndex(barTools, new apf.button({
@@ -113,6 +127,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             
             this.model = new apf.model().load("<configurations />")
         );
+        
+        btnRun.$button1.addEventListener("onmouseover", function(e) {
+            ext.initExtension(_self);
+            apf.tween.single(debugInfo, {
+                from:0,
+                to:1,
+                steps: 10,
+                type:"fade",
+                interval: 30
+            }); 
+        });
         
         var c = 0;
         menus.addItemToMenu(this.mnuRunCfg, new apf.item({ 
@@ -271,6 +296,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     init : function(amlNode){
         var _self = this;
+        
+        apf.importCssString(cssString);
         
         this.panel = winRunPanel;
 

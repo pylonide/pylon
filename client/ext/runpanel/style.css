@@ -1,0 +1,23 @@
+.c9-debugInfo {
+    width: 277px;
+    height: 95px;
+    position: absolute;
+    top: 39px;
+    left: 315px;
+    z-index: 50000;
+    min-width: 0px;
+    min-height: 0px;
+    max-width: 9998px;
+    max-height: 9992px;
+    opacity: 0;
+    display: block;
+    padding: 7px;
+    color: white;
+    line-height: 13px;
+}
+
+.debugInfoDesc {
+	color: white;
+	background: transparent;
+	line-height: 16px;
+}
