@@ -256,7 +256,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         return match !== null && match[0] == name;
     },
 
-    beforeRename : function(node, name, newPath, isCopyAction) {
+    beforeRename : function(node, name, newPath, isCopyAction, isReplaceAction) {
         var path = node.getAttribute("path");
         var page = tabEditors.getPage(path);
 
@@ -289,11 +289,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
             this.beforeRename(childNode, null, node.getAttribute("path") + "/" + name);
         }
+        
         ide.dispatchEvent("updatefile", {
             path: path,
             newPath: newPath,
-            filename: name && name.input,
-            xmlNode: node
+            filename: name && name[0],
+            xmlNode: node,
+            replace: isReplaceAction
         });
     },
 
