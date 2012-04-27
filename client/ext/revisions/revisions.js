@@ -221,17 +221,17 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.$switchToPageModel(page);
         }
 
-        this.panel = new apf.bar({
-            id: "revisionsPanel",
-            visible: false,
-            top: 2,
-            bottom: 0,
-            right: 0,
-            width: BAR_WIDTH,
-            height: "100%",
-            "class": "revisionsBar"
-        });
-        this.nodes.push(this.panel);
+        this.nodes.push(this.panel = new apf.bar({
+                id: "revisionsPanel",
+                visible: false,
+                top: 2,
+                bottom: 0,
+                right: 0,
+                width: BAR_WIDTH,
+                height: "100%",
+                "class": "revisionsBar"
+            })
+        );
 
         apf.document.documentElement.appendChild(winQuestionRev);
 
@@ -548,8 +548,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onMessage: function(e) {
         var message = e.message;
-        if (message.type !== "revision")
+        if (message.type !== "revision") {
             return;
+        }
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
@@ -557,8 +558,20 @@ module.exports = ext.register("ext/revisions/revisions", {
             case "confirmSave":
                 revObj = this.$getRevisionObject(message.path);
                 var ts = message.ts;
-                if (!this.revisionQueue[ts])
+                // This could happen in edge cases, like the user having two browsers
+                // opened and active on the same file, and then saving. Only one 
+                // of them will have the revision in the queue (in single user mode).
+                // In that case, we understand that there is some problem and 
+                // request the entire revision history to the server.
+                if (!this.revisionQueue[ts]) {
+                    ide.send({
+                        command: "revisions",
+                        subCommand: "getRevisionHistory",
+                        path: message.path,
+                        id: ts
+                    });
                     return;
+                }
 
                 var revision = this.revisionQueue[ts].revision;
                 if (revision) {
