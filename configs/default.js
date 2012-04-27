@@ -117,7 +117,8 @@ module.exports = {
                     "ext/tabsessions/tabsessions",
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
-                    "ext/colorpicker/colorpicker"
+                    "ext/colorpicker/colorpicker",
+                    "ext/language/liveinspect"
                     //"ext/revisions/revisions"
                     //"ext/minimap/minimap"
                     //"ext/acebugs/acebugs"
