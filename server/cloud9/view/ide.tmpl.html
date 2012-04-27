@@ -27,6 +27,7 @@
                 projectName: <%projectName%>,
                 version: <%version%>,
                 staticUrl: "[%staticUrl%]/",
+                settings: <%settingsXml%>,
                 socketIoUrl: <%socketIoUrl%>
             };
 
@@ -52,7 +53,6 @@
                 if (VERSION == RELEASE)
                     list.push("ace/editor");
 
-                apf.IdeSettings = <%settingsXml%>
                 //loader.animateLoader(20);
                 require(list, function(ide, ext, util){
                     var plugins = <%plugins%>;
@@ -60,9 +60,9 @@
                     var aceConfig = require("ace/config");
 
                     aceConfig.set("packaged", true);
-                    aceConfig.set("workerPath", "/static/build/worker");
-                    aceConfig.set("modePath", "/static/build/mode");
-                    aceConfig.set("themePath", "/static/build/theme");
+                    aceConfig.set("workerPath", "/static/js/worker");
+                    aceConfig.set("modePath", "/static/js/mode");
+                    aceConfig.set("themePath", "/static/js/theme");
                     
                     //loader.animateLoader(50);
                     apf.addEventListener("load", function(){
