@@ -28,17 +28,17 @@ var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
-    if (cmd && typeof cmd === "string") {
-        
+    if ((typeof ceEditor !== "undefined") && cmd && typeof cmd === "string") {
+        var ed = ceEditor.$editor;
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
             if (cliCmds[cmd]) {
-                cliCmds[cmd](ceEditor.$editor, e.data);
+                cliCmds[cmd](ed, e.data);
             }
             else if (cmd.match(/^\d+$/)) {
-                ceEditor.$editor.gotoLine(parseInt(cmd, 10), 0);
-                ceEditor.$editor.navigateLineStart();
+                ed.gotoLine(cmd, 0);
+                ed.navigateLineStart();
             }
             else {
                 console.log("Vim command '" + cmd + "' not implemented.");
@@ -50,7 +50,7 @@ var onConsoleCommand = function onConsoleCommand(e) {
         else if (cmd[0] === "/") {
             cmd = cmd.substr(1);
             cmdModule.searchStore.current = cmd;
-            ceEditor.$editor.find(cmd, cmdModule.searchStore.options);
+            ed.find(cmd, cmdModule.searchStore.options);
             ceEditor.focus();
             e.returnValue = false;
         }
