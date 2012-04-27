@@ -34,6 +34,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     markup          : markup,
     appliedFilter   : "all",
     nodes           : [],
+    offline         : false,
     
     defaultWidth    : 290,
 

@@ -633,6 +633,14 @@ module.exports = ext.register("ext/editors/editors", {
             if (page)
                 tabEditors.remove(page);
         });
+        
+        ide.addEventListener("afteroffline", function(e){
+            tabEditors.$setStyleClass(tabEditors.$ext, "offline");
+        });
+        
+        ide.addEventListener("afteronline", function(e){
+            tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
+        });
 
         var vbox  = colMiddle;
         this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
@@ -845,13 +853,14 @@ module.exports = ext.register("ext/editors/editors", {
 
         if (row !== undefined) {
             var jumpTo = function(){
-                //setTimeout(function() {
+                var f;
+                setTimeout(f = function() {
                     // TODO move this to the editor
                     ceEditor.$editor.gotoLine(row, column, false);
                     if (text)
                         ceEditor.$editor.find(text, null, false);
                     ceEditor.focus();
-                //}, 100);
+                }, 100); f();
             };
 
             if (hasData) {

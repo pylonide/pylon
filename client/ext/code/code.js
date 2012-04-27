@@ -832,6 +832,14 @@ module.exports = ext.register("ext/code/code", {
             if (page && ceEditor.getDocument() == page.$doc.acesession)
                 ceEditor.setProperty("syntax", _self.getSyntax(e.xmlNode));
         });
+        
+        ide.addEventListener("afteroffline", function(){
+            menus.menus["View/Syntax"].disable();
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            menus.menus["View/Syntax"].enable();
+        });
     },
 
     /**

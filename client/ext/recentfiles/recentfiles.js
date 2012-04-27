@@ -18,7 +18,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
     alone       : true,
     type        : ext.GENERAL,
     deps        : [],
-    offline     : true,
+    offline     : false,
 
     nodes       : [],
 

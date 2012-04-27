@@ -57,6 +57,7 @@ module.exports = ext.register("ext/tree/tree", {
     animControl      : {},
     nodes            : [],
     model            : null,
+    offline          : false,
 
     "default"        : true,
 
@@ -247,6 +248,15 @@ module.exports = ext.register("ext/tree/tree", {
         this.nodes.push(winFilesViewer);
 
         colLeft.appendChild(winFilesViewer);
+        
+        ide.addEventListener("afteroffline", function(){
+            trFiles.selectable = false;
+            //_self.button.enable();
+        })
+        
+        ide.addEventListener("afteronline", function(){
+            trFiles.selectable = true;
+        })
 
         // This adds a "Show Hidden Files" item to the settings dropdown
         // from the Project Files header

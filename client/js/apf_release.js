@@ -44281,7 +44281,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(elements/auth.js)SIZE(23999)TIME(Thu, 15 Dec 2011 00:34:58 GMT)*/
+/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Fri, 27 Apr 2012 06:48:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44510,8 +44510,10 @@ apf.aml.setElement("auth", apf.auth);
         if (this.autostart && !this.$hasHost) {
             var _self = this;
             apf.addEventListener("load", function(){
-                _self.authRequired();
-                apf.removeEventListener("load", arguments.callee);
+                apf.addEventListener("login", function(){
+                    _self.authRequired();
+                    apf.removeEventListener("load", arguments.callee);
+                });
             });
         }
     });
@@ -61786,7 +61788,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5172)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Fri, 27 Apr 2012 06:48:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61898,10 +61900,14 @@ apf.splitbutton = function(struct, tagName){
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
                 _self.$button2.$setState("Over", {});
+                
+                _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 apf.setStyleClass(this.$ext, "", ["primary"]);
                 _self.$button2.$setState("Out", {});
+                
+                _self.dispatchEvent("mouseout", { button: this });
             },
             onclick: function(e) {
                 _self.dispatchEvent("click");
@@ -61916,6 +61922,8 @@ apf.splitbutton = function(struct, tagName){
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
                 _self.$button1.$setState("Over", {});
+                
+                _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 if(!_self.$button2.value) {
@@ -61926,6 +61934,8 @@ apf.splitbutton = function(struct, tagName){
                     apf.setStyleClass(this.$ext, "primary");
                     _self.$button1.$setState("Over", {});
                 }
+                
+                _self.dispatchEvent("mouseout", { button: this });
             }
         });
     };

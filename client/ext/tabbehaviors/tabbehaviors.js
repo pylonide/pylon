@@ -29,9 +29,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     menuOffset : 4, //@todo this should use new menus api
 
     commands   : [
-        ["closetab", "Option-W", "Ctrl-W", "close the tab that is currently active", "Closing active tab.", function(){ return tabEditors.activepage; }],
-        ["closealltabs", "Option-Shift-W", "Ctrl-Shift-W", "close all opened tabs", "Closing all tabs.", function(){ return tabEditors.activepage; }],
-        ["closeallbutme", "Option-Ctrl-W", "Ctrl-Alt-W", "close all opened tabs, but the tab that is currently active", "Closing tabs.", function(){ return tabEditors.length > 1 }],
+        ["closetab", "Option-W", "Ctrl-W", "close the tab that is currently active", "Closing active tab.", function(){ return ide.onLine && tabEditors.activepage; }],
+        ["closealltabs", "Option-Shift-W", "Ctrl-Shift-W", "close all opened tabs", "Closing all tabs.", function(){ return ide.onLine && tabEditors.activepage; }],
+        ["closeallbutme", "Option-Ctrl-W", "Ctrl-Alt-W", "close all opened tabs, but the tab that is currently active", "Closing tabs.", function(){ return ide.onLine && tabEditors.length > 1 }],
         ["gototabright", "Command-]", "Ctrl-]", "navigate to the next tab, right to the tab that is currently active", "Switching to right tab.", function(){ return tabEditors.length > 1 }],
         ["gototableft", "Command-[", "Ctrl-[", "navigate to the next tab, left to the tab that is currently active", "Switching to left tab.", function(){ return tabEditors.length > 1 }],
         ["tab1", "Command-1", "Ctrl-1", "navigate to the first tab", "Switching to tab 1."],
@@ -44,7 +44,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         ["tab8", "Command-8", "Ctrl-8", "navigate to the eighth tab", "Switching to tab 8."],
         ["tab9", "Command-9", "Ctrl-9", "navigate to the ninth tab", "Switching to tab 9."],
         ["tab0", "Command-0", "Ctrl-0", "navigate to the tenth tab", "Switching to tab 10."],
-        ["revealtab", "Shift-Command-L", "Ctrl-Shift-L", "reveal current tab in the file tree", function(){ return tabEditors.activepage }],
+        ["revealtab", "Shift-Command-L", "Ctrl-Shift-L", "reveal current tab in the file tree", function(){ return ide.onLine && tabEditors.activepage }],
         ["nexttab", "Option-Tab", "Ctrl-Tab", "navigate to the next tab in the stack of accessed tabs", function(){ return tabEditors.length > 1 }],
         ["previoustab", "Option-Shift-Tab", "Ctrl-Shift-Tab", "navigate to the previous tab in the stack of accessed tabs", function(){ return tabEditors.length > 1 }]
     ],
@@ -71,7 +71,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         commands.addCommand({
             name: "closealltotheright",
             isAvailable : function(){
-                return tabEditors.length > 1 
+                return ide.onLine && tabEditors.length > 1 
                   && mnuContextTabs.$page.nextSibling.localName == "page";
             },
             exec: function (editor, args) { 
@@ -82,7 +82,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         commands.addCommand({
             name: "closealltotheleft",
             isAvailable : function(){
-                return tabEditors.length > 1 
+                return ide.onLine && tabEditors.length > 1 
                   && mnuContextTabs.$page != tabEditors.getPage(0);
             },
             exec: function (editor, args) { 
