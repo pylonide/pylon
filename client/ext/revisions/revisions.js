@@ -147,8 +147,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
         menus.addItemToMenu(this.mnuSave, new apf.item({
             caption : "About Auto-Save",
-            onclick : function() {
-                self.showAbout();   
+            onclick: function(e) {
+                self.toggleInfoDiv(1);
             }
         }), c += 100);
 
@@ -726,9 +726,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
     },
 
-    showAbout : function() {
-        ext.initExtension(this);
-        revisionInfo.show(); 
+    toggleInfoDiv : function(show) {
+    	ext.initExtension(this);
+    	if (show == true)
+        	revisionsInfo.$ext.style.display = "block";
+        else
+        	revisionsInfo.$ext.style.display = "none";
     },
     
     /**

@@ -295,6 +295,30 @@
                     position: absolute;
                     background: rgb(168, 232, 166);
                 }
+                
+	        .c9-revisionsInfo {
+				width: 428px;
+				height: 230px;
+	            position: absolute;
+	            top: 39px;
+	            left: 354px;
+	            z-index: 50000;
+	            min-width: 0px;
+	            min-height: 0px;
+	            max-width: 9998px;
+	            max-height: 9992px;
+	            display: none;
+	            opacity: 1;
+	            padding: 7px;
+	            color: white;
+	            line-height: 13px;
+	        }
+	        
+	        .revisionsInfoDesc {
+	        	color: white;
+	        	background: transparent;
+	        	line-height: 16px;
+	        }
         ]]></a:style>
         <a:presentation>
             <a:main container=".">
