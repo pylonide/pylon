@@ -82,22 +82,19 @@ module.exports = ext.register("ext/editors/editors", {
         }
     },
     
-    toggleTabs : function(force, preview){
-        
+    toggleTabs : function(force, preview, noAnim){
         if (!force || force > 0) {
             if (!preview)
                 this.showTabs = true;
             
-            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, true);
-            apf.setStyleClass(barButtonContainer.$ext, "", ["hidetabs"]);
+            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim);
             apf.layout.forceResize(barButtonContainer.$ext);
         }
         else {
             if (!preview)
                 this.showTabs = false;
 
-            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, true);
-            apf.setStyleClass(barButtonContainer.$ext, "hidetabs");
+            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim);
             apf.layout.forceResize(barButtonContainer.$ext);
         }
 
@@ -227,27 +224,55 @@ module.exports = ext.register("ext/editors/editors", {
      * dimensions of tabEditors.parentNode when the editor goes
      * out of focus mode
      */
-    setTabResizeValues : function(ext, preview, animate) {
+    setTabResizeValues : function(ext, preview, animate, callback) {
         var ph; 
         var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
         var d = apf.getDiff(ext);
         var _self = this;
         
-        if (this.animating && this.animating[0] == preview)
+        if (this.animating && (!animate || this.animating[0] == preview))
             return;
 
         if (animate) {
+            if (this.animateControl)
+                this.animateControl.stop();
+            
             this.animating = [preview];
+            var dir = tabEditors.$buttons.style.height == "9px" ? 1 : 0;
+            var i = dir ? 6 : 0;
+            
+            if (dir) {
+                tabEditors.$buttons.style.paddingTop = "2px";
+                apf.setStyleClass(barButtonContainer.$ext, "", ["hidetabs"]);
+            }
+         
             apf.tween.multi(ext, {
-                anim : apf.tween.NORMAL,
-                steps : 3,
-                interval : 1,
+                anim : apf.tween.easeOutCubic,
+                steps : 5,
+                interval : 10,
+                control : this.animateControl = {},
                 tweens : [  
                     { from: ext.offsetTop, to: ((this.showTabs || preview ? 0 : - 16) + pos[1]), type: "top" },
-                    { from: ext.offsetHeight - d[1], to: ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]), type: "height" }
+                    { from: ext.offsetHeight - d[1], to: ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]), type: "height" },
+                    { oHtml: tabEditors.$buttons, from: parseInt(tabEditors.$buttons.style.height), to: (this.showTabs || preview ? 22 : 9), type: "height" },
+                    { oHtml: tabEditors.$buttons, from: parseInt(apf.getStyle(tabEditors.$buttons, "paddingTop")), to: (this.showTabs || preview ? 5 : 2), type: "paddingTop" }
                 ],
+                oneach : function(){
+                    apf.setStyleClass(tabEditors.$buttons, 
+                        "step" + (dir ? --i : ++i), ["step" + (dir ? i + 1 : i-1)]);
+                },
                 onfinish : function(e){
+                    apf.setStyleClass(tabEditors.$buttons, "", ["step" + i]);
                     _self.animating = false;
+                    
+                    if (!dir) {
+                        tabEditors.$buttons.style.paddingTop = "0px";
+                        apf.setStyleClass(barButtonContainer.$ext, "hidetabs");
+                    }
+                    
+                    callback && callback();
+                    
+                    apf.layout.forceResize();
                 }
             })
         }
@@ -703,7 +728,7 @@ module.exports = ext.register("ext/editors/editors", {
             settings.setDefaults("auto/tabs", [["show", "true"]]);
             
             var showTab = settings.model.queryValue("auto/tabs/@show");
-            _self.toggleTabs(apf.isTrue(showTab) ? 1 : -1);
+            _self.toggleTabs(apf.isTrue(showTab) ? 1 : -1, null, true);
             
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){

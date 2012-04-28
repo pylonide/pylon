@@ -52,16 +52,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         ext.initExtension(_self);
                         winUploadFiles.show();
                     }
-                }), 370),
-                winFilesViewer.insertBefore(new apf.button({
-                    id : "btnUploadFiles",
-                    top : "-22",
-                    skin : "header-btn",
-                    right : "56",
-                    icon : "panel_upload.png",
-                    onclick : "require('core/ext').initExtension(require('ext/uploadfiles/uploadfiles'));winUploadFiles.show()",
-                    tooltip : "Upload Files"
-                }), btnTreeRefresh)
+                }), 370)
             );
             
             mnuCtxTree.addEventListener("afterrender", function(){
@@ -89,17 +80,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         onclick : function(){
                             window.open("/api/project/download/zip/" + ide.projectName);
                         }
-                    }), 390),
-                    winFilesViewer.insertBefore(new apf.button({
-                        top: "-22",
-                        skin: "header-btn",
-                        right: "56",
-                        icon: "download-ico.png",
-                        tooltip: "Download Files",
-                        onclick : function(){
-                            window.open("/api/project/download/zip/" + require("core/ide").projectName);
-                        }
-                    }), btnTreeRefresh)
+                    }), 390)
                 );
                 btnUploadFiles.setProperty("right", "81");
             }

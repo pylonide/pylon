@@ -41,18 +41,6 @@ module.exports = ext.register("ext/main/main", {
 
     init : function(){
         
-        document.body.onload = function(e){
-            var parent = document.getElementsByClassName("black-menu-bar")[0];
-            console.log(parent);
-            var logoDiv = document.createElement("div");
-            logoDiv.setAttribute("class","c9-logo");
-            parent.appendChild(logoDiv);
-
-            var elDiv = document.createElement("div");
-            elDiv.setAttribute("class","toggle-black-menu-bar");
-            parent.appendChild(elDiv);
-        }
-        
         //c9MbarMinimize.addEventListener("mousedown", toggleMenuBar);
         //logobar.$ext - > reference to html element
     },

@@ -232,6 +232,7 @@
 			width         : 200px;
 			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
 			min-width : 196px;
+            z-index   : 1000;
         }
 
         /*.deploy.mnubtn {
@@ -293,6 +294,9 @@
         .black-menu-bar .c9-logo:hover {
         	background-position: -111px -346px;
         }
+        .black-menu-bar .c9-logo .icon{
+            display : none;
+        }
         .black-menu-bar .toggle-black-menu-bar {
         	background: url(images/c9-no-repeat.png) no-repeat 0 -383px;
         	cursor: pointer;
@@ -304,6 +308,7 @@
         }
         .black-menu-bar.closed .toggle-black-menu-bar {
         	background-position: 0px -383px;
+            right : 1px;
         }
         .black-menu-bar.closed .toggle-black-menu-bar:hover {
         	background-position: -8px -383px;
@@ -313,6 +318,9 @@
         }
         .black-menu-bar .toggle-black-menu-bar:hover {
         	background-position: -26px -383px;
+        }
+        .black-menu-bar .toggle-black-menu-bar .icon{
+            display : none;
         }
      ]]></a:style>
 
@@ -7996,14 +8004,8 @@
                 box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
 
         position: relative;
-
     }
         
-	.editor_tab .btnsesssioncontainer,
-	.editor_tab .btnsesssioncontainer .session_btn {
-    	-webkit-transition: height, top, padding .1s linear 0;
-	}
-
     .editor_tab .btnsesssioncontainer>div {
         cursor: default;
         display : inline-block;
@@ -8265,10 +8267,6 @@
     /* ------------------------------------------------------------------------------------------
      * minimized tabs
      * --------------------------------------------------------------------------------------- */
-    .editor_tab.hidetabs .btnsesssioncontainer {
-    	height: 11px;
-    	padding-top: 0;
-    }
     .editor_tab.hidetabs .tab_middle *,
     .editor_tab.hidetabs .btnclose .tab_middle > strong {
     	display: none;
@@ -8279,14 +8277,14 @@
 		top                 : 0;
 		width: 19px;
     }
-
+    
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
     	height: 5px;
     	overflow: hidden;
-    	top: -5px;
+    	top: -7px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
     	overflow: visible;
@@ -8329,7 +8327,7 @@
     .editor_tab.hidetabs .curbtn {
     	height: 7px;
     	overflow: hidden;
-    	top: -3px;
+    	top: -5px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
@@ -8379,6 +8377,32 @@
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -198px;
     }
+    
+    /* ------------------------------------------------------------------------------------------
+     * Animation steps
+     * --------------------------------------------------------------------------------------- */
+    
+    .editor_tab .btnsesssioncontainer.step1 .tab_middle:after 
+        { -webkit-mask-image  : none; top : 0; width : 17px; right: -17px; display: block;}
+    .editor_tab .btnsesssioncontainer.step2 .tab_middle:after 
+        { -webkit-mask-image  : none; top : 0; width : 14px; right: -14px; display: block;}
+    .editor_tab .btnsesssioncontainer.step3 .tab_middle:after 
+        { -webkit-mask-image  : none; top : 0; width : 11px; right: -11px; display: block;}
+    .editor_tab .btnsesssioncontainer.step4 .tab_middle:after 
+        { -webkit-mask-image  : none; top : 0; width : 7px;  right: -7px;  display: block;}
+    .editor_tab .btnsesssioncontainer.step5 .tab_middle:after 
+        { -webkit-mask-image  : none; top : 0; width : 0px;  right: 0;     display: block;}
+    
+    .editor_tab .btnsesssioncontainer.step1 .tab_middle:before 
+        { -webkit-mask-image  : none; top : 0; width : 17px; }
+    .editor_tab .btnsesssioncontainer.step2 .tab_middle:before 
+        { -webkit-mask-image  : none; top : 0; width : 17px; }
+    .editor_tab .btnsesssioncontainer.step3 .tab_middle:before 
+        { -webkit-mask-image  : none; top : 0; width : 18px; }
+    .editor_tab .btnsesssioncontainer.step4 .tab_middle:before 
+        { -webkit-mask-image  : none; top : 0; width : 18px; }
+    .editor_tab .btnsesssioncontainer.step5 .tab_middle:before 
+        { -webkit-mask-image  : none; top : 0; width : 19px; }
 
     /* ------------------------------------------------------------------------------------------
      * Other

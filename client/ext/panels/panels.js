@@ -153,12 +153,6 @@ module.exports = ext.register("ext/panels/panels", {
         colLeft.$ext.style.width = width + "px";
         //apf.setOpacity(toWinExt, 0);
         
-        ide.dispatchEvent("panels.animate", { 
-            tweens : tweens, 
-            win : win,
-            toWin : toWin
-        });
-
         var options = {
             steps : 6,
             interval : apf.isChrome ? 0 : 5,
@@ -198,6 +192,13 @@ module.exports = ext.register("ext/panels/panels", {
         };
         options.onstop = options.onfinish;
         
+        ide.dispatchEvent("panels.animate", { 
+            options : options,
+            tweens : tweens, 
+            win : win,
+            toWin : toWin
+        });
+        
         apf.tween.multi(document.body, options);
     },
     
@@ -207,7 +208,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         ext.initExtension(panelExt);
         
-        var lastPanel = this.currentPanel;
+        lastPanel = this.currentPanel;
         
         if (this.currentPanel && (this.currentPanel != this))
             this.deactivate();
@@ -229,6 +230,7 @@ module.exports = ext.register("ext/panels/panels", {
 
         splitterPanelLeft.show();
         this.currentPanel = panelExt;
+        this.lastPanel    = panelExt;
         
         settings.model.setQueryValue("auto/panels/@active", panelExt.path);
         

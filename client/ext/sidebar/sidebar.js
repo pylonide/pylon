@@ -21,20 +21,65 @@ module.exports = ext.register("ext/sidebar/sidebar", {
 
     init : function(){
         var _self = this;
-        
 
+        function btnClick(){
+            if (panels.currentPanel)
+                panels.deactivate(null, true);
+            else if (panels.lastPanel)
+                panels.activate(panels.lastPanel);
+        }
 
         this.nodes.push(
             hboxTabBar.insertBefore(new apf.hbox({
                 id: "navbar",
-                "class": "black-menu-bar unselectable"
+                "class": "black-menu-bar",
+                childNodes : [
+                    new apf.button({
+                        skin    : "mnubtn",
+                        "class" : "c9-logo",
+                        onclick : btnClick
+                    }),
+                    this.btnArrow = new apf.button({
+                        skin    : "mnubtn",
+                        "class" : "toggle-black-menu-bar",
+                        onclick : btnClick
+                    })
+                ]
             }), hboxTabBar.firstChild)
         );
-
+        
+        navbar.$ext.addEventListener("mouseover", function(e){
+            if (apf.isChildOf(navbar.$ext, e.fromElement, true))
+                return;
+            
+            if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
+                _self.animateToFullWidth();
+            }
+        });
+        
+        navbar.$ext.addEventListener("mouseout", function(e){
+            if (apf.isChildOf(navbar.$ext, e.toElement, true))
+                return;
+            
+            if (colLeft.getWidth() != navbar.getWidth()) {
+                _self.animateToDefaultWidth();
+            }
+        });
+        
         ide.addEventListener("panels.animate", function(e){
             var lastTween = e.tweens[e.tweens.length - 1];
-            var tween = {oHtml: navbar.$ext, type: "width", from: lastTween.from, to: lastTween.to};
+            var tween = {oHtml: navbar.$ext, type: "width", from: navbar.getWidth(), to: lastTween.to};
             e.tweens.push(tween);
+            
+            var finish = e.options.onfinish;
+            e.options.onfinish = function(){
+                if (lastTween.to == 0)
+                    apf.setStyleClass(navbar.$ext, "closed");
+                else
+                    apf.setStyleClass(navbar.$ext, "", ["closed"]);
+                
+                finish.apply(this, arguments);
+            }
         });
 
         splitterPanelLeft.addEventListener("dragmove", function(e){
@@ -56,6 +101,43 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         });
     },
     
+    animateToFullWidth : function(){
+        if (this.animateControl)
+            this.animateControl.stop();
+        
+        apf.tween.single(navbar.$ext, {
+            type: "width",
+            from: navbar.getWidth(),
+            to: navbar.$int.scrollWidth + 6,
+            steps : 6,
+            interval : apf.isChrome ? 0 : 5,
+            control : this.animateControl = {},
+            anim : apf.tween.easeOutCubic,
+            onfinish : function(){
+                //apf.setStyleClass(navbar.$ext, "", ["closed"]);
+            }
+        });
+    },
+    
+    animateToDefaultWidth : function(){
+        if (this.animateControl)
+            this.animateControl.stop();
+        
+        apf.tween.single(navbar.$ext, {
+            type: "width",
+            from: navbar.getWidth(),
+            to: colLeft.getWidth(),
+            steps : 6,
+            interval : apf.isChrome ? 0 : 5,
+            control : this.animateControl = {},
+            anim : apf.tween.easeOutCubic,
+            onfinish : function(){
+                if (colLeft.getWidth() == 0)
+                    apf.setStyleClass(navbar.$ext, "closed");
+            }
+        });
+    },
+    
     add : function(panelExt, options) {
         var beforePanel, diff = 1000000;
         for (var path in panels.panels) {
@@ -69,10 +151,9 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         panelExt.button = navbar.insertBefore(new apf.button({
             skin    : "mnubtn",
             state   : "true",
-            //value   : "true",
             "class" : options["class"],
             caption : options.caption
-        }), beforePanel && beforePanel.button); // || navbar.firstChild
+        }), beforePanel && beforePanel.button || this.btnArrow);
 
         panelExt.button.addEventListener("mousedown", function(e){
             var value = this.value;
