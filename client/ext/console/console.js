@@ -8,8 +8,7 @@
 
 define(function(require, exports, module) {
 
-var editors, parseLine; // These modules are loaded on demand
-var predefinedCmds = require("ext/console/output");
+var editors, parseLine, predefinedCmds; // These modules are loaded on demand
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
@@ -163,7 +162,7 @@ module.exports = ext.register("ext/console/console", {
         argv[0] = argv[0].replace(/["'`]/g, "");
         this.inputHistory.push(line);
 
-        var spinnerBtn = ['<div class="prompt_spinner" ', 'id="spinner',
+        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner',
             this.command_id_tracer,
             '" onclick="return require(\'ext/console/console\').handleCliBlockAction(event)"></div>']
             .join("");
@@ -180,6 +179,8 @@ module.exports = ext.register("ext/console/console", {
         var showConsole = true;
         var cmd = argv[0];
 
+        if (!predefinedCmds)
+            predefinedCmds = require("ext/console/output");
         var defCmd = predefinedCmds.getPredefinedOutput(argv);
         if (defCmd !== "") {
             this.commandCompleted(this.command_id_tracer);

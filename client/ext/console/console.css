@@ -13,14 +13,16 @@
     overflow: hidden;
 }
 
-.output_section.collapsed:hover {
+.console_text.feedback .output_section.collapsed:hover,
+.console_text.feedback .output_section.collapsed.quit_proc:hover {
     background: #38393a;
 }
 
+/** Deprecated **/
 .cli_divider {
     display: block;
     border-top: 1px solid #444;
-    margin: 6px 0 6px 0;
+    margin: 6px 5px 6px 30px;
 }
 .console_text.feedback div.prompt_spacer {
     padding-top: 5px;
@@ -45,6 +47,9 @@
 }
 .console_text.feedback .output_section.loading.has_pid:hover .prompt_spinner {
     background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 0;
+}
+.console_text.feedback .output_section.loading.has_pid:hover .prompt_spinner:active {
+    background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 -22px;
 }
 .console_text.feedback div.loaded .prompt_spinner {
     background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat 1px 1px;
