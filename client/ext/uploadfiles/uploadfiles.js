@@ -43,90 +43,63 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     hook : function(){
         var _self = this;
-        
-        this.worker = new Worker('/static/ext/uploadfiles/uploadworker.js');
-        this.worker.onmessage = function(e) {  
-            var data = e.data;
-            if (!data.type) {
-                //console.log(data);
-                return;
-            }
-            switch(data.type) {
-                case "complete":
-                    _self.onComplete();
-                    break;
-                case "progress":
-                    _self.onProgress(data.value);
-                    break;
-                case "paused":
-                    ide.addEventListener("afteronline", function(e) {
-                        // upload current file again
-                        _self.upload();
-                    });
-                    break;
-                case "debug":
-                    console.log(JSON.stringify(data));
-                default:
-                    console.log("unknown message from uploadworker: ", data.type);
-            }
-            
-        };  
-        
-        this.nodes.push(
-            ide.mnuFile.appendChild(new apf.item({
-                caption : "Upload Files",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    
-                    winUploadFiles.show();
-                }
-            })),
-            winFilesViewer.insertBefore(new apf.button({
-                id : "btnUploadFiles",
-                top : "-22",
-                skin : "header-btn",
-                right : "56",
-                icon : "panel_upload.png",
-                onclick : "require('core/ext').initExtension(require('ext/uploadfiles/uploadfiles'));winUploadFiles.show()",
-                tooltip : "Upload Files"
-            }), btnTreeRefresh),
-            mnuCtxTree.insertBefore(new apf.item({
-                id : "mnuCtxTreeUpload",
-                match : "[folder]",
-                visible : "{trFiles.selected.getAttribute('type')=='folder'}",
-                caption : "Upload to this folder",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    
-                    winUploadFiles.show();
-                }
-            }), itemCtxTreeNewFile),
-            mnuCtxTree.insertBefore(new apf.divider({
-                visible : "{mnuCtxTreeUpload.visible}"
-            }), itemCtxTreeNewFile)
-        );
-        
-        if(ide.infraEnv) {
-            this.nodes.push(
+        ide.addEventListener("init.ext/tree/tree", function(){
+            _self.nodes.push(
                 ide.mnuFile.appendChild(new apf.item({
-                    caption : "Download Project",
+                    caption : "Upload Files",
                     onclick : function(){
-                        window.open("/api/project/download/zip/" + ide.projectName);
+                        ext.initExtension(_self);
+                        
+                        winUploadFiles.show();
                     }
                 })),
                 winFilesViewer.insertBefore(new apf.button({
-                    top: "-22",
-                    skin: "header-btn",
-                    right: "56",
-                    icon: "download-ico.png",
-                    tooltip: "Download Files",
+                    id : "btnUploadFiles",
+                    top : "-22",
+                    skin : "header-btn",
+                    right : "56",
+                    icon : "panel_upload.png",
+                    onclick : "require('core/ext').initExtension(require('ext/uploadfiles/uploadfiles'));winUploadFiles.show()",
+                    tooltip : "Upload Files"
+                }), btnTreeRefresh),
+                mnuCtxTree.insertBefore(new apf.item({
+                    id : "mnuCtxTreeUpload",
+                    match : "[folder]",
+                    visible : "{trFiles.selected.getAttribute('type')=='folder'}",
+                    caption : "Upload to this folder",
                     onclick : function(){
-                        window.open("/api/project/download/zip/" + require("core/ide").projectName);
+                        ext.initExtension(_self);
+                        
+                        winUploadFiles.show();
                     }
-                }), btnTreeRefresh)
+                }), itemCtxTreeNewFile),
+                mnuCtxTree.insertBefore(new apf.divider({
+                    visible : "{mnuCtxTreeUpload.visible}"
+                }), itemCtxTreeNewFile)
             );
-            btnUploadFiles.setProperty("right", "81");
-        }
+            
+            if(ide.infraEnv) {
+                _self.nodes.push(
+                    ide.mnuFile.appendChild(new apf.item({
+                        caption : "Download Project",
+                        onclick : function(){
+                            window.open("/api/project/download/zip/" + ide.projectName);
+                        }
+                    })),
+                    winFilesViewer.insertBefore(new apf.button({
+                        top: "-22",
+                        skin: "header-btn",
+                        right: "56",
+                        icon: "download-ico.png",
+                        tooltip: "Download Files",
+                        onclick : function(){
+                            window.open("/api/project/download/zip/" + require("core/ide").projectName);
+                        }
+                    }), btnTreeRefresh)
+                );
+                btnUploadFiles.setProperty("right", "81");
+            }
+        });
     },
     
     init : function(){
@@ -189,7 +162,38 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.clearCompletedUploads();
         });
     },
-
+    
+    initWorker: function() {
+        var _self = this;
+        
+        this.worker = new Worker('/static/ext/uploadfiles/uploadworker.js');
+        this.worker.onmessage = function(e) {  
+            var data = e.data;
+            if (!data.type) {
+                //console.log(data);
+                return;
+            }
+            switch(data.type) {
+                case "complete":
+                    _self.onComplete();
+                    break;
+                case "progress":
+                    _self.onProgress(data.value);
+                    break;
+                case "paused":
+                    ide.addEventListener("afteronline", function(e) {
+                        // upload current file again
+                        _self.upload();
+                    });
+                    break;
+                case "debug":
+                    console.log(JSON.stringify(data));
+                default:
+                    console.log("unknown message from uploadworker: ", data.type);
+            }
+        };  
+    },
+    
     onShow : function(){
         if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
             alert('The File APIs are not fully supported in this browser.');
@@ -482,6 +486,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     var file = file || _self.currentFile;
                     var node = file.queueNode;
                     apf.xmldb.setAttribute(node, "progress", 0);
+                    
+                    if (!_self.worker)
+                        _self.initWorker();
                     _self.worker.postMessage({cmd: 'connect', id: file.name, file: file, path: file.path});
                 }
                 _self.upload = upload;
@@ -526,7 +533,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             else {
                 util.alert(
                     "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
-                    "Please remove all file larger that 50MB from the list to continue."
+                    "Please remove all files larger that 50MB from the list to continue."
                 );
             }
             
