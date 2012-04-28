@@ -2098,7 +2098,7 @@
 <a:button name="mnubtn">
     <a:style><![CDATA[
         .mnubtn {
-			height      : 26px !important;
+			height      : 27px !important;
 			position    : relative;
 			cursor      : default;
 			overflow    : hidden;
@@ -2129,13 +2129,11 @@
 
 
         /*.mnubtnDisabled*/
-        .black-menu-bar.unselectable .mnubtn .icon,
-        .black-menu-bar .mnubtn.unselectable .icon {
+        .mnubtnDisabled .icon {
         	opacity: 0.3;
         }
 
-        .black-menu-bar.unselectable .mnubtnDown,
-        .black-menu-bar .mnubtnDown.unselectable {
+        .mnubtnDisabled {
         	box-shadow: none;
         	background-image: none;
         }
