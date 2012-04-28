@@ -161,7 +161,9 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
-            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="' + staticUrl + '/support/ace/build/src/ace.js"></script>\n';
+            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="' 
+                + staticUrl + '/support/ace/build/src/ace'
+                + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,
