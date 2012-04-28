@@ -12,7 +12,7 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var util = require("core/util");
 var settings = require("ext/settings/settings");
-
+var commands = require("ext/commands/commands");
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
@@ -21,6 +21,8 @@ module.exports = ext.register("ext/editors/editors", {
     nodes   : [],
 
     fileExtensions  : {},
+
+    showTabs : true,
 
     register : function(oExtension){
         /*var id = "rb" + oExtension.path.replace(/\//g, "_");
@@ -82,17 +84,25 @@ module.exports = ext.register("ext/editors/editors", {
         }
     },
     
-    toggleTabs : function(force){
-        if (!force && tabEditors["class"] == "hidetabs" || force > 0) {
-            tabEditors.setAttribute("class", "");
-            tabEditors.parentNode.$ext.style.paddingBottom = "32px";
-            apf.layout.forceResize(tabEditors.$ext);
+    toggleTabs : function(force, preview){
+        
+        if (!force || force > 0) {
+            if (!preview)
+                this.showTabs = true;
+            
+            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, true);
+            apf.setStyleClass(barButtonContainer.$ext, "", ["hidetabs"]);
+            apf.layout.forceResize(barButtonContainer.$ext);
         }
         else {
-            tabEditors.setAttribute("class", "hidetabs");
-            tabEditors.parentNode.$ext.style.paddingBottom = 0;
-            apf.layout.forceResize(tabEditors.$ext);
+            if (!preview)
+                this.showTabs = false;
+
+            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, true);
+            apf.setStyleClass(barButtonContainer.$ext, "hidetabs");
+            apf.layout.forceResize(barButtonContainer.$ext);
         }
+
     },
 
     addTabSection : function(){
@@ -101,10 +111,11 @@ module.exports = ext.register("ext/editors/editors", {
             new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
         );
 
-        var btn;
+        var btn, btnMenu;
         var tab = new apf.bar({
             skin     : "basic",
-            style    : "padding : 0 0 32px 0;position:absolute;", //53px
+            "class"  : "codeditorHolder",
+            style    : "position:absolute;", //53px
             //htmlNode : document.body,
             childNodes: [
                 new apf.tab({
@@ -139,7 +150,8 @@ module.exports = ext.register("ext/editors/editors", {
                         })
                     ]
                 }),
-                new apf.button({
+                
+                btnMenu = new apf.button({
                     onmouseover : function(){
                         this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
                     },
@@ -163,6 +175,7 @@ module.exports = ext.register("ext/editors/editors", {
         apf.document.documentElement.appendChild(tab);
 
         tabEditors.$buttons.appendChild(btn.$ext);
+        tabEditors.$buttons.appendChild(btnMenu.$ext);
         tabEditors.addEventListener("DOMNodeInserted",function(e){
             if (e.$isMoveWithinParent) {
                 //record position in settings
@@ -191,6 +204,18 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
 
+        barButtonContainer.$ext.appendChild(tabEditors.$buttons);
+        tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
+
+        tabEditors.$buttons.addEventListener("mouseover",function(e){
+            if (!_self.showTabs)
+                _self.toggleTabs(1, true);
+        });
+        tabEditors.$buttons.addEventListener("mouseout",function(e){
+            if (!_self.showTabs)
+                _self.toggleTabs(-1, true);
+        });
+
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
             _self.setTabResizeValues(tab.$ext);
         });
@@ -204,15 +229,37 @@ module.exports = ext.register("ext/editors/editors", {
      * dimensions of tabEditors.parentNode when the editor goes
      * out of focus mode
      */
-    setTabResizeValues : function(ext) {
-        var ph;
+    setTabResizeValues : function(ext, preview, animate) {
+        var ph; 
         var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
-        ext.style.left = (pos[0] - 2) + "px";
-        ext.style.top = pos[1] + "px";
         var d = apf.getDiff(ext);
-        // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
-        ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
-        ext.style.height = (ph.offsetHeight - d[1]) + "px";
+        var _self = this;
+        
+        if (this.animating && this.animating[0] == preview)
+            return;
+
+        if (animate) {
+            this.animating = [preview];
+            apf.tween.multi(ext, {
+                anim : apf.tween.NORMAL,
+                steps : 3,
+                interval : 1,
+                tweens : [  
+                    { from: ext.offsetTop, to: ((this.showTabs || preview ? 0 : - 16) + pos[1]), type: "top" },
+                    { from: ext.offsetHeight - d[1], to: ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]), type: "height" }
+                ],
+                onfinish : function(e){
+                    _self.animating = false;
+                }
+            })
+        }
+        else {
+            ext.style.left = (pos[0] - 2) + "px";
+            ext.style.top = ((this.showTabs || preview ? 0 : - 16) + pos[1]) + "px";
+            // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
+            ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
+            ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
+        }
     },
 
     /**
@@ -583,12 +630,18 @@ module.exports = ext.register("ext/editors/editors", {
             }
         }), 190);
         
+        commands.addCommand({ 
+            name: "toggleTabs", 
+            bindKey : { mac : "Ctrl-M", wind: "Ctrl-M" },
+            exec: function(e){
+                 _self.toggleTabs(!_self.showTabs ? 1 : -1);
+            }
+        });
+
         menus.addItemByPath("View/Tab Button", new apf.item({
             type: "check",
             checked : "[{require('ext/settings/settings').model}::auto/tabs/@show]",
-            "onprop.checked" : function(e) {
-                _self.toggleTabs(apf.isTrue(e.value) ? 1 : -1);
-            }
+            command : "toggleTabs"
         }), 300);
         
         ext.addType("Editor", function(oExtension){

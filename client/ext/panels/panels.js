@@ -153,6 +153,12 @@ module.exports = ext.register("ext/panels/panels", {
         colLeft.$ext.style.width = width + "px";
         //apf.setOpacity(toWinExt, 0);
         
+        ide.dispatchEvent("panels.animate", { 
+            tweens : tweens, 
+            win : win,
+            toWin : toWin
+        });
+
         var options = {
             steps : 6,
             interval : apf.isChrome ? 0 : 5,

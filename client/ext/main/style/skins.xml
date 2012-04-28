@@ -76,7 +76,7 @@
     <a:style><![CDATA[
         body > .vbox,
         .editor_tab .curbtn .tab_middle {
-        	background-color: #09cƒ !important; /*#E8E8E8*/
+        	background-color: #e8e8e8 !important; /*#0c9*/
         }
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar expanded
@@ -87,7 +87,7 @@
             overflow      : visible;
             background    : url(images/c9-repeat-x.png) repeat-x 0 0 #49a8fa;
         }
-ƒ        .c9-menu-bar .c9-mbar-bcont {
+        .c9-menu-bar .c9-mbar-bcont {
             position   : relative;
             overflow   : visible;
         }
@@ -180,22 +180,24 @@
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar minimized
          * --------------------------------------------------------------------------------------- */
-         .c9-menu-bar .c9-mbar-cont.minimized {
+         .c9-menu-bar.minimized .c9-mbar-cont,
+         .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize {
             background-image: url("images/c9-repeat-x.png");
             background-repeat: no-repeat;
-            background-position: 50% -14px;
+            background-position: 50% -13px;
             cursor: pointer;
             height: 6px;
          }
-         .c9-menu-bar .c9-mbar-cont.minimized:hover {
-            background-position: 50% -22px;
+         .c9-menu-bar.minimized .c9-mbar-cont:hover,
+         .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize:hover {
+            background-position: 50% -21px;
          }
-         .c9-menu-bar .c9-mbar-cont.minimized * {
+         .c9-menu-bar.minimized .c9-mbar-cont * {
             display: none;
          }
 
-         .c9-menu-bar .c9-mbar-cont.minimized + .c9-mbar-minimize {
-            display: none;
+         .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize {
+         	top: 1px;
          }
     ]]></a:style>
 
@@ -205,7 +207,7 @@
                 <div class="c9-mbar-logo">
                     <div class="c9-mbar-bcont">
                         <div class="c9-mbar-cont"> </div>
-                        <div class="c9-mbar-minimize"> </div>
+                        <div class="c9-mbar-minimize" id="c9MbarMinimize"> </div>
                         <div class="c9-mbar-round">
                             <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
                             <div class="c9-offline"></div>
@@ -221,14 +223,15 @@
 <a:bar name="black-menu-bar">
     <a:style><![CDATA[
         .black-menu-bar {
-			background   : rgba(26, 26, 26, .9);
-			border       : 1px solid #000;
-			border-right : 0 none;
-			height       : 27px !important;
-			overflow     : hidden;
-			padding      : 0 8px 0 37px !important;
-			position     : relative;
-			width        : 400px;
+			background    : rgba(26, 26, 26, .9);
+			border-bottom : 1px solid black;
+			height        : 28px !important;
+			overflow      : hidden;
+			padding       : 0 6px 0 37px !important;
+			position      : relative;
+			width         : 200px;
+			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+			min-width : 196px;
         }
 
         /*.deploy.mnubtn {
@@ -266,6 +269,50 @@
             bottom      : 2px;
             left        : 0;
             right       : 0;
+        }
+
+        .black-menu-bar .c9-logo {
+        	background: url(images/c9-no-repeat.png) no-repeat;
+        	box-shadow: 1px 0 0 0  black;
+        	cursor: pointer;
+        	height: 27px;
+        	left: 0;
+        	position: absolute;
+        	top: 0;
+        	width: 37px;
+        }
+        .black-menu-bar.closed .c9-logo {
+        	background-position: 0px -346px;
+        }
+        .black-menu-bar.closed .c9-logo:hover {
+        	background-position: -37px -346px;
+        }
+        .black-menu-bar .c9-logo {
+        	background-position: -74px -346px;
+        }
+        .black-menu-bar .c9-logo:hover {
+        	background-position: -111px -346px;
+        }
+        .black-menu-bar .toggle-black-menu-bar {
+        	background: url(images/c9-no-repeat.png) no-repeat 0 -383px;
+        	cursor: pointer;
+        	height: 27px;
+        	position: absolute;
+        	right: 0;
+        	top: 0;
+        	width: 5px;
+        }
+        .black-menu-bar.closed .toggle-black-menu-bar {
+        	background-position: 0px -383px;
+        }
+        .black-menu-bar.closed .toggle-black-menu-bar:hover {
+        	background-position: -8px -383px;
+        }
+        .black-menu-bar .toggle-black-menu-bar {
+        	background-position: -18px -383px;
+        }
+        .black-menu-bar .toggle-black-menu-bar:hover {
+        	background-position: -26px -383px;
         }
      ]]></a:style>
 
@@ -2051,40 +2098,47 @@
 <a:button name="mnubtn">
     <a:style><![CDATA[
         .mnubtn {
-			height       : 26px;
-			padding-top  : 47px;
-			border-left  : 1px solid transparent;
-			border-right : 1px solid transparent;
-			position     : relative;
-			cursor       : default;
-			overflow     : hidden;
-			display: inline-block;
-			width: 20% !important;
+			height      : 26px !important;
+			position    : relative;
+			cursor      : default;
+			overflow    : hidden;
+			display     : block;
+			border      : 0;
+			-webkit-box-flex: 1;
         }
 
+        .mnubtnOver
         .mnubtnOver,
         .mnubtnDwon {
         	background-image: url(images/c9-repeat-x.png);
         	background-repeat: repeat-x;
-        	border-color: #000;
         }
         .mnubtnOver {
         	background-position: 0 -181px;
         }
         .mnubtnDown {
-            
+        	box-shadow: -1px 0 0 0 #000 inset, 1px 0 0 0 #000 inset;
         	background-position: 0 -217px;
         }
 
         .mnubtn .icon {
-            background-position : 0 0;
-            background-repeat   : no-repeat;
-            width               : 40px;
-            height              : 40px;
-            position            : absolute;
-            top                 : 7px;
-            left                : 12px;
+			background-image  : url(images/c9-repeat-x.png);
+			background-repeat : no-repeat;
+			width             : 100%;
+			height            : 26px;
         }
+
+        .black-menu-bar.unselectable .mnubtn .icon,
+        .black-menu-bar .mnubtn.unselectable .icon {
+        	opacity: 0.3;
+        }
+
+        .black-menu-bar.unselectable .mnubtnDown,
+        .black-menu-bar .mnubtnDown.unselectable {
+        	box-shadow: none;
+        	background-image: none;
+        }
+
 
         .mnubtn .pointer {
             /*background-image    : url(images/gitui_close_arrow.png);
@@ -2104,7 +2158,7 @@
             color               : #aaaaaa;
             text-align          : center;
             position:relative;
-            display:block;
+            display:none;
             overflow:hidden;
         }
 
@@ -2114,10 +2168,6 @@
 
         .mnubtnDown .pointer {
             /*display:block;*/
-        }
-
-        .mnubtnDown .icon {
-            background-position:-40px 0;
         }
 
         .mnubtn.spacer {
@@ -2136,19 +2186,19 @@
         }
 
         .mnubtn.rundebug .icon {
-            background-image:url(images/rundebug.png);
+            background-position: 50% -305px;
         }
 
         .mnubtn.project_files .icon {
-            background-image:url(images/project_files.png);
+            background-position: 50% -249px;
         }
 
         .mnubtn.open_files .icon {
-            background-image:url(images/open_files.png);
+            background-position: 50% -278px;
         }
 
         .mnubtn.testing .icon {
-            background-image:url(images/testing.png);
+            background-position: 50% -392px;
         }
 
         .mnubtn.visual_editor .icon {
@@ -2156,7 +2206,7 @@
         }
 
         .mnubtn.preferences .icon {
-            background-image:url(images/preferences.png);
+            background-position: 50% -364px;
         }
 
         .mnubtn.git_corner .icon {
@@ -7919,12 +7969,10 @@
         margin : 0 auto;
         overflow: hidden;
         position:relative;
-        padding-top: 32px;
     }
     
     .editor_tab .btnsesssioncontainer {
-        padding : 5px 45px 0 21px;
-        z-index : 100;
+        padding : 5px 45px 0 21px;	
         height: 22px;
         overflow: visible;
         white-space: nowrap;
@@ -7933,13 +7981,20 @@
         font-size : 12px;
         border-bottom : 1px solid #000;
         background: rgba(26,26,26,.9) url(images/c9-noise.png);
-        margin-top : -33px;
         width : auto;
 
         -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
            -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
                 box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+
+        position: relative;
+
     }
+        
+	.editor_tab .btnsesssioncontainer,
+	.editor_tab .btnsesssioncontainer .session_btn {
+    	-webkit-transition: height, top, padding .1s linear 0;
+	}
 
     .editor_tab .btnsesssioncontainer>div {
         cursor: default;
@@ -7964,19 +8019,7 @@
         position : relative;
         padding  : 4px 0 0 0;
     }
-    .webkit .editor_tab .tab_middle {
-        overflow: visible;
-    }
-    .webkit .editor_tab .tab_left,
-    .webkit .editor_tab .tab_right {
-    	display: none;
-    }
-    .webkit .editor_tab .scale .btn .tab_middle {
-        display : block;
-        overflow : hidden;
-        text-overflow : ellipsis;
-        white-space : nowrap;
-    }
+    
     .editor_tab .tab_middle:before,
     .editor_tab .tab_middle:after {
         background-color : inherit;
@@ -8006,32 +8049,6 @@
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
-    .webkit .editor_tab .session_btn:not(.curbtn) .tab_middle,
-    .webkit .editor_tab .session_btn:not(.curbtn) .tab_middle:before,
-    .webkit .editor_tab .session_btn:not(.curbtn) .tab_middle:after {
-        box-shadow   : 0 -1px 0 0 #000 inset;
-    }
-    .webkit .editor_tab .session_btn .tab_middle {
-        background-image    : url(images/c9-repeat-x.png);
-        background-repeat   : repeat-x;
-        background-position : 0 -79px;
-    }
-    .webkit .editor_tab .session_btn .tab_middle {
-        background-color    : #2F2F2F;
-        color               : #cecece;
-    }
-
-    .webkit .editor_tab .session_btn .tab_middle:before {
-        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : 0 -159px, 0 -79px;
-        background-repeat   : no-repeat, repeat-x;
-    }
-    .webkit .editor_tab .session_btn .tab_middle:after {
-        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : -31px -159px, 0 -79px;
-        background-repeat   : no-repeat, repeat-x;
-    }
-
     .editor_tab .btnclose .tab_middle > strong {
         width               : 14px;
         height              : 14px;
@@ -8055,10 +8072,6 @@
     /* ------------------------------------------------------------------------------------------
      * Unselected tab hover
      * --------------------------------------------------------------------------------------- */
-    .webkit .editor_tab .session_btn.over:not(.curbtn) .tab_middle {
-        background-color: #000;
-    }
-
     .editor_tab .btnclose .tab_middle > strong:hover {
         background-position : -14px -14px;
     }
@@ -8080,26 +8093,10 @@
         top         : 1px;
         z-index     : 10;
     }
-    .webkit .editor_tab .curbtn .tab_middle {
-        background-image    : url(images/c9-repeat-x.png);
-        background-position : 0 -57px;
-        background-repeat   : repeat-x;
-        color               : #000;
-    }
-
     .editor_tab .curbtn .tab_middle {
         background-color    : #e8e8e8;
         color               : #000;
         text-shadow         : 0 1px 0 0 rgba(255,255,255,.4);
-    }
-
-    .webkit .editor_tab .curbtn .tab_middle:before {
-        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : 0 -127px, 0 -57px;
-    }
-    .webkit .editor_tab .curbtn .tab_middle:after {
-        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : -31px -127px, 0 -57px;
     }
     .editor_tab .loading_active .sessiontab_saving,
     .editor_tab .saving_active .sessiontab_saving {
@@ -8113,9 +8110,6 @@
     /* ------------------------------------------------------------------------------------------
      * Selected tab hover
      * --------------------------------------------------------------------------------------- */
-    .webkit .editor_tab .curbtn.over .tab_middle {
-        box-shadow: 0 0 0 1000px rgba(255,255,255,.1) inset;
-    }
     .editor_tab .btnclose.curbtn .tab_middle > strong {
         background-position : 0 0;
         top : 4px;
@@ -8132,7 +8126,6 @@
     /* ------------------------------------------------------------------------------------------
      * Tab elements
      * --------------------------------------------------------------------------------------- */
-
     .editor_tab .session_btn .sessiontab_title {
         display : block;
         overflow : hidden;
@@ -8178,19 +8171,20 @@
 		background-position: -58px -132px;
     }
 
-    .editor_tab + .tabmenubtn {
+    .editor_tab .btnsesssioncontainer > .tabmenubtn {
     	background: url(images/c9-no-repeat.png) no-repeat -98px -80px;
     	height: 17px;
     	left: 4px;
     	position: absolute;
-    	top: 6px;
+    	top: 7px;
     	width: 19px;
     }
-    .editor_tab + .tabmenubtn:hover {
+    .editor_tab .btnsesssioncontainer > .tabmenubtn:hover {
     	background-position: -98px -106px;
     }
-    .editor_tab + .tabmenubtn.btn_icon_onlymenuDown {
+    .editor_tab .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -132px;
+    	z-index: 10000000;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -8304,9 +8298,6 @@
         background-repeat   : repeat-x;
         background-position : 0 -101px;
     }
-    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:hover {
-    	background-position: 50% -125px, 0 -111px;
-    }
     .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:hover:before {
     	background-position: 0 -111px;
     }
@@ -8334,13 +8325,13 @@
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
-        background-position : 50% -124px, 0 -57px;
+        background-position : 50% -124px, 0 -111px;
         background-repeat   : no-repeat, repeat-x;
     	border-top-right-radius: 2px;	
     }
     .editor_tab.hidetabs .curbtn .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
-        background-position : 0 -57px;
+        background-position : 0 -111px;
         background-repeat   : repeat-x;
     }
     .editor_tab.hidetabs .curbtn .tab_middle:after {
@@ -8367,17 +8358,17 @@
     .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button:active {
 		background-position: -58px -198px;
     }
-    .editor_tab.hidetabs + .tabmenubtn {
+    .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn {
     	background-position: -98px -158px;
     	height: 9px;
-    	left: 4px;
-    	top: 1px;
+    	left: 1px;
+    	top: 2px;
     	width: 19px;
     }
-    .editor_tab.hidetabs + .tabmenubtn:hover {
+    .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn:hover {
     	background-position: -98px -178px;
     }
-    .editor_tab.hidetabs + .tabmenubtn.btn_icon_onlymenuDown {
+    .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -198px;
     }
 
@@ -8419,9 +8410,11 @@
         color: #d9d9d9;
     }
 
+    .codeditorHolder {
+    	padding-top: 7px;
+    }
+
     .editor_tab .editor_bg {
-        top : 32px;
-        bottom : 0px;
         height : auto;
         position : absolute;
         margin: 0 auto;
@@ -8506,7 +8499,7 @@
     .editor_tab .session_page {
         display : none;
         position : absolute;
-        top : 32px;
+        top : 0px;
         bottom : 0;
         left : 0;
         right : 0;
@@ -8517,9 +8510,6 @@
         padding-top:3px;
         overflow: hidden;
         clear: both;
-    }
-    .editor_tab.hidetabs .session_page {
-    	top: 18px;
     }
 
     .editor_tab .session_page.curpage{
@@ -8541,6 +8531,85 @@
         text-indent: 0;
     }*/
 ]]></a:style>
+<a:style condition="apf.isWebkit">
+	/* ------------------------------------------------------------------------------------------
+     * Tab shape
+     * --------------------------------------------------------------------------------------- */
+	.editor_tab .tab_middle {
+        overflow: visible;
+    }
+    .editor_tab .tab_left,
+    .editor_tab .tab_right {
+    	display: none;
+    }
+    .editor_tab .scale .btn .tab_middle {
+        display : block;
+        overflow : hidden;
+        text-overflow : ellipsis;
+        white-space : nowrap;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Unselected tab default state
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .session_btn:not(.curbtn) .tab_middle,
+    .editor_tab .session_btn:not(.curbtn) .tab_middle:before,
+    .editor_tab .session_btn:not(.curbtn) .tab_middle:after {
+        box-shadow   : 0 -1px 0 0 #000 inset;
+    }
+    .editor_tab .session_btn .tab_middle {
+        background-image    : url(images/c9-repeat-x.png);
+        background-repeat   : repeat-x;
+        background-position : 0 -79px;
+    }
+    .editor_tab .session_btn .tab_middle {
+        background-color    : #2F2F2F;
+        color               : #cecece;
+    }
+
+    .editor_tab .session_btn .tab_middle:before {
+        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+        background-position : 0 -159px, 0 -79px;
+        background-repeat   : no-repeat, repeat-x;
+    }
+    .editor_tab .session_btn .tab_middle:after {
+        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+        background-position : -31px -159px, 0 -79px;
+        background-repeat   : no-repeat, repeat-x;
+    }
+    
+    /* ------------------------------------------------------------------------------------------
+     * Unselected tab hover
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .session_btn.over:not(.curbtn) .tab_middle {
+        background-color: #000;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Selected tab default state
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .curbtn .tab_middle {
+        background-image    : url(images/c9-repeat-x.png);
+        background-position : 0 -57px;
+        background-repeat   : repeat-x;
+        color               : #000;
+    }
+    .editor_tab .curbtn .tab_middle:before {
+        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+        background-position : 0 -127px, 0 -57px;
+    }
+    .editor_tab .curbtn .tab_middle:after {
+        background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+        background-position : -31px -127px, 0 -57px;
+    }
+
+    /* ------------------------------------------------------------------------------------------
+     * Selected tab hover
+     * --------------------------------------------------------------------------------------- */
+    .editor_tab .curbtn.over .tab_middle {
+        box-shadow: 0 0 0 1000px rgba(255,255,255,.1) inset;
+    }
+</a:style>
 
 <a:presentation>
     <a:main pages="." buttons="div[1]">

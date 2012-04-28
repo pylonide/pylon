@@ -42,7 +42,8 @@
         <a:button
           skin="header-btn"
           class="panel-settings"
-          submenu="mnuDebugSettings" />
+          submenu="mnuDebugSettings"
+          flex="1" />
         
         <a:menu id="mnuDebugSettings">
             <a:item
