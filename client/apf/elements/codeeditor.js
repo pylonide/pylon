@@ -371,7 +371,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.$propHandlers["fadefoldwidgets"] = function(value, prop, initial) {
-        this.$editor.setFadeFoldWidgets(value);
+        if(this.$editor.setFadeFoldWidgets)
+            this.$editor.setFadeFoldWidgets(value);
     };
 
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
@@ -627,7 +628,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             function(width){
                 _self.$corner.style.left = (width - 5) + "px"
             });
-
+        
         if (apf.isTrue(this.getAttribute("globalcommands")))
             this.$editor.keyBinding.setDefaultHandler(null);
 
