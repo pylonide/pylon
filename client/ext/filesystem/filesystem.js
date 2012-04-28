@@ -60,7 +60,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             this.webdav.exists(path, callback);
     },
 
-    createFolder: function(name, tree) {
+    createFolder: function(name, tree, noRename, callback) {
         if (!tree) {
             tree = apf.document.activeElement;
             if (!tree || tree.localName != "tree")
@@ -71,7 +71,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         if (!node && tree.xmlRoot)
             node = tree.xmlRoot.selectSingleNode("folder");
         if (!node)
-            return;
+            return callback && callback();
+
         if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
 
@@ -94,19 +95,23 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                     tree.focus();
                     _self.webdav.exec("mkdir", [path, name], function(data) {
                         // @todo: in case of error, show nice alert dialog
-                        if (!data || data instanceof Error)
+                        if (!data || data instanceof Error) {
+                            callback && callback();
                             throw Error;
+                        }
                         
                         // parse xml
                         var nodesInDirXml = apf.getXml(data);
                         // we expect the new created file in the directory listing
                         var fullFolderPath = path + "/" + name;
                         var folder = nodesInDirXml.selectSingleNode("//folder[@path='" + fullFolderPath + "']");
+                        
                         // not found? display an error
-
                         if (!folder) {
-                             return util.alert("Error", "Folder '" + name + "' could not be created",
+                            util.alert("Error", "Folder '" + name + "' could not be created",
                                  "An error occurred while creating a new folder, please try again.");
+                            callback && callback();
+                            return;
                         }
                         tree.slideOpen(null, node, true, function(data, flag, extra){
                             // empty data means it didn't trigger <insert> binding,
@@ -117,7 +122,11 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             folder = apf.queryNode(node, "folder[@path='"+ fullFolderPath +"']");
 
                             tree.select(folder);
-                            tree.startRename();
+                            
+                            if (!noRename)
+                                tree.startRename();
+                            
+                            callback && callback(folder);
                         });
                     });
                 }
@@ -233,7 +242,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         return match !== null && match[0] == name;
     },
 
-    beforeRename : function(node, name, newPath, isCopyAction, ignoreTree) {
+    beforeRename : function(node, name, newPath, isCopyAction, isReplaceAction) {
         var path = node.getAttribute("path");
         var page = tabEditors.getPage(path);
 
@@ -267,12 +276,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
             this.beforeRename(childNode, null, node.getAttribute("path") + "/" + name);
         }
+        
         ide.dispatchEvent("updatefile", {
             path: path,
             newPath: newPath,
             filename: name && name[0],
             xmlNode: node,
-            ignoreTree: ignoreTree
+            replace: isReplaceAction
         });
     },
 
@@ -496,6 +506,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     disable : function() {},
 
     destroy : function(){
+        commands.removeCommandsByName(["open", "c9"]);
+        
         this.webdav.destroy(true, true);
         this.model.destroy(true, true);
     }

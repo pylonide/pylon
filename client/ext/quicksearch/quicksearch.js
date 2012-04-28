@@ -54,6 +54,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             name: "find",
             hint: "open the quicksearch dialog to quickly search for a phrase",
             bindKey: {mac: "Command-F", win: "Ctrl-F"},
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function(env, args, request) {
                 _self.toggleDialog(1);
             }
@@ -88,6 +91,16 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     init : function(){
         var _self = this;
+        
+        var isAvailable = commands.commands["findnext"].isAvailable;
+        
+        commands.commands["findnext"].isAvailable =
+        commands.commands["findprevious"].isAvailable = function(editor){
+            if (apf.activeElement == txtQuickSearch)
+                return true;
+            
+            return isAvailable.apply(this, arguments);
+        }
 
         txtQuickSearch.addEventListener("clear", function() {
             _self.execSearch(false, false, true);
@@ -494,6 +507,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("find");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

@@ -78,7 +78,7 @@ module.exports = ext.register("ext/acebugs/acebugs", {
         }, {
             ident   : "aceAnnotations",
             primary : {
-                backgroundImage: ide.staticPrefix + "ext/main/style/images/debugicons.png",
+                backgroundImage: ide.staticPrefix + "/ext/main/style/images/debugicons.png",
                 defaultState: { x: -6, y: -391 },
                 activeState: { x: -6, y: -391 }
             }

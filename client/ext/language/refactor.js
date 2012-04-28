@@ -43,6 +43,9 @@ module.exports = {
             name: "renameVar",
             hint: "Rename variable",
             bindKey: {mac: "Option-Command-R", win: "Ctrl-Alt-R"},
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function(editor) {
                 _self.renameVariable();
             }
@@ -83,6 +86,10 @@ module.exports = {
     
     renameVariable: function() {
         this.worker.emit("fetchVariablePositions", {data: ceEditor.$editor.getCursorPosition()});
+    },
+    
+    destroy : function(){
+        commands.removeCommandByName("renameVar");
     }
 };
 

@@ -9,7 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/menus/menus", {
@@ -89,7 +88,7 @@ module.exports = ext.register("ext/menus/menus", {
                 commands.exec(value);
                 var command = commands.commands[value];
                 if (command && command.focusContext)
-                    command.context[0].focus();
+                    self["req"+"uire"]("ext/editors/editors").currentEditor.focus();
             } || null;
         }
     },
@@ -109,6 +108,20 @@ module.exports = ext.register("ext/menus/menus", {
         return parent.insertBefore(item, beforeNode);
     },
     
+    $checkItems : function(e){
+        if (e.value) {
+            var page = self.tabEditors && tabEditors.$activepage;
+            var editor = page && page.$editor;
+            
+            var nodes = this.childNodes;
+            for (var a, cmd, n, i = nodes.length - 1; i >= 0; i--) {
+                if (a = ((cmd = (n = nodes[i]).command) 
+                  && commands.commands[cmd].isAvailable) || n.isAvailable)
+                    n[a(editor) ? "enable" : "disable"]();
+            }
+        }
+    },
+    
     setRootMenu : function(name, index, item, menu){
         var items = this.items, menus = this.menus;
         
@@ -121,7 +134,8 @@ module.exports = ext.register("ext/menus/menus", {
             menu = menus[name];
             if (!menu) {
                 menu = menus[name] = new apf.menu({
-                    id : "mnuMenus" + ++this.count
+                    id : "mnuMenus" + ++this.count,
+                    "onprop.visible" : this.$checkItems
                 });
             }
         }
@@ -170,7 +184,8 @@ module.exports = ext.register("ext/menus/menus", {
             menu = menus[name];
             if (!menu) {
                 menu = menus[name] = new apf.menu({
-                    id : "mnuMenus" + ++this.count
+                    id : "mnuMenus" + ++this.count,
+                    "onprop.visible" : this.$checkItems
                 });
             }
         }

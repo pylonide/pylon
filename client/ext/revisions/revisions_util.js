@@ -2,6 +2,7 @@ define(function(require, exports, module) {
     
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
+var settings = require("ext/settings/settings");
 
 var TIMELAPSE = 10 * 60 * 1000;
 exports.compactRevisions = function(timestamps) {
@@ -123,6 +124,39 @@ exports.addCodeMarker = function(session, doc, type, range) {
     anchor.on("change", updateFloat);
 };
 
+exports.isAutoSaveEnabled = function() {
+    return apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
+};
+
+exports.pageHasChanged = function(page) {
+    if (!page) {
+        throw new Error("Page object parameter missing");
+    }
+    var model = page.getModel();
+    return model && model.queryValue("@changed") == 1;
+};
+
+exports.pageIsCode = function(page) {
+    if (!page) {
+        throw new Error("Page object parameter missing");
+    }
+    return page.type === "ext/code/code";
+};
+
+exports.getDocPath = function(page) {
+    if (!page && tabEditors) {
+        page = tabEditors.getPage();
+    }
+
+    // Can we rely on `name`?
+    // What follows is a hacky way to get a path that we can use on
+    // the server. I am sure that these workspace string manipulation
+    // functions are somewhere...to be fixed.
+    var docPath = page.name.replace(ide.davPrefix, "");
+    docPath = docPath.charAt(0) === "/" ? docPath.substr(1) : docPath;
+    return docPath;
+};
+
 exports.localDate = function(ts) {
     var getTZOffset = function() {
         return -(new Date()).getTimezoneOffset() * 60000;
@@ -130,4 +164,14 @@ exports.localDate = function(ts) {
 
     return new Date(ts + getTZOffset());
 };
+
+exports.question = function(title, header, msg, onyes, onno, onadd) {
+    winQuestionRev.show();
+    winQuestionRev.setAttribute("title", title);
+    winQuestionRevHeader.$ext.innerHTML = header;
+    winQuestionRevMsg.$ext.innerHTML = msg;
+    btnQuestionRevYes.onclick = onyes;
+    btnQuestionRevNo.onclick = onno;
+};
+
 });

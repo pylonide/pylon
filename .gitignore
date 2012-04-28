@@ -5,10 +5,12 @@ common/packager
 common/apf
 client/icons/Thumbs.db
 client/common
+client/build
 .settings.xml
 .project
 .settings
 /demo
+/client/build
 .settings.xml.old
 .DS_Store
 /nbproject

@@ -96,7 +96,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         
         ext.initExtension(require("ext/console/console"));
         
-        /*ide.addEventListener("loadsettings", function(e){
+        /*ide.addEventListener("settings.load", function(e){
             _self.animateui = settings.model.queryValue('general/@animateui');
             settings.model.setQueryValue('general/@animateui', false);
         });*/
@@ -255,6 +255,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             // All of these fix issues with elements not being available when this plugin loads
             else if (step.div == "ceEditor"){
                 _self.currentEl = ceEditor;
+            }
+            else if (step.div == "ceEditorGutter") {
+                _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[1]/DIV[2]', ceEditor.$ext) 
             }
             else if (step.div == "expandedDbg") {
                 _self.currentEl = expandedDbg;

@@ -42,8 +42,8 @@
         </a:vbox>
     
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnConfirmOk" default="3" skin="btn-default-css3" class="btn-green" onclick="winConfirm.hide()">Ok</a:button>
             <a:button id="btnConfirmCancel" onclick="winConfirm.hide()" skin="btn-default-css3">Cancel</a:button>
+            <a:button id="btnConfirmOk" default="3" skin="btn-default-css3" class="btn-green" onclick="winConfirm.hide()">Ok</a:button>
         </a:hbox>
     </a:window>
     

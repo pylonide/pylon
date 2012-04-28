@@ -51,7 +51,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
         });
 
-        ide.addEventListener("loadsettings", function(e) {
+        ide.addEventListener("settings.load", function(e) {
             _self.map_enabled = e.model.queryValue("editors/code/@minimap");
         });
 

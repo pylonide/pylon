@@ -3,7 +3,7 @@
       disable-space             = "true"
       auto-hide-loading         = "true"
       allow-select              = "false"
-      allow-blur                = "true"
+      allow-blur                = "false"
       initdelay                 = "false"
       loaderAnimIndicator       = "animatedLoader"
       loaderWidth               = "300"
@@ -43,7 +43,7 @@
         </a:bar>
 
         <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
-            <a:hbox id="hboxTabBar" padding="0" edge="0" height="28" align="start" >
+            <a:hbox id="hboxTabBar" padding="0" edge="0" height="28" align="start" nosplitter="true">
                 <a:hbox id="barButtonContainer" class="editor_tab" flex="1" align="start" />
             </a:hbox>
             <a:hbox id="hboxMain" padding="0" edge="0" flex="1">

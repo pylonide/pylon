@@ -33,7 +33,11 @@
               onafterload     = "
                 var vp = this.getViewport();
                 if (vp.length &lt; 100) {
-                    var ht = Math.min(350, vp.getScrollHeight());
+                    var sh = vp.getScrollHeight();
+                    if (sh / vp.length == 1000)
+                        return setTimeout(arguments.callee.bind(this));
+                    
+                    var ht = Math.min(350, sh);
                     if (ht != this.height)
                         this.setAttribute('height', ht);
                 }

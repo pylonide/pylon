@@ -7,12 +7,12 @@
 
 "use strict";
 
-var sys = require("sys");
+var util = require("util");
 var Plugin = require("cloud9/plugin");
 var Fs = require("fs");
 var Path = require("path");
 var Async = require("asyncjs");
-var util = require("cloud9/util");
+var Cloud9Util = require("cloud9/util");
 
 var ShellPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -21,7 +21,7 @@ var ShellPlugin = module.exports = function(ide, workspace) {
     this.name = "shell";
 };
 
-sys.inherits(ShellPlugin, Plugin);
+util.inherits(ShellPlugin, Plugin);
 
 (function() {
 
@@ -114,7 +114,7 @@ sys.inherits(ShellPlugin, Plugin);
                  }
                  else {
                      if (oExt.metadata && oExt.metadata.commands)
-                         util.extend(commands, oExt.metadata.commands);
+                         Cloud9Util.extend(commands, oExt.metadata.commands);
                      next();
                  }
              })

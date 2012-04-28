@@ -30,11 +30,12 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     nodes: [],
 
-    beautify: function () {
+    beautify: function (editor) {
         if (this.disabled === true)
             return;
 
-        var editor = editors.currentEditor;
+        if (!editor)
+            editor = editors.currentEditor;
 
         var sel = editor.getSelection();
         var doc = editor.getDocument();
@@ -73,7 +74,9 @@ module.exports = ext.register("ext/beautify/beautify", {
             if (trim) value = value.trim();
         }
         catch (e) {
-            util.alert("Error", "This code could not be beautified", "Please correct any JavaScript errors and try again");
+            util.alert("Error", 
+                "This code could not be beautified", 
+                "Please correct any JavaScript errors and try again");
             return;
         }
 
@@ -83,35 +86,6 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     init: function () {
         var _self = this;
-        tabEditors.addEventListener("afterswitch", function() {
-            if (_self.$selectionEvent) {
-                _self.editorSession.selection.removeEventListener("changeSelection",
-                    _self.$selectionEvent);
-            }
-
-            setTimeout(function() {
-                if (editors.currentEditor.ceEditor) {
-                    _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
-                    _self.editorSession.selection.addEventListener("changeSelection",
-                        _self.$selectionEvent = function(e) {
-                            if (!_self.mnuItem)
-                                return;
-
-                            var range = ceEditor.$editor.getSelectionRange();
-                            if (range.start.row == range.end.row && range.start.column == range.end.column) {
-                                _self.disabled = true;
-                                _self.mnuItem.disable();
-                            }
-                            else {
-                                _self.disabled = false;
-                                _self.mnuItem.enable();
-                            }
-                        }
-                    );
-                }
-            }, 200);
-        });
-
         ide.addEventListener("revisions.visibility", function(e) {
             if (e.visibility === "shown")
                 _self.disable();
@@ -123,25 +97,35 @@ module.exports = ext.register("ext/beautify/beautify", {
     hook: function () {
         var _self = this;
 
-        menus.addItemByPath("Tools/Beautify Selection", 
-          this.menuItem = new apf.item({
-              disabled : "true",
-              command  : "beautify"
-          }), 100);
+        this.nodes.push(
+            menus.addItemByPath("Tools/Beautify Selection", 
+              this.mnuItem = new apf.item({
+                  disabled : "true",
+                  command  : "beautify"
+              }), 100)
+        );
 
         commands.addCommand({
             name: "beautify",
             hint: "reformat selected JavaScript code in the editor",
             msg: "Beautifying selection.",
             bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
-            exec: function () {
-                _self.beautify();
+            isAvailable : function(editor){
+                if (editor && editor.ceEditor) {
+                    var range = editor.ceEditor.$editor.getSelectionRange();
+                    return range.start.row != range.end.row 
+                      || range.start.column != range.end.column;
+                }
+                return false;
+            },
+            exec: function (editor) {
+                _self.beautify(editor);
             }
         });
 
         settings.addSettings("JS Beautify", markupSettings);
 
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             settings.setDefaults("beautify/jsbeautify", [
                 ["preserveempty", "true"],
                 ["keeparrayindentation", "false"],
@@ -173,6 +157,7 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     destroy: function () {
         menus.remove("Tools/Beautify Selection");
+        commands.removeCommand("beautify");
 
         this.nodes.each(function (item) {
             item.destroy(true, true);

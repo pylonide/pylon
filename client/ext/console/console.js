@@ -45,7 +45,7 @@ var execAction = function(cmd, data) {
         if (commandEvResult !== false && consoleEvResult !== false) {
             if (!ide.onLine)
                 module.exports.write("Cannot execute command. You are currently offline.");
-            else
+            else 
                 ide.send(data);
         }
         else {
@@ -97,8 +97,11 @@ module.exports = ext.register("ext/console/console", {
     nodes : [],
     
     minHeight : 150,
+
     collapsedHeight : 30,
     $collapsedHeight : 0,
+
+    maxHeight: window.innerHeight - 70,
 
     autoOpen : true,
     excludeParent : true,
@@ -327,7 +330,7 @@ module.exports = ext.register("ext/console/console", {
         
         commands.addCommand({
             name: "toggleconsole",
-            bindKey: {mac: "Ctrl-Esc", win: "Ctrl-Esc"},
+            bindKey: {mac: "Ctrl-Esc", win: "F6"},
             exec: function () {
                 if (_self.hidden)
                     _self.show();
@@ -378,7 +381,7 @@ module.exports = ext.register("ext/console/console", {
         menus.addItemByPath("Tools/NPM/Install", new apf.item({}), 1000),
         menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({}), 2000)
         
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
                 e.model.setQueryValue("auto/console/@autoshow", true);
 
@@ -393,6 +396,14 @@ module.exports = ext.register("ext/console/console", {
             
             if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
                 _self.showInput();
+        });
+        
+        stProcessRunning.addEventListener("activate", function() {
+            var autoshow = settings.model.queryValue("auto/console/@autoshow");
+            if (_self.autoOpen && apf.isTrue(autoshow))
+                _self.show();
+            
+            _self.showOutput();
         });
     },
 
@@ -411,18 +422,12 @@ module.exports = ext.register("ext/console/console", {
         commands.addCommand({
             name: "escapeconsole",
             bindKey: {mac: "Esc", win: "Esc"},
-            context : [txtConsoleInput],
+            isAvailable : function(){
+                return apf.activeElement == txtConsoleInput;
+            },
             exec: function () {
                 _self.switchconsole();
             }
-        });
-
-        stProcessRunning.addEventListener("activate", function() {
-            _self.showOutput();
-
-            var autoshow = settings.model.queryValue("auto/console/@autoshow");
-            if (_self.autoOpen && apf.isTrue(autoshow))
-                _self.show();
         });
 
         // before the actual run target gets called we clear the console
@@ -520,6 +525,7 @@ module.exports = ext.register("ext/console/console", {
         winDbgConsole.setAttribute('anchors', '0 0 0 0');
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');
+        winDbgConsole.$ext.style.maxHeight = "10000px";
         winDbgConsole.$ext.style.zIndex = 900000;
 
         settings.model.setQueryValue("auto/console/@maximized", true);
@@ -533,7 +539,10 @@ module.exports = ext.register("ext/console/console", {
 
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.removeAttribute('anchors');
-        winDbgConsole.setAttribute('height', this.height);
+        this.maxHeight = window.innerHeight - 70;
+        winDbgConsole.$ext.style.maxHeight =  this.maxHeight + "px";
+        
+        winDbgConsole.setAttribute('height', this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height);
         winDbgConsole.$ext.style.zIndex = this.lastZIndex;
 
         settings.model.setQueryValue("auto/console/@maximized", false);
@@ -597,11 +606,15 @@ module.exports = ext.register("ext/console/console", {
         var cfg;
         if (shouldShow) {
             cfg = {
-                height: this.height,
+                height: this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height,
                 dbgVisibleMethod: "show",
                 mnuItemLabel: "check",
                 animFrom: this.$collapsedHeight,
-                animTo: this.height > this.minHeight ? this.height : this.minHeight,
+                animTo: this.height > this.minHeight 
+                    ? (this.maxHeight && this.height > this.maxHeight 
+                        ? this.maxHeight 
+                        : this.height) 
+                    : this.minHeight,
                 steps: 5,
                 animTween: "easeOutQuint"
             };
@@ -614,25 +627,31 @@ module.exports = ext.register("ext/console/console", {
                 height: this.$collapsedHeight,
                 dbgVisibleMethod: "hide",
                 mnuItemLabel: "uncheck",
-                animFrom: this.height > this.minHeight ? this.height : this.minHeight,
+                animFrom: this.height > this.minHeight 
+                    ? (this.maxHeight && this.height > this.maxHeight 
+                        ? this.maxHeight 
+                        : this.height) 
+                    : this.minHeight,
                 animTo: this.$collapsedHeight,
                 steps: 5,
                 animTween: "easeInOutCubic"
             };
-
             if (winDbgConsole.parentNode != mainRow)
                 this.restore();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
+            winDbgConsole.$ext.style.maxHeight = "10000px";
         }
 
         var finish = function() {
             if (!shouldShow)
                 tabConsole.hide();
-            else
+            else {
                 winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
-
+                this.maxHeight = window.innerHeight - 70;
+                winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
+            }
             winDbgConsole.height = cfg.height + 1;
             winDbgConsole.setAttribute("height", cfg.height);
             winDbgConsole.previousSibling[cfg.dbgVisibleMethod]();
@@ -643,7 +662,7 @@ module.exports = ext.register("ext/console/console", {
 
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (!immediate && animOn) {
-            apf.tween.single(winDbgConsole.$ext, {
+            apf.tween.single(winDbgConsole.$ext, { 
                 control : this.$control = {},
                 type  : "height",
                 anim  : apf.tween[cfg.animTween],
@@ -668,6 +687,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     destroy: function(){
+        commands.removeCommandsByName(
+            ["help", "clear", "switchconsole", "toggleconsole", 
+             "escapeconsole", "toggleinputbar"]);
+        
         this.nodes.each(function(item) { item.destroy(true, true); });
         this.nodes = [];
     }

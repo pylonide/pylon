@@ -27,11 +27,13 @@ var ProxyDocument = require("ext/code/proxydocument");
 
 var markup = require("text!ext/revisions/revisions.xml");
 var skin = require("text!ext/revisions/skin.xml");
+var cssString = require("text!ext/revisions/style.css");
 
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 5000;
 
+var isInfoActive = false;
 module.exports = ext.register("ext/revisions/revisions", {
     name: "Revisions",
     dev: "Cloud9",
@@ -41,19 +43,42 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
-
+    
+    /**
+     * Revisions#rawRevisions -> Object
+     * Holds the cached revisions and some meta-data about them so Cloud9 can
+     * access them fast in the client-side. It also minimizes the amount of communication
+     * needed with the server in single-user mode.
+     */
     rawRevisions: {},
     revisionsData: {},
     docChangeTimeout: null,
     docChangeListeners: {},
+    /**
+     * Revisions#revisionQueue -> Object
+     * Contains the revisions that have been sent to the server, but not yet
+     * confirmed to be saved.
+     */
+    revisionQueue: {},
+    /**
+     * Revisions#offlineQueue -> Array
+     * Contains the revisions that have been saved during Cloud9 being offline.
+     * Its items are not revision objects, but hold their own format (for
+     * example, they have a generated timestamp of the moment of saving).
+     */
+    offlineQueue: [],
 
+    /** related to: Revisions#show
+     * Revisions#toggle() -> Void
+     *
+     * Initializes the plugin if it is not initialized yet, and shows/hides its UI.
+     **/
     toggle: function() {
         if (!editors.currentEditor.ceEditor) {
             return;
         }
 
         ext.initExtension(this);
-
         if (this.panel.visible)
             this.hide();
         else
@@ -61,14 +86,17 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     hook: function() {
-        var _self = this;
+        var self = this;
 
         commands.addCommand({
             name: "revisionpanel",
             hint: "File Revision History...",
             bindKey: { mac: "Command-B", win: "Ctrl-B" },
+            isAvailable: function(editor) {
+                return editor && !!editor.ceEditor;
+            },
             exec: function () {
-                _self.toggle();
+                self.toggle();
             }
         });
 
@@ -85,18 +113,45 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
 
         settings.addSettings("General", markupSettings);
-
-        ide.addEventListener("loadsettings", function(e){
-            e.ext.setDefaults("general", [["autosaveenabled", "true"]]);
+        ide.addEventListener("settings.load", function(e){
+            e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
         });
 
         btnSave.removeAttribute("icon");
         btnSave.setAttribute("caption", "");
         btnSave.removeAttribute("tooltip");
         btnSave.setAttribute("margin", "0 20 0 20");
-        btnSave.setAttribute("submenu", "mnuSave");
         btnSave.removeAttribute("command");
 
+        btnSave.addEventListener("onmouseover", function(e) {
+            setTimeout(function (e) {
+                ext.initExtension(self);
+                revisionsInfo.addEventListener("onmouseover", function(e) {
+                    isInfoActive = true;
+                });
+                revisionsInfo.addEventListener("onmouseout", function(e) {
+                    isInfoActive = false;
+                    self.hideRevisionsInfo();
+                });
+                apf.tween.single(revisionsInfo, {
+                    from:0,
+                    to:1,
+                    steps: 10,
+                    type     : "opacity",
+                    anim     : apf.tween.easeInOutCubic,
+                    interval: 30
+                });
+            }, 500);
+        });
+
+        btnSave.addEventListener("onmouseout", function(e) {
+            self.hideRevisionsInfo();
+        });
+        
+        btnSave.addEventListener("onclick", function(e) {
+            Save.quicksave();
+        });
+        
         this.$onMessageFn = this.onMessage.bind(this);
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
@@ -106,24 +161,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-
-        var c = 0;
-        menus.addItemToMenu(this.mnuSave, new apf.item({
-            caption: "Save Now",
-            onclick: function() { Save.quicksave(); }
-        }), c += 100);
-
-        menus.addItemToMenu(this.mnuSave, new apf.item({
-            caption : "Enable Auto-Save",
-            type    : "check",
-            checked : "{[{require('core/settings').model}::general/@autosaveenabled] != '' ? [{require('core/settings').model}::general/@autosaveenabled] : 'true'}"
-        }), c += 100);
-
-        menus.addItemToMenu(this.mnuSave, new apf.divider(), c += 100);
-        menus.addItemToMenu(this.mnuSave, new apf.item({
-            caption : "About Auto-Save",
-            onclick : function() {}
-        }), c += 100);
 
         this.defaultUser = { email: null };
 
@@ -140,22 +177,29 @@ module.exports = ext.register("ext/revisions/revisions", {
                 method: "get",
                 callback: function(data, state, extra) {
                     if (state === 200 && data) {
-                        _self.defaultUser = {
+                        self.defaultUser = {
                             email: data
                         };
                     }
                 }
             });
         }
-        
+
+        this.$onExternalChange = this.onExternalChange.bind(this);
+        ide.addEventListener("beforewatcherchange", this.$onExternalChange);
+
         ide.addEventListener("beforesavewarn", function(e){
-            if (apf.isTrue(settings.model.queryValue("general/@autosaveenabled"))) {
-                _self.save();
-                
+            var isNewFile = apf.isTrue(e.doc.getNode().getAttribute("newfile"));
+            if (!isNewFile && Util.isAutoSaveEnabled()) {
+                self.save();
                 return false;
             }
         });
 
+        this.$onAfterOnline = this.onAfterOnline.bind(this);
+        ide.addEventListener("onafteronline", this.$onAfterOnline);
+        this.$onRevisionSaved = this.onRevisionSaved.bind(this);
+        ide.addEventListener("revisionSaved", this.$onRevisionSaved);
         this.$initWorker();
     },
 
@@ -168,10 +212,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             btnSave.setCaption("");
         }
 
-        var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-        var hasChanged = this.$pageHasChanged(tabEditors.getPage());
-
-        if (autoSaveEnabled && hasChanged) {
+        var hasChanged = Util.pageHasChanged(tabEditors.getPage());
+        if (Util.isAutoSaveEnabled() && hasChanged) {
             btnSave.setCaption("Saving...");
         }
         else if (!hasChanged) {
@@ -182,29 +224,28 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
-    $pageIsCode: function(page) {
-        return page && page.type === "ext/code/code";
-    },
-
     init: function() {
         var self = this;
-
         var page = tabEditors.getPage();
         if (page) {
             this.$switchToPageModel(page);
         }
 
-        this.panel = new apf.bar({
-            id: "revisionsPanel",
-            visible: false,
-            top: 2,
-            bottom: 0,
-            right: 0,
-            width: BAR_WIDTH,
-            height: "100%",
-            "class": "revisionsBar"
-        });
-        this.nodes.push(this.panel);
+        apf.importCssString(cssString);
+
+        this.nodes.push(this.panel = new apf.bar({
+                id: "revisionsPanel",
+                visible: false,
+                top: 2,
+                bottom: 0,
+                right: 0,
+                width: BAR_WIDTH,
+                height: "100%",
+                "class": "revisionsBar"
+            })
+        );
+
+        apf.document.documentElement.appendChild(winQuestionRev);
 
         /**
          * @todo the panel should move to the active editor tab using
@@ -215,28 +256,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             revisionsPanel.appendChild(pgRevisions);
         });
 
-        this.$afterSelectFn = function(e) {
-            var node = this.selected;
-            if (!node || this.selection.length > 1) {
-                return;
-            }
-
-            var path = self.$getDocPath();
-            var revObj = self.$getRevisionObject(path);
-            var id = parseInt(node.getAttribute("id"), 10);
-            var cache = revObj.previewCache;
-            if (cache && cache[id]) {
-                self.previewRevision(id, null, cache[id][1], cache[id][0]);
-            }
-            else {
-                if (!cache) {
-                    cache = revObj.previewCache = {};
-                }
-                self.loadRevision(id, "preview");
-            }
-            tabEditors.getPage().$selectedRevision = id;
-        };
-
+        this.$afterSelectFn = this.afterSelect.bind(this);
         lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
 
         this.$onSwitchFileFn = this.onSwitchFile.bind(this);
@@ -250,15 +270,17 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     $initWorker: function() {
         var worker = this.worker = new Worker("/static/ext/revisions/revisions_worker.js");
-        worker.onmessage = this.onWorkerMessage.bind(this);
+        worker.onmessage = this.onWorkerMessage.bind(this); //!
         worker.onerror = function(error) {
-            console.log("Worker error: " + error.message + "\n");
-            throw error;
+            throw(new Error("Error from worker:\n" + error.message));
         };
+        // Preload diff libraries so they are available to the worker in case we
+        // go offline.
+        worker.postMessage({ type: "preloadlibs" });
     },
 
     $switchToPageModel: function(page) {
-        if (!page || !this.$pageIsCode(page)) {
+        if (!page || !Util.pageIsCode(page)) {
             return;
         }
 
@@ -266,38 +288,21 @@ module.exports = ext.register("ext/revisions/revisions", {
             page.$mdlRevisions = new apf.model();
         }
 
-        this.$restoreSelection(page);
+        this.$restoreSelection(page, page.$mdlRevisions);
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
         this.model = page.$mdlRevisions;
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
     },
 
-    $restoreSelection: function(page) {
-        var model = page.$mdlRevisions;
-        if (model && page.$showRevisions === true) {
-            var node;
-            if (page.$selectedRevision) {
+    $restoreSelection: function(page, model) {
+        if (page.$showRevisions === true && lstRevisions) {
+            var selection = lstRevisions.selection;
+            var node = model.data.firstChild;
+            if (selection && selection.length === 0 && page.$selectedRevision) {
                 node = model.queryNode("revision[@id='" + page.$selectedRevision + "']");
             }
-            else {
-                node = model.data.firstChild;
-            }
-            if (node) {
-                lstRevisions.select(node);
-            }
-        }
-    },
-
-    afterModelUpdate: function(e) {
-        var model = e.currentTarget;
-        if (!model || !model.data || model.data.childNodes.length === 0) {
-            return;
-        }
-
-        if (typeof lstRevisions !== "undefined") {
-            lstRevisions.setModel(model);
-            this.$restoreSelection(tabEditors.getPage());
+            lstRevisions.select(node);
         }
     },
 
@@ -307,6 +312,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             revObj = this.rawRevisions[path] = {};
             revObj.useCompactList = true;
             revObj.groupedRevisionIds = [];
+            revObj.previewCache = {};
         }
         return revObj;
     },
@@ -315,6 +321,54 @@ module.exports = ext.register("ext/revisions/revisions", {
     // Event listeners //
     /////////////////////
 
+    /** related to: Revisions#showQuestionWindow
+     * Revisions#onExternalChange(e) -> Boolean
+     * - e(Object): Event object
+     *
+     * This is the listener to the file watcher event. It is fired when a file is
+     * modified by an external application, and it starts the chain of messaging
+     * events, starting with asking the server to send over the contents of the
+     * modified file as it is after the external changes.
+     **/
+    onExternalChange: function(e) {
+        // It could happen early, when `winQuestionRev` hasn't yet been defined
+        ext.initExtension(this);
+        var page = tabEditors.getPage();
+        var doc = page.$doc;
+
+        // We want to prevent autosave to keep saving while we are resolving
+        // this query.
+        this.prevAutoSaveValue = Util.isAutoSaveEnabled();
+        settings.model.setQueryValue("general/@autosaveenabled", false);
+
+        if (!this.isCollab(doc)) {
+            ide.send({
+                command: "revisions",
+                subCommand: "getRealFileContents",
+                path: Util.getDocPath(page)
+            });
+        }
+        return false;
+    },
+
+    hideRevisionsInfo : function() {
+        if (!isInfoActive) { 
+            setTimeout(function(e) {
+                ext.initExtension(self);
+                if (!isInfoActive) { 
+                    apf.tween.single(revisionsInfo, {
+                        from:1,
+                        to:0,
+                        steps: 10,
+                        type     : "opacity",
+                        anim     : apf.tween.easeInOutCubic,
+                        interval: 30
+                    });
+                }
+            }, 200);
+        }
+    },
+    
     onOpenFile: function(data) {
         if (!data || !data.doc)
             return;
@@ -322,13 +376,13 @@ module.exports = ext.register("ext/revisions/revisions", {
         var self = this;
         var doc = data.doc;
         var page = doc.$page;
-        if (!this.$pageIsCode(page)) {
+        if (!Util.pageIsCode(page)) {
             return;
         }
 
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
-        var path = self.$getDocPath(doc.$page);
+        var path = Util.getDocPath(doc.$page);
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
                 self.onDocChange.call(self, e, doc);
@@ -353,7 +407,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterSwitch: function(e) {
-        if (!this.$pageIsCode(e.nextPage)) {
+        if (!Util.pageIsCode(e.nextPage)) {
             return;
         }
 
@@ -369,10 +423,11 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
+        this.setSaveButtonCaption();
+
         var self = this;
-        setTimeout(function() { self.setSaveButtonCaption(); });
         setTimeout(function() {
-            var path = self.$getDocPath(e.page);
+            var path = Util.getDocPath(e.page);
             if (self.rawRevisions[path]) {
                 delete self.rawRevisions[path];
             }
@@ -380,9 +435,80 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (self.docChangeListeners[path]) {
                 delete self.docChangeListeners[path];
             }
+
+            for (var rev in self.revisionQueue) {
+                var _path = self.revisionQueue[rev].path;
+                if (_path && _path === path) {
+                    delete self.revisionQueue[rev];
+                }
+            }
         }, 100);
 
         this.save(e.page);
+    },
+
+    $makeNewRevision: function(rev) {
+        var revObj = this.$getRevisionObject(rev.path);
+        rev.revisions = revObj.allRevisions;
+        // To not have to extract and sort timestamps from allRevisions
+        rev.timestamps = revObj.allTimestamps;
+        this.worker.postMessage(rev);
+    },
+
+    onRevisionSaved: function(data) {
+        var savedTS = parseInt(data.ts, 10);
+        var matches = this.offlineQueue.filter(function(rev) {
+            return rev && (parseInt(rev.applyOn, 10) === savedTS);
+        });
+
+        if (matches.length) {
+            this.$makeNewRevision(matches[0]);
+        }
+    },
+
+    onAfterOnline: function(e) {
+        var queue = this.offlineQueue;
+        if (!queue || !queue.length) {
+            return;
+        }
+
+        queue.forEach(function(rev, ind, _queue) {
+            var prev = _queue[ind - 1];
+            if (prev) {
+                rev.applyOn = prev.ts;
+            }
+        });
+        this.$makeNewRevision(queue.shift()); // First item doesn't depend on anything
+    },
+
+    afterSelect: function(e) {
+        var node = e.currentTarget.selected;
+        if (!node || e.currentTarget.selection.length > 1) {
+            return;
+        }
+
+        var revObj = this.$getRevisionObject(Util.getDocPath());
+        var id = parseInt(node.getAttribute("id"), 10);
+        var cache = revObj.previewCache;
+        if (cache[id]) {
+            this.previewRevision(id, null, cache[id][1], cache[id][0]);
+        }
+        else {
+            this.loadRevision(id, "preview");
+        }
+        tabEditors.getPage().$selectedRevision = id;
+    },
+
+    afterModelUpdate: function(e) {
+        var model = e.currentTarget;
+        if (!model || !model.data || model.data.childNodes.length === 0) {
+            return;
+        }
+
+        if (typeof lstRevisions !== "undefined") {
+            lstRevisions.setModel(model);
+            this.$restoreSelection(tabEditors.getPage(), model);
+        }
     },
 
     onDocChange: function(e, doc) {
@@ -396,8 +522,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         clearTimeout(this.docChangeTimeout);
         this.docChangeTimeout = setTimeout(function(self) {
-            var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-            if (doc.$page && autoSaveEnabled) {
+            if (doc.$page && Util.isAutoSaveEnabled()) {
                 self.setSaveButtonCaption();
                 self.save(doc.$page);
             }
@@ -417,20 +542,24 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.previewRevision(content.id, content.value, content.ranges);
                 break;
             case "newRevision":
+                var revision = e.data.revision;
                 // We don't save revision if it doesn't contain any patches
                 // (i.e. nothing new was saved)
-                if (e.data.revision.patch[0].length === 0) {
+                if (revision.patch[0].length === 0) {
                     return;
                 }
 
-                var data = {
-                    command: "revisions",
-                    subCommand: "saveRevision",
-                    path: this.$getDocPath(),
-                    revision: e.data.revision
+                this.revisionQueue[revision.ts] = {
+                    path: e.data.path,
+                    revision: revision
                 };
 
-                ide.send(data);
+                this.$saveExistingRevision(e.data.path, revision);
+                break;
+            case "recovery":
+                if (e.data.revision.inDialog === true) {
+                    this.showQuestionWindow(e.data);
+                }
                 break;
             case "debug":
                 console.log("WORKER DEBUG\n", e.data.content);
@@ -438,31 +567,82 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    $saveExistingRevision: function(path, revision) {
+        ide.send({
+            command: "revisions",
+            subCommand: "saveRevision",
+            path: path,
+            revision: revision
+        });
+    },
+
     onMessage: function(e) {
         var message = e.message;
-        if (message.type !== "revision")
+        if (message.type !== "revision") {
             return;
+        }
 
+        var page = tabEditors.getPage();
+        var revObj = this.$getRevisionObject(message.path);
         switch (message.subtype) {
+            case "confirmSave":
+                revObj = this.$getRevisionObject(message.path);
+                var ts = message.ts;
+                // This could happen in edge cases, like the user having two browsers
+                // opened and active on the same file, and then saving. Only one
+                // of them will have the revision in the queue (in single user mode).
+                // In that case, we understand that there is some problem and
+                // request the entire revision history to the server.
+                if (!this.revisionQueue[ts]) {
+                    ide.send({
+                        command: "revisions",
+                        subCommand: "getRevisionHistory",
+                        path: message.path,
+                        id: ts
+                    });
+                    return;
+                }
+
+                var revision = this.revisionQueue[ts].revision;
+                if (revision) {
+                    revision.saved = true;
+                    revObj.allRevisions[ts] = revision;
+                    delete this.revisionQueue[ts];
+
+                    this.generateCache(revObj);
+                    ide.dispatchEvent("revisionSaved", {
+                        ts: ts,
+                        path: message.path,
+                        revision: revision
+                    });
+
+                    // If we are on the page for the doc, let's populate the model,
+                    // otherwise it is a waste of resources
+                    if (Util.getDocPath() === message.path) {
+                        this.populateModel(revObj, this.model);
+                    }
+                }
+                break;
+
             case "getRevisionHistory":
-                var revObj = this.$getRevisionObject(message.path);
                 if (message.body && message.body.revisions) {
                     revObj.allRevisions = message.body.revisions;
                 }
 
                 this.generateCache(revObj);
-
                 if (!message.nextAction || !message.id) {
-                    this.populateModel(revObj);
+                    if (page && Util.getDocPath(page) === message.path &&
+                        page.$showRevisions === true) {
+                        this.populateModel(revObj, this.model);
+                    }
                     break;
                 }
 
-                var revision = this.getRevision(message.id);
                 var group = {};
                 var data = {
                     id: message.id,
                     group: group,
-                    type: message.nextAction,
+                    type: message.nextAction
                 };
 
                 var len = revObj.groupedRevisionIds.length;
@@ -489,11 +669,78 @@ module.exports = ext.register("ext/revisions/revisions", {
                     }
                 }
 
-                group[message.id] = revision;
+                group[message.id] = this.getRevision(message.id);
                 data.groupKeys = [parseInt(message.id, 10)];
                 this.worker.postMessage(data);
                 break;
+
+            case "getRealFileContents":
+                this.worker.postMessage({
+                    inDialog: true,
+                    type: "recovery",
+                    lastContent: page.$doc.getValue(),
+                    realContent: message.contents,
+                    revisions: revObj.allRevisions,
+                    path: message.path,
+                    // To not have to extract and sort timestamps from allRevisions
+                    timestamps: revObj.allTimestamps
+                });
         }
+    },
+
+
+    /**
+     * Revisions#showQuestionWindow(data) -> Void
+     * - data (Object): Data about the revision to be potentially submitted, and
+     * the contents of the file before and after the external edit.
+     *
+     * Shows a dialog that lets the user choose whether to keep the current state
+     * of the document or to reload it to get the external changes.
+     **/
+    showQuestionWindow: function(data) {
+        if (typeof winQuestionRev === "undefined") {
+            return;
+        }
+
+        var self = this;
+        var c9DocContent = data.revision.finalContent;
+        var serverContent = data.revision.realContent;
+        var page = tabEditors.getPage();
+        var doc = page.$doc;
+        var path = data.path;
+
+        // No need to send these over the wire.
+        delete data.revision.finalContent;
+        delete data.revision.realContent;
+
+        var dataToSend = {
+            command: "revisions",
+            subCommand: "saveRevision",
+            path: path,
+            revision: data.revision,
+            forceRevisionListResponse: true
+        };
+
+        var finalize = function() {
+            winQuestionRev.hide();
+            settings.model.setQueryValue("general/@autosaveenabled", this.prevAutoSaveValue || true);
+        };
+
+        Util.question(
+            "File changed, reload tab?",
+            path + " has been modified while you were editing it.",
+            "Do you want to reload it?",
+            function YesReload() { // Yes
+                doc.setValue(serverContent);
+                self.save(page);
+                finalize();
+            },
+            function NoDontReload() { // No
+                doc.setValue(c9DocContent);
+                ide.send(dataToSend);
+                finalize();
+            }
+        );
     },
 
     /**
@@ -510,8 +757,8 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var getTsAndSort = function(obj) {
             return Object.keys(obj)
-                .map(function(ts) { return parseInt(ts, 10) })
-                .sort(function(a, b) { return a - b });
+                .map(function(ts) { return parseInt(ts, 10); })
+                .sort(function(a, b) { return a - b; });
         };
 
         // Create an array of the numeric timestamps. `allTimestamps` will store
@@ -526,10 +773,21 @@ module.exports = ext.register("ext/revisions/revisions", {
         revObj.compactTimestamps = getTsAndSort(revObj.compactRevisions);
     },
 
-    toggleListView: function() {
-        var revObj = this.rawRevisions[this.$getDocPath()];
+    toggleListView: function(model) {
+        var revObj = this.$getRevisionObject(Util.getDocPath());
         revObj.useCompactList = !!!revObj.useCompactList;
+
+        // We don't want to mix up compact/detailed preview caches
+        revObj.previewCache = {};
         this.$setRevisionListClass();
+
+        // Select first child upon change of list view
+        setTimeout(function() {
+            var node = model.data.firstChild;
+            if (node) {
+                lstRevisions.select(node);
+            }
+        });
     },
 
     /**
@@ -537,12 +795,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      *
      * Populates the revisions model with the current revision list and attributes.
      **/
-    populateModel: function(revObj) {
-        if (!revObj) {
-            revObj = this.rawRevisions[this.$getDocPath()];
+    populateModel: function(revObj, model) {
+        if (!revObj || !model) {
+            console.error("Expected a parameter and a model");
+            return;
         }
-
-        if (!revObj) { return; }
 
         var revisions, timestamps;
         if (revObj.useCompactList && revObj.compactRevisions && revObj.compactTimestamps) {
@@ -554,35 +811,33 @@ module.exports = ext.register("ext/revisions/revisions", {
             timestamps = revObj.allTimestamps;
         }
 
+        var contributorToXml = function(c) {
+            return "<contributor email='" + c + "' />";
+        };
         var revsXML = "";
         for (var i = timestamps.length - 1; i >= 0; i--) {
             var ts = timestamps[i];
             var rev = revisions[ts];
             var friendlyDate = Util.localDate(ts).toString("MMM d, h:mm tt");
             var restoring = rev.restoring || "";
+            var savedToDisk = rev.saved !== false;
 
             revsXML += "<revision " +
                 "id='" + rev.ts + "' " +
                 "name='" + friendlyDate + "' " +
+                "saved='" + savedToDisk + "' " +
                 "silentsave='" + rev.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
-            var contributors;
+            var contributors = "";
             if (rev.contributors && rev.contributors.length) {
-                contributors = rev.contributors.map(function(c) {
-                    return "<contributor email='" + c + "' />";
-                }).join("");
-            }
-            else {
-                contributors = "";
+                contributors = rev.contributors.map(contributorToXml).join("");
             }
 
             revsXML += "<contributors>" + contributors + "</contributors></revision>";
         }
 
-        if (this.model) {
-            this.model.load("<revisions>" + revsXML + "</revisions>");
-        }
+        this.model.load("<revisions>" + revsXML + "</revisions>");
     },
 
     /**
@@ -601,7 +856,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     getRevision: function(id, content) {
         id = parseInt(id, 10);
 
-        var revObj = this.rawRevisions[this.$getDocPath()];
+        var revObj = this.$getRevisionObject(Util.getDocPath());
         var tstamps = revObj.allTimestamps.slice(0);
         var revision = tstamps.indexOf(id);
 
@@ -639,7 +894,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.$setRevisionNodeAttribute(id, "loading", "true");
         }
 
-        var path = this.$getDocPath();
+        var path = Util.getDocPath();
         var revObj = this.rawRevisions[path];
         if (revObj) {
             return this.onMessage({
@@ -648,7 +903,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     type: "revision",
                     subtype: "getRevisionHistory",
                     path: path,
-                    nextAction: nextAction,
+                    nextAction: nextAction
                 }
             });
         }
@@ -659,7 +914,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             subCommand: "getRevisionHistory",
             nextAction: nextAction,
             path: path,
-            id: id,
+            id: id
         });
     },
 
@@ -759,7 +1014,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.$setRevisionNodeAttribute(id, "loading", "false");
         this.saveRevision(doc, true, id);
-
         this.hide();
     },
 
@@ -776,7 +1030,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     previewRevision: function(id, value, ranges, newSession) {
         var editor = ceEditor.$editor;
         var session = editor.getSession();
-        var revObj = this.$getRevisionObject(this.$getDocPath());
+        var revObj = this.$getRevisionObject(Util.getDocPath());
 
         if (session.previewRevision !== true && !revObj.realSession) {
             revObj.realSession = session;
@@ -811,7 +1065,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             doc = newSession.doc;
         }
 
-        editor.selection.clearSelection()
+        editor.selection.clearSelection();
 
         // Look for the node that references the revision we are loading and
         // update its state to loaded.
@@ -834,7 +1088,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (typeof ceEditor === "undefined")
             return;
 
-        var revObj = this.$getRevisionObject(this.$getDocPath());
+        var revObj = this.$getRevisionObject(Util.getDocPath());
         if (revObj.realSession) {
             ceEditor.$editor.setSession(revObj.realSession);
         }
@@ -843,8 +1097,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
-        var autoSaveEnabled = apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-        if (!self.tabEditors || !autoSaveEnabled)
+        if (!self.tabEditors || !Util.isAutoSaveEnabled())
             return;
 
         tabEditors.getPages().forEach(this.save, this);
@@ -861,20 +1114,19 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
-        if (!page || !this.$pageHasChanged(page) || !this.$pageIsCode(page))
+        if (!page || !Util.pageHasChanged(page) || !Util.pageIsCode(page))
             return;
 
         var node = page.$doc.getNode();
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
-            
+
         ext.initExtension(this); //Why???
-            
         Save.quicksave(page, function(){}, true);
     },
 
     /**
-     * Revisions#saveRevision(doc, silentsave, restoring)
+     * Revisions#saveRevision(doc, silentsave, restoring) -> Void
      * - doc (Object): Document Object that refers to the document we want to save a revision for
      * - silentsave (Boolean): Indicates whether the save is automatic or forced
      * - restoring (Boolean): Indicates whether we are saving a previous revision retrieval
@@ -884,13 +1136,12 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     saveRevision: function(doc, silentsave, restoring) {
         var page = doc.$page;
-        if (!this.$pageIsCode(page)) {
+        if (!Util.pageIsCode(page)) {
             return;
         }
 
-        var docPath = this.$getDocPath(page);
+        var docPath = Util.getDocPath(page);
         var contributors = this.$getEditingUsers(docPath);
-
         if (contributors.length === 0 && this.defaultUser.email) {
             contributors.push(this.defaultUser.email);
         }
@@ -910,14 +1161,22 @@ module.exports = ext.register("ext/revisions/revisions", {
         // in a worker istead of sending over to the server. Later on, we'll
         // send the new revision to the server.
         if (!this.isCollab(doc)) {
-            var revObj = this.rawRevisions[docPath];
             data.type = "newRevision";
             data.lastContent = doc.getValue();
-            data.revisions = revObj.allRevisions;
-            // To not have to extract and sort timestamps from allRevisions
-            data.timestamps = revObj.allTimestamps;
 
-            return this.worker.postMessage(data);
+            if (ide.onLine === false) {
+                data.ts = Date.now();
+                this.offlineQueue.push(data);
+                return;
+            }
+            else {
+                var revObj = this.$getRevisionObject(docPath);
+                data.revisions = revObj.allRevisions;
+                // To not have to extract and sort timestamps from allRevisions
+                data.timestamps = revObj.allTimestamps;
+                this.worker.postMessage(data);
+                return;
+            }
         }
 
         ide.send(data);
@@ -934,8 +1193,8 @@ module.exports = ext.register("ext/revisions/revisions", {
      **/
     addUserToDocChangeList: function(user, doc) {
         if (user && doc) {
-            var origPath = this.$getDocPath(doc.$page);
-            var stack = this.revisionsData[origPath];
+            var path = Util.getDocPath(doc.$page);
+            var stack = this.revisionsData[path];
             if (stack && (stack.usersChanged.indexOf(user.user.email) === -1)) {
                 stack.usersChanged.push(user.user.email);
             }
@@ -978,33 +1237,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
-    /**
-     * Revisions#$pageHasChanged(page) -> Boolean
-     *
-     * Check to see if the page has been actually modified since the last
-     * save.
-     **/
-    $pageHasChanged: function(page) {
-        if (!page) {
-            return;
-        }
-        var model = page.getModel();
-        return model && model.queryValue("@changed") == 1;
-     },
-
-    $getDocPath: function(page) {
-        if (!page && tabEditors)
-            page = tabEditors.getPage();
-
-        // Can we rely on `name`?
-        // What follows is a hacky way to get a path that we can use on
-        // the server. I am sure that these workspace string manipulation
-        // functions are somewhere...to be fixed.
-        var docPath = page.name.replace(ide.davPrefix, "");
-        docPath = docPath.charAt(0) === "/" ? docPath.substr(1) : docPath;
-        return docPath;
-    },
-
     $getEditingUsers: function(path) {
         var users = [];
         var rev = this.revisionsData[path];
@@ -1022,7 +1254,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $setRevisionListClass: function() {
-        var revObj = this.rawRevisions[this.$getDocPath()];
+        var revObj = this.rawRevisions[Util.getDocPath()];
         if (!revObj) {
             return;
         }
@@ -1034,12 +1266,12 @@ module.exports = ext.register("ext/revisions/revisions", {
             apf.setStyleClass(lstRevisions.$ext, null, ["compactView"]);
         }
 
-        this.populateModel();
+        this.populateModel(revObj, this.model);
     },
 
     show: function() {
         var page = tabEditors.getPage();
-        if (!this.$pageIsCode(page)) {
+        if (!Util.pageIsCode(page)) {
             return;
         }
 
@@ -1062,11 +1294,14 @@ module.exports = ext.register("ext/revisions/revisions", {
             lstRevisions.setModel(model);
         }
 
-        if (model && (!model.data || model.data.length === 0)) {
-            this.populateModel();
+        if (model) {
+            if (!model.data || model.data.length === 0) {
+                this.populateModel(this.rawRevisions[Util.getDocPath()], model);
+            }
+            else {
+                this.$restoreSelection(page, model);
+            }
         }
-
-        this.$restoreSelection(page);
     },
 
     hide: function() {
@@ -1104,6 +1339,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.removeEventListener("editorswitch", this.$onSwitchFileFn);
         }
 
+        if (this.$onAfterSwitchFn) {
+            ide.removeEventListener("afterswitch", this.$onAfterSwitchFn);
+        }
+
         if (this.$afterSelectFn) {
             lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
         }
@@ -1130,13 +1369,17 @@ module.exports = ext.register("ext/revisions/revisions", {
             ide.addEventListener("editorswitch", this.$onSwitchFileFn);
         }
 
+        if (this.$onAfterSwitchFn) {
+            ide.addEventListener("afterswitch", this.$onAfterSwitchFn);
+        }
+
         if (this.$afterSelectFn) {
             lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
         }
     },
 
     enable: function() {
-        this.nodes.each(function(item){
+        this.nodes.each(function(item) {
             item.enable();
         });
 
@@ -1177,9 +1420,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.disableEventListeners();
     },
 
-    destroy : function() {
+    destroy: function() {
         menus.remove("File/File revisions");
         menus.remove("File/~", 1000);
+
+        commands.removeCommandByName("revisionpanel");
 
         if (this.saveInterval) {
             clearInterval(this.saveInterval);

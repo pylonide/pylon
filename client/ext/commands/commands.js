@@ -39,7 +39,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         init : function(){
             var _self = this;
             
-            ide.addEventListener("loadsettings", function(e){
+            ide.addEventListener("settings.load", function(e){
                 e.ext.setDefaults("general/keybindings", [["preset", "auto"]]);
                 
                 var preset = e.model.queryValue("general/keybindings/@preset");
@@ -68,22 +68,29 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         },
         
         exec : function(command, editor, args, e){
-            if (command.context 
-              && command.context.indexOf(apf.activeElement) == -1) //or should this be apf.xmldb.isChildOf?
-                return; //Disable commands for other contexts
-            
             if (!editor || editor.fake) {
-                //@todo this needs a better abstraction
-                //@todo focus handling
-                var page = self.tabEditors && tabEditors.getPage();
+                //@todo focus handling for splitview
+                var page = self.tabEditors && tabEditors.$activepage;
                 editor = page && page.$editor;
-                if (editor && editor.ceEditor)
-                    editor = editor.ceEditor.$editor;
             }
             
+            if (Array.isArray(command)) {
+                for (var i = command.length; i--; ) {
+                    var cmd = command[i];
+                    if (!cmd.isAvailable || cmd.isAvailable(editor))
+                        break;
+                    else
+                        cmd = null;
+                }
+                if (!cmd)
+                    return;
+                command = cmd;
+            } else if (command.isAvailable && !command.isAvailable(editor))
+                return; //Disable commands for other contexts
+
             if (exec.apply(this, [command, editor, args]) !== false && e) {
-                e.returnValue = false;
-                e.preventDefault();
+//                e.returnValue = false;
+//                e.preventDefault();
                 apf.queue.empty();
                 return true;
             }
@@ -102,7 +109,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                     .setProperty(command.name, command.bindKey[this.platform]);
         },
         
-        addCommands : function(commands, context, asDefault){
+        addCommands : function(commands, asDefault){
             var _self = this;
             commands && Object.keys(commands).forEach(function(name) {
                 var command = commands[name];
@@ -117,24 +124,74 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                     
                 if (asDefault && _self.commands[command.name])
                     return;
-                
-                if (context && !command.context)
-                    command.context = context;
     
-                this.addCommand(command, context);
+                this.addCommand(command);
             }, this);
         },
         
-        removeCommands : function(commands, context){
+        removeCommands : function(commands){
             Object.keys(commands).forEach(function(name) {
-                this.removeCommand(commands[name], context);
+                this.removeCommand(commands[name]);
             }, this);
         },
         
         removeCommand : function(command, context){
-            if (ide.commandManager[command.name])
-                ide.commandManager.setProperty(command.name, "");
-            removeCommand.apply(this, arguments);
+            var name = (typeof command === 'string' ? command : command.name);
+
+            if (ide.commandManager[name])
+                ide.commandManager.setProperty(name, "");
+
+            command = this.commands[name];
+            delete this.commands[name];
+
+        
+            var ckb = this.commmandKeyBinding;
+            for (var hashId in ckb) {
+                for (var key in ckb[hashId]) {
+                    var cl = ckb[hashId][key];
+                    if (cl == command) {
+                        delete ckb[hashId][key];
+                    } else if (cl && cl.indexOf && cl.splice) {
+                        var i = cl.indexOf(command);
+                        if (i != -1)
+                            cl.splice(i, 1);
+                    }
+                }
+            };
+        },
+        
+        bindKey: function(key, command) {
+            if(!key)
+                return;
+
+            var ckb = this.commmandKeyBinding;
+            key.split("|").forEach(function(keyPart) {
+                var binding = this.parseKeys(keyPart, command);
+                var hashId = binding.hashId;
+                var hash = (ckb[hashId] || (ckb[hashId] = {}))
+                
+                if (!hash[binding.key])
+                    hash[binding.key] = command;
+                else if (Array.isArray(hash[binding.key]))
+                    hash[binding.key].push(command);
+                else
+                    hash[binding.key] = [hash[binding.key], command];
+            }, this);
+        },
+         
+        removeCommandByName : function(name){
+            var cmd = this.commands[name];
+            if (cmd)
+                this.removeCommand(cmd);
+        },
+        
+        removeCommandsByName : function(list){
+            var _self = this;
+            list.forEach(function(name){
+                var cmd = _self.commands[name];
+                if (cmd)
+                    _self.removeCommand(cmd);
+            });
         },
     
         enable : function(){

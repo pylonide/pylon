@@ -38,9 +38,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             menus.addItemByPath("Goto/Goto Line...", new apf.item({
                 caption : "Goto Line...",
                 hint: "enter a linenumber and jump to it in the active document",
-                onclick : function(){
-                    _self.gotoline();
-                }
+                command : "gotoline"
             }), 200)
         );
 
@@ -51,6 +49,9 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         commands.addCommand({
             name: "gotoline",
             bindKey: {mac: "Command-L", win: "Ctrl-G"},
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function() {
                 _self.gotoline();
             }
@@ -242,19 +243,23 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             var maxTop = aceHtml.offsetHeight - winGotoLine.getHeight() - 10;
             
             var top;
+            //First part of doc
             if (pos.pageY - firstLine < half) {
                 top = Math.max(0, pos.pageY - firstLine - 5);
             }
+            //Last part of doc
             else if (lastLine - pos.pageY < half) {
                 top = Math.min(maxTop, half + (half - (lastLine - pos.pageY)));
             }
+            //Already visible
             else if (ace.isRowFullyVisible(cursor.row)) {
                 //Determine the position of the window
                 var epos = apf.getAbsolutePosition(aceHtml);
                 top = Math.min(maxTop, pos.pageY - epos[1] - 5);
             }
+            //General case (centered)
             else {
-                top = half - 5 - lineHeight;
+                top = half - 5;// - lineHeight;
             }
 
             if (this.lineControl)
@@ -303,6 +308,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("gotoline");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

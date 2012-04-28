@@ -62,7 +62,7 @@ module.exports = ext.register("ext/imgview/imgview", {
                 return false;
         });
         
-        amlPage.appendChild(editor);
+        //amlPage.appendChild(editor);
         editor.show();
 
         this.imgEditor = this.amlEditor = editor;

@@ -88,7 +88,7 @@ this.tour = {
             }
         },
         el: undefined,
-        div: "DIV[1]",
+        div: "ceEditorGutter",
         desc: "The gutter can do more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set breakpoints here.",
         pos: "right",
         time: 5
@@ -158,7 +158,7 @@ this.tour = {
             doc.setBreakpoints([1]);
         },
         el: undefined,
-        div: "DIV[1]",
+        div: "ceEditorGutter",
         desc: "We're ready to test our code, so we've inserted a breakpoint on this line by clicking in the gutter. Before debugging, though, we'll need to set up a debugging scenario.",
         pos: "right",
         time: 5

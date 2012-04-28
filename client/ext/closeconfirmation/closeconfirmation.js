@@ -27,7 +27,7 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
         // when unloading the window
         window.onbeforeunload = this.onBeforeUnloadHandler;
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             settings.setDefaults("general", [
                 ["confirmexit", "false"]
             ]);

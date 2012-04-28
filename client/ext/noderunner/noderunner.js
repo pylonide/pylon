@@ -33,7 +33,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
         dbg.addEventListener("break", function(e){
-            ide.dispatchEvent("break", e);
+            ide.dispatchEvent("break");
         });
 
         dbgNode.addEventListener("onsocketfind", function() {
@@ -55,7 +55,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         this.nodePid = null;
 
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             _self.NODE_VERSION = e.model.queryValue("auto/node-version/@version") || "auto";
         });
     },

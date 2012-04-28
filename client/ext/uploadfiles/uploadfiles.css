@@ -1,0 +1,73 @@
+.uploadactivity-header {
+    font-family: Arial;
+    font-size: 11px;
+    color: #606060;
+    text-shadow: #ffffff 0 1px 0;
+    line-height: 37px;
+    font-weight: bold;
+    text-indent: 10px;
+    height: 30px;
+    width: 100%;
+    background: url(/static/ext/uploadfiles/style/images/list_uploadactivity_header_bg.png) no-repeat 0 0;
+    background-size: 100% 30px;
+}
+
+.uploadDropArea {
+    height: 95px;
+    width: 335px;
+    background: url(/static/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 0;
+}
+
+.uploadDropArea.over {
+    background: url(/static/ext/uploadfiles/style/images/upload-droparea-box.png) no-repeat 0 -95px;
+}
+.uploadOrText {
+    height: 12px;
+    width: 18px;
+    background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-text.png) no-repeat 0 1px;
+}
+
+.uploadOrSelectText {
+    height: 15px;
+    width: 77px;
+    background: url(/static/ext/uploadfiles/style/images/upload-dialog-or-select-text.png) no-repeat 0 0;
+}
+
+.txtUploadTargetFolder {
+    font-size: 11px;
+    color: #838383;
+}
+#fileUploadSelect {
+    z-index: 9999;
+}
+#fileUploadSelect {
+    position: absolute;
+    top: 127px;
+    left: 99px;
+    width: 181px;
+    height: 24px;
+    opacity: 0;
+}
+
+#fileUploadSelect.uploadWithFolders {
+    position: absolute;
+    top: 122px;
+    left: 93px;
+    width: 65px;
+    height: 24px;
+    opacity: 0;
+}
+
+#folderUploadSelect {
+    display: none;
+    position: absolute;
+    top: 127px;
+    left: 188px;
+    width: 152px;
+    height: 24px;
+    opacity: 0;
+}
+
+.uploadSelectButtons div {
+    color: #ffffff;
+}

@@ -37,24 +37,6 @@ module.exports = ext.register("ext/settings/settings", {
         settings.save(force);
     },
 
-    saveSettingsPanel: function() {
-        var pages   = self.pgSettings ? pgSettings.getPages() : [],
-            i       = 0,
-            l       = pages.length,
-            changed = false;
-        for (; i < l; ++i) {
-            if (!pages[i].$at) continue;
-            if (pages[i].$at.undolength > 0) {
-                pages[i].$commit(pages[i]);
-                changed = true;
-            }
-        }
-        if (ide.dispatchEvent("savesettings", {
-            model : this.model
-        }) !== false || changed)
-            settings.save();
-    },
-
     addSection : function(tagName, name, xpath, cbCommit){
         var node = this.model.queryNode(xpath + "/" + tagName);
         if (!node)
@@ -198,26 +180,6 @@ module.exports = ext.register("ext/settings/settings", {
         return false;
     },
 
-    saveSettings: function() {
-        winSettings.hide();
-        this.saveSettingsPanel();
-    },
-
-    applySettings: function() {
-        this.saveSettingsPanel();
-    },
-
-    cancelSettings: function() {
-        winSettings.hide();
-        var pages = pgSettings.getPages(),
-            i     = 0,
-            l     = pages.length;
-        for (; i < l; ++i) {
-            if (!pages[i].$at) continue;
-            pages[i].$at.undo(-1);
-        }
-    },
-    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
@@ -231,6 +193,8 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("opensettingspanel");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

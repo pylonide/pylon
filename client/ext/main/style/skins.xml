@@ -98,8 +98,8 @@
             position:absolute;
             background:url(images/offline.png) no-repeat 0 0;
             top:23px;
-            right:-30px;
-            display:none;
+            right: -30px;
+            display: none;
             z-index: 100000;
         }
 
@@ -1933,6 +1933,10 @@
             background-repeat   : no-repeat;
             top: -32px;
         }
+        
+        .header-btnDisabled {
+            opacity : 0.3;
+        }
 
         .panel-settings {
         	background-position: 0px -270px;
@@ -2119,6 +2123,10 @@
         	box-shadow: -1px 0 0 0 #000 inset, 1px 0 0 0 #000 inset;
         	background-position: 0 -217px;
         }
+        
+        .mnubtnDisabled .icon, .mnubtnDisabled SPAN{
+            opacity : 0.3
+        }
 
         .mnubtn .icon {
 			background-image  : url(images/c9-repeat-x.png);
@@ -2127,8 +2135,6 @@
 			height            : 26px;
         }
 
-
-        /*.mnubtnDisabled*/
         .mnubtnDisabled .icon {
         	opacity: 0.3;
         }
@@ -2137,7 +2143,6 @@
         	box-shadow: none;
         	background-image: none;
         }
-
 
         .mnubtn .pointer {
             /*background-image    : url(images/gitui_close_arrow.png);
@@ -2373,7 +2378,7 @@
             text-shadow   : #626267 0px 1px 0px;
             color: #38383d;
         }
-
+        
         .btn-default-css3 .caption {
             border-top: 1px solid #93939B;
             padding: 3px 18px 4px;
@@ -2972,7 +2977,7 @@
           -webkit-user-select: none;
           -o-user-select: none;
           user-select: none;
-          z-index : 100000;
+          z-index : 10001;
         }
         
         .ace_corner{
@@ -6159,7 +6164,11 @@
             left: 0;
             z-index: 0;
         }
-
+        
+        .bk-window.dark-bg .bg-bk-content {
+            background:url(images/modalbg-dark.png) repeat 0 0;
+        }
+        
         .bk-window.nofooter .bg-bk-content {
             bottom: 0;
         }
@@ -8412,6 +8421,10 @@
     .codeditorHolder {
     	padding-top: 7px;
     }
+    
+    .editor_tab.offline .btnsesssioncontainer .btnclose strong{
+        display : none;
+    }
 
     .editor_tab .editor_bg {
         height : auto;
@@ -10191,6 +10204,10 @@
             border-bottom:1px solid transparent;
             /*width:100%;*/
         }
+        
+        .filemgr-treeDisabled .item-fix{
+            opacity : 0.3;
+        }
 
         .filemgr-tree .item-fix .item {
             height:18px;
@@ -10207,13 +10224,15 @@
         }
 
         .filemgr-dragtree .item .caption,
-        .filemgr-tree .item-fix.dragAppend .item {
+        .filemgr-tree .item-fix.dragAppend .item,
+        .filemgr-tree .item-fix.dragAppendUpload .item {
             color: white;
             margin-right: 5px;
         }
 
         .filemgr-dragtree .item .caption,
-        .filemgr-tree .item-fix.dragAppend .label-content {
+        .filemgr-tree .item-fix.dragAppend .label-content,
+        .filemgr-tree .item-fix.dragAppendUpload .label-content {
             -webkit-border-radius: 10px;
             -moz-border-radius: 10px;
             border-radius: 10px;
@@ -10222,7 +10241,12 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
-
+        
+        .filemgr-tree .item-fix.dragAppendUpload .label-content > LABEL {
+            background: url(images/tree_upload_icon.png) no-repeat 0 0 !important;
+            background-position: 3 0;
+        }
+        
         .filemgr-tree .item-fix.dragDenied {
 
         }
@@ -10242,9 +10266,12 @@
         }
 
         .filemgr-dragtree,
+        .filemgr-tree .item-fix.dragAppend .item LABEL .caption,
+        .filemgr-tree .item-fix.dragAppendUpload .item LABEL .caption,
         .filemgr-treeFocus .item-fix.selected .item LABEL .caption,
         .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption,
-        .filemgr-tree.openfile .item-fix.selected .item LABEL .caption{
+        .filemgr-tree.openfile .item-fix.selected .item LABEL .caption,
+        .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption {
             color:white;
         }
 
@@ -10338,6 +10365,11 @@
             white-space: nowrap;
         }
 
+        .filemgr-tree .fileupload .item LABEL .caption {
+            color: #a6a6a6;
+            text-shadow : #ffffff 0px 1px 0px;
+        }
+        
         .filemgr-tree .loading .item {
             background : url(images/file-tree-load-spinner.gif) no-repeat 16px 1px;
         }

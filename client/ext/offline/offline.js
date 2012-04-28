@@ -54,7 +54,7 @@ module.exports = ext.register("ext/offline/offline", {
 
         // preload the offline image programmatically:
         var img = new Image();
-        img.src = ide.staticPrefix + "ext/main/style/images/offline.png";
+        img.src = ide.staticPrefix + "/ext/main/style/images/offline.png";
 
         //Replace http checking because we already have a socket
         //offline.isSiteAvailable = function(){};
@@ -343,7 +343,7 @@ module.exports = ext.register("ext/offline/offline", {
             }
         }
 
-        ide.addEventListener("savesettings", saveFiles);
+        ide.addEventListener("settings.save", saveFiles);
         apf.addEventListener("exit", saveFiles);
 
         /**** Init ****/
@@ -387,6 +387,13 @@ module.exports = ext.register("ext/offline/offline", {
             if (_ext.offline === false)
                 _ext.disable();
         }
+    },
+
+    toggleInfoDiv : function(show) {
+        if (show == true)
+            offlineInfoDiv.style.display = "block";
+        else
+            offlineInfoDiv.style.display = "none";
     }
 });
 

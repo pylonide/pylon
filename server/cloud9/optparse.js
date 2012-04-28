@@ -254,7 +254,7 @@ exports.args = function() {
  * @return string Value of arg
  */
 exports.arg = function(name) {
-    //puts(require("sys").inspect(arguments));
+    //puts(require("util").inspect(arguments));
     return args[name];
 };
 

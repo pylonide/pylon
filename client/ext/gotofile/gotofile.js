@@ -74,23 +74,25 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 ide.dispatchEvent("track_action", {type: "gotofile"});
                 return false;
             }
-            else if (e.keyCode == 38 && dgGoToFile.viewport.length) {
-                if (dgGoToFile.selected == dgGoToFile.$cachedTraverseList[0])
-                    return;
-                
-                var prev = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected, false);
-                if (prev) {
-                    dgGoToFile.select(prev, e.ctrlKey, e.shiftKey);
-                    dgGoToFile.focus();
-                    e.preventDefault();
+            else if (dgGoToFile.xmlRoot) {
+                if (e.keyCode == 38 && dgGoToFile.viewport.length) {
+                    if (dgGoToFile.selected == dgGoToFile.$cachedTraverseList[0])
+                        return;
+                    
+                    var prev = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected, false);
+                    if (prev) {
+                        dgGoToFile.select(prev, e.ctrlKey, e.shiftKey);
+                        dgGoToFile.focus();
+                        e.preventDefault();
+                    }
                 }
-            }
-            else if (e.keyCode == 40 && dgGoToFile.viewport.length) {
-                var next = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected);
-                if (next) {
-                    dgGoToFile.select(next, e.ctrlKey, e.shiftKey);
-                    dgGoToFile.focus();
-                    e.preventDefault();
+                else if (e.keyCode == 40 && dgGoToFile.viewport.length && dgGoToFile.selected) {
+                    var next = dgGoToFile.getNextTraverseSelected(dgGoToFile.selected);
+                    if (next) {
+                        dgGoToFile.select(next, e.ctrlKey, e.shiftKey);
+                        dgGoToFile.focus();
+                        e.preventDefault();
+                    }
                 }
             }
         });
@@ -237,9 +239,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 nodes = this.arrayCacheLastSearch;
             else
                 nodes = this.arrayCache;
-            var dt = new Date();
+                
             var cache = [], xml = search(nodes, keyword, cache);
-            console.log(new Date() - dt);
             data = apf.getXml(xml);
     
             this.arrayCacheLastSearch = cache;
@@ -268,7 +269,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             }
         }
         
-        dgGoToFile.select(dgGoToFile.getFirstTraverseNode());
+        var selNode = dgGoToFile.getFirstTraverseNode();
+        if (selNode)
+            dgGoToFile.select(selNode);
     },
     
     openFile: function(noanim){
@@ -389,6 +392,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("gotofile");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

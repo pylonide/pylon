@@ -15,7 +15,7 @@ var skin = require("text!ext/quickstart/skin.xml");
 var markup = require("text!ext/quickstart/quickstart.xml");
 
 // require("ext/settings/settings").model.queryValue("auto/help/@show") == "false"
-//ide.addEventListener("loadsettings", function(){
+//ide.addEventListener("settings.load", function(){
 
 var jsonQuickStart;
 
@@ -70,7 +70,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     hook : function(){
         var _self = this;
         
-        ide.addEventListener("loadsettings", function(e) {
+        ide.addEventListener("settings.load", function(e) {
             var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
             if(showQS === "" || showQS == "true") {
                 if(apf.getcookie("show-quick-start") == "false") {

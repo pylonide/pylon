@@ -196,7 +196,7 @@ module.exports = ext = {
         //Load markup
         var markup = oExtension.markup;
         if (markup) 
-            (oExtension.markupInsertionPoint || apf.document.documentElement).insertMarkup(markup);
+            (oExtension.markupInsertionPoint || amlParent || apf.document.documentElement).insertMarkup(markup);
 
         var deps = oExtension.deps;
         if (deps) {
