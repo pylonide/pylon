@@ -190,7 +190,7 @@ module.exports = ext.register("ext/zen/zen", {
     calculatePositions : function() {
         // Calculate the position
         var _self = this;
-        var height = (window.innerHeight-32) + "px";
+        var height = (window.innerHeight) + "px";
         tabEditors.parentNode.$ext.style.height = height;
         _self.animateZen.style.height = window.innerHeight + "px";
         var width = window.innerWidth * _self.initialWidth;
@@ -335,8 +335,8 @@ module.exports = ext.register("ext/zen/zen", {
                 top: "0",
                 width: afWidth + "px",
                 timingFunction: "ease-in-out"
-            }, slow ? 3.7 : 0.7, function() {
-
+            }, slow ? 3.7 : 0.7, 
+            function() {
                 _self.isFocused = true;
 
                 // Frustratingly, Firmin does not remove the csstransform attributes

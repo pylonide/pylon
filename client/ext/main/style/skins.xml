@@ -114,7 +114,7 @@
             margin: 0;
             height: 25px;
             background-color: #232323;
-            box-shadow: 0 1px 0 0 #464646 inset;
+            box-shadow: 0 1px 0 0 #353535 inset;
             border-bottom: 1px solid #000;
             border-top: 1px solid #000;
             -webkit-transition: height 0.1s ease 0;
@@ -8443,7 +8443,8 @@
     }
 
     .codeditorHolder {
-    	padding-top: 7px;
+    	padding-top: 3px;
+        background : #e8e8e8;
     }
     
     .editor_tab.offline .btnsesssioncontainer .btnclose strong{

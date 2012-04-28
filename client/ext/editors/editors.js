@@ -202,13 +202,29 @@ module.exports = ext.register("ext/editors/editors", {
         barButtonContainer.$ext.appendChild(tabEditors.$buttons);
         tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
 
+        var timer;
         tabEditors.$buttons.addEventListener("mouseover",function(e){
-            if (!_self.showTabs)
+            if (apf.isChildOf(tabEditors.$buttons, e.fromElement, true))
+                return;
+            
+            clearTimeout(timer);
+            
+            if (!_self.showTabs) {
                 _self.toggleTabs(1, true);
+                _self.previewing = true;
+            }
         });
         tabEditors.$buttons.addEventListener("mouseout",function(e){
-            if (!_self.showTabs)
-                _self.toggleTabs(-1, true);
+            if (apf.isChildOf(tabEditors.$buttons, e.toElement, true))
+                return;
+            
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                if (!_self.showTabs) {
+                    _self.previewing = false;
+                    _self.toggleTabs(-1, true);
+                }
+            }, 500);
         });
 
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
@@ -230,7 +246,7 @@ module.exports = ext.register("ext/editors/editors", {
         var d = apf.getDiff(ext);
         var _self = this;
         
-        if (this.animating && (!animate || this.animating[0] == preview))
+        if (this.animating && (!animate || this.animating[0] == preview) || this.previewing)
             return;
 
         if (animate) {
@@ -271,7 +287,6 @@ module.exports = ext.register("ext/editors/editors", {
                     }
                     
                     callback && callback();
-                    
                     apf.layout.forceResize();
                 }
             })
@@ -842,7 +857,7 @@ module.exports = ext.register("ext/editors/editors", {
                     //load the new file from disk, losing changes.
                     if (copy.getAttribute("changed") == 1 && copy.getAttribute("newfile") == 1) {
                         copy.appendChild(copy.ownerDocument.createCDATASection(
-                            pages[i].$doc.getValue()
+                            (pages[i].$doc.getValue() || "")
                                 .replace(/\r/g, "\\r")
                                 .replace(/\n/g, "\\n")
                                 .replace(/\]\]/g, "\n]\n]")

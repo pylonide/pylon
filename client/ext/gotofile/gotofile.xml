@@ -7,7 +7,7 @@
       maxheight = "400"
       zindex    = "99999"
       showtab   = "[{require('ext/settings/settings').model}::auto/tabs/@show]"
-      top       = "{apf.isTrue(this.showtab) ? 37 : 5}"
+      top       = "2"
       style     = "
         background:#e8e8e8;
         box-shadow:0 5px 7px rgba(0,0,0,0.5);
