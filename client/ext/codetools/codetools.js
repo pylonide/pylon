@@ -18,15 +18,18 @@ module.exports = ext.register("ext/codetools/codetools", {
 
     nodes : [],
 
-    hook : function(amlNode){
-        var _self = this;
+    init : function(){
         
-        ide.addEventListener("init.ext/code/code", function(e) {
-            _self.attachEditorEvents(ceEditor);
-        });
+    },
+    
+    register : function(plugin){
+        if (!ceEditor.$codeToolsAttached)
+            this.attachEditorEvents(ceEditor);
     },
     
     attachEditorEvents: function(amlEditor) {
+        amlEditor.$codeToolsAttached = true;
+        
         var editor = amlEditor.$editor;
         var prevRow, prevCol, multiClickTimer;
 

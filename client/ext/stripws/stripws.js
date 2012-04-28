@@ -56,6 +56,9 @@ module.exports = ext.register("ext/stripws/stripws", {
         commands.addCommand({
             name: "stripws",
             hint: "strip whitespace at the end of each line",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function(){
                 ext.initExtension(self);
                 self.stripws();
@@ -86,7 +89,7 @@ module.exports = ext.register("ext/stripws/stripws", {
                 self.enable();
         });
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             settings.setDefaults("editors/code", [
                 ["stripws", "false"]
             ]);
@@ -117,6 +120,7 @@ module.exports = ext.register("ext/stripws/stripws", {
 
     destroy: function () {
         menus.remove("Tools/Strip Whitespace");
+        commands.removeCommandByName("stripws");
 
         this.nodes.each(function (item) {
             item.destroy(true, true);

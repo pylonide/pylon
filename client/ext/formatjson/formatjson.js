@@ -54,6 +54,14 @@ module.exports = ext.register("ext/formatjson/formatjson", {
             name : "formatjson",
             bindKey : {mac: "Shift-Command-J", win: "Ctrl-Shift-J"},
             hint: "reformat the current JSON document",
+            isAvailable : function(editor){
+                if (editor && editor.ceEditor) {
+                    var range = editor.ceEditor.$editor.getSelectionRange();
+                    return range.start.row == range.end.row 
+                      && range.start.column == range.end.column
+                }
+                return false;
+            },
             exec : function(){
                 ext.initExtension(_self);
                 _self.winFormat.show();
@@ -85,6 +93,8 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     },
     
     destroy : function(){
+        commands.removeCommandByName("formatjson");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

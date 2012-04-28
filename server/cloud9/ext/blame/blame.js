@@ -6,7 +6,7 @@
  */
 var Plugin = require("cloud9/plugin");
 var Fs     = require("fs");
-var sys    = require("sys");
+var util   = require("util");
 
 var BlamePlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -14,7 +14,7 @@ var BlamePlugin = module.exports = function(ide, workspace) {
     this.name  = "blame";
 };
 
-sys.inherits(BlamePlugin, Plugin);
+util.inherits(BlamePlugin, Plugin);
 
 (function() {
 

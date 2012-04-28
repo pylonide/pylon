@@ -52,7 +52,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                   + node.getAttribute("path").replace(/"/g, "&quot;") + '"]')) {
                     var xmlNode = model.appendXml(apf.getCleanCopy(node));
                     
-                    if (_self.inited && lstOpenFiles.$ext.offsetWidth)
+                    if (ide.inited && _self.inited && lstOpenFiles.$ext.offsetWidth)
                         _self.animateAdd(xmlNode);
                 }
             }
@@ -82,18 +82,29 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 model.removeXml(node);
         });
         
-        tabEditors.addEventListener("close", function(e){
+        var $close = function(e){
+            if (e.returnValue === false)
+                return;
+            
             var node = model.queryNode('//node()[@path="' 
                 + e.page.id.replace(/"/g, "&quot;") + '"]');
+            
+            if (!node || !node.parentNode || node.beingRemoved)
+                return;
             
             e.page.$model.removeEventListener("update", 
                 e.page.$model.$lstOpenFilesListener);
             
-            if (_self.inited && lstOpenFiles.$ext.offsetWidth)
+            if (ide.inited && _self.inited && lstOpenFiles.$ext.offsetWidth) {
+                node.beingRemoved = true;
                 _self.animateRemove(node);
+            }
             else
                 model.removeXml(node);
-        });
+        }
+        
+        ide.addEventListener("closefile", $close);
+        tabEditors.addEventListener("close", $close);
 
         ide.addEventListener("updatefile", function(e){
             var node = e.xmlNode;
@@ -104,19 +115,20 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             var path = (e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
             var fNode = model.queryNode('//node()[@path="' + path + '"]');
-            if(!e.ignoreTree)
+
+            if (!e.replace)
                 var trNode = trFiles.queryNode('//node()[@path="' + path + '"]');
             if (node && fNode && trNode) {
                 if (e.path)
                     apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
-                    apf.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
+                    trNode && apf.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
                 if (e.filename) {
                     apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
-                    apf.xmldb.setAttribute(trNode, "name", apf.getFilename(e.filename));
+                    trNode && apf.xmldb.setAttribute(trNode, "name", apf.getFilename(e.filename));
                 }
                 if (e.changed != undefined) {
                     apf.xmldb.setAttribute(fNode, "changed", e.changed);
-                    apf.xmldb.setAttribute(trNode, "changed", e.changed);
+                    trNode && apf.xmldb.setAttribute(trNode, "changed", e.changed);
                 }
             }
         });
@@ -146,7 +158,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             //{type: "height", from:20, to: 0, steps: 10, interval: 10, anim: apf.tween.NORMAL}
             {type: "left", from:0, to: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
         ], onfinish: function(){
-            htmlNode.style.display='none';
+            htmlNode.style.display = 'none';
             _self.model.removeXml(xmlNode);
         }});
     },
@@ -221,6 +233,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
     
     destroy : function(){
+        commands.removeCommandByName("openfilepanel");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

@@ -31,8 +31,8 @@ module.exports = ext.register("ext/zen/zen", {
     skin     : {
         id   : "zen",
         data : skin,
-        "media-path" : ide.staticPrefix + "ext/main/style/images/",
-        "icon-path"  : ide.staticPrefix + "ext/main/style/icons/"
+        "media-path" : ide.staticPrefix + "/ext/main/style/images/",
+        "icon-path"  : ide.staticPrefix + "/ext/main/style/icons/"
     },
     isFocused : false,
     neverShown : true,
@@ -53,6 +53,9 @@ module.exports = ext.register("ext/zen/zen", {
             name: "zen",
             hint: "toggle zen mode",
             bindKey: {mac: "Option-Z", win: "Alt-Z"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
             exec: function () {
                 _self.zen();
             }
@@ -62,21 +65,18 @@ module.exports = ext.register("ext/zen/zen", {
             name: "zenslow",
             hint: "toggle zen mode in slow-motion",
             bindKey: {mac: "Shift-Option-Z", win: "Shift-Alt-Z"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
             exec: function () {
                 _self.zenslow();
             }
         });
 
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             var strSettings = e.model.queryValue("auto/zen");
             if (strSettings)
                 _self.initialWidth = strSettings;
-        });
-
-        ide.addEventListener("savesettings", function(e){
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/zen/text()");
-            xmlSettings.nodeValue = _self.initialWidth;
-            return true;
         });
 
         ide.addEventListener("minimap.visibility", function(e) {
@@ -247,7 +247,8 @@ module.exports = ext.register("ext/zen/zen", {
                 return;
 
             if (_self.handleLeftMove || _self.handleRightMove)
-                settings.save();
+                settings.model.setQueryValue("auto/zen/text()", _self.initialWidth);
+
             _self.handleLeftMove = false;
             _self.handleRightMove = false;
             apf.layout.forceResize();
@@ -671,6 +672,8 @@ module.exports = ext.register("ext/zen/zen", {
 
     destroy : function(){
         menus.remove("View/Zen");
+        
+        commands.removeCommandsByName(["zen", "zenslow"]);
         
         this.nodes.each(function(item){
             item.destroy(true, true);

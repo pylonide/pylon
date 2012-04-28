@@ -39,6 +39,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
             hint: "search for a string inside the active document and replace it",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function(env, args, request) {
                 _self.toggleDialog(true, true);
             }
@@ -46,6 +49,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         
         commands.addCommand({
             name: "replacenext",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function(env, args, request) {
                 commands.exec("findnext");
                 commands.exec("replace");
@@ -54,6 +60,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         
         commands.addCommand({
             name: "replaceprevious",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function(env, args, request) {
                 commands.exec("findprevious");
                 commands.exec("replace");
@@ -392,6 +401,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         menus.remove("Find/Find...");
         menus.remove("Find/~", 200);
         menus.remove("Find/Replace...");
+        
+        commands.removeCommandsByName(["replace", "replacenext", "replaceprevious"]);
         
         this.nodes.each(function(item){
             item.destroy(true, true);

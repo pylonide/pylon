@@ -96,6 +96,8 @@ module.exports = ext.register("ext/undo/undo", {
         menus.remove("Edit/Undo");
         menus.remove("Edit/Redo");
         
+        //commands.removeCommandsByName(["undo", "redo"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

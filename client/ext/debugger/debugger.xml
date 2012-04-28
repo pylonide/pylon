@@ -5,14 +5,14 @@
                 <div class="expand-panel-bg"></div>
                 <a:button id="btnResume" tooltip="Resume"
                   icon     = "play.png"
-                  command  = "debugresume"
+                  command  = "resume"
                   skin     = "c9-sidepanelsbutton"
-                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button  tooltip="Suspend"
                   skin     = "c9-sidepanelsbutton"
                   icon     = "pause.png"
                   onclick  = "dbg.suspend();"
-                  disabled = "{!stDebugProcessRunning.active || !stRunning.active}"/>
+                  disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
                 <a:divider skin="c9-divider" />
                 <a:button id="btnStepOver" tooltip="Step Over"
                   icon     = "step.png"

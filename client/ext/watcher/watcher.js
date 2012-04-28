@@ -23,32 +23,30 @@ module.exports = ext.register("ext/watcher/watcher", {
     deps    : [tree],
 
     init : function() {
-        // console.log("Initializing watcher");
-
         this.expandedPaths = {};
 
-        var removedPaths = {};
+        this.removedPaths = {};
+        this.changedPaths = {};
+
         var removedPathCount = 0;
-        var changedPaths = {};
         var changedPathCount = 0;
         var _self = this;
 
-
         function checkPage() {
-            var page = tabEditors.getPage(),
-                data = page.$model.data;
+            var page = tabEditors.getPage();
+            var data = page.$model.data;
             if (!data || !data.getAttribute)
                 return;
 
             var path = data.getAttribute("path");
-            if (removedPaths[path]) {
+            if (_self.removedPaths[path]) {
                 util.question(
                     "File removed, keep tab open?",
                     path + " has been deleted, or is no longer available.",
                     "Do you wish to keep the file open in the editor?",
                     function() { // Yes
                         apf.xmldb.setAttribute(data, "changed", "1");
-                        delete removedPaths[path];
+                        delete _self.removedPaths[path];
                         --removedPathCount;
                         winQuestion.hide();
                     },
@@ -58,13 +56,13 @@ module.exports = ext.register("ext/watcher/watcher", {
                         pages.forEach(function(page) {
                            apf.xmldb.setAttribute(page.$model.data, "changed", "1");
                         });
-                        removedPaths = {};
+                        _self.removedPaths = {};
                         removedPathCount = 0;
                         winQuestion.hide();
                     },
                     function() { // No
                         tabEditors.remove(page);
-                        delete removedPaths[path];
+                        delete _self.removedPaths[path];
                         --removedPathCount;
                         winQuestion.hide();
                     },
@@ -72,24 +70,25 @@ module.exports = ext.register("ext/watcher/watcher", {
                         var pages = tabEditors.getPages();
 
                         pages.forEach(function(page) {
-                            if (removedPaths[page.$model.data.getAttribute("path")])
+                            if (_self.removedPaths[page.$model.data.getAttribute("path")])
                                 tabEditors.remove(page);
                         });
-                        removedPaths = {};
+                        this.removedPaths = {};
                         removedPathCount = 0;
                         winQuestion.hide();
                     }
                 );
                 btnQuestionYesToAll.setAttribute("visible", removedPathCount > 1);
                 btnQuestionNoToAll.setAttribute("visible", removedPathCount > 1);
-            } else if (changedPaths[path]) {
+            } 
+            else if (_self.changedPaths[path]) {
                 util.question(
                     "File changed, reload tab?",
                     path + " has been changed by another application.",
                     "Do you want to reload it?",
                     function() { // Yes
                         ide.dispatchEvent("reload", {doc : page.$doc});
-                        delete changedPaths[path];
+                        delete _self.changedPaths[path];
                         --changedPathCount;
                         winQuestion.hide();
                     },
@@ -97,20 +96,20 @@ module.exports = ext.register("ext/watcher/watcher", {
                         var pages = tabEditors.getPages();
 
                         pages.forEach(function (page) {
-                            if (changedPaths[page.$model.data.getAttribute("path")])
+                            if (_self.changedPaths[page.$model.data.getAttribute("path")])
                                 ide.dispatchEvent("reload", {doc : page.$doc});
                         });
-                        changedPaths = {};
+                        _self.changedPaths = {};
                         changedPathCount = 0;
                         winQuestion.hide();
                     },
                     function() { // No
-                        delete changedPaths[path];
+                        delete _self.changedPaths[path];
                         --changedPathCount;
                         winQuestion.hide();
                     },
                     function() { // No to all
-                        changedPaths = {};
+                        _self.changedPaths = {};
                         changedPathCount = 0;
                         winQuestion.hide();
                     }
@@ -122,8 +121,6 @@ module.exports = ext.register("ext/watcher/watcher", {
 
         ide.addEventListener("openfile", function(e) {
             var path = e.doc.getNode().getAttribute("path");
-
-            // console.log("Opened file " + path);
             _self.sendWatchFile(path);
         });
 
@@ -135,82 +132,91 @@ module.exports = ext.register("ext/watcher/watcher", {
         });
 
         ide.addEventListener("socketMessage", function(e) {
-            if (_self.disabled) return;
-
-            var pages = tabEditors.getPages();
             var message = e.message;
-            if ((message.type && message.type != "watcher") || !message.path)
+            if (_self.disabled || (message.type && message.type !== "watcher") || !message.path) {
                 return;
+            }
 
             var path = ide.davPrefix + message.path.slice(ide.workspaceDir.length);
             path = path.replace(/\/$/, "");
 
-            if (_self.expandedPaths[path])
+            if (_self.expandedPaths[path]) {
                 return ide.dispatchEvent("treechange", {
-                    path    : path,
-                    files   : message.files
+                    path: path,
+                    files: message.files
                 });
-            if (!pages.some(function (page) {
-                return page.$model.data.getAttribute("path") == path;
-            }))
+            }
+
+            var getPagePath = function(page) {
+                return page.$model.data.getAttribute("path") === path;
+            };
+
+            var pages = tabEditors.getPages();
+            if (!pages.some(getPagePath)) {
                 return;
+            }
+
+            // allow another plugin to change the watcher behavior
+            var eventData = {
+                path: path
+            };
+
+            if (ide.dispatchEvent("beforewatcherchange", eventData) === false) {
+                return;
+            }
+
             switch (message.subtype) {
-            case "create":
-                break;
-            case "remove":
-                if (!removedPaths[path]) {
-                    removedPaths[path] = path;
-                    ++removedPathCount;
-                    checkPage();
-                    /*
-                    ide.dispatchEvent("treeremove", {
-                        path : path
-                    });
-                    */
-                }
-                break;
-            case "change":
-                if (!changedPaths[path] &&
-                    (new Date(message.lastmod).getTime() != new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime())) {
-                    changedPaths[path] = path;
-                    ++changedPathCount;
-                    checkPage();
-                }
-                break;
+                case "create":
+                    break;
+                case "remove":
+                    if (!_self.removedPaths[path]) {
+                        _self.removedPaths[path] = path;
+                        removedPathCount += 1;
+                        checkPage();
+                    }
+                    break;
+                case "change":
+                    var messageLastMod = new Date(message.lastmod).getTime();
+                    var currentPageLastMod = new Date(tabEditors.getPage().$model.queryValue('@modifieddate')).getTime();
+                    if (!_self.changedPaths[path] && (messageLastMod !== currentPageLastMod)) {
+                        _self.changedPaths[path] = path;
+                        changedPathCount += 1;
+                        checkPage();
+                    }
+                    break;
             }
         });
 
         ide.addEventListener("init.ext/editors/editors", function(e) {
             tabEditors.addEventListener("afterswitch", function(e) {
-                if (_self.disabled) return;
-
+                if (_self.disabled) {
+                    return;
+                }
                 checkPage();
             });
         });
 
-        ide.addEventListener("init.ext/tree/tree", function(){
-            trFiles.addEventListener("expand", function(e) {
-                if (_self.disabled) return;
-
-                var node = e.xmlNode;
-                if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
+        ide.addEventListener("init.ext/tree/tree", function() {
+            var watcherFn = function(node, shouldWatch) {
+                if (node && (node.getAttribute("type") === "folder" || node.tagName === "folder")) {
                     var path = node.getAttribute("path");
 
                     _self.expandedPaths[path] = path;
-                    _self.sendWatchFile(path);
+                    _self[shouldWatch ? "sendWatchFile" : "sendUnwatchFile"](path);
                 }
+            };
+            trFiles.addEventListener("expand", function(e) {
+                if (_self.disabled) {
+                    return;
+                }
+                watcherFn(e.xmlNode, true);
             });
 
             trFiles.addEventListener("collapse", function (e) {
-                if (_self.disabled) return;
-
-                var node = e.xmlNode;
-                if (node && (node.getAttribute("type") == "folder" || node.tagName == "folder")) {
-                    var path = node.getAttribute("path");
-
-                    delete _self.expandedPaths[path];
-                    _self.sendUnwatchFile(path);
+                if (_self.disabled) {
+                    return;
                 }
+                watcherFn(e.xmlNode, true);
             });
         });
     },
@@ -236,21 +242,22 @@ module.exports = ext.register("ext/watcher/watcher", {
 
         var _self = this;
         var pages = tabEditors.getPages();
-        pages.forEach(function (page) {
-            if (page.$model)
+        pages.forEach(function(page) {
+            if (page.$model) {
                 _self.sendWatchFile(page.$model.data.getAttribute("path"));
+            }
         });
-        for (var path in this.expandedPaths)
+
+        for (var path in this.expandedPaths) {
             this.sendWatchFile(path);
+        }
     },
 
     disable : function() {
         this.disabled = true;
     },
 
-    destroy : function() {
-
-    }
+    destroy : function() {}
 });
 
 });

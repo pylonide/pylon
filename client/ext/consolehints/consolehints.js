@@ -133,8 +133,9 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             
             //txtConsoleInput.addEventListener("blur", function(e) { _self.hide(); });
             txtConsoleInput.addEventListener("keyup", function(e) {
-                // Ignore up/down cursor arrows here
-                if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9) return;
+                // Ignore up/down cursor arrows, enter, here
+                if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9 || e.keyCode === 13) 
+                    return;
                 var getCmdMatches = function(filtered) {
                     var cli = e.currentTarget;
                     if (filtered.length && filtered[0] !== "[PATH]")
@@ -178,7 +179,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                         // try executing the redefined mapping
                         // if it returns false, then execute the old func
                         if (!_self[redefinedKeys[keyCode]].call(_self)) {
-                            previousKey(target);
+                            previousKey && previousKey(target);
                             _self.hide();
                         }
                     }
@@ -230,6 +231,9 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         e.preventDefault();
 
         var node = e.target;
+        this.setSelection(node);
+    },
+    setSelection: function(node){
         if (node.parentNode != hintsContent && node != hintsContent)
             node = node.parentNode;
 
@@ -321,12 +325,12 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         var hintNodes = hintsContent.childNodes;
         for (var i = 0, l = hintNodes.length; i < l; ++i) {
             if (hintNodes[i].className === "selected") {
-                this.click({ target: hintNodes[i] });
+                this.setSelection(hintNodes[i]);
                 handled = true;
                 break;
             }
         }
-        
+
         return handled;
     },
     selectUp: function() {
@@ -366,7 +370,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         return winHints && !!winHints.visible;
     },
     selected: function() {
-        return selectedHint && hintsContent.childNodes
+        return (selectedHint || selectedHint >= 0) && hintsContent.childNodes.length > 0
             ? hintsContent.childNodes[selectedHint]
             : false;
     }

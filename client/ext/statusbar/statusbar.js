@@ -28,8 +28,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     skin     : {
         id   : "c9statusbar",
         data : skin,
-        "media-path" : ide.staticPrefix + "ext/main/style/images/",
-        "icon-path"  : ide.staticPrefix + "ext/main/style/icons/"
+        "media-path" : ide.staticPrefix + "/ext/main/style/images/",
+        "icon-path"  : ide.staticPrefix + "/ext/main/style/icons/"
     },
     expanded: false,
     nodes : [],
@@ -41,15 +41,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     hook : function(){
         var _self = this;
 
-        ide.addEventListener("loadsettings", function(e){
-            /*var strSettings = e.model.queryValue("auto/statusbar");
-            if (strSettings === "true") {
-                if (_self.inited)
-                    _self.toggleStatusBar();
-                else
-                    _self.toggleOnInit = true;
-            }*/
-            
+        ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/statusbar/@show"))
                 e.model.setQueryValue("auto/statusbar/@show", "true");
 
@@ -61,12 +53,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             if (apf.isTrue(e.model.queryValue("auto/statusbar/@show")))
                 _self.preinit();
         });
-
-//        ide.addEventListener("savesettings", function(e){
-//            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/statusbar/text()");
-//            xmlSettings.nodeValue = _self.expanded;
-//            return true;
-//        });
 
         this.nodes.push(
             menus.addItemByPath("View/Status Bar", new apf.item({
@@ -154,12 +140,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
     
                 setTimeout(function() {
-                    if(editors.currentEditor.ceEditor) {
+                    if (editors.currentEditor && editors.currentEditor.ceEditor) {
                         _self.setSelectionLength();
     
                         _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
                         _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
-                            _self.setSelectionLength();
+                            if (_self._timer)
+                                return;
+                            _self._timer = setTimeout(function() {
+                                _self.setSelectionLength();
+                            }, 50);
                         });
                     }
                 }, 200);
@@ -186,7 +176,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                     mnuStatusBarPrefs.appendChild(pItem.item);
             }
     
-            !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();	
+            !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();    
             wrapMode.addEventListener("click", function(e) {
                 if (e.currentTarget.checked) {    
                     wrapModeViewport.enable();     

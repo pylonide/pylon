@@ -57,20 +57,25 @@ var getLastAndAfterRevisions = function(data) {
     return [beforeRevision, afterRevision];
 };
 
-self.onmessage = function(e) {
+var loadLibs = function() {
     if (!self.dmp) {
         importScripts("/static/ext/revisions/diff_match_patch.js");
         self.dmp = new diff_match_patch();
     }
 
     if (!self.difflib) {
-        importScripts("/static/ext/revisions/lib/difflib.js");
+        importScripts("/static/ext/revisions/difflib.js");
         self.difflib = difflib;
     }
+};
 
+self.onmessage = function(e) {
     var packet = {};
-    var afterRevision, beforeRevision;
+    var afterRevision, beforeRevision, lastContent, patch;
     switch (e.data.type) {
+        case "preloadlibs":
+            loadLibs();
+            break;
         case "preview":
             var results = getLastAndAfterRevisions(e.data);
             beforeRevision = results[0];
@@ -160,24 +165,58 @@ self.onmessage = function(e) {
                 beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
             }
 
-            var lastContent = e.data.lastContent;
-            var patch = self.dmp.patch_make(beforeRevision, lastContent);
+            lastContent = e.data.lastContent;
+            patch = self.dmp.patch_make(beforeRevision, lastContent);
 
             // If there is no actual changes, let's return
             if (patch.length === 0) {
                 return;
             }
 
-            packet.type = "newRevision";
-            packet.revision = {
-                contributors: e.data.contributors,
-                patch: [patch],
-                silentsave: e.data.silentsave,
-                restoring: e.data.restoring,
-                ts: Date.now(),
-                length: lastContent.length
+            packet = {
+                type: "newRevision",
+                path: e.data.path,
+                revision: {
+                    contributors: e.data.contributors,
+                    silentsave: e.data.silentsave,
+                    restoring: e.data.restoring,
+                    ts: e.data.ts || Date.now(),
+                    patch: [patch],
+                    length: lastContent.length,
+                    saved: false
+                }
             };
+            break;
+
+        // Recovery is a special case for when a external application modifies
+        // the file the user is working on.
+        case "recovery":
+            var currentContent = e.data.lastContent;
+            var realContent = e.data.realContent;
+            patch = self.dmp.patch_make(currentContent, realContent);
+
+            // If there is no actual changes, let's return
+            if (patch.length === 0) {
+                return;
+            }
+
+            packet = {
+                type: "recovery",
+                path: e.data.path,
+                revision: {
+                    contributors: e.data.contributors,
+                    silentsave: e.data.silentsave,
+                    restoring: e.data.restoring,
+                    ts: Date.now(),
+                    patch: [patch],
+                    finalContent: currentContent,
+                    realContent: realContent,
+                    saved: false,
+                    inDialog: true
+                }
+            };
+
+            break;
     }
     self.postMessage(packet);
 };
-

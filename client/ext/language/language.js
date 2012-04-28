@@ -78,7 +78,7 @@ module.exports = ext.register("ext/language/language", {
             });
         }, true);
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             settings.setDefaults("language", [
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],
@@ -151,7 +151,7 @@ module.exports = ext.register("ext/language/language", {
         var currentPath = page.getAttribute("id");
 
         // Currently no code editor active
-        if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
+        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
         this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
@@ -218,13 +218,32 @@ module.exports = ext.register("ext/language/language", {
         this.worker.emit("cursormove", {data: this.editor.getCursorPosition()});
     },
 
-    enable : function() {
+    enable: function () {
+        this.nodes.each(function (item) {
+            item.enable();
+        });
+
+        this.disabled = false;
     },
 
-    disable : function() {
+    disable: function () {
+        this.nodes.each(function (item) {
+            item.disable();
+        });
+
+        this.disabled = true;
     },
 
-    destroy : function() {
+    destroy: function () {
+        // Language features
+        marker.destroy();
+        complete.destroy();
+        refactor.destroy();
+
+        this.nodes.each(function (item) {
+            item.destroy(true, true);
+        });
+        this.nodes = [];
     }
 });
 

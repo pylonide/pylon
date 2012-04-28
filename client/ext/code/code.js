@@ -185,7 +185,7 @@ module.exports = ext.register("ext/code/code", {
     menus : [],
 
     fileExtensions : Object.keys(contentTypes),
-    supportedModes: Object.keys(SupportedModes),
+    supportedModes : Object.keys(SupportedModes),
 
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
@@ -305,8 +305,10 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", initValue = function(e, force) {
                 //abstraction leakage???
                 if (force || this.$page.id == this.$page.parentNode.activepage) {
+                    ceEditor.setProperty("value", ""); //Prevent highlighter to highlight wrong code
+                    ceEditor.setProperty("syntax", 
+                        _self.getSyntax(doc.getNode()));
                     ceEditor.setProperty("value", doc.acesession);
-                    ceEditor.setProperty("syntax", ceEditor.docsyntax);
                 }
                 
                 doc.removeEventListener("prop.value", arguments.callee);
@@ -324,34 +326,39 @@ module.exports = ext.register("ext/code/code", {
                     return doc.acesession.getValue();
             });
 
-            doc.addEventListener("close", function(){
+            doc.addEventListener("close", function(e){
                 if (this.editor != _self)
                     return;
 
                 //??? destroy doc.acesession
-                doc.acedoc.doc.$lines = [];
-                doc.acedoc.doc._eventRegistry = null;
-                doc.acedoc.doc._defaultHandlers = null;
-                doc.acedoc._eventRegistry = null;
-                doc.acedoc._defaultHandlers = null;
-                doc.acedoc = null;
-                doc.acesession.$stopWorker();
-                doc.acesession.bgTokenizer.lines = [];
-                doc.acesession.bgTokenizer.tokenizer = null;
-                doc.acesession.bgTokenizer = null;
-                doc.acesession.$rowCache = null;
-                doc.acesession.$mode = null;
-                doc.acesession.$origMode = null;
-                doc.acesession.$breakpoints = null;
-                doc.acesession.$annotations = null;
-                doc.acesession.languageAnnos = null;
-                doc.acesession = null;
-                doc = null;
+                setTimeout(function() {
+                    doc.acedoc.doc.$lines = [];
+                    doc.acedoc.doc._eventRegistry = null;
+                    doc.acedoc.doc._defaultHandlers = null;
+                    doc.acedoc._eventRegistry = null;
+                    doc.acedoc._defaultHandlers = null;
+                    doc.acedoc = null;
+                    doc.acesession.$stopWorker();
+                    doc.acesession.bgTokenizer.lines = [];
+                    doc.acesession.bgTokenizer.tokenizer = null;
+                    doc.acesession.bgTokenizer = null;
+                    doc.acesession.$rowCache = null;
+                    doc.acesession.$mode = null;
+                    doc.acesession.$origMode = null;
+                    doc.acesession.$breakpoints = null;
+                    doc.acesession.$annotations = null;
+                    doc.acesession.languageAnnos = null;
+                    doc.acesession = null;
+                    doc = null;
+                    //??? call doc.$page.destroy()
+                });
             });
         }
         else {
+            ceEditor.setProperty("value", ""); //Prevent highlighter to highlight wrong code
+            ceEditor.setProperty('syntax', 
+                _self.getSyntax(doc.getNode()));
             ceEditor.setProperty("value", doc.acesession);
-            ceEditor.setProperty('syntax', ceEditor.docsyntax);
         }
 
         if (doc.editor && doc.editor != this) {
@@ -361,8 +368,12 @@ module.exports = ext.register("ext/code/code", {
                 doc.dispatchEvent("prop.value", {value : value});
             }
         }
-
+ 
         doc.editor = this;
+    },
+    
+    clear : function(){
+        ceEditor.clear();
     },
     
     focus : function(){
@@ -372,20 +383,40 @@ module.exports = ext.register("ext/code/code", {
     hook: function() {
         var _self = this;
         
-        defaultCommands.each(function(command) {
+        var fnWrap = function(command){
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
-        });
-        MultiSelectCommands.each(function(command) {
-            command.readOnly = command.readOnly || false;
-            command.focusContext = true;
-        });
+             
+            var isAvailable = command.isAvailable;
+            command.isAvailable = function(editor){
+                if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
+                    return false;
+                
+                return isAvailable ? isAvailable(editor) : true;
+            }
+            var exec = command.exec;
+            command.exec = function(editor, args){
+                if (editor && editor.ceEditor)
+                    editor = editor.ceEditor.$editor;
+                
+                exec.call(this, editor, args);
+            }
+        }
         
-        commands.addCommands(defaultCommands, null, true);
-        commands.addCommands(MultiSelectCommands, null, true);
+        if (!defaultCommands.wrapped) {
+            defaultCommands.each(fnWrap, defaultCommands);
+            defaultCommands.wrapped = true;
+        }
+        if (!MultiSelectCommands.wrapped) {
+            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
+            MultiSelectCommands.wrapped = true;
+        }
+        
+        commands.addCommands(defaultCommands, true);
+        commands.addCommands(MultiSelectCommands, true);
 
         //Settings Support
-        ide.addEventListener("loadsettings", function(e) {
+        ide.addEventListener("settings.load", function(e) {
             settings.setDefaults("editors/code", [
                 ["overwrite", "false"],
                 ["selectstyle", "line"],
@@ -441,7 +472,7 @@ module.exports = ext.register("ext/code/code", {
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            if(typeof ceEditor != "undefined")
+            if (typeof ceEditor != "undefined")
                 ceEditor.afterOpenFile(ceEditor.getSession());
         });
         
@@ -568,11 +599,17 @@ module.exports = ext.register("ext/code/code", {
             
             menus.addItemByPath("View/Syntax/", new apf.menu({
                 "onprop.visible" : function(e){
-                    if (e.value && self.tabEditors) {
-                        var page = tabEditors.getPage();
-                        var node = page.$model.data;
-                        grpSyntax.setValue(node 
-                            && node.getAttribute("customtype") || "auto");
+                    if (e.value) {
+                        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+                            this.disable();
+                        else {
+                            this.enable();
+                        
+                            var page = tabEditors.getPage();
+                            var node = page && page.$model.data;
+                            grpSyntax.setValue(node 
+                                && node.getAttribute("customtype") || "auto");
+                        }
                     }
                 },
                 "onitemclick" : function(e) {
@@ -613,6 +650,9 @@ module.exports = ext.register("ext/code/code", {
                                 customType: customType
                             });
                         }
+                        
+                        if (self.ceEditor)
+                            ceEditor.setProperty("syntax", _self.getSyntax(file));
                     }
                 }
             }), 300000),
@@ -656,7 +696,10 @@ module.exports = ext.register("ext/code/code", {
             
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
-                checked : "[{require('core/settings').model}::editors/code/@wrapmode]"
+                checked : "[{require('core/settings').model}::editors/code/@wrapmode]",
+                isAvailable : function(editor){
+                    return editor && editor.ceEditor;
+                }
             }), 500000),
             
             menus.addItemByPath("View/Wrap To Viewport", new apf.item({
@@ -664,7 +707,10 @@ module.exports = ext.register("ext/code/code", {
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
                 "onprop.wrapmode" : function(e){
-                    this.setAttribute("disabled", !apf.isTrue(e.value))
+                    this.setAttribute("disabled", !apf.isTrue(e.value) || !this.available())
+                },
+                isAvailable : function(editor){
+                    return editor && editor.ceEditor;
                 }
             }), 600000)
         );
@@ -717,43 +763,51 @@ module.exports = ext.register("ext/code/code", {
             
             addEditorMenu("Goto/Scroll to Selection", "centerselection")
         );
-
-        this.disable();
     },
 
     init: function(amlPage) {
-        amlPage.appendChild(ceEditor);
+        var _self = this;
+        
+        //amlPage.appendChild(ceEditor);
         ceEditor.show();
 
         this.ceEditor = this.amlEditor = ceEditor;
+        ceEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         ceEditor.$editor.commands = commands;
         
-        defaultCommands.each(function(command){
-            command.context = [ceEditor];
-        });
-        MultiSelectCommands.each(function(command){
-            command.context = [ceEditor];
-        });
-
         // preload common language modes
         var noop = function() {}; 
         ceEditor.getMode("javascript", noop);
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
 
-        var _self = this;
-
         var menuShowInvisibles = new apf.item({
             type    : "check",
             caption : "Show Invisibles",
             checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
         });
+        
+        ide.addEventListener("reload", function(e) {
+            var doc = e.doc;
+            doc.state = doc.$page.$editor.getState 
+                && doc.$page.$editor.getState(doc);
+        });
 
-        ide.addEventListener("closefile", function(e){
-            if (tabEditors.length > 1)
-                _self.enable();
-            else
-                _self.disable();
+        ide.addEventListener("afterreload", function(e) {
+            var doc         = e.doc;
+            var acesession  = doc.acesession;
+            
+            if (!acesession)
+                return;
+                
+            acesession.doc.setValue(e.data);
+
+            if (doc.state) {
+                var editor = doc.$page.$editor;
+                editor.setState && editor.setState(doc, doc.state);
+            }
+            
+            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
 
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
@@ -773,11 +827,18 @@ module.exports = ext.register("ext/code/code", {
             ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
         });
         
-        ide.addEventListener("closefile", function(e){
-            if (e.page.parentNode.getPages().length == 1) {
-                ceEditor.clear();
-                //ceEditor.setProperty('syntax', "text/plain");
-            }
+        ide.addEventListener("updatefile", function(e){
+            var page = tabEditors.getPage();
+            if (page && ceEditor.getDocument() == page.$doc.acesession)
+                ceEditor.setProperty("syntax", _self.getSyntax(e.xmlNode));
+        });
+        
+        ide.addEventListener("afteroffline", function(){
+            menus.menus["View/Syntax"].disable();
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            menus.menus["View/Syntax"].enable();
         });
     },
 
@@ -862,6 +923,9 @@ module.exports = ext.register("ext/code/code", {
         this.menus.each(function(item){
             item.destroy(true, true);
         });
+        
+        commands.removeCommands(defaultCommands);
+        commands.removeCommands(MultiSelectCommands);
         
         this.nodes.each(function(item){
             item.destroy(true, true);

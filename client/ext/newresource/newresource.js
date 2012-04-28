@@ -149,6 +149,8 @@ module.exports = ext.register("ext/newresource/newresource", {
     },
 
     destroy : function(){
+        commands.removeCommandsByName(["newfile", "newfiletemplate", "newfolder"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

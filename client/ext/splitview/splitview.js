@@ -868,6 +868,8 @@ module.exports = ext.register("ext/splitview/splitview", {
     },
 
     destroy : function(){
+        commands.removeCommandsByName(["mergetableft", "mergetabright"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

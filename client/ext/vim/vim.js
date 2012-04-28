@@ -28,17 +28,17 @@ var OLD_HANDLER;
 
 var onConsoleCommand = function onConsoleCommand(e) {
     var cmd = e.data.command;
-    if (cmd && typeof cmd === "string") {
-        
+    if ((typeof ceEditor !== "undefined") && cmd && typeof cmd === "string") {
+        var ed = ceEditor.$editor;
         if (cmd[0] === ":") {
             cmd = cmd.substr(1);
 
             if (cliCmds[cmd]) {
-                cliCmds[cmd](ceEditor.$editor, e.data);
+                cliCmds[cmd](ed, e.data);
             }
             else if (cmd.match(/^\d+$/)) {
-                ceEditor.$editor.gotoLine(parseInt(cmd, 10), 0);
-                ceEditor.$editor.navigateLineStart();
+                ed.gotoLine(cmd, 0);
+                ed.navigateLineStart();
             }
             else {
                 console.log("Vim command '" + cmd + "' not implemented.");
@@ -50,7 +50,7 @@ var onConsoleCommand = function onConsoleCommand(e) {
         else if (cmd[0] === "/") {
             cmd = cmd.substr(1);
             cmdModule.searchStore.current = cmd;
-            ceEditor.$editor.find(cmd, cmdModule.searchStore.options);
+            ed.find(cmd, cmdModule.searchStore.options);
             ceEditor.focus();
             e.returnValue = false;
         }
@@ -83,31 +83,35 @@ var onCursorMove = function() {
 
 var enableVim = function enableVim() {
     ext.initExtension(this);
-
-    var editor = ceEditor.$editor;
-    addCommands(editor, commands);
-    editor.renderer.container.addEventListener("click", onCursorMove, false);
-
-    // Set Vim's own keyboard handle and store the old one.
-    OLD_HANDLER = OLD_HANDLER || editor.getKeyboardHandler();
-    editor.setKeyboardHandler(handler);
-
-    // Set Vim in command (normal) mode
-    commands.stop.exec(editor);
-    VIM_ENABLED = true;
-        
-    ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: util.currentMode});
+    
+    ide.addEventListener("init.ext/code/code", function(){
+        var editor = ceEditor.$editor;
+        addCommands(editor, commands);
+        editor.renderer.container.addEventListener("click", onCursorMove, false);
+    
+        // Set Vim's own keyboard handle and store the old one.
+        OLD_HANDLER = OLD_HANDLER || editor.getKeyboardHandler();
+        editor.setKeyboardHandler(handler);
+    
+        // Set Vim in command (normal) mode
+        commands.stop.exec(editor);
+        VIM_ENABLED = true;
+            
+        ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: util.currentMode});
+    });
 };
 
 var disableVim = function() {
-    var editor = ceEditor.$editor;
-    removeCommands(editor, commands);
-    editor.setKeyboardHandler(OLD_HANDLER);
-    commands.start.exec(editor);
-    editor.renderer.container.removeEventListener("click", onCursorMove, false);
-    VIM_ENABLED = false;
-
-    ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
+    ide.addEventListener("init.ext/code/code", function(){
+        var editor = ceEditor.$editor;
+        removeCommands(editor, commands);
+        editor.setKeyboardHandler(OLD_HANDLER);
+        commands.start.exec(editor);
+        editor.renderer.container.removeEventListener("click", onCursorMove, false);
+        VIM_ENABLED = false;
+    
+        ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
+    });
 };
 
 module.exports = ext.register("ext/vim/vim", {
@@ -128,7 +132,7 @@ module.exports = ext.register("ext/vim/vim", {
         
         menus.addItemByPath("View/Vim Mode", menuItem, 150000);
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             settings.setDefaults("editors/code", [
                 ["vimmode", "false"]
             ]);

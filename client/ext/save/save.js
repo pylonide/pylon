@@ -36,6 +36,9 @@ module.exports = ext.register("ext/save/save", {
             name: "quicksave",
             hint: "save the currently active file to disk",
             bindKey: {mac: "Command-S", win: "Ctrl-S"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
             exec: function () {
                 _self.quicksave();
             }
@@ -45,6 +48,9 @@ module.exports = ext.register("ext/save/save", {
             name: "saveas",
             hint: "save the file to disk with a different filename",
             bindKey: {mac: "Command-Shift-S", win: "Ctrl-Shift-S"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
             exec: function () {
                 _self.saveas();
             }
@@ -53,6 +59,9 @@ module.exports = ext.register("ext/save/save", {
         commands.addCommand({
             name: "saveall",
             hint: "downgrade the currently active file to the last saved version",
+            isAvailable : function(editor){
+                return !!editor;
+            },
             exec: function () {
                 _self.saveall();
             }
@@ -61,6 +70,9 @@ module.exports = ext.register("ext/save/save", {
         commands.addCommand({
             name: "reverttosaved",
             bindKey: {mac: "Ctrl-Shift-Q", win: "Ctrl-Shift-Q"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
             exec: function () {
                 _self.reverttosaved();
             }
@@ -143,7 +155,7 @@ module.exports = ext.register("ext/save/save", {
             }), 1000)
         );
 
-        var saveItem, saveAsItem;
+        var saveItem, saveAsItem, itmRevertToSaved;
         this.nodes.push(
             saveItem = menus.addItemByPath("File/Save", new apf.item({
                 command : "quicksave",
@@ -160,11 +172,21 @@ module.exports = ext.register("ext/save/save", {
                 disabled : "{!!!tabEditors.activepage}"
             }), 1200),
 
-            menus.addItemByPath("File/Revert to Saved", new apf.item({
+            itmRevertToSaved = menus.addItemByPath("File/Revert to Saved", new apf.item({
                 command : "reverttosaved",
                 disabled : "{!!!tabEditors.activepage}"
             }), 700)
         );
+
+        ide.addEventListener("afteroffline", function(){
+            itmRevertToSaved.disable();
+            saveAsItem.disable();
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            itmRevertToSaved.enable();
+            saveAsItem.enable();
+        });
     },
 
     init : function(amlNode){
@@ -343,7 +365,7 @@ module.exports = ext.register("ext/save/save", {
         return false;
     },
 
-    _saveAsNoUI: function(page, path, newPath, ignoreTree) {
+    _saveAsNoUI: function(page, path, newPath, isReplace) {
         if (!page || !path)
             return;
 
@@ -374,12 +396,13 @@ module.exports = ext.register("ext/save/save", {
 
             if (path !== newPath || parseInt(node.getAttribute("newfile") || 0, 10) === 1) {
                 file = apf.getCleanCopy(node)
-                fs.beforeRename(file, null, newPath, false, ignoreTree);
+                fs.beforeRename(file, null, newPath, false, isReplace);
                 doc.setNode(file);
                 model.load(file);
                 tabEditors.set(tabEditors.getPage());
             }
 
+            apf.xmldb.removeAttribute(oldFile, "saving");
             apf.xmldb.removeAttribute(file, "saving");
 
             if (self.saveBuffer[path]) {
@@ -468,7 +491,7 @@ module.exports = ext.register("ext/save/save", {
         var file = page.$model.data;
         var path = file.getAttribute("path");
         var newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
-
+        
         var isReplace = false;
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"), 10);
@@ -484,8 +507,15 @@ module.exports = ext.register("ext/save/save", {
             window.winConfirm && winConfirm.hide();
             winSaveAs.hide();
             self._saveAsNoUI(page, path, newPath, isReplace);
-        };
 
+            if (btnConfirmOk.caption == "Yes")
+                btnConfirmOk.setCaption("Ok");
+        };
+        
+        var doCancel = function() {
+            if (btnConfirmOk.caption == "Yes")
+                btnConfirmOk.setCaption("Ok");
+        };
         if (path !== newPath || parseInt(file.getAttribute("newfile") || 0, 10) === 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
@@ -494,12 +524,13 @@ module.exports = ext.register("ext/save/save", {
                     
                     isReplace = true;
                     util.confirm(
-                        "Are you sure?",
+                        "A file with this name already exists",
                         "\"" + name + "\" already exists, do you want to replace it?",
-                        "A file or folder with the same name already exists in the folder "
-                        + folder + ". "
-                        + "Replacing it will overwrite it's current contents.",
-                        doSave);
+                        "A file with the same name already exists at this location." +
+                        "Selecting Yes will overwrite the existing document.",
+                        doSave,
+                        doCancel);
+                    btnConfirmOk.setCaption("Yes");
                 }
                 else {
                     doSave();
@@ -537,12 +568,15 @@ module.exports = ext.register("ext/save/save", {
     },
 
     destroy : function(){
-        menus.remove("File/~", 1100),
-        menus.remove("File/Save All")
-        menus.remove("File/Save As...")
-        menus.remove("File/Save")
-        menus.remove("File/~", 800)
-        menus.remove("File/Revert to Saved")
+        menus.remove("File/~", 1100);
+        menus.remove("File/Save All");
+        menus.remove("File/Save As...");
+        menus.remove("File/Save");
+        menus.remove("File/~", 800);
+        menus.remove("File/Revert to Saved");
+        
+        commands.removeCommandsByName(
+            ["quicksave", "saveas", "saveall", "reverttosaved"]);
         
         this.nodes.each(function(item){
             item.destroy(true, true);

@@ -45,8 +45,6 @@ module.exports = ext.register("ext/editors/editors", {
             type     : "radio",
             value    : oExtension.path,
             group    : this.$itmGroup,
-            disabled : "{!require('ext/editors/editors').isEditorAvailable(tabEditors.activepage, '" 
-                + oExtension.path + "')}",
             onclick  : function(){
                 _self.switchEditor(this.value);
             }
@@ -374,23 +372,22 @@ module.exports = ext.register("ext/editors/editors", {
 
         var model = new apf.model();
         var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
-            /*page.addEventListener("afteropen", function(){
-                doc.dispatchEvent("editor.ready", {page: fake});
-                doc.addEventListener("$event.editor.ready", 
-                    function(fn){ fn({page: page}); });
-            });*/
-            
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
             doc.$page    = page;
             page.$editor = editor;
+            page.setAttribute("autofocus", false);
             page.setAttribute("tooltip", "[@path]");
             page.setAttribute("class",
                 "{parseInt([@saving], 10) || parseInt([@lookup], 10) ? (tabEditors.getPage(tabEditors.activepage) == this ? 'saving_active' : 'saving') : \
                 ([@loading] ? (tabEditors.getPage(tabEditors.activepage) == this ? 'loading_active' : 'loading') : '')}"
             );
             page.setAttribute("model", page.$model = model);
-            page.$model.load(xmlNode);
+            
+            model.load(xmlNode);
+            model.addEventListener("update", function(){
+                settings.save();
+            });
         });
 
         if (init)
@@ -480,9 +477,10 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     $close : function() {
-        var page = this;
-        var at   = page.$at;
-        var mdl  = page.$model;
+        var page   = this;
+        var at     = page.$at;
+        var editor = page.$editor;
+        var mdl    = page.$model;
 
         mdl.setQueryValue("@changed", 0);
         page.$doc.dispatchEvent("close");
@@ -508,6 +506,9 @@ module.exports = ext.register("ext/editors/editors", {
                 apf.history.setHash("");
             }*/
             //apf.history.setHash("");
+            
+            editor.clear && editor.clear();
+            require("ext/editors/editors").currentEditor = null;
         }
 
         //Destroy the app page if it has no application instance
@@ -570,6 +571,8 @@ module.exports = ext.register("ext/editors/editors", {
         }*/
         apf.history.setHash("!" + path);
         
+        settings.save();
+        
         if (!e.keepEditor) {
             var fileExtension = (path || "").split(".").pop().toLowerCase();
             var editor = this.fileExtensions[fileExtension] 
@@ -593,8 +596,8 @@ module.exports = ext.register("ext/editors/editors", {
             var editor = page.$editor;
         }
         
-        if (editor.ceEditor)
-            editor.ceEditor.focus();
+        if (editor.focus)
+            editor.focus();
 
         //toHandler.$rbEditor.select();
 
@@ -625,8 +628,22 @@ module.exports = ext.register("ext/editors/editors", {
         
         menus.addItemByPath("View/Editors/", new apf.menu({
             "onprop.visible" : function(e){
-                if (e.value)
-                    _self.$itmGroup.setValue(_self.currentEditor.path);
+                if (e.value) {
+                    if (!_self.currentEditor)
+                        this.disable();
+                    else {
+                        this.enable();
+                        
+                        var nodes = this.childNodes;
+                        for (var i = nodes.length - 1; i >= 0; i--) {
+                            nodes[i].setAttribute("disabled", 
+                                !_self.isEditorAvailable(
+                                    tabEditors.activepage, nodes[i].value));
+                        }
+                        
+                        _self.$itmGroup.setValue(_self.currentEditor.path);
+                    }
+                }
             }
         }), 190);
         
@@ -659,6 +676,14 @@ module.exports = ext.register("ext/editors/editors", {
             if (page)
                 tabEditors.remove(page);
         });
+        
+        ide.addEventListener("afteroffline", function(e){
+            tabEditors.$setStyleClass(tabEditors.$ext, "offline");
+        });
+        
+        ide.addEventListener("afteronline", function(e){
+            tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
+        });
 
         var vbox  = colMiddle;
         this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
@@ -672,12 +697,10 @@ module.exports = ext.register("ext/editors/editors", {
         /**** Support for state preservation ****/
 
         this.$settings = {};
-        ide.addEventListener("loadsettings", function(e){
-            if (!e.model.queryNode("auto/files"))
-                apf.createNodeFromXpath(e.model.data, "auto/files");
+        ide.addEventListener("settings.load", function(e){
+            settings.setDefaults("auto/files", []);
             
-            if (!e.model.queryNode("auto/tabs/@show"))
-                e.model.setQueryValue("auto/tabs/@show", "true");
+            settings.setDefaults("auto/tabs", [["show", "true"]]);
             
             var showTab = settings.model.queryValue("auto/tabs/@show");
             _self.toggleTabs(apf.isTrue(showTab) ? 1 : -1);
@@ -750,12 +773,11 @@ module.exports = ext.register("ext/editors/editors", {
             });
         });
 
-        ide.addEventListener("savesettings", function(e){
+        ide.addEventListener("settings.save", function(e){
             if (!e.model.data)
                 return;
 
             var pNode   = e.model.data.selectSingleNode("auto/files");
-            var state   = pNode && pNode.xml;
             var pages   = tabEditors.getPages();
 
             if (pNode) {
@@ -803,31 +825,6 @@ module.exports = ext.register("ext/editors/editors", {
                     }
                 }
             }
-
-            if (state != (pNode && pNode.xml))
-                return true;
-        });
-
-        ide.addEventListener("reload", function(e) {
-            var doc = e.doc;
-            doc.state = doc.$page.$editor.getState && doc.$page.$editor.getState(doc);
-        });
-
-        ide.addEventListener("afterreload", function(e) {
-            var doc         = e.doc;
-            var acesession  = doc.acesession;
-            
-            if (!acesession)
-                return;
-                
-            acesession.doc.setValue(e.data);
-
-            if (doc.state) {
-                var editor = doc.$page.$editor;
-                editor.setState && editor.setState(doc, doc.state);
-            }
-            
-            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
     },
 
@@ -887,25 +884,26 @@ module.exports = ext.register("ext/editors/editors", {
         return node;
     },
 
-    showFile : function(path, row, column, text, animate) {
+    showFile : function(path, row, column, text) {
         var node = this.createFileNodeFromPath(path);
 
-        this.jump(node, row, column, text, animate);
+        this.jump(node, row, column, text);
     },
 
-    jump : function(fileEl, row, column, text, doc, page, animate) {
+    jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
         var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
 
         if (row !== undefined) {
             var jumpTo = function(){
-                setTimeout(function() {
+                var f;
+                setTimeout(f = function() {
                     // TODO move this to the editor
                     ceEditor.$editor.gotoLine(row, column, false);
                     if (text)
                         ceEditor.$editor.find(text, null, false);
                     ceEditor.focus();
-                }, 100);
+                }, 100); f();
             };
 
             if (hasData) {

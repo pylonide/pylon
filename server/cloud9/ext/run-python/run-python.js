@@ -7,7 +7,7 @@
 var Path             = require("path"),
     Spawn            = require("child_process").spawn,
     Plugin           = require("cloud9/plugin"),
-    sys              = require("sys"),
+    util             = require("util"),
     netutil          = require("cloud9/netutil");
 
 var PythonRuntimePlugin = module.exports = function(ide, workspace) {
@@ -17,7 +17,7 @@ var PythonRuntimePlugin = module.exports = function(ide, workspace) {
     this.name = "python-runtime";
 };
 
-sys.inherits(PythonRuntimePlugin, Plugin);
+util.inherits(PythonRuntimePlugin, Plugin);
 
 (function() {
     this.init = function() {

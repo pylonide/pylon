@@ -79,6 +79,9 @@ module.exports = {
             name: "complete",
             hint: "code complete",
             bindKey: {mac: "Ctrl-Space|Alt-Space", win: "Ctrl-Space|Alt-Space"},
+            isAvailable : function(editor){
+                return apf.activeElement.localName == "codeeditor";
+            },
             exec: function(editor) {
                 _self.invoke();
             }
@@ -270,6 +273,10 @@ module.exports = {
             if(typeof barCompleterCont !== 'undefined')
                 barCompleterCont.$ext.style.display = "none";
         }
+    },
+    
+    destroy : function(){
+        commands.removeCommandByName("complete");
     }
 };
 

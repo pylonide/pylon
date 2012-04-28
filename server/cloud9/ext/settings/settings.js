@@ -7,7 +7,7 @@
 var Plugin = require("cloud9/plugin");
 var Path = require("path");
 var fs = require("fs");
-var sys = require("sys");
+var util = require("util");
 
 var SettingsPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -17,7 +17,7 @@ var SettingsPlugin = module.exports = function(ide, workspace) {
     this.settingsPath = ide.options.mountDir + "/.settings.xml";
 };
 
-sys.inherits(SettingsPlugin, Plugin);
+util.inherits(SettingsPlugin, Plugin);
 
 (function() {
     
@@ -57,7 +57,7 @@ sys.inherits(SettingsPlugin, Plugin);
     };
     
     this.storeSettings = function(user, settings, callback) {
-        // console.log("store settings", this.settingsPath);
+        console.log("store settings", this.settingsPath, settings.substr(0, 100));
         fs.writeFile(this.settingsPath, settings, "utf8", callback);
     };
       

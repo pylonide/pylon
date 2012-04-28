@@ -21,6 +21,7 @@ var extAll = define([
     "ext/quicksearch/quicksearch",
     "ext/gotoline/gotoline",
     "ext/html/html",
+    "ext/log/log",
     "ext/help/help",
     //"ext/ftp/ftp",
     "ext/code/code",

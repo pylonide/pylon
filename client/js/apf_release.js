@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(96111)TIME(Fri, 13 Apr 2012 20:08:37 GMT)*/
+/*FILEHEAD(apf.js)SIZE(96190)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -144,6 +144,10 @@ VERSION:'3.0beta',
      * @see baseclass.guielement.method.focus
      */
     KEYBOARD_MOUSE : true,
+    /**
+     * Constant for specifying that a widget is a menu
+     */
+    MENU           : 3,
 
     /**
      * Constant for specifying success.
@@ -1397,7 +1401,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(45743)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(46109)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2451,6 +2455,14 @@ apf.Class.prototype = new (function(){
                 self[this.id || this.name] = null;
         }
         catch (ex) {}
+        
+        for (var prop in this.$captureStack) this.$captureStack[prop] = null;
+        for (var prop in this.$eventsStack) this.$eventsStack[prop] = null;
+        for (var prop in this.$funcHandlers) this.$funcHandlers[prop] = null;
+        
+        for (var i = this.$bufferEvents.length - 1; i >= 0; i--) {
+            this.$bufferEvents = null;
+        }
         
         
         apf.nameserver.remove(this.localName, this);
@@ -4434,7 +4446,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(core/lib/util/popup.js)SIZE(12703)TIME(Wed, 11 Apr 2012 17:06:05 GMT)*/
+/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Mon, 23 Apr 2012 01:33:31 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4580,18 +4592,18 @@ apf.popup = {
                     ? pOverflow.offsetHeight 
                     : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
                 : pOverflow.offsetHeight + pOverflow.scrollTop);
-            moveUp = options.autoCorrect && (y
+            moveUp = options.up || options.autoCorrect && (y
                 + (options.height || o.height || o.content.offsetHeight))
                 > edgeY;
 
             if (moveUp) {
                 var value;
-                if (refNode)
+                if (options.ref)
                     value = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + 3;
                 else
-                    value = (edgeY - (options.height || o.height || o.content.offsetHeight));
+                    value = Math.max(0, edgeY - (options.height || o.height || o.content.offsetHeight));
                 
-                popup.style.top = value < 0 ? y : value + "px";
+                popup.style.top = (!options.up && value < 0 ? y : value) + "px";
             }
             else {
                 popup.style.top = y + "px";
@@ -4759,6 +4771,24 @@ apf.popup = {
     
     getCurrentElement : function(){
         return typeof this.last == "number" && apf.lookup(this.last);
+    },
+    
+    $mousedownHandler : function(amlNode, e){
+        if (!this.last || (amlNode && this.last == amlNode.$uniqueId) || !this.cache[this.last])
+          return;
+
+        var htmlNode = e.srcElement || e.target;
+        
+        var uId = this.last;
+        
+        while (this.cache[uId]) {
+            if (apf.isChildOf(this.cache[uId].content, htmlNode, true))
+                return;
+            
+            uId = this.cache[uId].options.allowTogether;
+        }
+        
+        this.forceHide();
     },
     
     forceHide : function(){
@@ -7812,7 +7842,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(core/lib/config.js)SIZE(8175)TIME(Thu, 15 Dec 2011 00:34:58 GMT)*/
+/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Mon, 23 Apr 2012 00:51:49 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7869,7 +7899,6 @@ apf.extend(apf.config, {
     defaults           : {},
     baseurl            : "",
     
-    "model"            : "@default",
     "empty-message"    : "No items",
     "loading-message"  : "Loading...",
     "offline-message"  : "You are currently offline.",
@@ -9798,7 +9827,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/layout.js)SIZE(13658)TIME(Thu, 15 Dec 2011 00:34:58 GMT)*/
+/*FILEHEAD(core/lib/layout.js)SIZE(13677)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9920,7 +9949,7 @@ apf.layout = {
 
         this.dlist = [];
         
-        clearTimeout(this.timer);
+        apf.setZeroTimeout.clearTimeout(this.timer);
         this.timer = null;
     },
     
@@ -10250,7 +10279,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(core/lib/queue.js)SIZE(3138)TIME(Wed, 11 Apr 2012 17:42:24 GMT)*/
+/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10287,16 +10316,21 @@ apf.setZeroTimeout = !window.postMessage
         // no time argument (always zero) and no arguments (you have to
         // use a closure).
         function setZeroTimeout(fn) {
-            timeouts.push(fn);
+            var id = timeouts.push(fn);
             window.postMessage(messageName, "*");
+            return id;
+        }
+        
+        setZeroTimeout.clearTimeout = function(id){
+            timeouts[id] = null;
         }
 
         function handleMessage(e) {
             if (!e) e = event;
             if (e.source == window && e.data == messageName) {
                 apf.stopPropagation(e);
-                if (timeouts.length > 0)
-                    timeouts.shift()();
+                if (timeouts.length > 0 && (t = timeouts.shift()))
+                    t();
             }
         }
 
@@ -10332,7 +10366,9 @@ apf.queue = {
     },
 
     empty : function(prop){
-        clearTimeout(this.timer);
+        
+        apf.setZeroTimeout.clearTimeout(this.timer);
+        
         this.timer = null;
 
         
@@ -12404,7 +12440,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40903)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13233,7 +13269,7 @@ apf.xmldb = new (function(){
             apf.xmldb.notifyQueued();
         }
         else if (runTimer) {
-            clearTimeout(notifyTimer);
+            apf.setZeroTimeout.clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
             this.$hasQueue = true;
             notifyTimer = apf.setZeroTimeout(function(){
@@ -13256,7 +13292,7 @@ apf.xmldb = new (function(){
         var myQueue = notifyQueue;
         notifyQueue = {};
         
-        clearTimeout(notifyTimer);
+        apf.setZeroTimeout.clearTimeout(notifyTimer);
         for (var uId in myQueue) {
             if (!uId) continue;
 
@@ -15702,7 +15738,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22835)TIME(Mon, 23 Apr 2012 00:05:11 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15864,8 +15900,7 @@ apf.AmlElement = function(struct, tagName){
                 
             }
     
-            if (self[value])
-                throw new Error("ID collision of APF element: '" + value + "'");
+            
     
             if (!self[value] || !self[value].hasFeature) {
                 try {
@@ -16186,10 +16221,14 @@ apf.AmlElement = function(struct, tagName){
             
             //Remove any bounds if relevant
             this.$clearDynamicProperty(prop);
-    
-            if (isInherit)
-                this.$inheritProperties[prop] = 2;
-    
+            
+        }
+        
+        if (isInherit)
+            this.$inheritProperties[prop] = 2;
+        
+        if (value) {
+            
             if (typeof value == "string" 
               && (value.indexOf("{") > -1 || value.indexOf("[") > -1)) {
                 this.$setDynamicProperty(prop, value);
@@ -23433,7 +23472,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47975)TIME(Fri, 13 Apr 2012 10:38:48 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47613)TIME(Fri, 27 Apr 2012 03:13:19 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23458,12 +23497,12 @@ apf.Init.run("databinding");
 
 
 /**
- * All elements inheriting from this {@link term.baseclass baseclass} can bind to data 
+ * All elements inheriting from this {@link term.baseclass baseclass} can bind to data
  * which contains multiple nodes.
  *
  * @allowchild  item, choices
- * @define  choices     Container for item nodes which receive presentation. 
- * This element is part of the XForms specification. It is not necesary for 
+ * @define  choices     Container for item nodes which receive presentation.
+ * This element is part of the XForms specification. It is not necesary for
  * the Ajax.org Markup Language.
  * Example:
  * <code>
@@ -23494,7 +23533,7 @@ apf.MultiselectBinding = function(){
 
 (function(){
     this.length = 0;
-    
+
     //1 = force no bind rule, 2 = force bind rule
     this.$attrExcludePropBind = apf.extend({
         caption   : 2,
@@ -23537,9 +23576,9 @@ apf.MultiselectBinding = function(){
     this.resort = function(options, clear, noReload){
         if (!this.$sort)
             this.$sort = new apf.Sort();
- 
+
         this.$sort.set(options, clear);
-        
+
         if (this.clearAllCache)
             this.clearAllCache();
 
@@ -23623,23 +23662,23 @@ apf.MultiselectBinding = function(){
                     return this.$sort.apply(nodes);
                 }
                 
-                
+
                 return (xmlNode || this.xmlRoot).childNodes;
             };
-        
+
             this.getFirstTraverseNode = function(xmlNode){
                 return this.getTraverseNodes()[0];//(xmlNode || this.xmlRoot).childNodes[0];
             };
-        
+
             this.getLastTraverseNode = function(xmlNode){
                 var nodes = this.getTraverseNodes();//(xmlNode || this.xmlRoot).childNodes;
                 return nodes[nodes.length - 1];
             };
-        
+
             this.getTraverseParent = function(xmlNode){
-                if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
+                if (!xmlNode.parentNode || xmlNode == this.xmlRoot)
                     return false;
-                    
+
                 return xmlNode.parentNode;
             };
         }
@@ -23660,7 +23699,7 @@ apf.MultiselectBinding = function(){
      */
     this.getTraverseNodes = function(xmlNode){
         
-        
+
         
         if (this.$sort) {
             var nodes = apf.getArrayFromNodelist((xmlNode || this.xmlRoot).selectNodes(this.each));
@@ -23780,7 +23819,7 @@ apf.MultiselectBinding = function(){
         var nodes = this.getTraverseNodes(this.getTraverseParent(xmlNode) || this.xmlRoot);
         while (nodes[i] && nodes[i] != xmlNode)
             i++;
-        
+
         var ind = i + (up ? -1 * count : count);
         return nodes[ind < 0 ? 0 : ind];
     };
@@ -23797,7 +23836,7 @@ apf.MultiselectBinding = function(){
      * @see  baseclass.multiselectbinding.binding.each
      */
     this.getTraverseParent = function(xmlNode){
-        if (!xmlNode.parentNode || xmlNode == this.xmlRoot) 
+        if (!xmlNode.parentNode || xmlNode == this.xmlRoot)
             return false;
 
         //@todo this can be removed when we have a new xpath implementation
@@ -23831,7 +23870,7 @@ apf.MultiselectBinding = function(){
             xmlNode.removeAttribute(apf.xmldb.xmlIdTag);
         return x;
     };
-    
+
     /**
      * Finds HTML presentation node in cache by ID
      *
@@ -23843,13 +23882,13 @@ apf.MultiselectBinding = function(){
             return this.$pHtmlDoc.getElementById(id);
         };
     }
-    
+
     this.$setClearMessage = function(msg, className, lastHeight){
         if (this.more && this.$addMoreItem) this.$addMoreItem();
         if (!this.$empty) {
             if (!this.$hasLayoutNode("empty"))
                 return;
-            
+
             this.$getNewContext("empty");
 
             var xmlEmpty = this.$getLayoutNode("empty");
@@ -23868,7 +23907,7 @@ apf.MultiselectBinding = function(){
 
         this.$empty.setAttribute("id", "empty" + this.$uniqueId);
         apf.setStyleClass(this.$empty, className, ["loading", "empty", "offline"]);
-        
+
         //@todo apf3.0 cleanup?
         var extH = apf.getStyle(this.$ext, "height");
         this.$empty.style.height = (lastHeight && (!extH || extH == "auto") && className != "empty")
@@ -23894,7 +23933,7 @@ apf.MultiselectBinding = function(){
         if (this.$empty && this.$empty.parentNode)
             this.$empty.parentNode.removeChild(this.$empty);
     };
-    
+
     /**
      * Set listeners, calls HTML creation methods and
      * initializes select and focus states of object.
@@ -23902,7 +23941,7 @@ apf.MultiselectBinding = function(){
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
         apf.xmldb.addNodeListener(XMLRoot, this);
-        
+
         this.$isLoading = true;
 
         var length = this.getTraverseNodes(XMLRoot).length;
@@ -23915,7 +23954,7 @@ apf.MultiselectBinding = function(){
 
         //Build HTML
         this.$fill(nodes);
-        
+
         this.$isLoading = false;
 
         //Select First Child
@@ -24011,7 +24050,7 @@ apf.MultiselectBinding = function(){
                 loc[0].insertBefore(xmlNode, loc[1]);
             else
                 lastParent.removeChild(xmlNode);
-            
+
             if (!eachNode)
                 xmlNode = lastParent;
         }
@@ -24049,7 +24088,7 @@ apf.MultiselectBinding = function(){
                     action = "add";
                     break;
                 }
-                
+
                 else if (htmlNode
                   && (startNode != xmlNode || xmlNode == this.xmlRoot)) {
                     if (actionFeature[action] & 1)
@@ -24069,7 +24108,7 @@ apf.MultiselectBinding = function(){
             if (xmlNode == listenNode) {
                 if (actionFeature[action] & 128) //The change is not for us.
                     return;
-                
+
                 break;
             }
             xmlNode = xmlNode.parentNode;
@@ -24100,7 +24139,7 @@ apf.MultiselectBinding = function(){
             //Case for replacing the xmlroot or its direct parent
             if (UndoObj ? UndoObj.args[1] == this.xmlRoot : !this.xmlRoot.parentNode)
                 return this.load(UndoObj ? UndoObj.xmlNode : listenNode, {force: true});
-            
+
             //Case for replacing a node between the xmlroot and the traverse nodes
             var nodes = this.getTraverseNodes();
             for (var i = 0, l = nodes.length; i < l; i++) {
@@ -24146,7 +24185,7 @@ apf.MultiselectBinding = function(){
         if (action == "insert" && (this.$isTreeArch || xmlNode == this.xmlRoot)) {
             if (!xmlNode)
                 return;
-            
+
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(xmlNode);
 
@@ -24162,7 +24201,7 @@ apf.MultiselectBinding = function(){
             }
 
             result = this.$addNodes(xmlNode, null, true, false, null, null, "insert");//this.$isTreeArch??
-            
+
             this.$fillParentHtml = (this.$getParentNode
                 ? this.$getParentNode(htmlNode)
                 : htmlNode);
@@ -24176,16 +24215,16 @@ apf.MultiselectBinding = function(){
         }
         else if (action == "add") {// || !htmlNode (Check Add)
             var parentHTMLNode;
-            pNode = this.getTraverseParent(xmlNode);
+            pNode = this.getTraverseParent(xmlNode) || this.xmlRoot;
 
             if (pNode == this.xmlRoot)
                 parentHTMLNode = this.$container;
-            
+
             if (!parentHTMLNode && this.$isTreeArch) {
                 parentHTMLNode = this.$findHtmlNode(
-                    pNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId); 
+                    pNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
             }
-            
+
             //This should be moved into a function (used in setCache as well)
             
             if (!parentHTMLNode && this.getCacheItem)
@@ -24196,7 +24235,7 @@ apf.MultiselectBinding = function(){
             
 
             //Only update if node is in current representation or in cache
-            if (parentHTMLNode || this.$isTreeArch 
+            if (parentHTMLNode || this.$isTreeArch
               && pNode == this.xmlRoot) { //apf.isChildOf(this.xmlRoot, xmlNode)
                 parentHTMLNode = (this.$findContainer && parentHTMLNode && parentHTMLNode.nodeType == 1
                     ? this.$findContainer(parentHTMLNode)
@@ -24213,8 +24252,8 @@ apf.MultiselectBinding = function(){
             //&& (!xmlNode || foundNode == xmlNode && xmlNode.parentNode
             //if (!xmlNode || startNode != xmlNode) //@todo unsure if I can remove above commented out statement
                 //return;
-            //I've commented above code out, because it disabled removing a 
-            //subnode of a node that through an each rule makes the traverse 
+            //I've commented above code out, because it disabled removing a
+            //subnode of a node that through an each rule makes the traverse
             //node no longer a traverse node.
 
             //Remove HTML Node
@@ -24231,7 +24270,7 @@ apf.MultiselectBinding = function(){
             if (this.$sort)
                 this.$moveNode(xmlNode, htmlNode);
             
-            
+
             this.$updateNode(xmlNode, htmlNode);
 
             //Transaction 'niceties'
@@ -24257,12 +24296,12 @@ apf.MultiselectBinding = function(){
                 return model.$waitForXml(this);
             }
         }
-        
+
         
 
         //For tree based nodes, update all the nodes up
         pNode = xmlNode ? xmlNode.parentNode : lastParent;
-        if (this.$isTreeArch && !this.$preventRecursiveUpdate 
+        if (this.$isTreeArch && !this.$preventRecursiveUpdate
           && pNode && pNode.nodeType == 1) {
             do {
                 htmlNode = this.$findHtmlNode(pNode.getAttribute(
@@ -24351,12 +24390,12 @@ apf.MultiselectBinding = function(){
 
         
         var cId, cItem;
-        if (this.$isTreeArch && this.caching 
+        if (this.$isTreeArch && this.caching
           && (!this.$bindings || !this.$bindings.each || !this.$bindings.each.filter)
           && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
             if (this.$subTreeCacheContext || this.$needsDepth) {
                 //@todo
-                //We destroy the current items, because currently we 
+                //We destroy the current items, because currently we
                 //don't support multiple treecachecontexts
                 //and because datagrid needs to redraw depth
                 this.clearCacheItem(cId);
@@ -24372,7 +24411,7 @@ apf.MultiselectBinding = function(){
                 var htmlNode;
                 while (cItem.childNodes.length)
                     (parent || this.$container).appendChild(htmlNode = cItem.childNodes[0]);
-                
+
                 return nodes;
             }
         }
@@ -24439,31 +24478,31 @@ apf.MultiselectBinding = function(){
             value = value.charAt(0) == "[" && value.charAt(value.length - 1) == "]"
                 ? value.replace(/^\[|\]$/g, "")
                 : value;
-            
+
             if (value.match(/^\w+::/)) {
                 var model = value.split("::"); //@todo this is all very bad
                 if (!apf.xPathAxis[model[0]]) {
                     this.setProperty("model", model[0]);
                     this.each = model[1];
                 }
-                else 
+                else
                     this.each = value;
             }
             else
                 this.each = value;
-            
+
             if (this.each == this.$lastEach)
                 return;
-            
+
             this.$lastEach = value;
-            
+
             if (!this.$model && !this.$initingModel) {
                 this.$initingModel = true;
                 this.$setInheritedAttribute("model");
-                
+
                 return; //@experimental
             }
-            
+
             if (this.$checkLoadQueue() !== false) //@experimental
                 return;
         }
@@ -24477,7 +24516,7 @@ apf.MultiselectBinding = function(){
             });
         }
     };
-    
+
     this.$select = function(o){
         
         if (this.renaming)
@@ -24564,7 +24603,7 @@ apf.MultiselectBinding = function(){
      * </code>
      */
     this.$propHandlers["caption"]  =
-    
+
     /**
      * @attribute {String} valuerule the xpath statement that determines from
      * which xml node the value is retrieved.
@@ -24627,7 +24666,7 @@ apf.MultiselectBinding = function(){
      * </code>
      * @see  baseclass.multiselect.binding.select
      */
-    //this.$propHandlers["select"]   = 
+    //this.$propHandlers["select"]   =
     
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
@@ -36643,7 +36682,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/window.js)SIZE(50596)TIME(Thu, 15 Dec 2011 00:34:58 GMT)*/
+/*FILEHEAD(core/window.js)SIZE(50587)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36856,7 +36895,7 @@ apf.window = function(){
 
     var focusLoopDetect;
     this.$focus = function(amlNode, e, force){
-        var aEl = this.document.activeElement;
+        var aEl = this.activeElement;
         if (aEl == amlNode && !force)
             return; //or maybe when force do $focus
 
@@ -36881,7 +36920,13 @@ apf.window = function(){
                 return false;
         }
 
-        (apf.activeElement = this.document.activeElement = this.document.documentElement.$lastFocussed = amlNode).focus(true, e);
+        if (amlNode.$focussable != apf.MENU || !apf.activeElement) {
+            apf.activeElement = 
+            this.document.activeElement = 
+            this.document.documentElement.$lastFocussed = amlNode;
+        }
+
+        (apf.window.activeElement = amlNode).focus(true, e);
 
         this.$settingFocus = null;
 
@@ -36897,15 +36942,21 @@ apf.window = function(){
     };
 
     this.$blur = function(amlNode){
-        var aEl = this.document.activeElement;
+        var aEl = this.activeElement;
         if (aEl != amlNode)
             return false;
 
         
 
         aEl.$focusParent.$lastFocussed = null;
-        apf.activeElement = this.document.activeElement = null;
+        
+        if (aEl.$focussable != apf.MENU) {
+            apf.activeElement = 
+            this.document.activeElement = null;
+        }
 
+        apf.window.activeElement = null;
+        
         apf.dispatchEvent("movefocus", {
             fromElement : amlNode
         });
@@ -37051,7 +37102,7 @@ apf.window = function(){
             list.remove(nodes[i]); //@todo assuming no windows here
         }
 
-        if (apf.document.activeElement == this)
+        if (apf.window.activeElement == this)
             apf.window.moveNext();
         
         if (this.$isWindowContainer) {
@@ -37074,21 +37125,21 @@ apf.window = function(){
      * @returns {Boolean} whether the element has focus.
      */
     this.hasFocus = function(amlNode){
-        return this.document.activeElement == amlNode;
+        return this.activeElement == amlNode;
     };
 
     /**
      * @private
      */
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
-        if (switchWindows && apf.document.activeElement) {
-            var p = apf.document.activeElement.$focusParent;
+        if (switchWindows && apf.window.activeElement) {
+            var p = apf.window.activeElement.$focusParent;
             if (p.visible && p.modal)
                 return false;
         }
 
         var dir, start, next,
-            amlNode = relObject || apf.document.activeElement,
+            amlNode = relObject || apf.window.activeElement,
             fParent = amlNode
                 ? (switchWindows && amlNode.$isWindowContainer 
                   && amlNode.$isWindowContainer != -1
@@ -37109,7 +37160,7 @@ apf.window = function(){
             start = -1;
         }
 
-        if (this.document.activeElement && this.document.activeElement == amlNode
+        if (this.activeElement == amlNode
           && list.length == 1 || list.length == 0)
             return false;
 
@@ -37136,7 +37187,7 @@ apf.window = function(){
         }
         while (!amlNode
             || amlNode.disabled > 0
-            || amlNode == apf.document.activeElement
+            || amlNode == apf.window.activeElement
             || (switchWindows ? !amlNode.visible : amlNode.$ext && !amlNode.$ext.offsetHeight)
             || amlNode.focussable === false
             || switchWindows && !amlNode.$tabList.length);
@@ -37190,7 +37241,7 @@ apf.window = function(){
         
         var pos, ev,
             amlNode = apf.findHost(e.srcElement || e.target)
-              || apf.document.activeElement
+              || apf.window.activeElement
               || apf.document && apf.document.documentElement;
 
         if (amlNode && amlNode.localName == "menu") //The menu is already visible
@@ -37267,14 +37318,11 @@ apf.window = function(){
               
             ;*/
         
-        if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
-          && apf.popup.cache[apf.popup.last] 
-          && !apf.isChildOf(apf.popup.cache[apf.popup.last].content, e.srcElement || e.target, true))
-            apf.popup.forceHide();
+        apf.popup.$mousedownHandler(amlNode, e);
         
 
         if (amlNode === false) 
-            amlNode = apf.document.activeElement;
+            amlNode = apf.window.activeElement;
 
         
         //Make sure the user cannot leave a modal window
@@ -37282,17 +37330,17 @@ apf.window = function(){
           && amlNode.canHaveChildren != 2 && !amlNode.$focusParent))
           && apf.config.allowBlur) {
             lastFocusParent = null;
-            if (apf.document.activeElement)
-                apf.document.activeElement.blur();
+            if (apf.window.activeElement)
+                apf.window.activeElement.blur();
         }
         else if (amlNode) { //@todo check this for documentElement apf3.0
-            if ((p = apf.document.activeElement
-              && apf.document.activeElement.$focusParent || lastFocusParent)
+            if ((p = apf.window.activeElement
+              && apf.window.activeElement.$focusParent || lastFocusParent)
               && p.visible && p.modal && amlNode.$focusParent != p
               && amlNode.$isWindowContainer != -1) {
                 apf.window.$focusLast(p, {mouse: true, ctrlKey: e.ctrlKey});
             }
-            else if (!amlNode && apf.document.activeElement) {
+            else if (!amlNode && apf.window.activeElement) {
                 apf.window.$focusRoot();
             }
             else if (amlNode.$isWindowContainer == -1) {
@@ -37307,14 +37355,14 @@ apf.window = function(){
                     apf.window.$focus(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
                 else if (amlNode.canHaveChildren == 2) {
-                    if (!apf.config.allowBlur || !apf.document.activeElement 
-                      || apf.document.activeElement.$focusParent != amlNode)
+                    if (!apf.config.allowBlur || !apf.window.activeElement 
+                      || apf.window.activeElement.$focusParent != amlNode)
                         apf.window.$focusLast(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
-                else {
-                    if (!apf.config.allowBlur || amlNode != apf.document.documentElement)
-                        apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
-                }
+//                else {
+//                    if (!apf.config.allowBlur || amlNode != apf.document.documentElement)
+//                        apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+//                }
             }
             else {
                 apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
@@ -37400,7 +37448,7 @@ apf.window = function(){
             bubbles  : true //@todo is this much slower?
         };
         
-        var aEl = apf.document && apf.document.activeElement;
+        var aEl = apf.document && apf.window.activeElement;
         if ((aEl && !aEl.disableKeyboard
           ? aEl.dispatchEvent("keyup", ev)
           : apf.dispatchEvent("keyup", ev)) === false) {
@@ -37491,8 +37539,8 @@ apf.window = function(){
     apf.addListener(document, "keyup", function(e){
         e = e || event;
 
-        if (e.ctrlKey && e.keyCode == 9 && apf.document.activeElement) {
-            var w = apf.document.activeElement.$focusParent;
+        if (e.ctrlKey && e.keyCode == 9 && apf.window.activeElement) {
+            var w = apf.window.activeElement.$focusParent;
             if (w.modal) {
                 if (e.preventDefault)
                     e.preventDefault();
@@ -37500,9 +37548,9 @@ apf.window = function(){
             }
 
             apf.window.moveNext(e.shiftKey,
-                apf.document.activeElement.$focusParent, true);
+                apf.window.activeElement.$focusParent, true);
 
-            w = apf.document.activeElement.$focusParent;
+            w = apf.window.activeElement.$focusParent;
             if (w && w.bringToFront)
                 w.bringToFront();
             
@@ -37523,7 +37571,7 @@ apf.window = function(){
             apf.contextMenuKeyboard = true;
         
 
-        var amlNode           = apf.document.activeElement, //apf.findHost(e.srcElement || e.target),
+        var amlNode           = apf.window.activeElement, //apf.findHost(e.srcElement || e.target),
             htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target),
             isTextInput = (ta[htmlNode.tagName]
               || htmlNode.contentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
@@ -37562,10 +37610,10 @@ apf.window = function(){
         }
         
         //Focus handling
-        else if ((!apf.config.disableTabbing || apf.document.activeElement) && e.keyCode == 9) {
+        else if ((!apf.config.disableTabbing || apf.window.activeElement) && e.keyCode == 9) {
             //Window focus handling
-            if (e.ctrlKey && apf.document.activeElement) {
-                var w = apf.document.activeElement.$focusParent;
+            if (e.ctrlKey && apf.window.activeElement) {
+                var w = apf.window.activeElement.$focusParent;
                 if (w.modal) {
                     if (e.preventDefault)
                         e.preventDefault();
@@ -37573,14 +37621,14 @@ apf.window = function(){
                 }
 
                 apf.window.moveNext(e.shiftKey,
-                    apf.document.activeElement.$focusParent, true);
+                    apf.window.activeElement.$focusParent, true);
 
-                w = apf.document.activeElement.$focusParent;
+                w = apf.window.activeElement.$focusParent;
                 if (w && w.bringToFront)
                     w.bringToFront();
             }
             //Element focus handling
-            else if(!apf.document.activeElement || apf.document.activeElement.tagName != "menu") {
+            else if(!apf.window.activeElement || apf.window.activeElement.tagName != "menu") {
                 apf.window.moveNext(e.shiftKey);
             }
 
@@ -37626,7 +37674,7 @@ apf.window = function(){
         }
         
         
-        /*if (browserNavKeys[e.keyCode] && apf.document.activeElement 
+        /*if (browserNavKeys[e.keyCode] && apf.window.activeElement 
           && apf.config.autoDisableNavKeys)
             e.returnValue = false;*/
 
@@ -37693,7 +37741,7 @@ apf.window = function(){
         
                     
                     //Set the default selected element
-                    if (!apf.document.activeElement && (!apf.config.allowBlur 
+                    if (!apf.window.activeElement && (!apf.config.allowBlur 
                       || apf.document.documentElement 
                       && apf.document.documentElement.editable))
                         apf.window.focusDefault();
@@ -44233,7 +44281,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(elements/auth.js)SIZE(23999)TIME(Thu, 15 Dec 2011 00:34:58 GMT)*/
+/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Fri, 27 Apr 2012 06:48:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44462,8 +44510,10 @@ apf.aml.setElement("auth", apf.auth);
         if (this.autostart && !this.$hasHost) {
             var _self = this;
             apf.addEventListener("load", function(){
-                _self.authRequired();
-                apf.removeEventListener("load", arguments.callee);
+                apf.addEventListener("login", function(){
+                    _self.authRequired();
+                    apf.removeEventListener("load", arguments.callee);
+                });
             });
         }
     });
@@ -54119,7 +54169,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19339)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54210,7 +54260,7 @@ apf.menu = function(struct, tagName){
 };
 
 (function(){
-    this.$focussable  = apf.KEYBOARD;
+    this.$focussable  = apf.MENU;
     this.$positioning = "basic"
     //var _self         = this;
     //var blurring      = false;
@@ -54404,7 +54454,8 @@ apf.menu = function(struct, tagName){
                     allowTogether: openMenuId,
                     autohide     : !this.pinned,
                     noleft       : this.left !== undefined,
-                    setZindex    : this.zindex ? false : true
+                    setZindex    : this.zindex ? false : true,
+                    up           : (this.ref || opener).submenudir == "up"
                 });
             }
             else {
@@ -56560,7 +56611,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/page.js)SIZE(27085)TIME(Fri, 13 Apr 2012 20:08:14 GMT)*/
+/*FILEHEAD(elements/page.js)SIZE(27212)TIME(Fri, 27 Apr 2012 03:13:27 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56606,6 +56657,7 @@ apf.page = function(struct, tagName){
     
     this.$focussable     = false;
     this.closebtn        = false;
+    this.autofocus       = true;
 
     
 
@@ -56649,8 +56701,9 @@ apf.page = function(struct, tagName){
     this.$booleanProperties["visible"]  = true;
     this.$booleanProperties["fake"]     = true;
     this.$booleanProperties["closebtn"] = true;
+    this.$booleanProperties["autofocus"] = true;
     this.$supportedProperties.push("fake", "caption", "icon", "tooltip",
-        "type", "buttons", "closebtn", "trans-in", "trans-out");
+        "type", "buttons", "closebtn", "trans-in", "trans-out", "autofocus");
 
     
     /**
@@ -57016,7 +57069,8 @@ apf.page = function(struct, tagName){
     
     function $btnSet(oHtml){
         this.parentNode.set(this);
-        this.canHaveChildren = 2;
+        if (this.autofocus)
+            this.canHaveChildren = 2;
         this.$setStyleClass(oHtml, "down", null, true);
     }
     
@@ -61734,7 +61788,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5172)TIME(Sat, 21 Apr 2012 15:32:20 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Fri, 27 Apr 2012 06:48:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61846,10 +61900,14 @@ apf.splitbutton = function(struct, tagName){
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
                 _self.$button2.$setState("Over", {});
+                
+                _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 apf.setStyleClass(this.$ext, "", ["primary"]);
                 _self.$button2.$setState("Out", {});
+                
+                _self.dispatchEvent("mouseout", { button: this });
             },
             onclick: function(e) {
                 _self.dispatchEvent("click");
@@ -61864,6 +61922,8 @@ apf.splitbutton = function(struct, tagName){
             onmouseover: function() {
                 apf.setStyleClass(this.$ext, "primary");
                 _self.$button1.$setState("Over", {});
+                
+                _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 if(!_self.$button2.value) {
@@ -61874,6 +61934,8 @@ apf.splitbutton = function(struct, tagName){
                     apf.setStyleClass(this.$ext, "primary");
                     _self.$button1.$setState("Over", {});
                 }
+                
+                _self.dispatchEvent("mouseout", { button: this });
             }
         });
     };
