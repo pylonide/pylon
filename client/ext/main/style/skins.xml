@@ -2102,13 +2102,13 @@
 <a:button name="mnubtn">
     <a:style><![CDATA[
         .mnubtn {
-			height      : 26px !important;
-			position    : relative;
-			cursor      : default;
-			overflow    : hidden;
-			display     : block;
-			border      : 0;
-            width       : 33px;
+			height   : 27px !important;
+			position : relative;
+			cursor   : default;
+			overflow : hidden;
+			display  : block;
+			border   : 0;
+			width    : 30px;
         }
 
         .mnubtnOver,
@@ -2135,7 +2135,6 @@
 			height            : 26px;
         }
 
-
         .mnubtnDisabled .icon {
         	opacity: 0.3;
         }
@@ -2144,7 +2143,6 @@
         	box-shadow: none;
         	background-image: none;
         }
-
 
         .mnubtn .pointer {
             /*background-image    : url(images/gitui_close_arrow.png);
