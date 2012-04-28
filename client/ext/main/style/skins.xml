@@ -2107,9 +2107,8 @@
 			-webkit-box-flex: 1;
         }
 
-        .mnubtnOver
         .mnubtnOver,
-        .mnubtnDwon {
+        .mnubtnDown {
         	background-image: url(images/c9-repeat-x.png);
         	background-repeat: repeat-x;
         }
@@ -2128,6 +2127,8 @@
 			height            : 26px;
         }
 
+
+        /*.mnubtnDisabled*/
         .black-menu-bar.unselectable .mnubtn .icon,
         .black-menu-bar .mnubtn.unselectable .icon {
         	opacity: 0.3;
