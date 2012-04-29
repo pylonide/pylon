@@ -226,7 +226,7 @@
 			border-bottom : 1px solid black;
 			height        : 28px !important;
 			overflow      : hidden;
-			padding       : 0 5px 0 0px !important;
+			padding       : 0 6px 0 39px !important;
 			position      : relative;
 			width         : 200px;
 			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
@@ -276,25 +276,37 @@
         	box-shadow: 1px 0 0 0  black;
         	cursor: pointer;
         	height: 27px;
-        	width: 37px;
+        	left: 0;
+        	position: absolute;
+        	top: 0;
+        	width: 39px;
         }
         .black-menu-bar.closed .c9-logo {
         	background-position: 0px -346px;
         }
-        .black-menu-bar.closed .c9-logo:hover {
-        	background-position: -37px -346px;
+        .black-menu-bar.closed .c9-logo.mnubtnOver {
+        	background-position: -39px -346px;
+        }
+        .black-menu-bar.closed .c9-logo.mnubtnDown {
+            background-position: -78px -346px;
+
         }
         .black-menu-bar .c9-logo {
-        	background-position: -74px -346px;
+            background-position: -117px -346px;
         }
-        .black-menu-bar .c9-logo:hover {
-        	background-position: -111px -346px;
+        .black-menu-bar .c9-logo.mnubtnOver {
+        	background-position: -156px -346px;
+        }
+        .black-menu-bar .c9-logo.mnubtnDown {
+            background-position: -195px -346px;
         }
         .black-menu-bar .c9-logo .icon{
             display : none;
         }
+
         .black-menu-bar .toggle-black-menu-bar {
         	background: url(images/c9-no-repeat.png) no-repeat 0 -383px;
+            box-shadow: none !important;
         	cursor: pointer;
         	height: 27px;
         	position: absolute;
@@ -8701,11 +8713,11 @@
     }
     .editor_tab .curbtn .tab_middle:before {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : 0 -127px, 0 -57px;
+        background-position : 0px -160px, 0 -57px;
     }
     .editor_tab .curbtn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : -31px -127px, 0 -57px;
+        background-position : -31px -159px, 0 -57px;
     }
 
     /* ------------------------------------------------------------------------------------------
