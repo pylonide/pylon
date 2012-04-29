@@ -387,20 +387,20 @@ module.exports = ext.register("ext/revisions/revisions", {
         var self = this;
         var doc = data.doc;
         var page = doc.$page;
-        if (!Util.pageIsCode(page)) {
+        if (!page || !Util.pageIsCode(page)) {
             return;
         }
 
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
-        var path = Util.getDocPath(doc.$page);
+        var path = Util.getDocPath(page);
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
                 self.onDocChange.call(self, e, doc);
             };
         }
 
-        this.$switchToPageModel(doc.$page);
+        this.$switchToPageModel(page);
 
         ide.send({
             command: "revisions",
