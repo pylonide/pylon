@@ -149,7 +149,7 @@
         }
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
-            height: 34px;
+            height: 37px;
             position: fixed;
             right: 0;
             top: 0;
@@ -8312,15 +8312,20 @@
     .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
     	background-color: #7A7A7A;
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
-        background-position : 50% -124px, 0 -101px;
+        background-position : 50% -124px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
     }
     .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
         background-repeat   : repeat-x;
-        background-position : 0 -101px;
+        background-position : 0 -79px;
     }
-    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle,
+    .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:before {
+        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.3) inset;
+    }
+
+    .editor_tab.hidetabs .tab_middle {
     	border-top-right-radius: 1px;
     }
     .editor_tab.hidetabs .tab_middle:before {
@@ -8654,7 +8659,7 @@
     .editor_tab .session_btn:not(.curbtn) .tab_middle,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:before,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:after {
-        box-shadow   : 0 -1px 0 0 #000 inset;
+        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.15) inset;
     }
     .editor_tab .session_btn .tab_middle {
         background-image    : url(images/c9-repeat-x.png);
@@ -8664,7 +8669,7 @@
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
         background-color    : #2F2F2F;
         color               : #cecece;
-        -webkit-transition: : color 0.1s ease 0s;
+        -webkit-transition: background-color .1s linear;
     }
 
     .editor_tab .session_btn .tab_middle:before {
