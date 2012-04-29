@@ -8188,9 +8188,10 @@
 		background-repeat: no-repeat;
     	display: inline-block;
 		height: 17px;
-		margin: 0px 0px 5px 12px;
-		top: 2px;
+		margin: 0px 0px 0 12px;
+		top: 3px;
 		width: 30px;
+        vertical-align : top;
     }
     .editor_tab .btnsesssioncontainer .plus_tab_button:hover {
 		background-position: -58px -106px;
@@ -8302,7 +8303,7 @@
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
     	height: 5px;
     	overflow: hidden;
-    	top: -6px;
+    	top: -5px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
     	overflow: visible;
@@ -8345,7 +8346,7 @@
     .editor_tab.hidetabs .curbtn {
     	height: 7px;
     	overflow: hidden;
-    	top: -4px;
+    	top: -3px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
