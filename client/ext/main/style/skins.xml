@@ -226,7 +226,7 @@
 			border-bottom : 1px solid black;
 			height        : 28px !important;
 			overflow      : hidden;
-			padding       : 0 6px 0 0px !important;
+			padding       : 0 5px 0 0px !important;
 			position      : relative;
 			width         : 200px;
 			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
@@ -8391,6 +8391,11 @@
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -198px;
     }*/
+    
+    .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button,
+    .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn {
+        opacity : 0;
+    }
     
     /* ------------------------------------------------------------------------------------------
      * Animation steps

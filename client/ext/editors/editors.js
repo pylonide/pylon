@@ -322,7 +322,7 @@ module.exports = ext.register("ext/editors/editors", {
             })
         }
         else {
-            tabEditors.$buttons.style.paddingTop = "2px";
+            tabEditors.$buttons.style.paddingTop = "0px";
             apf.setStyleClass(barButtonContainer.$ext, "hidetabs");
             
             this.$resize(ext, preview);
@@ -783,8 +783,9 @@ module.exports = ext.register("ext/editors/editors", {
         this.$settings = {};
         ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/files", [])
-            
             settings.setDefaults("auto/tabs", [["show", "true"]]);
+            
+            _self.loadedSettings = false;
             
             var showTab = settings.model.queryValue("auto/tabs/@show");
             _self.showTabs = apf.isTrue(showTab);
@@ -856,11 +857,13 @@ module.exports = ext.register("ext/editors/editors", {
 
                     checkExpand(node.getAttribute("path"), doc);
                 }
+                
+                _self.loadedSettings = true;
             });
         });
 
         ide.addEventListener("settings.save", function(e){
-            if (!e.model.data)
+            if (!e.model.data || !_self.loadedSettings)
                 return;
 
             var pNode   = e.model.data.selectSingleNode("auto/files");

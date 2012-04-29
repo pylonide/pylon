@@ -51,10 +51,14 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         
         // Load up extensions the user added manually
         ide.addEventListener("settings.load", function(e){
+            _self.loadedSettings = false;
+            
             ide.addEventListener("extload", function(){
                 var nodes = e.model.queryNodes("auto/extensions/plugin");
                 for (var n = 0; n < nodes.length; n++)
                     _self.loadExtension(nodes[n].getAttribute("path"));
+                
+                _self.loadedSettings = true;
             });
         });
     },
@@ -62,6 +66,9 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     init : function(amlNode){
         // Save the manually-loaded extensions
         ide.addEventListener("settings.save", function(e){
+            if (!_self.loadedSettings)
+                return;
+            
             var eNode = e.model.data.selectSingleNode("auto/extensions");
             if (eNode) {
                 eNode.parentNode.removeChild(eNode);

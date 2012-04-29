@@ -111,6 +111,9 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                     });
                 });
             }
+            
+            var showTabs = e.model.queryValue("auto/tabs/@show");
+            navbar.setAttribute("minwidth", apf.isTrue(showTabs) ? 43 : 0);
         });
         
         ide.addEventListener("tabs.visible", function(e){
