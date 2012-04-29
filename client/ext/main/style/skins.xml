@@ -8371,7 +8371,7 @@
     /* ------------------------------------------------------------------------------------------
      * Minimized tab elements
      * --------------------------------------------------------------------------------------- */
-    .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button {
+    /*.editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button {
 		background-position: -58px -158px;
 		height: 10px;
 		margin: 0px 0px 5px 3px;
@@ -8395,7 +8395,7 @@
     }
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -198px;
-    }
+    }*/
     
     /* ------------------------------------------------------------------------------------------
      * Animation steps
@@ -8409,7 +8409,8 @@
         { -webkit-mask-position : -164px  -64px; top : 0; width : 11px; right: -11px; display: block;}
     .editor_tab .btnsesssioncontainer.step4 .tab_middle:after 
         { -webkit-mask-position : -164px  -96px; top : 0; width : 7px;  right: -7px;  display: block;}
-    .editor_tab .btnsesssioncontainer.step5 .tab_middle:after 
+    .editor_tab .btnsesssioncontainer.step5 .tab_middle:after,
+    .editor_tab .btnsesssioncontainer.step6 .tab_middle:after 
         { -webkit-mask-position : -164px -128px; top : 0; width : 0px;  right: 0;     display: block;}
     
     .editor_tab .btnsesssioncontainer.step1 .tab_middle:before 
@@ -8422,6 +8423,18 @@
         { -webkit-mask-position : -137px  -96px; top : 0; width : 18px; }
     .editor_tab .btnsesssioncontainer.step5 .tab_middle:before 
         { -webkit-mask-position : -137px -128px; top : 0; width : 19px; }
+    .editor_tab .btnsesssioncontainer.step6 .tab_middle:before 
+        { -webkit-mask-position : -137px -128px; top : 0; width : 19px; }
+    
+    .editor_tab .btnsesssioncontainer.step5 .session_btn:not(.curbtn) .tab_middle:before 
+        { height : 8px; }
+    .editor_tab .btnsesssioncontainer.step6 .session_btn:not(.curbtn) .tab_middle:before 
+        { height : 5px; }
+    
+    .editor_tab .btnsesssioncontainer.step5 .session_btn:not(.curbtn) .tab_middle 
+        { height : 3px; }
+    .editor_tab .btnsesssioncontainer.step6 .session_btn:not(.curbtn) .tab_middle
+        { height : 0px; }
 
     /* ------------------------------------------------------------------------------------------
      * Other
