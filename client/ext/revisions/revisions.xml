@@ -10,7 +10,7 @@
       center    = "true"
       kbclose   = "true"
       buttons   = "close"
-      width     = "700"
+      width     = "600"
       skin      = "bk-window2"
       onkeydown = "
         if(event.keyCode == 89) {
@@ -27,9 +27,9 @@
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionRevYes" default="3" skin="btn-default-css3" class="btn-green">Yes, and add it as a revision</a:button>
+            <a:button id="btnQuestionRevYes" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
             <a:filler/>
-            <a:button id="btnQuestionRevNo" skin="btn-default-css3" class="btn-red">No, keep changes in a revision</a:button>
+            <a:button id="btnQuestionRevNo" skin="btn-default-css3" class="btn-red">No (but keep changes in a revision)</a:button>
             <a:filler/>
             <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes to all</a:button>
             <a:filler/>
