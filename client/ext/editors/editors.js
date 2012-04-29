@@ -215,32 +215,32 @@ module.exports = ext.register("ext/editors/editors", {
         tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
 
         var timer;
-        tabEditors.$buttons.addEventListener("mouseover",function(e){
-            clearTimeout(timer);
-            
-            if (_self.showTabs || _self.previewing)
-                return;
-                
-            timer = setTimeout(function(){
-                if (!_self.previewing) {
-                    _self.toggleTabs(1, true, null, true);
-                    _self.previewing = true;
-                }
-            }, 200);
-        });
-        tabEditors.$buttons.addEventListener("mouseout",function(e){
-            clearTimeout(timer);
-            
-            if (_self.showTabs || apf.isChildOf(tabEditors.$buttons, e.toElement, true))
-                return;
-            
-            timer = setTimeout(function(){
-                if (_self.previewing) {
-                    _self.previewing = false;
-                    _self.toggleTabs(-1, true, null, true);
-                }
-            }, 300);
-        });
+//        tabEditors.$buttons.addEventListener("mouseover",function(e){
+//            clearTimeout(timer);
+//            
+//            if (_self.showTabs || _self.previewing)
+//                return;
+//                
+//            timer = setTimeout(function(){
+//                if (!_self.previewing) {
+//                    _self.toggleTabs(1, true, null, true);
+//                    _self.previewing = true;
+//                }
+//            }, 200);
+//        });
+//        tabEditors.$buttons.addEventListener("mouseout",function(e){
+//            clearTimeout(timer);
+//            
+//            if (_self.showTabs || apf.isChildOf(tabEditors.$buttons, e.toElement, true))
+//                return;
+//            
+//            timer = setTimeout(function(){
+//                if (_self.previewing) {
+//                    _self.previewing = false;
+//                    _self.toggleTabs(-1, true, null, true);
+//                }
+//            }, 300);
+//        });
 
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
             _self.$resize(tab.$ext);
@@ -779,7 +779,7 @@ module.exports = ext.register("ext/editors/editors", {
                     tabEditors.setAttribute("buttons", "close,scale,order");
                     tabEditors.$waitForMouseOut = false;
                     tabEditors.$scaleinit(null, "sync");
-                }, 200);
+                }, 300);
                 
                 onfinish.apply(this, arguments);
             };

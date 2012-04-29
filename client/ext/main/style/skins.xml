@@ -8222,7 +8222,7 @@
         height              : 20px;
         position            : relative;
         overflow            : hidden;
-        padding             : 5px 0 0 0;
+        padding             : 4px 0 0 0;
     }
     .editor_tab .tab_left,
     .editor_tab .tab_right {
