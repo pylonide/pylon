@@ -6,6 +6,7 @@
     "engines": {"node": ">= 0.6.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
 
+    "pm": "sm",
     "dependencies": {
         
         "socket.io": "0.9.x",
