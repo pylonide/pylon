@@ -8721,11 +8721,6 @@
     /* ------------------------------------------------------------------------------------------
      * Selected tab hover
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .curbtn.over .tab_middle,
-    .editor_tab .curbtn.over .tab_middle:before,
-    .editor_tab .curbtn.over .tab_middle:after {
-        box-shadow: 0 0 0 1000px rgba(255,255,255,.05) inset;
-    }
 
 </a:style>
 
