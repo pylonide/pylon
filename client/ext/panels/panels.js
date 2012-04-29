@@ -11,7 +11,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var menus = require("ext/menus/menus");
-var markupSettings =  require("text!ext/panels/settings.xml");
 
 module.exports = ext.register("ext/panels/panels", {
     name   : "Panel Manager",
@@ -154,10 +153,10 @@ module.exports = ext.register("ext/panels/panels", {
         //apf.setOpacity(toWinExt, 0);
         
         var options = {
-            steps : 6,
+            steps : win && toWin ? 6 : 10,
             interval : apf.isChrome ? 0 : 5,
             control : this.animateControl = {},
-            anim : win && toWin ? apf.tween.easeOutCubic : apf.tween.easeOutQuint,
+            anim : win && toWin ? apf.tween.easeOutCubic : apf.tween.easeInOutCubic,
             tweens : tweens,
             oneach: function(){
                 apf.layout.forceResize()

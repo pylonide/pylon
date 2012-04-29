@@ -76,10 +76,25 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         
         ide.addEventListener("panels.animate", function(e){
             var lastTween = e.tweens[e.tweens.length - 1];
-            var tween = {oHtml: navbar.$ext, type: "width", from: navbar.getWidth(), to: lastTween.to};
+            
+            var tween = {
+                oHtml : navbar.$ext, 
+                type  : "width", 
+                from  : navbar.getWidth(),
+                to    : lastTween.to
+            };
+            
             e.tweens.push(tween);
             
+            var i = 0;
             var finish = e.options.onfinish;
+            var oneach = e.options.oneach;
+            e.options.oneach = function(){
+                if (++i == 4 && lastTween.to == 0)
+                    apf.setStyleClass(navbar.$ext, "closed");
+                
+                oneach.apply(this, arguments);
+            }
             e.options.onfinish = function(){
                 if (lastTween.to == 0)
                     apf.setStyleClass(navbar.$ext, "closed");
@@ -108,6 +123,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 ide.addEventListener("init." + activePanel, function(e){
                     colLeft.addEventListener("prop.visible", function(){
                         navbar.setWidth(colLeft.getWidth());
+                        colLeft.removeEventListener("prop.visible", arguments.callee);
                     });
                 });
             }
@@ -126,6 +142,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         if (this.animateControl)
             this.animateControl.stop();
         
+        var i = 0;
         apf.tween.single(navbar.$ext, {
             type: "width",
             from: navbar.getWidth(),
@@ -134,8 +151,9 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             interval : apf.isChrome ? 0 : 5,
             control : this.animateControl = {},
             anim : apf.tween.easeOutCubic,
-            onfinish : function(){
-                //apf.setStyleClass(navbar.$ext, "", ["closed"]);
+            oneach : function(){
+                if (i++ == 4)
+                    apf.setStyleClass(navbar.$ext, "", ["closed"]);
             }
         });
     },
@@ -144,6 +162,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         if (this.animateControl)
             this.animateControl.stop();
         
+        var i = 0;
         apf.tween.single(navbar.$ext, {
             type: "width",
             from: navbar.getWidth(),
@@ -152,8 +171,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             interval : apf.isChrome ? 0 : 5,
             control : this.animateControl = {},
             anim : apf.tween.easeOutCubic,
-            onfinish : function(){
-                if (colLeft.getWidth() == 0)
+            oneach : function(){
+                if (i++ == 4 && colLeft.getWidth() == 0)
                     apf.setStyleClass(navbar.$ext, "closed");
             }
         });

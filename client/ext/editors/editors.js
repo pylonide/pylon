@@ -13,6 +13,7 @@ var menus = require("ext/menus/menus");
 var util = require("core/util");
 var settings = require("ext/settings/settings");
 var commands = require("ext/commands/commands");
+
 module.exports = ext.register("ext/editors/editors", {
     name    : "Editors",
     dev     : "Ajax.org",
@@ -767,6 +768,21 @@ module.exports = ext.register("ext/editors/editors", {
         
         ide.addEventListener("afteronline", function(e){
             tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
+        });
+        
+        ide.addEventListener("panels.animate", function(e){
+            tabEditors.setAttribute("buttons", "close,order");
+            
+            var onfinish = e.options.onfinish;
+            e.options.onfinish = function(){
+                setTimeout(function(){
+                    tabEditors.setAttribute("buttons", "close,scale,order");
+                    tabEditors.$waitForMouseOut = false;
+                    tabEditors.$scaleinit(null, "sync");
+                }, 200);
+                
+                onfinish.apply(this, arguments);
+            };
         });
 
         var vbox  = colMiddle;
