@@ -770,8 +770,9 @@ module.exports = ext.register("ext/editors/editors", {
             settings.setDefaults("auto/tabs", [["show", "true"]]);
             
             var showTab = settings.model.queryValue("auto/tabs/@show");
-            _self.showTabs = false;
-            _self.toggleTabs(apf.isTrue(showTab) ? 1 : -1, true, true);
+            _self.showTabs = apf.isTrue(showTab);
+            if (!_self.showTabs)
+                _self.toggleTabs(_self.showTabs ? 1 : -1, true, true);
             
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){

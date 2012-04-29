@@ -40,9 +40,6 @@ module.exports = ext.register("ext/main/main", {
     nodes   : [],
 
     init : function(){
-        
-        //c9MbarMinimize.addEventListener("mousedown", toggleMenuBar);
-        //logobar.$ext - > reference to html element
     },
 
     enable : function(){

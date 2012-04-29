@@ -85,6 +85,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 else
                     apf.setStyleClass(navbar.$ext, "", ["closed"]);
                 
+                panels.lastPanel.button.$setState("Out", {});
+                
                 finish.apply(this, arguments);
             }
         });
@@ -100,9 +102,12 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             var activePanel = e.model.queryValue("auto/panels/@active");
             if (activePanel == "none") {
                 navbar.setWidth(0);
+                apf.setStyleClass(navbar.$ext, "closed");
             } else {
                 ide.addEventListener("init." + activePanel, function(e){
-                    navbar.setWidth(colLeft.getWidth());
+                    colLeft.addEventListener("prop.visible", function(){
+                        navbar.setWidth(colLeft.getWidth());
+                    });
                 });
             }
         });
@@ -165,7 +170,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         panelExt.button.addEventListener("mousedown", function(e){
             var value = this.value;
             if (panels.currentPanel && (panels.currentPanel != panelExt || value) && value) {
-                panels.deactivate(panels.currentPanel == panelExt, true);
+                //panels.currentPanel == panelExt
+                panels.deactivate(false, true);
                 
                 if (value) {
                     if (!apf.isTrue(settings.model.queryValue('general/@animateui')))

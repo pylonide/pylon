@@ -86,7 +86,7 @@ module.exports = ext.register("ext/offline/offline", {
         ide.addEventListener("afteroffline", function(){
             stServerConnected.deactivate();
             ide.onLine = false;
-            logobar.$ext.className = "c9-menu-bar offline";
+            apf.setStyleClass(logobar.$ext, "offline");
 
             _self.bringExtensionsOffline();
         });
@@ -126,7 +126,7 @@ module.exports = ext.register("ext/offline/offline", {
         });
         
         ide.addEventListener("afteronline", function(e){
-            logobar.$ext.className = "c9-menu-bar";
+            apf.setStyleClass(logobar.$ext, "", ["offline"]);
 
             _self.bringExtensionsOnline();
         });
