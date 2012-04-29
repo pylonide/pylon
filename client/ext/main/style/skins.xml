@@ -117,7 +117,6 @@
             box-shadow: 0 1px 0 0 #353535 inset;
             border-bottom: 1px solid #000;
             border-top: 1px solid #000;
-            -webkit-transition: height 0.1s ease 0;
         }
 
         .c9-menu-bar .c9-mbar-cont .c9-divider-double, 
@@ -137,23 +136,23 @@
         }
 
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize {
-            background: url(images/c9-no-repeat.png) no-repeat 0 -75px;
+            background: url(images/c9-no-repeat.png) no-repeat 0 -70px;
             cursor: pointer;
-            height: 16px;
+            height: 25px;
             left: 0;
             position : absolute;
-            top: 6px;
+            top: 0px;
             width: 21px;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
-            background-position: -21px -75px;
+            background-position: -21px -70px;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
             height: 34px;
-            position: absolute;
+            position: fixed;
             right: 0;
-            top: -4px;
+            top: 0;
             width: 74px;
             z-index: 999;
         }
@@ -207,7 +206,7 @@
                 <div class="c9-mbar-logo">
                     <div class="c9-mbar-bcont">
                         <div class="c9-mbar-cont"> </div>
-                        <div class="c9-mbar-minimize" id="c9MbarMinimize"> </div>
+                        
                         <div class="c9-mbar-round">
                             <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
                             <div class="c9-offline"></div>
@@ -1556,6 +1555,25 @@
                 <div class="c9-label">-</div>
                 <div class="c9-right"></div>
                 <div class="c9-fix"></div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:button name="c9-simple-btn">
+    <a:style><![CDATA[
+        .c9-simple-btn {
+            -moz-user-select   : none;
+            -khtml-user-select : none;
+            user-select        : none;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption    = "."
+          background = "."
+          icon       = ".">
+            <div class="c9-simple-btn">
             </div>
         </a:main>
     </a:presentation>
@@ -2985,7 +3003,7 @@
           -webkit-user-select: none;
           -o-user-select: none;
           user-select: none;
-          z-index : 10001;
+          z-index : 10001 !important;
         }
         
         .ace_corner{
@@ -8284,7 +8302,7 @@
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
     	height: 5px;
     	overflow: hidden;
-    	top: -7px;
+    	top: -6px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
     	overflow: visible;
@@ -8327,7 +8345,7 @@
     .editor_tab.hidetabs .curbtn {
     	height: 7px;
     	overflow: hidden;
-    	top: -5px;
+    	top: -4px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
@@ -8433,10 +8451,6 @@
         background-image: url(images/load-indicator-inactive-tab.gif);
     }*/
   
-
-    
-
-
     .editor_tab .btnsesssioncontainer div.down {
         text-shadow: none;
         color: #d9d9d9;

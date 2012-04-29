@@ -41,20 +41,22 @@
                 </a:hbox>
             </a:hbox>
         </a:bar>
-
-        <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
-            <a:hbox id="hboxTabBar" padding="0" edge="0" height="28" align="start" nosplitter="true">
-                <a:hbox id="barButtonContainer" class="editor_tab" flex="1" align="start" />
-            </a:hbox>
-            <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
-                <a:vbox id="colLeft" width="200" minwidth="105" visible="false" />
-                <a:splitter width="0" id="splitterPanelLeft" />
-                <a:vbox id="colMiddle" flex="1" padding="3" />
-                <a:vbox id="colRight" padding="0">
-                    <a:hbox id="hboxDockPanel" flex="1" class="hboxdockpanel">
-                    </a:hbox>
-                </a:vbox>
-            </a:hbox>
-        </a:vbox>
+        
+        <a:hbox flex="1" padding="0">
+            <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
+                <a:hbox id="hboxTabBar" padding="0" edge="0" height="28" align="start" nosplitter="true">
+                    <a:hbox id="barButtonContainer" class="editor_tab" flex="1" align="start" />
+                </a:hbox>
+                <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
+                    <a:vbox id="colLeft" width="200" minwidth="105" visible="false" />
+                    <a:splitter width="0" id="splitterPanelLeft" />
+                    <a:vbox id="colMiddle" flex="1" padding="3" />
+                </a:hbox>
+            </a:vbox>
+            <a:vbox id="colRight" padding="0">
+                <a:hbox id="hboxDockPanel" flex="1" class="hboxdockpanel">
+                </a:hbox>
+            </a:vbox>
+        </a:hbox>
     </a:vbox>
 </a:application>

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/menus/menus", {
@@ -21,8 +22,11 @@ module.exports = ext.register("ext/menus/menus", {
     menus   : {},
     count   : 0,
     debug   : location.href.indexOf('menus=1') > -1,
-
+    minimized : false,
+    
     init : function(){
+        var _self = this;
+        
         this.nodes.push(
             this.menubar = logobar.firstChild.insertBefore(new apf.hbox({
                 edge    : "0 5 0 5",
@@ -39,6 +43,59 @@ module.exports = ext.register("ext/menus/menus", {
             this.setRootMenu("Goto", 600),
             this.setRootMenu("Tools", 700)
         );
+        
+        var timer;
+        this.menubar.insertBefore(new apf.button({
+            "class" : "c9-mbar-minimize",
+            "skin" : "c9-simple-btn",
+            "onclick" : function(e){
+                _self.minimize();
+            }
+        }), this.menubar.firstChild);
+        
+        logobar.$ext.addEventListener("mousedown", function(){
+            _self.restore();
+        });
+        
+        logobar.$ext.addEventListener("mouseover",function(e){
+            if (!_self.minimized || !ide.inited
+              || apf.isChildOf(logobar.$ext, e.fromElement, true))
+                return;
+            
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                _self.restore(true);
+            }, 200);
+        });
+        logobar.$ext.addEventListener("mouseout",function(e){
+            if (!_self.minimized || !ide.inited
+              || apf.isChildOf(logobar.$ext, e.toElement, true))
+                return;
+            
+            clearTimeout(timer);
+            if (apf.popup.isShowing(apf.popup.last)) {
+                timer = setTimeout(function(){
+                    if (apf.popup.isShowing(apf.popup.last))
+                        timer = setTimeout(arguments.callee, 300);
+                    else
+                        _self.minimize(true);
+                }, 300);
+            }
+            else {
+                timer = setTimeout(function(){
+                    _self.minimize(true);
+                }, 300);
+            }
+        });
+        
+        ide.addEventListener("settings.load", function(e){
+            e.ext.setDefaults("auto/menus", [["minimized", "false"]]);
+            
+            if (apf.isTrue(e.model.queryValue("auto/menus/@minimized"))) {
+                _self.minimize(true, true);
+                _self.minimized = true;
+            }
+        });
         
         this.addItemByPath("File/~", new apf.divider(), 1000000);
         this.addItemByPath("File/Quit Cloud9 IDE", new apf.item({
@@ -303,6 +360,70 @@ module.exports = ext.register("ext/menus/menus", {
      * - mnuXXX throughout C9 need to be using this plugin
      * - Architect submenus used in multiple location
      */
+    
+    restore : function(preview){
+        if (this.animateControl)
+            this.animateControl.stop();
+
+        logobar.$ext.style.overflow = "hidden";
+        apf.setStyleClass(logobar.$ext, "", ["minimized"]);
+        apf.tween.single(logobar.$ext, {
+            from : logobar.$ext.offsetHeight,
+            to : 31,
+            anim : apf.tween.easeOutCubic,
+            type : "height",
+            control : this.animateControl = {},
+            interval : apf.isWebkit ? 0 : 10,
+            steps : 5,
+            oneach : function(){
+                apf.layout.forceResize(tabEditors.$ext);
+            },
+            onfinish : function(){
+                apf.layout.forceResize(tabEditors.$ext);
+                logobar.$ext.style.overflow = "";
+            }
+        });
+        
+        if (!preview) {
+            settings.model.setQueryValue("auto/menus/@minimized", "false");
+            this.minimized = false;
+        }
+    },
+    
+    minimize : function(preview, noAnim){
+        if (this.animateControl)
+            this.animateControl.stop();
+        
+        if (noAnim) {
+            apf.setStyleClass(logobar.$ext, "minimized");
+            logobar.$ext.style.height = "12px";
+        }
+        else {
+            logobar.$ext.style.overflow = "hidden";
+            apf.tween.single(logobar.$ext, {
+                from : logobar.$ext.offsetHeight,
+                to : 12,
+                anim : apf.tween.easeOutCubic,
+                type : "height",
+                control : this.animateControl = {},
+                interval : apf.isWebkit ? 0 : 10,
+                steps : 5,
+                oneach : function(){
+                    apf.layout.forceResize(tabEditors.$ext);
+                },
+                onfinish : function(){
+                    apf.setStyleClass(logobar.$ext, "minimized");
+                    apf.layout.forceResize(tabEditors.$ext);
+                    logobar.$ext.style.overflow = "";
+                }
+            });
+        }
+
+        if (!preview) {
+            settings.model.setQueryValue("auto/menus/@minimized", "true");
+            this.minimized = true;
+        }
+    },
 
     enable : function(){
         this.hbox.show();

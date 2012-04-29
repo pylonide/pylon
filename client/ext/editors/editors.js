@@ -82,19 +82,23 @@ module.exports = ext.register("ext/editors/editors", {
         }
     },
     
-    toggleTabs : function(force, preview, noAnim){
+    toggleTabs : function(force, preview, noAnim, mouse){
         if (!force || force > 0) {
-            if (!preview)
+            if (!preview) {
                 this.showTabs = true;
+                settings.model.setQueryValue("auto/tabs/@show", "true");
+            }
             
-            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim);
+            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 1);
             apf.layout.forceResize(barButtonContainer.$ext);
         }
         else {
-            if (!preview)
+            if (!preview) {
                 this.showTabs = false;
+                settings.model.setQueryValue("auto/tabs/@show", "false");
+            }
 
-            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim);
+            this.setTabResizeValues(tabEditors.parentNode.$ext, force == 1, !noAnim, mouse, 0);
             apf.layout.forceResize(barButtonContainer.$ext);
         }
 
@@ -208,11 +212,12 @@ module.exports = ext.register("ext/editors/editors", {
                 return;
             
             clearTimeout(timer);
-            
-            if (!_self.showTabs) {
-                _self.toggleTabs(1, true);
-                _self.previewing = true;
-            }
+            timer = setTimeout(function(){
+                if (!_self.showTabs) {
+                    _self.toggleTabs(1, true, null, true);
+                    _self.previewing = true;
+                }
+            }, 200);
         });
         tabEditors.$buttons.addEventListener("mouseout",function(e){
             if (apf.isChildOf(tabEditors.$buttons, e.toElement, true))
@@ -220,15 +225,15 @@ module.exports = ext.register("ext/editors/editors", {
             
             clearTimeout(timer);
             timer = setTimeout(function(){
-                if (!_self.showTabs) {
+                if (!_self.showTabs && _self.previewing) {
                     _self.previewing = false;
-                    _self.toggleTabs(-1, true);
+                    _self.toggleTabs(-1, true, null, true);
                 }
-            }, 500);
+            }, 300);
         });
 
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
-            _self.setTabResizeValues(tab.$ext);
+            _self.$resize(tab.$ext);
         });
 
         return vbox;
@@ -240,13 +245,13 @@ module.exports = ext.register("ext/editors/editors", {
      * dimensions of tabEditors.parentNode when the editor goes
      * out of focus mode
      */
-    setTabResizeValues : function(ext, preview, animate, callback) {
+    setTabResizeValues : function(ext, preview, animate, mouse, dir) {
         var ph; 
         var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
         var d = apf.getDiff(ext);
         var _self = this;
         
-        if (this.animating && (!animate || this.animating[0] == preview) || this.previewing)
+        if (this.animating && (!animate || this.animating[0] == preview))
             return;
 
         if (animate) {
@@ -254,31 +259,39 @@ module.exports = ext.register("ext/editors/editors", {
                 this.animateControl.stop();
             
             this.animating = [preview];
-            var dir = tabEditors.$buttons.style.height == "9px" ? 1 : 0;
-            var i = dir ? 6 : 0;
             
+            if (dir == undefined)
+                dir = tabEditors.$buttons.style.height == "10px" ? 1 : 0;
+            var i = dir ? (mouse ? 11 : 6) : 0;
+            var steps = mouse ? 10 : 5;
+
             if (dir) {
                 tabEditors.$buttons.style.paddingTop = "2px";
                 apf.setStyleClass(barButtonContainer.$ext, "", ["hidetabs"]);
             }
          
             apf.tween.multi(ext, {
-                anim : apf.tween.easeOutCubic,
-                steps : 5,
-                interval : 10,
+                anim : mouse ? apf.tween.easeOutQuint : apf.tween.easeOutCubic,
+                steps : steps,
+                interval : apf.isWebkit ? 0 : 10,
                 control : this.animateControl = {},
                 tweens : [  
                     { from: ext.offsetTop, to: ((this.showTabs || preview ? 0 : - 16) + pos[1]), type: "top" },
                     { from: ext.offsetHeight - d[1], to: ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]), type: "height" },
-                    { oHtml: tabEditors.$buttons, from: parseInt(tabEditors.$buttons.style.height), to: (this.showTabs || preview ? 22 : 9), type: "height" },
+                    { oHtml: tabEditors.$buttons, from: parseInt(tabEditors.$buttons.style.height), to: (this.showTabs || preview ? 22 : 10), type: "height" },
                     { oHtml: tabEditors.$buttons, from: parseInt(apf.getStyle(tabEditors.$buttons, "paddingTop")), to: (this.showTabs || preview ? 5 : 2), type: "paddingTop" }
                 ],
                 oneach : function(){
                     apf.setStyleClass(tabEditors.$buttons, 
-                        "step" + (dir ? --i : ++i), ["step" + (dir ? i + 1 : i-1)]);
+                        "step" + Math.ceil((dir ? --i : ++i) / (mouse ? 2 : 1)), 
+                        ["step" + Math.ceil((dir ? i + 1 : i-1) / (mouse ? 2 : 1))]);
+                    
+                    if (!dir && tabEditors.getPage())
+                        apf.layout.forceResize(tabEditors.getPage().$ext);
                 },
                 onfinish : function(e){
-                    apf.setStyleClass(tabEditors.$buttons, "", ["step" + i]);
+                    apf.setStyleClass(tabEditors.$buttons, "", 
+                        ["step" + Math.ceil(i / (mouse ? 2 : 1))]);
                     _self.animating = false;
                     
                     if (!dir) {
@@ -286,18 +299,32 @@ module.exports = ext.register("ext/editors/editors", {
                         apf.setStyleClass(barButtonContainer.$ext, "hidetabs");
                     }
                     
-                    callback && callback();
-                    apf.layout.forceResize();
+                    if (tabEditors.getPage())
+                        apf.layout.forceResize(tabEditors.getPage().$ext);
                 }
             })
         }
         else {
-            ext.style.left = (pos[0] - 2) + "px";
-            ext.style.top = ((this.showTabs || preview ? 0 : - 16) + pos[1]) + "px";
-            // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
-            ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
-            ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
+            tabEditors.$buttons.style.paddingTop = "2px";
+            apf.setStyleClass(barButtonContainer.$ext, "hidetabs");
+            
+            this.$resize(ext, preview);
         }
+    },
+    
+    $resize : function(ext, preview){
+        if (this.previewing || this.animating)
+            return;
+        
+        var ph; 
+        var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
+        var d = apf.getDiff(ext);
+        
+        ext.style.left = (pos[0] - 2) + "px";
+        ext.style.top = ((this.showTabs || preview ? 0 : - 16) + pos[1]) + "px";
+        // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
+        ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
+        ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
     },
 
     /**
@@ -743,7 +770,8 @@ module.exports = ext.register("ext/editors/editors", {
             settings.setDefaults("auto/tabs", [["show", "true"]]);
             
             var showTab = settings.model.queryValue("auto/tabs/@show");
-            _self.toggleTabs(apf.isTrue(showTab) ? 1 : -1, null, true);
+            _self.showTabs = false;
+            _self.toggleTabs(apf.isTrue(showTab) ? 1 : -1, true, true);
             
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){
