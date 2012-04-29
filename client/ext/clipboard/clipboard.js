@@ -80,6 +80,10 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             apf.clipboard.cutSelection(trFiles);
         }
         else {
+            try {
+                if (document.exec("cut")) return;
+            } catch(e) {}
+
             var ace = this.$getAce();
             aceClipboardText = ace.getCopyText() || aceClipboardText;
             ace.$nativeCommands.exec("cut", ace);
@@ -94,6 +98,10 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             apf.clipboard.copied = true;
         }
         else {
+            try {
+                if (document.exec("copy")) return;
+            } catch(e) {}
+
             var ace = this.$getAce();
             aceClipboardText = ace.getCopyText() || aceClipboardText;
         }
@@ -104,6 +112,10 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             apf.clipboard.pasteSelection(trFiles);
         }
         else {
+            try {
+                if (document.exec("paste")) return;
+            } catch(e) {}
+
             var ace = this.$getAce();
             ace.onPaste(aceClipboardText);
         }
