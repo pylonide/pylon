@@ -47,13 +47,17 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 ]
             }), hboxTabBar.firstChild)
         );
-        
+    
+        var timer;
         navbar.$ext.addEventListener("mouseover", function(e){
             if (apf.isChildOf(navbar.$ext, e.fromElement, true))
                 return;
             
+            clearTimeout(timer);
             if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
-                _self.animateToFullWidth();
+                timer = setTimeout(function(){
+                    _self.animateToFullWidth();
+                }, 200);
             }
         });
         
@@ -61,8 +65,11 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             if (apf.isChildOf(navbar.$ext, e.toElement, true))
                 return;
             
+            clearTimeout(timer);
             if (colLeft.getWidth() != navbar.getWidth()) {
-                _self.animateToDefaultWidth();
+                timer = setTimeout(function(){
+                    _self.animateToDefaultWidth();
+                }, 300);
             }
         });
         
@@ -89,7 +96,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             navbar.setWidth(colLeft.getWidth());
         });
         
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             var activePanel = e.model.queryValue("auto/panels/@active");
             if (activePanel == "none") {
                 navbar.setWidth(0);
@@ -109,7 +116,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             type: "width",
             from: navbar.getWidth(),
             to: navbar.$int.scrollWidth + 6,
-            steps : 6,
+            steps : 10,
             interval : apf.isChrome ? 0 : 5,
             control : this.animateControl = {},
             anim : apf.tween.easeOutCubic,
@@ -127,7 +134,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             type: "width",
             from: navbar.getWidth(),
             to: colLeft.getWidth(),
-            steps : 6,
+            steps : 10,
             interval : apf.isChrome ? 0 : 5,
             control : this.animateControl = {},
             anim : apf.tween.easeOutCubic,
