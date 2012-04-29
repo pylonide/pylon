@@ -1,5 +1,5 @@
 define(function(require, exports, module) {
-    
+
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
 var settings = require("ext/settings/settings");
@@ -143,6 +143,12 @@ exports.pageIsCode = function(page) {
     return page.type === "ext/code/code";
 };
 
+exports.stripWSFromPath = function(path) {
+    var docPath = path.replace(ide.davPrefix, "");
+    docPath = docPath.charAt(0) === "/" ? docPath.substr(1) : docPath;
+    return docPath;
+};
+
 exports.getDocPath = function(page) {
     if (!page && tabEditors) {
         page = tabEditors.getPage();
@@ -152,9 +158,7 @@ exports.getDocPath = function(page) {
     // What follows is a hacky way to get a path that we can use on
     // the server. I am sure that these workspace string manipulation
     // functions are somewhere...to be fixed.
-    var docPath = page.name.replace(ide.davPrefix, "");
-    docPath = docPath.charAt(0) === "/" ? docPath.substr(1) : docPath;
-    return docPath;
+    return exports.stripWSFromPath(page.name);
 };
 
 exports.localDate = function(ts) {
@@ -165,13 +169,15 @@ exports.localDate = function(ts) {
     return new Date(ts + getTZOffset());
 };
 
-exports.question = function(title, header, msg, onyes, onno, onadd) {
+exports.question = function(title, header, msg, onyes, onyesall, onno, onnoall) {
     winQuestionRev.show();
     winQuestionRev.setAttribute("title", title);
     winQuestionRevHeader.$ext.innerHTML = header;
     winQuestionRevMsg.$ext.innerHTML = msg;
     btnQuestionRevYes.onclick = onyes;
     btnQuestionRevNo.onclick = onno;
+    btnQuestionRevYesAll.onclick = onyesall;
+    btnQuestionRevNoAll.onclick = onnoall;
 };
 
 });

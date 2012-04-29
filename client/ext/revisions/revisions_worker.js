@@ -212,7 +212,8 @@ self.onmessage = function(e) {
                     finalContent: currentContent,
                     realContent: realContent,
                     saved: false,
-                    inDialog: true
+                    inDialog: true,
+                    nextAction: e.data.nextAction
                 }
             };
 

@@ -43,7 +43,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
-    
+
     /**
      * Revisions#rawRevisions -> Object
      * Holds the cached revisions and some meta-data about them so Cloud9 can
@@ -67,6 +67,13 @@ module.exports = ext.register("ext/revisions/revisions", {
      * example, they have a generated timestamp of the moment of saving).
      */
     offlineQueue: [],
+
+    /** related to: Revisions#onExternalChange
+     * Revisions#changedPaths -> Array
+     * Holds the list of filepaths that have ben changed in the server from an
+     * external source.
+     **/
+    changedPaths: [],
 
     /** related to: Revisions#show
      * Revisions#toggle() -> Void
@@ -147,20 +154,29 @@ module.exports = ext.register("ext/revisions/revisions", {
         btnSave.addEventListener("onmouseout", function(e) {
             self.hideRevisionsInfo();
         });
-        
+
         btnSave.addEventListener("onclick", function(e) {
             Save.quicksave();
         });
-        
+
+        // Declaration of event listeners
         this.$onMessageFn = this.onMessage.bind(this);
         this.$onOpenFileFn = this.onOpenFile.bind(this);
         this.$onCloseFileFn = this.onCloseFile.bind(this);
         this.$onFileSaveFn = this.onFileSave.bind(this);
+        this.$onAfterOnline = this.onAfterOnline.bind(this);
+        this.$onRevisionSaved = this.onRevisionSaved.bind(this);
+        this.$onExternalChange = this.onExternalChange.bind(this);
+        this.$onBeforeSaveWarning = this.onBeforeSaveWarning.bind(this);
 
         ide.addEventListener("socketMessage", this.$onMessageFn);
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
+        ide.addEventListener("onafteronline", this.$onAfterOnline);
+        ide.addEventListener("revisionSaved", this.$onRevisionSaved);
+        ide.addEventListener("beforewatcherchange", this.$onExternalChange);
+        ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
 
         this.defaultUser = { email: null };
 
@@ -185,21 +201,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
 
-        this.$onExternalChange = this.onExternalChange.bind(this);
-        ide.addEventListener("beforewatcherchange", this.$onExternalChange);
-
-        ide.addEventListener("beforesavewarn", function(e){
-            var isNewFile = apf.isTrue(e.doc.getNode().getAttribute("newfile"));
-            if (!isNewFile && Util.isAutoSaveEnabled()) {
-                self.save();
-                return false;
-            }
-        });
-
-        this.$onAfterOnline = this.onAfterOnline.bind(this);
-        ide.addEventListener("onafteronline", this.$onAfterOnline);
-        this.$onRevisionSaved = this.onRevisionSaved.bind(this);
-        ide.addEventListener("revisionSaved", this.$onRevisionSaved);
         this.$initWorker();
     },
 
@@ -331,31 +332,33 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
-        // It could happen early, when `winQuestionRev` hasn't yet been defined
         ext.initExtension(this);
-        var page = tabEditors.getPage();
-        var doc = page.$doc;
 
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = Util.isAutoSaveEnabled();
         settings.model.setQueryValue("general/@autosaveenabled", false);
 
-        if (!this.isCollab(doc)) {
+        var path = Util.stripWSFromPath(e.path);
+        this.changedPaths.push(path);
+
+        if (winQuestionRev.visible !== true && 
+            !this.isCollab(tabEditors.getPage().$doc)) { // Only in single user mode
             ide.send({
                 command: "revisions",
                 subCommand: "getRealFileContents",
-                path: Util.getDocPath(page)
+                path: path
             });
         }
         return false;
     },
 
     hideRevisionsInfo : function() {
-        if (!isInfoActive) { 
+        var self = this;
+        if (!isInfoActive) {
             setTimeout(function(e) {
                 ext.initExtension(self);
-                if (!isInfoActive) { 
+                if (!isInfoActive) {
                     apf.tween.single(revisionsInfo, {
                         from:1,
                         to:0,
@@ -368,7 +371,15 @@ module.exports = ext.register("ext/revisions/revisions", {
             }, 200);
         }
     },
-    
+
+    onBeforeSaveWarning: function(e) {
+        var isNewFile = apf.isTrue(e.doc.getNode().getAttribute("newfile"));
+        if (!isNewFile && Util.isAutoSaveEnabled()) {
+            this.save();
+            return false;
+        }
+    },
+
     onOpenFile: function(data) {
         if (!data || !data.doc)
             return;
@@ -376,20 +387,20 @@ module.exports = ext.register("ext/revisions/revisions", {
         var self = this;
         var doc = data.doc;
         var page = doc.$page;
-        if (!Util.pageIsCode(page)) {
+        if (!page || !Util.pageIsCode(page)) {
             return;
         }
 
         // Add document change listeners to an array of functions so that we
         // can clean up on disable plugin.
-        var path = Util.getDocPath(doc.$page);
+        var path = Util.getDocPath(page);
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
                 self.onDocChange.call(self, e, doc);
             };
         }
 
-        this.$switchToPageModel(doc.$page);
+        this.$switchToPageModel(page);
 
         ide.send({
             command: "revisions",
@@ -557,7 +568,30 @@ module.exports = ext.register("ext/revisions/revisions", {
                 this.$saveExistingRevision(e.data.path, revision);
                 break;
             case "recovery":
-                if (e.data.revision.inDialog === true) {
+                if (e.data.revision.nextAction === "storeAsRevision") {
+                    var c9DocContent = e.data.revision.finalContent;
+                    var pages = tabEditors.getPages();
+
+                    // No need to send these over the wire.
+                    delete e.data.revision.finalContent;
+                    delete e.data.revision.realContent;
+
+                    pages.forEach(function(page) {
+                        var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                        if (e.data.path === path) {
+                            page.$doc.setValue(c9DocContent);
+                        }
+                    });
+
+                    ide.send({
+                        command: "revisions",
+                        subCommand: "saveRevision",
+                        path: e.data.path,
+                        revision: e.data.revision,
+                        forceRevisionListResponse: true
+                    });
+                }
+                else if (e.data.revision.inDialog === true && winQuestionRev.visible !== true) {
                     this.showQuestionWindow(e.data);
                 }
                 break;
@@ -675,16 +709,30 @@ module.exports = ext.register("ext/revisions/revisions", {
                 break;
 
             case "getRealFileContents":
-                this.worker.postMessage({
-                    inDialog: true,
-                    type: "recovery",
-                    lastContent: page.$doc.getValue(),
-                    realContent: message.contents,
-                    revisions: revObj.allRevisions,
-                    path: message.path,
-                    // To not have to extract and sort timestamps from allRevisions
-                    timestamps: revObj.allTimestamps
+                var self = this;
+                var pages = tabEditors.getPages();
+                pages.forEach(function(page) {
+                    var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                    if (message.path === path) {
+                        var data = {
+                            inDialog: true,
+                            type: "recovery",
+                            lastContent: page.$doc.getValue(),
+                            realContent: message.contents,
+                            revisions: revObj.allRevisions,
+                            path: message.path,
+                            // To not have to extract and sort timestamps from allRevisions
+                            timestamps: revObj.allTimestamps
+                        };
+
+                        if (message.nextAction === "storeAsRevision") {
+                            data.nextAction = "storeAsRevision";
+                        }
+
+                        self.worker.postMessage(data);
+                    }
                 });
+                break;
         }
     },
 
@@ -705,9 +753,17 @@ module.exports = ext.register("ext/revisions/revisions", {
         var self = this;
         var c9DocContent = data.revision.finalContent;
         var serverContent = data.revision.realContent;
-        var page = tabEditors.getPage();
-        var doc = page.$doc;
+        var pages = tabEditors.getPages();
         var path = data.path;
+        var doc, page;
+
+        pages.forEach(function(_page) {
+            var pagePath = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
+            if (path === pagePath) {
+                page = _page;
+                doc = _page.$doc;
+            }
+        });
 
         // No need to send these over the wire.
         delete data.revision.finalContent;
@@ -730,17 +786,60 @@ module.exports = ext.register("ext/revisions/revisions", {
             "File changed, reload tab?",
             path + " has been modified while you were editing it.",
             "Do you want to reload it?",
-            function YesReload() { // Yes
+            function YesReload() {
+                if (!page || !doc) { return; }
+
                 doc.setValue(serverContent);
-                self.save(page);
+                self.save(page, true);
                 finalize();
             },
-            function NoDontReload() { // No
+            function YesReloadAll() {
+                pages.forEach(function(page) {
+                    var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                    if (self.changedPaths.indexOf(path) > -1) {
+                        ide.addEventListener("afterreload", function onDocReload(data) {
+                            if (data.doc === page.$doc) {
+                                self.save(page, true);
+                                ide.removeEventListener("afterreload", onDocReload);
+                            }
+                        });
+                        ide.dispatchEvent("reload", { doc : page.$doc });
+                    }
+                });
+                self.changedPaths = [];
+                finalize();
+            },
+            function NoDontReload() {
                 doc.setValue(c9DocContent);
                 ide.send(dataToSend);
                 finalize();
+            },
+            function NoDontReloadAll() {
+                pages.forEach(function(page) {
+                    var doc = page.$doc;
+                    var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                    if (self.changedPaths.indexOf(path) > -1) {
+                        ide.send({
+                            command: "revisions",
+                            subCommand: "getRealFileContents",
+                            path: path,
+                            nextAction: "storeAsRevision"
+                        });
+                    }
+                    doc.setValue(c9DocContent);
+                    ide.send(dataToSend);
+                });
+                finalize();
             }
         );
+    },
+
+    toggleInfoDiv : function(show) {
+        ext.initExtension(this);
+        if (show === true)
+            revisionsInfo.$ext.style.display = "block";
+        else
+            revisionsInfo.$ext.style.display = "none";
     },
 
     /**
@@ -1110,11 +1209,14 @@ module.exports = ext.register("ext/revisions/revisions", {
      *
      * Prompts a save of the desired document.
      **/
-    save: function(page) {
+    save: function(page, forceSave) {
         if (!page || !page.$at)
             page = tabEditors.getPage();
 
-        if (!page || !Util.pageHasChanged(page) || !Util.pageIsCode(page))
+        if (!page)
+            return;
+
+        if (!forceSave && (!Util.pageHasChanged(page) || !Util.pageIsCode(page)))
             return;
 
         var node = page.$doc.getNode();
@@ -1122,7 +1224,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
 
         ext.initExtension(this); //Why???
-        Save.quicksave(page, function(){}, true);
+        Save.quicksave(page, function() {}, true);
     },
 
     /**
@@ -1319,63 +1421,73 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     disableEventListeners: function() {
-        if (this.$onMessageFn) {
+        if (this.$onMessageFn)
             ide.removeEventListener("socketMessage", this.$onMessageFn);
-        }
 
-        if (this.$onOpenFileFn) {
+        if (this.$onOpenFileFn)
             ide.removeEventListener("afteropenfile", this.$onOpenFileFn);
-        }
 
-        if (this.$onCloseFileFn) {
+        if (this.$onCloseFileFn)
             ide.removeEventListener("closefile", this.$onCloseFileFn);
-        }
 
-        if (this.$onFileSaveFn) {
+        if (this.$onFileSaveFn)
             ide.removeEventListener("afterfilesave", this.$onFileSaveFn);
-        }
 
-        if (this.$onSwitchFileFn) {
+        if (this.$onSwitchFileFn)
             ide.removeEventListener("editorswitch", this.$onSwitchFileFn);
-        }
 
-        if (this.$onAfterSwitchFn) {
+        if (this.$onAfterSwitchFn)
             ide.removeEventListener("afterswitch", this.$onAfterSwitchFn);
-        }
 
-        if (this.$afterSelectFn) {
+        if (this.$afterSelectFn)
             lstRevisions.removeEventListener("afterselect", this.$afterSelectFn);
-        }
+
+        if (this.$onAfterOnline)
+            ide.removeEventListener("onafteronline", this.$onAfterOnline);
+
+        if (this.$onRevisionSaved)
+            ide.removeEventListener("revisionSaved", this.$onRevisionSaved);
+
+        if (this.$onExternalChange)
+            ide.removeEventListener("beforewatcherchange", this.$onExternalChange);
+
+        if (this.$onBeforeSaveWarning)
+            ide.removeEventListener("beforesavewarn", this.$onBeforeSaveWarning);
     },
 
     enableEventListeners: function() {
-        if (this.$onMessageFn) {
+        if (this.$onMessageFn)
             ide.addEventListener("socketMessage", this.$onMessageFn);
-        }
 
-        if (this.$onOpenFileFn) {
+        if (this.$onOpenFileFn)
             ide.addEventListener("afteropenfile", this.$onOpenFileFn);
-        }
 
-        if (this.$onCloseFileFn) {
+        if (this.$onCloseFileFn)
             ide.addEventListener("closefile", this.$onCloseFileFn);
-        }
 
-        if (this.$onFileSaveFn) {
+        if (this.$onFileSaveFn)
             ide.addEventListener("afterfilesave", this.$onFileSaveFn);
-        }
 
-        if (this.$onSwitchFileFn) {
+        if (this.$onSwitchFileFn)
             ide.addEventListener("editorswitch", this.$onSwitchFileFn);
-        }
 
-        if (this.$onAfterSwitchFn) {
+        if (this.$onAfterSwitchFn)
             ide.addEventListener("afterswitch", this.$onAfterSwitchFn);
-        }
 
-        if (this.$afterSelectFn) {
+        if (this.$afterSelectFn)
             lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
-        }
+
+        if (this.$onAfterOnline)
+            ide.addEventListener("onafteronline", this.$onAfterOnline);
+
+        if (this.$onRevisionSaved)
+            ide.addEventListener("revisionSaved", this.$onRevisionSaved);
+
+        if (this.$onExternalChange)
+            ide.addEventListener("beforewatcherchange", this.$onExternalChange);
+
+        if (this.$onBeforeSaveWarning)
+            ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
     },
 
     enable: function() {

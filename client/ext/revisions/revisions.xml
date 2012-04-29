@@ -10,7 +10,7 @@
       center    = "true"
       kbclose   = "true"
       buttons   = "close"
-      width     = "550"      
+      width     = "700"
       skin      = "bk-window2"
       onkeydown = "
         if(event.keyCode == 89) {
@@ -30,6 +30,10 @@
             <a:button id="btnQuestionRevYes" default="3" skin="btn-default-css3" class="btn-green">Yes, and add it as a revision</a:button>
             <a:filler/>
             <a:button id="btnQuestionRevNo" skin="btn-default-css3" class="btn-red">No, keep changes in a revision</a:button>
+            <a:filler/>
+            <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes to all</a:button>
+            <a:filler/>
+            <a:button id="btnQuestionRevNoAll" skin="btn-default-css3" class="btn-red">No to all</a:button>
         </a:hbox>
     </a:window>
 
@@ -79,7 +83,7 @@
                             </li>
                         }
                     }</ul>
-                    
+
                     if ([@loading_preview] == 'true' or [@loading] == 'true') {
                         <button class="btnRecover" disabled="disabled"></button>
                     }

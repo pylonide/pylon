@@ -135,6 +135,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                               type: "revision",
                               subtype: "getRealFileContents",
                               path: message.path,
+                              nextAction: message.nextAction,
                               contents: data
                           }));
                     });
