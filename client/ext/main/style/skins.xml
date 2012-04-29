@@ -226,7 +226,7 @@
 			border-bottom : 1px solid black;
 			height        : 28px !important;
 			overflow      : hidden;
-			padding       : 0 6px 0 37px !important;
+			padding       : 0 6px 0 0px !important;
 			position      : relative;
 			width         : 200px;
 			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
@@ -276,9 +276,6 @@
         	box-shadow: 1px 0 0 0  black;
         	cursor: pointer;
         	height: 27px;
-        	left: 0;
-        	position: absolute;
-        	top: 0;
         	width: 37px;
         }
         .black-menu-bar.closed .c9-logo {

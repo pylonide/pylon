@@ -33,6 +33,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             hboxTabBar.insertBefore(new apf.hbox({
                 id: "navbar",
                 "class": "black-menu-bar",
+                "minwidth": "43",
                 childNodes : [
                     new apf.button({
                         skin    : "mnubtn",
@@ -111,6 +112,11 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 });
             }
         });
+        
+        ide.addEventListener("tabs.visible", function(e){
+            navbar.setAttribute("minwidth", 
+                !e.value ? 0 : 43);
+        })
     },
     
     animateToFullWidth : function(){

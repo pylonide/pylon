@@ -86,6 +86,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (!force || force > 0) {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "true");
+                ide.dispatchEvent("tabs.visible", {value: true});
                 this.showTabs = true;
             }
             
@@ -95,6 +96,7 @@ module.exports = ext.register("ext/editors/editors", {
         else {
             if (!preview) {
                 settings.model.setQueryValue("auto/tabs/@show", "false");
+                ide.dispatchEvent("tabs.visible", {value: false});
                 this.showTabs = false;
             }
 
@@ -269,9 +271,9 @@ module.exports = ext.register("ext/editors/editors", {
             
             if (dir == undefined)
                 dir = tabEditors.$buttons.style.height == "10px" ? 1 : 0;
-            var steps = mouse ? 5 : 5;
+            var steps = mouse ? 10 : 5;
             var i = dir ? steps + 1 : 0;
-            var div = mouse ? 1 : 1;
+            var div = mouse ? 2 : 1;
 
             if (dir) {
                 tabEditors.$buttons.style.paddingTop = "2px";
@@ -780,14 +782,14 @@ module.exports = ext.register("ext/editors/editors", {
 
         this.$settings = {};
         ide.addEventListener("settings.load", function(e){
-            settings.setDefaults("auto/files", []);
+            settings.setDefaults("auto/files", [])
             
             settings.setDefaults("auto/tabs", [["show", "true"]]);
             
             var showTab = settings.model.queryValue("auto/tabs/@show");
             _self.showTabs = apf.isTrue(showTab);
             if (!_self.showTabs)
-                _self.toggleTabs(_self.showTabs ? 1 : -1, true, true);
+                _self.toggleTabs(_self.showTabs ? 1 : -1, true, true);;
             
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){

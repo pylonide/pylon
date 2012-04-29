@@ -15741,7 +15741,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Sun, 29 Apr 2012 18:41:38 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19919,7 +19919,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33273)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Sun, 29 Apr 2012 18:52:31 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20443,6 +20443,11 @@ apf.GuiElement = function(){
  * @private
  */
 apf.GuiElement.propHandlers = {
+    "minwidth": function(value){ this.$ext.style.minWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
+    "minheight": function(value){ this.$ext.style.minHeight = Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"; },
+    "maxwidth": function(value){ this.$ext.style.maxWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
+    "maxheight": function(value){ this.$ext.style.maxHeight = Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"; },
+    
     
     /**
      * @attribute {Boolean} focussable whether this element can receive the focus.
