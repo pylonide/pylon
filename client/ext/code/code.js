@@ -708,7 +708,7 @@ module.exports = ext.register("ext/code/code", {
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
                 "onprop.wrapmode" : function(e){
-                    this.setAttribute("disabled", !apf.isTrue(e.value) || !this.available())
+                    this.setAttribute("disabled", !apf.isTrue(e.value) || !this.isAvailable())
                 },
                 isAvailable : function(editor){
                     return editor && editor.ceEditor;

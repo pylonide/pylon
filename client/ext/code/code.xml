@@ -1,7 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:codeeditor id="ceEditor"
       flex              = "1"
-      anchors           = "2 0 0 0"
+      anchors           = "6 0 0 0"
       theme             = "[{require('core/settings').model}::editors/code/@theme]"
       overwrite         = "[{require('core/settings').model}::editors/code/@overwrite]"
       folding           = "[{require('core/settings').model}::editors/code/@folding]"

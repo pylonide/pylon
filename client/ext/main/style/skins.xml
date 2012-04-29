@@ -226,7 +226,7 @@
 			border-bottom : 1px solid black;
 			height        : 28px !important;
 			overflow      : hidden;
-			padding       : 0 6px 0 39px !important;
+			padding       : 0 5px 0 0px !important;
 			position      : relative;
 			width         : 200px;
 			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
@@ -276,9 +276,6 @@
         	box-shadow: 1px 0 0 0  black;
         	cursor: pointer;
         	height: 27px;
-        	left: 0;
-        	position: absolute;
-        	top: 0;
         	width: 39px;
         }
         .black-menu-bar.closed .c9-logo {
@@ -8236,6 +8233,9 @@
         overflow            : hidden;
         padding             : 4px 0 0 0;
     }
+    .editor_tab .curbtn .tab_middle{
+        padding-top : 5px;
+    }
     .editor_tab .tab_left,
     .editor_tab .tab_right {
         position            : absolute;
@@ -8522,8 +8522,6 @@
     }
 
     .codeditorHolder {
-    	padding-top: 3px;
-        background : #e8e8e8;
     }
     
     .editor_tab.offline .btnsesssioncontainer .btnclose strong{
@@ -8621,9 +8619,9 @@
         right : 0;
         z-index : 10;
         margin: 0 auto;
-        background-color: #e8e8e8;
+        /*background-color: #e8e8e8;*/
         /*border-bottom: 1px solid #8C8C8C;*/
-        padding-top:3px;
+        padding-top:6px;
         overflow: hidden;
         clear: both;
     }

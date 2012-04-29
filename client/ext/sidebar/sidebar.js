@@ -33,7 +33,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             hboxTabBar.insertBefore(new apf.hbox({
                 id: "navbar",
                 "class": "black-menu-bar",
-                "minwidth": "43",
+                "minwidth": "45",
                 childNodes : [
                     new apf.button({
                         skin    : "mnubtn",
@@ -129,16 +129,16 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             }
             
             var showTabs = e.model.queryValue("auto/tabs/@show");
-            navbar.setAttribute("minwidth", apf.isTrue(showTabs) ? 43 : 0);
+            navbar.setAttribute("minwidth", apf.isTrue(showTabs) ? 45 : 0);
         });
         
         ide.addEventListener("tabs.visible", function(e){
             navbar.setAttribute("minwidth", 
-                !e.value ? 0 : 43);
+                !e.value ? 0 : 45);
         })
     },
     
-    animateToFullWidth : function(){
+    animateToFullWidth : function(cb){
         if (this.animateControl)
             this.animateControl.stop();
         
@@ -152,8 +152,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             control : this.animateControl = {},
             anim : apf.tween.easeOutCubic,
             oneach : function(){
-                if (i++ == 4)
-                    apf.setStyleClass(navbar.$ext, "", ["closed"]);
+                //if (i++ == 4)
+                    //apf.setStyleClass(navbar.$ext, "", ["closed"]);
             }
         });
     },
@@ -174,6 +174,9 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             oneach : function(){
                 if (i++ == 4 && colLeft.getWidth() == 0)
                     apf.setStyleClass(navbar.$ext, "closed");
+            },
+            onfinish : function(){
+                apf.layout.forceResize();
             }
         });
     },
