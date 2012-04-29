@@ -213,24 +213,26 @@ module.exports = ext.register("ext/editors/editors", {
 
         var timer;
         tabEditors.$buttons.addEventListener("mouseover",function(e){
-            if (apf.isChildOf(tabEditors.$buttons, e.fromElement, true))
-                return;
-            
             clearTimeout(timer);
+            
+            if (_self.showTabs || _self.previewing)
+                return;
+                
             timer = setTimeout(function(){
-                if (!_self.showTabs) {
+                if (!_self.previewing) {
                     _self.toggleTabs(1, true, null, true);
                     _self.previewing = true;
                 }
             }, 200);
         });
         tabEditors.$buttons.addEventListener("mouseout",function(e){
-            if (apf.isChildOf(tabEditors.$buttons, e.toElement, true))
+            clearTimeout(timer);
+            
+            if (_self.showTabs || apf.isChildOf(tabEditors.$buttons, e.toElement, true))
                 return;
             
-            clearTimeout(timer);
             timer = setTimeout(function(){
-                if (!_self.showTabs && _self.previewing) {
+                if (_self.previewing) {
                     _self.previewing = false;
                     _self.toggleTabs(-1, true, null, true);
                 }
@@ -267,8 +269,9 @@ module.exports = ext.register("ext/editors/editors", {
             
             if (dir == undefined)
                 dir = tabEditors.$buttons.style.height == "10px" ? 1 : 0;
-            var i = dir ? (mouse ? 11 : 6) : 0;
-            var steps = mouse ? 10 : 5;
+            var steps = mouse ? 5 : 5;
+            var i = dir ? steps + 1 : 0;
+            var div = mouse ? 1 : 1;
 
             if (dir) {
                 tabEditors.$buttons.style.paddingTop = "2px";
@@ -278,7 +281,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
          
             apf.tween.multi(ext, {
-                anim : mouse ? apf.tween.easeOutQuint : apf.tween.easeOutCubic,
+                anim : mouse ? apf.tween.easeOutCubic : apf.tween.easeOutCubic,
                 steps : steps,
                 interval : apf.isWebkit ? 0 : 10,
                 control : this.animateControl = {},
@@ -294,15 +297,15 @@ module.exports = ext.register("ext/editors/editors", {
                 ],
                 oneach : function(){
                     apf.setStyleClass(tabEditors.$buttons, 
-                        "step" + Math.ceil((dir ? --i : ++i) / (mouse ? 2 : 1)), 
-                        ["step" + Math.ceil((dir ? i + 1 : i-1) / (mouse ? 2 : 1))]);
+                        "step" + Math.ceil((dir ? --i : ++i) / div), 
+                        ["step" + Math.ceil((dir ? i + 1 : i-1) / div)]);
                     
                     if (!dir && tabEditors.getPage())
                         apf.layout.forceResize(tabEditors.getPage().$ext);
                 },
                 onfinish : function(e){
                     apf.setStyleClass(tabEditors.$buttons, "", 
-                        ["step" + Math.ceil(i / (mouse ? 2 : 1))]);
+                        ["step" + Math.ceil(i / div)]);
                     _self.animating = false;
                     
                     
