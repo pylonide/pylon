@@ -327,7 +327,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.$propHandlers["gutterline"] = function(value) {
-        this.$editor.setHighlightGutterLine(value);
+        if(this.$editor.setHighlightGutterLine)
+            this.$editor.setHighlightGutterLine(value);
     };
 
     this.$propHandlers["selectstyle"] = function(value) {
@@ -628,9 +629,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             function(width){
                 _self.$corner.style.left = (width - 5) + "px"
             });
-        
-        if (apf.isTrue(this.getAttribute("globalcommands")))
-            this.$editor.keyBinding.setDefaultHandler(null);
+            
+        if (apf.isTrue(this.getAttribute("globalcommands"))){
+            if(this.$editor.keyBinding.setDefaultHandler)
+                this.$editor.keyBinding.setDefaultHandler(null);
+        }
 
         // read defaults...
         var ed  = this.$editor;
