@@ -277,7 +277,10 @@ module.exports = ext.register("ext/code/code", {
     setDocument : function(doc, actiontracker){
         var _self = this;
 
-        if (!doc.acesession) {
+        if (doc.acesession) {
+            ceEditor.setProperty("value", doc.acesession);
+        }
+        else {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
             doc.acesession = new EditSession(doc.acedoc);
@@ -294,27 +297,30 @@ module.exports = ext.register("ext/code/code", {
                     return;
 
                 doc.acesession.setValue(e.value || "");
-                
+
                 if (doc.state)
                     _self.setState(doc, doc.state);
-                
+
                 doc.isInited = true;
+
+                var syntax = _self.getSyntax(doc.getNode());
+                doc.acesession.setMode(ceEditor.getMode(syntax));
+                doc.acesession.syntax = syntax;
+
+                if (this.$page.id != this.$page.parentNode.activepage)
+                    return;
+
+                ceEditor.setProperty("syntax", syntax);
+                ceEditor.setProperty("value", doc.acesession);
+                // force tokenize first visible rows
+                var rowCount = Math.min(50, doc.acesession.getLength());
+                doc.acesession.bgTokenizer.getTokens(0, rowCount);
             });
-            
-            var initValue;
-            doc.addEventListener("prop.value", initValue = function(e, force) {
-                //abstraction leakage???
-                if (force || this.$page.id == this.$page.parentNode.activepage) {
-                    ceEditor.setProperty("value", ""); //Prevent highlighter to highlight wrong code
-                    ceEditor.setProperty("syntax", 
-                        _self.getSyntax(doc.getNode()));
-                    ceEditor.setProperty("value", doc.acesession);
-                }
-                
-                doc.removeEventListener("prop.value", arguments.callee);
-            });
+
             if (doc.value)
-                initValue.call(doc, null, true);
+                ceEditor.setProperty("value", doc.acesession);
+            else
+                ceEditor.setProperty("value", "");
 
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self)
@@ -354,12 +360,7 @@ module.exports = ext.register("ext/code/code", {
                 });
             });
         }
-        else {
-            ceEditor.setProperty("value", ""); //Prevent highlighter to highlight wrong code
-            ceEditor.setProperty('syntax', 
-                _self.getSyntax(doc.getNode()));
-            ceEditor.setProperty("value", doc.acesession);
-        }
+
 
         if (doc.editor && doc.editor != this) {
             var value = doc.getValue();
@@ -368,41 +369,41 @@ module.exports = ext.register("ext/code/code", {
                 doc.dispatchEvent("prop.value", {value : value});
             }
         }
- 
+
         doc.editor = this;
     },
-    
+
     clear : function(){
         ceEditor.clear();
     },
-    
+
     focus : function(){
         ceEditor.focus();
     },
 
     hook: function() {
         var _self = this;
-        
+
         var fnWrap = function(command){
             command.readOnly = command.readOnly || false;
             command.focusContext = true;
-             
+
             var isAvailable = command.isAvailable;
             command.isAvailable = function(editor){
                 if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
                     return false;
-                
+
                 return isAvailable ? isAvailable(editor) : true;
             }
             var exec = command.exec;
             command.exec = function(editor, args){
                 if (editor && editor.ceEditor)
                     editor = editor.ceEditor.$editor;
-                
+
                 exec.call(this, editor, args);
             }
         }
-        
+
         if (!defaultCommands.wrapped) {
             defaultCommands.each(fnWrap, defaultCommands);
             defaultCommands.wrapped = true;
@@ -411,7 +412,7 @@ module.exports = ext.register("ext/code/code", {
             MultiSelectCommands.each(fnWrap, MultiSelectCommands);
             MultiSelectCommands.wrapped = true;
         }
-        
+
         commands.addCommands(defaultCommands, true);
         commands.addCommands(MultiSelectCommands, true);
 
@@ -450,7 +451,7 @@ module.exports = ext.register("ext/code/code", {
             // pre load custom mime types
             _self.getCustomTypes(e.model);
         });
-        
+
         settings.addSettings("Code Editor", markupSettings);
 
         ide.addEventListener("afteropenfile", function(e) {
@@ -475,14 +476,14 @@ module.exports = ext.register("ext/code/code", {
             if (typeof ceEditor != "undefined")
                 ceEditor.afterOpenFile(ceEditor.getSession());
         });
-        
+
         c = 20000;
         this.menus.push(
             menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
             addEditorMenu("Tools/Record Macro", "togglerecording"), //@todo this needs some more work
             addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
         );
-        
+
         var c = 600;
         this.menus.push(
             menus.addItemByPath("Edit/~", new apf.divider(), c += 100),
@@ -492,24 +493,24 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("Edit/Code Folding/", null, c += 100),
             menus.addItemByPath("Edit/Convert Case/", null, c += 100)
         );
-        
+
         function addEditorMenu(path, commandName) {
             return menus.addItemByPath(path, new apf.item({
                 command : commandName
             }), c += 100);
         }
-        
+
         c = 0;
         this.menus.push(
             addEditorMenu("Edit/Line/Indent", "indent"),
             addEditorMenu("Edit/Line/Outdent", "outdent"),
             addEditorMenu("Edit/Line/Move Line Up", "movelinesup"),
             addEditorMenu("Edit/Line/Move Line Down", "movelinesdown"),
-            
+
             menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
             addEditorMenu("Edit/Line/Copy Lines Up", "copylinesup"),
             addEditorMenu("Edit/Line/Copy Lines Down", "copylinesdown"),
-            
+
             menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
             addEditorMenu("Edit/Line/Remove Line", "removeline"),
             addEditorMenu("Edit/Line/Remove to Line End", "removetolineend"),
@@ -518,12 +519,12 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
             addEditorMenu("Edit/Line/Split Line", "splitline")
         )
-        
+
         c = 0;
         this.menus.push(
             addEditorMenu("Edit/Comment/Toggle Comment", "togglecomment")
         );
-        
+
         c = 0;
         this.menus.push(
             addEditorMenu("Edit/Text/Remove Word Right", "removewordright"),
@@ -537,27 +538,27 @@ module.exports = ext.register("ext/code/code", {
         this.menus.push(
             addEditorMenu("Edit/Code Folding/Fold", "fold"),
             addEditorMenu("Edit/Code Folding/Unfold", "unfold"),
-        
+
             menus.addItemByPath("Edit/Code Folding/~", new apf.divider(), c += 100),
             addEditorMenu("Edit/Code Folding/Fold All", "foldall"),
             addEditorMenu("Edit/Code Folding/Unfold All", "unfoldall")
         );
-        
+
         c = 0;
         this.menus.push(
             addEditorMenu("Edit/Convert Case/Upper Case", "touppercase"),
             addEditorMenu("Edit/Convert Case/Lower Case", "tolowercase")
         );
-        
+
         c = 0;
         this.menus.push(
             addEditorMenu("Selection/Select All", "selectall"),
             addEditorMenu("Selection/Split Into Lines", "splitIntoLines"),
             addEditorMenu("Selection/Single Selection", "singleSelection"),
-            
+
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
             menus.addItemByPath("Selection/Multiple Selections/", null, c += 100),
-            
+
             menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
             addEditorMenu("Selection/Select Word Right", "selectwordright"),
             addEditorMenu("Selection/Select Word Left", "selectwordleft"),
@@ -570,7 +571,7 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Selection/Select to Document Start", "selecttostart"),
             addEditorMenu("Selection/Select to Document End", "selecttoend")
         );
-        
+
         c = 0;
         this.menus.push(
             addEditorMenu("Selection/Multiple Selections/Add Cursor Up", "addCursorAbove"),
@@ -585,18 +586,18 @@ module.exports = ext.register("ext/code/code", {
             menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
             addEditorMenu("Selection/Multiple Selections/Merge Selection Range", "splitIntoLines")
         );
-        
+
         var grpSyntax, grpNewline;
-            
+
         /**** View ****/
         this.menus.push(
             menus.addItemByPath("View/Gutter", new apf.item({
                 type    : "check",
                 checked : "[{require('core/settings').model}::editors/code/@gutter]"
             }), 500),
-            
+
             menus.addItemByPath("View/~", new apf.divider(), 290000),
-            
+
             menus.addItemByPath("View/Syntax/", new apf.menu({
                 "onprop.visible" : function(e){
                     if (e.value) {
@@ -604,41 +605,41 @@ module.exports = ext.register("ext/code/code", {
                             this.disable();
                         else {
                             this.enable();
-                        
+
                             var page = tabEditors.getPage();
                             var node = page && page.$model.data;
-                            grpSyntax.setValue(node 
+                            grpSyntax.setValue(node
                                 && node.getAttribute("customtype") || "auto");
                         }
                     }
                 },
                 "onitemclick" : function(e) {
                     var file = ide.getActivePageModel();
-        
+
                     if (file) {
                         var value = e.relatedNode.value;
-        
+
                         if (value == "auto")
                             apf.xmldb.removeAttribute(file, "customtype", "");
                         else
                             apf.xmldb.setAttribute(file, "customtype", value);
-        
+
                         if (file.getAttribute("customtype")) {
                             var fileName = file.getAttribute("name");
-        
+
                             if (contentTypes["*" + fileName])
                                 delete contentTypes["*" + fileName];
-        
+
                             var mime = value.split(";")[0];
                             var fileExt = (fileName.lastIndexOf(".") != -1) ?
                                 fileName.split(".").pop() : null;
-        
+
                             if (fileExt && contentTypes[fileExt] !== mime)
                                 delete contentTypes[fileExt];
-        
+
                             var customType = fileExt ?
                                 contentTypes[fileExt] : contentTypes["*" + fileName];
-        
+
                             if (!customType)
                                 _self.setCustomType(fileExt ? fileExt : file, mime);
 
@@ -650,15 +651,15 @@ module.exports = ext.register("ext/code/code", {
                                 customType: customType
                             });
                         }
-                        
+
                         if (self.ceEditor)
                             ceEditor.setProperty("syntax", _self.getSyntax(file));
                     }
                 }
             }), 300000),
-            
+
             grpNewline = new apf.group(),
-            
+
             menus.addItemByPath("View/Newline Mode/", new apf.menu({
                 "onprop.visible" : function(e){
                     if (e.value) {
@@ -667,7 +668,7 @@ module.exports = ext.register("ext/code/code", {
                     }
                 },
                 "onitemclick" : function(e){
-                    settings.model.setQueryValue("editors/code/@newlinemode", 
+                    settings.model.setQueryValue("editors/code/@newlinemode",
                         e.relatedNode.value);
                 }
             }), 310000),
@@ -677,7 +678,7 @@ module.exports = ext.register("ext/code/code", {
                 value   : "auto",
                 group   : grpNewline
             }), 100),
-            
+
             menus.addItemByPath("View/Newline Mode/~", new apf.divider(), 110),
 
             menus.addItemByPath("View/Newline Mode/Windows (CRLF)", new apf.item({
@@ -693,7 +694,7 @@ module.exports = ext.register("ext/code/code", {
             }), 300),
 
             menus.addItemByPath("View/~", new apf.divider(), 400000),
-            
+
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
                 checked : "[{require('core/settings').model}::editors/code/@wrapmode]",
@@ -701,7 +702,7 @@ module.exports = ext.register("ext/code/code", {
                     return editor && editor.ceEditor;
                 }
             }), 500000),
-            
+
             menus.addItemByPath("View/Wrap To Viewport", new apf.item({
                 wrapmode : "[{require('core/settings').model}::editors/code/@wrapmode]",
                 type     : "check",
@@ -714,26 +715,26 @@ module.exports = ext.register("ext/code/code", {
                 }
             }), 600000)
         );
-        
+
         c = 0;
         this.menus.push(
             grpSyntax = new apf.group(),
-            
+
             menus.addItemByPath("View/Syntax/Auto-Select", new apf.item({
                 type: "radio",
                 value: "auto",
                 group : grpSyntax
             }), c += 100),
-            
+
             menus.addItemByPath("View/Syntax/Plain Text", new apf.item({
                 type: "radio",
                 value: "text/plain",
                 group : grpSyntax
             }), c += 100),
-            
+
             menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
         );
-        
+
         for (var mode in ModesCaption) {
             this.menus.push(
                 menus.addItemByPath("View/Syntax/" + mode, new apf.item({
@@ -743,9 +744,9 @@ module.exports = ext.register("ext/code/code", {
                 }), c += 100)
             )
         }
-        
+
         c = 0;
-        this.menus.push(  
+        this.menus.push(
             /**** Goto ****/
 
             menus.addItemByPath("Goto/~", new apf.divider(), c = 399),
@@ -757,26 +758,26 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Goto/Line End", "gotolineend"),
             addEditorMenu("Goto/Line Start", "gotolinestart"),
             menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
-            
+
             addEditorMenu("Goto/Jump to Matching Brace", "jumptomatching"),
             menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
-            
+
             addEditorMenu("Goto/Scroll to Selection", "centerselection")
         );
     },
 
     init: function(amlPage) {
         var _self = this;
-        
+
         //amlPage.appendChild(ceEditor);
         ceEditor.show();
 
         this.ceEditor = this.amlEditor = ceEditor;
         ceEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         ceEditor.$editor.commands = commands;
-        
+
         // preload common language modes
-        var noop = function() {}; 
+        var noop = function() {};
         ceEditor.getMode("javascript", noop);
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
@@ -786,27 +787,27 @@ module.exports = ext.register("ext/code/code", {
             caption : "Show Invisibles",
             checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
         });
-        
+
         ide.addEventListener("reload", function(e) {
             var doc = e.doc;
-            doc.state = doc.$page.$editor.getState 
+            doc.state = doc.$page.$editor.getState
                 && doc.$page.$editor.getState(doc);
         });
 
         ide.addEventListener("afterreload", function(e) {
             var doc         = e.doc;
             var acesession  = doc.acesession;
-            
+
             if (!acesession)
                 return;
-                
+
             acesession.doc.setValue(e.data);
 
             if (doc.state) {
                 var editor = doc.$page.$editor;
                 editor.setState && editor.setState(doc, doc.state);
             }
-            
+
             apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
         });
 
@@ -826,17 +827,17 @@ module.exports = ext.register("ext/code/code", {
             // the vim plugin), we fire an event so these plugins can react to it.
             ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
         });
-        
+
         ide.addEventListener("updatefile", function(e){
             var page = tabEditors.getPage();
             if (page && ceEditor.getDocument() == page.$doc.acesession)
                 ceEditor.setProperty("syntax", _self.getSyntax(e.xmlNode));
         });
-        
+
         ide.addEventListener("afteroffline", function(){
             menus.menus["View/Syntax"].disable();
         });
-        
+
         ide.addEventListener("afteronline", function(){
             menus.menus["View/Syntax"].enable();
         });
@@ -854,7 +855,7 @@ module.exports = ext.register("ext/code/code", {
         if (typeof ext === "string") {
             node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
             if (!node)
-                node = settings.model.appendXml('<mime name="' 
+                node = settings.model.appendXml('<mime name="'
                     + mime + '" ext="' + ext + '" />', "auto/customtypes");
         } else {
             var name = ext.getAttribute("name") || "";
@@ -862,7 +863,7 @@ module.exports = ext.register("ext/code/code", {
             if (node)
                 apf.xmldb.removeAttribute(node, "ext");
             else
-                node = settings.model.appendXml('<mime name="' 
+                node = settings.model.appendXml('<mime name="'
                     + mime + '" filename="' + name + '" />', "auto/customtypes");
         }
 
@@ -892,13 +893,13 @@ module.exports = ext.register("ext/code/code", {
     enable : function() {
         if (this.disabled === false)
             return;
-            
+
         this.disabled = false;
-        
+
         this.menus.each(function(item){
             item.enable();
         });
-        
+
         this.nodes.each(function(item){
             item.show();
         });
@@ -907,13 +908,13 @@ module.exports = ext.register("ext/code/code", {
     disable : function() {
         if (this.disabled)
             return;
-        
+
         this.disabled = true;
-        
+
         this.menus.each(function(item){
             item.disable();
         });
-        
+
         this.nodes.each(function(item){
             item.hide();
         });
@@ -923,10 +924,10 @@ module.exports = ext.register("ext/code/code", {
         this.menus.each(function(item){
             item.destroy(true, true);
         });
-        
+
         commands.removeCommands(defaultCommands);
         commands.removeCommands(MultiSelectCommands);
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
