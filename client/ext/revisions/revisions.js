@@ -342,7 +342,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var path = Util.stripWSFromPath(e.path);
         this.changedPaths.push(path);
 
-        if (winQuestionRev.visible !== true && 
+        if (winQuestionRev.visible !== true &&
             !this.isCollab(tabEditors.getPage().$doc)) { // Only in single user mode
             ide.send({
                 command: "revisions",
@@ -784,14 +784,14 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         Util.question(
             "File changed, reload tab?",
-            path + " has been modified while you were editing it.",
+            "'" + path + "' has been modified while you were editing it.",
             "Do you want to reload it?",
             function YesReload() {
                 if (!page || !doc) { return; }
 
                 doc.setValue(serverContent);
                 self.save(page, true);
-                finalize();
+                setTimeout(finalize);
             },
             function YesReloadAll() {
                 pages.forEach(function(page) {
@@ -807,16 +807,15 @@ module.exports = ext.register("ext/revisions/revisions", {
                     }
                 });
                 self.changedPaths = [];
-                finalize();
+                setTimeout(finalize);
             },
             function NoDontReload() {
                 doc.setValue(c9DocContent);
                 ide.send(dataToSend);
-                finalize();
+                setTimeout(finalize);
             },
             function NoDontReloadAll() {
                 pages.forEach(function(page) {
-                    var doc = page.$doc;
                     var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
                     if (self.changedPaths.indexOf(path) > -1) {
                         ide.send({
@@ -826,10 +825,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                             nextAction: "storeAsRevision"
                         });
                     }
-                    doc.setValue(c9DocContent);
-                    ide.send(dataToSend);
                 });
-                finalize();
+                setTimeout(finalize);
             }
         );
     },
@@ -1196,7 +1193,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
-        if (!self.tabEditors || !Util.isAutoSaveEnabled())
+        if (typeof tabEditors === "undefined" || !Util.isAutoSaveEnabled())
             return;
 
         tabEditors.getPages().forEach(this.save, this);
