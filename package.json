@@ -5,6 +5,10 @@
     "homepage" : "http://github.com/ajaxorg/cloud9",
     "engines": {"node": ">= 0.6.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
+    "help": {
+        "web": "https://github.com/ajaxorg/cloud9/blob/master/README.md",
+        "cli": "./scripts/help.js"
+    },
 
     "pm": "sm",
     "dependencies": {
