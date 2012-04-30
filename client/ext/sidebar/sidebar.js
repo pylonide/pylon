@@ -51,7 +51,9 @@ module.exports = ext.register("ext/sidebar/sidebar", {
     
         var timer;
         navbar.$ext.addEventListener("mouseover", function(e){
-            if (apf.isChildOf(navbar.$ext, e.fromElement, true))
+            if (!_self.animating 
+              && navbar.getWidth() >= navbar.$int.scrollWidth
+              && apf.isChildOf(navbar.$ext, e.fromElement, true))
                 return;
             
             clearTimeout(timer);
@@ -63,7 +65,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         });
         
         navbar.$ext.addEventListener("mouseout", function(e){
-            if (apf.isChildOf(navbar.$ext, e.toElement, true))
+            if (!_self.animating
+              && apf.isChildOf(navbar.$ext, e.toElement, true))
                 return;
             
             clearTimeout(timer);
@@ -75,8 +78,13 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         });
         
         ide.addEventListener("panels.animate", function(e){
-            var lastTween = e.tweens[e.tweens.length - 1];
+            //Stop and prevent any animation to happen
+            clearTimeout(timer);
+            _self.animating = true;
+            if (_self.animateControl)
+                _self.animateControl.stop();
             
+            var lastTween = e.tweens[e.tweens.length - 1];
             var tween = {
                 oHtml : navbar.$ext, 
                 type  : "width", 
@@ -104,6 +112,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 panels.lastPanel.button.$setState("Out", {});
                 
                 finish.apply(this, arguments);
+                
+                _self.animating = false;
             }
         });
 
