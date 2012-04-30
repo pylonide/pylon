@@ -35,8 +35,9 @@ module.exports = ext.register("ext/themes/themes", {
                 //group   : this.group
                 
                 onmouseover: function(e) {
-                    _self.currTheme = settings.model.queryValue("editors/code/@theme");
-                    settings.model.setQueryValue("editors/code/@theme", this.value);
+                    //_self.currTheme = settings.model.queryValue("editors/code/@theme");
+                    //settings.model.setQueryValue("editors/code/@theme", this.value);
+                    _self.set(this.value);
                     _self.saved = false;
                 },
                 
@@ -54,11 +55,63 @@ module.exports = ext.register("ext/themes/themes", {
 
     set : function(path){
         settings.model.setQueryValue("editors/code/@theme", path);
+        this.setThemedGUI(path);
         
         ide.dispatchEvent("theme_change", {theme: path});
         
         this.saved = true;
         ide.dispatchEvent("track_action", {type: "theme change", theme: path});
+    },
+    
+    setThemedGUI : function(path){
+        var _self = this;
+
+        require(["require", path], function (require, theme) {
+            if (theme.isDark)
+                apf.setStyleClass(document.body, "dark");
+            else
+                apf.setStyleClass(document.body, "", ["dark"]);
+            
+            var cssClass = theme.cssClass;
+            
+            var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
+            var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
+            
+            if (_self.stylesheet) {
+                //_self.stylesheet.disabled = true;
+                _self.stylesheet.ownerNode.parentNode.removeChild(
+                    _self.stylesheet.ownerNode);
+            }
+            
+            _self.stylesheet = apf.createStylesheet();
+        
+            apf.importStylesheet([
+                ["body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
+                 "color:" + fg + " !important; background-color: " + bg + " !important"],
+                [".ace_corner", 
+                 "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
+                 + bg + " inset !important;"],
+                [".editor_bg", "display: none"]
+            ], self, _self.stylesheet);
+            
+//            apf.setStyleRule(
+//                "body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
+//                "color", fg + " !important", _self.stylesheet, self);
+//            apf.setStyleRule(
+//                "body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
+//                "background-color", bg + " !important", _self.stylesheet, self);
+//            
+//            apf.setStyleRule(
+//                ".ace_corner", 
+//                "border-color", bg + " !important", _self.stylesheet, self);
+//            apf.setStyleRule(
+//                ".ace_corner", 
+//                "box-shadow", "4px 4px 0px " + bg + " inset !important;", _self.stylesheet, self);
+//            
+//            apf.setStyleRule(
+//                ".editor_bg", 
+//                "display", "none", _self.stylesheet, self);
+        });
     },
 
     init : function(){
@@ -84,6 +137,13 @@ module.exports = ext.register("ext/themes/themes", {
         ide.addEventListener("init.ext/code/code", function() {
             if (ceEditor && ceEditor.$editor)
                 mnuThemes.select(null, _self.defaultTheme);
+        });
+        
+        ide.addEventListener("settings.load", function(e){
+            var theme = e.model.queryValue("editors/code/@theme")
+                || _self.defaultTheme;
+            
+            _self.setThemedGUI(theme);
         });
     },
     
