@@ -26,7 +26,7 @@ define(function(require, exports, module) {
 
         this.loggedIn       = true;
 
-        this.onLine         = false;
+        //this.onLine         = false;
         this.offlineFileSystemSupport = false;
 
         this.dispatchEvent("load");

@@ -91,7 +91,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 caption  : "{this.checked ? 'debug' : 'run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
-                disabled : "{!ide.onLine}",
+                disabled : "{!!!ide.onLine}",
                 submenu  : "mnuRunCfg"
             }), 100),
             
@@ -104,7 +104,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 skin     : "c9-toolbarbutton",
                 command  : "stop",
                 visible  : "{stProcessRunning.active and 1}" ,
-                disabled : "{!ide.onLine}"
+                disabled : "{!!!ide.onLine}"
             }), 200),
             
 //            menus.$insertByIndex(barTools, new apf.divider({

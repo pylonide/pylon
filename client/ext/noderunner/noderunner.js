@@ -154,6 +154,21 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     onConnect : function() {
         ide.send({"command": "state"});
+            
+        /**** START Moved from offline.js ****/
+        
+        // load the state, which is quite a weird name actually, but it contains
+        // info about the debugger. The response is handled by 'noderunner.js'
+        // who publishes info for the UI of the debugging controls based on this.
+        ide.send({
+            command: "state",
+            action: "publish"
+        });
+
+        // the debugger needs to know that we are going to attach, but that its not a normal state message
+        dbg.registerAutoAttach();
+        
+        /**** END Moved from offline.js ****/
     },
 
     onDisconnect : function() {

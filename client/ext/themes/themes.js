@@ -63,9 +63,10 @@ module.exports = ext.register("ext/themes/themes", {
         ide.dispatchEvent("track_action", {type: "theme change", theme: path});
     },
     
+    loaded : {},
     setThemedGUI : function(path){
         var _self = this;
-
+        
         require(["require", path], function (require, theme) {
             if (theme.isDark)
                 apf.setStyleClass(document.body, "dark");
@@ -74,24 +75,30 @@ module.exports = ext.register("ext/themes/themes", {
             
             var cssClass = theme.cssClass;
             
+            if (_self.lastTheme)
+                apf.setStyleClass(document.body, "", [_self.lastTheme]);
+            
+            apf.setStyleClass(document.body, _self.lastTheme = cssClass);
+            
+            if (_self.loaded[path])
+                return;
+                
+            _self.loaded[path] = true;
+            
             var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
             var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
             
-            if (_self.stylesheet) {
-                //_self.stylesheet.disabled = true;
-                _self.stylesheet.ownerNode.parentNode.removeChild(
-                    _self.stylesheet.ownerNode);
-            }
-            
-            _self.stylesheet = apf.createStylesheet();
-        
             apf.importStylesheet([
-                ["body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
+                ["." + cssClass + " .ace_editor",
+                 "border: 0 !important;"],
+                ["body." + cssClass + " > .vbox, "
+                 + "." + cssClass + " .editor_tab .curbtn .tab_middle, "
+                 + "." + cssClass + " .codeditorHolder, "
+                 + "." + cssClass + " .session_page", 
                  "color:" + fg + " !important; background-color: " + bg + " !important"],
-                [".ace_corner", 
+                ["." + cssClass + " .ace_corner", 
                  "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
-                 + bg + " inset !important;"],
-                [".editor_bg", "display: none"]
+                 + bg + " inset !important;"]
             ], self, _self.stylesheet);
             
 //            apf.setStyleRule(
@@ -116,6 +123,8 @@ module.exports = ext.register("ext/themes/themes", {
 
     init : function(){
         var _self = this;
+        
+        this.stylesheet = apf.createStylesheet();
         
         this.nodes.push(
             this.group = new apf.group()

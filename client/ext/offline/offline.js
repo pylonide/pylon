@@ -131,20 +131,6 @@ module.exports = ext.register("ext/offline/offline", {
             _self.bringExtensionsOnline();
         });
 
-        // after the IDE connects (either initial or after reconnect)
-        ide.addEventListener("socketConnect", function (e) {
-            // load the state, which is quite a weird name actually, but it contains
-            // info about the debugger. The response is handled by 'noderunner.js'
-            // who publishes info for the UI of the debugging controls based on this.
-            ide.send({
-                command: "state",
-                action: "publish"
-            });
-
-            // the debugger needs to know that we are going to attach, but that its not a normal state message
-            dbg.registerAutoAttach();
-        });
-
         /**** File System ****/
         /**
          * Here, we need to first create the offlineWebdav object in the main scope
