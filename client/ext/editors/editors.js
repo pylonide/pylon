@@ -387,7 +387,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (!width)
             width = ph.offsetWidth;
         
-        ext.style.left = (Math.max(45, pos[0])) + "px";
+        ext.style.left = (Math.max(this.showTabs ? 45 : 0, pos[0])) + "px";
         ext.style.top = (pos[1]) + "px"; // - 28
         ext.style.width = (width + 2 - d2[0]) + "px";
     },
