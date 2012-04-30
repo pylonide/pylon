@@ -185,7 +185,7 @@
         	height: 9px;
         	left: 24px;
         	position: absolute;
-        	top: 10px;
+        	top: 4px;
         	width: 9px;
         }
 
@@ -193,10 +193,10 @@
             background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
             display: block;
             height: 26px;
-            left: 34px;
+            left: 33px;
             position: absolute;
             text-indent: 100%;
-            top: 6px;
+            top: 4px;
             width: 37px;
         }
         /* ------------------------------------------------------------------------------------------
@@ -248,7 +248,7 @@
         .black-menu-bar {
 			background    : rgba(26, 26, 26, .9);
 			border-bottom : 1px solid black;
-			height        : 28px !important;
+			height        : 27px !important;
 			overflow      : hidden;
 			padding       : 0 5px 0 0px !important;
 			position      : relative;
@@ -1495,22 +1495,9 @@
             line-height        : 17px;
         }
 
-        .c9-menu-btn .c9-left {
-            width:5px;
-            height:24px;
-            position:absolute;
-            overflow:hidden;
-            top:0;
-            left:0;
-        }
-
+        .c9-menu-btn .c9-left,
         .c9-menu-btn .c9-right {
-            width:5px;
-            height:24px;
-            position:absolute;
-            overflow:hidden;
-            top:0;
-            right:0;
+            display: none;
         }
 
         .c9-menu-btn .c9-label {
@@ -1524,36 +1511,22 @@
             text-shadow   : rgba(41, 42, 43, 1) 0px 1px 0px;
         }
 
-        .c9-menu-btnOver .c9-left {
-            background:url(images/menu-btn.png) no-repeat 0 0;
-        }
-
-        .c9-menu-btnOver .c9-right {
-            background:url(images/menu-btn.png) no-repeat 0 -48px;
-        }
-
-        .c9-menu-btnOver .c9-label {
-            background:url(images/menu-btn.png) repeat-x 0 -24px;
-        }
-
-        .c9-menu-btnDown .c9-left {
-            background:url(images/menu-btn.png) no-repeat 0 -72px;
-        }
-
-        .c9-menu-btnDown .c9-right {
-            background:url(images/menu-btn.png) no-repeat 0 -120px;
-        }
-
-        .c9-menu-btnDown .c9-label {
-            background:url(images/menu-btn.png) repeat-x 0 -96px;
-        }
-
-        .c9-menu-btnDown .c9-label {
-           color:#d0e6b3;
-           text-shadow : none;
+        .c9-menu-btnOver,
+        .c9-menu-btnDown {
+            background-color: #333;
+            box-shadow:  1px -1px 0 0 black,
+                        -1px 0 0 0 black,
+                         0 1px 0 0 rgba(255,255,255,.15) inset;
+            color: #d4d4d4;
         }
 
         .c9-menu-btnDown {
+            background: -webkit-linear-gradient(top, #333 10%, #1C1C1C);
+            box-shadow:  1px -1px 0 0 black,
+                        -1px 0 0 0 black,
+                         1px 0 0 0 rgba(255,255,255,.1) inset,
+                        -1px 0 0 0 rgba(255,255,255,.1) inset,
+                         0 1px 0 0 rgba(255,255,255,.15) inset;
             z-index : 100000000;
         }
 
@@ -1570,7 +1543,8 @@
         }
 
         .hbox > DIV > .c9-menu-btn {
-            height : 24px;
+            height : 25px;
+            margin: 0 !important;
         }
     ]]></a:style>
 
@@ -2158,7 +2132,7 @@
 <a:button name="mnubtn">
     <a:style><![CDATA[
         .mnubtn {
-			height   : 27px !important;
+			height   : 26px !important;
 			position : relative;
 			cursor   : default;
 			overflow : hidden;
@@ -2254,11 +2228,11 @@
         }
 
         .mnubtn.open_files .icon {
-            background-position: 50% -278px;
+            background-position: 50% -277px;
         }
 
         .mnubtn.testing .icon {
-            background-position: 50% -392px;
+            background-position: 50% -393px;
         }
 
         .mnubtn.visual_editor .icon {
@@ -8374,7 +8348,9 @@
     /* ------------------------------------------------------------------------------------------
      * Unselected tab hover
      * --------------------------------------------------------------------------------------- */
-
+    .editor_tab.hidetabs .session_btn.over:not(.curbtn) .tab_middle {
+        background-color: #616161;
+    }
     /* ------------------------------------------------------------------------------------------
      * Selected tab default state
      * --------------------------------------------------------------------------------------- */
