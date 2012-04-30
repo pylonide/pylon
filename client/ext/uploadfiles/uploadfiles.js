@@ -537,7 +537,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             else {
                 util.alert(
                     "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
-                    "Please remove all file larger that 50MB from the list to continue."
+                    "Please remove all files larger that 50MB from the list to continue."
                 );
             }
             
