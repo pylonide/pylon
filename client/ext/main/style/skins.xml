@@ -234,7 +234,7 @@
                             <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
                             <div class="c9-activity"> </div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
-                            <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk mnuSbPrefs upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
+                            <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
                         </div>
                     </div>
                 </div>
@@ -1522,8 +1522,8 @@
         .c9-menu-btnDown {
             background-color: #494949;
             z-index : 100000000;
-            box-shadow:  1px -1px 0 0 black,
-                        -1px 0 0 0 black,
+            box-shadow:  1px 0 0 0 black inset,
+                         1px 0 0 0 black,
                          0 1px 0 0 rgba(255,255,255,.15) inset;
             z-index : 100000000;
         }
@@ -2713,6 +2713,7 @@
             z-index:1100000;
             position: relative;
             height: 20px;
+            color: #f1f1f1;
         }
 
         .cbmcontainer span {
@@ -2720,7 +2721,6 @@
             font-family   : Tahoma, Arial;
             font-size     : 11px;
             line-height   : 14px;
-            color         : #f1f1f1;
             cursor:default;
             
             padding     : 1px 3px 2px 0px;
@@ -2737,7 +2737,8 @@
         }
         
         .cbmcontainerOver  {
-            background-color : #393939;
+            background-color : #262626;
+            color : #F5B53C;
         }
         
         .cbmcontainerChecked.cbmcontainerDown.cbmcontainerFocus .checkbox {
@@ -2779,7 +2780,7 @@
             background : none;
         }
 
-        .cbmcontainerDisabled span {
+        .cbmcontainerDisabled {
             color : #bebebe;
         }
     ]]></a:style>
@@ -5016,7 +5017,7 @@
 <a:menu name="menu">
     <a:style><![CDATA[
         .menu {
-            margin: -1px 0 0 -1px;
+            margin: -1px 0 0 0;
             padding: 3px 0 3px 0;
             z-index: 10000;
             position: absolute;
@@ -5206,27 +5207,6 @@
             bottom: -14px;
             width: 20px;
             background-position: -22px -45px;
-        }
-
-        .menu-bk.mnuSbPrefs.upward .arrow, .menu-bk.mnuSbTools.upward .arrow {
-            right: 5px;
-        }
-        
-        .menu-bk.mnuSbPrefs > div.menu_item.checked > u {
-            background-image: url(images/check.png);
-            background-repeat: no-repeat;
-            background-position: 2px -37px;
-        }
-        
-        .menu-bk.mnuSbPrefs .cbmcontainerChecked .checkbox {
-            background-image: url(images/check.png);
-            background-repeat: no-repeat;
-            background-position: 1px -37px;
-            left: 4px;
-        }
-        
-        .menu-bk.mnuSbPrefs.downward .arrow, .menu-bk.mnuSbTools.downward .arrow {
-            right: 4px;
         }
 
         .menu-bk>div.menu_item{

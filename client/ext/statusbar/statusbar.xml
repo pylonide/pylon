@@ -35,10 +35,10 @@
             </a:hbox>
         </a:hbox>
     </a:bar>
+    
     <a:menu id="mnuStatusBarPrefs"
       ref   = "{btnSbPrefs}"
       class = "mnuSbPrefs"
-      skin  = "menu-bk"
       sticky = "true">
       <a:item type="check" caption="Code Folding" checked="[{require('ext/settings/settings').model}::editors/code/@folding]" />
       <a:item type="check" caption="Full Line Selection" value="[{require('ext/settings/settings').model}::editors/code/@selectstyle]" values="line|text" />
