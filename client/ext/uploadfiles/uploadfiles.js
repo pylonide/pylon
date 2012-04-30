@@ -237,7 +237,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             util.alert(
                 "Could not upload file(s)", "An error occurred while dropping this file(s)",
                 "Your browser does not offer support for drag and drop for file uploads. " +
-                "Please try with a recent version of Chrome or Firefox`."
+                "Please try with a recent version of Chrome or Firefox."
             );
             return false;
         }
