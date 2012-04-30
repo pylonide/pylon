@@ -158,7 +158,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             control : this.animateControl = {},
             anim : apf.tween.easeOutCubic,
             oneach : function(){
-                
+                apf.layout.forceResize();
             }
         });
     },
@@ -179,6 +179,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             oneach : function(){
                 if (i++ == 4 && colLeft.getWidth() == 0)
                     apf.setStyleClass(navbar.$ext, "closed");
+                
+                apf.layout.forceResize();
             },
             onfinish : function(){
                 apf.layout.forceResize();

@@ -253,6 +253,19 @@ module.exports = ext.register("ext/editors/editors", {
 //            }, 300);
 //        });
 
+        splitterPanelLeft.addEventListener("dragmove", function(e){
+            _self.isResizing = true;
+        });
+        splitterPanelLeft.addEventListener("dragdrop", function(e){
+            _self.isResizing = false;
+        });
+
+        ide.addEventListener("init.ext/sidebar/sidebar", function(){
+            navbar.addEventListener("resize", function(){
+                _self.$resizeButtons();
+            });
+        });
+
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
             _self.$resize();
         });
@@ -357,7 +370,7 @@ module.exports = ext.register("ext/editors/editors", {
         if (this.previewing || this.animating)
             return;
         
-        var ph, ext = tabEditors.$ext; 
+        var ph, ext = tabEditors.parentNode.$ext; 
         var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
         var d = apf.getDiff(ext);
         
@@ -367,13 +380,21 @@ module.exports = ext.register("ext/editors/editors", {
         ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
         ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
         
-        var ext = this.$buttonContainer.$ext;
+        if (this.isResizing)
+            this.$resizeButtons([pos[0], pos[1] - 28], ph.offsetWidth);
+    },
+    
+    $resizeButtons : function(pos, width){
+        var ph, ext = this.$buttonContainer.$ext;
         var d2 = apf.getDiff(ext);
-        //var pos = apf.getAbsolutePosition(barButtonContainer.$ext);
+        if (!pos)
+            pos = apf.getAbsolutePosition(ph = barButtonContainer.$ext);
+        if (!width)
+            width = ph.offsetWidth;
         
         ext.style.left = (Math.max(45, pos[0])) + "px";
-        ext.style.top = (pos[1] - 28) + "px";
-        ext.style.width = (ph.offsetWidth + 2 - d2[0]) + "px";
+        ext.style.top = (pos[1]) + "px"; // - 28
+        ext.style.width = (width + 2 - d2[0]) + "px";
     },
 
     /**
