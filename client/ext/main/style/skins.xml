@@ -1511,8 +1511,7 @@
             text-shadow   : rgba(41, 42, 43, 1) 0px 1px 0px;
         }
 
-        .c9-menu-btnOver,
-        .c9-menu-btnDown {
+        .c9-menu-btnOver {
             background-color: #333;
             box-shadow:  1px -1px 0 0 black,
                         -1px 0 0 0 black,
@@ -1521,13 +1520,17 @@
         }
 
         .c9-menu-btnDown {
-            background: -webkit-linear-gradient(top, #333 10%, #1C1C1C);
+            background-color: #494949;
+            z-index : 100000000;
             box-shadow:  1px -1px 0 0 black,
                         -1px 0 0 0 black,
-                         1px 0 0 0 rgba(255,255,255,.1) inset,
-                        -1px 0 0 0 rgba(255,255,255,.1) inset,
                          0 1px 0 0 rgba(255,255,255,.15) inset;
             z-index : 100000000;
+        }
+        
+        .c9-menu-btnDown .c9-label{
+            color: #212121;
+            text-shadow : 0 1px 0 #5b5d63;
         }
 
         /* Why are we using an extra div here??? */
@@ -5013,7 +5016,7 @@
 <a:menu name="menu">
     <a:style><![CDATA[
         .menu {
-            margin: -1px 0 0 0;
+            margin: -1px 0 0 -1px;
             padding: 3px 0 3px 0;
             z-index: 10000;
             position: absolute;
@@ -5026,17 +5029,14 @@
             cursor:default;
 
             display : none;
-            border:1px solid rgba(255, 255, 255, 0.1);
+            border:1px solid #00040a;
 
             -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
 
-            background-color   : #1c1c1c;
-            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
-            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
-            background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
-            background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
+            background-color   : #494949;
+            text-shadow : 0px 1px 0px #2c2c2c;
         }
 
         .menu>div.menu_item{
@@ -5049,7 +5049,8 @@
             height: 13px;
         }
         .menu>div.menu_item.hover {
-            background-color : #393939;
+            background-color : #262626;
+            color : #F5B53C;
         }
 
         .menu>div.menu_divider{
@@ -5058,8 +5059,8 @@
             font-size: 1px;
 
             margin:2px 3px;
-            border-top:1px solid #000000;
-            border-bottom:1px solid #313131;
+            border-top:1px solid #353535;
+            border-bottom:1px solid #565656;
         }
 
         .menu>div.menu_divider{
@@ -5094,7 +5095,7 @@
 
         .menu>div.menu_item.disabled{
             color: gray;
-            /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
+            text-shadow : none;
         }
         .menu>div.menu_item.disabled>span{
             /*display : none;*/
@@ -8010,8 +8011,8 @@
     }
     
     .editor_tab .btnsesssioncontainer {
-        padding : 5px 45px 0 21px;	
-        height: 22px;
+        padding : 0px 45px 0 21px;	
+        height: 26px;
         overflow: visible;
         white-space: nowrap;
         color: #f5f5f5;
@@ -8032,7 +8033,8 @@
         cursor: default;
         display : inline-block;
         position : relative;
-        vertical-align : bottom;
+        vertical-align : top;
+        top : 5px;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -8193,7 +8195,7 @@
     	display: inline-block;
 		height: 17px;
 		margin: 0px 0px 0 12px;
-		top: 3px;
+		top: 6px;
 		width: 30px;
         vertical-align : top;
     }
@@ -8310,7 +8312,6 @@
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
     	height: 5px;
     	overflow: hidden;
-    	top: -5px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
     	overflow: visible;
@@ -8357,7 +8358,6 @@
     .editor_tab.hidetabs .curbtn {
     	height: 7px;
     	overflow: hidden;
-    	top: -3px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);

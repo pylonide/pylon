@@ -44,7 +44,7 @@
         
         <a:hbox flex="1" padding="0">
             <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
-                <a:hbox id="hboxTabBar" padding="0" edge="0" height="28" align="start" nosplitter="true">
+                <a:hbox id="hboxTabBar" padding="0" edge="0" height="27" align="start" nosplitter="true">
                     <a:hbox id="barButtonContainer" flex="1" align="start" />
                 </a:hbox>
                 <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
