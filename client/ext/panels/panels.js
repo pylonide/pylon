@@ -302,15 +302,22 @@ module.exports = ext.register("ext/panels/panels", {
             menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
         );
         
+        var timer;
         colLeft.addEventListener("resize", function(){
             if (!_self.currentPanel || _self.animating)
                 return;
             
-            var query = "auto/panels/panel[@path='" 
-                + _self.currentPanel.path + "']/@width";
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                if (!_self.currentPanel)
+                    return;
                 
-            if (settings.model.queryValue(query) != colLeft.getWidth())
-                settings.model.setQueryValue(query, colLeft.getWidth());
+                var query = "auto/panels/panel[@path='" 
+                    + _self.currentPanel.path + "']/@width";
+                    
+                if (settings.model.queryValue(query) != colLeft.getWidth())
+                    settings.model.setQueryValue(query, colLeft.getWidth());
+            }, 500);
         });
         
         /**** Support for state preservation ****/
