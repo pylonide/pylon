@@ -339,7 +339,9 @@ module.exports = ext.register("ext/tree/tree", {
             while (args[0].selectSingleNode('node()[@name="' + filename.replace(/"/g, "&quot;") + '"]')) {
                 filename = filename.replace(/\.(\d+)$/, "");
                 
-                var idx  = filename.lastIndexOf(".");
+                var idx  = filename.lastIndexOf("."); 
+                if (idx == -1) idx = filename.length;
+
                 var name = filename.substr(0, idx), ext = filename.substr(idx);
                 filename = name + "." + ++count + ext;
             }

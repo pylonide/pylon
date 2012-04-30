@@ -3,7 +3,7 @@
       id        = "winAlert"
       title     = ""
       icon      = ""
-      skin      = "bk-window"
+      skin      = "bk-window2"
       class     = "relative"
       center    = "true"
       render    = "runtime"
@@ -34,7 +34,7 @@
       kbclose   = "true"
       buttons   = "close"
       width     = "512"
-      skin      = "bk-window"
+      skin      = "bk-window2"
       class     = "relative">
         <a:vbox padding="10" edge="15 20 25 20">
             <h3 id="winConfirmHeader"></h3>

@@ -97,11 +97,10 @@ module.exports = ext.register("ext/console/console", {
     nodes : [],
     
     minHeight : 150,
+    maxHeight: window.innerHeight - 70,
 
     collapsedHeight : 30,
     $collapsedHeight : 0,
-
-    maxHeight: window.innerHeight - 70,
 
     autoOpen : true,
     excludeParent : true,
@@ -599,83 +598,74 @@ module.exports = ext.register("ext/console/console", {
             
         this.hidden = !shouldShow;
 
-        if (this.$control)
-            this.$control.stop();
+        if (this.animating)
+            return;
+
+        this.animating = true;
+
+        var finish = function() {
+            setTimeout(function(){
+                if (!shouldShow) {
+                    tabConsole.hide();
+                }
+                else {
+                    winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
+                    this.maxHeight = window.innerHeight - 70;
+                    winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
+                }
+                
+                winDbgConsole.height = height + 1;
+                winDbgConsole.setAttribute("height", height);
+                winDbgConsole.previousSibling[shouldShow ? "show" : "hide"]();
+                winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                
+                _self.animating = false;
+    
+                settings.model.setQueryValue("auto/console/@expanded", shouldShow);
+            
+                apf.layout.forceResize();
+            }, 100);
+        };
 
         var _self = this;
-        var cfg;
+        var cfg, height;
+        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (shouldShow) {
-            cfg = {
-                height: this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height,
-                dbgVisibleMethod: "show",
-                mnuItemLabel: "check",
-                animFrom: this.$collapsedHeight,
-                animTo: this.height > this.minHeight 
-                    ? (this.maxHeight && this.height > this.maxHeight 
-                        ? this.maxHeight 
-                        : this.height) 
-                    : this.minHeight,
-                steps: 5,
-                animTween: "easeOutQuint"
-            };
+            height = Math.max(this.minHeight, Math.min(this.maxHeight, this.height));
 
             tabConsole.show();
+            winDbgConsole.$ext.style.minHeight = 0;
+            winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
+            
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
+
+            if (!immediate && animOn) {
+                Firmin.animate(winDbgConsole.$ext, {
+                    height: height + "px",
+                    timingFunction: "cubic-bezier(.30, .08, 0, 1)"
+                }, 0.4, finish);
+            }
+            else
+                finish();
         }
         else {
-            cfg = {
-                height: this.$collapsedHeight,
-                dbgVisibleMethod: "hide",
-                mnuItemLabel: "uncheck",
-                animFrom: this.height > this.minHeight 
-                    ? (this.maxHeight && this.height > this.maxHeight 
-                        ? this.maxHeight 
-                        : this.height) 
-                    : this.minHeight,
-                animTo: this.$collapsedHeight,
-                steps: 5,
-                animTween: "easeInOutCubic"
-            };
+            height = this.$collapsedHeight;
+            
             if (winDbgConsole.parentNode != mainRow)
                 this.restore();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.maxHeight = "10000px";
-        }
 
-        var finish = function() {
-            if (!shouldShow)
-                tabConsole.hide();
-            else {
-                winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
-                this.maxHeight = window.innerHeight - 70;
-                winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
+            if (!immediate && animOn) {
+                Firmin.animate(winDbgConsole.$ext, {
+                    height: height + "px",
+                    timingFunction: "cubic-bezier(.63, .26, .82, .58)"
+                }, 0.3, finish);
             }
-            winDbgConsole.height = cfg.height + 1;
-            winDbgConsole.setAttribute("height", cfg.height);
-            winDbgConsole.previousSibling[cfg.dbgVisibleMethod]();
-            apf.layout.forceResize();
-
-            settings.model.setQueryValue("auto/console/@expanded", shouldShow);
-        };
-
-        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
-        if (!immediate && animOn) {
-            apf.tween.single(winDbgConsole.$ext, { 
-                control : this.$control = {},
-                type  : "height",
-                anim  : apf.tween[cfg.animTween],
-                from  : cfg.animFrom,
-                to    : cfg.animTo,
-                steps : cfg.steps,
-                interval : 5,
-                onfinish : finish,
-                oneach : function() { apf.layout.forceResize(); }
-            });
-        }
-        else {
-            finish();
+            else
+                finish();
         }
     },
     enable: function(){
