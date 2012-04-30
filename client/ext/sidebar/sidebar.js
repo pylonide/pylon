@@ -121,10 +121,14 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 apf.setStyleClass(navbar.$ext, "closed");
             } else {
                 ide.addEventListener("init." + activePanel, function(e){
-                    colLeft.addEventListener("prop.visible", function(){
+                    if (colLeft.visible)
                         navbar.setWidth(colLeft.getWidth());
-                        colLeft.removeEventListener("prop.visible", arguments.callee);
-                    });
+                    else {
+                        colLeft.addEventListener("prop.visible", function(){
+                            navbar.setWidth(colLeft.getWidth());
+                            colLeft.removeEventListener("prop.visible", arguments.callee);
+                        });
+                    }
                 });
             }
             
@@ -197,6 +201,17 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             "class" : options["class"],
             caption : options.caption
         }), beforePanel && beforePanel.button || this.btnArrow);
+
+        panelExt.button.addEventListener("mouseover", function(e){
+            if (panels.currentPanel)
+                panels.currentPanel.panel.setTitle(this.caption);
+        });
+        
+        panelExt.button.addEventListener("mouseout", function(e){
+            if (panels.currentPanel)
+                panels.currentPanel.panel.setTitle(
+                    panels.currentPanel.button.caption);
+        });
 
         panelExt.button.addEventListener("mousedown", function(e){
             var value = this.value;

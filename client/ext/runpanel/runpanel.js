@@ -41,7 +41,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         
         panels.register(this, {
             position : 3000,
-            caption: "Run",
+            caption: "Run & Debug",
             "class": "rundebug"
         });
         

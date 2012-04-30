@@ -309,8 +309,8 @@ module.exports = ext.register("ext/editors/editors", {
                 onfinish : function(e){
                     apf.setStyleClass(tabEditors.$buttons, "", 
                         ["step" + Math.ceil(i / div)]);
+
                     _self.animating = false;
-                    
                     
                     if (!dir) {
                         tabEditors.$buttons.style.paddingTop = "0px";
@@ -323,8 +323,20 @@ module.exports = ext.register("ext/editors/editors", {
             })
         }
         else {
-            tabEditors.$buttons.style.paddingTop = "0px";
-            apf.setStyleClass(barButtonContainer.$ext, "hidetabs");
+            if (this.showTabs || preview) {
+                tabEditors.$buttons.style.paddingTop = "0px";
+                tabEditors.$buttons.style.height = "22px";
+                apf.setStyleClass(barButtonContainer.$ext, "", ["hidetabs"]);
+                this.buttons.menu.setHeight(17);
+                this.buttons.add.setHeight(17);
+            }
+            else {
+                tabEditors.$buttons.style.paddingTop = "0px";
+                tabEditors.$buttons.style.height = "10px";
+                apf.setStyleClass(barButtonContainer.$ext, "hidetabs");
+                this.buttons.menu.setHeight(10);
+                this.buttons.add.setHeight(10);
+            }
             
             this.$resize(ext, preview);
         }
