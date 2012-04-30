@@ -9,7 +9,7 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var settings = require("core/settings");
 var panels = require("ext/panels/panels");
-var menus = require("ext/menus/menus");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/sidebar/sidebar", {
     name     : "Side Bar",
@@ -58,7 +58,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
                 timer = setTimeout(function(){
                     _self.animateToFullWidth();
-                }, 200);
+                }, 300);
             }
         });
         
@@ -146,6 +146,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         if (this.animateControl)
             this.animateControl.stop();
         
+        editors.pauseTabResize();
+        
         var i = 0;
         apf.tween.single(navbar.$ext, {
             type: "width",
@@ -156,8 +158,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             control : this.animateControl = {},
             anim : apf.tween.easeOutCubic,
             oneach : function(){
-                //if (i++ == 4)
-                    //apf.setStyleClass(navbar.$ext, "", ["closed"]);
+                
             }
         });
     },
@@ -181,6 +182,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             },
             onfinish : function(){
                 apf.layout.forceResize();
+                editors.continueTabResize();
             }
         });
     },
@@ -224,6 +226,13 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                         colLeft.hide();
                     return;
                 }
+            }
+            
+            if (panels.currentPanel) {
+                setTimeout(function(){
+                    panels.currentPanel.panel.setTitle(
+                        panels.currentPanel.button.caption);
+                });
             }
 
             panels.activate(panelExt, true);

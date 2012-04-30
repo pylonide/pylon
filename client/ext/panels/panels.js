@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var menus = require("ext/menus/menus");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/panels/panels", {
     name   : "Panel Manager",
@@ -149,6 +150,8 @@ module.exports = ext.register("ext/panels/panels", {
             toWin.show();
         }
         
+        editors.pauseTabResize();
+        
         colLeft.$ext.style.width = width + "px";
         //apf.setOpacity(toWinExt, 0);
         
@@ -185,6 +188,8 @@ module.exports = ext.register("ext/panels/panels", {
                     if (!toWin)
                         colLeft.hide();
                 }
+                
+                editors.continueTabResize();
                 
                 _self.animating = false;
             }

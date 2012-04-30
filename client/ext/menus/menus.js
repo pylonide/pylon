@@ -49,7 +49,10 @@ module.exports = ext.register("ext/menus/menus", {
             "class" : "c9-mbar-minimize",
             "skin" : "c9-simple-btn",
             "onclick" : function(e){
-                _self.minimize();
+                if (!_self.minimized)
+                    _self.minimize();
+                else
+                    _self.restore();
             }
         }), this.menubar.firstChild);
         
@@ -57,36 +60,36 @@ module.exports = ext.register("ext/menus/menus", {
             _self.restore();
         });
         
-//        logobar.$ext.addEventListener("mouseover",function(e){
-//            if (!_self.minimized || !ide.inited
-//              || apf.isChildOf(logobar.$ext, e.fromElement, true))
-//                return;
-//            
-//            clearTimeout(timer);
-//            timer = setTimeout(function(){
-//                _self.restore(true);
-//            }, 200);
-//        });
-//        logobar.$ext.addEventListener("mouseout",function(e){
-//            if (!_self.minimized || !ide.inited
-//              || apf.isChildOf(logobar.$ext, e.toElement, true))
-//                return;
-//            
-//            clearTimeout(timer);
-//            if (apf.popup.isShowing(apf.popup.last)) {
-//                timer = setTimeout(function(){
-//                    if (apf.popup.isShowing(apf.popup.last))
-//                        timer = setTimeout(arguments.callee, 300);
-//                    else
-//                        _self.minimize(true);
-//                }, 300);
-//            }
-//            else {
-//                timer = setTimeout(function(){
-//                    _self.minimize(true);
-//                }, 300);
-//            }
-//        });
+        logobar.$ext.addEventListener("mouseover",function(e){
+            if (!_self.minimized || !ide.inited
+              || apf.isChildOf(logobar.$ext, e.fromElement, true))
+                return;
+            
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                _self.restore(true);
+            }, 200);
+        });
+        logobar.$ext.addEventListener("mouseout",function(e){
+            if (!_self.minimized || !ide.inited
+              || apf.isChildOf(logobar.$ext, e.toElement, true))
+                return;
+            
+            clearTimeout(timer);
+            if (apf.popup.isShowing(apf.popup.last)) {
+                timer = setTimeout(function(){
+                    if (apf.popup.isShowing(apf.popup.last))
+                        timer = setTimeout(arguments.callee, 300);
+                    else
+                        _self.minimize(true);
+                }, 300);
+            }
+            else {
+                timer = setTimeout(function(){
+                    _self.minimize(true);
+                }, 300);
+            }
+        });
         
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("auto/menus", [["minimized", "false"]]);

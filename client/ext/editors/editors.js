@@ -11,7 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var util = require("core/util");
-var settings = require("ext/settings/settings");
+var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/editors/editors", {
@@ -754,7 +754,7 @@ module.exports = ext.register("ext/editors/editors", {
 
         menus.addItemByPath("View/Tab Button", new apf.item({
             type: "check",
-            checked : "[{require('ext/settings/settings').model}::auto/tabs/@show]",
+            checked : "[{require('core/settings').model}::auto/tabs/@show]",
             command : "toggleTabs"
         }), 300);
         
@@ -782,21 +782,6 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
         });
         
-        ide.addEventListener("panels.animate", function(e){
-            tabEditors.setAttribute("buttons", "close,order");
-            
-            var onfinish = e.options.onfinish;
-            e.options.onfinish = function(){
-                setTimeout(function(){
-                    tabEditors.setAttribute("buttons", "close,scale,order");
-                    tabEditors.$waitForMouseOut = false;
-                    tabEditors.$scaleinit(null, "sync");
-                }, 300);
-                
-                onfinish.apply(this, arguments);
-            };
-        });
-
         var vbox  = colMiddle;
         this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
         
@@ -1000,6 +985,18 @@ module.exports = ext.register("ext/editors/editors", {
             .node();
         return node;
     },
+    
+    pauseTabResize : function(){
+        tabEditors.setAttribute("buttons", "close,order");
+    },
+    
+    continueTabResize : function(){
+        setTimeout(function(){
+            tabEditors.setAttribute("buttons", "close,scale,order");
+            tabEditors.$waitForMouseOut = false;
+            tabEditors.$scaleinit(null, "sync");
+        }, 300);
+    },            
 
     showFile : function(path, row, column, text) {
         var node = this.createFileNodeFromPath(path);
