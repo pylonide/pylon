@@ -8292,6 +8292,7 @@
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
     	height: 5px;
     	overflow: hidden;
+        top : 4px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
     	overflow: visible;
@@ -8336,12 +8337,13 @@
      * Selected tab default state
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs .curbtn {
-    	height: 7px;
+    	height: 8px;
     	overflow: hidden;
+        top : 3px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
-        background-position : 50% -124px, 0 -111px;
+        background-position : 50% -123px, 0 -111px;
         background-repeat   : no-repeat, repeat-x;
         border-top-right-radius: 1px;   
     }
