@@ -21,6 +21,7 @@ document.documentElement.style.display = "block";
 document.body.style.display = "block"; //might wanna make this variable based on layout loading...
 
 //Start APF
+apf.config.resize = cloud9config.debug ? true : false;
 apf.initialize('<a:application xmlns:a="http://ajax.org/2005/aml" />');
 
 module.exports = ext.register("ext/main/main", {
@@ -40,6 +41,10 @@ module.exports = ext.register("ext/main/main", {
     nodes   : [],
 
     init : function(){
+        ide.addEventListener("extload", function(){
+            apf.config.resize = true;
+            apf.layout.$onresize();
+        });
     },
 
     enable : function(){

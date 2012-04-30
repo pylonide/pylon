@@ -4446,7 +4446,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Sun, 29 Apr 2012 22:45:13 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9827,7 +9827,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/layout.js)SIZE(13677)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/lib/layout.js)SIZE(13472)TIME(Mon, 30 Apr 2012 03:18:07 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10110,15 +10110,6 @@ apf.layout = {
                 f();
 
             if (!apf.layout.$onresize) {
-                /*var f = apf.layout.onresize;
-                window.onresize = function(){
-                    var s = [];
-                    for (var name in f)
-                        s.unshift(f[name]);
-                    for (var i = 0; i < s.length; i++)
-                        s[i]();
-                }*/
-                
                 var rsz = function(f){
                     //@todo fix this
                     try{
@@ -10139,7 +10130,10 @@ apf.layout = {
                 }
                 
                 apf.addListener(window, "resize", apf.layout.$onresize = function(){
-                    rsz(apf.layout.onresize);
+                    if (apf.config.resize !== false) {
+                        console.log("resize");
+                        rsz(apf.layout.onresize);
+                    }
                 });
             }
         }

@@ -60,9 +60,12 @@ module.exports = ext.register("ext/menus/menus", {
             _self.restore();
         });
         
+        var logoCorner = document.querySelector(".c9-mbar-round");
+        
         logobar.$ext.addEventListener("mouseover",function(e){
             if (!_self.minimized || !ide.inited
-              || apf.isChildOf(logobar.$ext, e.fromElement, true))
+              || apf.isChildOf(logobar.$ext, e.fromElement, true)
+              || apf.isChildOf(logoCorner, e.toElement, true))
                 return;
             
             clearTimeout(timer);

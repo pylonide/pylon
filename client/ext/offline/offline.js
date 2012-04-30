@@ -349,14 +349,12 @@ module.exports = ext.register("ext/offline/offline", {
         /**** Init ****/
 
         ide.addEventListener("socketConnect", function() {
-            offline.goOnline();
-            ide.removeEventListener("socketConnect", arguments.callee);
+             offline.goOnline();
         });
-
-        ide.addEventListener("extload", function() {
-            offline.start();
+        ide.addEventListener("socketDisconnect", function(){
+            offline.goOffline();
         });
-
+ 
         if (_self.offlineStartup)
             ide.dispatchEvent("afteroffline"); //Faking offline startup
     },

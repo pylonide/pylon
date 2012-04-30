@@ -25,7 +25,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    //offline : false,
+    offline : false,
     markup  : markup,
     deps    : [noderunner],
 
@@ -452,13 +452,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     enable : function(){
         this.nodes.each(function(item){
-            item.enable();
+            item.enable && item.enable();
         });
     },
 
     disable : function(){
         this.nodes.each(function(item){
-            item.disable();
+            item.disable && item.disable();
         });
     },
 
