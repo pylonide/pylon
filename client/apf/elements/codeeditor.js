@@ -173,7 +173,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         else if (typeof value == "string" && !doc.hasValue) {
             //@todo big hack!
             doc.setValue(value);
-            this.$editor.moveCursorTo(0, 0);
             doc.hasValue = true;
         }
 
@@ -183,7 +182,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 _self.dispatchEvent("loadmode", e);
             });
         }
-        doc.setMode(_self.getMode(_self.syntax));
+        // this is not needed
+        //doc.setMode(_self.getMode(_self.syntax));
 
         doc.setTabSize(parseInt(_self.tabsize, 10));
         doc.setUseSoftTabs(_self.softtabs);
