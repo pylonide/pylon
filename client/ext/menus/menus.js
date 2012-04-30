@@ -213,7 +213,7 @@ module.exports = ext.register("ext/menus/menus", {
                 item = items[name] = new apf.button({
                     skin    : "c9-menu-btn",
                     submenu : menu.id,
-                    margin  : "1 0 0 0",
+                    margin  : "0 0 0 0",
                     caption : (this.debug ? "\\[" + index + "\\] " : "") + name
                 });
             }

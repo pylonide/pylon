@@ -316,7 +316,7 @@ module.exports = ext.register("ext/editors/editors", {
                     { from: ext.offsetTop, to: ((this.showTabs || preview ? 0 : - 16) + pos[1]), type: "top" },
                     { from: ext.offsetHeight - d[1], to: ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]), type: "height" },
                     { oHtml: tabEditors.$buttons, from: parseInt(tabEditors.$buttons.style.height), to: (this.showTabs || preview ? 22 : 10), type: "height" },
-                    { oHtml: tabEditors.$buttons, from: parseInt(apf.getStyle(tabEditors.$buttons, "paddingTop")), to: (this.showTabs || preview ? 5 : 2), type: "paddingTop" },
+                    { oHtml: tabEditors.$buttons, from: parseInt(apf.getStyle(tabEditors.$buttons, "paddingTop")), to: (this.showTabs || preview ? 4 : 2), type: "paddingTop" },
                     { oHtml: this.buttons.add, from: dir ? 0 : 1, to : dir ? 1 : 0, type: "fade" },
                     { oHtml: this.buttons.add, from: dir ? 10 : 17, to : dir ? 17 : 10, type: "height" },
                     { oHtml: this.buttons.menu, from: dir ? 0 : 1, to : dir ? 1 : 0, type: "fade" },
