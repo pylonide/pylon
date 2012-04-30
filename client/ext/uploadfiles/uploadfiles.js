@@ -237,7 +237,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             util.alert(
                 "Could not upload file(s)", "An error occurred while dropping this file(s)",
                 "Your browser does not offer support for drag and drop for file uploads. " +
-                "Please try with a recent version of Chrome or Firefox browsers."
+                "Please try with a recent version of Chrome or Firefox`."
             );
             return false;
         }
@@ -474,7 +474,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                                 btnUploadOverwriteAll.hide();
                                 btnUploadSkipAll.hide();
                             }
-                            uploadFileExistsMsg.$ext.innerHTML = "\"" + apf.escapeXML(file.name) + "\" already exists, do you want to replace it?. Replacing it will overwrite it's current contents.";
+                            uploadFileExistsMsg.$ext.innerHTML = "\"" + apf.escapeXML(file.name) + "\" already exists, do you want to replace it? Replacing it will overwrite its current contents.";
                         }
                     }
                     else {
@@ -533,7 +533,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             else {
                 util.alert(
                     "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
-                    "Please remove all files larger that 50MB from the list to continue."
+                    "Please remove any files larger than 50MB from the list to continue."
                 );
             }
             
