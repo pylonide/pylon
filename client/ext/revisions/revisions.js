@@ -799,7 +799,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                     if (self.changedPaths.indexOf(path) > -1) {
                         ide.addEventListener("afterreload", function onDocReload(data) {
                             if (data.doc === page.$doc) {
-                                self.save(page, true);
+                                // Surprisingly, afterreload event doesn't contain the updated
+                                // documents content, so we must force a timeout.
+                                setTimeout(function() { self.save(page, true); }, 100);
                                 ide.removeEventListener("afterreload", onDocReload);
                             }
                         });
@@ -1213,7 +1215,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!page)
             return;
 
-        if (!forceSave && (!Util.pageHasChanged(page) || !Util.pageIsCode(page)))
+        if ((forceSave !== true) && (!Util.pageHasChanged(page) || !Util.pageIsCode(page)))
             return;
 
         var node = page.$doc.getNode();
