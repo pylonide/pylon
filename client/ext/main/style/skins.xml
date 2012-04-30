@@ -185,7 +185,7 @@
         	height: 9px;
         	left: 24px;
         	position: absolute;
-        	top: 10px;
+        	top: 4px;
         	width: 9px;
         }
 
@@ -193,10 +193,10 @@
             background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
             display: block;
             height: 26px;
-            left: 34px;
+            left: 33px;
             position: absolute;
             text-indent: 100%;
-            top: 6px;
+            top: 4px;
             width: 37px;
         }
         /* ------------------------------------------------------------------------------------------
