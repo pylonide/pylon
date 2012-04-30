@@ -55,6 +55,9 @@ var modules = {
     scrollLeft: function(oHtml, value, center){
         oHtml.scrollLeft = value;
     },
+    paddingTop: function(oHtml, value, center){
+        oHtml.style.paddingTop = value + "px";
+    },
     "height-rsz": function(oHtml, value, center){
         oHtml.style.height = value + PX;
         if (apf.hasSingleResizeEvent && apf.layout.$onresize)
