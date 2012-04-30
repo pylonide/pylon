@@ -14,7 +14,7 @@ Requirements:
 
 Setup:
 
-    sm clone --dev https://github.com/ajaxorg/cloud9infra/tree/plugins2 cloud9
+    sm clone --dev https://github.com/ajaxorg/cloud9/tree/plugins2 cloud9
     cd cloud9
 
 Workflow:
