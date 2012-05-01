@@ -4,7 +4,7 @@ this.tour = {
     steps: [
     {
         before: function() {
-            require("ext/sidebar/sidebar").animateToFullWidth();
+            
             //require("ext/panels/panels").activate(require("ext/panels/panels").lastPanel);
         },
         el: undefined,
@@ -38,12 +38,12 @@ this.tour = {
         },
         el: undefined,
         div: "navbar.childNodes[navbar.childNodes.length - 2]",
-        desc: "Here, you can change the behavior of the editor, manipulate the code beautifier, and change the indentation and width of the editor, among other options.",
+        desc: "You can enable additional features and change the behavior of the editor.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            require("ext/tree/tree").show();
+            require("ext/panels/panels").activate(require("ext/tree/tree"));
         },
         el: "winFilesViewer",
         desc: "All your project files are listed here. You can rename and delete files, as well as drag in new ones from your computer. You can also right-click to see context options.",
@@ -51,10 +51,13 @@ this.tour = {
         time: 4
     }, {
         before: function() {
-            //require("ext/tree/tree").enable();
+            if (madeNewFile) {
+                madeNewFile = false;
+                require("ext/tabbehaviors/tabbehaviors").closetab(tabEditors.getPage());
+            }
         },
         el: plus_tab_button,
-        desc: "You can use this button to quickly add new files to the editor. We'll simulate pushing that right now.",
+        desc: "Use this button to quickly add new files to the editor. We'll push it right now.",
         pos: "left",
         time: 4
     }, {
@@ -64,9 +67,9 @@ this.tour = {
                 require("ext/newresource/newresource").newfile();
             }
         },
-        el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabEditors.$ext),
-        desc: "Here's a tabbed arrangement of all your active files, including the new one we just created. You can rearrange the tabs however you like and swap through them with keyboard shortcuts.",
-        pos: "bottom",
+        el: tabEditors.$buttons,
+        desc: "Rearrange these tabs any way you like, and cycle through them with keyboard shortcuts.",
+        pos: "left",
         time: 4
     }, {
         before: function() {
@@ -101,7 +104,7 @@ this.tour = {
         },
         el: undefined,
         div: "barIdeStatus",
-        desc: "This is the status bar. It shows your current line number and column position. Clicking on it lets you modify IDE aspects, like vim mode, line margins, and scroll speed.",
+        desc: "The status bar shows your cursor position. Clicking on it modifies some of the IDE aspects.",
         pos: "left",
         time: 4
     }, {

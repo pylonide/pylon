@@ -92,11 +92,12 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     },
     
     initTour: function(){
-        this.animateui = settings.model.queryValue('general/@animateui');
-        settings.model.setQueryValue('general/@animateui', false);
+        //this.animateui = settings.model.queryValue('general/@animateui');
+        //settings.model.setQueryValue('general/@animateui', false);
         
-        ext.initExtension(require("ext/console/console"));
-        
+        require("ext/sidebar/sidebar").animateToFullWidth();
+        //ext.initExtension();
+        require("ext/console/console").showInput();
         /*ide.addEventListener("settings.load", function(e){
             _self.animateui = settings.model.queryValue('general/@animateui');
             settings.model.setQueryValue('general/@animateui', false);
@@ -247,9 +248,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     commonStepOps: function(step){
         function getCurrentEl(){
             if (step.el !== undefined) {
-                if(typeof step.el == "string")
+                if (typeof step.el == "string")
                     step.el = self[step.el];
-                if(typeof step.el == "function")
+                else if (typeof step.el == "function")
                     step.el = step.el();
                 _self.currentEl = step.el;
             }
@@ -316,7 +317,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             
             if(step.pos)
                 winTourText.show();
-        });
+        }, 200);
     },
 
     setPositions: function(position, posArray, div) {
@@ -330,6 +331,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         }
         else if (position == "bottom"){
             div.setAttribute("top", posArray[3] + 50);
+        //    div.setAttribute("left", posArray[0] - 75);
             div.setAttribute("left", posArray[3]);
            // div.setAttribute("right", (posArray[0] + (posArray[2] / 2)) - (div.getWidth() / 2));
         }
@@ -390,8 +392,13 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             
         var elExt = el.$ext;
         if (elExt === undefined) {
-            var pos = apf.getAbsolutePosition(el[0]);
-            return [pos[0], pos[1], el[0].offsetWidth, el[0].offsetHeight];
+            if (el.parentNode !== undefined)
+                elExt = el.parentNode;
+            else
+                elExt = el[0];
+                
+            var pos = apf.getAbsolutePosition(elExt);
+            return [pos[0], pos[1], elExt.offsetWidth, elExt.offsetHeight];
         }
         else {
             var pos = apf.getAbsolutePosition(elExt);
