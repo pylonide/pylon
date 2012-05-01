@@ -7,7 +7,7 @@
 
 define(function(require, exports, module) {
 
-var GitLogParser = require("ext/revisions/gitlogparser");
+var GitLogParser = require("ext/githistory/gitlogparser");
 
 module.exports = (function() {
     function RSession() {

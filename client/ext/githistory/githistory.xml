@@ -449,7 +449,7 @@
         <a:list id="lstCommits" skinset="skin_revisions" skin="commitlist"
           anchors="0 0 0 0" flex="1" border="0" multiselect="false"
           autoselect="false" model="mdlCommits" prerender="true"
-          onselect="require('ext/revisions/revisions').loadRevisionFromList()">
+          onselect="require('ext/githistory/githistory').loadRevisionFromList()">
             <a:each
               match         = "[commit]"
               filter        = "{tbRevisionsSearch.value}"

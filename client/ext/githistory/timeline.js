@@ -7,7 +7,7 @@
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
-var rutil = require("ext/revisions/util");
+var rutil = require("ext/githistory/util");
 
 module.exports = {
     /**

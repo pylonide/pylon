@@ -7,9 +7,9 @@
 
 define(function(require, exports, module) {
 
-var rsession = require("ext/revisions/rsession");
-var rutil = require("ext/revisions/util");
-var timeline = require("ext/revisions/timeline");
+var rsession = require("ext/githistory/rsession");
+var rutil = require("ext/githistory/util");
+var timeline = require("ext/githistory/timeline");
 
 module.exports = (function() {
     function RState() {

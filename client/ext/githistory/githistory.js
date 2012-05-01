@@ -49,17 +49,17 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var util = require("core/util");
-var rutil = require("ext/revisions/util");
-var timeline = require("ext/revisions/timeline");
+var rutil = require("ext/githistory/util");
+var timeline = require("ext/githistory/timeline");
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
-var GitLogParser = require("ext/revisions/gitlogparser");
-var RState = require("ext/revisions/rstate");
+var GitLogParser = require("ext/githistory/gitlogparser");
+var RState = require("ext/githistory/rstate");
 
-var skin = require("text!ext/revisions/skin.xml");
-var markup = require("text!ext/revisions/revisions.xml");
+var skin = require("text!ext/githistory/skin.xml");
+var markup = require("text!ext/githistory/githistory.xml");
 
-module.exports = ext.register("ext/revisions/revisions", {
+module.exports = ext.register("ext/githistory/githistory", {
     name     : "Version History",
     dev      : "Cloud9 IDE, Inc.",
     alone    : true,
@@ -79,7 +79,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         document.body.appendChild(
             rutil.createElement("script", {
                 "type" : "text/javascript",
-                "src" : ide.staticPrefix + "/ext/revisions/diff_match_patch.js"
+                "src" : ide.staticPrefix + "/ext/githistory/diff_match_patch.js"
             })
         );
 
