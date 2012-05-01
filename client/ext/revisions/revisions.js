@@ -133,10 +133,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         tooltip.add(btnSave, {
             message : "Changes to your file are automatically saved.<br />\
-            View all your changes through <a href='javascript:void(0)' \
-            onclick='require(\"ext/revisions/revisions\").toggle();' \
-            class='revisionsInfoLink'>the Revision History pane</a>. \
-            Rollback to a previous state, or make comparisons.",
+                View all your changes through <a href='javascript:void(0)' \
+                onclick='require(\"ext/revisions/revisions\").toggle();' \
+                class='revisionsInfoLink'>the Revision History pane</a>. \
+                Rollback to a previous state, or make comparisons.",
             width : "250px"
         });
 
@@ -733,7 +733,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var self = this;
         var c9DocContent = data.revision.finalContent;
-        var serverContent = data.revision.realContent;
         var pages = tabEditors.getPages();
         var path = data.path;
         var doc, page;
@@ -763,32 +762,47 @@ module.exports = ext.register("ext/revisions/revisions", {
             settings.model.setQueryValue("general/@autosaveenabled", this.prevAutoSaveValue || true);
         };
 
+        // Reload page if it has been changed. Once reloaded, the page is saved
+        // with the new content.
+        var reloadAndSave = function(_page) {
+            var path = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
+            var index = self.changedPaths.indexOf(path);
+            if (self.changedPaths.indexOf(path) > -1) {
+                ide.addEventListener("afterreload", function onDocReload(e) {
+                    if (e.doc === _page.$doc) {
+                        // doc.setValue is redundant here, but it ensures that
+                        // the proper value will be saved.
+                        e.doc.setValue(e.data);
+                        setTimeout(function() {
+                            self.save(_page, true);
+                        });
+                        ide.removeEventListener("afterreload", onDocReload);
+                    }
+                });
+                ide.dispatchEvent("reload", { doc : _page.$doc });
+            }
+            return index;
+        };
+
         Util.question(
             "File changed, reload tab?",
             "'" + path + "' has been modified while you were editing it.",
             "Do you want to reload it?",
             function YesReload() {
-                if (!page || !doc) { return; }
+                if (!page || !doc) {
+                    return;
+                }
 
-                doc.setValue(serverContent);
-                self.save(page, true);
+                // Reload and save page. After that, check out what path in
+                // `changedpaths` was the one reloaded and delete item
+                var index = reloadAndSave(page);
+                if (index > -1) {
+                    self.changedPaths.splice(index, 1);
+                }
                 setTimeout(finalize);
             },
             function YesReloadAll() {
-                pages.forEach(function(page) {
-                    var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
-                    if (self.changedPaths.indexOf(path) > -1) {
-                        ide.addEventListener("afterreload", function onDocReload(data) {
-                            if (data.doc === page.$doc) {
-                                // Surprisingly, afterreload event doesn't contain the updated
-                                // documents content, so we must force a timeout.
-                                setTimeout(function() { self.save(page, true); }, 100);
-                                ide.removeEventListener("afterreload", onDocReload);
-                            }
-                        });
-                        ide.dispatchEvent("reload", { doc : page.$doc });
-                    }
-                });
+                pages.forEach(reloadAndSave);
                 self.changedPaths = [];
                 setTimeout(finalize);
             },
