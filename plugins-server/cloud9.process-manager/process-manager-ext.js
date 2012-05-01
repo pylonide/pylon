@@ -7,7 +7,7 @@ module.exports = function setup(options, imports, register) {
     var runners = {};
 
     var eventEmitter = imports.eventbus;
-    var pm = new ProcessManager(runners, eventEmitter, imports.ide);
+    var pm = new ProcessManager(runners, eventEmitter);
 
     register(null, {
         "onDestruct": function(callback) {
