@@ -312,7 +312,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
             ide.dispatchEvent("closepopup", {element: this});
 
-            winQuickSearch.$ext.style.top = "-30px";
+            winQuickSearch.$ext.style.top = "-27px";
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
@@ -331,7 +331,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                 type     : "top",
                 anim     : apf.tween.easeInOutCubic,
                 from     : corrected ? corrected.from : -27,
-                to       : corrected ? corrected.to : 2,
+                to       : corrected ? corrected.to : 6,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {}),
