@@ -10318,6 +10318,14 @@
         .filemgr-tree.openfile .item-fix .item{
             /*padding-left : 2px;*/
         }
+        
+        .rundebug .item-fix .item label{
+            padding-left : 4px;
+        }
+        
+        .rundebug .curfile span{
+            display : none !important;
+        }
 
         .filemgr-tree .item-fix.selected {
             background : rgba(0,0,0,0.04);

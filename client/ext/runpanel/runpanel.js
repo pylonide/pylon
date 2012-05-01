@@ -288,10 +288,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         colLeft.appendChild(winRunPanel);
         this.nodes.push(winRunPanel);
+        
+        lstRunCfg.addEventListener("click", function(e){
+            if (e.htmlEvent.target.tagName == "SPAN") {
+                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
+                this.remove(xmlNode);
+            }
+        });
 
         lstRunCfg.addEventListener("afterremove", function(e){
             _self.mnuRunCfg.childNodes.each(function(item){
-                if (item.node == e.args[0].xmlNode)
+                if (item.getAttribute("node") == e.args[0].xmlNode)
                     item.destroy(true, true);
             });
         });

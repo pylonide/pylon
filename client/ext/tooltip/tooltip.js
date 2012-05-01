@@ -126,7 +126,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
                 options.control.stop();
 
             apf.tween.single(options.tooltip, {
-                 type: "fade", from: 1, to : 0, steps: 5, interval: 0,
+                 type: "fade", from: 1, to : 0, steps: 10, interval: 0,
                  control: options.control = {}, 
                  onfinish: function(){ options.tooltip.style.display = "none";}
             });

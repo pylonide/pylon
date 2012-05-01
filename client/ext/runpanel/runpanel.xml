@@ -17,7 +17,7 @@
                 <a:button 
                   class  = "c9-header-minus c9-header-divider"
                   skin     = "header-btn"
-                  onclick  = "apf.xmldb.removeNode(lstRunCfg.selected)"
+                  onclick  = "lstRunCfg.remove(lstRunCfg.selected)"
                   disabled = "{!lstRunCfg.selected || !![{lstRunCfg.selected}::@curfile]}"/>
                   
                 <!--a:divider skin="c9-divider-double" /-->
@@ -65,11 +65,14 @@
               caption = "[@name]"
               flex    = "1"
               skin    = "tree"
+              class   = "openfile rundebug"
               autoselect    = "true"
               empty-message = "no run configurations"
               onafterchoose = "
                 require('ext/runpanel/runpanel').run();
-              " />
+              ">
+                <a:css match="[@curfile]" value="curfile" />
+            </a:list>
               
             <a:bar skin="basic" class="run-panel-info">
                 <a:vbox>

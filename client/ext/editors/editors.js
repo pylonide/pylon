@@ -376,7 +376,7 @@ module.exports = ext.register("ext/editors/editors", {
         ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
         
         if (this.isResizing)
-            this.$resizeButtons([pos[0], pos[1] - 28], ph.offsetWidth);
+            this.$resizeButtons([pos[0], pos[1] - 27], ph.offsetWidth);
     },
     
     $resizeButtons : function(pos, width){
