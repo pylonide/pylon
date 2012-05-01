@@ -551,18 +551,21 @@ module.exports = ext.register("ext/revisions/revisions", {
             case "recovery":
                 if (e.data.revision.nextAction === "storeAsRevision") {
                     var c9DocContent = e.data.revision.finalContent;
-                    var pages = tabEditors.getPages();
 
                     // No need to send these over the wire.
                     delete e.data.revision.finalContent;
                     delete e.data.revision.realContent;
 
-                    pages.forEach(function(page) {
-                        var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                    var path, page;
+                    var pages = tabEditors.getPages();
+                    for (var i = 0; i < pages.length; i++) {
+                        page = pages[i];
+                        path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
                         if (e.data.path === path) {
                             page.$doc.setValue(c9DocContent);
+                            break;
                         }
-                    });
+                    }
 
                     ide.send({
                         command: "revisions",
@@ -731,31 +734,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
         }
 
-        var self = this;
-        var c9DocContent = data.revision.finalContent;
-        var pages = tabEditors.getPages();
-        var path = data.path;
-        var doc, page;
-
-        pages.forEach(function(_page) {
-            var pagePath = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            if (path === pagePath) {
-                page = _page;
-                doc = _page.$doc;
-            }
-        });
-
         // No need to send these over the wire.
         delete data.revision.finalContent;
         delete data.revision.realContent;
-
-        var dataToSend = {
-            command: "revisions",
-            subCommand: "saveRevision",
-            path: path,
-            revision: data.revision,
-            forceRevisionListResponse: true
-        };
 
         var finalize = function() {
             winQuestionRev.hide();
@@ -784,17 +765,32 @@ module.exports = ext.register("ext/revisions/revisions", {
             return index;
         };
 
+        var dontReloadAndStore = function(_page) {
+            var path = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
+            var index = self.changedPaths.indexOf(path);
+            if (index > -1) {
+                ide.send({
+                    command: "revisions",
+                    subCommand: "getRealFileContents",
+                    path: path,
+                    nextAction: "storeAsRevision"
+                });
+            }
+            return index;
+        };
+        
+        var self = this;
+        var pages = tabEditors.getPages();
+        var page = pages.filter(function(_page) {
+            var pagePath = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
+            return data.path === pagePath
+        })[0];
+
         Util.question(
             "File changed, reload tab?",
-            "'" + path + "' has been modified while you were editing it.",
+            "'" + data.path + "' has been modified while you were editing it.",
             "Do you want to reload it?",
             function YesReload() {
-                if (!page || !doc) {
-                    return;
-                }
-
-                // Reload and save page. After that, check out what path in
-                // `changedpaths` was the one reloaded and delete item
                 var index = reloadAndSave(page);
                 if (index > -1) {
                     self.changedPaths.splice(index, 1);
@@ -807,22 +803,15 @@ module.exports = ext.register("ext/revisions/revisions", {
                 setTimeout(finalize);
             },
             function NoDontReload() {
-                doc.setValue(c9DocContent);
-                ide.send(dataToSend);
+                var index = dontReloadAndStore(page);
+                if (index > -1) {
+                    self.changedPaths.splice(index, 1);
+                }
                 setTimeout(finalize);
             },
             function NoDontReloadAll() {
-                pages.forEach(function(page) {
-                    var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
-                    if (self.changedPaths.indexOf(path) > -1) {
-                        ide.send({
-                            command: "revisions",
-                            subCommand: "getRealFileContents",
-                            path: path,
-                            nextAction: "storeAsRevision"
-                        });
-                    }
-                });
+                pages.forEach(dontReloadAndStore);
+                self.changedPaths = [];
                 setTimeout(finalize);
             }
         );
