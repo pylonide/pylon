@@ -17,6 +17,7 @@
         //<![CDATA[
 
             window.cloud9config = {
+                startdate: new Date(),
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
                 debug: <%debug%>,
@@ -27,8 +28,8 @@
                 projectName: <%projectName%>,
                 version: <%version%>,
                 staticUrl: "[%staticUrl%]/",
-                settings: <%settingsXml%>,
-                socketIoUrl: <%socketIoUrl%>
+                socketIoUrl: <%socketIoUrl%>,
+                settings: <%settingsXml%>
             };
 
             // prevent console messages from crashing our app!
@@ -41,7 +42,7 @@
             var DEBUG   = "debug";
             var FILES   = "files";
 
-            var VERSION = window.cloud9config.debug ? FILES : RELEASE;
+            var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
 
             var apfLoc = VERSION == FILES
                 ? "[%staticUrl%]/support/apf/apf.js"
@@ -49,9 +50,9 @@
 
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
-                var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/main/main", "ext/editors/editors"];
-                if (VERSION == RELEASE)
-                    list.push("ace/editor");
+                var list = ["core/ide", "core/ext", "core/util", 
+                    "core/settings", "ext/main/main", "ext/editors/editors",
+                    "ace/editor"];
 
                 //loader.animateLoader(20);
                 require(list, function(ide, ext, util){
@@ -67,9 +68,12 @@
                     //loader.animateLoader(50);
                     apf.addEventListener("load", function(){
                         //Load extensions
-                        // loader.animateLoader(20);
                         require(plugins, function(){
                             ide.dispatchEvent("extload", {modules: plugins});
+
+                            console.log("Total Load Time " 
+                                + (new Date() - window.cloud9config.startdate) + "ms");
+
                             ide.addEventListener("$event.extload", function(cb){
                                 cb();
                             });

@@ -57,7 +57,7 @@ util.inherits(SettingsPlugin, Plugin);
     };
     
     this.storeSettings = function(user, settings, callback) {
-        // console.log("store settings", this.settingsPath);
+//        console.log("store settings", this.settingsPath, settings.substr(0, 100));
         fs.writeFile(this.settingsPath, settings, "utf8", callback);
     };
       

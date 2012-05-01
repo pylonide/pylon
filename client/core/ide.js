@@ -6,11 +6,11 @@
  */
 
 define(function(require, exports, module) {
-    var Document = require("core/document");
-    var util = require("core/util");
+    var Document       = require("core/document");
+    var util           = require("core/util");
 
-    var ide = new apf.Class().$init();
-
+    ide = new apf.Class().$init(); //global on purpose
+    
     ide.createDocument = function(node, value){
         return new Document(node, value);
     };
@@ -26,7 +26,7 @@ define(function(require, exports, module) {
 
         this.loggedIn       = true;
 
-        this.onLine         = false;
+        //this.onLine         = false;
         this.offlineFileSystemSupport = false;
 
         this.dispatchEvent("load");
@@ -240,7 +240,13 @@ define(function(require, exports, module) {
         if (!page)
             return null;
 
-        return page.$model.data;
+        var corrected = this.dispatchEvent("activepagemodel", {
+            model: page.$model
+        });
+        
+        return corrected && corrected.data 
+            ? corrected.data 
+            : page.$model.data;
     };
 
     ide.getAllPageModels = function() {

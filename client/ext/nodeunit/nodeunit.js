@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var fs = require("ext/filesystem/filesystem");
 var newresource = require("ext/newresource/newresource");
+var menus = require("ext/menus/menus");
 var noderunner = require("ext/noderunner/noderunner");
 var testpanel = require("ext/testpanel/testpanel");
 var console = require("ext/console/console");

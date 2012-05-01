@@ -6,6 +6,7 @@
       kbclose = "true"
       top     = "-27"
       right   = "30"
+      zindex  = "10000"
       focussable = "true">
         <a:hbox edge="0 5 5 5">
             <a:textbox id="txtQuickSearch" flex="1" focusselect="true" skin="searchbox_textbox" skinset="default" class="quickSearch"  />

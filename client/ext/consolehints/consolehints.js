@@ -15,6 +15,7 @@ var ext = require("core/ext");
 var markup = require("text!ext/consolehints/consolehints.xml");
 var css = require("text!ext/consolehints/consolehints.css");
 var Console = require("ext/console/console");
+var commands = require("ext/commands/commands");
 
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
@@ -81,6 +82,20 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     nodes  : [],
     autoOpen : true,
     excludeParent : true,
+    
+    hook : function(){
+        var _self = this;
+        
+        ide.addEventListener("init.ext/console/console", function(e){
+            ext.initExtension(_self);
+            
+            var hideInput = e.ext.hideInput;
+            e.ext.hideInput = function(){
+                _self.hide();
+                hideInput.apply(Console, arguments);
+            }
+        });
+    },
 
     init: function() {
         var _self = this;
@@ -100,7 +115,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             Console.messages.commandhints = function(message) {
                 var cmds = message.body;
                 for (var cmd in cmds)
-                    Console.allCommands[cmd] = cmds[cmd];
+                    commands.commands[cmd] = cmds[cmd];
             };
             Console.messages["internal-autocomplete"] = function(message) {
                 var cmds = message.body;
@@ -190,7 +205,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 base: base,
                 cmdName: cmdName,
                 cursorPos: cursorPos,
-                cmd: Console.allCommands[cmdName]
+                cmd: commands.commands[cmdName]
             });
         }).join("");
 
@@ -252,7 +267,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         var fullCmd = value.match(/(\w+)\s+(.*)$/);
         if (fullCmd) {
             // If we don't recognize the root command
-            var rootCmd = Console.allCommands[fullCmd[1]];
+            var rootCmd = commands.commands[fullCmd[1]];
             if (!rootCmd)
                 return fn1([]);
 
@@ -268,7 +283,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             fn1(filtered, fullCmd[1], fullCmd[2]);
         }
         else {
-            (fn2 || fn1)(filterCommands(Object.keys(Console.allCommands), value));
+            (fn2 || fn1)(filterCommands(Object.keys(commands.commands), value));
         }
     },
     onTabKey: function() {

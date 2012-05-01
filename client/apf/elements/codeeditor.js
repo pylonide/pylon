@@ -45,6 +45,9 @@ var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
 var Range = require("ace/range").Range;
 var MultiSelect = require("ace/multi_select").MultiSelect;
+var ProxyDocument = require("ext/code/proxydocument");
+var Document = require("ace/document").Document;
+
 require("ace/lib/fixoldbrowsers");
 
 apf.codeeditor = module.exports = function(struct, tagName) {
@@ -74,6 +77,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.caching           = true;
 
     this.$booleanProperties["activeline"]               = true;
+    this.$booleanProperties["gutterline"]               = true;
     this.$booleanProperties["caching"]                  = true;
     this.$booleanProperties["readonly"]                 = true;
     this.$booleanProperties["activeline"]               = true;
@@ -88,22 +92,29 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$booleanProperties["folding"]                  = true;
     this.$booleanProperties["wrapmode"]                 = true;
     this.$booleanProperties["wrapmodeViewport"]         = true;
-    this.$booleanProperties["animatedscroll"]         = true;
-    
+    this.$booleanProperties["animatedscroll"]           = true;
+    this.$booleanProperties["globalcommands"]           = true;
+    this.$booleanProperties["fadefoldwidgets"]          = true;
+
     this.$supportedProperties.push("value", "syntax", "activeline", "selectstyle",
         "caching", "readonly", "showinvisibles", "showprintmargin", "printmargincolumn",
         "overwrite", "tabsize", "softtabs", "debugger", "model-breakpoints", "scrollspeed",
         "theme", "gutter", "highlightselectedword", "autohidehorscrollbar", "animatedscroll",
-        "behaviors", "folding", "newlinemode");
+        "behaviors", "folding", "newlinemode", "globalcommands", "fadefoldwidgets",
+        "gutterline");
 
     this.$getCacheKey = function(value) {
-        if (typeof value == "string") {
-            var key = this.xmlRoot
-                ? this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)
-                : value;
+        var key;
+        if (typeof value === "string") {
+            if (this.xmlRoot) {
+                key = this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag);
+            }
+            else {
+                key = value;
+            }
         }
         else if (value.nodeType) {
-            var key = value.getAttribute(apf.xmldb.xmlIdTag);
+            key = value.getAttribute(apf.xmldb.xmlIdTag);
         }
 
         return key;
@@ -145,12 +156,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 apf.xmldb.addNodeListener(value.nodeType == 1
                     ? value : value.parentNode, this);
             }
-
-            doc = new EditSession(typeof value == "string"
+            
+            doc = new EditSession(new ProxyDocument(new Document(typeof value == "string"
               ? value
               : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
                     ? value.nodeValue
-                    : value.firstChild && value.firstChild.nodeValue || ""));
+                    : value.firstChild && value.firstChild.nodeValue || ""))));
 
             doc.cacheId = key;
             doc.setUndoManager(new UndoManager());
@@ -162,7 +173,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         else if (typeof value == "string" && !doc.hasValue) {
             //@todo big hack!
             doc.setValue(value);
-            this.$editor.moveCursorTo(0, 0);
             doc.hasValue = true;
         }
 
@@ -172,7 +182,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 _self.dispatchEvent("loadmode", e);
             });
         }
-        doc.setMode(_self.getMode(_self.syntax));
+        // this is not needed
+        //doc.setMode(_self.getMode(_self.syntax));
 
         doc.setTabSize(parseInt(_self.tabsize, 10));
         doc.setUseSoftTabs(_self.softtabs);
@@ -181,7 +192,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             doc.setWrapLimitRange(_self.wraplimitmin, null);
         }
         else {
-           doc.setWrapLimitRange(_self.wraplimitmin, _self.printmargincolumn); 
+           doc.setWrapLimitRange(_self.wraplimitmin, _self.printmargincolumn);
         }
         doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
         doc.setNewLineMode(_self.newlinemode);
@@ -293,7 +304,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["theme"] = function(value) {
         this.$editor.setTheme(value);
     };
-    
+
     this.$propHandlers["newlinemode"] = function(value) {
         this.newlinemode = value || "auto";
         this.$editor.getSession().setNewLineMode(this.newlinemode);
@@ -307,12 +318,17 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         syntax = (syntax || "text").toLowerCase();
         if (syntax.indexOf("/") == -1)
             syntax = "ace/mode/" + syntax;
-        
+
         return syntax;
     };
 
     this.$propHandlers["activeline"] = function(value) {
         this.$editor.setHighlightActiveLine(value);
+    };
+
+    this.$propHandlers["gutterline"] = function(value) {
+        if(this.$editor.setHighlightGutterLine)
+            this.$editor.setHighlightGutterLine(value);
     };
 
     this.$propHandlers["selectstyle"] = function(value) {
@@ -333,7 +349,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$propHandlers["showinvisibles"] = function(value, prop, initial) {
         this.$editor.setShowInvisibles(value);
     };
-    
+
     this.$propHandlers["animatedscroll"] = function(value, prop, initial) {
         this.$editor.setAnimatedScroll(value);
     };
@@ -355,6 +371,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor.getSession().setFoldStyle(value ? "markbegin" : "manual");
     };
 
+    this.$propHandlers["fadefoldwidgets"] = function(value, prop, initial) {
+        if(this.$editor.setFadeFoldWidgets)
+            this.$editor.setFadeFoldWidgets(value);
+    };
+
     this.$propHandlers["softtabs"] = function(value, prop, initial) {
         this.$editor.getSession().setUseSoftTabs(value);
     };
@@ -365,6 +386,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$propHandlers["gutter"] = function(value, prop, initial) {
         this.$editor.renderer.setShowGutter(value);
+        this.$corner.style.display = value ? "block" : "none";
     };
 
     this.$propHandlers["fontsize"] = function(value, prop, initial) {
@@ -476,6 +498,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         }
     });
 
+    this.addEventListener("keydown", function(e){
+        if (e.keyCode == 9)
+            return false;
+    });
+
     /**** Public Methods ****/
 
     //#ifdef __WITH_CONVENIENCE_API
@@ -492,6 +519,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     //@todo cleanup and put initial-message behaviour in one location
     this.clear = function(){
         this.$propHandlers["value"].call(this, "", null, true);
+        this.$editor.resize();
 
         this.dispatchEvent("clear");//@todo this should work via value change
     };
@@ -564,7 +592,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         if (!this.$ext)
             return;
 
-        this.syncValue();
+        // Removed because it was causing problems in some plugins by
+        // reloading sessions upon the editor losing focus and it is unknown
+        // what's the reasoning behind. Tests show no difference.
+        // this.syncValue();
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
         this.$editor.blur();
@@ -583,15 +614,26 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.$draw = function(){
         //Build Main Skin
-        this.$ext   = this.$getExternal();
-        this.$input = this.$getLayoutNode("main", "content", this.$ext);
+        this.$ext    = this.$getExternal();
+        this.$input  = this.$getLayoutNode("main", "content", this.$ext);
+        this.$corner = this.$getLayoutNode("main", "corner", this.$ext);
 
         this.addEventListener("resize", function(e) {
             this.$editor.resize();
         });
 
-        this.$editor = new Editor(new VirtualRenderer(this.$input));
+        this.$editor = new Editor(new VirtualRenderer(this.$input), null);
         new MultiSelect(this.$editor);
+
+        this.$editor.renderer.$gutterLayer.addEventListener("changeGutterWidth",
+            function(width){
+                _self.$corner.style.left = (width - 5) + "px"
+            });
+            
+        if (apf.isTrue(this.getAttribute("globalcommands"))){
+            if(this.$editor.keyBinding.setDefaultHandler)
+                this.$editor.keyBinding.setDefaultHandler(null);
+        }
 
         // read defaults...
         var ed  = this.$editor;
@@ -634,6 +676,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             this.selectstyle = ed.getSelectionStyle();//"line";
         if (this.activeline === undefined)
             this.activeline = ed.getHighlightActiveLine();//true;
+        if (this.gutterline === undefined)
+            this.gutterline = ed.getHighlightGutterLine();//true;
         if (this.readonly === undefined)
             this.readonly = ed.getReadOnly();//false;
         if (this.showinvisibles === undefined)

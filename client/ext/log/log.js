@@ -5,11 +5,12 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
  
- define(function(require, exports, module) {
+define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/log/log.xml");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/log/log", {
     name   : "Log",
@@ -25,13 +26,12 @@ module.exports = ext.register("ext/log/log", {
     hook : function(){
         var _self = this;
         this.nodes.push(
-            mnuWindows.insertBefore(new apf.item({
-                caption : "Log...",
+            menus.addItemByPath("Tools/Log...", new apf.item({
                 onclick : function(){
                     ext.initExtension(_self);
                     winLog.show();
                 }
-            }), mnuWindows.firstChild)
+            }), 1500000)
         );
         
         var send = ide.send;
@@ -93,14 +93,17 @@ module.exports = ext.register("ext/log/log", {
 
     log : function(url, type, request, response){
         if (this.model.data.childNodes.length > 1000) {
-            apf.xmldb.removeChild(this.model.data.firstChild);
+            apf.xmldb.removeNode(this.model.data.firstChild);
         }
 
-        var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
-            + "' url='" + (url || "") + "' type='" + type + "' "
-            + "response='" + (response ? JSON.stringify(response) : "") + "'><![CDATA[" 
-            + (request ? JSON.stringify(request) : "") + "]]></event>");
-        return apf.xmldb.appendChild(this.model.data, xmlNode);
+        try {
+            var xmlNode = apf.getXml("<event time='" + new Date().getTime() 
+                + "' url='" + (url || "") + "' type='" + type + "' "
+                + "response='" + (response ? apf.escapeXML(JSON.stringify(response)) : "") + "'><![CDATA[" 
+                + (request ? JSON.stringify(request).replace(/\]\]/g, "] ]") : "") + "]]></event>");
+            return apf.xmldb.appendChild(this.model.data, xmlNode);
+        }
+        catch(e){}
     },
 
     init : function(amlNode){},

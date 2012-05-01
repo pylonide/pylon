@@ -10,64 +10,46 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var markup = require("text!ext/keybindings_default/keybindings_default.xml");
 var css = require("text!ext/keybindings_default/keybindings_default.css");
+var commands = require("ext/commands/commands");
 
-var mac = require("text!ext/keybindings_default/default_mac.js");
-var win = require("text!ext/keybindings_default/default_win.js");
-
-function parseKeyBindings(txt) {
-    var json;
-    txt.replace(/keys\.onLoad\(([\w\W\n\r]*)\);\n/gm, function(m, s){
-        json = s.replace(/\);[\n\r\s]*\}$/, "").replace(/\/\/.+/, "");
-    });
-    return JSON.parse(json);
-}
-
-var extCache = {};
-
-function uCaseFirst(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function generatePanelHtml(def, isMac) {
+function generatePanelHtml(commands, platform) {
     var html = [];
-    var div, extName, oExt, cmdName, command, parts;
+    var div, oExt, parts;
     var count = 0;
-    for (extName in def.ext) {
+    
+    Object.keys(commands).forEach(function(name){
         ++count;
-        oExt = extCache[extName];
-        if (!extCache[extName]) {
-            try {
-                oExt = extCache[extName] = require("ext/" + extName + "/" + extName);
-            }
-            catch(ex) {
-                continue;
-            }
-        }
         
+        var command = commands[name];
+        var key = (command.bindKey && command.bindKey[platform] || "").split("|")[0];
+        
+        if (!key)
+            return;
+        
+        if (platform == "mac")
+            key = apf.hotkeys.toMacNotation(key);
+            
         div = count % 3;
         html.push('<div class="keybindings_default_block',
             (div === 1 || div === 2 ? "_border" : ""),
-            '"><h3>', oExt.name.toUpperCase(), "</h3>");
-        for (cmdName in def.ext[extName]) {
-            command = def.ext[extName][cmdName];
-            html.push('<div class="keybindings_default_command">',
-                '<span class="keybindings_default_cmdname">',
-                    (oExt.commands && oExt.commands[cmdName].short 
-                        ? oExt.commands[cmdName].short
-                        : uCaseFirst(cmdName)
-                    ),
-                '</span><br/>');
-            command = command.split("|")[0];
-            if (isMac)
-                parts = apf.hotkeys.toMacNotation(command).split(" ");
-            else
-                parts = command.split("-");
-            html.push('<span class="keybindings_default_cmdkey">', 
-                parts.join('</span><span class="keybindings_default_cmdop">+</span><span class="keybindings_default_cmdkey">'),
-                '</span></div>');
-        }
+            '">');
+
+        html.push('<div class="keybindings_default_command">',
+            '<span class="keybindings_default_cmdname">',
+                (command.short 
+                    ? command.short
+                    : command.name.uCaseFirst()
+                ),
+            '</span><br/>');
+        
+        parts = key.split(/[\- ]/);
+        html.push('<span class="keybindings_default_cmdkey">', 
+            parts.join('</span><span class="keybindings_default_cmdop">+</span><span class="keybindings_default_cmdkey">'),
+            '</span></div>');
+
         html.push("</div>");
-    }
+    });
+    
     return html.join("");
 }
 
@@ -123,11 +105,11 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
     buildPanels: function() {
         // build windows panel:
         var panelWin = barKeyBindingsWin;
-        panelWin.$ext.innerHTML = generatePanelHtml(parseKeyBindings(win));
+        panelWin.$ext.innerHTML = generatePanelHtml(commands.commands, "win");
         
         // build mac panel:
         var panelMac = barKeyBindingsMac;
-        panelMac.$ext.innerHTML = generatePanelHtml(parseKeyBindings(mac), true);
+        panelMac.$ext.innerHTML = generatePanelHtml(commands.commands, "mac");
     },
     
     keybindings: function() {

@@ -10,20 +10,18 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var markup = require("text!ext/formatjson/formatjson.xml");
-        
+var commands = require("ext/commands/commands");
+
 module.exports = ext.register("ext/formatjson/formatjson", {
     name     : "JSON Formatter",
     dev      : "Ajax.org",
     alone    : true,
     type     : ext.GENERAL,
     markup   : markup,
-    commands  : {
-        "format": {hint: "reformat the current JSON document"}
-    },
-    hotitems : {},
     
     nodes : [],
     
@@ -51,17 +49,31 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     
     hook : function(){
         var _self = this;
-        this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                caption : "Format JSON",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    _self.winFormat.show();
-                }
-            }))
-        );
         
-        this.hotitems["format"] = [this.nodes[0]];
+        commands.addCommand({
+            name : "formatjson",
+            bindKey : {mac: "Shift-Command-J", win: "Ctrl-Shift-J"},
+            hint: "reformat the current JSON document",
+            isAvailable : function(editor){
+                if (editor && editor.ceEditor) {
+                    var range = editor.ceEditor.$editor.getSelectionRange();
+                    return range.start.row == range.end.row 
+                      && range.start.column == range.end.column
+                }
+                return false;
+            },
+            exec : function(){
+                ext.initExtension(_self);
+                _self.winFormat.show();
+            }
+        });
+        
+        var mnuItem;
+        this.nodes.push(
+            mnuItem = menus.addItemByPath("Tools/Format JSON", new apf.item({
+                command : "formatjson"
+            }), 500)
+        );
     },
     
     init : function(amlNode){
@@ -81,6 +93,8 @@ module.exports = ext.register("ext/formatjson/formatjson", {
     },
     
     destroy : function(){
+        commands.removeCommandByName("formatjson");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

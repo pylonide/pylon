@@ -60,9 +60,9 @@ module.exports = ext.register("ext/gittools/gittools", {
             if (!_self.gitLogs[file])
                 _self.gitLog();
             /*if (editors.currentEditor) {
-                editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
+                editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
                 if (_self.originalGutterWidth)
-                    editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
+                    editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
             }*/
         });
     },
@@ -121,7 +121,7 @@ module.exports = ext.register("ext/gittools/gittools", {
                             logData : [],
                             lastLoadedGitLog : 0,
                             lastSliderValue : 0,
-                            currentRevision : editors.currentEditor ? editors.currentEditor.ceEditor.getSession().getValue() : "",
+                            currentRevision : editors.currentEditor ? editors.currentEditor.amlEditor.getSession().getValue() : "",
                             revisions : {}
                         };
                     }
@@ -159,10 +159,10 @@ module.exports = ext.register("ext/gittools/gittools", {
                 else {
                     ide.send(data);
                     if (!this.originalGutterWidth)
-                        this.originalGutterWidth = editors.currentEditor.ceEditor.$editor.renderer.getGutterWidth();
+                        this.originalGutterWidth = editors.currentEditor.amlEditor.$editor.renderer.getGutterWidth();
 
                     // Set gutter width, arbitrary number based on 12/13px font
-                    editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth("300px");
+                    editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth("300px");
                 }
             }
         }
@@ -229,8 +229,8 @@ module.exports = ext.register("ext/gittools/gittools", {
     onGitShowMessage : function(message) {
         this.gitLogs[message.body.file].revisions[message.body.hash] =
             message.body.out;
-        editors.currentEditor.ceEditor.getSession().setValue(message.body.out);
-        editors.currentEditor.ceEditor.$editor.setReadOnly(true);
+        editors.currentEditor.amlEditor.getSession().setValue(message.body.out);
+        editors.currentEditor.amlEditor.$editor.setReadOnly(true);
     },
 
     onGitBlameMessage: function(message) {
@@ -263,9 +263,9 @@ module.exports = ext.register("ext/gittools/gittools", {
             sliderGitLog.setValue(this.gitLogs[file].lastSliderValue);
             this.formulateGitLogOut(this.gitLogs[file].lastSliderValue);
             if (this.gitLogs[file].lastLoadedGitLog != this.gitLogs[file].logData.length) {
-                editors.currentEditor.ceEditor.$editor.setReadOnly(true);
+                editors.currentEditor.amlEditor.$editor.setReadOnly(true);
             } else {
-                editors.currentEditor.ceEditor.$editor.setReadOnly(false);
+                editors.currentEditor.amlEditor.$editor.setReadOnly(false);
             }
         } else {
             lblGitLog.setAttribute("caption", fileName + " revisions (0)");
@@ -278,7 +278,7 @@ module.exports = ext.register("ext/gittools/gittools", {
             btnGitBlame.enable();
             txtGitLog.setValue("");
             if (editors.currentEditor)
-                editors.currentEditor.ceEditor.$editor.setReadOnly(false);
+                editors.currentEditor.amlEditor.$editor.setReadOnly(false);
         }
     },
 
@@ -327,14 +327,14 @@ module.exports = ext.register("ext/gittools/gittools", {
     loadFileRevision : function() {
         var file = this.getFilePath();
         if (sliderGitLog.value == this.gitLogs[file].logData.length) {
-            editors.currentEditor.ceEditor.getSession().setValue(
+            editors.currentEditor.amlEditor.getSession().setValue(
                 this.gitLogs[file].currentRevision
             );
-            editors.currentEditor.ceEditor.$editor.setReadOnly(false);
+            editors.currentEditor.amlEditor.$editor.setReadOnly(false);
         } else {
             // Save the latest version of the file
             if (this.gitLogs[file].lastLoadedGitLog == this.gitLogs[file].logData.length)
-                this.gitLogs[file].currentRevision = editors.currentEditor.ceEditor.getSession().getValue();
+                this.gitLogs[file].currentRevision = editors.currentEditor.amlEditor.getSession().getValue();
 
             this.gitShow(this.gitLogs[file].logData[sliderGitLog.value].commit);
         }
@@ -361,8 +361,8 @@ module.exports = ext.register("ext/gittools/gittools", {
             }
         }
 
-        editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
-        editors.currentEditor.ceEditor.$editor.renderer.updateFull();
+        editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
+        editors.currentEditor.amlEditor.$editor.renderer.updateFull();
     },
 
     enable : function(){

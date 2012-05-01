@@ -11,8 +11,7 @@
       width     = "793"
       height    = "500"
       buttons   = "close"
-      class     = "relative keybindings_default"
-      draggable = "false">
+      class     = "relative keybindings_default">
         <a:bar id="barKeyBindingsMac"
           skin="basic"
           class="keybindings_default_bar"

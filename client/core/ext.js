@@ -9,6 +9,29 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var util = require("core/util");
 
+//Prevent the introduction of globals
+//apf.AmlElement.prototype.$propHandlers.id = function(value){
+//    if (this.name == value)
+//        return;
+//
+//    if (this.name) {
+//        //#ifdef __WITH_NAMESERVER
+//        apf.nameserver.remove(this.localName, this);
+//        apf.nameserver.remove("all", this);
+//        //#endif
+//    }
+//
+//    if (apf.nameserver.get("all", value))
+//        console.warn("ID collision of APF element: '" + value + "'");
+//
+//    //#ifdef __WITH_NAMESERVER
+//    apf.nameserver.register(this.localName, value, this);
+//    apf.nameserver.register("all", value, this);
+//    //#endif
+//    
+//    this.name = value;
+//};
+
 var ext;
 module.exports = ext = {
     //Extension types
@@ -48,6 +71,8 @@ module.exports = ext = {
         if (oExtension.registered)
             return oExtension;
 
+        var dt = new Date();
+
         if (!this.model.data)
             this.model.load("<plugins />");
 
@@ -81,15 +106,17 @@ module.exports = ext = {
         if (oExtension.hook) {
             oExtension.hook();
             
-            ide.dispatchEvent("hook." + oExtension.path, {
-                ext : oExtension
-            });
             ide.addEventListener("$event.hook." + oExtension.path, function(callback){
                 callback.call(this, {ext : oExtension});
+            });
+            ide.dispatchEvent("hook." + oExtension.path, {
+                ext : oExtension
             });
         }
         
         ide.dispatchEvent("ext.register", {ext: oExtension});
+        
+        this.model.queryNode("plugin[@path='" + path + "']").setAttribute("time", Number(new Date() - dt));
 
         return oExtension;
     },
@@ -155,6 +182,8 @@ module.exports = ext = {
     initExtension : function(oExtension, amlParent) {
         if (oExtension.inited)
             return;
+            
+        oExtension.inited = true; // Prevent Re-entry
 
         var skin = oExtension.skin;
         if (skin && typeof skin == "object") {
@@ -167,7 +196,7 @@ module.exports = ext = {
         //Load markup
         var markup = oExtension.markup;
         if (markup) 
-            (oExtension.markupInsertionPoint || apf.document.documentElement).insertMarkup(markup);
+            (oExtension.markupInsertionPoint || amlParent || apf.document.documentElement).insertMarkup(markup);
 
         var deps = oExtension.deps;
         if (deps) {
@@ -188,13 +217,12 @@ module.exports = ext = {
         }
 
         oExtension.init(amlParent);
-        oExtension.inited = true;
         
-        ide.dispatchEvent("init." + oExtension.path, {
-            ext : oExtension
-        });
         ide.addEventListener("$event.init." + oExtension.path, function(callback){
             callback.call(this, {ext : oExtension});
+        });
+        ide.dispatchEvent("init." + oExtension.path, {
+            ext : oExtension
         });
     },
 
@@ -222,28 +250,18 @@ module.exports = ext = {
         else
             cmd = "";
 
-        var oCmd = this.commandsLut[cmd];
-        if (!oCmd || !oCmd.ext) {
-            return;
-        }
+        var commands = self["req"+"uire"]("ext/commands/commands");
+        var c9console = self["requ"+"ire"]("ext/console/console");
 
-        var oExt = require(oCmd.ext);
-        if (oExt && typeof oExt[cmd] === "function") {
-            self["requ"+"ire"](["ext/console/console"], function(consoleExt) {
-                if (oExt.commands[cmd].msg)
-                    consoleExt.write(oExt.commands[cmd].msg);
-            });
-            var res = oExt[cmd](data);
+        var command = commands.commands[cmd];
+        if (!command || !command.exec)
+            return;
+
+        if (command.msg)
+            c9console.write([command.msg]);
             
-            // if the command specifies a return value, then pass that back
-            if (typeof res !== "undefined") {
-                return res;
-            }
-            
-            // otherwise respond with 'false'
-            // I would expected true here but soit; console.js checks explicitly for 'false'
-            return false;
-        }
+        var res = commands.exec(cmd, null, data);
+        return res === undefined ? false : res;
     }
 };
 

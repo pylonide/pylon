@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
-var settings = require("ext/settings/settings");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
@@ -18,20 +18,6 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     type   : ext.GENERAL,
     alone  : true,
     deps   : [],
-    commands: {
-        "open": {
-            "hint": "open a file to edit in a new tab",
-            "commands": {
-                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
-            }
-        },
-        "c9": {
-            "hint": "alias for 'open'",
-            "commands": {
-                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
-            }
-        }
-    },
 
     readFile : function (path, callback){
         if (!this.webdav) return;
@@ -267,7 +253,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         node.setAttribute("oldpath", node.getAttribute("path"));
         node.setAttribute("path", newPath);
-        apf.xmldb.setAttribute(node, "name", name);
+        if (isCopyAction)
+            apf.xmldb.setAttribute(node, "name", name);
 
         // when this is a copy action, then we don't want this to happen
         if (page && !isCopyAction)
@@ -337,6 +324,21 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     /**** Init ****/
 
     init : function() {
+        commands.addCommand({
+            name : "open",
+            hint: "open a file to edit in a new tab",
+            commands: {
+                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
+            }
+        });
+        commands.addCommand({
+            name: "c9",
+            hint: "alias for 'open'",
+            commands: {
+                "[PATH]": {"hint": "path pointing to a file. Autocomplete with [TAB]"}
+            }
+        });
+        
         this.model = new apf.model();
         this.model.load("<data><folder type='folder' name='" + ide.projectName +
             "' path='" + ide.davPrefix + "' root='1'/></data>");
@@ -453,10 +455,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         });
                     }
                     else {
-                        // populate the document
-                        doc.setValue(data);
-                        // fire event
-                        ide.dispatchEvent("afteropenfile", { doc: doc, node: node, editor: editor });
+                        //doc.addEventListener("editor.ready", function(){
+                            // populate the document
+                            doc.setValue(data);
+                            
+                            // fire event
+                            ide.dispatchEvent("afteropenfile", { doc: doc, node: node, editor: editor });
+                        //});
                     }
                 };
                 
@@ -501,6 +506,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     disable : function() {},
 
     destroy : function(){
+        commands.removeCommandsByName(["open", "c9"]);
+        
         this.webdav.destroy(true, true);
         this.model.destroy(true, true);
     }

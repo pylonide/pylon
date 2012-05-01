@@ -15,62 +15,67 @@ var debug = function() {
 
 var rNL = /\r?\n/;
 var startChar = {
-    "equal": " ",
-    "delete": "-",
-    "insert": "+"
+    "equal" : "  ",
+    "delete": "- ",
+    "insert": "+ "
 };
 
 var getLastAndAfterRevisions = function(data) {
-    "use strict";
-
     var group = data.group;
     // Ordered timestamps
     var keys = data.groupKeys;
     var minKey = keys[0];
     var maxKey = keys[keys.length - 1];
     var revision = group[keys[0]];
-    var beforeRevision = data.content;
+    var beforeRevision = "";
 
-    var i, patch, ts;
+    var i, ts;
+    var patches = [];
     for (i = 0; i <= revision.ts.length; i++) {
         ts = revision.ts[i];
         if (minKey == ts) {
             break;
         }
 
-        patch = revision.tsValues[ts][0];
-        beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
+        patches = patches.concat(revision.tsValues[ts][0]);
     }
+    beforeRevision = self.dmp.patch_apply(patches, beforeRevision)[0];
 
+    patches = [];
     var afterRevision = beforeRevision;
     for (i = 0; i <= keys.length; i++) {
         ts = keys[i];
         var rev = group[ts];
-        patch = rev.tsValues[ts][0];
-        afterRevision = self.dmp.patch_apply(patch, afterRevision)[0];
+        patches = patches.concat(rev.tsValues[ts][0]);
 
         if (maxKey == ts) {
             break;
         }
     }
+    afterRevision = self.dmp.patch_apply(patches, afterRevision)[0];
 
     return [beforeRevision, afterRevision];
 };
 
-self.onmessage = function(e) {
+var loadLibs = function() {
     if (!self.dmp) {
         importScripts("/static/ext/revisions/diff_match_patch.js");
         self.dmp = new diff_match_patch();
     }
 
     if (!self.difflib) {
-        importScripts("/static/ext/revisions/lib/difflib.js");
+        importScripts("/static/ext/revisions/difflib.js");
         self.difflib = difflib;
     }
+};
 
+self.onmessage = function(e) {
     var packet = {};
-    var afterRevision, beforeRevision;
+    var afterRevision, beforeRevision, lastContent, patch;
     switch (e.data.type) {
+        case "preloadlibs":
+            loadLibs();
+            break;
         case "preview":
             var results = getLastAndAfterRevisions(e.data);
             beforeRevision = results[0];
@@ -147,33 +152,72 @@ self.onmessage = function(e) {
 
             packet.type = "apply";
             packet.content = {
-                id: e.data.data.id,
+                id: e.data.id,
                 value: afterRevision
             };
             break;
 
         case "newRevision":
-            beforeRevision = e.data.originalContent;
+            beforeRevision = "";
             var tss = e.data.timestamps;
             for (var i = 0, l = tss.length; i < l; i++) {
                 patch = e.data.revisions[tss[i]].patch[0];
                 beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
             }
 
-            var lastContent = e.data.lastContent;
-            var patch = self.dmp.patch_make(beforeRevision, lastContent);
+            lastContent = e.data.lastContent;
+            patch = self.dmp.patch_make(beforeRevision, lastContent);
 
-            packet.type = "newRevision";
-            packet.revision = {
-                contributors: e.data.contributors,
-                patch: [patch],
-                silentsave: e.data.silentsave,
-                restoring: e.data.restoring,
-                ts: Date.now(),
-                lastContent: lastContent,
-                length: lastContent.length
+            // If there is no actual changes, let's return
+            if (patch.length === 0) {
+                return;
+            }
+
+            packet = {
+                type: "newRevision",
+                path: e.data.path,
+                revision: {
+                    contributors: e.data.contributors,
+                    silentsave: e.data.silentsave,
+                    restoring: e.data.restoring,
+                    ts: e.data.ts || Date.now(),
+                    patch: [patch],
+                    length: lastContent.length,
+                    saved: false
+                }
             };
+            break;
+
+        // Recovery is a special case for when a external application modifies
+        // the file the user is working on.
+        case "recovery":
+            var currentContent = e.data.lastContent;
+            var realContent = e.data.realContent;
+            patch = self.dmp.patch_make(currentContent, realContent);
+
+            // If there is no actual changes, let's return
+            if (patch.length === 0) {
+                return;
+            }
+
+            packet = {
+                type: "recovery",
+                path: e.data.path,
+                revision: {
+                    contributors: e.data.contributors,
+                    silentsave: e.data.silentsave,
+                    restoring: e.data.restoring,
+                    ts: Date.now(),
+                    patch: [patch],
+                    finalContent: currentContent,
+                    realContent: realContent,
+                    saved: false,
+                    inDialog: true,
+                    nextAction: e.data.nextAction
+                }
+            };
+
+            break;
     }
     self.postMessage(packet);
 };
-

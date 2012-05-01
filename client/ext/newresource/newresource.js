@@ -9,8 +9,10 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/newresource/newresource.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/newresource/newresource", {
     dev     : "Ajax.org",
@@ -20,49 +22,57 @@ module.exports = ext.register("ext/newresource/newresource", {
     type    : ext.GENERAL,
     markup  : markup,
     deps    : [fs],
-    commands : {
-        "newfile": {
-            hint: "create a new file resource",
-            msg: "New file created."
-        },
-        "newfolder": {
-            hint: "create a new directory resource",
-            msg: "New directory created."
-        },
-        "newfiletemplate": {hint: "open the new file template dialog"}
-    },
-    hotitems: {},
 
     nodes   : [],
 
-    init : function(amlNode){
+    hook : function(amlNode){
         var _self = this;
 
-        this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "New Folder",
-                onclick : function(){
-                    _self.newfolder();
-                }
-            }), ide.mnuFile.firstChild),
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "New From Template...",
-                onclick : function(){
-                    _self.newfiletemplate();
-                }
-            }), ide.mnuFile.firstChild),
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "New File",
-                onclick : function(){
-                    _self.newfile();
-                }
-            }), ide.mnuFile.firstChild)
-        );
+        commands.addCommand({
+            name: "newfile",
+            hint: "create a new file resource",
+            msg: "New file created.",
+            bindKey: {mac: "Option-Shift-N", win: "Ctrl-N"},
+            exec: function () {
+                _self.newfile();
+            }
+        });
+        
+        commands.addCommand({
+            name: "newfiletemplate",
+            hint: "create a new directory resource",
+            msg: "New directory created.",
+            bindKey: {mac: "Option-Ctrl-N", win: "Ctrl-Alt-N"},
+            exec: function () {
+                _self.newfiletemplate();
+            }
+        });
+        
+        commands.addCommand({
+            name: "newfolder",
+            hint: "open the new file template dialog",
+            bindKey: {mac: "Option-Ctrl-Shift-N", win: "Ctrl-N"},
+            exec: function () {
+                _self.newfolder();
+            }
+        });
 
-        this.hotitems.newfile = [this.nodes[3]];
-        this.hotitems.newfiletemplate = [this.nodes[2]];
-        this.hotitems.newfolder = [this.nodes[1]];
+        this.nodes.push(
+            menus.addItemByPath("File/New File", new apf.item({
+                command : "newfile",
+            }), 100),
+            menus.addItemByPath("File/New From Template...", new apf.item({
+                command : "newfiletemplate"
+            }), 200),
+            menus.addItemByPath("File/New Folder", new apf.item({
+                command : "newfolder"
+            }), 300),
+            menus.addItemByPath("File/~", new apf.divider(), 400)
+        );
+    },
+    
+    init : function(){
+        
     },
 
     newfile: function(type, value, path) {
@@ -110,6 +120,8 @@ module.exports = ext.register("ext/newresource/newresource", {
     },
 
     newfiletemplate : function(){
+        ext.initExtension(this);
+        
         winNewFileTemplate.show();
     },
 
@@ -137,12 +149,12 @@ module.exports = ext.register("ext/newresource/newresource", {
     },
 
     destroy : function(){
+        commands.removeCommandsByName(["newfile", "newfiletemplate", "newfolder"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
         this.nodes = [];
-
-        mnuNew.destroy(true, true);
 
         tabEditors.removeEventListener("close", this.$close);
     }

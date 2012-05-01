@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 
 "use strict";
 
+var Editors = require("ext/editors/editors");
 var util = require("ext/vim/maps/util");
 var motions = require("ext/vim/maps/motions");
 var operators = require("ext/vim/maps/operators");
@@ -484,11 +485,11 @@ exports.commands = {
 };
 
 var handleCursorMove = exports.onCursorMove = function() {
-    var editor = ceEditor.$editor;
+    var editor = Editors.currentEditor.amlEditor.$editor;
 
     if(util.currentMode === 'insert' || handleCursorMove.running)
         return;
-    else if(!ceEditor.$editor.selection.isEmpty()) {
+    else if(!editor.selection.isEmpty()) {
         handleCursorMove.running = true;
         if(util.onVisualLineMode) {
             var originRow = editor.selection.visualLineStart;

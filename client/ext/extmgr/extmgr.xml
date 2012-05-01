@@ -38,8 +38,9 @@
                           empty-message = "No user extensions">
                             <a:column width="25%" value="[@name]" caption="Name" />
                             <a:column width="30%" value="[@path]" caption="Path" />
-                            <a:column width="15%" value="[@type]" caption="Type" />
-                            <a:column width="20%" value="[@dev]" caption="Developer" />
+                            <a:column width="10%" value="[@type]" caption="Type" />
+                            <a:column width="15%" value="[@dev]" caption="Developer" />
+                            <a:column width="10%" value="[@time]ms" caption="Time" align="right" /> 
                             <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />
                         </a:datagrid>
                         
@@ -58,8 +59,9 @@
                           eachvalue  = "[@path]">
                             <a:column width="25%" value="[@name]" caption="Name" /> 
                             <a:column width="30%" value="[@path]" caption="Path" /> 
-                            <a:column width="15%" value="[@type]" caption="Type" /> 
-                            <a:column width="20%" value="[@dev]" caption="Developer" /> 
+                            <a:column width="10%" value="[@type]" caption="Type" /> 
+                            <a:column width="15%" value="[@dev]" caption="Developer" /> 
+                            <a:column width="10%" value="[@time]ms" caption="Time" align="right" /> 
                             <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" /> 
                         </a:datagrid>
                     </a:vbox>

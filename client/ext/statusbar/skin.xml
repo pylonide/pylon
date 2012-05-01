@@ -45,6 +45,16 @@
             .ace_dark.bar-status .label {
                 color: rgba(255, 255, 255, 0.4);
             }
+            
+            .mnuSbPrefs{
+                border-radius : 6px;
+                margin-top : -8px;
+                margin-left : 1px;
+            }
+            
+            .mnuSbPrefs .label {
+                color : #f1f1f1;
+            }
         ]]></a:style>
 
         <a:presentation>
@@ -156,70 +166,4 @@
             </a:main>
         </a:presentation>
     </a:button>
-    <a:menu name="statusbar-mnu">
-        <a:style><![CDATA[
-            .statusbar-mnu {
-                margin   : 0;
-                z-index  : 10000;
-                position : absolute;
-                overflow : visible;
-                display  : none;
-
-                background-image: linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
-                background-image: -o-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
-                background-image: -moz-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
-                background-image: -webkit-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
-                background-image: -ms-linear-gradient(bottom, rgba(65,65,65,0.14) 0%, rgba(255,255,255,0.14) 100%);
-
-                position : absolute;
-                border-radius : 9px;
-                -webkit-box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
-                -moz-box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
-                box-shadow: inset 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
-                border: 1px solid #e8e8e8;
-
-                margin-top: -17px;
-                margin-left: -10px;
-
-                padding: 3px 0;
-            }
-
-            .statusbar-mnu .arrow {
-                position : absolute;
-                width: 19px;
-                height: 17px;
-                bottom: -16px;
-                left: 40px;
-                z-index: 10001;
-                background: url(images/arrow-sb.png) no-repeat 0 0;
-            }
-
-            .statusbar-mnu .menu-item {
-                padding: 5px 15px;
-                cursor: default;
-                color: rgba(0, 0, 0, 0.4);
-            }
-            .statusbar-mnu .menu-item.hover{
-                background-color: rgba(170, 170, 170, 0.14);
-            }
-        ]]></a:style>
-
-        <a:presentation>
-            <a:main container=".">
-                <div class="statusbar-mnu">
-                    <div class="arrow"> </div>
-                </div>
-            </a:main>
-            <a:item
-              caption = "text()"
-              icon    = "div"
-              hotkey  = "div"
-              inherit = "true">
-                <div class="menu-item">-<div class="icon"></div></div>
-            </a:item>
-            <a:divider inherit="true">
-                <div class="menu-divider"></div>
-            </a:divider>
-        </a:presentation>
-    </a:menu>
 </a:skin>

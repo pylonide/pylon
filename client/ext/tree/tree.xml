@@ -15,31 +15,23 @@
       modal    = "false"
       buttons  = "close"
       optimize = "true">
-        <a:button id="btnTreeRefresh"
-          top="-22"
-          skin="header-btn"
-          right="29"
-          icon="panel_refresh.png"
-          visible = "{trFiles.visible}"
-          onclick="require('ext/tree/tree').refresh()" 
-          tooltip="Refresh Project Tree" />
         <a:button
-          top="-22"
           skin="header-btn"
           right="5"
-          icon="panel_settings.png"
-          submenu="mnuFilesSettings"
-          tooltip="Settings" />
+          class="panel-settings"
+          submenu="mnuFilesSettings"/>
+          
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         
         <a:menu id="mnuFilesSettings">
-            
+            <a:item onclick="require('ext/tree/tree').refresh()">Refresh Project Tree</a:item>
+            <a:divider />
         </a:menu>
 
         <a:vbox id="vboxTreeContainer" anchors="0 0 0 0">
             <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
               contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-              onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
+              onbeforeremove="return require('core/util').removeInteractive(this)"
               onbeforemove="this.disable();" autoselect="false"
               flex="1" scrollbar="sbShared 2 2 2"
             >
@@ -72,7 +64,7 @@
             </a:tree>
         </a:vbox>
         
-        <a:menu id="mnuCtxTree" disabled="{{!stServerConnected.active}}">
+        <a:menu id="mnuCtxTree" disabled="{{!stServerConnected.active}}" render="runtime">
             <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>
@@ -87,22 +79,14 @@
                     return apf.xmldb.cleanNode(node.cloneNode(false))
                 }));
                 apf.clipboard.copied = true;
-                apf.clipboard.pasteSelection(apf.activeElement, trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
+                apf.clipboard.pasteSelection(apf.activeElement, 
+                    trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
                 apf.clipboard.store = store;
             ">Duplicate</a:item>
             <a:divider />
-            <a:item match="[file|folder[not(@root)]]" onclick="
-                apf.clipboard.cutSelection(apf.activeElement);
-            ">Cut</a:item>
-            <a:item match="[file|folder[not(@root)]]" onclick="
-                apf.clipboard.put(trFiles.getSelection().map(function (node) {
-                    return apf.xmldb.cleanNode(node.cloneNode(false))
-                }));
-                apf.clipboard.copied = true;
-            ">Copy</a:item>
-            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" onclick="
-                apf.clipboard.pasteSelection(apf.activeElement);
-            ">Paste</a:item>
+            <a:item match="[file|folder[not(@root)]]" command="cut">Cut</a:item>
+            <a:item match="[file|folder[not(@root)]]" command="copy">Copy</a:item>
+            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" command="paste">Paste</a:item>
             <a:divider />
             <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" onclick="
                 require('ext/filesystem/filesystem').createFile();

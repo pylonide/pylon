@@ -9,25 +9,48 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var template = "<settings />";
 
+var INTERVAL = 2000; //I would like this at 60000, but save on exit is broken
+
 module.exports = {
     model : new apf.model(),
-
-    save : function(){
-        if (!ide.inited)
-            return;
-
+    
+    $checkSave : function() {
+        if (this.dirty)
+            this.saveToFile();
+    },
+    
+    startTimer : function(){
         var _self = this;
-        clearTimeout(this.$customSaveTimer);
+        
+        clearInterval(this.$timer);
+        
+        var checkSave = function(){
+            _self.$checkSave();
+        };
+        this.$timer = setInterval(checkSave, INTERVAL);
+    },
 
-        this.$customSaveTimer = setTimeout(function(){
-            ide.dispatchEvent("savesettings", {model : _self.model});
-            _self.saveToFile();
-        }, 100);
+    save : function(force){
+        this.dirty = true;
+        
+        if (force) {
+            this.saveToFile();
+            this.startTimer();
+        }
     },
 
     saveToFile : function() {
+        if (cloud9config.debug)
+            console.log("Saving Settings...");
+            
+        ide.dispatchEvent("settings.save", { model : this.model });
+        
+        this.model.data.setAttribute("time", new Date().getTime());
         var data = this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "";
+
         if (ide.onLine) {
+            this.dirty = false;
+            
             ide.send({
                 command: "settings",
                 action: "set",
@@ -50,10 +73,11 @@ module.exports = {
             this.model.load(template);
         }
 
-        if (window.onerror) {
+        if (!cloud9config.debug) {
             try {
-                ide.dispatchEvent("loadsettings", {
-                    model : this.model
+                ide.dispatchEvent("settings.load", {
+                    model : this.model,
+                    ext   : this
                 });
             } catch(e) {
                 self["requ"+"ire"]("ext/filesystem/filesystem")
@@ -61,29 +85,51 @@ module.exports = {
 
                 this.model.load(template);
 
-                ide.dispatchEvent("loadsettings", {
-                    model : this.model
+                ide.dispatchEvent("settings.load", {
+                    model : this.model,
+                    ext   : this
                 });
             }
         }
         else {
-            ide.dispatchEvent("loadsettings", {
-                model : this.model
+            ide.dispatchEvent("settings.load", {
+                model : this.model,
+                ext   : this
             });
         }
 
-        ide.addEventListener("$event.loadsettings", this.$loadsettings);
+        ide.addEventListener("$event.settings.load", this.$loadsettings);
 
         this.loaded = true;
     },
 
     $loadsettings : function(cb){
-        try {
-            cb({model : require('core/settings').model});
+        var _self = require('core/settings');
+        
+        if (cloud9config.debug) {
+            cb({model : _self.model, ext : _self});
         }
-        catch(e){
-            console.error(e.message);
+        else {
+            try {
+                cb({model : _self.model, ext : _self});
+            }
+            catch(e){
+                console.error(e.message);
+            }
         }
+    },
+    
+    setDefaults : function(path, attr){
+        var node = this.model.queryNode(path);
+        if (!node)
+            node = apf.createNodeFromXpath(this.model.data, path);
+
+        for (var i = 0, l = attr.length; i < l; i++) {
+            if (!node.getAttributeNode(attr[i][0]))
+                apf.xmldb.setAttribute(node, attr[i][0], attr[i][1]);
+        }
+        
+        apf.xmldb.applyChanges("synchronize", node);
     },
 
     /**
@@ -96,6 +142,8 @@ module.exports = {
         var xml, _self = this;
         var resetSettings = location.href.indexOf('reset=1') > -1;
         var sIdent = this.sIdent = "cloud9.settings." + ide.workspaceId;
+
+        this.model.setProperty("create-model", false);
 
         if (resetSettings)
             xml = template;
@@ -129,20 +177,16 @@ module.exports = {
                 ide.send({command: "settings", action: "get"});
             return;
         }
-
+        
         this.load(xml);
 
         /**** Events ****/
 
-        var checkSave = function() {
-            if (ide.dispatchEvent("savesettings", {
-                model : _self.model
-            }) === true)
-                _self.saveToFile();
-        };
-        this.$timer = setInterval(checkSave, 60000);
+        this.startTimer();
 
-        apf.addEventListener("exit", checkSave);
+        apf.addEventListener("exit", function(){
+            _self.$checkSave();
+        });
 
         ide.addEventListener("afteronline", function(){
             _self.saveToFile(); //Save to file
@@ -154,6 +198,10 @@ module.exports = {
         ide.addEventListener("afteroffline", function(){
             if (_self.loaded)
                 _self.saveToFile(); //Save in local storage
+        });
+        
+        this.model.addEventListener("update", function(){
+            _self.save();
         });
     }
 };

@@ -11,18 +11,15 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
 var Map = require("ext/minimap/map");
+var menus = require("ext/menus/menus");
 var css = require("text!ext/minimap/style.css");
+var commands = require("ext/commands/commands");
 
 return module.exports = ext.register("ext/minimap/minimap", {
     name  : "Minimap",
     dev   : "Cloud9 IDE, Inc.",
     type  : ext.GENERAL,
     alone : true,
-    commands : {
-        "minimap": {
-            hint: "Hide or show the code minimap"
-        }
-    },
     nodes   : [],
     deps    : [editors],
     css     : css,
@@ -31,6 +28,9 @@ return module.exports = ext.register("ext/minimap/minimap", {
     map_enabled : false,
 
     hook : function() {
+        //hint: "Hide or show the code minimap"
+        //@todo command
+        
         var _self = this;
         this.menuItem = new apf.item({
             id      : "mnuItemShowMinimap",
@@ -42,14 +42,16 @@ return module.exports = ext.register("ext/minimap/minimap", {
             }
         });
 
-        this.nodes.push(mnuView.appendChild(this.menuItem));
+        this.nodes.push(
+            menus.addItemByPath("View/Minimap", this.menuItem, 800)
+        );
 
         ide.addEventListener("afteropenfile", function() {
             ext.initExtension(_self);
 
         });
 
-        ide.addEventListener("loadsettings", function(e) {
+        ide.addEventListener("settings.load", function(e) {
             _self.map_enabled = e.model.queryValue("editors/code/@minimap");
         });
 

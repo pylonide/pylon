@@ -17,6 +17,7 @@
         //<![CDATA[
 
             window.cloud9config = {
+                startdate: new Date(),
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
                 debug: <%debug%>,
@@ -28,7 +29,8 @@
                 version: <%version%>,
                 staticUrl: <%staticUrl%>,
                 settings: <%settingsXml%>,
-                socketIoUrl: <%socketIoUrl%>
+                socketIoUrl: <%socketIoUrl%>,
+                settings: <%settingsXml%>
             };
             
             // prevent console messages from crashing our app!
@@ -54,9 +56,13 @@
 
                         // Load extensions
                         ide.dispatchEvent("extload", {modules: list});
+                        
+                        console.log("Total Load Time " 
+                            + (new Date() - window.cloud9config.startdate) + "ms");
+                            
                         ide.addEventListener("$event.extload", function(cb){
                             cb();
-                         });
+                        });
                     });
 
                     preloaderImgs();

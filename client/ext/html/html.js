@@ -10,7 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
-var markup = require("text!ext/html/html.xml");
+var menus = require("ext/menus/menus");
 
 var previewExtensions = [
     "htm", "html", "xhtml",
@@ -24,33 +24,14 @@ module.exports = ext.register("ext/html/html", {
     type  : ext.GENERAL,
     alone : true,
     deps  : [code],
-    markup: markup,
     nodes : [],
-
-    hook : function(){
-        var _self = this;
-        tabEditors.addEventListener("afterswitch", function(e){
-            _self.afterSwitchOrOpen(e.nextPage);
-        });
-        ide.addEventListener("afteropenfile", function(e){
-            // Only listen for event from editors.js
-            if (e.editor && e.node.$model)
-                _self.afterSwitchOrOpen(e.node);
-        });
-        ide.addEventListener("updatefile", function(e) {
-            var page = tabEditors.getPage(e.newPath);
-            if (!page || !page.$active)
-                return;
-            _self.afterSwitchOrOpen(page);
-        });
-    },
 
     afterSwitchOrOpen : function(node) {
         var name = node.$model.data.getAttribute("name");
         var fileExtension = name.split(".").pop().toLowerCase();
 
         if (previewExtensions.indexOf(fileExtension) > -1) {
-            ext.initExtension(this);
+            //ext.initExtension(this);
             this.page = node;
             this.enable();
         }
@@ -59,25 +40,51 @@ module.exports = ext.register("ext/html/html", {
         }
     },
 
-    init : function() {
-        //Append the button bar to the main toolbar
-        var nodes = barHtmlMode.childNodes;
-        var node;
-        for (var i = nodes.length - 1; i >= 0; i--) {
-            node = ide.barTools.appendChild(nodes[0]);
-            if (node.nodeType != 1) {
-                continue;
-            }
-            this.nodes.push(node);
-        }
+    init : function(){
+        var _self = this;
+        
+        this.nodes.push(
+//            menus.$insertByIndex(barTools, new apf.divider({
+//                skin : "c9-divider"
+//            }), 300),
+            
+            menus.$insertByIndex(barTools, new apf.button({
+                skin : "c9-toolbarbutton",
+                //icon : "preview.png" ,
+                "class" : "preview",
+                tooltip : "Preview in browser",
+                caption : "Preview",
+                disabled : true,
+                onclick : function(){
+                    var file = _self.page.$model.data;
+                    window.open(location.protocol + "//" 
+                        + location.host + file.getAttribute("path"), "_blank");
+                }
+            }), 10)
+        );
+        
+        ide.addEventListener("init.ext/editors/editors", function(e) {
+            tabEditors.addEventListener("afterswitch", function(e){
+                _self.afterSwitchOrOpen(e.nextPage);
+            });
+            ide.addEventListener("closefile", function(e){
+                if (tabEditors.getPages().length == 1)
+                    _self.disable();
+            });
+            ide.addEventListener("afteropenfile", function(e){
+                // Only listen for event from editors.js
+                if (e.editor && e.node.$model)
+                    _self.afterSwitchOrOpen(e.node);
+            });
+            ide.addEventListener("updatefile", function(e) {
+                var page = tabEditors.getPage(e.newPath);
+                if (!page || !page.$active)
+                    return;
+                _self.afterSwitchOrOpen(page);
+            });
+        });
 
-        btnHtmlOpen.onclick = this.onOpenPage.bind(this);
-        this.enabled = true;
-    },
-
-    onOpenPage : function() {
-        var file = this.page.$model.data;
-        window.open(location.protocol + "//" + location.host + file.getAttribute("path"), "_blank");
+        this.enabled = false;
     },
 
     enable : function() {
@@ -86,7 +93,7 @@ module.exports = ext.register("ext/html/html", {
         this.enabled = true;
 
         this.nodes.each(function(item){
-            item.show();
+            item.enable && item.enable();
         });
     },
 
@@ -96,7 +103,7 @@ module.exports = ext.register("ext/html/html", {
         this.enabled = false;
 
         this.nodes.each(function(item){
-            item.hide && item.hide();
+            item.disable && item.disable();
         });
     },
 

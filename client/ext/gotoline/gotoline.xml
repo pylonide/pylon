@@ -7,7 +7,7 @@
       height  = "90"
       left    = "-100"
       top     = "-100"
-      zindex  = "10000">
+      zindex  = "100000">
         <a:vbox anchors="0 0 0 0" padding="0" edge="5">
             <a:textbox id="txtLineNr"
               focusselect="true" />

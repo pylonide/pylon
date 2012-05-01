@@ -9,6 +9,7 @@
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var util = require("core/util");
 var markup = require("text!ext/extmgr/extmgr.xml");
 var panels = require("ext/panels/panels");
@@ -27,41 +28,47 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     hook : function(){
         var _self = this;
         var reloadDgExt = true;
-        this.nodes.push(
-            mnuWindows.insertBefore(new apf.divider(), mnuWindows.firstChild),
+        
+        menus.addItemByPath("Tools/~", new apf.divider(), 1000000);
+        menus.addItemByPath("Tools/Extension Manager...", new apf.item({
+            onclick : function(){
+                ext.initExtension(_self);
+                winExt.show();
 
-            mnuWindows.insertBefore(new apf.item({
-                caption : "Extension Manager...",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    winExt.show();
-
-                    // Hackity hackathon
-                    // @TODO the problem is apparently that APF does not
-                    // like to show the datagrid records when two datagrids are
-                    // bound to the same model && that one of the xpath selectors
-                    // used to filter the model, has no results
-                    setTimeout(function() {
-                        if (reloadDgExt) {
-                            dgExt.reload();
-                            reloadDgExt = false;
-                        }
-                    });
-                }
-            }), mnuWindows.firstChild)
-        );
-
+                // Hackity hackathon
+                // @TODO the problem is apparently that APF does not
+                // like to show the datagrid records when two datagrids are
+                // bound to the same model && that one of the xpath selectors
+                // used to filter the model, has no results
+                setTimeout(function() {
+                    if (reloadDgExt) {
+                        dgExt.reload();
+                        reloadDgExt = false;
+                    }
+                });
+            }
+        }), 2000000);
+        
         // Load up extensions the user added manually
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
+            _self.loadedSettings = false;
+            
             ide.addEventListener("extload", function(){
                 var nodes = e.model.queryNodes("auto/extensions/plugin");
                 for (var n = 0; n < nodes.length; n++)
                     _self.loadExtension(nodes[n].getAttribute("path"));
+                
+                _self.loadedSettings = true;
             });
         });
+    },
 
+    init : function(amlNode){
         // Save the manually-loaded extensions
-        ide.addEventListener("savesettings", function(e){
+        ide.addEventListener("settings.save", function(e){
+            if (!_self.loadedSettings)
+                return;
+            
             var eNode = e.model.data.selectSingleNode("auto/extensions");
             if (eNode) {
                 eNode.parentNode.removeChild(eNode);
@@ -74,12 +81,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 var copy = apf.xmldb.cleanNode(userExtensions[u].cloneNode(false));
                 eNode.appendChild(copy);
             }
-
-            return true;
         });
     },
-
-    init : function(amlNode){},
 
     loadExtension : function(path) {
         if (path || tbModuleName.validate()) {
@@ -104,7 +107,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
         var extPath = dgExtUser.selected.getAttribute("path");
         var extension = require(extPath);
 
-        if(ext.unregister(extension)) {
+        if (ext.unregister(extension)) {
             ext.model.removeXml(ext.model.queryNode("plugin[@path='" + extPath + "']"));
             settings.save();
         }
@@ -162,6 +165,9 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     },
     
     destroy : function(){
+        menus.remove("Tools/~", 1000000);
+        menus.remove("Tools/Extension Manager...");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

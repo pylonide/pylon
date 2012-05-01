@@ -13,11 +13,13 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var dock   = require("ext/dockpanel/dockpanel");
+var commands = require("ext/commands/commands");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
+var settings = require("ext/settings/settings");
+
 require("ext/debugger/inspector");
-require("ext/settings/settings");
 
 module.exports = ext.register("ext/debugger/debugger", {
     name    : "Debug",
@@ -28,19 +30,45 @@ module.exports = ext.register("ext/debugger/debugger", {
     markup  : markup,
     buttonClassName : "debug1",
     deps    : [fs, noderunner],
-    commands: {
-        "resume"   : {hint: "resume the current paused process"},
-        "stepinto" : {hint: "step into the function that is next on the execution stack"},
-        "stepover" : {hint: "step over the current expression on the execution stack"},
-        "stepout"  : {hint: "step out of the current function scope"}
-    },
 
     nodesAll: [],
     nodes : [],
-    hotitems: {},
 
     hook : function(){
         var _self = this;
+        
+        commands.addCommand({
+            name: "resume",
+            hint: "resume the current paused process",
+            bindKey: {mac: "F8", win: "F8"},
+            exec: function(){
+                self.dbg && dbg.continueScript();
+            }
+        });
+        commands.addCommand({
+            name: "stepinto",
+            hint: "step into the function that is next on the execution stack",
+            bindKey: {mac: "F11", win: "F11"},
+            exec: function(){
+                self.dbg && dbg.stepInto();
+            }
+        });
+        commands.addCommand({
+            name: "stepover",
+            hint: "step over the current expression on the execution stack",
+            bindKey: {mac: "F10", win: "F10"},
+            exec: function(){
+                self.dbg && dbg.stepNext();
+            }
+        });
+        commands.addCommand({
+            name: "stepout",
+            hint: "step out of the current function scope",
+            bindKey: {mac: "Shift-F11", win: "Shift-F11"},
+            exec: function(){
+                self.dbg && dbg.stepOut();
+            }
+        });
 
         ide.addEventListener("consolecommand.debug", function(e) {
             ide.send({
@@ -52,7 +80,7 @@ module.exports = ext.register("ext/debugger/debugger", {
             return false;
         });
 
-        ide.addEventListener("loadsettings", function (e) {
+        ide.addEventListener("settings.load", function (e) {
             // restore the breakpoints from the IDE settings
             var bpFromIde = e.model.data.selectSingleNode("//breakpoints");
             // not there yet, create element
@@ -222,15 +250,6 @@ module.exports = ext.register("ext/debugger/debugger", {
             e.data && _self.showDebugFile(e.data.getAttribute("scriptid"));
         });
 
-        pgDebugNav.addEventListener("afterrender", function(){
-            _self.hotitems["resume"]   = [btnResume];
-            _self.hotitems["stepinto"] = [btnStepInto];
-            _self.hotitems["stepover"] = [btnStepOver];
-            _self.hotitems["stepout"]  = [btnStepOut];
-
-            require("ext/keybindings/keybindings").update(_self);
-        });
-
         dbgBreakpoints.addEventListener("afterrender", function(){
             lstBreakpoints.addEventListener("afterselect", function(e) {
                 if (e.selected && e.selected.getAttribute("scriptid"))
@@ -278,7 +297,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         var file = fs.model.queryNode("//file[@scriptid='" + scriptId + "']");
 
         // check prerequisites
-        if (self.ceEditor && !ceEditor.$updateMarkerPrerequisite()) {
+        if (editors.currentEditor && !editors.currentEditor.amlEditor.$updateMarkerPrerequisite()) {
             return;
         }
 
@@ -409,6 +428,9 @@ module.exports = ext.register("ext/debugger/debugger", {
     },
 
     destroy : function(){
+        commands.removeCommandsByName(
+            ["resume", "stepinto", "stepover", "stepout"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
             dock.unregisterPage(item);
