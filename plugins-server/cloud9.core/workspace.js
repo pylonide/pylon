@@ -49,7 +49,8 @@ var Workspace = module.exports = function(ide) {
             this.send({
                 type: "result",
                 subtype: "info",
-                body:  "Command '" + message.command + "' was not recognized"
+                body: "Command '" + message.command + "' was not recognized",
+                extra: message.extra
             }, message);
         }
     };

@@ -15,6 +15,8 @@ var editors = require("ext/editors/editors");
 var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
 var markup = require("text!ext/quicksearch/quicksearch.xml");
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 
 var oIter, oTotal;
 
@@ -33,21 +35,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         "icon-path" : ide.staticPrefix + "/ext/quicksearch/icons/"
     },
     markup  : markup,
-    commands : {
-        "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},
-        "find": {hint: "open the quicksearch dialog to quickly search for a phrase"},
-        "findnext": {
-            hint: "search for the next occurrence of the search query your entered last",
-            msg: "Navigating to next match."
-        },
-        "findprevious": {
-            hint: "search for the previous occurrence of the search query your entered last",
-            msg: "Navigating to previous match."
-        }
-    },
     defaultOffset : 30,
     offsetWidth : 30,
-    hotitems: {},
 
     nodes   : [],
 
@@ -55,8 +44,19 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     hook : function(){
         var _self = this;
-        code.commandManager.addCommand({
+        
+        commands.commands["findnext"].hint = "search for the next occurrence of the search query your entered last";
+        commands.commands["findnext"].msg = "Navigating to next match.";
+        commands.commands["findprevious"].hint = "search for the previous occurrence of the search query your entered last";
+        commands.commands["findprevious"].msg = "Navigating to previous match.";
+        
+        commands.addCommand({
             name: "find",
+            hint: "open the quicksearch dialog to quickly search for a phrase",
+            bindKey: {mac: "Command-F", win: "Ctrl-F"},
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function(env, args, request) {
                 _self.toggleDialog(1);
             }
@@ -79,10 +79,28 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
             _self.updateBarPosition();
         });
+        
+        this.nodes.push(
+            menus.addItemByPath("Find/~", new apf.divider(), 1000),
+
+            menus.addItemByPath("Find/Quick Find", new apf.item({
+                command : "find"
+            }), 1100)
+        );
     },
 
     init : function(){
         var _self = this;
+        
+        var isAvailable = commands.commands["findnext"].isAvailable;
+        
+        commands.commands["findnext"].isAvailable =
+        commands.commands["findprevious"].isAvailable = function(editor){
+            if (apf.activeElement == txtQuickSearch)
+                return true;
+            
+            return isAvailable.apply(this, arguments);
+        }
 
         txtQuickSearch.addEventListener("clear", function() {
             _self.execSearch(false, false, true);
@@ -126,30 +144,14 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (ace.getSession().getDocument().getLength() > MAX_LINES)
                 return;
 
-            switch (e.keyCode) {
-                case 8: // Backspace is handled in "keyup", else isCharacter steals it
-                    return;
-                default:
-                    if (apf.isCharacter(e.keyCode) && !e.metaKey) {
-                        setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
-                            _self.execSearch(false, false);
-                        }, 20);
-                    }
-                    break;
+            if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
+                clearTimeout(this.$timer);
+                this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
+                    _self.execSearch(false, false, e.keyCode == 8);
+                }, 20);
             }
 
             return;
-        });
-
-        txtQuickSearch.addEventListener("keyup", function(e) {
-            var ace = _self.$getAce();
-            switch (e.keyCode) {
-                case 8: // Backspace
-                    var ace = _self.$getAce();
-                    if (ace.getSession().getDocument().getLength() < MAX_LINES)
-                        _self.execSearch(false, !!e.shiftKey, true);
-                    return false;
-            }
         });
 
         winQuickSearch.addEventListener("blur", function(e){
@@ -278,12 +280,17 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         if (!editorPage) return;
 
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
+            
+        editor.amlEditor.parentNode.appendChild(winQuickSearch);
 
         var _self = this;
 
         if (!force && !winQuickSearch.visible || force > 0) {
+            if (winQuickSearch.visible)
+                return;
+            
             this.position = -1;
 
             if (this.control && this.control.stop)
@@ -293,36 +300,54 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var doc   = editor.getDocument();
             var range = sel.getRange();
             var value = doc.getTextRange(range);
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
+                anim: "out"
+            });
 
-            if (!value && editor.ceEditor)
-               value = editor.ceEditor.getLastSearchOptions().needle;
+            if (!value && editor.amlEditor)
+                value = editor.amlEditor.getLastSearchOptions().needle;
 
             if (value)
                 txtQuickSearch.setValue(value);
 
             ide.dispatchEvent("closepopup", {element: this});
 
-            winQuickSearch.$ext.style.top = "-30px";
+            winQuickSearch.$ext.style.top = "-27px";
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
+            
+            if (corrected) {
+                if (typeof corrected.right != "undefined")
+                    winQuickSearch.$ext.style.right = corrected.right + "px";
+                winQuickSearch.$ext.style.zIndex = corrected.zIndex || winQuickSearch.zindex;
+            }
+            else {
+                winQuickSearch.$ext.style.zIndex = winQuickSearch.zindex;
+            }
 
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
                 anim     : apf.tween.easeInOutCubic,
-                from     : -27,
-                to       : 2,
+                from     : corrected ? corrected.from : -27,
+                to       : corrected ? corrected.to : 6,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {}),
                 onfinish : function() {
                     divSearchCount.$ext.style.visibility = "";
                     _self.updateCounter();
+                    if (corrected && corrected.onfinish)
+                        corrected.onfinish();
                 }
             });
         }
         else if (winQuickSearch.visible) {
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
+                anim: "in"
+            });
+            
             if (this.control && this.control.stop)
                 this.control.stop();
 
@@ -339,7 +364,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     type     : "top",
                     anim     : apf.tween.NORMAL,
                     from     : winQuickSearch.$ext.offsetTop,
-                    to       : -30,
+                    to       : corrected ? corrected.to : -30,
                     steps    : 8,
                     interval : 10,
                     control  : (this.control = {}),
@@ -424,7 +449,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         if (close) {
             winQuickSearch.hide();
-            editors.currentEditor.ceEditor.focus();
+            editors.currentEditor.amlEditor.focus();
         }
 
         this.updateCounter(backwards);
@@ -482,11 +507,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     $getAce: function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
-        return ceEditor.$editor;
+        var amlEditor = editor.amlEditor;
+        return amlEditor.$editor;
     },
 
     enable : function(){
@@ -502,6 +527,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("find");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

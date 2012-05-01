@@ -14,6 +14,7 @@ var template = require("simple-template");
 var Workspace = require("./workspace");
 var EventEmitter = require("events").EventEmitter;
 var c9util = require("./util");
+var Path = require("path");
 
 var Ide = module.exports = function(options) {
     EventEmitter.call(this);
@@ -27,7 +28,9 @@ var Ide = module.exports = function(options) {
     var staticUrl = options.staticUrl || "/static";
 
     this.workspaceDir = options.workspaceDir;
-
+    
+    options.plugins = options.plugins || [];
+    
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
@@ -37,12 +40,13 @@ var Ide = module.exports = function(options) {
         debug: options.debug === true,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId,
-        plugins: options.plugins || [],
+        plugins: options.plugins.length > 0 ? options.plugins : (options.real ? [ "build/packed" ] : []),
         bundledPlugins: options.bundledPlugins || [],
         requirejsConfig: options.requirejsConfig,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
-        extra: options.extra
+        extra: options.extra,
+        real: options.real
     };
 
     this.$users = {};
@@ -79,7 +83,9 @@ util.inherits(Ide, EventEmitter);
 
     this.$serveIndex = function(req, res, next) {
         var plugin, _self = this;
-        fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
+        var indexFile =  _self.options.real === true ? "ide.tmpl.packed.html" : "ide.tmpl.html";
+        
+        fs.readFile(Path.join(__dirname, "/view/", indexFile), "utf8", function(err, index) {
             if (err)
                 return next(err);
 
@@ -104,7 +110,9 @@ util.inherits(Ide, EventEmitter);
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
-            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="' + staticUrl + '/ace/build/ace.js"></script>\n';
+            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
+                + staticUrl + '/ace/build/src/ace'
+                + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,
@@ -119,7 +127,7 @@ util.inherits(Ide, EventEmitter);
                 readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
-                scripts: _self.options.debug ? "" : aceScripts,
+                scripts:  scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version
             };

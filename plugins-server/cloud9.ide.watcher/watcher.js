@@ -4,20 +4,19 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
 "use strict";
 
 var fs = require("fs");
 var util = require("util");
-var async   = require("asyncjs");
 var Plugin = require("../cloud9.core/plugin");
+var async = require("asyncjs");
 
 var name = "watcher";
 var DAV;
 
-module.exports = function setup(options, imports, register) {
+module.exports = function setup(options, imports, register) {	
     DAV = imports.dav.getServer();
-    imports.ide.register(name, WatcherPlugin, register);
+    imports.ide.register(name, WatcherPlugin, register);	
 };
 
 var IGNORE_TIMEOUT = 50,
@@ -64,15 +63,11 @@ util.inherits(WatcherPlugin, Plugin);
     this.command = function(user, message, client) {
         var that, subtype, files;
 
-        if (!message || message.command != "watcher")
+        if (!message || message.command !== "watcher")
             return false;
 
-        var command = message.command;
         var path = message.path;
         var type = message.type;
-
-        if (command != "watcher")
-            return false;
 
         path = this.basePath + (path ? "/" + path : "");
 
@@ -93,6 +88,7 @@ util.inherits(WatcherPlugin, Plugin);
                             }, IGNORE_TIMEOUT);
                             return;
                         }
+                        
                         if (curr.nlink == 1 && prev.nlink == 0)
                             subtype = "create";
                         else if (curr.nlink == 0 && prev.nlink == 1)
@@ -101,6 +97,7 @@ util.inherits(WatcherPlugin, Plugin);
                             subtype = "change";
                         else
                             return;
+                            
                         if (curr.isDirectory()) {
                             files = {};
 

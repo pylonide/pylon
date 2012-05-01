@@ -118,7 +118,8 @@ module.exports = {
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
-                    "ext/language/liveinspect"
+                    "ext/language/liveinspect",
+                    "ext/tooltip/tooltip"
                     //"ext/revisions/revisions"
                     //"ext/minimap/minimap"
                     //"ext/acebugs/acebugs"

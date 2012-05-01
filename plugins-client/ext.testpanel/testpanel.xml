@@ -38,10 +38,8 @@
         </a:bar>
       
         <a:button
-          top="-22"
           skin="header-btn"
-          right="5"
-          icon="panel_settings.png"
+          class="panel-settings"
           submenu = "mnuFilter" />
         <a:menu id="mnuFilter">
             <a:item type="radio" value="all" selected="true">All</a:item>

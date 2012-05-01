@@ -10,6 +10,8 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var settings = require("core/settings");
 var skin = require("text!ext/gotoline/skin.xml");
@@ -26,37 +28,34 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         "media-path" : ide.staticPrefix + "/ext/gotoline/images/"
     },
     markup  : markup,
-    commands : {
-        "gotoline": {hint: "enter a linenumber and jump to it in the active document"}
-    },
-    hotitems: {},
 
     nodes   : [],
 
     hook : function(){
         var _self = this;
+        
         this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Go to Line...",
-                onclick : function(){
-                    _self.gotoline();
-                }
-            }))
+            menus.addItemByPath("Goto/Goto Line...", new apf.item({
+                caption : "Goto Line...",
+                hint: "enter a linenumber and jump to it in the active document",
+                command : "gotoline"
+            }), 200)
         );
 
         ide.addEventListener("gotoline", function() {
             _self.gotoline();
         });
 
-        code.commandManager.addCommand({
+        commands.addCommand({
             name: "gotoline",
+            bindKey: {mac: "Command-L", win: "Ctrl-G"},
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function() {
                 _self.gotoline();
             }
         });
-
-        this.hotitems.gotoline = [this.nodes[1]];
     },
 
     init : function() {
@@ -121,12 +120,14 @@ module.exports = ext.register("ext/gotoline/gotoline", {
                     lstLineNumber.focus();
                 }
             }
-            else if (!e.ctrlKey && !e.metaKey && (e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
+            else if ((e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
                 return false;
-
-            setTimeout(function(){
-                _self.execGotoLine(null, true);
-            });
+            
+            if (!e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
+                setTimeout(function(){
+                    _self.execGotoLine(null, true);
+                });
+            }
         });
 
         winGotoLine.addEventListener("blur", function(e){
@@ -157,7 +158,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var maxTop = aceHtml.offsetHeight - 100;
 
         editor.ceEditor.parentNode.appendChild(winGotoLine);
-        winGotoLine.setAttribute("top", Math.min(maxTop, pos.pageY - epos[1] - 5));
+        winGotoLine.setAttribute("top", Math.max(0, Math.min(maxTop, pos.pageY - epos[1] - 5)));
         winGotoLine.setAttribute("left", -60);
 
         winGotoLine.show();
@@ -201,7 +202,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             return;
 
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
         if (!winGotoLine.visible)
@@ -213,19 +214,19 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     },
 
     execGotoLine: function(line, preview) {
-        var editor = require('ext/editors/editors').currentEditor;
-        if (!editor || !editor.ceEditor)
+        var editor = editors.currentEditor;
+        if (!editor || !editor.amlEditor)
             return;
-        
-        var ceEditor = editor.ceEditor;
-        var ace      = ceEditor.$editor;
+
+        var amlEditor = editor.amlEditor;
+        var ace       = amlEditor.$editor;
 
         if (typeof line != "number")
             line = parseInt(txtLineNr.getValue(), 10) || 0;
 
         ace.gotoLine(line);
         
-        if (preview) {
+        if (typeof preview != "undefined") {
             var animate = apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
             if (!animate)
                 return;
@@ -242,19 +243,23 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             var maxTop = aceHtml.offsetHeight - winGotoLine.getHeight() - 10;
             
             var top;
+            //First part of doc
             if (pos.pageY - firstLine < half) {
                 top = Math.max(0, pos.pageY - firstLine - 5);
             }
+            //Last part of doc
             else if (lastLine - pos.pageY < half) {
                 top = Math.min(maxTop, half + (half - (lastLine - pos.pageY)));
             }
+            //Already visible
             else if (ace.isRowFullyVisible(cursor.row)) {
                 //Determine the position of the window
                 var epos = apf.getAbsolutePosition(aceHtml);
                 top = Math.min(maxTop, pos.pageY - epos[1] - 5);
             }
+            //General case (centered)
             else {
-                top = half - 5 - lineHeight;
+                top = half - 5;// - lineHeight;
             }
 
             if (this.lineControl)
@@ -286,7 +291,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             if (lineEl != gotoline.firstChild)
                 apf.xmldb.appendChild(gotoline, lineEl, gotoline.firstChild);
                 
-            ceEditor.focus();
+            amlEditor.focus();
         }
     },
 
@@ -303,6 +308,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("gotoline");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

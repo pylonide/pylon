@@ -30,19 +30,14 @@ define(function(require, exports, module) {
         this.offlineFileSystemSupport = false;
 
         this.dispatchEvent("load");
-
-        /**** Error Handling ****/
-
-        //Catch all unhandled errors
-        var loc = location.href;
+        
+       var loc = location.href;
         if (
-            location.protocol != "file:"
-            && loc.indexOf("dev") == -1
-            && (loc.indexOf("cloud9ide.com") > -1 || loc.indexOf("c9.io") > -1))
+            location.protocol !== "file:"
+            && loc.indexOf("dev") === -1
+            && (loc.indexOf("c9.io") > -1))
         {
-            /*window.onerror = function(m, u, l) {
-                if (window.console)
-                    console.log("An error occurred, the Cloud9 system admin has been notified.");
+            window.onerror = function(m, u, l) {
                 apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
@@ -53,11 +48,10 @@ define(function(require, exports, module) {
                         workspaceId : ide.workspaceId
                     })
                 });
-                return true;
-            };*/
-
+            };
+    
             //Catch all APF Routed errors
-            /*apf.addEventListener("error", function(e){
+            apf.addEventListener("error", function(e){
                 apf.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
@@ -72,14 +66,6 @@ define(function(require, exports, module) {
                         workspaceId : ide.workspaceId
                     })
                 });
-            });*/
-        }
-        else {
-//                window.onerror = function(m, u, l) {
-//                    window.console && console.error("An error occurred", m, u, l);
-//                }
-            apf.addEventListener("error", function(e){
-                window.console && console.error("An APF error occurred", e);
             });
         }
     };
@@ -251,7 +237,13 @@ define(function(require, exports, module) {
         if (!page)
             return null;
 
-        return page.$model.data;
+        var corrected = this.dispatchEvent("activepagemodel", {
+            model: page.$model
+        });
+        
+        return corrected && corrected.data 
+            ? corrected.data 
+            : page.$model.data;
     };
 
     ide.getAllPageModels = function() {

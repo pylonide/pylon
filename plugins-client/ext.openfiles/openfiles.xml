@@ -12,10 +12,8 @@
       buttons  = "close"
       optimize = "true">
         <a:button
-          top="-22"
           skin="header-btn"
-          right="5"
-          icon="panel_settings.png"
+          class="panel-settings"
           submenu="mnuOpenFilesSettings"/>
         
         <a:menu id="mnuOpenFilesSettings">
@@ -40,6 +38,7 @@
           model       = "{require('ext/openfiles/openfiles').model}"
           border      = "0"
           scrollbar   = "sbShared 2 2 2"
+          class       = "openfile"
           multiselect = "true" 
           autoselect  = "false"
           skin        = "tree">

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var language = require("ext/language/language");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/codecomplete/codecomplete", {
     name    : "Code Complete",
@@ -25,12 +26,21 @@ module.exports = ext.register("ext/codecomplete/codecomplete", {
     },
 
     enable : function() {
+        this.nodes.each(function(item){
+            item.enable();
+        });
     },
 
     disable : function() {
+        this.nodes.each(function(item){
+            item.disable();
+        });
     },
 
     destroy : function() {
+        this.nodes.each(function(item){
+            item.destroy(true, true);
+        });
     }
 });
 

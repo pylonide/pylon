@@ -8,6 +8,7 @@ define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
+var Editors = require("ext/editors/editors");
 
 module.exports = {
 
@@ -85,7 +86,7 @@ module.exports = {
      */
     disableMarkerType: function(type) {
         this.disabledMarkerTypes[type] = true;
-        var session = ceEditor.$editor.session;
+        var session = Editors.currentEditor.amlEditor.$editor.session;
         var markers = session.getMarkers(false);
         for (var id in markers) {
             // All language analysis' markers are prefixed with language_highlight
@@ -166,6 +167,9 @@ module.exports = {
         }
         if (foundOne)
             session._dispatchEvent("changeBackMarker");
+    },
+    
+    destroy : function(){
     }
 };
 

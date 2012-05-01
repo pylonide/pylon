@@ -1,44 +1,45 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:codeeditor id="ceEditor"
       flex              = "1"
-      anchors           = "2 0 0 0"
-      visible           = "false"
-      syntax            = "{require('ext/code/code').getSyntax(%[.])}"
-      theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
-      overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
-      folding           = "[{require('ext/settings/settings').model}::editors/code/@folding]"
-      behaviors         = "[{require('ext/settings/settings').model}::editors/code/@behaviors]"
-      selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
-      activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
-      showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-      showprintmargin   = "[{require('ext/settings/settings').model}::editors/code/@showprintmargin]"
-      printmargincolumn = "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]"
-      softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
-      tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
-      scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-      newlinemode       = "[{require('ext/settings/settings').model}::editors/code/@newlinemode]"
-      animatedscroll    = "[{require('ext/settings/settings').model}::editors/code/@animatedscroll]"
-      fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
-      wrapmode          = "[{require('ext/settings/settings').model}::editors/code/@wrapmode]"
-      wrapmodeViewport  = "[{require('ext/settings/settings').model}::editors/code/@wrapmodeViewport]"
+      anchors           = "6 0 0 0"
+      theme             = "[{require('core/settings').model}::editors/code/@theme]"
+      overwrite         = "[{require('core/settings').model}::editors/code/@overwrite]"
+      folding           = "[{require('core/settings').model}::editors/code/@folding]"
+      behaviors         = "[{require('core/settings').model}::editors/code/@behaviors]"
+      selectstyle       = "[{require('core/settings').model}::editors/code/@selectstyle]"
+      activeline        = "[{require('core/settings').model}::editors/code/@activeline]"
+      gutterline        = "[{require('core/settings').model}::editors/code/@gutterline]"
+      showinvisibles    = "[{require('core/settings').model}::editors/code/@showinvisibles]"
+      showprintmargin   = "[{require('core/settings').model}::editors/code/@showprintmargin]"
+      printmargincolumn = "[{require('core/settings').model}::editors/code/@printmargincolumn]"
+      softtabs          = "[{require('core/settings').model}::editors/code/@softtabs]"
+      tabsize           = "[{require('core/settings').model}::editors/code/@tabsize]"
+      scrollspeed       = "[{require('core/settings').model}::editors/code/@scrollspeed]"
+      newlinemode       = "[{require('core/settings').model}::editors/code/@newlinemode]"
+      animatedscroll    = "[{require('core/settings').model}::editors/code/@animatedscroll]"
+      fontsize          = "[{require('core/settings').model}::editors/code/@fontsize]"
+      wrapmode          = "[{require('core/settings').model}::editors/code/@wrapmode]"
+      wrapmodeViewport  = "[{require('core/settings').model}::editors/code/@wrapmodeViewport]"
       wraplimitmin      = "40"
       wraplimitmax      = "80"
-      gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
-      highlightselectedword = "[{require('ext/settings/settings').model}::editors/code/@highlightselectedword]"
-      autohidehorscrollbar  = "[{require('ext/settings/settings').model}::editors/code/@autohidehorscrollbar]"
+      gutter            = "[{require('core/settings').model}::editors/code/@gutter]"
+      highlightselectedword = "[{require('core/settings').model}::editors/code/@highlightselectedword]"
+      autohidehorscrollbar  = "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]"
+      fadefoldwidgets   = "[{require('core/settings').model}::editors/code/@fadefoldwidgets]"
 
       contextmenu       = "mnuCtxEditor"
+      globalcommands    = "true"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
       readonly          = "{[@loading] || cloud9config.readonly || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 
-    <a:menu id="mnuCtxEditor" render="runtime" onfocus="require('ext/clipboard/clipboard').keepRange()" ondisplay="require('ext/clipboard/clipboard').showRange()">
-        <a:item onclick="tabEditors.getPage().$at.undo()">Undo</a:item>
-        <a:item onclick="tabEditors.getPage().$at.redo()">Redo</a:item>
+    <a:menu id="mnuCtxEditor" render="runtime">
+        <a:item command="undo">Undo</a:item>
+        <a:item command="redo">Redo</a:item>
         <a:divider />
-        <a:item onclick="{require('ext/clipboard/clipboard').cut()}">Cut</a:item>
-        <a:item onclick="{require('ext/clipboard/clipboard').copy()}">Copy</a:item>
-        <a:item onclick="{require('ext/clipboard/clipboard').paste()}">Paste</a:item>
+        <a:item command="cut">Cut</a:item>
+        <a:item command="copy">Copy</a:item>
+        <a:item command="paste">Paste</a:item>
         <a:divider />
         <a:item 
           visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"
@@ -46,7 +47,7 @@
             require('ext/quickwatch/quickwatch').toggleDialog(1, true);
           ">Quick Watch</a:item>
         <a:divider visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}" />
-        <a:item onclick="ceEditor.$editor.getSelection().selectAll()">Select All</a:item>
+        <a:item command="selectall">Select All</a:item>
     </a:menu>
 
     <a:menu id="mnuSyntax">
@@ -78,5 +79,6 @@
         <a:item type="radio" value="text/x-web-textile">Textile</a:item>
         <a:item type="radio" value="text/html">(X)HTML</a:item>
         <a:item type="radio" value="application/xml">XML</a:item>
+>>>>>>> 9423a6f57ad85cb2c40d03eb764434c60406a0ae
     </a:menu>
 </a:application>

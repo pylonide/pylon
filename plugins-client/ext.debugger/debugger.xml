@@ -5,30 +5,30 @@
                 <div class="expand-panel-bg"></div>
                 <a:button id="btnResume" tooltip="Resume"
                   icon     = "play.png"
-                  onclick  = "dbg.continueScript();"
+                  command  = "resume"
                   skin     = "c9-sidepanelsbutton"
-                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button  tooltip="Suspend"
                   skin     = "c9-sidepanelsbutton"
                   icon     = "pause.png"
                   onclick  = "dbg.suspend();"
-                  disabled = "{!stDebugProcessRunning.active || !stRunning.active}"/>
+                  disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
                 <a:divider skin="c9-divider" />
                 <a:button id="btnStepOver" tooltip="Step Over"
                   icon     = "step.png"
                   skin     = "c9-sidepanelsbutton"
-                  onclick  = "dbg.stepNext();"
-                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
+                  command  = "stepover"
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button id="btnStepInto" tooltip="Step Into"
                   icon     = "stepinto.png" 
                   skin     = "c9-sidepanelsbutton"
-                  onclick  = "dbg.stepInto();" 
-                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
+                  command  = "stepinto" 
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button id="btnStepOut" tooltip="Step Out"
                   icon     = "stepback.png" 
                   skin     = "c9-sidepanelsbutton"
-                  onclick  = "dbg.stepOut();"
-                  disabled = "{!stDebugProcessRunning.active || stRunning.active}" />
+                  command  = "stepout"
+                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
             </a:hbox>
         </a:page>
     </a:tab>
