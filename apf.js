@@ -425,6 +425,7 @@
         apf.hasContentEditableContainerBug = apf.isWebkit;
         // Try transform first for forward compatibility
         var props   = ["transform", "OTransform", "KhtmlTransform", "MozTransform", "WebkitTransform"],
+            props2  = ["transition", "OTransition", "KhtmlTransition", "MozTransition", "WebkitTransition"],
             prefixR = ["", "O", "Khtml", "Moz", "Webkit"],
             prefixC = ["", "o-", "khtml-", "moz-", "webkit-"],
             events  = ["transitionend", "transitionend", "transitionend", "transitionend", "webkitTransitionEnd"],
@@ -435,6 +436,7 @@
         for (; i < l && !this.supportCSSAnim; ++i) {
             if (typeof t.style[props[i]] == "undefined") continue;
             this.supportCSSAnim     = props[i];
+            this.supportCSSTransition = props2[i];
             this.runtimeStylePrefix = prefixR[i];
             this.classNamePrefix    = prefixC[i];
             this.cssAnimEvent       = events[i];

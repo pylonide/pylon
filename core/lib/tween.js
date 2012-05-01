@@ -347,7 +347,7 @@ var ID        = "id",
                 oHtml.style.position = "relative";
         } catch(e){}
         
-        var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
+        var useCSSAnim  = (false && apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
             isTransform = (info.type == TRANSFORM);
 
         info.method = useCSSAnim ? info.type : isTransform
@@ -510,7 +510,7 @@ var ID        = "id",
         }
 
         var animCSS, isTransform,
-            useCSSAnim  = apf.supportCSSAnim && apf.supportCSSTransition,
+            useCSSAnim  = false && apf.supportCSSAnim && apf.supportCSSTransition,
             hasCSSAnims = false,
             cssDuration = ((info.steps * info.interval) / 1000),
             cssAnim     = CSSTIMING[info.anim || 0],
