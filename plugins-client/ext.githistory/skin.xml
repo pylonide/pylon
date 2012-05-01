@@ -1,0 +1,322 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml">
+    <a:button name="revisionsbutton">
+        <a:style><![CDATA[
+            .revisions_btn {
+                height             : 27px;
+                overflow           : hidden;
+                cursor             : default;
+                position           : relative;
+                -moz-user-select   : none;
+                -khtml-user-select : none;
+                user-select        : none;
+                line-height        : 17px;
+            }
+
+            .revisions_btn .lbl {
+                height              : 23px;
+                padding             : 4px 8px 0 8px;
+                margin              : 0 4px;
+                white-space         : nowrap;
+                overflow            : hidden;
+                -moz-border-radius  : 3px;
+                border-radius       : 3px;
+                background: #fafafa;
+                background: -moz-linear-gradient(top,  #fafafa 0%, #e6e6e6 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fafafa), color-stop(100%,#e6e6e6));
+                background: -webkit-linear-gradient(top,  #fafafa 0%,#e6e6e6 100%);
+                background: -o-linear-gradient(top,  #fafafa 0%,#e6e6e6 100%);
+                background: -ms-linear-gradient(top,  #fafafa 0%,#e6e6e6 100%);
+                background: linear-gradient(top,  #fafafa 0%,#e6e6e6 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#e6e6e6',GradientType=0 );
+                position            : relative;
+                text-align          : center;
+                color               : #474747;
+                text-shadow         : rgba(255, 255, 255, .71) 0px 1px 0px;
+                font-family         : Arial;
+                font-size           : 14px;
+                font-weight         : bold;
+            }
+            
+            .revisions_btnOver .lbl {
+                background: #fdfdfd;
+                background: -moz-linear-gradient(top,  #fdfdfd 0%, #f6f6f6 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fdfdfd), color-stop(100%,#f6f6f6));
+                background: -webkit-linear-gradient(top,  #fdfdfd 0%,#f6f6f6 100%);
+                background: -o-linear-gradient(top,  #fdfdfd 0%,#f6f6f6 100%);
+                background: -ms-linear-gradient(top,  #fdfdfd 0%,#f6f6f6 100%);
+                background: linear-gradient(top,  #fdfdfd 0%,#f6f6f6 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#f6f6f6',GradientType=0 );
+
+            }
+            .revisions_btnDown .lbl {
+                background: #e6e6e6;
+                background: -moz-linear-gradient(top,  #e6e6e6 0%, #f7f7f7 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#e6e6e6), color-stop(100%,#f7f7f7));
+                background: -webkit-linear-gradient(top,  #e6e6e6 0%,#f7f7f7 100%);
+                background: -o-linear-gradient(top,  #e6e6e6 0%,#f7f7f7 100%);
+                background: -ms-linear-gradient(top,  #e6e6e6 0%,#f7f7f7 100%);
+                background: linear-gradient(top,  #e6e6e6 0%,#f7f7f7 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e6e6e6', endColorstr='#f7f7f7',GradientType=0 );
+            }
+
+            /* Additional styles - RED */
+            .revisions_btn.ui-btn-red .lbl {
+                color            : white;
+                text-shadow      : rgba(209, 2, 0, .71) 0px 1px 0px;
+                background: #fa1511;
+                background: -moz-linear-gradient(top,  #fa1511 0%, #ce000b 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fa1511), color-stop(100%,#ce000b));
+                background: -webkit-linear-gradient(top,  #fa1511 0%,#ce000b 100%);
+                background: -o-linear-gradient(top,  #fa1511 0%,#ce000b 100%);
+                background: -ms-linear-gradient(top,  #fa1511 0%,#ce000b 100%);
+                background: linear-gradient(top,  #fa1511 0%,#ce000b 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fa1511', endColorstr='#ce000b',GradientType=0 );
+            }
+
+            .revisions_btn.ui-btn-red.revisions_btnOver .lbl {
+                background: #fc5244;
+                background: -moz-linear-gradient(top,  #fc5244 0%, #da4042 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fc5244), color-stop(100%,#da4042));
+                background: -webkit-linear-gradient(top,  #fc5244 0%,#da4042 100%);
+                background: -o-linear-gradient(top,  #fc5244 0%,#da4042 100%);
+                background: -ms-linear-gradient(top,  #fc5244 0%,#da4042 100%);
+                background: linear-gradient(top,  #fc5244 0%,#da4042 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fc5244', endColorstr='#da4042',GradientType=0 );
+            }
+
+            .revisions_btnDown.ui-btn-red .lbl {
+                background: #cd000b;
+                background: -moz-linear-gradient(top,  #cd000b 0%, #fb1511 100%);
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cd000b), color-stop(100%,#fb1511));
+                background: -webkit-linear-gradient(top,  #cd000b 0%,#fb1511 100%);
+                background: -o-linear-gradient(top,  #cd000b 0%,#fb1511 100%);
+                background: -ms-linear-gradient(top,  #cd000b 0%,#fb1511 100%);
+                background: linear-gradient(top,  #cd000b 0%,#fb1511 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cd000b', endColorstr='#fb1511',GradientType=0 );
+            }
+
+            .revisions_btnDisabled.ui-btn-red .lbl {
+                color               : #bd0502;
+                text-shadow         : rgba(255, 255, 255, .31) 0px 1px 0px;
+            }
+
+            .revisions_btnDisabled {
+                cursor: default;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+            .revisions_btn .lbl {
+                margin  : 0;
+                height  : 22px;
+                padding : 5px 8px 0 8px;
+            }
+
+            .revisions_btnIcon .lbl {
+                overflow : hidden;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isIE"><![CDATA[
+            .revisions_btn .lbl {
+                line-height : 19px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption="div[1]/text()" label="div[1]/text()" background="." icon="div[1]/span" minwidth="30">
+                <div class="revisions_btn">
+                    <div class="lbl">-
+                        <span/>
+                        <div class="btnArrow"> </div>
+                    </div>
+
+                 </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+    <a:menu name="commitsmenu">
+        <a:style><![CDATA[
+            .commitmenu {
+                margin: -1px 0 0 0;
+                padding: 3px 0 3px 0;
+                z-index: 10000;
+                position: absolute;
+                overflow-y: auto;
+    
+                font-family   : Tahoma, Arial;
+                font-size     : 11px;
+                line-height   : 14px;
+                color         : #f1f1f1;
+                cursor:default;
+    
+                display : none;
+                border:1px solid rgba(255, 255, 255, 0.1);
+    
+                -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+                -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+                box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
+    
+                background-color   : #1c1c1c;
+                filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
+                -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
+                background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
+                background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
+            }
+    
+            .commitmenu>div.menu_item{
+                padding: 3px 16px 5px 23px;
+                white-space: nowrap;
+                cursor : default;
+                z-index:1100000;
+            }
+            .commitmenu>div.menu_item{
+                height: 13px;
+            }
+            .commitmenu>div.menu_item.hover {
+                background-color : #393939;
+            }
+    
+            .commitmenu>div.menu_divider{
+                overflow: visible;
+                padding: 0;
+                font-size: 1px;
+    
+                margin:2px 3px;
+                border-top:1px solid #000000;
+                border-bottom:1px solid #313131;
+            }
+    
+            .commitmenu>div.menu_divider{
+                height: 0;
+            }
+    
+            .commitmenu>div.menu_item>span{
+                right: 15px;
+                margin-top: 0px;
+                z-index: 10;
+                text-align: right;
+                padding-left: 15px;
+                /*margin-right: -15px;
+                position : absolute;*/
+                float : right;
+            }
+    
+            .commitmenu>div.submenu>span{
+                background: url(images/submenu_arrow.gif) no-repeat right -15px;
+                width: 4px;
+                height: 7px;
+                display: block;
+                position: absolute;
+                right: 8px;
+                margin: 4px 0 0 0;
+                z-index: 10;
+            }
+    
+            .commitmenu>div.menu_item.hover>span{
+                background-position : right -15px;
+            }
+    
+            .commitmenu>div.menu_item.disabled{
+                color: gray;
+                /*text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;*/
+            }
+            .commitmenu>div.menu_item.disabled>span{
+                display : none;
+            }
+    
+            .commitmenu>div.menu_item>u{
+                width: 16px;
+                height: 16px;
+                position: absolute;
+                left: 3px;
+                margin-top : -1px;
+            }
+    
+            .commitmenu>div.menu_item.selected>u{
+                background-image: url(images/radio.gif);
+                background-repeat: no-repeat;
+                background-position: 0 -16px;
+            }
+    
+            .commitmenu>div.menu_item.checked>u{
+                background-image: url(images/check.gif);
+                background-repeat: no-repeat;
+                background-position: 0 -16px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container="." overlay="strong">
+                <blockquote class='commitmenu'>
+    
+                </blockquote>
+            </a:main>
+            <a:item caption="text()" icon="u" hotkey="span" inherit="true">
+                <div class="menu_item"><span> </span><u> </u>-</div>
+            </a:item>
+            <a:divider inherit="true">
+                <div class='menu_divider'></div>
+            </a:divider>
+        </a:presentation>
+    </a:menu>
+    <a:list name="commitlist">
+        <a:style><![CDATA[
+            .commitlist{
+                overflow: auto;
+                position: relative;
+                background-color: #fff;
+                color: #000;
+                margin: 0;
+                outline: none;
+                font-family: Tahoma, Arial;
+                font-size: 12px;
+                cursor: default;
+            }
+            .commitlist p {
+                margin: 2px 0;
+            }
+            .commitlist > div.empty.message {
+                border: none;
+                font-size: 13px;
+                color: #666;
+                padding-top: 20px;
+            }
+            .commitlist > div.empty.message:hover {
+                background: none;
+            }
+            .commitlist > div:hover, .commitlist > div.odd:hover {
+                background-color: #ffc; /*#e7e7e7;*/
+            }
+            .commitlist > .selected, .commitlist > div.selected:hover{
+                background-color: #e0e0e0;
+            }
+            .commitlistFocus > .selected{
+                
+            }
+            .commitlist .empty, .commitlist .offline, .commitlist .loading{
+                text-align: center;
+                padding: 8px 0 0 0;
+                color: #777;
+                font-size : 8pt;
+                font-weight : normal;
+            }
+            .commitlist > div {
+                padding: 6px 12px;
+                line-height: 16px;
+                border-bottom: 1px solid #ddd;
+            }
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container=".">
+                <div class="commitlist">
+                </div>
+            </a:main>
+            <a:item class="." caption="." select="." container=".">
+                <div>
+                </div>
+            </a:item>
+            <a:empty caption=".">
+                <div class="message">-</div>
+            </a:empty>
+        </a:presentation>
+    </a:list>
+</a:skin>

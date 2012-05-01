@@ -1,0 +1,21 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winReconnect"
+      title     = "Connection Lost"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      skin      = "bk-window"
+      class     = "relative nofooter"
+      width     = "512">
+        <a:vbox width="100%">
+            <a:hbox edge="15 10 25 10" padding="10">
+                <div class="alertWarn" margin="0 10 0 10"/>
+                <a:vbox flex="1" padding="5">
+                    <h3 id="winAlertHeader">Lost server connection</h3>
+                    <div id="winAlertMsg" class="alertMsg">Trying to reconnect ...</div>
+                </a:vbox>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>
