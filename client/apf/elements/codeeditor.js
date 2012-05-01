@@ -182,8 +182,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 _self.dispatchEvent("loadmode", e);
             });
         }
-        // this is not needed
-        //doc.setMode(_self.getMode(_self.syntax));
+        _self.syntax = doc.syntax;
 
         doc.setTabSize(parseInt(_self.tabsize, 10));
         doc.setUseSoftTabs(_self.softtabs);

@@ -294,6 +294,9 @@ module.exports = ext.register("ext/code/code", {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
             doc.acesession = new EditSession(doc.acedoc);
+            var syntax = _self.getSyntax(doc.getNode());
+            doc.acesession.setMode(ceEditor.getMode(syntax));
+            doc.acesession.syntax = syntax;
             doc.acedoc = doc.acesession.getDocument();
             doc.acesession.c9doc = doc;
 
@@ -312,10 +315,6 @@ module.exports = ext.register("ext/code/code", {
                     _self.setState(doc, doc.state);
 
                 doc.isInited = true;
-
-                var syntax = _self.getSyntax(doc.getNode());
-                doc.acesession.setMode(ceEditor.getMode(syntax));
-                doc.acesession.syntax = syntax;
 
                 if (this.$page.id != this.$page.parentNode.activepage)
                     return;
@@ -828,9 +827,17 @@ module.exports = ext.register("ext/code/code", {
         });
 
         ide.addEventListener("updatefile", function(e){
-            var page = tabEditors.getPage();
-            if (page && ceEditor.getDocument() == page.$doc.acesession)
-                ceEditor.setProperty("syntax", _self.getSyntax(e.xmlNode));
+            var page = tabEditors.getPage(e.xmlNode.getAttribute("path"));
+            if (!page || !page.$doc || !page.$doc.acesession)
+                return;
+
+            // this needs to be called after rename but there is only event before
+            setTimeout(function() {
+                var doc = page.$doc;
+                var syntax = _self.getSyntax(doc.getNode());
+                doc.acesession.setMode(ceEditor.getMode(syntax));
+                doc.acesession.syntax = syntax;
+            })
         });
 
         ide.addEventListener("afteroffline", function(){
