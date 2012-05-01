@@ -40,6 +40,7 @@ module.exports = ext.register("ext/console/console", {
 
     command_id_tracer : 1,
     tracerToPidMap : {},
+    pidToTracerMap : {},
 
     allCommands : {},
     keyEvents   : {},
@@ -84,7 +85,11 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    getLogStreamOutObject : function(tracer_id) {
+    getLogStreamOutObject : function(tracer_id, idIsPid) {
+        console.log(tracer_id, idIsPid);
+        if (idIsPid)
+            tracer_id = this.pidToTracerMap[tracer_id];
+        console.log(tracer_id, idIsPid);
         var id = "section" + tracer_id;
         return {
             $ext : document.getElementById("console_" + id),
@@ -152,6 +157,22 @@ module.exports = ext.register("ext/console/console", {
             return this.commandTextHandler(e);
     },
 
+    outputLogSection: function(line) {
+        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner',
+            this.command_id_tracer,
+            '" onclick="return require(\'ext/console/console\').handleCliBlockAction(event)"></div>']
+            .join("");
+
+        var outputId = "console_section" + this.command_id_tracer;
+        Logger.log(line, "prompt", spinnerBtn,
+            '<div class="prompt_spacer"></div>', null, outputId);
+
+        var outputEl = document.getElementById(outputId);
+        apf.setStyleClass(outputEl, "loading");
+
+        return this.command_id_tracer;
+    },
+
     evalCmd: function(line) {
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
@@ -162,17 +183,7 @@ module.exports = ext.register("ext/console/console", {
         argv[0] = argv[0].replace(/["'`]/g, "");
         this.inputHistory.push(line);
 
-        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner',
-            this.command_id_tracer,
-            '" onclick="return require(\'ext/console/console\').handleCliBlockAction(event)"></div>']
-            .join("");
-
-        var outputId = "console_section" + this.command_id_tracer;
-        Logger.log(this.getPrompt(line), "prompt", spinnerBtn,
-            '<div class="prompt_spacer"></div>', null, outputId);
-
-        var outputEl = document.getElementById(outputId);
-        apf.setStyleClass(outputEl, "loading");
+        this.outputLogSection(this.getPrompt(line));
 
         tabConsole.set("console");
 
@@ -262,7 +273,9 @@ module.exports = ext.register("ext/console/console", {
             this.keyEvents[code](e.currentTarget);
     },
 
-    commandCompleted: function(id) {
+    commandCompleted: function(id, idIsPid) {
+        if (idIsPid)
+            id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
         if (spinnerElement) {
             var pNode = spinnerElement.parentNode;
@@ -296,11 +309,32 @@ module.exports = ext.register("ext/console/console", {
             extra = message.body.extra;
 
         switch(message.type) {
+            case "node-start":
+                var command_id = this.outputLogSection("Running Node Process");
+                this.tracerToPidMap[command_id] = message.pid;
+                this.pidToTracerMap[message.pid] = command_id;
+
+                var containerEl = this.getLogStreamOutObject(command_id).$ext;
+                containerEl.setAttribute("rel", command_id);
+                apf.setStyleClass(containerEl, "has_pid");
+
+                if (window.cloud9config.hosted) {
+                    var url = location.protocol + "//" +
+                        ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
+                        "." + location.host;
+                    Logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
+                        "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
+                        null, this.getLogStreamOutObject(message.pid, true), ide);
+                }
+
+                this.command_id_tracer++;
+                return;
             case "node-data":
-                Logger.logNodeStream(message.data, message.stream, true, ide);
+                Logger.logNodeStream(message.data, message.stream,
+                    this.getLogStreamOutObject(message.pid, true), ide);
                 return;
             case "node-exit":
-                Logger.log("", "divider", null, null, true);
+                this.commandCompleted(message.pid, true);
                 return;
             case "kill":
                 if (message.err) {
@@ -310,21 +344,35 @@ module.exports = ext.register("ext/console/console", {
                 break;
             default:
                 if (message.type.match(/-start$/)) {
-                    this.tracerToPidMap[extra.command_id] = message.pid;
-                    var containerEl = this.getLogStreamOutObject(extra.command_id).$ext;
-                    containerEl.setAttribute("rel", extra.command_id);
+                    var command_id = extra.command_id;
+
+                    this.tracerToPidMap[command_id] = message.pid;
+                    this.pidToTracerMap[message.pid] = command_id;
+
+                    var containerEl = this.getLogStreamOutObject(command_id).$ext;
+                    containerEl.setAttribute("rel", command_id);
                     apf.setStyleClass(containerEl, "has_pid");
                     return;
                 }
 
                 if (message.type.match(/-data$/)) {
+                    var type = "tracer";
+                    var id = extra.command_id;
+                    if (!command_id) {
+                        type = "pid";
+                        id = message.pid;
+                    }
+
                     Logger.logNodeStream(message.data, message.stream,
-                        this.getLogStreamOutObject(extra.command_id), ide);
+                        this.getLogStreamOutObject(id, type === "pid"), ide);
                     return;
                 }
 
                 if (message.type.match(/-exit$/)) {
-                    this.commandCompleted(extra.command_id);
+                    if (extra.command_id)
+                        this.commandCompleted(extra.command_id);
+                    else
+                        this.commandCompleted(message.pid, true);
                     return;
                 }
                 break;
