@@ -56,6 +56,7 @@ module.exports = {
             }, {
                 packagePath: "./cloud9.core",
                 fsUrl: fsUrl,
+                hosted: false,
                 bundledPlugins: [
                     "helloworld"
                 ],
@@ -98,10 +99,13 @@ module.exports = {
                     "ext/consolehints/consolehints",
                     "ext/tabbehaviors/tabbehaviors",
                     "ext/tabsessions/tabsessions",
-                    "ext/keybindings/keybindings",
+                    //"ext/keybindings/keybindings",
                     "ext/keybindings_default/keybindings_default",
                     "ext/watcher/watcher",
                     "ext/dragdrop/dragdrop",
+                    "ext/menus/menus",
+                    "ext/tooltip/tooltip",
+                    "ext/sidebar/sidebar",
                     "ext/beautify/beautify",
                     "ext/offline/offline",
                     "ext/stripws/stripws",
@@ -109,7 +113,7 @@ module.exports = {
                     "ext/nodeunit/nodeunit",
                     "ext/zen/zen",
                     "ext/codecomplete/codecomplete",
-                    "ext/vim/vim",
+                    "ext/vim/vim", 
                     "ext/guidedtour/guidedtour",
                     "ext/quickstart/quickstart",
                     "ext/jslanguage/jslanguage",
@@ -118,9 +122,9 @@ module.exports = {
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
-                    "ext/language/liveinspect",
-                    "ext/tooltip/tooltip"
-                    //"ext/revisions/revisions"
+                    "ext/revisions/revisions",
+                    "ext/language/liveinspect"
+                    //"ext/splitview/splitview"
                     //"ext/minimap/minimap"
                     //"ext/acebugs/acebugs"
                 ]
@@ -159,7 +163,7 @@ module.exports = {
             "./cloud9.ide.run-python",
             {
                 packagePath: "./cloud9.ide.settings",
-                settingsPath: __dirname + "/../.architect/settings"
+                settingsPath: projectDir + "/.settings"
             },
             "./cloud9.ide.shell",
             "./cloud9.ide.state",

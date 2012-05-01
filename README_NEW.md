@@ -40,3 +40,13 @@ Workflow:
     
     sm status
 
+Run it:
+
+```bash
+$ node server.js
+```
+
+Options:
+
+* `-w /path/to/project` Open a different workspace (broken)
+* `-p 1234` Listen on a different port, default is 3131

@@ -34,6 +34,7 @@ var SettingsPlugin = module.exports.SettingsPlugin = function(ide, workspace) {
 util.inherits(SettingsPlugin, Plugin);
 
 (function() {
+    this.counter = 0;
 
     this.command = function(user, message, client) {
         if (message.command != "settings")
@@ -74,7 +75,7 @@ util.inherits(SettingsPlugin, Plugin);
         var _self = this;
         // console.log("store settings", this.settingsPath);
         // Atomic write (write to tmp file and rename) so we don't get corrupted reads if at same time.
-        var tmpPath = _self.settingsPath + "~" + new Date().getTime();
+        var tmpPath = _self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
         fs.writeFile(tmpPath, settings, "utf8", function(err) {
             if (err) {
                 callback(err);

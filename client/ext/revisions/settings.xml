@@ -1,6 +1,0 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:checkbox 
-        class="underlined" label="Enable Auto-Save" 
-        value="[general/@autosaveenabled]" 
-        skin="checkbox_grey" position="2000" />
-</a:application>

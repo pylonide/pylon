@@ -30,7 +30,7 @@
                 version: <%version%>,
                 staticUrl: "[%staticUrl%]",
                 socketIoUrl: <%socketIoUrl%>,
-                hosted: baseUrl.indexOf("c9.io") >= 0 || baseUrl.indexOf("stage.io") >= 0 || baseUrl.indexOf("c9.dev") >= 0,
+                hosted: [%hosted%],
                 settings: <%settingsXml%>
             };
 
@@ -46,9 +46,7 @@
 
             var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
 
-            var apfLoc = VERSION == FILES
-                ? "[%staticUrl%]/support/apf/apf.js"
-                : "[%staticUrl%]/js/apf_" + VERSION + ".js";
+            var apfLoc = "[%staticUrl%]/apf-packaged/apf_" + VERSION + ".js";
 
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){

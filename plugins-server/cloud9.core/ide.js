@@ -46,7 +46,8 @@ var Ide = module.exports = function(options) {
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
-        real: options.real
+        real: options.real,
+        hosted: !!options.hosted
     };
 
     this.$users = {};
@@ -82,7 +83,7 @@ util.inherits(Ide, EventEmitter);
     };
 
     this.$serveIndex = function(req, res, next) {
-        var plugin, _self = this;
+        var _self = this;
         var indexFile =  _self.options.real === true ? "ide.tmpl.packed.html" : "ide.tmpl.html";
         
         fs.readFile(Path.join(__dirname, "/view/", indexFile), "utf8", function(err, index) {
@@ -99,19 +100,19 @@ util.inherits(Ide, EventEmitter);
             var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
 
             var client_exclude = c9util.arrayToMap(permissions.client_exclude.split("|"));
-            for (plugin in client_exclude)
+            for (var plugin in client_exclude)
                 delete plugins[plugin];
 
             // TODO: Exclude applicable bundledPlugins
 
             var client_include = c9util.arrayToMap((permissions.client_include || "").split("|"));
-            for (plugin in client_include)
+            for (var plugin in client_include)
                 if (plugin)
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
             var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
-                + staticUrl + '/ace/build/src/ace'
+                + staticUrl + '/ace/build/ace'
                 + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
 
             var replacements = {
@@ -127,9 +128,10 @@ util.inherits(Ide, EventEmitter);
                 readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
-                scripts:  scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
+                scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
                 projectName: _self.options.projectName,
-                version: _self.options.version
+                version: _self.options.version,
+                hosted: _self.options.hosted.toString()
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");

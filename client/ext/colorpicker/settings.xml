@@ -1,5 +1,0 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:checkbox class="underlined" label="Enable Color Picker" 
-      value="[editors/codewidget/@colorpicker]" skin="checkbox_grey" position="1000"
-      onclick="require('ext/colorpicker/colorpicker').updateSetting()"/>
-</a:application>

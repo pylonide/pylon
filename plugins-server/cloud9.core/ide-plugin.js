@@ -58,7 +58,8 @@ module.exports = function setup(options, imports, register) {
                 paths: imports.static.getRequireJsPaths()
             },
             plugins: options.clientPlugins || [],
-            bundledPlugins: options.bundledPlugins || []
+            bundledPlugins: options.bundledPlugins || [],
+            hosted: options.hosted
         });
 
         register(null, {
