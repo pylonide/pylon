@@ -366,7 +366,6 @@ apf.button  = function(struct, tagName){
 
         this.parentNode.menuIsPressed = this;
 
-        //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
         menu.display(null, null, false, this,
             null, null, this.$ext.offsetWidth - 2);
 
@@ -403,13 +402,13 @@ apf.button  = function(struct, tagName){
         }
         //#endif
 
-        var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
+        //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
 
 //        menu.display(pos[0],
 //            pos[1] + this.$ext.offsetHeight, true, this,
 //            null, null, this.$ext.offsetWidth - 2);
             
-        menu.display(null, pos[1] + this.$ext.offsetHeight, true, this,
+        menu.display(null, null, true, this,
             null, null, this.$ext.offsetWidth - 2);
 
         //apf.window.$focus(this);

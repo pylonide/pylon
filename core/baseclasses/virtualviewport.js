@@ -575,6 +575,7 @@ apf.$viewportVirtual = function(amlNode){
     this.host   = this;
     this.cache  = null;
     this.inited = false;
+    this.virtual = true;
     
     this.setScrollbar = function(scrollbar, onscroll){
        this.scrollbar = scrollbar;

@@ -138,6 +138,10 @@
      * @see baseclass.guielement.method.focus
      */
     KEYBOARD_MOUSE : true,
+    /**
+     * Constant for specifying that a widget is a menu
+     */
+    MENU           : 3,
 
     /**
      * Constant for specifying success.
@@ -421,6 +425,7 @@
         apf.hasContentEditableContainerBug = apf.isWebkit;
         // Try transform first for forward compatibility
         var props   = ["transform", "OTransform", "KhtmlTransform", "MozTransform", "WebkitTransform"],
+            props2  = ["transition", "OTransition", "KhtmlTransition", "MozTransition", "WebkitTransition"],
             prefixR = ["", "O", "Khtml", "Moz", "Webkit"],
             prefixC = ["", "o-", "khtml-", "moz-", "webkit-"],
             events  = ["transitionend", "transitionend", "transitionend", "transitionend", "webkitTransitionEnd"],
@@ -431,6 +436,7 @@
         for (; i < l && !this.supportCSSAnim; ++i) {
             if (typeof t.style[props[i]] == "undefined") continue;
             this.supportCSSAnim     = props[i];
+            this.supportCSSTransition = props2[i];
             this.runtimeStylePrefix = prefixR[i];
             this.classNamePrefix    = prefixC[i];
             this.cssAnimEvent       = events[i];
@@ -1049,7 +1055,7 @@
                     +  "background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>"
                     +  "<strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' "
                     +  "onmousedown='(self.apf || window.opener.apf).console.toggle(this.nextSibling, "
-                    +  (this.cache.push(data) - 1) + ")'>More information"
+                    +  (this.cache.push(data) - 1) + ")'>"
                     +  "</strong><div style='display:none;background-color:#EEEEEE;"
                     +  "padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>"
                     +  "</div></blockquote>";

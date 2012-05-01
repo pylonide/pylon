@@ -118,7 +118,7 @@ apf.layout = {
 
         this.dlist = [];
         
-        clearTimeout(this.timer);
+        apf.setZeroTimeout.clearTimeout(this.timer);
         this.timer = null;
     },
     
@@ -279,15 +279,6 @@ apf.layout = {
                 f();
 
             if (!apf.layout.$onresize) {
-                /*var f = apf.layout.onresize;
-                window.onresize = function(){
-                    var s = [];
-                    for (var name in f)
-                        s.unshift(f[name]);
-                    for (var i = 0; i < s.length; i++)
-                        s[i]();
-                }*/
-                
                 var rsz = function(f){
                     //@todo fix this
                     try{
@@ -308,7 +299,9 @@ apf.layout = {
                 }
                 
                 apf.addListener(window, "resize", apf.layout.$onresize = function(){
-                    rsz(apf.layout.onresize);
+                    if (apf.config.resize !== false) {
+                        rsz(apf.layout.onresize);
+                    }
                 });
             }
         }

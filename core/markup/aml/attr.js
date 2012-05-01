@@ -86,16 +86,21 @@ apf.AmlAttr = function(ownerElement, name, value){
     this.$triggerUpdate = function(e, oldValue){
         var name  = this.name,
             value = this.value || this.nodeValue,
-            host  = this.ownerElement;
+            host  = this.ownerElement,
+            isEvent = name.substr(0, 2) == "on";
 
-        if (name == "id" && !this.specified && host.id) {
-            this.specified = true;
-            return;
+        if (!this.specified) {
+            //@todo This should be generalized
+            if (isEvent && this.$lastValue == value
+              || name == "id" && host.id) {
+                this.specified = true;
+                return;
+            }
         }
 
-        if (name.substr(0, 2) == "on") {
+        if (isEvent) {
             if (host.$events[name])
-                host.removeEventListener(name.replace(/^on/, ""), host.$events[name]);
+                host.removeEventListener(name.substr(2), host.$events[name]);
             if (value)
                 host.addEventListener(name, (host.$events[name] = 
                   (typeof value == "string"

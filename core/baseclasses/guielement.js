@@ -543,6 +543,11 @@ apf.GuiElement = function(){
  * @private
  */
 apf.GuiElement.propHandlers = {
+    "minwidth": function(value){ this.$ext.style.minWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
+    "minheight": function(value){ this.$ext.style.minHeight = Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"; },
+    "maxwidth": function(value){ this.$ext.style.maxWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
+    "maxheight": function(value){ this.$ext.style.maxHeight = Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"; },
+    
     //#ifdef __WITH_FOCUS
     /**
      * @attribute {Boolean} focussable whether this element can receive the focus.
@@ -615,10 +620,10 @@ apf.GuiElement.propHandlers = {
             var _self     = this;
             //this.disabled = false;
 
-            apf.queue.add("disable" + this.$uniqueId, function(e){
-                _self.disabled = value;
-                apf.GuiElement.propHandlers.disabled.call(_self, value);
-            });
+            this.addEventListener("DOMNodeInsertedIntoDocument", 
+                this.$updateDisabled || (this.$updateDisabled = function(e){
+                    apf.GuiElement.propHandlers.disabled.call(_self, _self.disabled);
+                }));
             return;
         }
         else
@@ -726,7 +731,8 @@ apf.GuiElement.propHandlers = {
      * the mouse over the element.
      */
     "tooltip" : function(value){
-        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " (" + this.hotkey + ")" : ""));
+        this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " ("
+            + (apf.isMac ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey) + ")" : ""));
     },
     
     //#ifdef __AMLCONTEXTMENU

@@ -147,18 +147,18 @@ apf.popup = {
                     ? pOverflow.offsetHeight 
                     : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
                 : pOverflow.offsetHeight + pOverflow.scrollTop);
-            moveUp = options.autoCorrect && (y
+            moveUp = options.up || options.autoCorrect && (y
                 + (options.height || o.height || o.content.offsetHeight))
                 > edgeY;
 
             if (moveUp) {
                 var value;
-                if (refNode)
+                if (options.ref)
                     value = (pos[1] - (options.height || o.height || o.content.offsetHeight)) + 3;
                 else
-                    value = (edgeY - (options.height || o.height || o.content.offsetHeight));
+                    value = Math.max(0, edgeY - (options.height || o.height || o.content.offsetHeight));
                 
-                popup.style.top = value < 0 ? y : value + "px";
+                popup.style.top = (!options.up && value < 0 ? y : value) + "px";
             }
             else {
                 popup.style.top = y + "px";
@@ -331,6 +331,24 @@ apf.popup = {
     
     getCurrentElement : function(){
         return typeof this.last == "number" && apf.lookup(this.last);
+    },
+    
+    $mousedownHandler : function(amlNode, e){
+        if (!this.last || (amlNode && this.last == amlNode.$uniqueId) || !this.cache[this.last])
+          return;
+
+        var htmlNode = e.srcElement || e.target;
+        
+        var uId = this.last;
+        
+        while (this.cache[uId]) {
+            if (apf.isChildOf(this.cache[uId].content, htmlNode, true))
+                return;
+            
+            uId = this.cache[uId].options.allowTogether;
+        }
+        
+        this.forceHide();
     },
     
     forceHide : function(){

@@ -56,7 +56,11 @@ apf.xmldb = new (function(){
     this.garbageCollect = function(){
         var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
         for (var i = 0, l = cache.length; i < l; i++) {
-            xmlNode = cache[i]
+            xmlNode = cache[i];
+            
+            if (!xmlNode || xmlNode.nodeFunc)
+                continue;
+            
             docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
             model = apf.nameserver.get("model", docId);
             
@@ -293,9 +297,10 @@ apf.xmldb = new (function(){
                     if (!model)
                         return;
                     
-                    if(model.$propBinds[sUId[1]][sUId[2]]) {
+                    if (model.$propBinds[sUId[1]][sUId[2]]) {
                         if (!apf.isChildOf(model.data, xmlNode, true)) 
                             return false;
+
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
                         var node  = xpath
                             ? apf.queryNode(model.data, xpath)
@@ -885,12 +890,12 @@ apf.xmldb = new (function(){
                 nextloop = null;
         }
 
-        if (undoObj && !this.delayUpdate) {
+        if (true || undoObj && !this.delayUpdate) {
             //Ok this was an action let's not delay execution
             apf.xmldb.notifyQueued();
         }
         else if (runTimer) {
-            clearTimeout(notifyTimer);
+            apf.setZeroTimeout.clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
             this.$hasQueue = true;
             notifyTimer = apf.setZeroTimeout(function(){
@@ -913,7 +918,7 @@ apf.xmldb = new (function(){
         var myQueue = notifyQueue;
         notifyQueue = {};
         
-        clearTimeout(notifyTimer);
+        apf.setZeroTimeout.clearTimeout(notifyTimer);
         for (var uId in myQueue) {
             if (!uId) continue;
 

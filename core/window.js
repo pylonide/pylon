@@ -369,7 +369,7 @@ apf.window = function(){
 
     var focusLoopDetect;
     this.$focus = function(amlNode, e, force){
-        var aEl = this.document.activeElement;
+        var aEl = this.activeElement;
         if (aEl == amlNode && !force)
             return; //or maybe when force do $focus
 
@@ -398,7 +398,13 @@ apf.window = function(){
                 return false;
         }
 
-        (apf.activeElement = this.document.activeElement = this.document.documentElement.$lastFocussed = amlNode).focus(true, e);
+        if (amlNode.$focussable != apf.MENU || !apf.activeElement) {
+            apf.activeElement = 
+            this.document.activeElement = 
+            this.document.documentElement.$lastFocussed = amlNode;
+        }
+
+        (apf.window.activeElement = amlNode).focus(true, e);
 
         this.$settingFocus = null;
 
@@ -425,7 +431,7 @@ apf.window = function(){
     };
 
     this.$blur = function(amlNode){
-        var aEl = this.document.activeElement;
+        var aEl = this.activeElement;
         if (aEl != amlNode)
             return false;
 
@@ -435,8 +441,14 @@ apf.window = function(){
         //#endif
 
         aEl.$focusParent.$lastFocussed = null;
-        apf.activeElement = this.document.activeElement = null;
+        
+        if (aEl.$focussable != apf.MENU) {
+            apf.activeElement = 
+            this.document.activeElement = null;
+        }
 
+        apf.window.activeElement = null;
+        
         apf.dispatchEvent("movefocus", {
             fromElement : amlNode
         });
@@ -584,7 +596,7 @@ apf.window = function(){
             list.remove(nodes[i]); //@todo assuming no windows here
         }
 
-        if (apf.document.activeElement == this)
+        if (apf.window.activeElement == this)
             apf.window.moveNext();
         
         if (this.$isWindowContainer) {
@@ -607,21 +619,21 @@ apf.window = function(){
      * @returns {Boolean} whether the element has focus.
      */
     this.hasFocus = function(amlNode){
-        return this.document.activeElement == amlNode;
+        return this.activeElement == amlNode;
     };
 
     /**
      * @private
      */
     this.moveNext = function(shiftKey, relObject, switchWindows, e){
-        if (switchWindows && apf.document.activeElement) {
-            var p = apf.document.activeElement.$focusParent;
+        if (switchWindows && apf.window.activeElement) {
+            var p = apf.window.activeElement.$focusParent;
             if (p.visible && p.modal)
                 return false;
         }
 
         var dir, start, next,
-            amlNode = relObject || apf.document.activeElement,
+            amlNode = relObject || apf.window.activeElement,
             fParent = amlNode
                 ? (switchWindows && amlNode.$isWindowContainer 
                   && amlNode.$isWindowContainer != -1
@@ -645,7 +657,7 @@ apf.window = function(){
             start = -1;
         }
 
-        if (this.document.activeElement && this.document.activeElement == amlNode
+        if (this.activeElement == amlNode
           && list.length == 1 || list.length == 0)
             return false;
 
@@ -672,7 +684,7 @@ apf.window = function(){
         }
         while (!amlNode
             || amlNode.disabled > 0
-            || amlNode == apf.document.activeElement
+            || amlNode == apf.window.activeElement
             || (switchWindows ? !amlNode.visible : amlNode.$ext && !amlNode.$ext.offsetHeight)
             || amlNode.focussable === false
             || switchWindows && !amlNode.$tabList.length);
@@ -868,7 +880,7 @@ apf.window = function(){
         //#ifdef __AMLCONTEXTMENU
         var pos, ev,
             amlNode = apf.findHost(e.srcElement || e.target)
-              || apf.document.activeElement
+              || apf.window.activeElement
               || apf.document && apf.document.documentElement;
 
         if (amlNode && amlNode.localName == "menu") //The menu is already visible
@@ -947,14 +959,11 @@ apf.window = function(){
               // #endif
             ;*/
         // #ifdef __WITH_POPUP
-        if (apf.popup.last && (!amlNode || apf.popup.last != amlNode.$uniqueId) 
-          && apf.popup.cache[apf.popup.last] 
-          && !apf.isChildOf(apf.popup.cache[apf.popup.last].content, e.srcElement || e.target, true))
-            apf.popup.forceHide();
+        apf.popup.$mousedownHandler(amlNode, e);
         // #endif
 
         if (amlNode === false) 
-            amlNode = apf.document.activeElement;
+            amlNode = apf.window.activeElement;
 
         //#ifdef __WITH_FOCUS
         //Make sure the user cannot leave a modal window
@@ -962,17 +971,17 @@ apf.window = function(){
           && amlNode.canHaveChildren != 2 && !amlNode.$focusParent))
           && apf.config.allowBlur) {
             lastFocusParent = null;
-            if (apf.document.activeElement)
-                apf.document.activeElement.blur();
+            if (apf.window.activeElement)
+                apf.window.activeElement.blur();
         }
         else if (amlNode) { //@todo check this for documentElement apf3.0
-            if ((p = apf.document.activeElement
-              && apf.document.activeElement.$focusParent || lastFocusParent)
+            if ((p = apf.window.activeElement
+              && apf.window.activeElement.$focusParent || lastFocusParent)
               && p.visible && p.modal && amlNode.$focusParent != p
               && amlNode.$isWindowContainer != -1) {
                 apf.window.$focusLast(p, {mouse: true, ctrlKey: e.ctrlKey});
             }
-            else if (!amlNode && apf.document.activeElement) {
+            else if (!amlNode && apf.window.activeElement) {
                 apf.window.$focusRoot();
             }
             else if (amlNode.$isWindowContainer == -1) {
@@ -987,14 +996,14 @@ apf.window = function(){
                     apf.window.$focus(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
                 else if (amlNode.canHaveChildren == 2) {
-                    if (!apf.config.allowBlur || !apf.document.activeElement 
-                      || apf.document.activeElement.$focusParent != amlNode)
+                    if (!apf.config.allowBlur || !apf.window.activeElement 
+                      || apf.window.activeElement.$focusParent != amlNode)
                         apf.window.$focusLast(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
                 }
-                else {
-                    if (!apf.config.allowBlur || amlNode != apf.document.documentElement)
-                        apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
-                }
+//                else {
+//                    if (!apf.config.allowBlur || amlNode != apf.document.documentElement)
+//                        apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
+//                }
             }
             else {
                 apf.window.$focusDefault(amlNode, {mouse: true, ctrlKey: e.ctrlKey});
@@ -1093,7 +1102,7 @@ apf.window = function(){
             bubbles  : true //@todo is this much slower?
         };
         
-        var aEl = apf.document && apf.document.activeElement;
+        var aEl = apf.document && apf.window.activeElement;
         if ((aEl && !aEl.disableKeyboard
           ? aEl.dispatchEvent("keyup", ev)
           : apf.dispatchEvent("keyup", ev)) === false) {
@@ -1184,8 +1193,8 @@ apf.window = function(){
     apf.addListener(document, "keyup", function(e){
         e = e || event;
 
-        if (e.ctrlKey && e.keyCode == 9 && apf.document.activeElement) {
-            var w = apf.document.activeElement.$focusParent;
+        if (e.ctrlKey && e.keyCode == 9 && apf.window.activeElement) {
+            var w = apf.window.activeElement.$focusParent;
             if (w.modal) {
                 if (e.preventDefault)
                     e.preventDefault();
@@ -1193,9 +1202,9 @@ apf.window = function(){
             }
 
             apf.window.moveNext(e.shiftKey,
-                apf.document.activeElement.$focusParent, true);
+                apf.window.activeElement.$focusParent, true);
 
-            w = apf.document.activeElement.$focusParent;
+            w = apf.window.activeElement.$focusParent;
             if (w && w.bringToFront)
                 w.bringToFront();
             
@@ -1220,7 +1229,7 @@ apf.window = function(){
             apf.contextMenuKeyboard = true;
         // #endif
 
-        var amlNode           = apf.document.activeElement, //apf.findHost(e.srcElement || e.target),
+        var amlNode           = apf.window.activeElement, //apf.findHost(e.srcElement || e.target),
             htmlNode          = (e.explicitOriginalTarget || e.srcElement || e.target),
             isTextInput = (ta[htmlNode.tagName]
               || htmlNode.contentEditable || htmlNode.contentEditable == "true")  //@todo apf3.0 need to loop here?
@@ -1235,7 +1244,7 @@ apf.window = function(){
         if (!isTextInput && apf.config.undokeys && ctrlKey) {
             //Ctrl-Z - Undo
             if (e.keyCode == 90) {
-                o = apf.document.activeElement;
+                o = apf.window.activeElement;
                 while (o && !o.getActionTracker && !o.$at)
                     o = o.parentNode;
                 if (!o) o = apf.window;
@@ -1243,7 +1252,7 @@ apf.window = function(){
             }
             //Ctrl-Y - Redo
             else if (e.keyCode == 89) {
-                o = apf.document.activeElement;
+                o = apf.window.activeElement;
                 while (o && !o.getActionTracker && !o.$at)
                     o = o.parentNode;
                 if (!o) o = apf.window;
@@ -1281,10 +1290,10 @@ apf.window = function(){
         }
         //#ifdef __WITH_FOCUS
         //Focus handling
-        else if ((!apf.config.disableTabbing || apf.document.activeElement) && e.keyCode == 9) {
+        else if ((!apf.config.disableTabbing || apf.window.activeElement) && e.keyCode == 9) {
             //Window focus handling
-            if (e.ctrlKey && apf.document.activeElement) {
-                var w = apf.document.activeElement.$focusParent;
+            if (e.ctrlKey && apf.window.activeElement) {
+                var w = apf.window.activeElement.$focusParent;
                 if (w.modal) {
                     if (e.preventDefault)
                         e.preventDefault();
@@ -1292,14 +1301,14 @@ apf.window = function(){
                 }
 
                 apf.window.moveNext(e.shiftKey,
-                    apf.document.activeElement.$focusParent, true);
+                    apf.window.activeElement.$focusParent, true);
 
-                w = apf.document.activeElement.$focusParent;
+                w = apf.window.activeElement.$focusParent;
                 if (w && w.bringToFront)
                     w.bringToFront();
             }
             //Element focus handling
-            else if(!apf.document.activeElement || apf.document.activeElement.tagName != "menu") {
+            else if(!apf.window.activeElement || apf.window.activeElement.tagName != "menu") {
                 apf.window.moveNext(e.shiftKey);
             }
 
@@ -1345,7 +1354,7 @@ apf.window = function(){
         }
         
         
-        /*if (browserNavKeys[e.keyCode] && apf.document.activeElement 
+        /*if (browserNavKeys[e.keyCode] && apf.window.activeElement 
           && apf.config.autoDisableNavKeys)
             e.returnValue = false;*/
 
@@ -1428,7 +1437,7 @@ apf.window = function(){
         
                     //#ifdef __WITH_FOCUS
                     //Set the default selected element
-                    if (!apf.document.activeElement && (!apf.config.allowBlur 
+                    if (!apf.window.activeElement && (!apf.config.allowBlur 
                       || apf.document.documentElement 
                       && apf.document.documentElement.editable))
                         apf.window.focusDefault();
@@ -1461,7 +1470,7 @@ apf.window = function(){
     //#ifdef __WITH_WINDOW_FOCUS
     var lastFocusElement;
     this.addEventListener("focus", function(e){
-        if (!apf.document.activeElement && lastFocusParent && !apf.isIphone) {
+        if (!apf.window.activeElement && lastFocusParent && !apf.isIphone) {
             lastFocusElement.focus();
             /*
             if (lastFocusParent.$isWindowContainer < 0) {
@@ -1475,13 +1484,16 @@ apf.window = function(){
         }
     });
     this.addEventListener("blur", function(e){
-        if (!apf.document.activeElement || apf.isIphone)
+        if (!apf.window.activeElement || apf.isIphone)
             return;
 
-        apf.document.activeElement.blur(true, {srcElement: this});//, {cancelBubble: true}
-        lastFocusParent   = apf.document.activeElement.$focusParent;
-        lastFocusElement  = apf.document.activeElement;
-        apf.activeElement = apf.document.activeElement = null;
+        apf.window.activeElement.blur(true, {srcElement: this});//, {cancelBubble: true}
+        lastFocusParent   = apf.window.activeElement.$focusParent;
+        lastFocusElement  = apf.window.activeElement;
+        
+        apf.activeElement = 
+        apf.window.activeElement = 
+        apf.document.activeElement = null;
     });
     this.getLastActiveElement = function(){
         return apf.activeElement || lastFocusElement;

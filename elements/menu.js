@@ -87,7 +87,7 @@ apf.menu = function(struct, tagName){
 };
 
 (function(){
-    this.$focussable  = apf.KEYBOARD;
+    this.$focussable  = apf.MENU;
     this.$positioning = "basic"
     //var _self         = this;
     //var blurring      = false;
@@ -281,7 +281,8 @@ apf.menu = function(struct, tagName){
                     allowTogether: openMenuId,
                     autohide     : !this.pinned,
                     noleft       : this.left !== undefined,
-                    setZindex    : this.zindex ? false : true
+                    setZindex    : this.zindex ? false : true,
+                    up           : (this.ref || opener).submenudir == "up"
                 });
             }
             else {
@@ -321,6 +322,9 @@ apf.menu = function(struct, tagName){
         }
         
         this.visible = false;
+        
+        if (!this.parentNode)
+            apf.document.documentElement.appendChild(this);
         
         if (this.$rendered !== false) {
             this.show();
@@ -371,7 +375,7 @@ apf.menu = function(struct, tagName){
             if (nodes[i].group != group)
                 continue;
 
-            if (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value)
+            if (value && (nodes[i].value == value || !nodes[i].value && nodes[i].caption == value))
                 nodes[i].setProperty("selected", true, false, true);
                 //nodes[i].$handlePropSet("selected", true);
             else if (nodes[i].selected)

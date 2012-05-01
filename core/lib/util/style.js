@@ -47,7 +47,10 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
         }
     }
     else {
-        var rules = (win || self).document.styleSheets[stylesheet || 0][apf.styleSheetRules];
+        if (!stylesheet)
+            stylesheet = (win || self).document.styleSheets[0];
+        
+        var rules = stylesheet[apf.styleSheetRules];
         for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                 rules.item(i).style[type] = value;
@@ -201,49 +204,53 @@ apf.getStyleRecur = function(el, prop) {
  * @method
  * @deprecated
  */    
-apf.importStylesheet = function (def, win) {
+apf.importStylesheet = function (def, win, stylesheet) {
     if (!def.length)
         return;
-        
-    var re = new RegExp("^" + document.domain, 'g');
-    var doc = (win || window).document;
-    for (var index=document.styleSheets.length - 1; index >= 0; index--) {
-        if (!doc.styleSheets[index].href || doc.styleSheets[index].href.match(re)) {
-            break;
-        }
-    }
-    var styleSheet = doc.styleSheets[index];
     
-    function newStyleSheet(){
-        if (doc.createStyleSheet)
-            return doc.createStyleSheet();
-        else {
-            var elem = doc.createElement("style");
-            elem.type = "text/css";
-            doc.getElementsByTagName("head")[0].appendChild(elem);
-            return elem.sheet;
+    if (!stylesheet) {
+        var re = new RegExp("^" + document.domain, 'g');
+        var doc = (win || window).document;
+        for (var index=document.styleSheets.length - 1; index >= 0; index--) {
+            if (!doc.styleSheets[index].href || doc.styleSheets[index].href.match(re)) {
+                break;
+            }
         }
+        stylesheet = doc.styleSheets[index];
     }
     
-    if (!styleSheet)
-        styleSheet = newStyleSheet();
+    if (!stylesheet)
+        stylesheet = apf.createStylesheet(win);
     
     for (var i = 0; i < def.length; i++) {
         if (!def[i][1])
             continue;
 
         if (apf.isIE)
-            styleSheet.addRule(def[i][0], def[i][1]);
+            stylesheet.addRule(def[i][0], def[i][1]);
         else {
             var rule = def[i][0] + " {" + def[i][1] + "}";
             try {
-                styleSheet.insertRule(rule, 0);
+                stylesheet.insertRule(rule, 0);
             }
             catch (e) {
-                styleSheet = newStyleSheet();
-                styleSheet.insertRule(rule, 0);
+                stylesheet = newStyleSheet();
+                stylesheet.insertRule(rule, 0);
             }
         }
+    }
+}
+
+apf.createStylesheet = function(win){
+    var doc = (win || window).document;
+    
+    if (doc.createStyleSheet)
+        return doc.createStyleSheet();
+    else {
+        var elem = doc.createElement("style");
+        elem.type = "text/css";
+        doc.getElementsByTagName("head")[0].appendChild(elem);
+        return elem.sheet;
     }
 }
 

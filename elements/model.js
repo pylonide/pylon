@@ -109,18 +109,12 @@ apf.model = function(struct, tagName){
     
     this.$listeners = {};
     this.$proplisteners = {};
-
-    if (!apf.globalModel) {
-        apf.globalModel = this;
-        //#ifdef __WITH_NAMESERVER
-        apf.nameserver.register("model", "@default", this);
-        //#endif
-    }
 };
 
 (function(){
-    this.$parsePrio = "020";
-    this.$isModel   = true;
+    this.$parsePrio   = "020";
+    this.$isModel     = true;
+    this.$createModel = true;
     
     this.canHaveChildren  = false;
     this.enablereset       = false;
@@ -134,16 +128,21 @@ apf.model = function(struct, tagName){
         session    : 1
     }, this.$attrExcludePropBind);
 
-    this.$booleanProperties["whitespace"] = true;
-    this.$booleanProperties["autoinit"]   = true;
-    this.$booleanProperties.enablereset   = true;
+    this.$booleanProperties["whitespace"]   = true;
+    this.$booleanProperties["create-model"] = true;
+    this.$booleanProperties["autoinit"]     = true;
+    this.$booleanProperties.enablereset     = true;
     this.$supportedProperties = ["submission", "src", "session", "autoinit", 
-        "enablereset", "remote", "whitespace"];
+        "enablereset", "remote", "whitespace", "create-model"];
     
     this.$propHandlers["src"] = 
     this.$propHandlers["get"] = function(value, prop){
         if (this.$amlLoaded)
             this.$loadFrom(value);
+    };
+    
+    this.$propHandlers["create-model"] = function(value, prop){
+        this.$createModel = value;
     };
 
     //#ifdef __WITH_RDB

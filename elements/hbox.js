@@ -328,7 +328,7 @@ apf.vbox = function(struct, tagName){
                 //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
                     //return;
 
-                (this.$altExt || this.$ext).style.width = value 
+                (this.$altExt || this.$ext).style.width = !apf.isNot(value) 
                     ? (parseFloat(value) == value 
                         ? value + "px"
                         : value)
@@ -340,7 +340,7 @@ apf.vbox = function(struct, tagName){
                 //if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
                     //return;
 
-                (this.$altExt || this.$ext).style.height = value 
+                (this.$altExt || this.$ext).style.height = !apf.isNot(value) 
                     ? (parseFloat(value) == value 
                         ? value + "px"
                         : value)

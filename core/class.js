@@ -528,7 +528,7 @@ apf.Class.prototype = new (function(){
 
                 if (!node || typeof node != OBJ || (!node.$regbase && node.$regbase !== 0)) {
                     bProp = o[1];
-                    node  = self[o[0]];
+                    node  = self[o[0]] || apf.nameserver.get("all", o[0]);
                 }
                 else {
                     o.push(bProp);
@@ -536,7 +536,7 @@ apf.Class.prototype = new (function(){
             }
             else {
                 bProp = o[1];
-                node  = self[o[0]] || o[0] == "this" && this;
+                node  = self[o[0]] || apf.nameserver.get("all", o[0]) || o[0] == "this" && this;
             }
 
             if (!node) {
@@ -1191,6 +1191,14 @@ apf.Class.prototype = new (function(){
                 self[this.id || this.name] = null;
         }
         catch (ex) {}
+        
+        for (var prop in this.$captureStack) this.$captureStack[prop] = null;
+        for (var prop in this.$eventsStack) this.$eventsStack[prop] = null;
+        for (var prop in this.$funcHandlers) this.$funcHandlers[prop] = null;
+        
+        for (var i = this.$bufferEvents.length - 1; i >= 0; i--) {
+            this.$bufferEvents = null;
+        }
         
         //#ifdef __WITH_NAMESERVER
         apf.nameserver.remove(this.localName, this);

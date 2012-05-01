@@ -345,9 +345,13 @@ apf.DragDrop = function(){
 
         if (this.disabled || !x || !x.length || !target) //!x[0] ???
             return false;
-        
-        if(!this.dragroot == false && this.xmlRoot.firstChild == x[0])
+            
+        if (!this.dragroot == false && this.xmlRoot.firstChild == x[0])
             return false;
+        
+        for (var i = x.length - 1; i >= 0; i--)
+            if (apf.isChildOf(x[i], target, true))
+                return false;
         
         var data, tgt, hasDropRule = this.$attrBindings && this.$attrBindings["drop"];
         if (this.drop && (!hasDropRule || hasDropRule.value == "true")) {
@@ -406,10 +410,6 @@ apf.DragDrop = function(){
     };
 
     this.$dragDrop = function(xmlReceiver, xmlNodeList, rule, defaction, isParent, srcRule, event, forceCopy){
-        // @todo apf3.0 action not known here yet... should be moved down?
-        if (action == "tree-append" && isParent) 
-            return false;
-
         /*
             Possibilities:
 
@@ -423,6 +423,10 @@ apf.DragDrop = function(){
             action = (rule.caction || rule.compile("action"))(xmlNodeList[0]);
         else
             action = defaction;
+            
+        // @todo apf3.0 action not known here yet... should be moved down?
+        if (action == "tree-append" && isParent) 
+            return false;
 
         if (!event)
             event = {};
@@ -1066,7 +1070,8 @@ apf.DragServer = {
             if (o && o.$dragover) {
                 var parentNode = (elSel || o.xmlRoot).parentNode,
                     htmlParentNode;
-                if(parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
+                if (parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
+                    isParent = true;
                     candrop = checkPermission(parentNode);
                     el = htmlParentNode;
                 }

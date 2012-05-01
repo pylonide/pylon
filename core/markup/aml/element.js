@@ -72,7 +72,7 @@ apf.AmlElement = function(struct, tagName){
         
         //Parse struct to create attributes and child nodes
         if (struct) {
-            var nodes, prop, i, l;
+            var nodes, prop, i, l, attr;
             if (struct.childNodes) {
                 nodes = struct.childNodes;
                 delete struct.childNodes; //why delete?
@@ -81,8 +81,18 @@ apf.AmlElement = function(struct, tagName){
             //Attributes
             for (prop in struct){ 
                 if (prop == "htmlNode") continue;
+                
+                attr = new apf.AmlAttr(this, prop, struct[prop]);
+                
+                //These exceptions should be generalized
+                if (prop == "id")
+                    this.$propHandlers["id"].call(this, this.id = struct.id);
+                else if (prop == "hotkey")
+                    this.$propHandlers["hotkey"].call(this, this.hotkey = struct.hotkey);
+                else if (prop.substr(0, 2) == "on")
+                    attr.$triggerUpdate();
 
-                this.attributes.push(new apf.AmlAttr(this, prop, struct[prop]));
+                this.attributes.push(attr);
             }
             
             if (!this.ownerDocument) {
@@ -146,8 +156,18 @@ apf.AmlElement = function(struct, tagName){
             if (this.name == value)
                 return;
     
-            if (self[this.name] == this)
-                self[this.name] = null
+            if (self[this.name] == this) {
+                self[this.name] = null;
+                //#ifdef __WITH_NAMESERVER
+                apf.nameserver.remove(this.localName, this);
+                apf.nameserver.remove("all", this);
+                //#endif
+            }
+    
+            //#ifdef __DEBUG
+            if (self[value])
+                throw new Error("ID collision of APF element: '" + value + "'");
+            //#endif
     
             if (!self[value] || !self[value].hasFeature) {
                 try {
@@ -172,6 +192,7 @@ apf.AmlElement = function(struct, tagName){
             //@todo old name disposal
             //#ifdef __WITH_NAMESERVER
             apf.nameserver.register(this.localName, value, this)
+            apf.nameserver.register("all", value, this)
             //#endif
             
             this.name = value;
@@ -241,7 +262,7 @@ apf.AmlElement = function(struct, tagName){
         if (!a) {
             this.attributes.push(a = new apf.AmlAttr(this, name, value));
         
-            if (!this.$amlLoaded)
+            if (!this.$amlLoaded && name != "id" && name != "hotkey")
                 return;
             
             if (noTrigger)
@@ -483,10 +504,14 @@ apf.AmlElement = function(struct, tagName){
             //#ifdef __WITH_PROPERTY_BINDING
             //Remove any bounds if relevant
             this.$clearDynamicProperty(prop);
-    
-            if (isInherit)
-                this.$inheritProperties[prop] = 2;
-    
+            //#endif
+        }
+        
+        if (isInherit)
+            this.$inheritProperties[prop] = 2;
+        
+        if (value) {
+            //#ifdef __WITH_PROPERTY_BINDING
             if (typeof value == "string" 
               && (value.indexOf("{") > -1 || value.indexOf("[") > -1)) {
                 this.$setDynamicProperty(prop, value);

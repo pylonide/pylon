@@ -429,8 +429,9 @@ apf.AmlNode = function(){
         if (!doc || doc.$domParser.$isPaused(this))
             return amlNode;
 
-        if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT)
-            return; //We don't update the tree if this is a doc fragment
+        // Don't update the tree if this is a doc fragment or if this element is not inited yet
+        if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT || !this.$amlLoaded)
+            return amlNode; 
 
         //@todo review this...
         if (initialAppend && !amlNode.render) { // && (nNodes = node.childNodes).length ??
