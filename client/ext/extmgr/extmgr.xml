@@ -28,17 +28,19 @@
                         </a:hbox>
                         <a:datagrid id = "dgExtUser"
                           flex       = "1"
-                          model      = "mdlExt"
+                          model      = "{require('core/ext').model}"
                           class      = "noscrollbar"
                           scrollbar  = "sbShared 20 2 2"
                           autoselect = "false"
                           each       = "[plugin[@userext='1']]"
+                          onafterselect = "require('ext/extmgr/extmgr').updateEnableBtnState()"
                           eachvalue  = "[@path]"
                           empty-message = "No user extensions">
                             <a:column width="25%" value="[@name]" caption="Name" />
                             <a:column width="30%" value="[@path]" caption="Path" />
-                            <a:column width="15%" value="[@type]" caption="Type" />
-                            <a:column width="20%" value="[@dev]" caption="Developer" />
+                            <a:column width="10%" value="[@type]" caption="Type" />
+                            <a:column width="15%" value="[@dev]" caption="Developer" />
+                            <a:column width="10%" value="[@time]ms" caption="Time" align="right" /> 
                             <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />
                         </a:datagrid>
                         
@@ -46,17 +48,20 @@
                 </a:page>
                 <a:page caption="Defaults">
                     <a:vbox anchors="10 10 10 10">
-                        <a:datagrid id="dgExt" flex="1"
-                          model      = "mdlExt"
+                        <a:datagrid id="dgExt"
+                          flex       = "1"
+                          model      = "{require('core/ext').model}"
                           class      = "noscrollbar"
                           scrollbar  = "sbShared 20 2 2"
                           autoselect = "false"
                           each       = "[plugin[@userext='0']]"
+                          onafterselect = "require('ext/extmgr/extmgr').updateEnableBtnState()"
                           eachvalue  = "[@path]">
                             <a:column width="25%" value="[@name]" caption="Name" /> 
                             <a:column width="30%" value="[@path]" caption="Path" /> 
-                            <a:column width="15%" value="[@type]" caption="Type" /> 
-                            <a:column width="20%" value="[@dev]" caption="Developer" /> 
+                            <a:column width="10%" value="[@type]" caption="Type" /> 
+                            <a:column width="15%" value="[@dev]" caption="Developer" /> 
+                            <a:column width="10%" value="[@time]ms" caption="Time" align="right" /> 
                             <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" /> 
                         </a:datagrid>
                     </a:vbox>
@@ -64,21 +69,22 @@
             </a:tab>
             <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 0}">
                 <a:button
-                  skin = "btn-default-css3"
+                  skin     = "btn-default-css3"
                   disabled = "{!dgExtUser.selected}"
-                  caption = "Remove"
-                  margin = "0 10 0 0"
-                  onclick = "require('ext/extmgr/extmgr').removeExtension()"
+                  caption  = "Remove"
+                  margin   = "0 10 0 0"
+                  onclick  = "require('ext/extmgr/extmgr').removeExtension()"
                 />
                 <a:button
-                  skin = "btn-default-css3"
+                  id       = "btnUserExtEnable"
+                  skin     = "btn-default-css3"
                   disabled = "{!dgExtUser.selected}"
-                  caption = "{[{dgExtUser.selected}::@enabled] == 1 ? 'Disable' : 'Enable'}" 
-                  onclick = "
-                    if ([{dgExtUser.selected}::@enabled] == 1)
-                        require('core/ext').unregister(require(dgExtUser.value));
+                  caption  = "Disable"
+                  onclick  = "
+                    if (dgExtUser.selected.getAttribute('enabled') == 1)
+                        require('ext/extmgr/extmgr').disableExt(dgExtUser.value);
                     else
-                        require('core/ext').register(dgExtUser.value, require(dgExtUser.value));
+                        require('ext/extmgr/extmgr').enableExt(dgExtUser.value);
                   "
                 />
                 <a:button
@@ -90,14 +96,15 @@
             </a:hbox>
             <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 1}">
                 <a:button
-                  skin = "btn-default-css3"
+                  id       = "btnDefaultExtEnable"
+                  skin     = "btn-default-css3"
+                  caption  = "Disable"
                   disabled = "{!dgExt.selected}"
-                  caption = "{[{dgExt.selected}::@enabled] == 1 ? 'Disable' : 'Enable'}" 
-                  onclick = "
-                    if ([{dgExt.selected}::@enabled] == 1)
-                        require('core/ext').unregister(require(dgExt.value));
+                  onclick  = "
+                    if (dgExtUser.selected.getAttribute('enabled') == 1)
+                        require('ext/extmgr/extmgr').disableExt(dgExt.value);
                     else
-                        require('core/ext').register(dgExt.value, require(dgExt.value));
+                        require('ext/extmgr/extmgr').enableExt(dgExt.value);
                   "
                 />
                 <a:button

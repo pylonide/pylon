@@ -37,6 +37,14 @@ oop.inherits(ProxyDocument, Document);
         return this.doc.getNewLineCharacter();
     };
 
+    this.setNewLineMode = function (mode) {
+        return this.doc.setNewLineMode(mode);
+    };
+    
+    this.getNewLineMode = function () {
+        return this.doc.getNewLineMode();
+    };
+
     this.getLength = function () {
         return this.doc.getLength();
     };
@@ -53,6 +61,10 @@ oop.inherits(ProxyDocument, Document);
         return this.doc.getTextRange(range);
     };
 
+    this.insert = function (position, text) {
+        return this.doc.insert(position, text);
+    };
+    
     this.insertNewLine = function (position) {
         return this.doc.insertNewLine(position);
     };

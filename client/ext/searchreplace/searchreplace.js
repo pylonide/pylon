@@ -9,63 +9,102 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
+var menus = require("ext/menus/menus");
 var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
+var css = require("text!ext/searchreplace/searchreplace.css");
 var markup = require("text!ext/searchreplace/searchreplace.xml");
+var commands = require("ext/commands/commands");
+
+var oIter, oTotal;
 
 module.exports = ext.register("ext/searchreplace/searchreplace", {
     name    : "Searchreplace",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
+    css     : css,
     markup  : markup,
-    commands : {
-        "search": {hint: "search for a string inside the active document"},
-        "searchreplace": {hint: "search for a string inside the active document and replace it"}
-    },
-    hotitems: {},
 
+    currentRange: null,
+    
     nodes   : [],
 
     hook : function(){
         var _self = this;
 
-        this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Search...",
-                onclick : function() {
-                    _self.toggleDialog(false);
-                }
-            })),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Search & Replace...",
-                onclick : function() {
-                    _self.toggleDialog(true);
-                }
-            }))
-        );
-
-        this.hotitems.search = [this.nodes[1]];
-        this.hotitems.searchreplace = [this.nodes[2]];
-
-        code.commandManager.addCommand({
+        commands.addCommand({
             name: "replace",
-            exec: function(editor) {
-                _self.setEditor(editor, editor.getSelection()).toggleDialog(true, true);
+            bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
+            hint: "search for a string inside the active document and replace it",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
+            exec: function(env, args, request) {
+                _self.toggleDialog(true, true);
+            }
+        });
+        
+        commands.addCommand({
+            name: "replacenext",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
+            exec: function(env, args, request) {
+                commands.exec("findnext");
+                commands.exec("replace");
+            }
+        });
+        
+        commands.addCommand({
+            name: "replaceprevious",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
+            exec: function(env, args, request) {
+                commands.exec("findprevious");
+                commands.exec("replace");
             }
         });
 
+        this.nodes.push(
+            menus.addItemByPath("Find/Find...", new apf.item({
+                onclick : function() {
+                    _self.toggleDialog(false);
+                }
+            }), 100),
+            menus.addItemByPath("Find/Find Next", new apf.item({
+                command : "findnext"
+            }), 200),
+            menus.addItemByPath("Find/Find Previous", new apf.item({
+                command : "findprevious"
+            }), 300),
+            menus.addItemByPath("Find/~", new apf.divider(), 400),
+            menus.addItemByPath("Find/Replace...", new apf.item({
+                command : "replace"
+            }), 500),
+            menus.addItemByPath("Find/Replace Next", new apf.item({
+                command : "replacenext",
+            }), 600),
+            menus.addItemByPath("Find/Replace Previous", new apf.item({
+                command : "replaceprevious",
+            }), 700),
+            menus.addItemByPath("Find/Replace All", new apf.item({
+                command : "replaceall"
+            }), 800)
+        );
     },
 
     init : function(amlNode){
         var _self = this;
+        apf.importCssString(_self.css);
         
         this.txtFind       = txtFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         this.txtReplace    = txtReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
         //bars
-        this.barReplace    = barReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
+        this.barSingleReplace    = barSingleReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
         //buttons
         this.btnReplace    = btnReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[1]");
         this.btnReplace.onclick = this.replace.bind(this);
@@ -74,8 +113,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.btnFind       = btnFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.findNext.bind(this);
         winSearchReplace.onclose = function() {
-            ceEditor.focus();
+            if (editors.currentEditor && editors.currentEditor.amlEditor)
+                editors.currentEditor.amlEditor.focus();
         }
+        
+        this.txtFind.$ext.cols = this.txtFind.cols;
         
         this.txtFind.addEventListener("keydown", function(e){
             switch (e.keyCode){
@@ -140,8 +182,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             var value;
             var editor = editors.currentEditor;
             if (editor) {
-                if (editor.ceEditor)
-                    value = editor.ceEditor.getLastSearchOptions().needle;
+                if (editor.amlEditor)
+                    value = editor.amlEditor.getLastSearchOptions().needle;
 
                 if (!value) {
                     var sel   = editor.getSelection();
@@ -153,20 +195,24 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 if (value)
                     this.txtFind.setValue(value);
 
+                ide.dispatchEvent("exitfullscreen");
+
                 winSearchReplace.setAttribute("title", isReplace
                         ? "Search & Replace" : "Search");
                 winSearchReplace.show();
             }
+            this.updateCounter();
         }
         else
             winSearchReplace.hide();
+
         return false;
     },
 
     onHide : function() {
-        var editor = require('ext/editors/editors').currentEditor;
-        if (editor && editor.ceEditor)
-            editor.ceEditor.focus();
+        var editor = editors.currentEditor;
+        if (editor && editor.amlEditor)
+            editor.amlEditor.focus();
     },
 
     search: function() {
@@ -182,16 +228,16 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.position = 0;
 
         // hide all 'replace' features
-        this.barReplace.setProperty("visible", isReplace);
+        this.barSingleReplace.setProperty("visible", isReplace);
         this.btnReplace.setProperty("visible", isReplace);
         this.btnReplaceAll.setProperty("visible", isReplace);
         return this;
     },
 
     setEditor: function(editor, selection) {
-        if (typeof ceEditor == "undefined")
+        if (typeof editors.currentEditor.amlEditor == "undefined")
             return;
-        this.$editor = editor || ceEditor.$editor;
+        this.$editor = editor || editors.currentEditor.amlEditor.$editor;
         this.$selection = selection || this.$editor.getSelection();
         return this;
     },
@@ -207,15 +253,18 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         };
     },
 
-    findNext: function() {
+    findNext: function(backwards) {
         if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
             return;
         var txt = this.txtFind.getValue();
-        if (!txt)
+        if (!txt) 
             return;
         var options = this.getOptions();
+        
+        if (backwards)
+            options.backwards = true;
 
         if (this.$crtSearch != txt) {
             this.$crtSearch = txt;
@@ -229,11 +278,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             //     regExp: false
             // }
             this.$editor.find(txt, options);
+            this.currentRange = this.$editor.selection.getRange();
         }
         else {
             this.$editor.find(txt, options);
+            this.currentRange = this.$editor.selection.getRange();
         }
         chkSearchSelection.setAttribute("checked", false);
+        this.updateCounter();
     },
 
     replace: function() {
@@ -241,7 +293,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             this.setEditor();
         if (!this.$editor)
             return;
-        if (!this.barReplace.visible)
+        if (!this.barSingleReplace.visible)
             return;
         var options = this.getOptions();
         options.needle = this.txtFind.getValue();
@@ -253,17 +305,87 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     replaceAll: function() {
-        if (!this.editor)
+        if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
             return;
         this.$crtSearch = null;
         var options = this.getOptions();
         options.needle = this.txtFind.getValue();
+        
+        var cursor = this.$editor.getCursorPosition();
+        var line = cursor.row;
+        
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
+        
+        this.$editor.gotoLine(line); // replaceAll jumps you elsewhere; go back to where you were
+        
+        this.updateCounter();
         ide.dispatchEvent("track_action", {type: "replace"});
     },
+    
+    updateCounter: function() {
+        var ace = this.$getAce();
+        var width, buttonWidth;
 
+        if (!oIter) {
+            oIter  = document.getElementById("spanSearchReplaceIter");
+            oTotal = document.getElementById("spanSearchReplaceTotal");
+        }
+/*
+        if (oIter.parentNode) {
+            if (!ace || !winQuickSearch.visible) {
+                oIter.parentNode.style.width = "0px";
+                return;
+            }
+            else
+                oIter.parentNode.style.width = "auto";
+        }
+
+        setTimeout(function() {
+            if (oIter.parentNode && txtQuickSearch && txtQuickSearch.$button) {
+                width = oIter.parentNode.offsetWidth || 0;
+                txtQuickSearch.$button.style.right = width + "px";
+            }
+        });
+*/
+        var ranges = ace.$search.findAll(ace.getSession());
+        if (!ranges || !ranges.length) {
+            oIter.innerHTML = "0";
+            oTotal.innerHTML = "of 0";
+            return;
+        }
+        var crtIdx = -1;
+        var cur = this.currentRange;
+        if (cur) {
+            // sort ranges by position in the current document
+            //ranges.sort(cur.compareRange.bind(cur));
+            var range;
+            var start = cur.start;
+            var end = cur.end;
+            for (var i = 0, l = ranges.length; i < l; ++i) {
+                range = ranges[i];
+                if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
+                    crtIdx = i;
+                    break;
+                }
+            }
+        }
+        
+        
+        oIter.innerHTML = String(++crtIdx);
+        oTotal.innerHTML = "of " + ranges.length;
+    },
+    
+    $getAce: function() {
+        var editor = editors.currentEditor;
+        if (!editor || !editor.ceEditor)
+            return;
+
+        var ceEditor = editor.ceEditor;
+        return ceEditor.$editor;
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
@@ -277,6 +399,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     destroy : function(){
+        menus.remove("Find/Find...");
+        menus.remove("Find/~", 200);
+        menus.remove("Find/Replace...");
+        
+        commands.removeCommandsByName(["replace", "replacenext", "replaceprevious"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

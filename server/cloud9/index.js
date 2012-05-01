@@ -40,11 +40,13 @@ exports.main = function(options) {
         socketIo.set("polling duration", 5);
         socketIo.sockets.on("connection", function(client) {
             client.on("message", function(data) {
-                var message;
-                try {
-                    message = JSON.parse(data);
-                } catch(e) {
-                    return;
+                var message = data;
+                if (typeof data == "string") {
+                    try {
+                        message = JSON.parse(data);
+                    } catch(e) {
+                        return;
+                    }
                 }
                 if (message.command === "attach") {
                     sessionStore.get(message.sessionId, function(err, session) {
@@ -56,7 +58,7 @@ exports.main = function(options) {
                 }
             });
         });
-        
+
 
         var name = projectDir.split("/").pop();
         var serverOptions = {
@@ -67,14 +69,16 @@ exports.main = function(options) {
             staticUrl: "/static",
             workspaceId: name,
             name: name,
-            version: options.version
+            version: options.version,
+            real: options.real,
+            exec: options.exec
         };
         var ide = new IdeServer(serverOptions, server, exts);
 
         return function(req, res, next) {
             if (!req.session.uid)
                 req.session.uid = "owner_" + req.sessionID;
-                
+
             ide.addUser(req.session.uid, User.OWNER_PERMISSIONS);
             ide.handle(req, res, next);
         };
@@ -87,9 +91,9 @@ exports.main = function(options) {
     var sessionStore = new MemoryStore({ reapInterval: -1 });
     server.use(Connect.session({
         store: sessionStore,
-        key: "cloud9.sid"
+        key: "cloud9.sid." + port
     }));
-    
+
     server.use(ideProvider(projectDir, server, sessionStore));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../support"), "/static/support"));
     server.use(middleware.staticProvider(Path.normalize(__dirname + "/../../client"), "/static"));
@@ -100,11 +104,15 @@ exports.main = function(options) {
     if (user)
         process.setuid(user);
 
-    server.listen(port, ip);
+    if (ip.length === 0)
+        server.listen(port);
+    else
+        server.listen(port, ip);
 };
 
 process.on("uncaughtException", function(e) {
-    console.log("uncaught exception:");
+    console.log("uncaught exception: ");
+    console.log(e);
     console.log(e.stack + "");
 });
 

@@ -5,7 +5,7 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
-var sys = require("sys");
+var util = require("util");
 
 var cloud9StatePlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -13,7 +13,7 @@ var cloud9StatePlugin = module.exports = function(ide, workspace) {
     this.name = "state";
 };
 
-sys.inherits(cloud9StatePlugin, Plugin);
+util.inherits(cloud9StatePlugin, Plugin);
 
 (function() {
     this.connect = function(user, message, client) {
@@ -23,7 +23,7 @@ sys.inherits(cloud9StatePlugin, Plugin);
     this.command = function(user, message, client) {
         if (message && message.command !== "state")
             return false;
-            
+
         // we need to be able to re-publish state when we request that
         // use: ide.send({ command: "state", action: "publish" })
         if (message && message.action && message.action === "publish") {
@@ -39,7 +39,6 @@ sys.inherits(cloud9StatePlugin, Plugin);
         };
         this.emit("statechange", state);
 
-        console.log("publish state" + JSON.stringify(state));
         this.send(state, null, this.name);
     };
 

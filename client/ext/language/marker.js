@@ -8,17 +8,19 @@ define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
+var Editors = require("ext/editors/editors");
 
 module.exports = {
+
     disabledMarkerTypes: {},
-    
+
     hook: function(language, worker) {
         var _self = this;
         worker.on("markers", function(event) {
             _self.addMarkers(event, language.editor);
         });
     },
-    
+
     removeMarkers: function(session) {
         var markers = session.getMarkers(false);
         for (var id in markers) {
@@ -32,7 +34,7 @@ module.exports = {
         }
         session.markerAnchors = [];
     },
-    
+
     addMarkers: function(event, editor) {
         var _self = this;
         var annos = event.data;
@@ -78,13 +80,13 @@ module.exports = {
         });
         mySession.setAnnotations(mySession.languageAnnos);
     },
-    
+
     /**
      * Temporarily disable certain types of markers (e.g. when refactoring)
      */
     disableMarkerType: function(type) {
         this.disabledMarkerTypes[type] = true;
-        var session = ceEditor.$editor.session;
+        var session = Editors.currentEditor.amlEditor.$editor.session;
         var markers = session.getMarkers(false);
         for (var id in markers) {
             // All language analysis' markers are prefixed with language_highlight
@@ -92,11 +94,11 @@ module.exports = {
                 session.removeMarker(id);
         }
     },
-    
+
     enableMarkerType: function(type) {
         this.disabledMarkerTypes[type] = false;
     },
-    
+
     /**
      * Called when text in editor is updated
      * This attempts to predict how the worker is going to adapt markers based on the given edit
@@ -165,15 +167,10 @@ module.exports = {
         }
         if (foundOne)
             session._dispatchEvent("changeBackMarker");
+    },
+    
+    destroy : function(){
     }
-};
-
-// Monkeypatching ACE's JS mode to disable worker
-// this will be handled by C9's worker
-var JavaScriptMode = require('ace/mode/javascript').Mode;
-
-JavaScriptMode.prototype.createWorker = function() {
-    return null;
 };
 
 });

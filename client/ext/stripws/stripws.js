@@ -13,44 +13,31 @@ define(function (require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
+var menus = require("ext/menus/menus");
 var extSettings = require("ext/settings/settings");
-
-var RE_WS = /[ \t\r\f\v]+\n/g;
+var markupSettings =  require("text!ext/stripws/settings.xml");
+var commands = require("ext/commands/commands");
+var settings = require("ext/settings/settings");
 
 // Attaching to exports.module for testing purposes
 var strip = module.exports.strip = function () {
-    if (!editors.currentEditor.ceEditor)
+    if (!editors.currentEditor.amlEditor)
         return;
 
-    var editor = editors.currentEditor.ceEditor.$editor;
+    var editor = editors.currentEditor.amlEditor.$editor;
     var session = editor.getSession();
-    var source = session.getValue();
-    var selection = session.getSelection();
-    var result = source.replace(RE_WS, "\n");
-    var pos, lead, anchor;
-    var scrollTopRow = editor.renderer.getScrollTopRow();
 
-    // Check whether the user has text selected
-    if (!selection.isEmpty()) {
-        lead = selection.getCursor();
-        anchor = selection.getSelectionAnchor();
-    } else {
-        pos = editor.getCursorPosition();
+    var doc = session.getDocument();
+    var lines = doc.getAllLines();
+
+    for (var i = 0, l=lines.length; i < l; i++) {
+        var line = lines[i];
+        var index = line.search(/\s+$/);
+
+        if (index !== -1)
+            doc.removeInLine(i, index, line.length);
     }
-
-    // Set the new trimmed buffer contents
-    session.setValue(result);
-
-    if (lead && anchor) {
-        selection = session.getSelection();
-        selection.setSelectionAnchor(anchor.row, anchor.column);
-        selection.moveCursorTo(lead.row, lead.column);
-    } else if (pos) {
-        editor.moveCursorTo(pos.row, pos.column);
-    }
-    editor.renderer.scrollToRow(scrollTopRow);
-
-    return result;
+    session.$syncInformUndoManager();
 };
 
 module.exports = ext.register("ext/stripws/stripws", {
@@ -59,26 +46,29 @@ module.exports = ext.register("ext/stripws/stripws", {
     alone: true,
     type: ext.GENERAL,
 
-    commands: {
-        "stripws": {
-            hint: "strip whitespace at the end of each line"
-        }
-    },
-
     nodes: [],
 
     init: function () {},
 
     hook: function () {
         var self = this;
+        
+        commands.addCommand({
+            name: "stripws",
+            hint: "strip whitespace at the end of each line",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
+            exec: function(){
+                ext.initExtension(self);
+                self.stripws();
+            }
+        });
+        
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.divider()), ide.mnuEdit.appendChild(new apf.item({
-                caption: "Strip Whitespace",
-                onclick: function () {
-                    ext.initExtension(self);
-                    strip();
-                }
-            }))
+            menus.addItemByPath("Tools/Strip Whitespace", new apf.item({
+                command : "stripws"
+            }), 200)
         );
 
         ide.addEventListener("beforefilesave", function(data) {
@@ -88,19 +78,24 @@ module.exports = ext.register("ext/stripws/stripws", {
             // If the 'Strip whitespace on save' option is enabled, we strip
             // whitespaces from the node value just before the file is saved.
             if (node && node.firstChild && node.firstChild.nodeValue == "true") {
-                strip();
+                self.stripws();
             }
         });
 
-        ide.addEventListener("init.ext/settings/settings", function (e) {
-            var heading = e.ext.getHeading("General");
-            heading.appendChild(new apf.checkbox({
-                "class" : "underlined",
-                skin  : "checkbox_grey",
-                value : "[editors/code/@stripws]",
-                label : "On Save, Strip Whitespace"
-            }))
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                self.disable();
+            else
+                self.enable();
         });
+        
+        ide.addEventListener("settings.load", function(){
+            settings.setDefaults("editors/code", [
+                ["stripws", "false"]
+            ]);
+        });
+
+        settings.addSettings("General", markupSettings);
     },
 
     stripws: function() {
@@ -108,18 +103,25 @@ module.exports = ext.register("ext/stripws/stripws", {
     },
 
     enable: function () {
-        this.nodes.each(function (item) {
+        this.nodes.each(function(item) {
             item.enable();
         });
+
+        this.stripws = function() { strip(); };
     },
 
     disable: function () {
-        this.nodes.each(function (item) {
+        this.nodes.each(function(item) {
             item.disable();
         });
+
+        this.stripws = function() {};
     },
 
     destroy: function () {
+        menus.remove("Tools/Strip Whitespace");
+        commands.removeCommandByName("stripws");
+
         this.nodes.each(function (item) {
             item.destroy(true, true);
         });

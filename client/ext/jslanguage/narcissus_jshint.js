@@ -8,7 +8,7 @@ define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
-var parser = require("ace/narcissus/jsparse");
+var parser = require("ace/narcissus/parser");
 
 var handler = module.exports = Object.create(baseLanguageHandler);
 
@@ -33,15 +33,18 @@ handler.analyze = function(doc) {
     catch (e) {
         var chunks = e.message.split(":");
         var message = chunks.pop().trim();
-        var lineNumber = parseInt(chunks.pop().trim(), 10) - 1;
-        markers = [{
-            pos: {
-                sl: lineNumber,
-                el: lineNumber
-            },
-            message: message,
-            type: "error"
-        }];
+        var numString = chunks.pop();
+        if(numString) {
+            var lineNumber = parseInt(numString.trim(), 10) - 1;
+            markers = [{
+                pos: {
+                    sl: lineNumber,
+                    el: lineNumber
+                },
+                message: message,
+                type: "error"
+            }];
+        }
         return markers;
     }
     finally {}

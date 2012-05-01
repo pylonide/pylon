@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/template/template.xml");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/template/template", {
     name   : "Template",
@@ -22,15 +23,14 @@ module.exports = ext.register("ext/template/template", {
 
     hook : function(){
         var _self = this;
-        this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                caption : "Template",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    _self.winTemplate.show();
-                }
-            }))
-        );
+        
+        menus.addItemByPath("Edit/Template", new apf.item({
+            caption : "Template",
+            onclick : function(){
+                ext.initExtension(_self);
+                _self.winTemplate.show();
+            }
+        }), 1000)
     },
 
     init : function(amlNode){
@@ -50,6 +50,8 @@ module.exports = ext.register("ext/template/template", {
     },
 
     destroy : function(){
+        menus.remove("Edit/Template");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

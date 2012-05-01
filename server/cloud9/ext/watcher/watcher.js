@@ -4,14 +4,16 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-var fs      = require("fs"),
-    sys     = require("sys"),
-    Plugin  = require("cloud9/plugin");
-   
+
+var fs      = require("fs");
+var util    = require("util");
+var Plugin  = require("cloud9/plugin");
+var async   = require("asyncjs");
+
 var IGNORE_TIMEOUT = 50,
     ignoredPaths = {},
     ignoreTimers = {};
- 
+
 var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
@@ -28,15 +30,15 @@ var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     this.hooks = ["disconnect", "command"];
     this.name = "watcher";
     this.filenames = {};
-    this.basePath  = ide.workspaceDir + "/";
+    this.basePath  = ide.workspaceDir;
 }
 
-sys.inherits(cloud9WatcherPlugin, Plugin);
+util.inherits(cloud9WatcherPlugin, Plugin);
 
 (function() {
     this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
-        if (--this.filenames[filename] == 0) {
+        if (filename in this.filenames && --this.filenames[filename] === 0) {
             delete this.filenames[filename];
             fs.unwatchFile(filename);
         }
@@ -44,25 +46,25 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
     };
 
     this.disconnect = function() {
-        for (var filename in this.filenames) 
+        for (var filename in this.filenames)
             this.unwatchFile(filename);
         return true;
     };
 
     this.command = function(user, message, client) {
-        var filename, that, subtype, files;
+        var that, subtype, files;
 
-        if (!message || message.command != "watcher") 
+        if (!message || message.command !== "watcher")
             return false;
-        with (message) {
-            if (command != "watcher")
-                return false;
-            
-            path = this.basePath + path;
-            
-            switch (type) {
+
+        var path = message.path;
+        var type = message.type;
+
+        path = this.basePath + (path ? "/" + path : "");
+
+        switch (type) {
             case "watchFile":
-                if (this.filenames[path]) 
+                if (this.filenames[path])
                     ++this.filenames[path]; // console.log("Already watching file " + path);
                 else {
                     // console.log("Watching file " + path);
@@ -72,44 +74,59 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                         if (ignoredPaths[path]) {
                             clearTimeout(ignoreTimers[path]);
                             ignoreTimers[path] = setTimeout(function() {
-                                delete ignoreTimers[path]
+                                delete ignoreTimers[path];
                                 delete ignoredPaths[path];
                             }, IGNORE_TIMEOUT);
                             return;
                         }
+                        
                         if (curr.nlink == 1 && prev.nlink == 0)
                             subtype = "create";
                         else if (curr.nlink == 0 && prev.nlink == 1)
                             subtype = "remove";
-                        else if (curr.mtime.toString() != prev.mtime.toString()) 
+                        else if (curr.mtime.toString() != prev.mtime.toString())
                             subtype = "change";
                         else
                             return;
+                            
                         if (curr.isDirectory()) {
                             files = {};
-                            
-                            // TODO don't use sync calls
-                            fs.readdirSync(path).forEach(function (file) {
-                                var stat = fs.statSync(path + "/" + file);
 
-                                if (file.charAt(0) != '.') {
-                                    files[file] = {
-                                        type : stat.isDirectory() ? "folder" : "file",
-                                        name : file
+                            async.readdir(path)
+                                .stat()
+                                .filter(function(file) {
+                                    return file.name.charAt(0) != '.'
+                                })
+                                .each(function(file) {
+                                    files[file.name] = {
+                                        type : file.stat.isDirectory() ? "folder" : "file",
+                                        name : file.name
                                     };
-                                }
+                                })
+                                .end(function(err) {
+                                    if (err)
+                                        return;
+
+                                    that.send({
+                                        "type"      : "watcher",
+                                        "subtype"   : subtype,
+                                        "path"      : path,
+                                        "files"     : files,
+                                        "lastmod"   : curr.mtime
+                                    });
+                                    //console.log("Sent " + subtype + " notification for file " + path);
+                                });
+                        } else
+                            that.send({
+                                "type"      : "watcher",
+                                "subtype"   : subtype,
+                                "path"      : path,
+                                "files"     : files,
+                                "lastmod"   : curr.mtime
                             });
-                        }
-                        that.send({
-                            "type"      : "watcher",
-                            "subtype"   : subtype,
-                            "path"      : path,
-                            "files"     : files,
-                            "lastmod"   : curr.mtime
-                        });
-                        //console.log("Sent " + subtype + " notification for file " + path);
+
                     });
-                    this.filenames[path] = 0;
+                    this.filenames[path] = 1;
                 }
                 return true;
             case "unwatchFile":
@@ -117,13 +134,14 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
             default:
                 return false;
             }
-        }
     };
-    
+
     this.dispose = function(callback) {
-        for (filename in this.filenames)
-            this.unwatchFile(this.filenames[filename]);
+        for (var filename in this.filenames) {
+            delete this.filenames[filename];
+            fs.unwatchFile(filename);
+        }
         callback();
     };
-    
+
 }).call(cloud9WatcherPlugin.prototype);

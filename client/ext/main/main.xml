@@ -1,0 +1,62 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:appsettings name="ide" debug="false"
+      disable-space             = "true"
+      auto-hide-loading         = "true"
+      allow-select              = "false"
+      allow-blur                = "false"
+      initdelay                 = "false"
+      loaderAnimIndicator       = "animatedLoader"
+      loaderWidth               = "300"
+      autoHideLoading           = "false"
+      storage                   = "cookie"
+      baseurl                   = "{apf.host ? apf.host : ''}"
+      requested-with-getparam   = "xhr" />
+
+    <!-- default model -->
+    <a:model />
+
+    <a:state id="stServerConnected" active="false" />
+    <a:state id="stProcessRunning" active="false" />
+
+    <a:scrollbar
+        id       = "sbShared"
+        skin     = "sbios"
+        top      = "0"
+        right    = "0"
+        bottom   = "0"
+        width    = "7"
+        showonscroll = "true"
+        zindex   = "100000"
+    />
+
+    <a:vbox anchors="0 0 0 0" id="vbMain">
+        <a:bar skin="c9-menu-bar" id="logobar">
+            <a:hbox>
+                <a:hbox id="barTools" edge="0 0 0 0" padding="3" align="center">
+                    <a:divider skin="c9-divider-double" />
+                </a:hbox>
+                <a:filler />
+                <a:hbox id="barExtras" edge="0 0 0 0" padding="3" align="center">
+                    <a:divider skin="c9-divider" visible="false" />
+                </a:hbox>
+            </a:hbox>
+        </a:bar>
+        
+        <a:hbox flex="1" padding="0">
+            <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
+                <a:hbox id="hboxTabBar" padding="0" edge="0" height="27" align="start" nosplitter="true">
+                    <a:hbox id="barButtonContainer" flex="1" align="start" />
+                </a:hbox>
+                <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
+                    <a:vbox id="colLeft" width="200" minwidth="105" visible="false" />
+                    <a:splitter width="0" id="splitterPanelLeft" />
+                    <a:vbox id="colMiddle" flex="1" padding="3" />
+                </a:hbox>
+            </a:vbox>
+            <a:vbox id="colRight" padding="0">
+                <a:hbox id="hboxDockPanel" flex="1" class="hboxdockpanel">
+                </a:hbox>
+            </a:vbox>
+        </a:hbox>
+    </a:vbox>
+</a:application>

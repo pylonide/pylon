@@ -9,6 +9,29 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var util = require("core/util");
 
+//Prevent the introduction of globals
+//apf.AmlElement.prototype.$propHandlers.id = function(value){
+//    if (this.name == value)
+//        return;
+//
+//    if (this.name) {
+//        //#ifdef __WITH_NAMESERVER
+//        apf.nameserver.remove(this.localName, this);
+//        apf.nameserver.remove("all", this);
+//        //#endif
+//    }
+//
+//    if (apf.nameserver.get("all", value))
+//        console.warn("ID collision of APF element: '" + value + "'");
+//
+//    //#ifdef __WITH_NAMESERVER
+//    apf.nameserver.register(this.localName, value, this);
+//    apf.nameserver.register("all", value, this);
+//    //#endif
+//    
+//    this.name = value;
+//};
+
 var ext;
 module.exports = ext = {
     //Extension types
@@ -31,6 +54,8 @@ module.exports = ext = {
         1 : "General"
     },
 
+    model : new apf.model(),
+
     currentLayoutMode : null,
 
     addType : function(defName, regHandler, unregHandler){
@@ -46,12 +71,17 @@ module.exports = ext = {
         if (oExtension.registered)
             return oExtension;
 
-        if (!mdlExt.queryNode("plugin[@path='" + path + "']"))
-            mdlExt.appendXml('<plugin type="' + this.typeLut[oExtension.type]
+        var dt = new Date();
+
+        if (!this.model.data)
+            this.model.load("<plugins />");
+
+        if (!this.model.queryNode("plugin[@path='" + path + "']"))
+            this.model.appendXml('<plugin type="' + this.typeLut[oExtension.type]
                 + '" name="' + (oExtension.name || "") + '" path="' + path
                 + '" dev="' + (oExtension.dev || "") + '" enabled="1" userext="0" />');
         else
-            mdlExt.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+            this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
         if (oExtension.commands) {
             for (var cmd in oExtension.commands)
@@ -76,15 +106,17 @@ module.exports = ext = {
         if (oExtension.hook) {
             oExtension.hook();
             
-            ide.dispatchEvent("hook." + oExtension.path, {
-                ext : oExtension
-            });
             ide.addEventListener("$event.hook." + oExtension.path, function(callback){
                 callback.call(this, {ext : oExtension});
+            });
+            ide.dispatchEvent("hook." + oExtension.path, {
+                ext : oExtension
             });
         }
         
         ide.dispatchEvent("ext.register", {ext: oExtension});
+        
+        this.model.queryNode("plugin[@path='" + path + "']").setAttribute("time", Number(new Date() - dt));
 
         return oExtension;
     },
@@ -137,7 +169,7 @@ module.exports = ext = {
 
         this.extHandlers[oExtension.type].unregister(oExtension);
 
-        mdlExt.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
+        this.model.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
 
         if (oExtension.inited) {
             oExtension.destroy();
@@ -150,19 +182,21 @@ module.exports = ext = {
     initExtension : function(oExtension, amlParent) {
         if (oExtension.inited)
             return;
+            
+        oExtension.inited = true; // Prevent Re-entry
 
         var skin = oExtension.skin;
         if (skin && typeof skin == "object") {
             var data = oExtension.skin.data;
             oExtension.skinNode = new apf.skin(apf.extend({}, oExtension.skin, {data: null}));
             oExtension.skinNode.setProperty("src", data);
-            apf.document.body.appendChild(oExtension.skinNode);
+            apf.document.documentElement.appendChild(oExtension.skinNode);
         }
 
         //Load markup
         var markup = oExtension.markup;
         if (markup) 
-            apf.document.body.insertMarkup(markup);
+            (oExtension.markupInsertionPoint || amlParent || apf.document.documentElement).insertMarkup(markup);
 
         var deps = oExtension.deps;
         if (deps) {
@@ -183,14 +217,31 @@ module.exports = ext = {
         }
 
         oExtension.init(amlParent);
-        oExtension.inited = true;
         
-        ide.dispatchEvent("init." + oExtension.path, {
-            ext : oExtension
-        });
         ide.addEventListener("$event.init." + oExtension.path, function(callback){
             callback.call(this, {ext : oExtension});
         });
+        ide.dispatchEvent("init." + oExtension.path, {
+            ext : oExtension
+        });
+    },
+
+    enableExt : function(path) {
+        var ext = require(path);
+        if(!ext.enable)
+            return;
+
+        ext.enable();
+        this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+    },
+
+    disableExt : function(path) {
+        var ext = require(path);
+        if(!ext.disable)
+            return;
+
+        ext.disable();
+        this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 0);
     },
 
     execCommand: function(cmd, data) {
@@ -199,19 +250,21 @@ module.exports = ext = {
         else
             cmd = "";
 
-        var oCmd = this.commandsLut[cmd];
-        if (!oCmd || !oCmd.ext) {
-            return;
-        }
+        var commands = self["req"+"uire"]("ext/commands/commands");
+        var c9console = self["requ"+"ire"]("ext/console/console");
 
-        var oExt = require(oCmd.ext);
-        if (oExt && typeof oExt[cmd] === "function") {
-            require(["ext/console/console"], function(consoleExt) {
-                if (oExt.commands[cmd].msg)
-                    consoleExt.write(oExt.commands[cmd].msg);
-            });
-            return oExt[cmd](data);
-        }
+        var command = commands.commands[cmd];
+        if (!command || !command.exec)
+            return;
+
+        if (command.msg)
+            c9console.write([command.msg], data);
+        else
+            c9console.write('"' + cmd + '" command executed', data);
+        c9console.commandCompleted(data.tracer_id);
+            
+        var res = commands.exec(cmd, null, data);
+        return res === undefined ? false : res;
     }
 };
 

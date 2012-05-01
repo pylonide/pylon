@@ -14,11 +14,8 @@ completer.handlesLanguage = function(language) {
 };
 
 completer.fetchText = function(path) {
-    var chunks = path.split("/");
-    chunks[0] = globalRequire.tlns[chunks[0]] || chunks[0];
-    var url = chunks.join("/");
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, false);
+    xhr.open('GET', "/static/" + path, false);
     xhr.send();
     if(xhr.status === 200)
         return xhr.responseText;

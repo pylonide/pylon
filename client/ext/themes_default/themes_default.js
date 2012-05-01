@@ -18,6 +18,7 @@ module.exports = ext.register("ext/themes_default/themes_default", {
     nodes   : [],
 
     themes  : {
+        "Chrome" : "ace/theme/chrome",
         "Clouds" : "ace/theme/clouds",
         "Clouds Midnight" : "ace/theme/clouds_midnight",
         "Cobalt" : "ace/theme/cobalt",

@@ -3,7 +3,7 @@
    <a:bar name="bar">
         <a:style><![CDATA[
             .barQuickSearch{
-                position : relative;
+                position : absolute;
 
                 -webkit-border-top-left-radius: 0px;
                 -webkit-border-top-right-radius: 0px;
@@ -25,6 +25,14 @@
                 background-color: #e8e8e8;
                 background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(232,232,232)),color-stop(1, rgb(227,227,227)));
                 background:-moz-linear-gradient(center bottom,rgb(232,232,232) 0%,rgb(227,227,227) 100%);
+            }
+            
+            .barQuickSearch .searchbox_textbox .sbtb_middle input {
+                width: 190px;
+            }
+            
+            .barQuickSearch .searchbox_textbox .sbtb_middle{
+                border-radius : 3px 0 0 3px;
             }
             
             #divSearchCount {

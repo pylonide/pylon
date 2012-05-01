@@ -2,6 +2,7 @@
 
 define(function(require, exports, module) {
 var registers = require("ext/vim/registers");
+var ide = require("core/ide");
 
 module.exports = {
     onVisualMode: false,
@@ -9,57 +10,54 @@ module.exports = {
     currentMode: 'normal',
     insertMode: function(editor) {
         var _self = this;
-        var theme = editor && editor.getTheme() || "ace/theme/textmate";
 
-        require(["require", theme], function (require) {
-            var isDarkTheme = require(theme).isDark;
+        ide.dispatchEvent("vim.changeMode", { mode : "insert" });
 
-            _self.currentMode = 'insert';
-            // Switch editor to insert mode
-            editor.unsetStyle('insert-mode');
+        _self.currentMode = 'insert';
+        // Switch editor to insert mode
+        editor.unsetStyle('insert-mode');
 
-            var cursor = document.getElementsByClassName("ace_cursor")[0];
-            if (cursor) {
-                cursor.style.display = null;
-                cursor.style.backgroundColor = null;
-                cursor.style.opacity = null;
-                cursor.style.border = null;
-                cursor.style.borderLeftColor = isDarkTheme? "#eeeeee" : "#333333";
-                cursor.style.borderLeftStyle = "solid";
-                cursor.style.borderLeftWidth = "2px";
+        var cursors = document.getElementsByClassName("ace_cursor");
+        if (cursors && cursors.length) {
+            for (var i = 0, l = cursors.length; i < l; ++i) {
+                cursors[i].removeAttribute("style"); // fall back to ace theme
             }
+        }
 
-            editor.setOverwrite(false);
-            editor.keyBinding.$data.buffer = "";
-            editor.keyBinding.$data.state = "insertMode";
-            _self.onVisualMode = false;
-            _self.onVisualLineMode = false;
-            if(_self.onInsertReplaySequence) {
-                // Ok, we're apparently replaying ("."), so let's do it
-                editor.commands.macro = _self.onInsertReplaySequence;
-                editor.commands.replay(editor);
-                _self.onInsertReplaySequence = null;
-                _self.normalMode(editor);
-            } else {
-                // Record any movements, insertions in insert mode
-                if(!editor.commands.recording)
-                    editor.commands.toggleRecording();
-            }
-        });
+        editor.setOverwrite(false);
+        editor.keyBinding.$data.buffer = "";
+        editor.keyBinding.$data.state = "insertMode";
+        _self.onVisualMode = false;
+        _self.onVisualLineMode = false;
+        if(_self.onInsertReplaySequence) {
+            // Ok, we're apparently replaying ("."), so let's do it
+            editor.commands.macro = _self.onInsertReplaySequence;
+            editor.commands.replay(editor);
+            _self.onInsertReplaySequence = null;
+            _self.normalMode(editor);
+        } else {
+            // Record any movements, insertions in insert mode
+            if(!editor.commands.recording)
+                editor.commands.toggleRecording();
+        }
     },
     normalMode: function(editor) {
         // Switch editor to normal mode
         this.currentMode = 'normal';
+        
+        ide.dispatchEvent("vim.changeMode", { mode : "normal" });
 
         editor.setStyle('normal-mode');
         editor.clearSelection();
 
-        var cursor = document.getElementsByClassName("ace_cursor")[0];
-        if (cursor) {
-            cursor.style.display = null;
-            cursor.style.backgroundColor = "red";
-            cursor.style.opacity = ".5";
-            cursor.style.border = "0";
+        var cursors = document.getElementsByClassName("ace_cursor");
+        if (cursors && cursors.length) {
+            for (var i = 0, l = cursors.length; i < l; ++i) {
+                cursors[i].style.display = null;
+                cursors[i].style.backgroundColor = "red";
+                cursors[i].style.opacity = ".5";
+                cursors[i].style.border = "0";
+            }
         }
 
         var pos;

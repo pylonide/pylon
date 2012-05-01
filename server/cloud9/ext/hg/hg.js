@@ -5,8 +5,8 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var Plugin = require("cloud9/plugin");
-var Util   = require("cloud9/util");
-var sys    = require("sys");
+var Cloud9Util   = require("cloud9/util");
+var Util   = require("util");
 
 var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
@@ -15,7 +15,7 @@ var ShellHgPlugin = module.exports = module.exports = function(ide, workspace) {
     this.banned = ["serve"];
 };
 
-sys.inherits(ShellHgPlugin, Plugin);
+Util.inherits(ShellHgPlugin, Plugin);
 
 (function() {
     var hghelp     = "";
@@ -53,14 +53,14 @@ sys.inherits(ShellHgPlugin, Plugin);
         }
 
         function onfinish() {
-            Util.extend(commands, hghelp);
+            Cloud9Util.extend(commands, hghelp);
             callback();
         }
     };
 
     this.augmentCommand = function(cmd, struct) {
         var map = commandsMap[cmd] || commandsMap["default"];
-        return Util.extend(struct, map || {});
+        return Cloud9Util.extend(struct, map || {});
     };
 
     this.command = function(user, message, client) {
@@ -79,6 +79,12 @@ sys.inherits(ShellHgPlugin, Plugin);
                 out: null
             });
             return false;
+        }
+
+        if (message.argv[1] == "commit" && message.argv[2] == "-m") {
+            if (message.argv[3].indexOf("\\n") > -1) {
+                message.argv[3] = message.argv[3].replace(/\\n/g,"\n");
+            }
         }
 
         this.spawnCommand(message.command, argv.slice(1), message.cwd, 

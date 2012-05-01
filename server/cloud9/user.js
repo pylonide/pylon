@@ -1,5 +1,5 @@
-var sys = require("sys");
-var util = require("./util");
+var util = require("util");
+var Util = require("./util");
 var EventEmitter = require("events").EventEmitter;
 
 var User = function (uid, permissions, data) {
@@ -18,7 +18,7 @@ var User = function (uid, permissions, data) {
     this.$server_exclude = {};
 };
 
-sys.inherits(User, EventEmitter);
+util.inherits(User, EventEmitter);
 
 User.OWNER_PERMISSIONS = {
     client_exclude: "",
@@ -60,7 +60,7 @@ User.VISITOR_PERMISSIONS = {
 (function() {
     
     this.setPermissions = function(permissions) {
-        this.$server_exclude = util.arrayToMap(permissions.server_exclude.split("|"));
+        this.$server_exclude = Util.arrayToMap(permissions.server_exclude.split("|"));
         if (this.permissions === permissions)
             return;
         
@@ -73,11 +73,10 @@ User.VISITOR_PERMISSIONS = {
     };
     
     this.addClientConnection = function(client, message) {
-        var id = client.id;
-        if (this.clients[id] === client)
+        if (this.clients.indexOf(client) !== -1)
             return;
             
-        this.clients[id] = client;
+        this.clients.push(client);
         this.onClientCountChange();
         
         var _self = this;
@@ -90,12 +89,20 @@ User.VISITOR_PERMISSIONS = {
                 user: _self,
                 client: client
             });
-            delete _self.clients[client.id];
+            var idx = _self.clients.indexOf(client);
+            if (idx !== -1)
+                _self.clients.splice(idx, 1);
             _self.onClientCountChange();
         });
         
         if (message)
-            _self.onClientMessage(message, client);         
+            _self.onClientMessage(message, client);
+    };
+    
+    this.disconnectClients = function() {
+        console.log("disconnecting all connected clients");
+        for (var i = this.clients.length - 1; i >= 0; --i)
+            this.clients[i].disconnect();
     };
     
     this.onClientMessage = function(message, client) {
@@ -115,10 +122,10 @@ User.VISITOR_PERMISSIONS = {
     };
     
     this.onClientCountChange = function() {
-        var count = Object.keys(this.clients).length;
+        var count = this.clients.length;
         this.emit("clientCountChange", count);
         
-        if (count == 0) {
+        if (count === 0) {
             this.dconn_time = new Date().getTime();
             this.emit("disconnectUser", this);
         }
@@ -145,9 +152,8 @@ User.VISITOR_PERMISSIONS = {
         if (scope && this.$server_exclude[scope])
             return;
 
-        // pass a lambda to enable socket.io ACK
-        for (var id in this.clients)
-            this.clients[id].send(msg, function() {});
+        for (var i = 0, l = this.clients.length; i < l; ++i)
+            this.clients[i].send(msg);
     };
     
 }).call(User.prototype);

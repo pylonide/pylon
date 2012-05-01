@@ -11,13 +11,14 @@ require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
-var useragent = require("ace/lib/useragent");
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
+var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
 var ProxyDocument = require("ext/code/proxydocument");
-var CommandManager = require("ace/commands/command_manager").CommandManager;
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
@@ -38,6 +39,34 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
+var ModesCaption = {
+    "C#" : "text/x-csharp",
+    "C/C++" : "text/x-c",
+    "Clojure" : "text/x-script.clojure",
+    "CoffeeScript" : "text/x-script.coffeescript",
+    "Coldfusion" : "text/x-coldfusion",
+    "CSS" : "text/css",
+    "Groovy" : "text/x-groovy",
+    "Java" : "text/x-java-source",
+    "JavaScript" : "application/javascript",
+    "Latex" : "application/x-latex",
+    "Script" : "text/x-script",
+    "Lua" : "text/x-lua",
+    "Markdown" : "text/x-markdown",
+    "OCaml" : "text/x-script.ocaml",
+    "PHP" : "application/x-httpd-php",
+    "Perl" : "text/x-script.perl",
+    "Powershell" : "text/x-script.powershell",
+    "Python" : "text/x-script.python",
+    "Ruby" : "text/x-script.ruby",
+    "Scala" : "text/x-scala",
+    "SCSS" : "text/x-scss",
+    "SQL" : "text/x-sql",
+    "Textile" : "text/x-web-textile",
+    "HTML" : "text/html",
+    "XML" : "application/xml"
+}
+
 var SupportedModes = {
     "application/javascript": "javascript",
     "application/json": "json",
@@ -54,6 +83,7 @@ var SupportedModes = {
     "application/atom+xml": "xml",
     "application/mathml+xml": "xml",
     "application/x-httpd-php": "php",
+    "application/x-sh": "sh",
     "text/x-script.python": "python",
     "text/x-script.ruby": "ruby",
     "text/x-script.perl": "perl",
@@ -112,6 +142,7 @@ var contentTypes = {
     "cxx": "text/x-c",
     "h": "text/x-c",
     "hh": "text/x-c",
+    "hpp": "text/x-c",
 
     "cs": "text/x-csharp",
 
@@ -137,7 +168,10 @@ var contentTypes = {
 
     "ps1": "text/x-script.powershell",
     "cfm": "text/x-coldfusion",
-    "sql": "text/x-sql"
+    "sql": "text/x-sql",
+
+    "sh": "application/x-sh",
+    "bash": "application/x-sh"
 };
 
 module.exports = ext.register("ext/code/code", {
@@ -148,9 +182,10 @@ module.exports = ext.register("ext/code/code", {
     deps    : [editors],
 
     nodes : [],
+    menus : [],
 
     fileExtensions : Object.keys(contentTypes),
-    commandManager : new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands),
+    supportedModes : Object.keys(SupportedModes),
 
     getState : function(doc) {
         doc = doc ? doc.acesession : this.getDocument();
@@ -214,7 +249,7 @@ module.exports = ext.register("ext/code/code", {
             var fileName = node.getAttribute("name");
 
             if (fileName.lastIndexOf(".") != -1)
-                mime = contentTypes[fileName.split(".").pop()];
+                mime = contentTypes[fileName.split(".").pop().toLowerCase()];
             else
                 mime = contentTypes["*" + fileName];
         }
@@ -226,27 +261,41 @@ module.exports = ext.register("ext/code/code", {
 
         return "text";
     },
+    
+    getContentType : function(node) {
+        var syntax = this.getSyntax(node);
+        if (!syntax)
+            return "auto";
+        
+        return contentTypes[syntax] || (syntax == "text" ? "text/plain" : "auto");
+    },
 
     getSelection : function(){
-        if (typeof ceEditor == "undefined")
+        if (typeof this.amlEditor == "undefined")
             return null;
-        return ceEditor.getSelection();
+        return this.amlEditor.getSelection();
     },
 
     getDocument : function(){
-        if (typeof ceEditor == "undefined")
+        if (typeof this.amlEditor == "undefined")
             return null;
-        return ceEditor.getSession();
+        return this.amlEditor.getSession();
     },
 
     setDocument : function(doc, actiontracker){
         var _self = this;
 
-        if (!doc.acesession) {
+        var ceEditor = this.amlEditor;
+
+        if (doc.acesession) {
+            ceEditor.setProperty("value", doc.acesession);
+        }
+        else {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
             doc.acesession = new EditSession(doc.acedoc);
             doc.acedoc = doc.acesession.getDocument();
+            doc.acesession.c9doc = doc;
 
             doc.acesession.setUndoManager(actiontracker);
 
@@ -258,10 +307,30 @@ module.exports = ext.register("ext/code/code", {
                     return;
 
                 doc.acesession.setValue(e.value || "");
+
                 if (doc.state)
                     _self.setState(doc, doc.state);
+
                 doc.isInited = true;
+
+                var syntax = _self.getSyntax(doc.getNode());
+                doc.acesession.setMode(ceEditor.getMode(syntax));
+                doc.acesession.syntax = syntax;
+
+                if (this.$page.id != this.$page.parentNode.activepage)
+                    return;
+
+                ceEditor.setProperty("syntax", syntax);
+                ceEditor.setProperty("value", doc.acesession);
+                // force tokenize first visible rows
+                var rowCount = Math.min(50, doc.acesession.getLength());
+                doc.acesession.bgTokenizer.getTokens(0, rowCount);
             });
+
+            if (doc.value)
+                ceEditor.setProperty("value", doc.acesession);
+            else
+                ceEditor.setProperty("value", "");
 
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self)
@@ -273,14 +342,36 @@ module.exports = ext.register("ext/code/code", {
                     return doc.acesession.getValue();
             });
 
-            doc.addEventListener("close", function(){
+            doc.addEventListener("close", function(e){
                 if (this.editor != _self)
                     return;
 
                 //??? destroy doc.acesession
+                setTimeout(function() {
+                    doc.acedoc.doc.$lines = [];
+                    doc.acedoc.doc._eventRegistry = null;
+                    doc.acedoc.doc._defaultHandlers = null;
+                    doc.acedoc._eventRegistry = null;
+                    doc.acedoc._defaultHandlers = null;
+                    doc.acedoc = null;
+                    doc.acesession.$stopWorker();
+                    doc.acesession.bgTokenizer.lines = [];
+                    doc.acesession.bgTokenizer.tokenizer = null;
+                    doc.acesession.bgTokenizer = null;
+                    doc.acesession.$rowCache = null;
+                    doc.acesession.$mode = null;
+                    doc.acesession.$origMode = null;
+                    doc.acesession.$breakpoints = null;
+                    doc.acesession.$annotations = null;
+                    doc.acesession.languageAnnos = null;
+                    doc.acesession = null;
+                    doc = null;
+                    //??? call doc.$page.destroy()
+                });
             });
+            
+            doc.dispatchEvent("init");
         }
-        ceEditor.setProperty("value", doc.acesession);
 
         if (doc.editor && doc.editor != this) {
             var value = doc.getValue();
@@ -293,47 +384,86 @@ module.exports = ext.register("ext/code/code", {
         doc.editor = this;
     },
 
+    clear : function(){
+        this.amlEditor.clear();
+    },
+
+    focus : function(){
+        this.amlEditor.focus();
+    },
+
     hook: function() {
-        var _self      = this;
+        var _self = this;
+
+        var fnWrap = function(command){
+            command.readOnly = command.readOnly || false;
+            command.focusContext = true;
+
+            var isAvailable = command.isAvailable;
+            command.isAvailable = function(editor){
+                if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
+                    return false;
+
+                return isAvailable ? isAvailable(editor) : true;
+            }
+            var exec = command.exec;
+            command.exec = function(editor, args){
+                if (editor && editor.ceEditor)
+                    editor = editor.ceEditor.$editor;
+
+                exec.call(this, editor, args);
+            }
+        }
+
+        if (!defaultCommands.wrapped) {
+            defaultCommands.each(fnWrap, defaultCommands);
+            defaultCommands.wrapped = true;
+        }
+        if (!MultiSelectCommands.wrapped) {
+            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
+            MultiSelectCommands.wrapped = true;
+        }
+
+        commands.addCommands(defaultCommands, true);
+        commands.addCommands(MultiSelectCommands, true);
 
         //Settings Support
-        ide.addEventListener("init.ext/settings/settings", function(e) {
-            var heading = e.ext.getHeading("Code Editor");
-            heading.insertMarkup(markupSettings);
-        });
-
-        ide.addEventListener("loadsettings", function(e) {
-            var model = e.model;
-            if (!model.queryNode("editors/code")) {
-                var node = apf.n("<code />")
-                  .attr("overwrite", "false")
-                  .attr("selectstyle", "line")
-                  .attr("activeline", "true")
-                  .attr("showinvisibles", "false")
-                  .attr("showprintmargin", "true")
-                  .attr("printmargincolumn", "80")
-                  .attr("softtabs", "true")
-                  .attr("tabsize", "4")
-                  .attr("scrollspeed", "2")
-                  .attr("fontsize", "12")
-                  .attr("wrapmode", "false")
-                  .attr("wraplimitmin", "")
-                  .attr("wraplimitmax", "")
-                  .attr("gutter", "true")
-                  .attr("highlightselectedword", "true")
-                  .attr("autohidehorscrollbar", "true").node();
-
-                var editors = apf.createNodeFromXpath(model.data, "editors");
-                apf.xmldb.appendChild(editors, node);
-            }
+        ide.addEventListener("settings.load", function(e) {
+            settings.setDefaults("editors/code", [
+                ["overwrite", "false"],
+                ["selectstyle", "line"],
+                ["activeline", "true"],
+                ["gutterline", "true"],
+                ["showinvisibles", "false"],
+                ["showprintmargin", "true"],
+                ["printmargincolumn", "80"],
+                ["softtabs", "true"],
+                ["tabsize", "4"],
+                ["scrollspeed", "2"],
+                ["fontsize", "12"],
+                ["wrapmode", "false"],
+                ["wraplimitmin", ""],
+                ["wraplimitmax", ""],
+                ["wrapmodeViewport", "true"],
+                ["gutter", "true"],
+                ["folding", "true"],
+                ["newlinemode", "auto"],
+                ["highlightselectedword", "true"],
+                ["autohidehorscrollbar", "true"],
+                ["fadefoldwidgets", "true"],
+                ["animatedscroll", "true"]
+            ]);
 
             // pre load theme
             var theme = e.model.queryValue("editors/code/@theme");
             if (theme)
                 require([theme], function() {});
+
             // pre load custom mime types
             _self.getCustomTypes(e.model);
         });
+
+        settings.addSettings("Code Editor", markupSettings);
 
         ide.addEventListener("afteropenfile", function(e) {
             if (_self.setState)
@@ -341,118 +471,374 @@ module.exports = ext.register("ext/code/code", {
 
             if (e.doc && e.doc.editor && e.doc.editor.ceEditor) {
                 // check if there is a scriptid, if not check if the file is somewhere in the stack
-                if (mdlDbgStack && mdlDbgStack.data
-                    && !e.node.getAttribute("scriptid") && e.node.getAttribute("scriptname"))
-                {
-                    var nodes = mdlDbgStack.data.selectNodes("//frame[@script='" + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "") + "']");
+                if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
+                  && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
+                  && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
+                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "").replace(/"/g, "&quot;") + '"]');
                     if (nodes.length) {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
                     }
                 }
-                e.doc.editor.ceEditor.afterOpenFile(e.doc.editor.ceEditor.getSession());
+                e.doc.editor.amlEditor.afterOpenFile(e.doc.editor.amlEditor.getSession());
             }
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            var editor = _self.amlEditor;
+            if (typeof editor != "undefined")
+                editor.afterOpenFile(editor.getSession());
         });
 
-        // preload common language modes
-        require(["ace/mode/javascript", "ace/mode/html", "ace/mode/css"], function() {});
+        c = 20000;
+        this.menus.push(
+            menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
+            addEditorMenu("Tools/Record Macro", "togglerecording"), //@todo this needs some more work
+            addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
+        );
+
+        var c = 600;
+        this.menus.push(
+            menus.addItemByPath("Edit/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Line/", null, c += 100),
+            menus.addItemByPath("Edit/Comment/", null, c += 100),
+            menus.addItemByPath("Edit/Text/", null, c += 100),
+            menus.addItemByPath("Edit/Code Folding/", null, c += 100),
+            menus.addItemByPath("Edit/Convert Case/", null, c += 100)
+        );
+
+        function addEditorMenu(path, commandName) {
+            return menus.addItemByPath(path, new apf.item({
+                command : commandName
+            }), c += 100);
+        }
+
+        c = 0;
+        this.menus.push(
+            addEditorMenu("Edit/Line/Indent", "indent"),
+            addEditorMenu("Edit/Line/Outdent", "outdent"),
+            addEditorMenu("Edit/Line/Move Line Up", "movelinesup"),
+            addEditorMenu("Edit/Line/Move Line Down", "movelinesdown"),
+
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
+            addEditorMenu("Edit/Line/Copy Lines Up", "copylinesup"),
+            addEditorMenu("Edit/Line/Copy Lines Down", "copylinesdown"),
+
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
+            addEditorMenu("Edit/Line/Remove Line", "removeline"),
+            addEditorMenu("Edit/Line/Remove to Line End", "removetolineend"),
+            addEditorMenu("Edit/Line/Remove to Line Start", "removetolinestart"),
+
+            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
+            addEditorMenu("Edit/Line/Split Line", "splitline")
+        )
+
+        c = 0;
+        this.menus.push(
+            addEditorMenu("Edit/Comment/Toggle Comment", "togglecomment")
+        );
+
+        c = 0;
+        this.menus.push(
+            addEditorMenu("Edit/Text/Remove Word Right", "removewordright"),
+            addEditorMenu("Edit/Text/Remove Word Left", "removewordleft"),
+
+            menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
+            addEditorMenu("Edit/Text/Transpose Letters", "transposeletters")
+        );
+
+        c = 0;
+        this.menus.push(
+            addEditorMenu("Edit/Code Folding/Fold", "fold"),
+            addEditorMenu("Edit/Code Folding/Unfold", "unfold"),
+
+            menus.addItemByPath("Edit/Code Folding/~", new apf.divider(), c += 100),
+            addEditorMenu("Edit/Code Folding/Fold All", "foldall"),
+            addEditorMenu("Edit/Code Folding/Unfold All", "unfoldall")
+        );
+
+        c = 0;
+        this.menus.push(
+            addEditorMenu("Edit/Convert Case/Upper Case", "touppercase"),
+            addEditorMenu("Edit/Convert Case/Lower Case", "tolowercase")
+        );
+
+        c = 0;
+        this.menus.push(
+            addEditorMenu("Selection/Select All", "selectall"),
+            addEditorMenu("Selection/Split Into Lines", "splitIntoLines"),
+            addEditorMenu("Selection/Single Selection", "singleSelection"),
+
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Selection/Multiple Selections/", null, c += 100),
+
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            addEditorMenu("Selection/Select Word Right", "selectwordright"),
+            addEditorMenu("Selection/Select Word Left", "selectwordleft"),
+
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            addEditorMenu("Selection/Select to Line End", "selecttolineend"),
+            addEditorMenu("Selection/Select to Line Start", "selecttolinestart"),
+
+            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            addEditorMenu("Selection/Select to Document Start", "selecttostart"),
+            addEditorMenu("Selection/Select to Document End", "selecttoend")
+        );
+
+        c = 0;
+        this.menus.push(
+            addEditorMenu("Selection/Multiple Selections/Add Cursor Up", "addCursorAbove"),
+            addEditorMenu("Selection/Multiple Selections/Add Cursor Down", "addCursorBelow"),
+            addEditorMenu("Selection/Multiple Selections/Move Active Cursor Up", "addCursorAboveSkipCurrent"),
+            addEditorMenu("Selection/Multiple Selections/Move Active Cursor Down", "addCursorBelowSkipCurrent"),
+
+            menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
+            addEditorMenu("Selection/Multiple Selections/Add Next Selection Match", "selectMoreAfter"),
+            addEditorMenu("Selection/Multiple Selections/Add Previous Selection Match", "selectMoreBefore"),
+
+            menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
+            addEditorMenu("Selection/Multiple Selections/Merge Selection Range", "splitIntoLines")
+        );
+
+        var grpSyntax, grpNewline;
+
+        /**** View ****/
+        this.menus.push(
+            menus.addItemByPath("View/Gutter", new apf.item({
+                type    : "check",
+                checked : "[{require('core/settings').model}::editors/code/@gutter]"
+            }), 500),
+
+            menus.addItemByPath("View/~", new apf.divider(), 290000),
+
+            menus.addItemByPath("View/Syntax/", new apf.menu({
+                "onprop.visible" : function(e){
+                    if (e.value) {
+                        if (!editors.currentEditor || !editors.currentEditor.ceEditor)
+                            this.disable();
+                        else {
+                            this.enable();
+
+                            var page = tabEditors.getPage();
+                            var node = page && page.$model.data;
+                            grpSyntax.setValue(node
+                                && node.getAttribute("customtype") || "auto");
+                        }
+                    }
+                },
+                "onitemclick" : function(e) {
+                    var file = ide.getActivePageModel();
+
+                    if (file) {
+                        var value = e.relatedNode.value;
+
+                        if (value == "auto")
+                            apf.xmldb.removeAttribute(file, "customtype", "");
+                        else
+                            apf.xmldb.setAttribute(file, "customtype", value);
+
+                        if (file.getAttribute("customtype")) {
+                            var fileName = file.getAttribute("name");
+
+                            if (contentTypes["*" + fileName])
+                                delete contentTypes["*" + fileName];
+
+                            var mime = value.split(";")[0];
+                            var fileExt = (fileName.lastIndexOf(".") != -1) ?
+                                fileName.split(".").pop() : null;
+
+                            if (fileExt && contentTypes[fileExt] !== mime)
+                                delete contentTypes[fileExt];
+
+                            var customType = fileExt ?
+                                contentTypes[fileExt] : contentTypes["*" + fileName];
+
+                            if (!customType)
+                                _self.setCustomType(fileExt ? fileExt : file, mime);
+
+                            ide.dispatchEvent("track_action", {
+                                type: "syntax highlighting",
+                                fileType: fileExt,
+                                fileName: fileName,
+                                mime: mime,
+                                customType: customType
+                            });
+                        }
+
+                        if (self.ceEditor)
+                            ceEditor.setProperty("syntax", _self.getSyntax(file));
+                    }
+                }
+            }), 300000),
+
+            grpNewline = new apf.group(),
+
+            menus.addItemByPath("View/Newline Mode/", new apf.menu({
+                "onprop.visible" : function(e){
+                    if (e.value) {
+                        grpNewline.setValue(
+                            settings.model.queryValue("editors/code/@newlinemode"));
+                    }
+                },
+                "onitemclick" : function(e){
+                    settings.model.setQueryValue("editors/code/@newlinemode",
+                        e.relatedNode.value);
+                }
+            }), 310000),
+
+            menus.addItemByPath("View/Newline Mode/Auto", new apf.item({
+                type    : "radio",
+                value   : "auto",
+                group   : grpNewline
+            }), 100),
+
+            menus.addItemByPath("View/Newline Mode/~", new apf.divider(), 110),
+
+            menus.addItemByPath("View/Newline Mode/Windows (CRLF)", new apf.item({
+                type    : "radio",
+                value   : "windows",
+                group   : grpNewline
+            }), 200),
+
+            menus.addItemByPath("View/Newline Mode/Unix (LF)", new apf.item({
+                type    : "radio",
+                value   : "unix",
+                group   : grpNewline
+            }), 300),
+
+            menus.addItemByPath("View/~", new apf.divider(), 400000),
+
+            menus.addItemByPath("View/Wrap Lines", new apf.item({
+                type    : "check",
+                checked : "[{require('core/settings').model}::editors/code/@wrapmode]",
+                isAvailable : function(editor){
+                    return editor && editor.ceEditor;
+                }
+            }), 500000),
+
+            menus.addItemByPath("View/Wrap To Viewport", new apf.item({
+                wrapmode : "[{require('core/settings').model}::editors/code/@wrapmode]",
+                type     : "check",
+                checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
+                "onprop.wrapmode" : function(e){
+                    this.setAttribute("disabled", !apf.isTrue(e.value))
+                },
+                isAvailable : function(editor){
+                    return editor && editor.ceEditor;
+                }
+            }), 600000)
+        );
+
+        c = 0;
+        this.menus.push(
+            grpSyntax = new apf.group(),
+
+            menus.addItemByPath("View/Syntax/Auto-Select", new apf.item({
+                type: "radio",
+                value: "auto",
+                group : grpSyntax
+            }), c += 100),
+
+            menus.addItemByPath("View/Syntax/Plain Text", new apf.item({
+                type: "radio",
+                value: "text/plain",
+                group : grpSyntax
+            }), c += 100),
+
+            menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
+        );
+
+        for (var mode in ModesCaption) {
+            this.menus.push(
+                menus.addItemByPath("View/Syntax/" + mode, new apf.item({
+                    type: "radio",
+                    value: ModesCaption[mode],
+                    group : grpSyntax
+                }), c += 100)
+            )
+        }
+
+        c = 0;
+        this.menus.push(
+            /**** Goto ****/
+
+            menus.addItemByPath("Goto/~", new apf.divider(), c = 399),
+
+            addEditorMenu("Goto/Word Right", "gotowordright"),
+            addEditorMenu("Goto/Word Left", "gotowordleft"),
+            menus.addItemByPath("Goto/~", new apf.divider(), 600),
+
+            addEditorMenu("Goto/Line End", "gotolineend"),
+            addEditorMenu("Goto/Line Start", "gotolinestart"),
+            menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
+
+            addEditorMenu("Goto/Jump to Matching Brace", "jumptomatching"),
+            menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
+
+            addEditorMenu("Goto/Scroll to Selection", "centerselection")
+        );
     },
 
     init: function(amlPage) {
-        amlPage.appendChild(ceEditor);
-        ceEditor.show();
-
-        this.ceEditor = this.amlEditor = ceEditor;
-        ceEditor.$editor.commands = this.commandManager;
-
         var _self = this;
 
-        this.nodes.push(
-            //Add a panel to the statusbar showing whether the insert button is pressed
-            sbMain.appendChild(new apf.section({
-                caption : "{ceEditor.insert}"
-            })),
+        this.ceEditor = this.amlEditor = ceEditor;
+        this.amlEditor.show();
 
-            //Add a panel to the statusbar showing the length of the document
-            sbMain.appendChild(new apf.section({
-                caption : "Length: {ceEditor.value.length}"
-            })),
+        this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
+        this.amlEditor.$editor.commands = commands;
 
-            mnuView.appendChild(new apf.item({
-                caption : "Syntax Highlighting",
-                submenu : "mnuSyntax"
-            })),
+        // preload common language modes
+        var noop = function() {};
+        ceEditor.getMode("javascript", noop);
+        ceEditor.getMode("html", noop);
+        ceEditor.getMode("css", noop);
 
-            mnuView.appendChild(new apf.divider()),
+        var menuShowInvisibles = new apf.item({
+            type    : "check",
+            caption : "Show Invisibles",
+            checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
+        });
 
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Show Invisibles",
-                checked : "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-            })),
+        ide.addEventListener("reload", function(e) {
+            var doc = e.doc;
+            doc.state = doc.$page.$editor.getState
+                && doc.$page.$editor.getState(doc);
+        });
 
-            mnuView.appendChild(new apf.item({
-                type    : "check",
-                caption : "Wrap Lines",
-                checked : "{ceEditor.wrapmode}"
-            }))
-        );
+        ide.addEventListener("afterreload", function(e) {
+            var doc         = e.doc;
+            var acesession  = doc.acesession;
 
-        mnuSyntax.onitemclick = function(e) {
-            var file = ide.getActivePageModel();
-
-            if (file) {
-                var value = e.relatedNode.value;
-
-                if (value == "auto")
-                    apf.xmldb.removeAttribute(file, "customtype", "");
-                else
-                    apf.xmldb.setAttribute(file, "customtype", value);
-
-                if (file.getAttribute("customtype")) {
-                    var fileName = file.getAttribute("name");
-
-                    if (contentTypes["*" + fileName])
-                        delete contentTypes["*" + fileName];
-
-                    var mime = value.split(";")[0];
-                    var fileExt = (fileName.lastIndexOf(".") != -1) ?
-                        fileName.split(".").pop() : null;
-
-                    if (fileExt && contentTypes[fileExt] !== mime)
-                        delete contentTypes[fileExt];
-
-                    var customType = fileExt ?
-                        contentTypes[fileExt] : contentTypes["*" + fileName];
-
-                    if (!customType)
-                        _self.setCustomType(fileExt ? fileExt : file, mime);
-                    ide.dispatchEvent("track_action", {
-                        type: "syntax highlighting",
-                        fileType: fileExt,
-                        fileName: fileName,
-                        mime: mime,
-                        customType: customType
-                    });
-                }
-            }
-        };
-
-        ide.addEventListener("keybindingschange", function(e) {
-            if (typeof ceEditor == "undefined")
+            if (!acesession)
                 return;
 
-            var bindings = e.keybindings.code;
-            ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
-            // In case the `keybindingschange` event gets fired after other
-            // plugins that change keybindings have already changed them (i.e.
-            // the vim plugin), we fire an event so these plugins can react to it.
-            ide.dispatchEvent("code.ext:defaultbindingsrestored", {
-                bindings: ceEditor.$editor.getKeyboardHandler()
-            });
+            acesession.doc.setValue(e.data);
+
+            if (doc.state) {
+                var editor = doc.$page.$editor;
+                editor.setState && editor.setState(doc, doc.state);
+            }
+
+            apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
+        });
+
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            // add preferences to the statusbar plugin
+            e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
+        });
+
+        ide.addEventListener("updatefile", function(e){
+            var page = tabEditors.getPage();
+            if (page && ceEditor.getDocument() == page.$doc.acesession)
+                ceEditor.setProperty("syntax", _self.getSyntax(e.xmlNode));
+        });
+
+        ide.addEventListener("afteroffline", function(){
+            menus.menus["View/Syntax"].disable();
+        });
+
+        ide.addEventListener("afteronline", function(){
+            menus.menus["View/Syntax"].enable();
         });
     },
 
@@ -468,14 +854,16 @@ module.exports = ext.register("ext/code/code", {
         if (typeof ext === "string") {
             node = settings.model.queryNode('auto/customtypes/mime[@ext="' + ext + '"]');
             if (!node)
-                settings.model.appendXml('<mime name="' + mime + '" ext="' + ext + '" />', "auto/customtypes");
+                node = settings.model.appendXml('<mime name="'
+                    + mime + '" ext="' + ext + '" />', "auto/customtypes");
         } else {
             var name = ext.getAttribute("name") || "";
             node = settings.model.queryNode('auto/customtypes/mime[@filename="' + name + '"]');
             if (node)
                 apf.xmldb.removeAttribute(node, "ext");
             else
-                settings.model.appendXml('<mime name="' + mime + '" filename="' + name + '" />', "auto/customtypes");
+                node = settings.model.appendXml('<mime name="'
+                    + mime + '" filename="' + name + '" />', "auto/customtypes");
         }
 
         apf.xmldb.setAttribute(node, "name", mime);
@@ -501,26 +889,50 @@ module.exports = ext.register("ext/code/code", {
         });
     },
 
-
     enable : function() {
+        if (this.disabled === false)
+            return;
+
+        this.disabled = false;
+
+        this.menus.each(function(item){
+            item.enable();
+        });
+
         this.nodes.each(function(item){
             item.show();
         });
     },
 
     disable : function() {
+        if (this.disabled)
+            return;
+
+        this.disabled = true;
+
+        this.menus.each(function(item){
+            item.disable();
+        });
+
         this.nodes.each(function(item){
             item.hide();
         });
     },
 
     destroy : function(){
+        this.menus.each(function(item){
+            item.destroy(true, true);
+        });
+
+        commands.removeCommands(defaultCommands);
+        commands.removeCommands(MultiSelectCommands);
+
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
 
-        if (self.ceEditor) {
-            ceEditor.destroy(true, true);
+        if (this.amlEditor) {
+            this.amlEditor.destroy(true, true);
             mnuSyntax.destroy(true, true);
         }
 

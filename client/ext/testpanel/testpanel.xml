@@ -25,7 +25,7 @@
                   caption  = "Run tests"
                   onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.getSelection());"
                   submenu  = "mnuRunSettings" 
-                  visible  = "{!(stTestRun.active or !dgTestProject.selected)}" />
+                  visible  = "{!(stTestRun.active || !dgTestProject.selected)}" />
             
                 <a:button
                   icon     = "stop.png"
@@ -33,15 +33,13 @@
                   skin     = "c9-toolbarbutton"
                   onclick  = "require('ext/testpanel/testpanel').stop()"
                   visible  = "{!btnTestRun.visible}"
-                  disabled = "{!stTestRun.active or stTestRun.stopping}" />
+                  disabled = "{!stTestRun.active || stTestRun.stopping}" />
             </a:hbox>
         </a:bar>
       
         <a:button
-          top="-22"
           skin="header-btn"
-          right="5"
-          icon="panel_settings.png"
+          class="panel-settings"
           submenu = "mnuFilter" />
         <a:menu id="mnuFilter">
             <a:item type="radio" value="all" selected="true">All</a:item>
@@ -100,7 +98,7 @@
                         if ([@status] === '0')
                             <span style='color:red'>\[[@status-message]\]</span>
                         else if ([@status] == '1')
-                            <span style='color:green'>\[PASS{[@status-message] and " [@status-message]"}\]</span>
+                            <span style='color:green'>\[PASS{[@status-message] &amp;&amp; " [@status-message]"}\]</span>
                         else if ([@status] == '-1')
                             <span>\[{[@status-message].uCaseFirst()}\]</span>
                         else

@@ -12,10 +12,8 @@
       buttons  = "close"
       optimize = "true">
         <a:button
-          top="-22"
           skin="header-btn"
-          right="5"
-          icon="panel_settings.png"
+          class="panel-settings"
           submenu="mnuOpenFilesSettings"/>
         
         <a:menu id="mnuOpenFilesSettings">
@@ -25,9 +23,11 @@
                 visible = "{lstOpenFiles.visible}"
                 checked = "[{require('ext/settings/settings').model}::auto/openfiles/@showpath]"
                 onclick = "
-                    var sel = lstOpenFiles.getSelection();
-                    lstOpenFiles.reload();
-                    lstOpenFiles.selectList(sel);
+                    setTimeout(function() {
+                        var sel = lstOpenFiles.getSelection();
+                        lstOpenFiles.reload();
+                        lstOpenFiles.selectList(sel);
+                    });
                 "
             />
         </a:menu>
@@ -38,6 +38,7 @@
           model       = "{require('ext/openfiles/openfiles').model}"
           border      = "0"
           scrollbar   = "sbShared 2 2 2"
+          class       = "openfile"
           multiselect = "true" 
           autoselect  = "false"
           skin        = "tree">

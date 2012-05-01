@@ -9,38 +9,34 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var Util = require("core/util");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var Search = require("ace/search").Search;
 var skin = require("text!ext/quicksearch/skin.xml");
 var markup = require("text!ext/quicksearch/quicksearch.xml");
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 
 var oIter, oTotal;
+
+//N.B. the problem is with many occurences, so a single character search breaks it.
+var MAX_LINES = 20000; // alter live search if lines > 20k--performance bug
+var MAX_LINES_SOFT = 8000; // single character search prohibited
 
 module.exports = ext.register("ext/quicksearch/quicksearch", {
     name    : "quicksearch",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
-    skin     : {
-        id   : "quicksearch",
-        data : skin,
-        "icon-path" : ide.staticPrefix + "/ext/quicksearch/icons/"
-    },
-    markup  : markup,
-    commands : {
-        "quicksearch": {hint: "quickly search for a string inside the active document, without further options (see 'search')"},
-        "find": {hint: "open the quicksearch dialog to quickly search for a phrase"},
-        "findnext": {
-            hint: "search for the next occurrence of the search query your entered last",
-            msg: "Navigating to next match."
-        },
-        "findprevious": {
-            hint: "search for the previous occurrence of the search query your entered last",
-            msg: "Navigating to previous match."
-        }
+    skin    : {
+        id  : "quicksearch",
+        data : skin,
+        "icon-path" : ide.staticPrefix + "/ext/quicksearch/icons/"
     },
-    hotitems: {},
+    markup  : markup,
+    defaultOffset : 30,
+    offsetWidth : 30,
 
     nodes   : [],
 
@@ -48,24 +44,79 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     hook : function(){
         var _self = this;
-        code.commandManager.addCommand({
+        
+        commands.commands["findnext"].hint = "search for the next occurrence of the search query your entered last";
+        commands.commands["findnext"].msg = "Navigating to next match.";
+        commands.commands["findprevious"].hint = "search for the previous occurrence of the search query your entered last";
+        commands.commands["findprevious"].msg = "Navigating to previous match.";
+        
+        commands.addCommand({
             name: "find",
+            hint: "open the quicksearch dialog to quickly search for a phrase",
+            bindKey: {mac: "Command-F", win: "Ctrl-F"},
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
             exec: function(env, args, request) {
                 _self.toggleDialog(1);
             }
         });
+
+        ide.addEventListener("minimap.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateBarPosition();
+        });
+
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.offsetWidth = _self.defaultOffset + e.width;
+            else
+                _self.offsetWidth = _self.defaultOffset;
+
+            _self.updateBarPosition();
+        });
+        
+        this.nodes.push(
+            menus.addItemByPath("Find/~", new apf.divider(), 1000),
+
+            menus.addItemByPath("Find/Quick Find", new apf.item({
+                command : "find"
+            }), 1100)
+        );
     },
 
-    init : function(amlNode){
+    init : function(){
         var _self = this;
+        
+        var isAvailable = commands.commands["findnext"].isAvailable;
+        
+        commands.commands["findnext"].isAvailable =
+        commands.commands["findprevious"].isAvailable = function(editor){
+            if (apf.activeElement == txtQuickSearch)
+                return true;
+            
+            return isAvailable.apply(this, arguments);
+        }
 
-        txtQuickSearch.addEventListener("keydown", function(e){
+        txtQuickSearch.addEventListener("clear", function() {
+            _self.execSearch(false, false, true);
+        })
+
+        txtQuickSearch.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
-                    _self.execSearch(false, !!e.shiftKey);
+                    _self.execSearch(false, !!e.shiftKey, null, true);
                     return false;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
+
+                    if (txtQuickSearch.getValue())
+                        _self.saveHistory(txtQuickSearch.getValue());
+
                     if (e.htmlEvent)
                         apf.stopEvent(e.htmlEvent);
                     else if (e.stop)
@@ -73,33 +124,66 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     return false;
                 case 38: //UP
                     _self.navigateList("prev");
-                break;
+                    break;
                 case 40: //DOWN
                     _self.navigateList("next");
-                break;
+                    break;
                 case 36: //HOME
-                    if (!e.ctrlKey) return;
+                    if (!e.ctrlKey)
+                        return;
                     _self.navigateList("first");
-                break;
+                    break;
                 case 35: //END
-                    if (!e.ctrlKey) return;
+                    if (!e.ctrlKey)
+                        return;
                     _self.navigateList("last");
-                break;
+                    break;
             }
+
+            var ace = _self.$getAce();
+            if (ace.getSession().getDocument().getLength() > MAX_LINES)
+                return;
+
+            if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
+                clearTimeout(this.$timer);
+                this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
+                    _self.execSearch(false, false, e.keyCode == 8);
+                }, 20);
+            }
+
+            return;
         });
 
         winQuickSearch.addEventListener("blur", function(e){
-            if (!apf.isChildOf(winQuickSearch, e.toElement))
+            if (winQuickSearch.visible && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
         });
+
         txtQuickSearch.addEventListener("blur", function(e){
-            if (!apf.isChildOf(winQuickSearch, e.toElement))
+            if (self.winQuickSearch && winQuickSearch.visible
+              && !apf.isChildOf(winQuickSearch, e.toElement))
                 _self.toggleDialog(-1);
+        });
+
+        ide.addEventListener("closepopup", function(e){
+            if (e.element != _self)
+                _self.toggleDialog(-1, true);
         });
 
         var editor = editors.currentEditor;
         if (editor && editor.ceEditor)
             editor.ceEditor.parentNode.appendChild(winQuickSearch);
+
+        setTimeout(function() {
+            _self.updateBarPosition();
+        });
+    },
+
+    updateBarPosition : function() {
+        if (!window["winQuickSearch"])
+            return;
+
+        winQuickSearch.setAttribute("right", this.offsetWidth);
     },
 
     navigateList : function(type){
@@ -127,14 +211,9 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         }
     },
 
-    handleQuicksearchEscape : function(e) {
-        if (e.keyCode == 27)
-            this.toggleDialog(-1);
-    },
-
-    updateCounter: function() {
+    updateCounter: function(backwards) {
         var ace = this.$getAce();
-        var width, buttonWidth;
+        var width;
 
         if (!oIter) {
             oIter  = document.getElementById("spanSearchIter");
@@ -154,120 +233,173 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             if (oIter.parentNode && txtQuickSearch && txtQuickSearch.$button) {
                 width = oIter.parentNode.offsetWidth || 0;
                 txtQuickSearch.$button.style.right = width + "px";
-                buttonWidth = txtQuickSearch.$button.offsetWidth || 0;
-                txtQuickSearch.$input.parentNode.style.paddingRight = (width + buttonWidth + 10) + "px";
             }
         });
 
         var ranges = ace.$search.findAll(ace.getSession());
-        if (!ranges || !ranges.length) {
+        if (!ranges || !ranges.length || !txtQuickSearch.getValue()) {
             oIter.innerHTML = "0";
             oTotal.innerHTML = "of 0";
             return;
         }
-        var crtIdx = -1;
-        var cur = this.currentRange;
-        if (cur) {
-            // sort ranges by position in the current document
-            ranges.sort(cur.compareRange.bind(cur));
-            var range;
-            var start = cur.start;
-            var end = cur.end;
-            for (var i = 0, l = ranges.length; i < l; ++i) {
-                range = ranges[i];
-                if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
-                    crtIdx = i;
-                    break;
+
+        if (backwards) {
+            var newCount = oIter.innerHTML - 1;
+            if (newCount < 1) {
+                newCount = String(ranges.length);
+            }
+            oIter.innerHTML = String(newCount);
+        }
+        else {
+            var crtIdx = -1;
+            var cur = this.currentRange;
+            if (cur) {
+                // sort ranges by position in the current document
+                //ranges.sort(cur.compareRange.bind(cur));
+                var range;
+                var start = cur.start;
+                var end = cur.end;
+                for (var i = 0, l = ranges.length; i < l; ++i) {
+                    range = ranges[i];
+                    if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
+                        crtIdx = i;
+                        break;
+                    }
                 }
             }
+            oIter.innerHTML = String(++crtIdx);
         }
-        oIter.innerHTML = String(++crtIdx);
+
         oTotal.innerHTML = "of " + ranges.length;
     },
 
-    toggleDialog: function(force) {
+    toggleDialog: function(force, noanim) {
         ext.initExtension(this);
-
-        if (this.control && this.control.stop)
-            this.control.stop();
 
         var editorPage = tabEditors.getPage();
         if (!editorPage) return;
 
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
+            
+        editor.amlEditor.parentNode.appendChild(winQuickSearch);
 
         var _self = this;
 
         if (!force && !winQuickSearch.visible || force > 0) {
+            if (winQuickSearch.visible)
+                return;
+            
             this.position = -1;
+
+            if (this.control && this.control.stop)
+                this.control.stop();
 
             var sel   = editor.getSelection();
             var doc   = editor.getDocument();
             var range = sel.getRange();
             var value = doc.getTextRange(range);
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
+                anim: "out"
+            });
 
-            if (!value && editor.ceEditor)
-               value = editor.ceEditor.getLastSearchOptions().needle;
+            if (!value && editor.amlEditor)
+                value = editor.amlEditor.getLastSearchOptions().needle;
 
             if (value)
                 txtQuickSearch.setValue(value);
+
+            ide.dispatchEvent("closepopup", {element: this});
 
             winQuickSearch.$ext.style.top = "-30px";
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
+            
+            if (corrected) {
+                if (typeof corrected.right != "undefined")
+                    winQuickSearch.$ext.style.right = corrected.right + "px";
+                winQuickSearch.$ext.style.zIndex = corrected.zIndex || winQuickSearch.zindex;
+            }
+            else {
+                winQuickSearch.$ext.style.zIndex = winQuickSearch.zindex;
+            }
 
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
                 anim     : apf.tween.easeInOutCubic,
-                from     : -27,
-                to       : 2,
+                from     : corrected ? corrected.from : -27,
+                to       : corrected ? corrected.to : 2,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {}),
                 onfinish : function() {
+                    divSearchCount.$ext.style.visibility = "";
                     _self.updateCounter();
+                    if (corrected && corrected.onfinish)
+                        corrected.onfinish();
                 }
             });
         }
         else if (winQuickSearch.visible) {
-            txtQuickSearch.focus();
-            txtQuickSearch.select();
-
-            //Animate
-            apf.tween.single(winQuickSearch, {
-                type     : "top",
-                anim     : apf.tween.NORMAL,
-                from     : winQuickSearch.$ext.offsetTop,
-                to       : -30,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {}),
-                onfinish : function(){
-                    winQuickSearch.hide();
-                    editor.ceEditor.focus();
-                }
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
+                anim: "in"
             });
+            
+            if (this.control && this.control.stop)
+                this.control.stop();
+
+            divSearchCount.$ext.style.visibility = "hidden";
+
+            if (!noanim) {
+                winQuickSearch.visible = false;
+
+                txtQuickSearch.focus();
+                txtQuickSearch.select();
+
+                //Animate
+                apf.tween.single(winQuickSearch, {
+                    type     : "top",
+                    anim     : apf.tween.NORMAL,
+                    from     : winQuickSearch.$ext.offsetTop,
+                    to       : corrected ? corrected.to : -30,
+                    steps    : 8,
+                    interval : 10,
+                    control  : (this.control = {}),
+                    onfinish : function(){
+                        winQuickSearch.visible = true;
+                        winQuickSearch.hide();
+
+                        editor.ceEditor.focus();
+                    }
+                });
+            }
+            else {
+                winQuickSearch.hide();
+            }
         }
 
         return false;
     },
 
     quicksearch : function(){
-        this.toggleDialog(1);
+        this.toggleDialog();
     },
 
-    execSearch: function(close, backwards) {
+    execSearch: function(close, backwards, wasDelete, save) {
         var ace = this.$getAce();
         if (!ace)
             return;
 
-        var txt = txtQuickSearch.getValue();
-        if (!txt)
+        var searchTxt = txtQuickSearch.getValue();
+
+        if (searchTxt.length < 2 && ace.getSession().getDocument().getLength() > MAX_LINES_SOFT)
             return;
+
+        //if (!searchTxt)
+          //  return this.updateCounter();
 
         var options = {
             backwards: !!backwards,
@@ -278,37 +410,76 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             scope: Search.ALL
         };
 
-        if (this.$crtSearch != txt)
-            this.$crtSearch = txt;
-        ace.find(txt, options);
-        this.currentRange = ace.selection.getRange();
+        if (this.$crtSearch != searchTxt)
+            this.$crtSearch = searchTxt;
 
-        var settings = require("ext/settings/settings");
-        if (settings.model) {
-            var history = settings.model;
-            var search = apf.createNodeFromXpath(history.data, "search");
+        var highlightTxt = ace.session.getTextRange(ace.selection.getRange());
 
-            if (!search.firstChild || search.firstChild.getAttribute("key") != txt) {
-                var keyEl = apf.getXml("<word />");
-                keyEl.setAttribute("key", txt);
-                apf.xmldb.appendChild(search, keyEl, search.firstChild);
+        // super ace bug ! if you're already highlighting some text, another find executes
+        // from the end of the cursor, not the start of your current highlight. thus,
+        // if the text is "copyright" and you execute a search for "c", followed immediately by
+        // "co", you'll never find the "co"--a search for "c" followed by a search for "o"
+        // DOES work, but doesn't highlight the content, so it's kind of lame.
+        // Let's just reset the cursor in the doc whilst waiting for an Ace fix, hm?
+
+        if (highlightTxt !== "") {
+            // we have a selection, that is the start of the current needle, but selection !== needle
+            if (!wasDelete) {
+                var highlightTxtReStart = new RegExp("^" + Util.escapeRegExp(highlightTxt), "i");
+
+                                                                            // if we're going backwards, reset the cursor anyway
+                if (searchTxt.match(highlightTxtReStart) && (options.backwards || searchTxt.toLowerCase() != highlightTxt.toLowerCase())) {
+                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - highlightTxt.length);
+                }
+            }
+            else { // we've deleted a letter, so stay on the same highlighted term
+                var searchTxtReStart = new RegExp("^" + Util.escapeRegExp(searchTxt), "i");
+
+                if (highlightTxt.match(searchTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) {
+                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - searchTxt.length - 1);
+                }
             }
         }
 
+        ace.find(searchTxt, options);
+        this.currentRange = ace.selection.getRange();
+
+        if (save)
+            this.saveHistory(searchTxt);
+
         if (close) {
             winQuickSearch.hide();
-            editors.currentEditor.ceEditor.focus();
+            editors.currentEditor.amlEditor.focus();
         }
 
-        this.updateCounter();
+        this.updateCounter(backwards);
+    },
+
+    saveHistory : function(searchTxt){
+        var settings = require("ext/settings/settings");
+        if (!settings.model)
+            return;
+
+        var history = settings.model;
+        var search = apf.createNodeFromXpath(history.data, "search");
+
+        if (!search.firstChild || search.firstChild.getAttribute("key") != searchTxt) {
+            var keyEl = apf.getXml("<word />");
+            keyEl.setAttribute("key", searchTxt);
+            apf.xmldb.appendChild(search, keyEl, search.firstChild);
+        }
     },
 
     find: function() {
-        this.toggleDialog(1);
+        this.toggleDialog();
         return false;
     },
 
-    findnext: function() {
+    findnext: function(e) { // apparently, CMD + G executes a search;
+        if (e !== 1) {      // halt that by forcing this method to come from a click
+            return;
+        }
+
         var ace = this.$getAce();
         if (!ace)
             return;
@@ -319,24 +490,28 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         return false;
     },
 
-    findprevious: function() {
+    findprevious: function(e) {
+        if (e !== 1) {
+            return;
+        }
+
         var ace = this.$getAce();
         if (!ace)
             return;
 
         ace.findPrevious();
         this.currentRange = ace.selection.getRange();
-        this.updateCounter();
+        this.updateCounter(true);
         return false;
     },
 
     $getAce: function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
-        return ceEditor.$editor;
+        var amlEditor = editor.amlEditor;
+        return amlEditor.$editor;
     },
 
     enable : function(){
@@ -352,6 +527,8 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("find");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

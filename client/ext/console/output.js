@@ -3,12 +3,13 @@
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ * @contributor Sergi Mansilla <sergi AT c9 DOT io>
  */
 
 define(function(require, exports, module) {
 module.exports = {
     general: {
-        "make me a sandwich": "What? Make it yourselfffff.",
+        "make me a sandwich": "What? Make it yourself!",
         "make love": "I put on my robe and wizard hat.",
         "i read the source code": "<3",
         "lpr": "PC LOAD LETTER",
@@ -67,6 +68,20 @@ module.exports = {
             "....\"Have you mooed today?\"...",
             " "],
         "__default__": "E: Invalid operation %s"
+    },
+    // If there is a predefined (i.e. hardcoded) output for the current
+    // command being executed in the CLI, show that.
+    getPredefinedOutput: function(argv) {
+        var rest;
+        var out = this[argv[0]];
+        if (out) {
+            rest = argv.slice(1).join(" ").trim();
+            return out[rest] || out.__default__.replace("%s", argv[0]);
+        }
+        else {
+            rest = argv.join(" ").trim();
+            return this.general[rest] || "";
+        }
     }
 };
 });

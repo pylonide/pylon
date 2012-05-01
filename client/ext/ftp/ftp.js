@@ -23,7 +23,6 @@ module.exports = ext.register("ext/ftp/ftp", {
     markup   : markup,
     pageTitle: "FTP log",
     pageID   : "pgFtpConsole",
-    hotitems : {},
     css      : css,
     nodes    : [],
 

@@ -20,15 +20,24 @@ module.exports = ext.register("ext/autotest/autotest", {
 
     hook : function() {
         ide.addEventListener("afterfilesave", function(e) {
+            // We don't want to run tests if it is an auto-save.
+            if (e.silentsave === true) {
+                return;
+            }
+            
             var node = e.node;
-
             var path = node.getAttribute("path");
             var m = path.match(/^.*(_test|Test)\.js$/);
+            
             if (m) {
                 run(path);
-            } else {
+            }
+            else {
                 var testPath = path.replace(/\.js$/, "_test.js");
-                if (path == testPath) return;
+                if (path == testPath) {
+                    return;
+                }
+                
                 fs.exists(testPath, function(exists) {
                     if (exists)
                         run(testPath);
@@ -44,7 +53,6 @@ module.exports = ext.register("ext/autotest/autotest", {
             
             function run(path) {
                 path = path.slice(ide.davPrefix.length + 1).replace("//", "/");
-                //console.log("running test", path);
                 noderunner.run(path, [], false);
             }
         });

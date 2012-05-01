@@ -8,28 +8,33 @@
 
         <link rel="icon" type="image/gif" href="[%staticUrl%]/favicon.ico" />
 
-        <link rel="stylesheet" type="text/css" href="[%staticUrl%]/style/style.css" />
+        <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/main/style/style.css" />
 
-        <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-        <script type="text/javascript" src="/static/require.js"></script>
+        <script type="text/javascript" src="/[%socketIoUrl%]/socket.io.js"></script>
+        <script type="text/javascript" src="[%staticUrl%]/require.js"></script>
         [%scripts%]
         <script type="text/javascript">
         //<![CDATA[
 
+            var baseUrl = window.location.host;
             window.cloud9config = {
+                startdate: new Date(),
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
                 debug: <%debug%>,
                 sessionId: <%sessionId%>,
-                workspaceId: <%workspaceId%>,                
+                workspaceId: <%workspaceId%>,
                 name: <%name%>,
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
-                staticUrl: <%staticUrl%>
+                staticUrl: "[%staticUrl%]/",
+                socketIoUrl: <%socketIoUrl%>,
+                hosted: baseUrl.indexOf("c9.io") >= 0 || baseUrl.indexOf("stage.io") >= 0 || baseUrl.indexOf("c9.dev") >= 0,
+                settings: <%settingsXml%>
             };
-            
-            // prevent console messages crash our app!
+
+            // prevent console messages from crashing our app!
             if (typeof window["console"] == "undefined") {
                 var K = function() {};
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
@@ -38,8 +43,8 @@
             var RELEASE = "release";
             var DEBUG   = "debug";
             var FILES   = "files";
-            
-            var VERSION = window.cloud9config.debug ? FILES : RELEASE;
+
+            var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
 
             var apfLoc = VERSION == FILES
                 ? "[%staticUrl%]/support/apf/apf.js"
@@ -47,37 +52,46 @@
 
             var config = <%requirejsConfig%>;
             require(config, [apfLoc], function(){
-                apf.addEventListener("load", function(){
-                    var list = ["core/ide", "core/ext", "core/util", "core/settings", "ext/editors/editors"];
-                    if (VERSION == RELEASE)
-                        list.push("ace/editor");
+                var list = ["core/ide", "core/ext", "core/util", 
+                    "core/settings", "ext/main/main", "ext/editors/editors",
+                    "ace/editor"];
 
-                    apf.IdeSettings = <%settingsXml%>
-                    //loader.animateLoader(20);
-                    require(list, function(ide, ext, util){
-                        var plugins = <%plugins%>;
-                        //loader.animateLoader(50);
-                        apf.addEventListener("load", function(){
-                            //Load extensions
-//                            loader.animateLoader(20);
-                            require(plugins, function(){
-                                ide.dispatchEvent("extload", {modules: plugins});
-                                ide.addEventListener("$event.extload", function(cb){
-                                    cb();
-                                });
+                //loader.animateLoader(20);
+                require(list, function(ide, ext, util){
+                    var plugins = <%plugins%>;
+
+                    var aceConfig = require("ace/config");
+
+                    aceConfig.set("packaged", true);
+                    aceConfig.set("workerPath", "/static/js/worker");
+                    aceConfig.set("modePath", "/static/js/mode");
+                    aceConfig.set("themePath", "/static/js/theme");
+                    
+                    //loader.animateLoader(50);
+                    apf.addEventListener("load", function(){
+                        //Load extensions
+                        require(plugins, function(){
+                            ide.dispatchEvent("extload", {modules: plugins});
+
+                            console.log("Total Load Time " 
+                                + (new Date() - window.cloud9config.startdate) + "ms");
+
+                            ide.addEventListener("$event.extload", function(cb){
+                                cb();
                             });
                         });
                     });
-                    preloaderImgs();
                 });
-                //if (apf.started)
-                //    apf.onstart();
+                preloaderImgs();
             });
             function preloaderImgs() {
                 var preloadImgs = [
-                    "[%staticUrl%]/style/images/bg-overlay.png",
-                    "[%staticUrl%]/style/images/cover-heaeder.png",
-                    "[%staticUrl%]/style/images/cover-logo.png"
+                    "[%staticUrl%]/ext/main/style/images/bg-overlay.png",
+                    "[%staticUrl%]/ext/main/style/images/cover-heaeder.png",
+                    "[%staticUrl%]/ext/main/style/images/cover-logo.png",
+                    "[%staticUrl%]/ext/main/style/images/panelBg.png",
+                    "[%staticUrl%]/ext/main/style/images/editor_tab.png",
+                    "[%staticUrl%]/ext/main/style/images/cloud9logo_transparent.png"
                 ];
                 if (document.images) {
                     var img;
@@ -101,25 +115,25 @@
                         <p>Your browser is not supported by ajax.org. Please upgrade your browser to one of these modern browsers.</p>
                         <span class="browser_option">
                             <a href="http://www.mozilla.com/firefox" target="_blank">
-                                <img src="[%staticUrl%]/style/images/browsers/ff_32x32.png" alt="" />
+                                <img src="[%staticUrl%]/ext/main/style/images/browsers/ff_32x32.png" alt="" />
                                 <div>Mozilla Firefox</div>
                             </a>
                         </span>
                         <span class="browser_option" style="width:50px;">
                             <a href="http://www.apple.com/safari" target="_blank">
-                                <img src="[%staticUrl%]/style/images/browsers/safari_32x32.png" alt="" />
+                                <img src="[%staticUrl%]/ext/main/style/images/browsers/safari_32x32.png" alt="" />
                                 <div>Safari</div>
                             </a>
                         </span>
                         <span class="browser_option">
                             <a href="http://www.google.com/chrome" target="_blank">
-                                <img src="[%staticUrl%]/style/images/browsers/chrome_32x32.png" alt="" />
+                                <img src="[%staticUrl%]/ext/main/style/images/browsers/chrome_32x32.png" alt="" />
                                 <div>Google Chrome</div>
                             </a>
                         </span>
                         <span class="browser_option">
                             <a href="http://www.microsoft.com/windows/internet-explorer" target="_blank">
-                                <img src="[%staticUrl%]/style/images/browsers/ie_32x32.png" alt="" />
+                                <img src="[%staticUrl%]/ext/main/style/images/browsers/ie_32x32.png" alt="" />
                                 <div>Internet Explorer</div>
                             </a>
                         </span>
@@ -132,94 +146,5 @@
                 </div>
             </div>
         </div>
-
-        <a:skin
-          src        = "/static/style/skins.xml"
-          media-path = "[%staticUrl%]/style/images/"
-          icon-path  = "[%staticUrl%]/style/icons/" />
-
-        <a:appsettings name="ide" debug="false"
-          disable-space       = "true"
-          auto-hide-loading   = "true"
-          allow-select        = "false"
-          allow-blur          = "true"
-          initdelay           = "false"
-          loaderAnimIndicator = "animatedLoader"
-          loaderWidth         = "300"
-          autoHideLoading     = "false"
-          storage             = "cookie"
-          baseurl             = "{apf.host ? apf.host : ''}" />
-
-        <!-- default model -->
-        <a:model />
-
-        <!--a:loader id="loader">
-            <div id="loaderContainer" class="bk-window-cover loader">tset
-                <div class="header"> </div>
-                <div class="logo"> </div>
-                <div class="loaderContent">
-                    <div class="loaderTitle">Loading IDE</div>
-                    <div class="loaderBg">
-                        <div id="animatedLoader" class="loaderIndicator"></div>
-                    </div>
-                </div>
-            </div>
-        </a:loader-->
-
-        <a:state id="stServerConnected" active="false" />
-        <a:state id="stProcessRunning" active="false" />
-
-        <a:include src="/static/include/models.xml" />
-        <a:include src="/static/include/menus.xml" />
-        <a:include src="/static/include/windows.xml" />
-        
-        <a:scrollbar
-            id       = "sbShared"
-            skin     = "sbios"
-            top      = "0"
-            right    = "0"
-            bottom   = "0"
-            width    = "7"
-            showonscroll = "true"
-            zindex   = "100000"
-        />
-        
-        <a:vbox anchors="0 0 0 0" id="vbMain">
-            <a:bar skin="c9-menu-bar" id="logobar">
-                <a:hbox>
-                    <a:hbox id="barMenu" edge="8 5 0 5" padding="3" align="center">
-                        <a:button skin="c9-menu-btn" submenu="mnuFile" margin="1 0 0 0">File</a:button>
-                        <a:button skin="c9-menu-btn" submenu="mnuEdit" margin="1 0 0 0">Edit</a:button>
-                        <a:button skin="c9-menu-btn" submenu="mnuView" margin="1 0 0 0">View</a:button>
-                    </a:hbox>
-                    <a:hbox id="barTools" edge="8 0 0 0" padding="3" align="center">
-                        <a:divider skin="c9-divider-double" />
-                    </a:hbox>
-                    <a:filler />
-                    <a:hbox id="barExtras" edge="8 0 0 0" padding="3" align="center"> 
-                        <a:divider skin="c9-divider" visible="false" />
-                    </a:hbox>
-                </a:hbox>
-            </a:bar>
-
-            <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
-                <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
-                    <a:vbox id="navbar" class="black-menu-bar unselectable">
-                    
-                    </a:vbox>
-                    <a:vbox id="colLeft" width="200" visible="false" />
-                    <a:splitter width="0" id="splitterPanelLeft" />
-                    <a:vbox id="colMiddle" flex="1" padding="3" />
-                    <a:vbox id="colRight" padding="0">
-                        <a:hbox id="hboxDockPanel" flex="1" class="hboxdockpanel">
-                        </a:hbox>
-                    </a:vbox>
-                </a:hbox>
-            </a:vbox>
-            
-            <a:statusbar id="sbMain" visible="false">
-                <a:section />
-            </a:statusbar>
-        </a:vbox>
     </body>
 </html>

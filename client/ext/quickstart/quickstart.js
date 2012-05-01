@@ -14,36 +14,10 @@ var ide = require("core/ide");
 var skin = require("text!ext/quickstart/skin.xml");
 var markup = require("text!ext/quickstart/quickstart.xml");
 
-var jsonQuickStart = {
-    identifiers: [
-        {
-            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:hbox[1]/a:vbox[1]/button[@caption="Project Files"]'),
-            name : "qsProjectBar",
-            pos: "right"
-        },
-        {
-            el : logobar,
-            name : "qsMenuBar",
-            pos: "bottom"
-        },
-       {
-            el : tabEditors,
-            name : "qsToolbar",
-            pos: "left",
-            visible: function(){
-                return hboxDockPanel.childNodes[0];
-            }
-        },
-        {
-            el : apf.document.selectSingleNode('/html[1]/body[1]/a:vbox[1]/a:vbox[1]/a:bar[1]/a:vbox[1]/a:hbox[1]'),
-            name : "qsCLI",
-            pos: "top"
-        }
-    ]
-};
-
 // require("ext/settings/settings").model.queryValue("auto/help/@show") == "false"
-//ide.addEventListener("loadsettings", function(){
+//ide.addEventListener("settings.load", function(){
+
+var jsonQuickStart;
 
 module.exports = ext.register("ext/quickstart/quickstart", {
     name     : "Quick Start",
@@ -59,6 +33,34 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     nodes : [],
 
     init : function(amlNode){   
+        jsonQuickStart = {
+            identifiers: [
+                {
+                    el : winFilesViewer,
+                    name : "qsProjectBar",
+                    pos: "right"
+                },
+                {
+                    el : logobar,
+                    name : "qsMenuBar",
+                    pos: "bottom"
+                },
+               {
+                    el : tabEditors,
+                    name : "qsToolbar",
+                    pos: "left",
+                    visible: function(){
+                        return hboxDockPanel.childNodes[0];
+                    }
+                },
+                {
+                    el : winDbgConsole,
+                    name : "qsCLI",
+                    pos: "top"
+                }
+            ]
+        };
+        
         this.overlay = document.createElement("div");
         this.overlay.setAttribute("style",
             "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;");
@@ -67,13 +69,18 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     
     hook : function(){
         var _self = this;
-                
-        ide.addEventListener("loadsettings", function(e) {
+        
+        ide.addEventListener("settings.load", function(e) {
             var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
             if(showQS === "" || showQS == "true") {
-                require("ext/settings/settings").model.setQueryValue("auto/help/@show", "true");
-                apf.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
-                _self.launchQS();
+                if(apf.getcookie("show-quick-start") == "false") {
+                    require("ext/settings/settings").model.setQueryValue("auto/help/@show", "false");   
+                }
+                else {
+                    require("ext/settings/settings").model.setQueryValue("auto/help/@show", "true");
+                    apf.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
+                    //_self.launchQS();
+                }
              }
          });
     },
@@ -88,6 +95,10 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             _self.arrangeQSImages();
             quickStartDialog.show();
         })
+    },
+    
+    setState: function(state){
+        apf.setcookie("show-quick-start", state, new Date().getTime() + 1000*3600*24*365*2);
     },
     
     hideMenus: function(){

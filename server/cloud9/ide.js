@@ -7,12 +7,12 @@ var DavPermission = require("./dav/permission");
 var Async = require("asyncjs");
 var User = require("./user");
 var fs = require("fs");
-var sys = require("sys");
+var util = require("util");
 var Url = require("url");
 var template = require("./template");
 var Workspace = require("cloud9/workspace");
 var EventEmitter = require("events").EventEmitter;
-var util = require("./util");
+var Util = require("./util");
 
 var Ide = module.exports = function(options, httpServer, exts, socket) {
     EventEmitter.call(this);
@@ -33,37 +33,51 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
         waitSeconds: 30
     };
 
+    if (options.plugins == undefined)
+        options.plugins = [];
+    
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
+        socketIoUrl: options.socketIoUrl || "socket.io",
         davPrefix: options.davPrefix || (baseUrl + "/workspace"),
+        davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         baseUrl: baseUrl,
         debug: options.debug === true,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId || "ide",
         context: options.context || null,
         db: options.db || null,
-        plugins: options.plugins || Ide.DEFAULT_PLUGINS,
+        plugins: options.plugins.length > 0 ? options.plugins : (options.real ? [ "build/packed" ] : Ide.DEFAULT_PLUGINS),
         requirejsConfig: requirejsConfig,
         offlineManifest: options.offlineManifest || "",
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
-        remote: options.remote
+        remote: options.remote,
+        real: options.real
     };
+    
+
+    // precalc regular expressions:
+    this.indexRe = new RegExp("^" + Util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
+    this.reconnectRe = new RegExp("^" + Util.escapeRegExp(this.options.baseUrl) + "\\/\\$reconnect$");
+    this.workspaceRe = new RegExp("^" + Util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
 
     this.$users = {};
-    this.nodeCmd = process.argv[0];
+
+    this.nodeCmd = options.exec || process.argv[0];
 
     var davOptions = {
         node: this.options.mountDir,
         mount: this.options.davPrefix,
+        plugins: this.options.davPlugins,
         server: this.httpServer,
         standalone: false
     };
 
     if (options.remote)
-        util.extend(davOptions, options.remote);
+        Util.extend(davOptions, options.remote);
     else
         davOptions.path = this.options.mountDir;
 
@@ -82,73 +96,18 @@ var Ide = module.exports = function(options, httpServer, exts, socket) {
     }
 };
 
-sys.inherits(Ide, EventEmitter);
+util.inherits(Ide, EventEmitter);
 
-Ide.DEFAULT_PLUGINS = [
-    "ext/filesystem/filesystem",
-    "ext/settings/settings",
-    "ext/editors/editors",
-    //"ext/connect/connect",
-    "ext/themes/themes",
-    "ext/themes_default/themes_default",
-    "ext/panels/panels",
-    "ext/dockpanel/dockpanel",
-    "ext/openfiles/openfiles",
-    "ext/tree/tree",
-    "ext/save/save",
-    "ext/recentfiles/recentfiles",
-    "ext/gotofile/gotofile",
-    "ext/newresource/newresource",
-    "ext/undo/undo",
-    "ext/clipboard/clipboard",
-    "ext/searchinfiles/searchinfiles",
-    "ext/searchreplace/searchreplace",
-    "ext/quickwatch/quickwatch",
-    "ext/quicksearch/quicksearch",
-    "ext/gotoline/gotoline",
-    "ext/html/html",
-    "ext/help/help",
-    //"ext/ftp/ftp",
-    "ext/code/code",
-    "ext/imgview/imgview",
-    //"ext/preview/preview",
-    "ext/extmgr/extmgr",
-    //"ext/run/run", //Add location rule
-    "ext/runpanel/runpanel", //Add location rule
-    "ext/debugger/debugger", //Add location rule
-    "ext/noderunner/noderunner", //Add location rule
-    "ext/console/console",
-    "ext/tabbehaviors/tabbehaviors",
-    "ext/tabsessions/tabsessions",
-    "ext/keybindings/keybindings",
-    "ext/keybindings_default/keybindings_default",
-    "ext/watcher/watcher",
-    "ext/dragdrop/dragdrop",
-    "ext/beautify/beautify",
-    "ext/offline/offline",
-    "ext/stripws/stripws",
-    "ext/testpanel/testpanel",
-    "ext/nodeunit/nodeunit",
-    "ext/zen/zen",
-    "ext/codecomplete/codecomplete",
-    //"ext/autosave/autosave",
-    "ext/vim/vim",
-    "ext/guidedtour/guidedtour",
-    "ext/quickstart/quickstart",
-    "ext/jslanguage/jslanguage",
-    "ext/autotest/autotest",
-    "ext/tabsessions/tabsessions"
-    //"ext/acebugs/acebugs"
-];
+Ide.DEFAULT_PLUGINS = require("../../client/ext/all");
+
+exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
 
 (function () {
 
     this.handle = function(req, res, next) {
-        var path = Url.parse(req.url).pathname;
-
-        this.indexRe = this.indexRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "(?:\\/(?:index.html?)?)?$");
-        this.reconnectRe = this.reconnectRe || new RegExp("^" + util.escapeRegExp(this.options.baseUrl) + "\\/reconnect$");
-        this.workspaceRe = this.workspaceRe || new RegExp("^" + util.escapeRegExp(this.options.davPrefix) + "(\\/|$)");
+        if (!req.parsedUrl)
+            req.parsedUrl = Url.parse(req.url);
+        var path = req.parsedUrl.pathname;
 
         if (path.match(this.indexRe)) {
             if (req.method !== "GET")
@@ -181,7 +140,9 @@ Ide.DEFAULT_PLUGINS = [
 
     this.$serveIndex = function(req, res, next) {
         var plugin, _self = this;
-        fs.readFile(__dirname + "/view/ide.tmpl.html", "utf8", function(err, index) {
+        var indexFile = _self.options.real === true ? __dirname + "/view/ide.tmpl.packed.html" : __dirname + "/view/ide.tmpl.html";
+
+        fs.readFile(indexFile, "utf8", function(err, index) {
             if (err)
                 return next(err);
 
@@ -191,27 +152,28 @@ Ide.DEFAULT_PLUGINS = [
             });
 
             var permissions = _self.getPermissions(req);
-            var plugins = util.arrayToMap(_self.options.plugins);
+            var plugins = Util.arrayToMap(_self.options.plugins);
 
-            var client_exclude = util.arrayToMap(permissions.client_exclude.split("|"));
+            var client_exclude = Util.arrayToMap(permissions.client_exclude.split("|"));
             for (plugin in client_exclude)
                 delete plugins[plugin];
 
-            var client_include = util.arrayToMap((permissions.client_include || "").split("|"));
+            var client_include = Util.arrayToMap((permissions.client_include || "").split("|"));
             for (plugin in client_include)
                 if (plugin)
                     plugins[plugin] = 1;
 
             var staticUrl = _self.options.staticUrl;
-            var aceScripts =
-                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/ace-uncompressed.js"></script>\n' +
-                '<script type="text/javascript" src="' + staticUrl + '/support/ace/build/src/mode-javascript.js"></script>'
+            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="' 
+                + staticUrl + '/support/ace/build/src/ace'
+                + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
 
             var replacements = {
                 davPrefix: _self.options.davPrefix,
                 workspaceDir: _self.options.workspaceDir,
                 debug: _self.options.debug,
                 staticUrl: staticUrl,
+                socketIoUrl: _self.options.socketIoUrl,
                 sessionId: req.sessionID, // set by connect
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),
@@ -219,7 +181,7 @@ Ide.DEFAULT_PLUGINS = [
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
                 offlineManifest: _self.options.offlineManifest,
-                scripts: _self.options.debug ? "" : aceScripts,
+                scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version
             };
@@ -232,6 +194,8 @@ Ide.DEFAULT_PLUGINS = [
             }
             else {
                 settingsPlugin.loadSettings(user, function(err, settings) {
+                    console.log("retrieve settings", settings.substr(0, 100));
+                    
                     replacements.settingsXml = err || !settings ? "defaults" : settings.replace(/]]>/g, '&#093;&#093;&gt;');
                     index = template.fill(index, replacements);
                     res.end(index);
@@ -274,6 +238,7 @@ Ide.DEFAULT_PLUGINS = [
             this.onUserCountChange();
             this.emit("userJoin", user);
         }
+        return user;
     };
 
     this.getUser = function(req) {
@@ -325,10 +290,17 @@ Ide.DEFAULT_PLUGINS = [
     };
 
     this.broadcast = function(msg, scope) {
-        // TODO check permissions
-        for (var username in this.$users) {
-            var user = this.$users[username];
-            user.broadcast(msg, scope);
+        try {
+            // TODO check permissions
+            for (var username in this.$users) {
+                var user = this.$users[username];
+                user.broadcast(msg, scope);
+            }
+        }
+        catch (e) {
+            var ex = new Error("Stack overflow just happened");
+            ex.original = e;
+            throw ex;
         }
     };
 
@@ -336,6 +308,10 @@ Ide.DEFAULT_PLUGINS = [
         //for (var u in this.$users)
         //    console.log("IDE USER", this.$users[u].uid, this.$users[u].clients);
         this.$users[username] && this.$users[username].broadcast(msg);
+    };
+
+    this.canShutdown = function() {
+        return this.workspace.canShutdown();
     };
 
     this.dispose = function(callback) {
