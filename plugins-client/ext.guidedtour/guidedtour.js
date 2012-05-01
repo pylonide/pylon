@@ -69,6 +69,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.hideMenus();
         madeNewFile = wentToZen = madeDebug = deletedFile = false;
         this.currentStep = -1;
+        require("ext/sidebar/sidebar").animateToFullWidth();
         winTourDesc.setValue(this.tour.initialText);
         winTourGuide.show();
         winTourButtonStart.show();
@@ -329,7 +330,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         }
         else if (position == "bottom"){
             div.setAttribute("top", posArray[3] + 50);
-            div.setAttribute("right", (posArray[0] + (posArray[2] / 2)) - (div.getWidth() / 2));
+            div.setAttribute("left", posArray[3]);
+           // div.setAttribute("right", (posArray[0] + (posArray[2] / 2)) - (div.getWidth() / 2));
         }
         else if (position == "left"){
             div.setAttribute("right", (window.innerWidth - posArray[0]) + 25);
