@@ -11,6 +11,7 @@ var Fs = require("fs");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var Spawn = require("child_process").spawn;
+var Async = require("asyncjs");
 
 /**
  *  FILE_SUFFIX = "c9save"
@@ -28,11 +29,11 @@ var FILE_SUFFIX = "c9save";
 var SAVE_INTERVAL = 1000;
 
 /** related to: Revisions#revisions
- *  PURGE_INTERVAL = 43200000
+ *  PURGE_INTERVAL -> 1 hour
  *
- *  Revision cache will be purged every PURGE_INTERVAL to avoid unfreed memory.
+ *  Revision cache will be purged every PURGE_INTERVAL to clear up unfreed memory.
  **/
-var PURGE_INTERVAL = 12 * 60 * 60 * 1000;
+var PURGE_INTERVAL = 60 * 60 * 1000;
 var Diff = new Diff_Match_Patch();
 
 var RevisionsPlugin = module.exports = function(ide, workspace) {
@@ -54,6 +55,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
             return false;
         }
 
+        var self = this;
         if (message.subCommand) {
             switch (message.subCommand) {
                 // Let the server save a revision. The client is requesting the
@@ -74,7 +76,28 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
                     }
-                    this.saveRevision(message.path, message.revision, function() {});
+
+                    this.saveRevision(message.path, message.revision, function(err, savedRevisionInfo) {
+                        if (err) {
+                            return console.error();
+                        }
+
+                        var path = savedRevisionInfo.path;
+                        var ts = savedRevisionInfo.ts;
+                        var revObj = savedRevisionInfo.revObj;
+                        if (!self.isCollab()) {
+                            self.broadcastConfirmSave(path, ts);
+                            if (message.forceRevisionListResponse === true) {
+                                self.broadcastRevisions.call(self, revObj, user, {
+                                    path: message.path
+                                });
+                            }
+                        }
+                        else {
+                            // Probably change that
+                            self.broadcastRevisions.call(self, revObj, null, { path: path });
+                        }
+                    });
                     break;
 
                 // The client requests the history of revisions for a particular
@@ -86,7 +109,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         return console.error("No path sent for the file to save");
                     }
 
-                    var self = this;
                     this.getRevisions(message.path, function(err, revObj) {
                         if (err) {
                             return console.error(
@@ -95,26 +117,30 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         }
 
                         self.broadcastRevisions.call(self, revObj, user, {
-                            path: message.path,
-                            getOriginalContent: message.getOriginalContent
+                            id: message.id || null,
+                            nextAction: message.nextAction,
+                            path: message.path
                         });
                     });
                     break;
 
-                // The client requests the original contents of a particular file.
-                // The original contents means the text of the document before
-                // any diff was applied.
-                case "getOriginalContent":
-                    if (!message.path) {
-                        return console.error("No revision path in the parameters");
-                    }
+                case "getRealFileContents":
+                    var path = PathUtils.getRealFile.call(this, message.path);
+                    Fs.readFile(path, "utf8", function (err, data) {
+                          if (err) {
+                              console.log(err);
+                          }
 
-                    this.broadcastOriginalContent(message.path, user, {
-                        nextAction: message.nextAction,
-                        id: message.id
+                          user.broadcast(JSON.stringify({
+                              type: "revision",
+                              subtype: "getRealFileContents",
+                              path: message.path,
+                              nextAction: message.nextAction,
+                              contents: data
+                          }));
                     });
-
                     break;
+
                 case "closeFile":
                     if (!message.path) {
                         return console.error("No path sent for the file to save");
@@ -133,7 +159,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * a backup file is not found for the file in the `path`.
      **/
     this.createEmptyStack = function() {
-        return { "revisions": [] };
+        return { "revisions": {} };
     };
 
     /**
@@ -173,8 +199,9 @@ require("util").inherits(RevisionsPlugin, Plugin);
         Path.exists(absPath, function(exists) {
             if (exists) {
                 Fs.readFile(absPath, function(err, data) {
-                    if (err)
+                    if (err) {
                         return callback(err);
+                    }
 
                     try {
                         revObj = JSON.parse(data);
@@ -196,13 +223,22 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     Spawn("mkdir", ["-p", parentDir]).on("exit", function() {
                         revObj = self.createEmptyStack(filePath);
                         // We just created the revisions file. Since we
-                        // don't have a 'previous revision, we will need
-                        // the original contents in order to diff properly
-                        // on the first revision save.
-                        revObj.originalContent = data.toString();
+                        // don't have a 'previous revision, our first revision will
+                        // consist of the previous contents of the file.
+                        var contents = data.toString();
+                        var ts = Date.now();
+                        revObj.revisions[ts] = {
+                            ts: ts,
+                            silentsave: true,
+                            restoring: false,
+                            patch: [Diff.patch_make("", contents)],
+                            length: contents.length
+                        };
+
                         Fs.writeFile(absPath, JSON.stringify(revObj), function(err) {
-                            if (err)
+                            if (err) {
                                 return callback(err);
+                            }
 
                             cacheRevision(filePath, revObj, callback);
                         });
@@ -210,6 +246,45 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 });
             }
         });
+    };
+
+    /**
+     * RevisionsPlugin#retrieveRevisionContent(revObj[, upperTSBound], callback)
+     * - revObj (Object): Object containing all the revisions in the document.
+     * - upperTSBound (Number): Timestamp of the revision to retrieve. Optional.
+     * - currentDoc (Function): Callback to pass the results to.
+     *
+     * Asynchronoulsy calculates the content of the documentat a particular
+     * revision, or defaults to the current content of the document according to
+     * the last revision.
+     **/
+    this.retrieveRevisionContent = function(revObj, upperTSBound, callback) {
+        var timestamps = Object.keys(revObj.revisions).sort(function(a, b) {
+            return a - b;
+        });
+
+        if (timestamps.length === 0) {
+            return callback(new Error("No revisions in the revisions Object"));
+        }
+
+        if (upperTSBound) {
+            var index = timestamps.indexOf(upperTSBound);
+            if (index > -1) {
+                timestamps = timestamps.slice(0, index + 1);
+            }
+        }
+
+        var content = "";
+        Async.list(timestamps)
+            .each(function(ts, next) {
+                var revision = revObj.revisions[ts];
+                content = Diff.patch_apply(revision.patch[0], content)[0];
+                next();
+            })
+            .delay(0)
+            .end(function() {
+                callback(null, content);
+            });
     };
 
     /**
@@ -221,17 +296,17 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * Retrieves the previous contents of the given file.
      **/
     this.getPreviousRevisionContent = function(path, callback) {
-        this.getRevisions(path, function(err, rev) {
+        this.getRevisions(path, function(err, revObj) {
             if (err) {
                 return callback(err);
             }
 
-            var content = rev.originalContent;
-            rev.revisions.forEach(function(revision) {
-                content = Diff.patch_apply(revision.patch[0], content)[0];
-            });
+            this.retrieveRevisionContent(revObj, null, function(err, content) {
+                if (err)
+                    return callback(err);
 
-            callback(null, content || rev.originalContent);
+                callback(null, content);
+            });
         });
     };
 
@@ -263,18 +338,8 @@ require("util").inherits(RevisionsPlugin, Plugin);
         }
     };
 
-    /**
-     * RevisionsPlugin#getOriginalDoc(path) -> String
-     * - path (String): Relative path for the file to get the document from
-     *
-     * Retrieves the original content of the file. This is the base where the
-     * diffs are applied. It might return empty string if a new file was
-     * created after the revision system was in place.
-     **/
-    this.getOriginalDoc = function(path) {
-        if (this.revisions[path]) { // This should always exist
-            return this.revisions[path].originalContent;
-        }
+    this.isCollab = function() {
+        return false;
     };
 
     /**
@@ -285,20 +350,15 @@ require("util").inherits(RevisionsPlugin, Plugin);
      *
      * Broadcast the given revision to all workspace clients.
      **/
-    this.broadcastRevisions = function(obj, user, options) {
+    this.broadcastRevisions = function(revObj, user, options) {
         var receiver = user || this.ide;
         var data = {
             type: "revision",
             subtype: "getRevisionHistory",
-            body: obj
+            body: revObj
         };
 
         if (options) {
-            if (options.getOriginalContent) {
-                data.originalContent = this.getOriginalDoc(options.path);
-                delete options.getOriginalContent;
-            }
-
             Object.keys(options).forEach(function(key) {
                 data[key] = options[key];
             });
@@ -307,22 +367,13 @@ require("util").inherits(RevisionsPlugin, Plugin);
         receiver.broadcast(JSON.stringify(data));
     };
 
-    this.broadcastOriginalContent = function(path, user, options) {
-        var receiver = user || this.ide;
-        var data = {
+    this.broadcastConfirmSave = function(path, ts) {
+        this.ide.broadcast(JSON.stringify({
             type: "revision",
-            subtype: "getOriginalContent",
-            body: this.getOriginalDoc(path),
-            path: path
-        };
-
-        if (options) {
-            Object.keys(options).forEach(function(key) {
-                data[key] = options[key];
-            });
-        }
-
-        receiver.broadcast(JSON.stringify(data));
+            subtype: "confirmSave",
+            path: path,
+            ts: ts
+        }));
     };
 
     this.enqueueDoc = function(user, message, client) {
@@ -337,9 +388,10 @@ require("util").inherits(RevisionsPlugin, Plugin);
     };
 
     this.saveQueue = function() {
+        var f = function(){};
         while (this.docQueue.length > 0) {
             var doc = this.docQueue.shift();
-            this.saveRevisionFromMsg(doc[0], doc[1], function() {});
+            this.saveRevisionFromMsg(doc[0], doc[1], f);
         }
     };
 
@@ -354,7 +406,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
             }
 
             if (typeof currentDoc !== "string") {
-                return callback(new Error("The contents for document '" + path + "' could not be retrieved"))
+                return callback(new Error("The contents for document '" + path + "' could not be retrieved"));
             }
 
             var patch = Diff.patch_make(previousRev, currentDoc);
@@ -371,12 +423,12 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 revision.contributors = [user.data.email];
             }
 
-            self.pushPatch(path, revision, currentDoc, callback);
+            self.pushPatch(path, revision, callback);
         });
     };
 
     this.saveRevision = function(path, revision, callback) {
-        this.pushPatch(path, revision, revision.lastContent, callback);
+        this.pushPatch(path, revision, callback);
     };
 
     /**
@@ -389,24 +441,26 @@ require("util").inherits(RevisionsPlugin, Plugin);
      *
      * Push a new revision into the stack and broadcast it to clients.
      **/
-    this.pushPatch = function(path, revision, currentDoc, callback) {
+    this.pushPatch = function(path, revision, callback) {
         var self = this;
         this.getRevisions(path, function(err, revObj) {
             if (err)
                 return callback(new Error("Couldn't retrieve revisions for " + path));
 
-            var doc = currentDoc || self.getCurrentDoc(path);
-            revObj.lastContent = doc;
-            revObj.revisions.push(revision);
+            revObj.revisions[revision.ts] = revision;
+            self.saveToDisk(path, function(err, savedRevisionInfo) {
+                if (err)
+                    callback(err);
 
-            self.broadcastRevisions.call(self, revObj);
-            self.saveToDisk(path, callback);
+                savedRevisionInfo.ts = revision.ts;
+                callback(null, savedRevisionInfo);
+            });
         });
     };
 
     this.saveToDisk = function(path, callback) {
         var revisions = this.revisions;
-        if (!path || !revisions[path]) {
+        if (!path || !revisions || !revisions[path]) {
             return callback(new Error("No path or no revision history in this filepath: " + path));
         }
 
@@ -419,7 +473,11 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 if (err)
                     return callback(new Error("Could not save backup file" + finalPath));
 
-                callback(null, finalPath, revisions[path]);
+                callback(null, {
+                    absPath: finalPath,
+                    path: path,
+                    revObj: revisions[path]
+                });
             });
         });
     };

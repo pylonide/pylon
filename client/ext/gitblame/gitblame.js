@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ext     = require("core/ext");
 var ide     = require("core/ide");
+var menus = require("ext/menus/menus");
 var editors = require("ext/editors/editors");
 var BlameJS = require("ext/gitblame/blamejs");
 var util    = require("core/util");
@@ -22,7 +23,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
     init : function(amlNode){
         this.blamejs = new BlameJS();
-        this.originalGutterWidth = editors.currentEditor.ceEditor.$editor.renderer.getGutterWidth();
+        this.originalGutterWidth = editors.currentEditor.amlEditor.$editor.renderer.getGutterWidth();
     },
 
     hook : function(){
@@ -32,21 +33,18 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
         tabEditors.addEventListener("beforeswitch", function(e){
             if (editors.currentEditor) {
-                editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
-                editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
+                editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
+                editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
             }
         });
-
-        this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                // @TODO: Support more CVSs? Just "Blame this File"
-                caption : "Git Blame this File",
-                onclick : function(){
-                    ext.initExtension(_self);
-                    _self.requestBlame();
-                }
-            }))
-        );
+        
+        menus.addItemByPath("Tools/Git Blame", new apf.item({
+            // @TODO: Support more CVSs? Just "Blame this File"
+            onclick : function(){
+                ext.initExtension(_self);
+                _self.requestBlame();
+            }
+        }), 500);
     },
 
     requestBlame : function() {
@@ -73,7 +71,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 else {
                     ide.send(data);
                     // Set gutter width
-                    editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth("300px");
+                    editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth("300px");
                 }
             }
         }
@@ -128,8 +126,8 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 };
             }
         }
-        editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
-        editors.currentEditor.ceEditor.$editor.renderer.updateFull();
+        editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
+        editors.currentEditor.amlEditor.$editor.renderer.updateFull();
     },
 
     enable : function(){
@@ -145,6 +143,8 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     },
 
     destroy : function(){
+        menus.remove("Tools/Git Blame");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

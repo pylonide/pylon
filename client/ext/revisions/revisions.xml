@@ -3,102 +3,108 @@
         src = "{require('ext/revisions/revisions').skin}"
         media-path = "/static/ext/revisions/images/" />
 
-    <a:vbox id = "pgRevisions"
-        skinset = "revisions"
-        class = "revisionsHolder"
-        anchors="0 0 0 0">
-        <a:toolbar height = "20" class="topbar">
-          <a:hbox height = "20">
-              <span>File Revisions</span>
-              <a:button
-                  height = "20"
-                  onclick=" require('ext/revisions/revisions').hide() " />
-          </a:hbox>
-        </a:toolbar>
-        <a:hbox flex = "1">
-            <a:list
-              id          = "lstRevisions"
-              anchors     = "0 0 0 0"
-              model       = "{require('ext/revisions/revisions').model}"
-              multiselect = "false"
-              autoselect  = "false"
-              drag = "false"
-              drop = "false"
-              skin="revisions-list"
-              flex="1">
-                <a:each match="[revision]">
-                        <a:caption>
-                            <?lm
-                                 <div class="revision-icon">
-                                  {
-                                    if ([@restoring] != '') {
-                                        <div class="rev-restoration" title="Restored"></div>
-                                    }
-                                    else if ([@silentsave] != 'true') {
-                                            <span class="rev-usersave" title="Saved by user">U</span>
-                                          }
-                                          else {
-                                              <span class="rev-autosave" title="Autosave">A</span>
-                                          }
-                                  }
-                                </div>
-                                <div class="revision-info">
-                                    <div class="revision-title">
-                                    {
-                                      [@name]
-                                    }
-                                    </div>
-                                    <ul class="contributors">
-                                      {                                        
-                                        each([contributors/contributor]) {
-                                          <li>
-                                            <span class="coloredSquare" style=' background-color: {require("ext/revisions/revisions")
-                                            .getUserColorByEmail([@email])}'>&#9632;</span>
-                                            <span>[@email]</span>
-                                          </li>
-                                        }
-                                      }
-                                    </ul>
-                                    {
-                                      if ([@loading_preview] == 'true' || [@loading] == 'true') {
-                                          <button class="btnRecover" disabled="disabled"></button>
-                                      }
-                                      else {
-                                          <button class="btnRecover" onclick="require('ext/revisions/revisions').loadRevision([@id], 'apply')"></button>
-                                      }
-                                    }
-                                </div>
-                            ?>
-                        </a:caption>
-                </a:each>
-                <a:remove match="[revision]" />
-            </a:list>
-            <a:scrollbar
-              for      = "lstRevisions"
-              id       = "sbrevisions"
-              margin   = "2"
-              skin     = "sbios"
-              top      = "0"
-              right    = "0"
-              bottom   = "0"
-              width    = "7"
-              overflow = "auto"
-            />
-        </a:hbox>
-            <a:toolbar class="show-detailes" >
-                <a:bar height = "25">
-                    <a:hbox edge="4 5 5 5">
-                        <a:checkbox
-                            skin="checkbox_grey"
-                            top = "-25"
-                            right = "10"
-                            checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
-                            label   ="Show Details"
-                            onafterchange="
-                                require('ext/revisions/revisions').toggleListView()
-                        " />
-                    </a:hbox>
-                </a:bar>
-            </a:toolbar>
+    <a:window
+      id        = "winQuestionRev"
+      title     = "Question"
+      icon      = ""
+      center    = "true"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "600"
+      skin      = "bk-window2"
+      onkeydown = "
+        if(event.keyCode == 89) {
+            btnQuestionYes.dispatchEvent('click', {htmlEvent: {}});
+        }
+        if(event.keyCode == 78) {
+            btnQuestionNo.dispatchEvent('click', {htmlEvent: {}});
+        }
+      "
+      class     = "relative">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3 id="winQuestionRevHeader"></h3>
+            <div id="winQuestionRevMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser.</div>
         </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnQuestionRevYes" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
+            <a:filler/>
+            <a:button id="btnQuestionRevNo" skin="btn-default-css3" class="btn-red">No (but keep changes in a revision)</a:button>
+            <a:filler/>
+            <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes to all</a:button>
+            <a:filler/>
+            <a:button id="btnQuestionRevNoAll" skin="btn-default-css3" class="btn-red">No to all</a:button>
+        </a:hbox>
+    </a:window>
+
+    <a:vbox id = "pgRevisions"
+      skinset = "revisions"
+      class   = "revisionsHolder"
+      anchors = "0 0 0 0">
+        <a:hbox height = "20" class="topbar" margin="0 0 -1 0">
+            <span>File Revisions</span>
+            <a:button
+              height  = "20"
+              onclick = "require('ext/revisions/revisions').hide() " />
+        </a:hbox>
+        <a:list
+          id           = "lstRevisions"
+          flex         = "1"
+          model        = "{require('ext/revisions/revisions').model}"
+          multiselect  = "false"
+          autoselect   = "false"
+          drag         = "false"
+          drop         = "false"
+          scrollbar    = "sbShared 2 2 2"
+          viewport2    = "virtual"
+          skin         = "revisions-list"
+          bufferselect = "true"
+          each         = "[revision]">
+            <a:caption><?lm
+                 <div class="revision-icon">{
+                    if ([@restoring] != '') {
+                        <div class="rev-restoration" title="Restored"></div>
+                    }
+                    else if ([@silentsave] != 'true') {
+                        <span class="rev-usersave" title="Saved by user">U</span>
+                    }
+                    else {
+                        <span class="rev-autosave" title="Autosave">A</span>
+                    }
+                }</div>
+                <div class="revision-info">{
+                    <div class="revision-title">[@name]</div>
+                    <ul class="contributors">{
+                        each ([contributors/contributor]) {
+                            <li>
+                                <span class="coloredSquare" 
+                                  style='background-color: {require("ext/revisions/revisions").getUserColorByEmail([@email])}'>&#9632;</span>
+                                <span>[@email]</span>
+                            </li>
+                        }
+                    }</ul>
+
+                    if ([@loading_preview] == 'true' or [@loading] == 'true') {
+                        <button class="btnRecover" disabled="disabled"></button>
+                    }
+                    else {
+                        <button class="btnRecover" onclick="require('ext/revisions/revisions').loadRevision([@id], 'apply')"></button>
+                    }
+                }</div>
+            ?></a:caption>
+            <a:remove match="[revision]" />
+        </a:list>
+        <a:hbox edge="3 2 3 4" class="show-details">
+            <a:checkbox
+                skin    = "checkbox_grey"
+                top     = "-25"
+                right   = "10"
+                checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
+                label   = "Show Details"
+                onafterchange = "
+                    var model = tabEditors.getPage().$mdlRevisions;
+                    require('ext/revisions/revisions').toggleListView(model);
+            " />
+        </a:hbox>
+    </a:vbox>
 </a:application>

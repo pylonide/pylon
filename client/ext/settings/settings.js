@@ -13,6 +13,7 @@ var markup = require("text!ext/settings/settings.xml");
 var panels = require("ext/panels/panels");
 var skin = require("text!ext/settings/skin.xml");
 var settings = require("core/settings");
+var commands = require("ext/commands/commands");
 var panelSettings =  require("text!ext/panels/settings.xml");
 
 module.exports = ext.register("ext/settings/settings", {
@@ -29,34 +30,11 @@ module.exports = ext.register("ext/settings/settings", {
     
     defaultWidth : 250,
     
-    commands : {
-        "showsettings": {hint: "open the settings window"}
-    },
-    hotitems: {},
-
     nodes : [],
 
     //Backwards compatible
-    save : function() {
-        settings.save();
-    },
-
-    saveSettingsPanel: function() {
-        var pages   = self.pgSettings ? pgSettings.getPages() : [],
-            i       = 0,
-            l       = pages.length,
-            changed = false;
-        for (; i < l; ++i) {
-            if (!pages[i].$at) continue;
-            if (pages[i].$at.undolength > 0) {
-                pages[i].$commit(pages[i]);
-                changed = true;
-            }
-        }
-        if (ide.dispatchEvent("savesettings", {
-            model : this.model
-        }) !== false || changed)
-            settings.save();
+    save : function(force) {
+        settings.save(force);
     },
 
     addSection : function(tagName, name, xpath, cbCommit){
@@ -66,14 +44,27 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     hook : function(){
+        var _self = this;
+        
         panels.register(this, {
             position : 100000,
             caption: "Preferences",
-            "class": "preferences"
+            "class": "preferences",
+            command: "opensettingspanel"
+        });
+        
+        commands.addCommand({
+            name: "opensettingspanel",
+            hint: "show the open settings panel",
+            bindKey: {mac: "Command-,", win: "Ctrl-,"},
+            exec: function () {
+                _self.show();
+            }
         });
         
         //Backwards compatible
         this.model = settings.model;
+        this.setDefaults = settings.setDefaults;
     },
     
     headings : {},
@@ -98,12 +89,12 @@ module.exports = ext.register("ext/settings/settings", {
         colLeft.appendChild(winSettings);
         
         this.nodes.push(winSettings);
-
+        
         // this has to be done out here for some reason
         this.addSettings("General",  panelSettings );
     },
 
-    addSettings : function(group, markup) {
+    addSettings : function(group, markup, callback) {
         var _self = this;
         ide.addEventListener("init.ext/settings/settings", function(e) {
             var heading = e.ext.getHeading(group);
@@ -148,6 +139,8 @@ module.exports = ext.register("ext/settings/settings", {
                 }
                 return beforeNode;
             }
+            
+            callback && callback();
         });
         
         /*ide.addEventListener("init.ext/settings/settings", function(e) {
@@ -175,32 +168,18 @@ module.exports = ext.register("ext/settings/settings", {
         });*/
     },
         
-    showsettings: function(e) {
-        panels.activate(this);
-        this.enable();
+    show : function(e) {
+        if (!this.panel || !this.panel.visible) {
+            panels.activate(this);
+            this.enable();
+        }
+        else {
+            panels.deactivate(null, true);
+        }
+        
         return false;
     },
 
-    saveSettings: function() {
-        winSettings.hide();
-        this.saveSettingsPanel();
-    },
-
-    applySettings: function() {
-        this.saveSettingsPanel();
-    },
-
-    cancelSettings: function() {
-        winSettings.hide();
-        var pages = pgSettings.getPages(),
-            i     = 0,
-            l     = pages.length;
-        for (; i < l; ++i) {
-            if (!pages[i].$at) continue;
-            pages[i].$at.undo(-1);
-        }
-    },
-    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();
@@ -214,6 +193,8 @@ module.exports = ext.register("ext/settings/settings", {
     },
 
     destroy : function(){
+        commands.removeCommandByName("opensettingspanel");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

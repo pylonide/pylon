@@ -17,6 +17,7 @@
         //<![CDATA[
 
             window.cloud9config = {
+                startdate: new Date(),
                 davPrefix: <%davPrefix%>,
                 workspaceDir: <%workspaceDir%>,
                 debug: <%debug%>,
@@ -28,9 +29,10 @@
                 version: <%version%>,
                 staticUrl: <%staticUrl%>,
                 settings: <%settingsXml%>,
-                socketIoUrl: <%socketIoUrl%>
+                socketIoUrl: <%socketIoUrl%>,
+                settings: <%settingsXml%>
             };
-
+            
             // prevent console messages from crashing our app!
             if (typeof window["console"] == "undefined") {
                 var K = function() {};
@@ -40,24 +42,27 @@
             var config = <%requirejsConfig%>;
 
             require(config, function() {
-                    var list = ["build/packed"];
+                    var list = <%plugins%>;
 
                     require(list, function(ide, ext, util) {
                         var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
-                        var plugins = <%plugins%>;
-
+                        
                         var aceConfig = require("ace/config");
 
                         aceConfig.set("packaged", true);
-                        aceConfig.set("workerPath", "static/build/worker");
-                        aceConfig.set("modePath", "static/build/mode");
-                        aceConfig.set("themePath", "static/build/theme");
+                        aceConfig.set("workerPath", "/static/js/worker");
+                        aceConfig.set("modePath", "/static/js/mode");
+                        aceConfig.set("themePath", "/static/js/theme");
 
                         // Load extensions
-                        ide.dispatchEvent("extload", {modules: plugins});
+                        ide.dispatchEvent("extload", {modules: list});
+                        
+                        console.log("Total Load Time " 
+                            + (new Date() - window.cloud9config.startdate) + "ms");
+                            
                         ide.addEventListener("$event.extload", function(cb){
                             cb();
-                         });
+                        });
                     });
 
                     preloaderImgs();

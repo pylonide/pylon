@@ -6,7 +6,7 @@
  */
 
 var fs      = require("fs");
-var sys     = require("sys");
+var util    = require("util");
 var Plugin  = require("cloud9/plugin");
 var async   = require("asyncjs");
 
@@ -33,12 +33,12 @@ var cloud9WatcherPlugin = module.exports = function(ide, workspace) {
     this.basePath  = ide.workspaceDir;
 }
 
-sys.inherits(cloud9WatcherPlugin, Plugin);
+util.inherits(cloud9WatcherPlugin, Plugin);
 
 (function() {
     this.unwatchFile = function(filename) {
         // console.log("No longer watching file " + filename);
-        if (--this.filenames[filename] === 0) {
+        if (filename in this.filenames && --this.filenames[filename] === 0) {
             delete this.filenames[filename];
             fs.unwatchFile(filename);
         }
@@ -54,15 +54,11 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
     this.command = function(user, message, client) {
         var that, subtype, files;
 
-        if (!message || message.command != "watcher")
+        if (!message || message.command !== "watcher")
             return false;
 
-        var command = message.command;
         var path = message.path;
         var type = message.type;
-
-        if (command != "watcher")
-            return false;
 
         path = this.basePath + (path ? "/" + path : "");
 
@@ -83,6 +79,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             }, IGNORE_TIMEOUT);
                             return;
                         }
+                        
                         if (curr.nlink == 1 && prev.nlink == 0)
                             subtype = "create";
                         else if (curr.nlink == 0 && prev.nlink == 1)
@@ -91,6 +88,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             subtype = "change";
                         else
                             return;
+                            
                         if (curr.isDirectory()) {
                             files = {};
 
@@ -128,7 +126,7 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
                             });
 
                     });
-                    this.filenames[path] = 0;
+                    this.filenames[path] = 1;
                 }
                 return true;
             case "unwatchFile":
@@ -139,8 +137,10 @@ sys.inherits(cloud9WatcherPlugin, Plugin);
     };
 
     this.dispose = function(callback) {
-        for (var filename in this.filenames)
-            this.unwatchFile(this.filenames[filename]);
+        for (var filename in this.filenames) {
+            delete this.filenames[filename];
+            fs.unwatchFile(filename);
+        }
         callback();
     };
 

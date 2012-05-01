@@ -8,6 +8,7 @@
       modal   = "false"
       center  = "true"
       width   = "450"
+      realtime = "true"
       kbclose = "true">
         <a:vbox edge="10" padding="5">
             <a:hbox>
@@ -20,7 +21,7 @@
             </a:hbox>
             <a:hbox id="barReplace" align="center">
                 <a:label width="95">Replace With</a:label>
-                <a:textbox id="txtReplace" flex="1" />
+                <a:textbox id="txtSFReplace" flex="1" />
             </a:hbox>
             <a:hbox edge="10 0 5">
                 <a:fieldset flex="1" caption="Options" margin="0 0 1">
@@ -51,7 +52,7 @@
             </a:hbox>
         </a:vbox>
         <a:hbox padding="10" pack="end" edge="6 10 10">
-            <a:button id="btnReplaceAll" skin="btn-default-css3">Replace All</a:button>
+            <a:button id="btnSFReplaceAll" skin="btn-default-css3">Replace All</a:button>
             <a:button id="btnSFFind" default="2" class="btn-green" skin="btn-default-css3">Find All</a:button>
             <a:button onclick="winSearchInFiles.hide()" skin="btn-default-css3">Close</a:button>
         </a:hbox>
@@ -69,6 +70,7 @@
           loading-message = "Searching..."
           style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
           autoselect      = "false"
+          reselectable    = "true"
           class           = "console_text">
             <a:model />
             <a:caption match="[d:querydetail]">[@count] {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in [@filecount] {[@filecount] == 1 ? "file" : "files"}{[@replacement].length &gt; 0 ? ", replaced as '" + apf.htmlentities([@replacement]) + "'" : ""} [@options]</a:caption>

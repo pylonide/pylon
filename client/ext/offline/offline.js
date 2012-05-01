@@ -54,7 +54,7 @@ module.exports = ext.register("ext/offline/offline", {
 
         // preload the offline image programmatically:
         var img = new Image();
-        img.src = ide.staticPrefix + "ext/main/style/images/offline.png";
+        img.src = ide.staticPrefix + "/ext/main/style/images/offline.png";
 
         //Replace http checking because we already have a socket
         //offline.isSiteAvailable = function(){};
@@ -86,7 +86,7 @@ module.exports = ext.register("ext/offline/offline", {
         ide.addEventListener("afteroffline", function(){
             stServerConnected.deactivate();
             ide.onLine = false;
-            logobar.$ext.className = "c9-menu-bar offline";
+            apf.setStyleClass(logobar.$ext, "offline");
 
             _self.bringExtensionsOffline();
         });
@@ -126,23 +126,9 @@ module.exports = ext.register("ext/offline/offline", {
         });
         
         ide.addEventListener("afteronline", function(e){
-            logobar.$ext.className = "c9-menu-bar";
+            apf.setStyleClass(logobar.$ext, "", ["offline"]);
 
             _self.bringExtensionsOnline();
-        });
-
-        // after the IDE connects (either initial or after reconnect)
-        ide.addEventListener("socketConnect", function (e) {
-            // load the state, which is quite a weird name actually, but it contains
-            // info about the debugger. The response is handled by 'noderunner.js'
-            // who publishes info for the UI of the debugging controls based on this.
-            ide.send({
-                command: "state",
-                action: "publish"
-            });
-
-            // the debugger needs to know that we are going to attach, but that its not a normal state message
-            dbg.registerAutoAttach();
         });
 
         /**** File System ****/
@@ -343,20 +329,18 @@ module.exports = ext.register("ext/offline/offline", {
             }
         }
 
-        ide.addEventListener("savesettings", saveFiles);
+        ide.addEventListener("settings.save", saveFiles);
         apf.addEventListener("exit", saveFiles);
 
         /**** Init ****/
 
         ide.addEventListener("socketConnect", function() {
-            offline.goOnline();
-            ide.removeEventListener("socketConnect", arguments.callee);
+             offline.goOnline();
         });
-
-        ide.addEventListener("extload", function() {
-            offline.start();
+        ide.addEventListener("socketDisconnect", function(){
+            offline.goOffline();
         });
-
+ 
         if (_self.offlineStartup)
             ide.dispatchEvent("afteroffline"); //Faking offline startup
     },
@@ -387,6 +371,13 @@ module.exports = ext.register("ext/offline/offline", {
             if (_ext.offline === false)
                 _ext.disable();
         }
+    },
+
+    toggleInfoDiv : function(show) {
+        if (show == true)
+            offlineInfoDiv.style.display = "block";
+        else
+            offlineInfoDiv.style.display = "none";
     }
 });
 

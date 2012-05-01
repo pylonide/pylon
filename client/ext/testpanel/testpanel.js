@@ -34,6 +34,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     markup          : markup,
     appliedFilter   : "all",
     nodes           : [],
+    offline         : false,
     
     defaultWidth    : 290,
 
@@ -59,7 +60,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             //ide.removeEventListener("init.testrunner", arguments.callee);
         //});
         
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             if (!e.model.queryValue("auto/testpanel/@autorun"))
                 e.model.setQueryValue("auto/testpanel/@autorun", "none");
         });

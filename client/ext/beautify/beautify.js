@@ -14,12 +14,13 @@ define(function (require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var util = require("core/util");
-var code = require("ext/code/code");
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var jsbeautify = require("ext/beautify/res/jsbeautify/jsbeautify-min");
 var markupSettings = require("text!ext/beautify/settings.xml");
-var extSettings = require("ext/settings/settings");
+var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/beautify/beautify", {
     name: "JS Beautify",
@@ -27,21 +28,14 @@ module.exports = ext.register("ext/beautify/beautify", {
     alone: true,
     type: ext.GENERAL,
 
-    commands: {
-        "beautify": {
-            hint: "reformat selected JavaScript code in the editor",
-            msg: "Beautifying selection."
-        }
-    },
-
     nodes: [],
-    hotitems: {},
 
-    beautify: function () {
+    beautify: function (editor) {
         if (this.disabled === true)
             return;
 
-        var editor = editors.currentEditor;
+        if (!editor)
+            editor = editors.currentEditor;
 
         var sel = editor.getSelection();
         var doc = editor.getDocument();
@@ -49,12 +43,12 @@ module.exports = ext.register("ext/beautify/beautify", {
         var value = doc.getTextRange(range);
 
         // Load up current settings data
-        var preserveEmpty = apf.isTrue(extSettings.model.queryValue("beautify/jsbeautify/@preserveempty"));
-        var keepIndentation = apf.isTrue(extSettings.model.queryValue("beautify/jsbeautify/@keeparrayindentation"));
-        var jsLintHappy = apf.isTrue(extSettings.model.queryValue("beautify/jsbeautify/@jslinthappy"));
-        var braces = extSettings.model.queryValue("beautify/jsbeautify/@braces") || "end-expand";
-        var indentSize = extSettings.model.queryValue("editors/code/@tabsize");
-        var indentTab = apf.isTrue(extSettings.model.queryValue("editors/code/@softtabs")) ? " " : "\t";
+        var preserveEmpty = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@preserveempty"));
+        var keepIndentation = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@keeparrayindentation"));
+        var jsLintHappy = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@jslinthappy"));
+        var braces = settings.model.queryValue("beautify/jsbeautify/@braces") || "end-expand";
+        var indentSize = settings.model.queryValue("editors/code/@tabsize");
+        var indentTab = apf.isTrue(settings.model.queryValue("editors/code/@softtabs")) ? " " : "\t";
 
         if (indentTab == "\t") indentSize = 1;
 
@@ -80,7 +74,9 @@ module.exports = ext.register("ext/beautify/beautify", {
             if (trim) value = value.trim();
         }
         catch (e) {
-            util.alert("Error", "This code could not be beautified", "Please correct any JavaScript errors and try again");
+            util.alert("Error", 
+                "This code could not be beautified", 
+                "Please correct any JavaScript errors and try again");
             return;
         }
 
@@ -90,74 +86,54 @@ module.exports = ext.register("ext/beautify/beautify", {
 
     init: function () {
         var _self = this;
-        tabEditors.addEventListener("afterswitch", function() {
-            if (_self.$selectionEvent) {
-                _self.editorSession.selection.removeEventListener("changeSelection",
-                    _self.$selectionEvent);
-            }
-
-            setTimeout(function() {
-                if(editors.currentEditor.ceEditor) {
-                    _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
-                    _self.editorSession.selection.addEventListener("changeSelection",
-                        _self.$selectionEvent = function(e) {
-                            if (typeof beautify_selection === "undefined")
-                                return;
-
-                            var range = ceEditor.$editor.getSelectionRange();
-                            if (range.start.row == range.end.row && range.start.column == range.end.column) {
-                                _self.disabled = true;
-                                beautify_selection.disable();
-                            }
-                            else {
-                                _self.disabled = false;
-                                beautify_selection.enable();
-                            }
-                        }
-                    );
-                }
-            }, 200);
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                _self.disable();
+            else
+                _self.enable();
         });
     },
 
     hook: function () {
         var _self = this;
-        var menuItem = new apf.item({
-            id : "beautify_selection",
-            disabled : "true",
-            caption: "Beautify Selection",
-            onclick: function () {
-                _self.beautify();
-            }
-        });
 
-        this.nodes.push(menuItem);
+        this.nodes.push(
+            menus.addItemByPath("Tools/Beautify Selection", 
+              this.mnuItem = new apf.item({
+                  disabled : "true",
+                  command  : "beautify"
+              }), 100)
+        );
 
-        ide.addEventListener("init.ext/statusbar/statusbar", function(e) {
-            e.ext.addToolsItem(menuItem, 1);
-        });
-
-        this.hotitems.beautify = [this.nodes[0]];
-        code.commandManager.addCommand({
+        commands.addCommand({
             name: "beautify",
-            exec: function () {
-                _self.beautify();
+            hint: "reformat selected JavaScript code in the editor",
+            msg: "Beautifying selection.",
+            bindKey: {mac: "Command-Shift-B", win: "Shift-Ctrl-B"},
+            isAvailable : function(editor){
+                if (editor && editor.ceEditor) {
+                    var range = editor.ceEditor.$editor.getSelectionRange();
+                    return range.start.row != range.end.row 
+                      || range.start.column != range.end.column;
+                }
+                return false;
+            },
+            exec: function (editor) {
+                _self.beautify(editor);
             }
         });
 
-        require("ext/settings/settings").addSettings("JS Beautify", markupSettings );
+        settings.addSettings("JS Beautify", markupSettings);
 
-        ide.addEventListener("loadsettings", function(e){
-            var model = e.model;
-
-            if (!model.queryNode("beautify/jsbeautify")) {
-                model.setQueryValue("beautify/jsbeautify/@preserveempty", "true");
-                model.setQueryValue("beautify/jsbeautify/@keeparrayindentation", "false");
-                model.setQueryValue("beautify/jsbeautify/@jslinthappy", "false");
-                model.setQueryValue("beautify/jsbeautify/@braces", "end-expand");
-                model.setQueryValue("editors/code/@tabsize", "4");
-                model.setQueryValue("editors/code/@softtabs", "true");
-            }
+        ide.addEventListener("settings.load", function(e){
+            settings.setDefaults("beautify/jsbeautify", [
+                ["preserveempty", "true"],
+                ["keeparrayindentation", "false"],
+                ["jslinthappy", "false"],
+                ["braces", "end-expand"],
+                ["softtabs", "true"],
+                ["tabsize", "4"]
+            ]);
         });
 
         ext.initExtension(this);
@@ -180,6 +156,9 @@ module.exports = ext.register("ext/beautify/beautify", {
     },
 
     destroy: function () {
+        menus.remove("Tools/Beautify Selection");
+        commands.removeCommand("beautify");
+
         this.nodes.each(function (item) {
             item.destroy(true, true);
         });

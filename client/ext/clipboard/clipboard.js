@@ -10,7 +10,11 @@ define(function(require, exports, module) {
 "use strict";
 
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
+
+var aceClipboardText = "";
 
 module.exports = ext.register("ext/clipboard/clipboard", {
     dev    : "Ajax.org",
@@ -25,26 +29,46 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     hook : function(){
         var _self = this;
         
+        var isAvailable = function(){
+            if (apf.activeElement.localName == "codeeditor")
+                return !(window.event instanceof KeyboardEvent);
+            
+            return self.trFiles && apf.activeElement == trFiles;
+        };
+        
+        commands.addCommand({
+            name: "cut",
+            bindKey: {mac: "Command-X", win: "Ctrl-X"},
+            isAvailable : isAvailable,
+            exec: function(){ _self.cut(); }
+        });
+        
+        commands.addCommand({
+            name: "copy",
+            bindKey: {mac: "Command-C", win: "Ctrl-C"},
+            isAvailable : isAvailable,
+            exec: function(){ _self.copy(); }
+        });
+        
+        commands.addCommand({
+            name: "paste",
+            bindKey: {mac: "Command-V", win: "Ctrl-V"},
+            isAvailable : isAvailable,
+            exec: function(){ _self.paste(); }
+        });
+        
         this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Cut",
-                onclick : function() {
-                    _self.cut();
-                }
-            })),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Copy",
-                onclick : function() { 
-                    _self.copy();
-                }
-            })),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Paste",
-                onclick : function() { 
-                    _self.paste();
-                }
-        })));
+            menus.addItemByPath("Edit/~", new apf.divider(), 300),
+            menus.addItemByPath("Edit/Cut", new apf.item({
+                command : "cut"
+            }), 400),
+            menus.addItemByPath("Edit/Copy", new apf.item({
+                command : "copy"
+            }), 500),
+            menus.addItemByPath("Edit/Paste", new apf.item({
+                command : "paste"
+            }), 600)
+        );
     },
 
     init : function (amlNode) {
@@ -52,59 +76,51 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     cut: function() {
-        if (apf.document.activeElement == trFiles) {
+        if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.cutSelection(trFiles);
         }
         else {
-            if (this.editor == null) {
-                this.editor = editors.currentEditor.ceEditor.$editor;
-            }
+            try {
+                if (document.exec("cut")) return;
+            } catch(e) {}
+
             var ace = this.$getAce();
-            this.text = ace.getCopyText();
-            ace.remove(ace.getSelectionRange());
+            aceClipboardText = ace.getCopyText() || aceClipboardText;
+            ace.$nativeCommands.exec("cut", ace);
         }
     },
 
     copy: function() {
-       if (apf.document.activeElement == trFiles) {
-            apf.clipboard.copySelection(trFiles);
+        if (self.trFiles && apf.document.activeElement == trFiles) {
+            apf.clipboard.put(trFiles.getSelection().map(function (node) {
+                return apf.xmldb.cleanNode(node.cloneNode(false))
+            }));
+            apf.clipboard.copied = true;
         }
         else {
+            try {
+                if (document.exec("copy")) return;
+            } catch(e) {}
+
             var ace = this.$getAce();
-            this.text = ace.getCopyText();
+            aceClipboardText = ace.getCopyText() || aceClipboardText;
         }
     },
 
     paste: function() {
-       if (apf.document.activeElement == trFiles) {
+       if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.pasteSelection(trFiles);
         }
         else {
+            try {
+                if (document.exec("paste")) return;
+            } catch(e) {}
+
             var ace = this.$getAce();
-            ace.getSession().replace(ace.getSelectionRange(), this.text);
+            ace.onPaste(aceClipboardText);
         }
     },
 
-    // seems to be some bug--once the context menu pops up, 
-    // ace selection disappears.
-    keepRange : function() {
-        var ace = this.$getAce();
-        this.range = ace.getSelectionRange();
-    },
-    
-    showRange : function() {
-        var _self = this;
-        setInterval(function() {
-            if (!mnuCtxEditor.visible) {
-                clearInterval(this);
-            }
-            else {
-                var ace = _self.$getAce();
-                ace.getSelection().setSelectionRange(_self.range);
-            }
-        }, 10);
-    },
-    
     $getAce : function() {
         var editor = editors.currentEditor;
         if (!editor || !editor.ceEditor)
@@ -127,6 +143,11 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     destroy : function(){
+        menus.remove("Edit/~", 300);
+        menus.remove("Edit/Cut");
+        menus.remove("Edit/Copy");
+        menus.remove("Edit/Paste");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

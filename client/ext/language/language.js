@@ -24,7 +24,8 @@ var css = require("text!ext/language/language.css");
 var lang = require("ace/lib/lang");
 
 var markupSettings = require("text!ext/language/settings.xml");
-var extSettings = require("ext/settings/settings");
+var settings = require("ext/settings/settings");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
@@ -38,19 +39,13 @@ module.exports = ext.register("ext/language/language", {
     worker  : null,
     enabled : true,
 
-    commands : {
-        "complete": {hint: "code complete"},
-        "renameVar": {hint: "Rename variable"}
-    },
-
-    hotitems: {},
-
     hook : function() {
-		var _self = this;
+        var _self = this;
 
         var deferred = lang.deferredCall(function() {
             _self.setPath();
         });
+
 
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function(){
@@ -61,11 +56,11 @@ module.exports = ext.register("ext/language/language", {
             ide.addEventListener("afteropenfile", function(event){
                 if (!event.node)
                     return;
-                if (!editors.currentEditor || !editors.currentEditor.ceEditor) // No editor, for some reason
+                if (!editors.currentEditor || !editors.currentEditor.amlEditor) // No editor, for some reason
                     return;
                 ext.initExtension(_self);
                 var path = event.node.getAttribute("path");
-                worker.call("switchFile", [path, editors.currentEditor.ceEditor.syntax, event.doc.getValue()]);
+                worker.call("switchFile", [path, editors.currentEditor.amlEditor.syntax, event.doc.getValue()]);
                 event.doc.addEventListener("close", function() {
                     worker.emit("documentClose", {data: path});
                 });
@@ -83,19 +78,28 @@ module.exports = ext.register("ext/language/language", {
                 callback({worker: worker});
             });
         }, true);
+        
+        ide.addEventListener("settings.load", function(){
+            settings.setDefaults("language", [
+                ["jshint", "true"],
+                ["instanceHighlight", "true"],
+                ["undeclaredVars", "true"],
+                ["unusedFunctionArgs", "true"]
+            ]);
+        });
 
-        require("ext/settings/settings").addSettings("Language Support", markupSettings );
+        settings.addSettings("Language Support", markupSettings );
     },
 
     init : function() {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
-        if (!editors.currentEditor || !editors.currentEditor.ceEditor) {
-            return;
-        }
         
-        this.editor = editors.currentEditor.ceEditor.$editor;
+        if (!editors.currentEditor || !editors.currentEditor.amlEditor)
+            return;
+
+        this.editor = editors.currentEditor.amlEditor.$editor;
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
         this.editor.selection.on("changeCursor", this.$onCursorChange);
         var oldSelection = this.editor.selection;
@@ -147,14 +151,15 @@ module.exports = ext.register("ext/language/language", {
         var currentPath = page.getAttribute("id");
 
         // Currently no code editor active
-        if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
+        if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
             return;
+
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
     },
 
     setJSHint: function() {
-        if(extSettings.model.queryValue("language/@jshint") != "false")
+        if(settings.model.queryValue("language/@jshint") != "false")
             this.worker.call("enableFeature", ["jshint"]);
         else
             this.worker.call("disableFeature", ["jshint"]);
@@ -162,7 +167,7 @@ module.exports = ext.register("ext/language/language", {
     },
 
     setInstanceHighlight: function() {
-        if(extSettings.model.queryValue("language/@instanceHighlight") != "false")
+        if(settings.model.queryValue("language/@instanceHighlight") != "false")
             this.worker.call("enableFeature", ["instanceHighlight"]);
         else
             this.worker.call("disableFeature", ["instanceHighlight"]);
@@ -172,7 +177,7 @@ module.exports = ext.register("ext/language/language", {
     },
 
     setUnusedFunctionArgs: function() {
-        if(extSettings.model.queryValue("language/@unusedFunctionArgs") != "false")
+        if(settings.model.queryValue("language/@unusedFunctionArgs") != "false")
             this.worker.call("enableFeature", ["unusedFunctionArgs"]);
         else
             this.worker.call("disableFeature", ["unusedFunctionArgs"]);
@@ -180,7 +185,7 @@ module.exports = ext.register("ext/language/language", {
     },
 
     setUndeclaredVars: function() {
-        if(extSettings.model.queryValue("language/@undeclaredVars") != "false")
+        if(settings.model.queryValue("language/@undeclaredVars") != "false")
             this.worker.call("enableFeature", ["undeclaredVars"]);
         else
             this.worker.call("disableFeature", ["undeclaredVars"]);
@@ -214,13 +219,32 @@ module.exports = ext.register("ext/language/language", {
         this.worker.emit("cursormove", {data: this.editor.getCursorPosition()});
     },
 
-    enable : function() {
+    enable: function () {
+        this.nodes.each(function (item) {
+            item.enable();
+        });
+
+        this.disabled = false;
     },
 
-    disable : function() {
+    disable: function () {
+        this.nodes.each(function (item) {
+            item.disable();
+        });
+
+        this.disabled = true;
     },
 
-    destroy : function() {
+    destroy: function () {
+        // Language features
+        marker.destroy();
+        complete.destroy();
+        refactor.destroy();
+
+        this.nodes.each(function (item) {
+            item.destroy(true, true);
+        });
+        this.nodes = [];
     }
 });
 

@@ -14,6 +14,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
 var markup = require("text!ext/noderunner/noderunner.xml");
+var c9console = require("ext/console/console");
 
 module.exports = ext.register("ext/noderunner/noderunner", {
     name    : "Node Runner",
@@ -22,14 +23,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     alone   : true,
     offline : false,
     markup  : markup,
-    commands: {
-        "run": {
-            "hint": "run a node program on the server",
-            "commands": {
-                "[PATH]": {"hint": "path pointing to an executable. Autocomplete with [TAB]"}
-            }
-        }
-    },
 
     NODE_VERSION: "auto",
 
@@ -40,7 +33,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
         dbg.addEventListener("break", function(e){
-            ide.dispatchEvent("break", e);
+            ide.dispatchEvent("break");
         });
 
         dbgNode.addEventListener("onsocketfind", function() {
@@ -62,7 +55,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         this.nodePid = null;
 
-        ide.addEventListener("loadsettings", function(e){
+        ide.addEventListener("settings.load", function(e){
             _self.NODE_VERSION = e.model.queryValue("auto/node-version/@version") || "auto";
         });
     },
@@ -134,11 +127,11 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 */
                 // Command error
                 if (message.code === 9) {
-                    txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:yellow'>"
+                    c9console.log("<div class='item console_log' style='font-weight:bold;color:yellow'>"
                         + message.message + "</div>");
                 }
                 else if (message.code !== 6 && message.code != 401 && message.code != 455 && message.code != 456) {
-                    txtConsole.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception "
+                    c9console.log("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception "
                         + (message.code || "") + "] " + message.message + "</div>");
 
                     apf.ajax("/debug", {
@@ -161,6 +154,21 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
     onConnect : function() {
         ide.send({"command": "state"});
+            
+        /**** START Moved from offline.js ****/
+        
+        // load the state, which is quite a weird name actually, but it contains
+        // info about the debugger. The response is handled by 'noderunner.js'
+        // who publishes info for the UI of the debugging controls based on this.
+        ide.send({
+            command: "state",
+            action: "publish"
+        });
+
+        // the debugger needs to know that we are going to attach, but that its not a normal state message
+        dbg.registerAutoAttach();
+        
+        /**** END Moved from offline.js ****/
     },
 
     onDisconnect : function() {

@@ -21,6 +21,7 @@ var extAll = define([
     "ext/quicksearch/quicksearch",
     "ext/gotoline/gotoline",
     "ext/html/html",
+    "ext/log/log",
     "ext/help/help",
     //"ext/ftp/ftp",
     "ext/code/code",
@@ -36,10 +37,13 @@ var extAll = define([
     "ext/consolehints/consolehints",
     "ext/tabbehaviors/tabbehaviors",
     "ext/tabsessions/tabsessions",
-    "ext/keybindings/keybindings",
+    //"ext/keybindings/keybindings",
     "ext/keybindings_default/keybindings_default",
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
+    "ext/menus/menus",
+    "ext/tooltip/tooltip",
+    "ext/sidebar/sidebar",
     "ext/beautify/beautify",
     "ext/offline/offline",
     "ext/stripws/stripws",
@@ -47,7 +51,7 @@ var extAll = define([
     "ext/nodeunit/nodeunit",
     "ext/zen/zen",
     "ext/codecomplete/codecomplete",
-    "ext/vim/vim",
+    "ext/vim/vim", 
     "ext/guidedtour/guidedtour",
     "ext/quickstart/quickstart",
     "ext/jslanguage/jslanguage",
@@ -55,8 +59,9 @@ var extAll = define([
     "ext/tabsessions/tabsessions",
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
-    "ext/colorpicker/colorpicker"
-    //"ext/revisions/revisions"
+    "ext/colorpicker/colorpicker",
+    //"ext/splitview/splitview"
+    "ext/revisions/revisions"
     //"ext/minimap/minimap"
     //"ext/acebugs/acebugs"
 ]);

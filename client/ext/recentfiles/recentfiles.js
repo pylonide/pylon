@@ -9,6 +9,8 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/recentfiles/recentfiles", {
     dev         : "Ajax.org",
@@ -16,35 +18,28 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
     alone       : true,
     type        : ext.GENERAL,
     deps        : [],
-    offline     : true,
+    offline     : false,
 
-    currentSettings : [],
     nodes       : [],
 
     init : function(){
         var _self = this;
 
         this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Open Recent",
-                submenu : "mnuRecent"
-            }), ide.mnuFile.firstChild),
-
-            apf.document.documentElement.appendChild(this.menu = new apf.menu({
-                id : "mnuRecent",
-                childNodes : [
-                    this.divider = new apf.divider(),
-                    new apf.item({
-                        caption : "Clear Menu",
-                        onclick : function(){
-                            _self.clearMenu();
-                        }
-                    })
-                ]
-            }))
+            this.menu = 
+                menus.addItemByPath("File/Open Recent/", null, 600),
+            
+            this.divider = 
+              menus.addItemByPath("File/Open Recent/~", new apf.divider(), 1000000),
+            
+            menus.addItemByPath("File/Open Recent/Clear Menu", new apf.item({
+                onclick : function(){
+                    _self.clearMenu();
+                }
+            }), 2000000)
         );
-
-        ide.addEventListener("loadsettings", function(e){
+        
+        ide.addEventListener("settings.load", function(e){
             var model = e.model;
             var strSettings = model.queryValue("auto/recentfiles");
             if (strSettings) {
@@ -65,7 +60,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             }
         });
 
-        ide.addEventListener("savesettings", function(e){
+        ide.addEventListener("settings.save", function(e){
             if (!_self.changed)
                 return;
 
@@ -84,7 +79,6 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             }
 
             xmlSettings.nodeValue = JSON.stringify(currentSettings);
-            return true;
         });
 
         function evHandler(e){
@@ -102,9 +96,9 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 node    : node
             };
 
-            _self.currentSettings.shift(obj);
-
             _self.$add(obj);
+            
+            settings.save();
         }
 
         ide.addEventListener("afteropenfile", evHandler);
@@ -118,7 +112,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             if (nodes[i].nodeType != 1) continue;
 
             if (nodes[i].localName == "item") {
-                if (nodes[i].value == def.value) {
+                if (nodes[i].getAttribute("value") == def.value) {
                     found = nodes[i];
                     break;
                 }
@@ -144,7 +138,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         }
 
         while (this.menu.childNodes.length > 12) {
-            this.menu.removeChild(this.divider.previousSibling);
+            this.divider.previousSibling.destroy(true, true);
         }
 
         this.changed = true;
@@ -154,7 +148,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         var nodes = this.menu.childNodes;
         for (var i = nodes.length - 1; i >= 0; i--) {
             if (nodes[0].localName == "item")
-                this.menu.removeChild(nodes[0]);
+                nodes[0].destroy(true, true);
             else break;
         }
     },
@@ -172,6 +166,8 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
     },
 
     destroy : function(){
+        menus.remove("File/Open Recent");
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

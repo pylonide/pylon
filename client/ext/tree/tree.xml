@@ -16,56 +16,55 @@
       buttons  = "close"
       optimize = "true">
         <a:button
-          top="-22"
           skin="header-btn"
           right="5"
-          icon="panel_settings.png"
+          class="panel-settings"
           submenu="mnuFilesSettings"/>
-        <a:button
-          top="-22"
-          skin="header-btn"
-          right="29"
-          icon="panel_refresh.png"
-          visible = "{trFiles.visible}"
-          onclick="require('ext/tree/tree').refresh()" />
+          
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
         
         <a:menu id="mnuFilesSettings">
-            
+            <a:item onclick="require('ext/tree/tree').refresh()">Refresh Project Tree</a:item>
+            <a:divider />
         </a:menu>
-        
-        <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-          onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
-          onbeforemove="this.disable();" autoselect="false"
-          flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
-        >
-            <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                <a:insert match="[folder]" get="" id="trFilesInsertRule" />
-                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
-                <a:icon match="[folder|project]" value="folder.png" />
-                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
-            </a:each>
 
-            <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
-            <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
-            <a:move set="{require('ext/tree/tree').moveFile([@path], createPath([@path], [../@path]))}"/>
-            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
-            <a:copy match="[file|folder]" set="{
-                davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
-            }" undo="{
-                alert('TODO!!');
-            }"/>
-
-            <a:drag match="[folder|file]" />
-            <a:drop match="[folder|file]" target="[folder]"
-                action="tree-append" copy="{event.ctrlKey}" />
-            <a:drop match="[folder|file]" target="[file]"
-                action="insert-before" copy="{event.ctrlKey}" />    
-        </a:tree>
+        <a:vbox id="vboxTreeContainer" anchors="0 0 0 0">
+            <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
+              contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
+              onbeforeremove="return require('core/util').removeInteractive(this)"
+              onbeforemove="this.disable();" autoselect="false"
+              flex="1" scrollbar="sbShared 2 2 2"
+            >
+                <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
+                    <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
+                    <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
+                    <a:icon match="[folder|project]" value="folder.png" />
+                    <a:selectable match="[folder|file[not(@type='fileupload')]]" />
+                    <a:icon match="[file[@type='fileupload']]" value="file-tree-load-spinner.gif" />
+                    <a:css match="[file[@type='fileupload']]" value="fileupload" />
+                    <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+                </a:each>
+    
+                <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
+                <a:move set="{require('ext/tree/tree').moveFile([@path], createPath([@path], [../@path]))}"/>
+                <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+                <a:copy match="[file|folder]" set="{
+                    davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
+                }" undo="{
+                    alert('TODO!!');
+                }"/>
+    
+                <a:drag match="[folder|file]" />
+                <a:drop match="[folder|file]" target="[folder]"
+                    action="tree-append" copy="{event.ctrlKey}" />
+                <a:drop match="[folder|file]" target="[file]"
+                    action="insert-before" copy="{event.ctrlKey}" />    
+            </a:tree>
+        </a:vbox>
         
-        <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active}">
+        <a:menu id="mnuCtxTree" disabled="{{!stServerConnected.active}}" render="runtime">
             <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>
@@ -76,22 +75,20 @@
             <a:divider />
             <a:item match="[file|folder|project]" onclick="
                 var store = apf.clipboard.store;
-                apf.clipboard.copySelection(apf.activeElement);
-                apf.clipboard.pasteSelection(apf.activeElement, trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
+                apf.clipboard.put(trFiles.getSelection().map(function (node) {
+                    return apf.xmldb.cleanNode(node.cloneNode(false))
+                }));
+                apf.clipboard.copied = true;
+                apf.clipboard.pasteSelection(apf.activeElement, 
+                    trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
                 apf.clipboard.store = store;
             ">Duplicate</a:item>
             <a:divider />
-            <a:item match="[file|folder[not(@root)]]" onclick="
-                apf.clipboard.cutSelection(apf.activeElement);
-            ">Cut</a:item>
-            <a:item match="[file|folder[not(@root)]]" onclick="
-                apf.clipboard.copySelection(apf.activeElement);
-            ">Copy</a:item>
-            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" onclick="
-                apf.clipboard.pasteSelection(apf.activeElement);
-            ">Paste</a:item>
+            <a:item match="[file|folder[not(@root)]]" command="cut">Cut</a:item>
+            <a:item match="[file|folder[not(@root)]]" command="copy">Copy</a:item>
+            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" command="paste">Paste</a:item>
             <a:divider />
-            <a:item match="[file|folder|project]" onclick="
+            <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" onclick="
                 require('ext/filesystem/filesystem').createFile();
             ">New File</a:item>
             <a:item match="[file|folder|project]" onclick="

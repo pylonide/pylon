@@ -12,7 +12,9 @@ var ext = require("core/ext");
 var util = require("core/util");
 var fs = require("ext/filesystem/filesystem");
 var css = require("text!ext/save/save.css");
+var menus = require("ext/menus/menus");
 var markup = require("text!ext/save/save.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/save/save", {
     dev         : "Ajax.org",
@@ -24,18 +26,58 @@ module.exports = ext.register("ext/save/save", {
     deps        : [fs],
     offline     : true,
 
-    commands    : {
-        "quicksave": {hint: "save the currently active file to disk"},
-        "saveas": {hint: "save the file to disk with a different filename"},
-        "reverttosaved": {hint: "downgrade the currently active file to the last saved version"}
-    },
-    hotitems    : {},
     nodes       : [],
     saveBuffer  : {},
 
     hook : function(){
         var _self = this;
+        
+        commands.addCommand({
+            name: "quicksave",
+            hint: "save the currently active file to disk",
+            bindKey: {mac: "Command-S", win: "Ctrl-S"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
+            exec: function () {
+                _self.quicksave();
+            }
+        });
+        
+        commands.addCommand({
+            name: "saveas",
+            hint: "save the file to disk with a different filename",
+            bindKey: {mac: "Command-Shift-S", win: "Ctrl-Shift-S"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
+            exec: function () {
+                _self.saveas();
+            }
+        });
 
+        commands.addCommand({
+            name: "saveall",
+            hint: "downgrade the currently active file to the last saved version",
+            isAvailable : function(editor){
+                return !!editor;
+            },
+            exec: function () {
+                _self.saveall();
+            }
+        });
+        
+        commands.addCommand({
+            name: "reverttosaved",
+            bindKey: {mac: "Ctrl-Shift-Q", win: "Ctrl-Shift-Q"},
+            isAvailable : function(editor){
+                return !!editor;
+            },
+            exec: function () {
+                _self.reverttosaved();
+            }
+        });
+        
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("close", _self.$close = function(e) {
                 var at = e.page.$at;
@@ -45,7 +87,14 @@ module.exports = ext.register("ext/save/save", {
                 if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
                   || !at.undo_ptr && node.getAttribute("changed") == 1
                   && e.page.$doc.getValue()) {
+    
                     ext.initExtension(_self);
+    
+                    if (ide.dispatchEvent("beforesavewarn", {
+                        page : e.page,
+                        doc  : e.page.$doc
+                    }) === false)
+                        return;
     
                     var pages   = tabEditors.getPages(),
                     currIdx = pages.indexOf(e.page);
@@ -91,57 +140,53 @@ module.exports = ext.register("ext/save/save", {
     
                     e.preventDefault();
                 }
-            });
+            }, true);
         });
 
-        this.nodes.push(ide.barTools.appendChild(new apf.button({
-            id       : "btnSave",
-            icon     : "save.png",
-            tooltip  : "Save",
-            skin     : "c9-toolbarbutton",
-            disabled : "{!!!tabEditors.activepage}",
-            onclick  : this.quicksave.bind(this)
-        })));
-
-        var saveItem, saveAsItem;
         this.nodes.push(
-            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
-
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save All",
-                onclick : function(){
-                    _self.saveall();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild),
-
-            saveAsItem = ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save As...",
-                onclick : function () {
-                    _self.saveas();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild),
-
-            saveItem = ide.mnuFile.insertBefore(new apf.item({
-                caption : "Save",
-                onclick : this.quicksave.bind(this),
-                disabled : "{!!!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild),
-
-            ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
-
-            ide.mnuFile.insertBefore(new apf.item({
-                caption : "Revert to Saved",
-                onclick : function(){
-                    _self.reverttosaved();
-                },
-                disabled : "{!!!tabEditors.activepage}"
-            }), ide.mnuFile.firstChild)
+            menus.$insertByIndex(barTools, new apf.button({
+                id       : "btnSave",
+                icon     : "save.png",
+                caption  : "Save",
+                tooltip  : "Save",
+                skin     : "c9-toolbarbutton",
+                disabled : "{!!!tabEditors.activepage}",
+                command  : "quicksave"
+            }), 1000)
         );
 
-        this.hotitems.quicksave = [saveItem];
-        this.hotitems.saveas = [saveAsItem];
+        var saveItem, saveAsItem, itmRevertToSaved;
+        this.nodes.push(
+            saveItem = menus.addItemByPath("File/Save", new apf.item({
+                command : "quicksave",
+                disabled : "{!!!tabEditors.activepage}"
+            }), 1000),
+
+            saveAsItem = menus.addItemByPath("File/Save As...", new apf.item({
+                command : "saveas",
+                disabled : "{!!!tabEditors.activepage}"
+            }), 1100),
+
+            menus.addItemByPath("File/Save All", new apf.item({
+                command : "saveall",
+                disabled : "{!!!tabEditors.activepage}"
+            }), 1200),
+
+            itmRevertToSaved = menus.addItemByPath("File/Revert to Saved", new apf.item({
+                command : "reverttosaved",
+                disabled : "{!!!tabEditors.activepage}"
+            }), 700)
+        );
+
+        ide.addEventListener("afteroffline", function(){
+            itmRevertToSaved.disable();
+            saveAsItem.disable();
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            itmRevertToSaved.enable();
+            saveAsItem.enable();
+        });
     },
 
     init : function(amlNode){
@@ -243,6 +288,10 @@ module.exports = ext.register("ext/save/save", {
             callback = null;
         }
 
+        var corrected = ide.dispatchEvent("correctactivepage", {page: page});
+        if (corrected)
+            page = corrected;
+        
         var doc  = page.$doc;
         var node = doc.getNode();
         var path = node.getAttribute("path");
@@ -320,13 +369,14 @@ module.exports = ext.register("ext/save/save", {
         return false;
     },
 
-    _saveAsNoUI: function(page, path, newPath) {
+    _saveAsNoUI: function(page, path, newPath, isReplace) {
         if (!page || !path)
             return;
 
         newPath = newPath || path;
 
         var file = page.$model.data;
+        var oldFile = file;
         var saving = parseInt(file.getAttribute("saving"), 10);
 
         if (saving) {
@@ -349,12 +399,14 @@ module.exports = ext.register("ext/save/save", {
             var doc = page.$doc;
 
             if (path !== newPath || parseInt(node.getAttribute("newfile") || 0, 10) === 1) {
-                model.load(node);
-                file = model.data;
-                fs.beforeRename(file, null, newPath, false);
+                file = apf.getCleanCopy(node)
+                fs.beforeRename(file, null, newPath, false, isReplace);
                 doc.setNode(file);
+                model.load(file);
+                tabEditors.set(tabEditors.getPage());
             }
 
+            apf.xmldb.removeAttribute(oldFile, "saving");
             apf.xmldb.removeAttribute(file, "saving");
 
             if (self.saveBuffer[path]) {
@@ -443,7 +495,8 @@ module.exports = ext.register("ext/save/save", {
         var file = page.$model.data;
         var path = file.getAttribute("path");
         var newPath = lblPath.getProperty('caption') + txtSaveAs.getValue();
-
+        
+        var isReplace = false;
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"), 10);
         if (saving) {
@@ -455,24 +508,33 @@ module.exports = ext.register("ext/save/save", {
 
         var self = this;
         var doSave = function() {
-            winConfirm.hide();
+            window.winConfirm && winConfirm.hide();
             winSaveAs.hide();
-            self._saveAsNoUI(page, path, newPath);
-        };
+            self._saveAsNoUI(page, path, newPath, isReplace);
 
+            if (btnConfirmOk.caption == "Yes")
+                btnConfirmOk.setCaption("Ok");
+        };
+        
+        var doCancel = function() {
+            if (btnConfirmOk.caption == "Yes")
+                btnConfirmOk.setCaption("Ok");
+        };
         if (path !== newPath || parseInt(file.getAttribute("newfile") || 0, 10) === 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
                     var name = newPath.match(/\/([^/]*)$/)[1];
                     var folder = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
-
+                    
+                    isReplace = true;
                     util.confirm(
-                        "Are you sure?",
+                        "A file with this name already exists",
                         "\"" + name + "\" already exists, do you want to replace it?",
-                        "A file or folder with the same name already exists in the folder "
-                        + folder + ". "
-                        + "Replacing it will overwrite it's current contents.",
-                        doSave);
+                        "A file with the same name already exists at this location." +
+                        "Selecting Yes will overwrite the existing document.",
+                        doSave,
+                        doCancel);
+                    btnConfirmOk.setCaption("Yes");
                 }
                 else {
                     doSave();
@@ -510,12 +572,22 @@ module.exports = ext.register("ext/save/save", {
     },
 
     destroy : function(){
+        menus.remove("File/~", 1100);
+        menus.remove("File/Save All");
+        menus.remove("File/Save As...");
+        menus.remove("File/Save");
+        menus.remove("File/~", 800);
+        menus.remove("File/Revert to Saved");
+        
+        commands.removeCommandsByName(
+            ["quicksave", "saveas", "saveall", "reverttosaved"]);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });
         this.nodes = [];
 
-        tabEditors.removeEventListener("close", this.$close);
+        tabEditors.removeEventListener("close", this.$close, true);
     }
 });
 

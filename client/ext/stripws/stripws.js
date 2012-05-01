@@ -13,15 +13,18 @@ define(function (require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");
+var menus = require("ext/menus/menus");
 var extSettings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/stripws/settings.xml");
+var commands = require("ext/commands/commands");
+var settings = require("ext/settings/settings");
 
 // Attaching to exports.module for testing purposes
 var strip = module.exports.strip = function () {
-    if (!editors.currentEditor.ceEditor)
+    if (!editors.currentEditor.amlEditor)
         return;
 
-    var editor = editors.currentEditor.ceEditor.$editor;
+    var editor = editors.currentEditor.amlEditor.$editor;
     var session = editor.getSession();
 
     var doc = session.getDocument();
@@ -43,41 +46,30 @@ module.exports = ext.register("ext/stripws/stripws", {
     alone: true,
     type: ext.GENERAL,
 
-    commands: {
-        "stripws": {
-            hint: "strip whitespace at the end of each line"
-        }
-    },
-
     nodes: [],
 
     init: function () {},
 
     hook: function () {
         var self = this;
-        var menuItem = new apf.item({
-            caption: "Strip Whitespace",
-            onclick: function () {
+        
+        commands.addCommand({
+            name: "stripws",
+            hint: "strip whitespace at the end of each line",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
+            exec: function(){
                 ext.initExtension(self);
-                strip();
+                self.stripws();
             }
         });
-        var menuItemClone = menuItem.cloneNode(true);
-
+        
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.divider()),
-            ide.mnuEdit.appendChild(menuItem),
-            menuItemClone
+            menus.addItemByPath("Tools/Strip Whitespace", new apf.item({
+                command : "stripws"
+            }), 200)
         );
-
-        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
-            // Try/catch added here because somehow adding a disabled item to
-            // the statusbar throws.
-            try {
-                e.ext.addToolsItem(menuItemClone, 2);
-            }
-            catch (e) {}
-        });
 
         ide.addEventListener("beforefilesave", function(data) {
             var node =
@@ -90,7 +82,20 @@ module.exports = ext.register("ext/stripws/stripws", {
             }
         });
 
-        require("ext/settings/settings").addSettings("General", markupSettings);
+        ide.addEventListener("revisions.visibility", function(e) {
+            if (e.visibility === "shown")
+                self.disable();
+            else
+                self.enable();
+        });
+        
+        ide.addEventListener("settings.load", function(){
+            settings.setDefaults("editors/code", [
+                ["stripws", "false"]
+            ]);
+        });
+
+        settings.addSettings("General", markupSettings);
     },
 
     stripws: function() {
@@ -114,6 +119,9 @@ module.exports = ext.register("ext/stripws/stripws", {
     },
 
     destroy: function () {
+        menus.remove("Tools/Strip Whitespace");
+        commands.removeCommandByName("stripws");
+
         this.nodes.each(function (item) {
             item.destroy(true, true);
         });

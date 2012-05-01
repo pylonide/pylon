@@ -23,34 +23,31 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
     
     nodes : [],
     
-    hook : function () {
+    init : function () {
         // when unloading the window
         window.onbeforeunload = this.onBeforeUnloadHandler;
+        
+        ide.addEventListener("settings.load", function(){
+            settings.setDefaults("general", [
+                ["confirmexit", "false"]
+            ]);
+        });
  
-        require("ext/settings/settings").addSettings("General", markupSettings );
+        settings.addSettings("General", markupSettings );
      
         // init extension
         ext.initExtension(this);
     },
     
-    init : function () {
-    },
-    
     onBeforeUnloadHandler : function () {
         var changed = false;
         tabEditors.getPages().forEach(function(page){
-            var at = page.$at;
-            if (!at.undo_ptr)
-                at.undo_ptr = at.$undostack[0];
             var node = page.$doc.getNode();
-            if (node && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
-              || !at.undo_ptr && node.getAttribute("changed") == 1
-              && page.$doc.getValue()) {
-                  changed = true;
-            }
+            if (node && node.getAttribute("changed") == 1 && page.$doc.getValue())
+                changed = true;
         });
         
-        if(changed)
+        if (changed)
             return "You have unsaved changes. Your changes will be lost if you don't save them";
             
         // see what's in the settings

@@ -11,6 +11,7 @@ var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/quickwatch/quickwatch.xml");
+var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/quickwatch/quickwatch", {
     name    : "quickwatch",
@@ -19,14 +20,20 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
     alone   : true,
     markup  : markup,
     deps   : [noderunner],
-    commands : {
-        "quickwatch": {hint: "quickly inspect the variable that is under the cursor"}
-    },
-    hotitems: {},
 
     nodes   : [],
 
     hook : function(){
+        var _self = this;
+        
+        commands.addCommand({
+            name : "quickwatch",
+            bindKey: {mac: "Option-Q", win: "Alt-Q"},
+            hint: "quickly inspect the variable that is under the cursor",
+            exec: function(){
+                _self.quickwatch();
+            }
+        });
     },
 
     init : function(amlNode){

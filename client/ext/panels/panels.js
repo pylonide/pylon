@@ -10,77 +10,52 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
-var markup = require("text!ext/panels/panels.xml");
-var markupSettings =  require("text!ext/panels/settings.xml");
+var menus = require("ext/menus/menus");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/panels/panels", {
     name   : "Panel Manager",
     dev    : "Ajax.org",
     alone  : true,
     type   : ext.GENERAL, 
-    markup : markup,
-    minWidth: 150,
+    minWidth: 110,
     nodes : [],
     panels : {},
     
     currentPanel : null,
-    
+
     register : function(panelExt, options){
         var _self = this;
         
-        var beforePanel, diff = 1000000;
-        for (var path in this.panels) {
-            var d = this.panels[path].$panelPosition - options.position;
-            if (d > 0 && d < diff) {
-                beforePanel = this.panels[path];
-                diff = d;
-            }
-        }
-        
-        panelExt.mnuItem = mnuProjectBar.insertBefore(new apf.item({
-            caption : panelExt.name,
-            type    : "radio",
-            value   : panelExt.path,
-            group   : this.group,
-            "onprop.selected" : function(e){
-                if (e.value)
-                    _self.activate(panelExt);
-            }
-        }), beforePanel && beforePanel.mnuItem);
-        
-        panelExt.button = navbar.insertBefore(new apf.button({
-            skin    : "mnubtn",
-            state   : "true",
-            //value   : "true",
-            "class" : options["class"],
-            caption : options.caption
-        }), beforePanel && beforePanel.button || navbar.firstChild);
-
-        //navbar.current = this;
-        panelExt.button.addEventListener("mousedown", function(e){
-            var value = this.value;
-            if (_self.currentPanel && (_self.currentPanel != panelExt || value) && value) {
-                _self.deactivate(_self.currentPanel == panelExt, true);
-                
-                if (value) {
-                    if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
-                        colLeft.hide();
-                    return;
+        panelExt.mnuItem = menus.addItemByPath(
+          "View/Side Bar/" + panelExt.name, 
+            new apf.item({
+                type    : "radio",
+                value   : panelExt.path,
+                group   : this.group,
+                hotkey  : "{ide.commandManager." + options.command + "}",
+                onclick : function(){
+                    if (panelExt.show)
+                        panelExt.show();
+                },
+                "onprop.selected" : function(e){
+                    if (e.value && !panelExt.show)
+                        _self.activate(panelExt);
                 }
-            }
-
-            _self.activate(panelExt, true);
+            }), options.position);
+        
+        ide.addEventListener("init.ext/sidebar/sidebar", function(e){
+            e.ext.add(panelExt, options);
         });
         
         this.panels[panelExt.path] = panelExt;
         panelExt.$panelPosition = options.position;
-        panelExt.nodes.push(panelExt.button, panelExt.mnuItem);
         
         ide.addEventListener("init." + panelExt.path, function(e){
             panelExt.panel.setAttribute("draggable", "false");
         });
         
-        ide.addEventListener("loadsettings", function(){
+        ide.addEventListener("settings.load", function(){
             if (!settings.model.queryNode("auto/panels/panel[@path='" 
                 + panelExt.path + "']")) {
                 settings.model.appendXml("<panel path='" 
@@ -102,7 +77,8 @@ module.exports = ext.register("ext/panels/panels", {
         
         this.animating = true;
         
-        navbar.$ext.style.zIndex = 10000;
+        if (self.navbar)
+            navbar.$ext.style.zIndex = 10000;
         
         if (toWin) {
             var toWinExt = toWin.$altExt || toWin.$ext;
@@ -174,14 +150,16 @@ module.exports = ext.register("ext/panels/panels", {
             toWin.show();
         }
         
+        editors.pauseTabResize();
+        
         colLeft.$ext.style.width = width + "px";
         //apf.setOpacity(toWinExt, 0);
         
         var options = {
-            steps : 8,
+            steps : win && toWin ? 6 : 6,
             interval : apf.isChrome ? 0 : 5,
             control : this.animateControl = {},
-            anim : apf.tween.EASEOUT,
+            anim : win && toWin ? apf.tween.easeOutCubic : apf.tween.easeOutCubic,
             tweens : tweens,
             oneach: function(){
                 apf.layout.forceResize()
@@ -211,10 +189,19 @@ module.exports = ext.register("ext/panels/panels", {
                         colLeft.hide();
                 }
                 
+                editors.continueTabResize();
+                
                 _self.animating = false;
             }
         };
         options.onstop = options.onfinish;
+        
+        ide.dispatchEvent("panels.animate", { 
+            options : options,
+            tweens : tweens, 
+            win : win,
+            toWin : toWin
+        });
         
         apf.tween.multi(document.body, options);
     },
@@ -225,7 +212,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         ext.initExtension(panelExt);
         
-        var lastPanel = this.currentPanel;
+        lastPanel = this.currentPanel;
         
         if (this.currentPanel && (this.currentPanel != this))
             this.deactivate();
@@ -242,16 +229,18 @@ module.exports = ext.register("ext/panels/panels", {
 
         colLeft.show();
         
-        if (!noButton)
+        if (!noButton && panelExt.button)
             panelExt.button.setValue(true);
 
         splitterPanelLeft.show();
         this.currentPanel = panelExt;
+        this.lastPanel    = panelExt;
         
-        //settings.model.setQueryValue("auto/panels/@active", panelExt.path);
+        settings.model.setQueryValue("auto/panels/@active", panelExt.path);
         
         ide.dispatchEvent("showpanel." + panelExt.path);
         
+        this.mnuPanelsNone.setAttribute("selected", false);
         panelExt.mnuItem.select(); //Will set setting too
     },
     
@@ -259,13 +248,13 @@ module.exports = ext.register("ext/panels/panels", {
         if (!this.currentPanel)
             return;
 
-        if (!apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+        if (anim === false || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             this.currentPanel.panel.hide();
         }
         else if (anim)
             this.animate(this.currentPanel.panel);
         
-        if (!noButton)
+        if (!noButton && this.currentPanel.button)
             this.currentPanel.button.setValue(false);
 
         splitterPanelLeft.hide();
@@ -273,16 +262,20 @@ module.exports = ext.register("ext/panels/panels", {
         //Quick Fix
         if (apf.isGecko)
             apf.layout.forceResize(ide.vbMain.$ext);
-            
-        settings.model.setQueryValue("auto/panels/@active", "");
         
         ide.dispatchEvent("hidepanel." + this.currentPanel.path);
         
         this.currentPanel = null;
+        
+        if (anim != undefined) {
+            settings.model.setQueryValue("auto/panels/@active", "none");
+            this.mnuPanelsNone.select();
+        }
     },
     
     unregister : function(panelExt){
-        panelExt.mnuItem.destroy(true, true);
+        menus.remove("View/Side Bar/" + panelExt.name);
+          
         delete this.panels[panelExt.path];
     },
 
@@ -291,83 +284,47 @@ module.exports = ext.register("ext/panels/panels", {
         
         this.nodes.push(
             this.group = apf.document.documentElement.appendChild(new apf.group({
-                value : "[{req"+"uire('core/settings').model}::auto/panels/@active]"
+                value : "[{req" + "uire('core/settings').model}::auto/panels/@active]"
             })),
             
-            barMenu.appendChild(new apf.button({
-                submenu : "mnuWindows",
-                caption : "Windows",
-                skin    : "c9-menu-btn",
-                margin  : "1 0 0 0"
-            })),
-            mnuWindows
+            menus.addItemByPath("View/Side Bar/", null, 100),
+            menus.addItemByPath("View/~", new apf.divider(), 200),
+            
+            this.mnuPanelsNone = 
+              menus.addItemByPath("View/Side Bar/None", new apf.item({
+                type: "radio",
+                selected : "true",
+                group: this.group,
+                "onclick": function(e){
+                    _self.deactivate(null, true);
+                }
+              }), 100),
+            menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
         );
         
+        var timer;
         colLeft.addEventListener("resize", function(){
             if (!_self.currentPanel || _self.animating)
                 return;
             
-            var query = "auto/panels/panel[@path='" 
-                + _self.currentPanel.path + "']/@width";
+            clearTimeout(timer);
+            timer = setTimeout(function(){
+                if (!_self.currentPanel)
+                    return;
                 
-            if (settings.model.queryValue(query) != colLeft.getWidth())
-                settings.model.setQueryValue(query, colLeft.getWidth());
+                var query = "auto/panels/panel[@path='" 
+                    + _self.currentPanel.path + "']/@width";
+                    
+                if (settings.model.queryValue(query) != colLeft.getWidth())
+                    settings.model.setQueryValue(query, colLeft.getWidth());
+            }, 500);
         });
         
         /**** Support for state preservation ****/
         
         var _self = this;
-        this.$settings = {};
-        ide.addEventListener("loadsettings", function(e){
-            var animateNode = e.model.queryNode("general/@animateui");
-            if (!animateNode)
-                e.model.setQueryValue("general/@animateui", 
-                    apf.isGecko ? false : true);
-        });
-
-        var props = ["visible", "flex", "width", "height", "state"];
-        ide.addEventListener("savesettings", function(e){
-            var changed = false, 
-                xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/panel/text()");
-
-            var set, pset, path, parent, panel, p, i, l = props.length;
-            for (path in _self.panels) {
-                panel = _self.panels[path].panel;
-                if (!panel) continue;
-
-                if (!_self.$settings[path]) {
-                    _self.$settings[path] = {parent: {}};
-                    changed = true;
-                }
-                
-                parent = panel.parentNode;
-                set    = _self.$settings[path];
-                pset   = _self.$settings[path].parent;
-
-                for (i = 0; i < l; i++) {
-                    if (props[i] == "width") {
-                        if (set[p = props[i]] !== _self.panels[path].$lastWidth) {
-                            set[p] = _self.panels[path].$lastWidth;
-                            changed = true;
-                        }
-                        continue;
-                    }
-                        
-                    if (set[p = props[i]] !== panel[p]) {
-                        set[p] = panel[p];
-                        changed = true;
-                    }
-                    if (pset[p] !== parent[p]) {
-                        pset[p] = parent[p];
-                        changed = true;
-                    }
-                }
-            }
-            
-            if (changed) {
-                xmlSettings.nodeValue = JSON.stringify(_self.$settings);
-                return true;
-            }
+        ide.addEventListener("settings.load", function(e){
+            settings.setDefaults("general", [["animateui", apf.isGecko ? false : true]]);
         });
     },
     
@@ -384,6 +341,8 @@ module.exports = ext.register("ext/panels/panels", {
     },
     
     destroy : function(){
+        menus.remove("View/~", 200);
+        
         this.nodes.each(function(item){
             item.destroy(true, true);
         });

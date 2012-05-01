@@ -18,6 +18,7 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var markup = require("text!ext/extension_template/extension_template.xml");
+var menus = require("ext/menus/menus");
 
 module.exports = ext.register("ext/extension_template/extension_template", {
     name     : "Extension Template",
@@ -35,8 +36,7 @@ module.exports = ext.register("ext/extension_template/extension_template", {
     hook : function(){
         var _self = this;
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
-                caption : "Extension Template Window",
+            menus.addItemByPath("Edit/Extension Template Window", new apf.item({
                 onclick : function(){
                     ext.initExtension(_self);
                     _self.winExtensionTemplate.show();
@@ -64,9 +64,9 @@ module.exports = ext.register("ext/extension_template/extension_template", {
         this.nodes = [];
     },
 
-     closeExtensionTemplateWindow : function(){
+    closeExtensionTemplateWindow : function(){
         this.winExtensionTemplate.hide();
-     }
+    }
 });
 
 });
