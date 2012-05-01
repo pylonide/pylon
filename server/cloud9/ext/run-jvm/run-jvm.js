@@ -85,14 +85,12 @@ sys.inherits(JVMRuntimePlugin, Plugin);
         }), this.name);
     };
 
-    // TODO: Maybe refactor to run the debug process from here
+    // Maybe future refactor to run the debug process from here
     // Only debug pure java console projects
     this.$debug = function (message, port) {
         var _self = this;
 
-        var seq = 8081;
-
-        var appPath = '/home/ubuntu/runtime-CodeCompletePlugin.Cloud9Eclipse/test/src';
+        var appPath = '/home/eweda/runtime-CodeCompletePlugin.Cloud9Eclipse/test/src';
         var debugOptions = {
             main_class: 'timeloop',
             port: port,
