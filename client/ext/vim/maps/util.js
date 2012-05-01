@@ -17,9 +17,11 @@ module.exports = {
         // Switch editor to insert mode
         editor.unsetStyle('insert-mode');
 
-        var cursor = document.getElementsByClassName("ace_cursor")[0]; 
-        if (cursor) {
-            cursor.removeAttribute("style"); // fall back to ace theme
+        var cursors = document.getElementsByClassName("ace_cursor");
+        if (cursors && cursors.length) {
+            for (var i = 0, l = cursors.length; i < l; ++i) {
+                cursors[i].removeAttribute("style"); // fall back to ace theme
+            }
         }
 
         editor.setOverwrite(false);
@@ -48,12 +50,14 @@ module.exports = {
         editor.setStyle('normal-mode');
         editor.clearSelection();
 
-        var cursor = document.getElementsByClassName("ace_cursor")[0];
-        if (cursor) {
-            cursor.style.display = null;
-            cursor.style.backgroundColor = "red";
-            cursor.style.opacity = ".5";
-            cursor.style.border = "0";
+        var cursors = document.getElementsByClassName("ace_cursor");
+        if (cursors && cursors.length) {
+            for (var i = 0, l = cursors.length; i < l; ++i) {
+                cursors[i].style.display = null;
+                cursors[i].style.backgroundColor = "red";
+                cursors[i].style.opacity = ".5";
+                cursors[i].style.border = "0";
+            }
         }
 
         var pos;

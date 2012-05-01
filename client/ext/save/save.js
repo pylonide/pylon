@@ -288,6 +288,10 @@ module.exports = ext.register("ext/save/save", {
             callback = null;
         }
 
+        var corrected = ide.dispatchEvent("correctactivepage", {page: page});
+        if (corrected)
+            page = corrected;
+        
         var doc  = page.$doc;
         var node = doc.getNode();
         var path = node.getAttribute("path");

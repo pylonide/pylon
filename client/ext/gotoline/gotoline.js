@@ -202,7 +202,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             return;
 
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
         if (!winGotoLine.visible)
@@ -213,20 +213,20 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         return false;
     },
 
-    execGotoLine: function(line, preview) {
-        var editor = require('ext/editors/editors').currentEditor;
-        if (!editor || !editor.ceEditor)
+    execGotoLine: function(line) {
+        var editor = editors.currentEditor;
+        if (!editor || !editor.amlEditor)
             return;
-        
-        var ceEditor = editor.ceEditor;
-        var ace      = ceEditor.$editor;
+
+        var amlEditor = editor.amlEditor;
+        var ace       = amlEditor.$editor;
 
         if (typeof line != "number")
             line = parseInt(txtLineNr.getValue(), 10) || 0;
 
         ace.gotoLine(line);
         
-        if (preview) {
+        if (typeof preview != "undefined") {
             var animate = apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
             if (!animate)
                 return;
@@ -291,7 +291,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             if (lineEl != gotoline.firstChild)
                 apf.xmldb.appendChild(gotoline, lineEl, gotoline.firstChild);
                 
-            ceEditor.focus();
+            amlEditor.focus();
         }
     },
 

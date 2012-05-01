@@ -280,8 +280,10 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
         if (!editorPage) return;
 
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
+            
+        editor.amlEditor.parentNode.appendChild(winQuickSearch);
 
         var _self = this;
 
@@ -298,9 +300,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             var doc   = editor.getDocument();
             var range = sel.getRange();
             var value = doc.getTextRange(range);
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
+                anim: "out"
+            });
 
-            if (!value && editor.ceEditor)
-               value = editor.ceEditor.getLastSearchOptions().needle;
+            if (!value && editor.amlEditor)
+                value = editor.amlEditor.getLastSearchOptions().needle;
 
             if (value)
                 txtQuickSearch.setValue(value);
@@ -311,23 +316,38 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
             winQuickSearch.show();
             txtQuickSearch.focus();
             txtQuickSearch.select();
+            
+            if (corrected) {
+                if (typeof corrected.right != "undefined")
+                    winQuickSearch.$ext.style.right = corrected.right + "px";
+                winQuickSearch.$ext.style.zIndex = corrected.zIndex || winQuickSearch.zindex;
+            }
+            else {
+                winQuickSearch.$ext.style.zIndex = winQuickSearch.zindex;
+            }
 
             //Animate
             apf.tween.single(winQuickSearch, {
                 type     : "top",
                 anim     : apf.tween.easeInOutCubic,
-                from     : -27,
-                to       : 2,
+                from     : corrected ? corrected.from : -27,
+                to       : corrected ? corrected.to : 2,
                 steps    : 8,
                 interval : 10,
                 control  : (this.control = {}),
                 onfinish : function() {
                     divSearchCount.$ext.style.visibility = "";
                     _self.updateCounter();
+                    if (corrected && corrected.onfinish)
+                        corrected.onfinish();
                 }
             });
         }
         else if (winQuickSearch.visible) {
+            var corrected = ide.dispatchEvent("ext.quicksearch.correctpos", {
+                anim: "in"
+            });
+            
             if (this.control && this.control.stop)
                 this.control.stop();
 
@@ -344,7 +364,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
                     type     : "top",
                     anim     : apf.tween.NORMAL,
                     from     : winQuickSearch.$ext.offsetTop,
-                    to       : -30,
+                    to       : corrected ? corrected.to : -30,
                     steps    : 8,
                     interval : 10,
                     control  : (this.control = {}),
@@ -429,7 +449,7 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         if (close) {
             winQuickSearch.hide();
-            editors.currentEditor.ceEditor.focus();
+            editors.currentEditor.amlEditor.focus();
         }
 
         this.updateCounter(backwards);
@@ -487,11 +507,11 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
     $getAce: function() {
         var editor = editors.currentEditor;
-        if (!editor || !editor.ceEditor)
+        if (!editor || !editor.amlEditor)
             return;
 
-        var ceEditor = editor.ceEditor;
-        return ceEditor.$editor;
+        var amlEditor = editor.amlEditor;
+        return amlEditor.$editor;
     },
 
     enable : function(){

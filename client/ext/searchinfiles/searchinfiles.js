@@ -68,15 +68,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         this.btnReplaceAll.onclick = this.execFind.bind(this, true);
 
         var _self = this;
-
+        winSearchInFiles.onclose = this.onHide.bind(this);
+        
         this.txtFind.$ext.cols = this.txtFind.cols;
-
-        winSearchInFiles.onclose = function() {
-            if (typeof ceEditor != "undefined")
-                ceEditor.focus();
-            if (self.trFiles)
-                trFiles.removeEventListener("afterselect", _self.setSearchSelection);
-        };
 
         winSearchInFiles.onshow = function() {
             if (self.trFiles)
@@ -175,8 +169,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
     onHide : function() {
         var editor = editors.currentEditor;
-        if (editor && editor.ceEditor)
-            editor.ceEditor.focus();
+        if (editor)
+            editor.focus();
+
+        trFiles.removeEventListener("afterselect", this.setSearchSelection);
     },
 
     searchinfiles: function() {

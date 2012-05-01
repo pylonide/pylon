@@ -113,7 +113,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.btnFind       = btnFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
         this.btnFind.onclick = this.findNext.bind(this);
         winSearchReplace.onclose = function() {
-            ceEditor.focus();
+            if (editors.currentEditor && editors.currentEditor.amlEditor)
+                editors.currentEditor.amlEditor.focus();
         }
         
         this.txtFind.$ext.cols = this.txtFind.cols;
@@ -181,8 +182,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             var value;
             var editor = editors.currentEditor;
             if (editor) {
-                if (editor.ceEditor)
-                    value = editor.ceEditor.getLastSearchOptions().needle;
+                if (editor.amlEditor)
+                    value = editor.amlEditor.getLastSearchOptions().needle;
 
                 if (!value) {
                     var sel   = editor.getSelection();
@@ -209,9 +210,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     onHide : function() {
-        var editor = require('ext/editors/editors').currentEditor;
-        if (editor && editor.ceEditor)
-            editor.ceEditor.focus();
+        var editor = editors.currentEditor;
+        if (editor && editor.amlEditor)
+            editor.amlEditor.focus();
     },
 
     search: function() {
@@ -234,9 +235,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     setEditor: function(editor, selection) {
-        if (typeof ceEditor == "undefined")
+        if (typeof editors.currentEditor.amlEditor == "undefined")
             return;
-        this.$editor = editor || ceEditor.$editor;
+        this.$editor = editor || editors.currentEditor.amlEditor.$editor;
         this.$selection = selection || this.$editor.getSelection();
         return this;
     },
@@ -304,7 +305,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     replaceAll: function() {
-        if (!this.editor)
+        if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
             return;

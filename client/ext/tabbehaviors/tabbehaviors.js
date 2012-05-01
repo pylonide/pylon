@@ -34,6 +34,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         ["closeallbutme", "Option-Ctrl-W", "Ctrl-Alt-W", "close all opened tabs, but the tab that is currently active", "Closing tabs.", function(){ return ide.onLine && tabEditors.length > 1 }],
         ["gototabright", "Command-]", "Ctrl-]", "navigate to the next tab, right to the tab that is currently active", "Switching to right tab.", function(){ return tabEditors.length > 1 }],
         ["gototableft", "Command-[", "Ctrl-[", "navigate to the next tab, left to the tab that is currently active", "Switching to left tab.", function(){ return tabEditors.length > 1 }],
+        ["movetabright", "Command-Option-]", "Ctrl-Alt-]", "move the tab that is currently active to the right", "Moving tab to the right.", function(){ return tabEditors.length > 1 }],
+        ["movetableft", "Command-Option-[", "Ctrl-Alt[", "move the tab that is currently active to the left", "Moving tab to the left.", function(){ return tabEditors.length > 1 }],
         ["tab1", "Command-1", "Ctrl-1", "navigate to the first tab", "Switching to tab 1."],
         ["tab2", "Command-2", "Ctrl-2", "navigate to the second tab", "Switching to tab 2."],
         ["tab3", "Command-3", "Ctrl-3", "navigate to the third tab", "Switching to tab 3."],
@@ -72,6 +74,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             name: "closealltotheright",
             isAvailable : function(){
                 return ide.onLine && tabEditors.length > 1 
+                  && mnuContextTabs.$page.nextSibling
                   && mnuContextTabs.$page.nextSibling.localName == "page";
             },
             exec: function (editor, args) { 
@@ -133,7 +136,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 command : "previoustab"
             }), 500),
             
-            mnuContext = new apf.menu({id : "mnuContextTabs", "onprop.visible" : menus.$checkItems})
+            mnuContext = this.menu = new apf.menu({id : "mnuContextTabs", "onprop.visible" : menus.$checkItems})
         );
         
         mnuContext.addEventListener("prop.visible", function(e) {
@@ -280,8 +283,15 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
     },
     
-    closetab: function() {
-        var page = tabEditors.getPage();
+    closetab: function(page) {
+        if (!page) {
+            page = tabEditors.getPage();
+            var corrected = ide.dispatchEvent("beforeclosetab", {
+                page: page
+            });
+            if (corrected)
+                page = corrected;
+        }
         var pages = tabEditors.getPages();
         var isLast = pages[pages.length - 1] == page;
         
@@ -430,11 +440,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.$tabAccessCycle = 2;
         }
 
+        var tabs = tabEditors;
         var next = this.accessed[n];
-        if (next == tabEditors.getPage())
+        if (next == tabs.getPage() || ide.dispatchEvent("beforenexttab", {
+            page: next
+        }) === false)
             return this.nexttab();
 
-        tabEditors.set(next);
+        tabs.set(next);
         
         this.$dirtyNextTab = true;
     },
@@ -450,11 +463,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.$tabAccessCycle = this.accessed.length;
         }
 
+        var tabs = tabEditors;
         var next = this.accessed[n];
-        if (next == tabEditors.getPage())
+        if (next == tabs.getPage() || ide.dispatchEvent("beforeprevioustab", {
+            page: next
+        }) === false)
             return this.previoustab();
-
-        tabEditors.set(next);
+            
+        tabs.set(next);
     },
 
     gototabright: function(e) {
@@ -466,17 +482,17 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     cycleTab: function(dir) {
-        var bRight  = dir == "right",
-            tabs    = tabEditors,
-            pages   = tabs.getPages(),
-            curr    = tabs.getPage(),
-            currIdx = pages.indexOf(curr);
+        var bRight  = dir == "right";
+        var tabs    = tabEditors;
+        var pages   = tabs.getPages();
+        var curr    = tabs.getPage();
+        var currIdx = pages.indexOf(curr);
         if (!curr || pages.length == 1)
             return;
         var idx = currIdx + (bRight ? 1 : -1);
         if (idx < 0)
             idx = pages.length - 1;
-        if (idx > pages.length -1)
+        if (idx > pages.length - 1)
             idx = 0;
 
         // other plugins may modify this behavior
@@ -491,6 +507,48 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             idx = res;
 
         tabs.set(pages[idx].id);
+        return false;
+    },
+    
+    movetabright: function() {
+        this.moveTab("right");
+    },
+    
+    movetableft: function() {
+        this.moveTab("left");
+    },
+    
+    moveTab: function(dir) {
+        var bRight  = dir == "right";
+        var tabs    = tabEditors;
+        var pages   = tabs.getPages();
+        var curr    = tabs.getPage();
+        var currIdx = pages.indexOf(curr);
+        var append  = false;
+        if (!curr || pages.length == 1)
+            return;
+        var idx = currIdx + (bRight ? 2 : -1);
+        if (idx < 0 || idx === pages.length)
+            append = true;
+        if (idx > pages.length - 1)
+            idx = 0;
+
+        // other plugins may modify this behavior
+        var res = ide.dispatchEvent("beforemovetab", {
+            index: idx,
+            dir: dir,
+            pages: pages
+        });
+        if (res === false)
+            return;
+        if (typeof res == "number")
+            idx = res;
+
+        if (append)
+            tabs.appendChild(curr)
+        else
+            tabs.insertBefore(curr, pages[idx]);
+        tabs.dispatchEvent("reorder", { page: curr });
         return false;
     },
 

@@ -6,12 +6,15 @@
                 height             : 23px;
                 overflow           : hidden;
                 cursor             : default;
-                position           : relative;
+                position           : absolute;
                 -moz-user-select   : none;
                 -khtml-user-select : none;
                 user-select        : none;
                 line-height        : 17px;
                 opacity : 0.01;
+                z-index: 2;
+                top: 10px;
+                right: 10px;
             }
             
             .zenbutton.full {

@@ -6,6 +6,7 @@
  */
 define(function(require, exports, module) {
 
+var editors = require("ext/editors/editors");
 var PlaceHolder = require("ace/placeholder").PlaceHolder;
 var marker = require("ext/language/marker");
 var ide = require("core/ide");
@@ -69,12 +70,13 @@ module.exports = {
         // Temporarily disable these markers, to prevent weird slow-updating events whilst typing
         marker.disableMarkerType('occurrence_main');
         marker.disableMarkerType('occurrence_other');
-        var cursor = ceEditor.$editor.getCursorPosition();
+        var ace = Editors.currentEditor.amlEditor;
+        var cursor = ace.getCursorPosition();
         var mainPos = data.pos;
-        var p = new PlaceHolder(ceEditor.$editor.session, data.length, mainPos, data.others, "language_rename_main", "language_rename_other");
+        var p = new PlaceHolder(ace.session, data.length, mainPos, data.others, "language_rename_main", "language_rename_other");
         if(cursor.row !== mainPos.row || cursor.column < mainPos.column || cursor.column > mainPos.column + data.length) {
             // Cursor is not "inside" the main identifier, move it there
-            ceEditor.$editor.moveCursorTo(mainPos.row, mainPos.column);
+            ace.moveCursorTo(mainPos.row, mainPos.column);
         }
         p.showOtherMarkers();
         p.on("cursorLeave", function() {
@@ -85,7 +87,7 @@ module.exports = {
     },
     
     renameVariable: function() {
-        this.worker.emit("fetchVariablePositions", {data: ceEditor.$editor.getCursorPosition()});
+        this.worker.emit("fetchVariablePositions", {data: editors.currentEditor.amlEditor.$editor.getCursorPosition()});
     },
     
     destroy : function(){

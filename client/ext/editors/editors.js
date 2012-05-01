@@ -175,15 +175,16 @@ module.exports = ext.register("ext/editors/editors", {
         });
         
         apf.document.documentElement.appendChild(tab);
+        var tabs = tabEditors;
 
         this.buttons = {
             add: btn,
             menu: btnMenu
         }
 
-        tabEditors.$buttons.appendChild(btn.$ext);
-        tabEditors.$buttons.appendChild(btnMenu.$ext);
-        tabEditors.addEventListener("DOMNodeInserted",function(e){
+        tabs.$buttons.appendChild(btn.$ext);
+        tabs.$buttons.appendChild(btnMenu.$ext);
+        tabs.addEventListener("DOMNodeInserted",function(e){
             if (e.$isMoveWithinParent) {
                 //record position in settings
 
@@ -195,15 +196,15 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             if (e.relatedNode == this && e.currentTarget.localName == "page") {
-                tabEditors.appendChild(btn);
-                tabEditors.$buttons.appendChild(btn.$ext);
+                tabs.appendChild(btn);
+                tabs.$buttons.appendChild(btn.$ext);
                 btn.$ext.style.position = "";
                 btn.$ext.style.right = "";
                 btn.$ext.style.top = "";
             }
         });
 
-        tabEditors.addEventListener("DOMNodeRemoved",function(e){
+        tabs.addEventListener("DOMNodeRemoved",function(e){
             if (e.relatedNode == this && this.getPages().length == 1) {
                 btn.$ext.style.position = "absolute";
                 btn.$ext.style.right = "5px";
@@ -469,14 +470,17 @@ module.exports = ext.register("ext/editors/editors", {
         this.afterswitch({nextPage: page, previousPage: {type: lastType}, keepEditor : true});
     },
 
-    openEditor : function(doc, init, active) {
+    openEditor : function(doc, init, active, forceOpen) {
         var xmlNode  = doc.getNode();
         var filepath = xmlNode.getAttribute("path");
+        var tabs = tabEditors;
 
-        var page = tabEditors.getPage(filepath);
-        if (page) {
-            tabEditors.set(page);
-            return;
+        if (!forceOpen) {
+            var page = tabs.getPage(filepath);
+            if (page) {
+                tabs.set(page);
+                return;
+            }
         }
 
         var fileExtension = (xmlNode.getAttribute("path") || "").split(".").pop().toLowerCase();
@@ -500,10 +504,10 @@ module.exports = ext.register("ext/editors/editors", {
 
         //Create Fake Page
         if (init)
-            tabEditors.setAttribute("buttons", "close");
+            tabs.setAttribute("buttons", "close");
 
         var model = new apf.model();
-        var fake = tabEditors.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
+        var fake = tabs.add("{([@changed] == 1 ? '*' : '') + [@name]}", filepath, editor.path, null, function(page){
             page.$at     = new apf.actiontracker();
             page.$doc    = doc;
             doc.$page    = page;
@@ -523,19 +527,25 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         if (init)
-            tabEditors.setAttribute("buttons", "close,scale,order");
+            tabs.setAttribute("buttons", "close,scale,order");
 
         doc.addEventListener("setnode", function(e) {
             fake.$model.load(e.node);
         });
 
         this.initEditorEvents(fake, model);
+        
+        ide.dispatchEvent("tab.create", {
+            page: fake,
+            model: model,
+            doc: doc
+        });
 
         if (init && !active)
             return;
 
         //Set active page
-        tabEditors.set(filepath);
+        tabs.set(filepath);
 
         //if (editorPage.model != model)
             //this.beforeswitch({nextPage: fake});
@@ -548,24 +558,25 @@ module.exports = ext.register("ext/editors/editors", {
         // okay don't know if you would want this, but this is the way the 'open file' dialog
         // handles it so let's do that
         setTimeout(function () {
-            if (typeof ceEditor !== "undefined")
-                ceEditor.focus();
+            if (typeof editor.amlEditor !== "undefined")
+                editor.amlEditor.focus();
         }, 100);
 
         settings.save();
     },
 
-    initEditorEvents: function(fake, model) {
-        fake.$at.addEventListener("afterchange", function(e) {
+    initEditorEvents: function(page, model) {
+        model = model || page.$model;
+        page.$at.addEventListener("afterchange", function(e) {
             if (e.action == "reset") {
                 delete this.undo_ptr;
                 return;
             }
 
             var val;
-            if (fake.$at.ignoreChange) {
+            if (page.$at.ignoreChange) {
                 val = undefined;
-                fake.$at.ignoreChange = false;
+                page.$at.ignoreChange = false;
             }
             else if(this.undolength === 0 && !this.undo_ptr) {
                 val = undefined;
@@ -576,11 +587,11 @@ module.exports = ext.register("ext/editors/editors", {
                     : undefined;
             }
 
-            if (fake.changed !== val) {
-                fake.changed = val;
+            if (page.changed !== val) {
+                page.changed = val;
                 model.setQueryValue("@changed", (val ? "1" : "0"));
                 
-                var node = fake.$doc.getNode();
+                var node = page.$doc.getNode();
                 ide.dispatchEvent("updatefile", {
                     changed : val ? 1 : 0,
                     xmlNode : node
@@ -655,8 +666,8 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     beforeswitch : function(e) {
-        var page       = e.nextPage,
-            editorPage = tabEditors.getPage(page.type);
+        var page       = e.nextPage;
+        var editorPage = tabEditors.getPage(page.type);
         if (!editorPage) return;
 
         // fire this event BEFORE editor sessions are swapped.
@@ -674,10 +685,12 @@ module.exports = ext.register("ext/editors/editors", {
             page.$editor.setDocument(page.$doc, page.$at);
         }
 
-        ide.dispatchEvent("editorswitch", {
+        if (ide.dispatchEvent("editorswitch", {
             previousPage: e.previousPage,
             nextPage: e.nextPage
-        });
+        }) !== false) {
+            page.$editor.setDocument && page.$editor.setDocument(page.$doc, page.$at);
+        }
     },
 
     afterswitch : function(e) {
@@ -800,7 +813,7 @@ module.exports = ext.register("ext/editors/editors", {
           });
 
         ide.addEventListener("openfile", function(e){
-            _self.openEditor(e.doc, e.init, e.active);
+            _self.openEditor(e.doc, e.init, e.active, e.forceOpen);
         });
 
         ide.addEventListener("filenotfound", function(e) {
@@ -896,9 +909,10 @@ module.exports = ext.register("ext/editors/editors", {
                     }
 
                     ide.dispatchEvent("openfile", {
-                        doc    : doc,
-                        init   : true,
-                        active : active
+                        doc      : doc,
+                        init     : true,
+                        forceOpen: true,
+                        active   : active
                             ? active == node.getAttribute("path")
                             : i == l - 1
                     });
@@ -1043,22 +1057,25 @@ module.exports = ext.register("ext/editors/editors", {
 
     jump : function(fileEl, row, column, text, doc, page) {
         var path    = fileEl.getAttribute("path");
-        var hasData = page && (tabEditors.getPage(path) || { }).$doc ? true : false;
+        var tabs    = tabEditors;
+        var hasData = page && (tabs.getPage(path) || { }).$doc ? true : false;
+        var _self   = this;
 
         if (row !== undefined) {
+            var editor = _self.currentEditor.amlEditor;
             var jumpTo = function(){
                 var f;
                 setTimeout(f = function() {
                     // TODO move this to the editor
-                    ceEditor.$editor.gotoLine(row, column, false);
+                    editor.$editor.gotoLine(row, column, false);
                     if (text)
-                        ceEditor.$editor.find(text, null, false);
-                    ceEditor.focus();
-                }, 100); f();
+                        editor.$editor.find(text, null, false);
+                    editor.focus();
+                }, 100);
             };
 
             if (hasData) {
-                tabEditors.set(path);
+                tabs.set(path);
                 jumpTo();
             }
             else
@@ -1077,7 +1094,7 @@ module.exports = ext.register("ext/editors/editors", {
                 doc: doc || ide.createDocument(fileEl)
             });
         else
-            tabEditors.set(path);
+            tabs.set(path);
     },
 
     enable : function(){

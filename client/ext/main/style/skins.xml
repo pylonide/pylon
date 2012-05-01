@@ -305,7 +305,7 @@
         .black-menu-bar.closed .c9-logo {
         	background-position: 0px -346px;
         }
-        .black-menu-bar.closed .c9-logo.mnubtnOver {
+        .black-menu-bar.closed .c9-logo.mnubtn:hover {
         	background-position: -39px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnDown {
@@ -315,7 +315,7 @@
         .black-menu-bar .c9-logo {
             background-position: -117px -346px;
         }
-        .black-menu-bar .c9-logo.mnubtnOver {
+        .black-menu-bar .c9-logo.mnubtn:hover {
         	background-position: -156px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnDown {
@@ -2144,12 +2144,12 @@
 			width    : 30px;
         }
 
-        .mnubtnOver,
+        .mnubtn:hover,
         .mnubtnDown {
         	background-image: url(images/c9-repeat-x.png);
         	background-repeat: repeat-x;
         }
-        .mnubtnOver {
+        .mnubtn:hover {
         	background-position: 0 -181px;
         }
         .mnubtnDown {
@@ -7473,7 +7473,11 @@
         .darksplitter {
             position : relative;
             z-index  : 90000;
-            background-color: #8c8c8c;
+            background-color: #e8e8e8;
+            
+            display  : -moz-box;
+            display  : -webkit-box;
+            display  : -ms-box;
         }
 
         .darksplitterFocus {
@@ -7487,57 +7491,81 @@
             cursor : ns-resize;
         }
 
-        .darksplitterMoving {
-            background-color : #8c8c8c;
-        }
-
         .darksplitterRealtime {
             background-image : url(images/spacer.gif);
         }
 
         .darksplitter span {
             position: absolute;
-            width: 11px;
-            height: 3px;
-            margin-left: 49%;
-            margin-top: 2px;
-            background: url(images/splitter_dark_grab.png) no-repeat 0 0;
+            background-image: url(images/splitter_dark_grab.png);
+            background-repeat: no-repeat;
+            background-position: 0 0;
         }
 
         .darksplitter.vertical {
-            display  : -moz-box;
-            display  : -webkit-box;
-            display  : -ms-box;
-
-            border-top: 0px;
-            border-right: 1px solid #fff;
-            border-bottom: 0px;
-            border-left: 1px solid #eaeaea;
+            border-right: 1px solid #e8e8e8;
+            border-left: 1px solid #d7d7d7;
 
             vertical-align: middle;
+            width: 6px;
+        }
+        
+        .darksplitterMoving.vertical,
+        .darksplitter.vertical:hover {
+            border-right: 1px solid #d7d7d7;
+            
+            background: -moz-linear-gradient(left,  #e8e8e8 50%, #f0f0f0 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right top, color-stop(50%,#e8e8e8), color-stop(100%,#f0f0f0)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* IE10+ */
+            background: linear-gradient(left,  #e8e8e8 50%,#f0f0f0 100%); /* W3C */
+        }
+        
+        .darksplitter.vertical span {
             width: 3px;
+            height: 11px;
+            background-position: 0 -3px;
+            margin-top: 49%;
+            margin-left: 1px;
         }
 
-        .darksplitter.vertical span {
-            display: none;
+        .darksplitterMoving.vertical span,
+        .darksplitter.vertical:hover span {
+            background-position: 0 -18px;
         }
 
         .darksplitter.horizontal {
             position: relative;
             margin : -2px 0 0 0;
-
-            border: 0;
-            /*border-top: 1px solid #3d3d3d;
-            border-right: 0px;
-            border-bottom: 1px solid #3d3d3d;
-            border-left: 0px;*/
-
             height: 6px;
-            background: url(images/splitter_dark_bg.png) repeat-x 0 0;
+            
+            border-top: 1px solid #c7c7c7;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .darksplitterMoving.horizontal,
+        .darksplitter.horizontal:hover {
+            border-bottom: 1px solid #d7d7d7;
+            
+            background: -moz-linear-gradient(top,  #e8e8e8 50%, #f2f2f2 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(50%,#e8e8e8), color-stop(100%,#f2f2f2)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* IE10+ */
+            background: linear-gradient(top,  #e8e8e8 50%,#f2f2f2 100%); /* W3C */
         }
 
         .darksplitter.horizontal span {
-            display: inline;
+            width: 11px;
+            height: 3px;
+            margin-left: 49%;
+            margin-top: 1px;
+        }
+        
+        .darksplitterMoving.horizontal span,
+        .darksplitter.horizontal:hover span {
+            background-position: 0 -15px;
         }
     ]]></a:style>
 

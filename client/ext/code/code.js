@@ -261,21 +261,31 @@ module.exports = ext.register("ext/code/code", {
 
         return "text";
     },
+    
+    getContentType : function(node) {
+        var syntax = this.getSyntax(node);
+        if (!syntax)
+            return "auto";
+        
+        return contentTypes[syntax] || (syntax == "text" ? "text/plain" : "auto");
+    },
 
     getSelection : function(){
-        if (typeof ceEditor == "undefined")
+        if (typeof this.amlEditor == "undefined")
             return null;
-        return ceEditor.getSelection();
+        return this.amlEditor.getSelection();
     },
 
     getDocument : function(){
-        if (typeof ceEditor == "undefined")
+        if (typeof this.amlEditor == "undefined")
             return null;
-        return ceEditor.getSession();
+        return this.amlEditor.getSession();
     },
 
     setDocument : function(doc, actiontracker){
         var _self = this;
+
+        var ceEditor = this.amlEditor;
 
         if (doc.acesession) {
             ceEditor.setProperty("value", doc.acesession);
@@ -359,8 +369,9 @@ module.exports = ext.register("ext/code/code", {
                     //??? call doc.$page.destroy()
                 });
             });
+            
+            doc.dispatchEvent("init");
         }
-
 
         if (doc.editor && doc.editor != this) {
             var value = doc.getValue();
@@ -374,11 +385,11 @@ module.exports = ext.register("ext/code/code", {
     },
 
     clear : function(){
-        ceEditor.clear();
+        this.amlEditor.clear();
     },
 
     focus : function(){
-        ceEditor.focus();
+        this.amlEditor.focus();
     },
 
     hook: function() {
@@ -468,13 +479,14 @@ module.exports = ext.register("ext/code/code", {
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
                     }
                 }
-                e.doc.editor.ceEditor.afterOpenFile(e.doc.editor.ceEditor.getSession());
+                e.doc.editor.amlEditor.afterOpenFile(e.doc.editor.amlEditor.getSession());
             }
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            if (typeof ceEditor != "undefined")
-                ceEditor.afterOpenFile(ceEditor.getSession());
+            var editor = _self.amlEditor;
+            if (typeof editor != "undefined")
+                editor.afterOpenFile(editor.getSession());
         });
 
         c = 20000;
@@ -769,12 +781,11 @@ module.exports = ext.register("ext/code/code", {
     init: function(amlPage) {
         var _self = this;
 
-        //amlPage.appendChild(ceEditor);
-        ceEditor.show();
-
         this.ceEditor = this.amlEditor = ceEditor;
-        ceEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
-        ceEditor.$editor.commands = commands;
+        this.amlEditor.show();
+
+        this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
+        this.amlEditor.$editor.commands = commands;
 
         // preload common language modes
         var noop = function() {};
@@ -814,18 +825,6 @@ module.exports = ext.register("ext/code/code", {
         ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
             // add preferences to the statusbar plugin
             e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
-        });
-
-        ide.addEventListener("keybindingschange", function(e) {
-            if (typeof ceEditor == "undefined")
-                return;
-
-            var bindings = e.keybindings.code;
-            ceEditor.$editor.setKeyboardHandler(new HashHandler(bindings));
-            // In case the `keybindingschange` event gets fired after other
-            // plugins that change keybindings have already changed them (i.e.
-            // the vim plugin), we fire an event so these plugins can react to it.
-            ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
         });
 
         ide.addEventListener("updatefile", function(e){
@@ -932,8 +931,8 @@ module.exports = ext.register("ext/code/code", {
             item.destroy(true, true);
         });
 
-        if (self.ceEditor) {
-            ceEditor.destroy(true, true);
+        if (this.amlEditor) {
+            this.amlEditor.destroy(true, true);
             mnuSyntax.destroy(true, true);
         }
 

@@ -146,9 +146,19 @@ module.exports = ext.register("ext/zen/zen", {
 
         this.setupHandleListeners();
 
-        var editor = editors.currentEditor;
-        if (editor && editor.ceEditor)
-            editor.ceEditor.parentNode.appendChild(btnZenFullscreen);
+        var button = btnZenFullscreen;
+        //var editor = editors.currentEditor;
+        //if (editor && editor.amlEditor)
+        //    editor.amlEditor.parentNode.appendChild(button);
+        var page = tabEditors && tabEditors.getPage();
+        if (page.fake)
+            page = page.relPage;
+        page.appendChild(button);
+        ide.addEventListener("editorswitch", function(e) {
+            var page = e.nextPage ? e.nextPage.fake ? e.nextPage.relPage : e.nextPage : null;
+            if (page && button.parentNode != page)
+                page.appendChild(button);
+        });
 
         vbMain.parentNode.appendChild(new apf.vbox({
             anchors: "0 0 0 0",

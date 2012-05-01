@@ -60,8 +60,8 @@ var extAll = define([
     "ext/closeconfirmation/closeconfirmation",
     "ext/codetools/codetools",
     "ext/colorpicker/colorpicker",
+    //"ext/splitview/splitview"
     "ext/revisions/revisions"
-    //"ext/acebugs/acebugs"
     //"ext/minimap/minimap"
     //"ext/acebugs/acebugs"
 ]);

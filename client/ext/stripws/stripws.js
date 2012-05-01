@@ -21,10 +21,10 @@ var settings = require("ext/settings/settings");
 
 // Attaching to exports.module for testing purposes
 var strip = module.exports.strip = function () {
-    if (!editors.currentEditor.ceEditor)
+    if (!editors.currentEditor.amlEditor)
         return;
 
-    var editor = editors.currentEditor.ceEditor.$editor;
+    var editor = editors.currentEditor.amlEditor.$editor;
     var session = editor.getSession();
 
     var doc = session.getDocument();

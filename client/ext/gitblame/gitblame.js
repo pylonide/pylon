@@ -23,7 +23,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
     init : function(amlNode){
         this.blamejs = new BlameJS();
-        this.originalGutterWidth = editors.currentEditor.ceEditor.$editor.renderer.getGutterWidth();
+        this.originalGutterWidth = editors.currentEditor.amlEditor.$editor.renderer.getGutterWidth();
     },
 
     hook : function(){
@@ -33,8 +33,8 @@ module.exports = ext.register("ext/gitblame/gitblame", {
 
         tabEditors.addEventListener("beforeswitch", function(e){
             if (editors.currentEditor) {
-                editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
-                editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
+                editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr([]);
+                editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth(_self.originalGutterWidth + "px");
             }
         });
         
@@ -71,7 +71,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 else {
                     ide.send(data);
                     // Set gutter width
-                    editors.currentEditor.ceEditor.$editor.renderer.setGutterWidth("300px");
+                    editors.currentEditor.amlEditor.$editor.renderer.setGutterWidth("300px");
                 }
             }
         }
@@ -126,8 +126,8 @@ module.exports = ext.register("ext/gitblame/gitblame", {
                 };
             }
         }
-        editors.currentEditor.ceEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
-        editors.currentEditor.ceEditor.$editor.renderer.updateFull();
+        editors.currentEditor.amlEditor.$editor.renderer.$gutterLayer.setExtendedAnnotationTextArr(textHash);
+        editors.currentEditor.amlEditor.$editor.renderer.updateFull();
     },
 
     enable : function(){
