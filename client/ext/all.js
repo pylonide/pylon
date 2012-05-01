@@ -42,6 +42,7 @@ var extAll = define([
     "ext/watcher/watcher",
     "ext/dragdrop/dragdrop",
     "ext/menus/menus",
+    "ext/tooltip/tooltip",
     "ext/sidebar/sidebar",
     "ext/beautify/beautify",
     "ext/offline/offline",

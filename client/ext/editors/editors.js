@@ -325,7 +325,7 @@ module.exports = ext.register("ext/editors/editors", {
                         "step" + Math.ceil((dir ? --i : ++i) / div), 
                         ["step" + Math.ceil((dir ? i + 1 : i-1) / div)]);
                     
-                    if (!dir && tabEditors.getPage())
+                    if (tabEditors.getPage())
                         apf.layout.forceResize(tabEditors.getPage().$ext);
                 },
                 onfinish : function(e){

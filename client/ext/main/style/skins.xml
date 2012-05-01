@@ -5303,6 +5303,22 @@
             background-repeat: no-repeat;
             background-position: 0 -16px;
         }
+        
+        .menu-bk.c9-tooltip {
+            padding : 7px 7px 8px 10px;
+            line-height : 15px;
+            width : 250px;
+            color : #f1f1f1;
+        }
+        
+        .menu-bk.c9-tooltip a, .menu-bk.c9-tooltip span{
+            color: #91c478;
+        }
+        
+        .menu-bk.c9-tooltip .arrow{
+            left : 50%;
+            margin-left : -12px;
+        }
     ]]></a:style>
 
     <a:presentation>

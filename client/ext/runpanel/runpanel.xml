@@ -118,14 +118,4 @@
             </a:bar>
         </a:vbox>
     </a:window>
-    
-    <a:bar id="debugInfo" class="c9-debugInfo menu-bk downward menu-bkFocus">
-        <a:vbox class="debugInfoContainer">
-            <div class="arrow debugInfoArrow"></div>
-            <a:text id="debugInfoText" class="debugInfoDesc">
-            Run &amp; Debug your Node.js applications.
-            &lt;br/>For help running code, check out our guided tour in the Help menu.
-            &lt;br/>Want your language supported?&lt;br/>Tweet us @Cloud9IDE!</a:text>
-        </a:vbox>
-	</a:bar>
 </a:application>

@@ -399,10 +399,12 @@ module.exports = ext.register("ext/console/console", {
         
         stProcessRunning.addEventListener("activate", function() {
             var autoshow = settings.model.queryValue("auto/console/@autoshow");
-            if (_self.autoOpen && apf.isTrue(autoshow))
-                _self.show();
-            
-            _self.showOutput();
+            if (_self.autoOpen && apf.isTrue(autoshow)) {
+                setTimeout(function(){
+                    _self.show();
+                    _self.showOutput();
+                }, 200);
+            }
         });
     },
 
@@ -643,7 +645,7 @@ module.exports = ext.register("ext/console/console", {
                 Firmin.animate(winDbgConsole.$ext, {
                     height: height + "px",
                     timingFunction: "cubic-bezier(.30, .08, 0, 1)"
-                }, 0.4, finish);
+                }, 0.3, finish);
             }
             else
                 finish();
@@ -659,10 +661,15 @@ module.exports = ext.register("ext/console/console", {
             winDbgConsole.$ext.style.maxHeight = "10000px";
 
             if (!immediate && animOn) {
+                var timer = setInterval(function(){apf.layout.forceResize()}, 10);
+                
                 Firmin.animate(winDbgConsole.$ext, {
                     height: height + "px",
-                    timingFunction: "cubic-bezier(.63, .26, .82, .58)"
-                }, 0.3, finish);
+                    timingFunction: "ease-in-out"
+                }, 0.3, function(){
+                    clearInterval(timer);
+                    finish();
+                });
             }
             else
                 finish();

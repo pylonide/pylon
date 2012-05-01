@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(96190)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(apf.js)SIZE(96350)TIME(Mon, 30 Apr 2012 22:00:16 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -414,6 +414,7 @@ VERSION:'3.0beta',
         apf.hasContentEditableContainerBug = apf.isWebkit;
         // Try transform first for forward compatibility
         var props   = ["transform", "OTransform", "KhtmlTransform", "MozTransform", "WebkitTransform"],
+            props2  = ["transition", "OTransition", "KhtmlTransition", "MozTransition", "WebkitTransition"],
             prefixR = ["", "O", "Khtml", "Moz", "Webkit"],
             prefixC = ["", "o-", "khtml-", "moz-", "webkit-"],
             events  = ["transitionend", "transitionend", "transitionend", "transitionend", "webkitTransitionEnd"],
@@ -424,6 +425,7 @@ VERSION:'3.0beta',
         for (; i < l && !this.supportCSSAnim; ++i) {
             if (typeof t.style[props[i]] == "undefined") continue;
             this.supportCSSAnim     = props[i];
+            this.supportCSSTransition = props2[i];
             this.runtimeStylePrefix = prefixR[i];
             this.classNamePrefix    = prefixC[i];
             this.cssAnimEvent       = events[i];
@@ -11429,7 +11431,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/tween.js)SIZE(35723)TIME(Sat, 28 Apr 2012 21:06:18 GMT)*/
+/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Mon, 30 Apr 2012 22:55:42 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11780,7 +11782,7 @@ var ID        = "id",
                 oHtml.style.position = "relative";
         } catch(e){}
         
-        var useCSSAnim  = (apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
+        var useCSSAnim  = (false && apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
             isTransform = (info.type == TRANSFORM);
 
         info.method = useCSSAnim ? info.type : isTransform
@@ -11937,7 +11939,7 @@ var ID        = "id",
         }
 
         var animCSS, isTransform,
-            useCSSAnim  = apf.supportCSSAnim && apf.supportCSSTransition,
+            useCSSAnim  = false && apf.supportCSSAnim && apf.supportCSSTransition,
             hasCSSAnims = false,
             cssDuration = ((info.steps * info.interval) / 1000),
             cssAnim     = CSSTIMING[info.anim || 0],

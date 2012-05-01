@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var menus = require("ext/menus/menus");
+var tooltip = require("ext/tooltip/tooltip");
 var commands = require("ext/commands/commands");
 
 //var TreeDocument = require("concorde/AceDocument");
@@ -130,33 +131,13 @@ module.exports = ext.register("ext/revisions/revisions", {
         btnSave.setAttribute("margin", "0 20 0 20");
         btnSave.removeAttribute("command");
 
-        btnSave.addEventListener("onmouseover", function(e) {
-            setTimeout(function (e) {
-                ext.initExtension(self);
-                revisionsInfo.addEventListener("onmouseover", function(e) {
-                    isInfoActive = true;
-                });
-                revisionsInfo.addEventListener("onmouseout", function(e) {
-                    isInfoActive = false;
-                    self.hideRevisionsInfo();
-                });
-                apf.tween.single(revisionsInfo, {
-                    from:0,
-                    to:1,
-                    steps: 10,
-                    type     : "opacity",
-                    anim     : apf.tween.easeInOutCubic,
-                    interval: 30
-                });
-            }, 500);
-        });
-
-        btnSave.addEventListener("onmouseout", function(e) {
-            self.hideRevisionsInfo();
-        });
-
-        btnSave.addEventListener("onclick", function(e) {
-            Save.quicksave();
+        tooltip.add(btnSave, {
+            message : "Changes to your file are automatically saved.<br />\
+            View all your changes through <a href='javascript:void(0)' \
+            onclick='require(\"ext/revisions/revisions\").toggle();' \
+            class='revisionsInfoLink'>the Revision History pane</a>. \
+            Rollback to a previous state, or make comparisons.",
+            width : "250px"
         });
 
         // Declaration of event listeners
@@ -831,14 +812,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 setTimeout(finalize);
             }
         );
-    },
-
-    toggleInfoDiv : function(show) {
-        ext.initExtension(this);
-        if (show === true)
-            revisionsInfo.$ext.style.display = "block";
-        else
-            revisionsInfo.$ext.style.display = "none";
     },
 
     /**

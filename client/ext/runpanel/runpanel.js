@@ -13,6 +13,7 @@ var noderunner = require("ext/noderunner/noderunner");
 var panels = require("ext/panels/panels");
 var settings = require("ext/settings/settings");
 var menus = require("ext/menus/menus");
+var tooltip = require("ext/tooltip/tooltip");
 var dock = require("ext/dockpanel/dockpanel");
 var save = require("ext/save/save");
 var markup = require("text!ext/runpanel/runpanel.xml");
@@ -114,28 +115,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             this.model = new apf.model().load("<configurations />")
         );
         
-        btnRun.$button1.addEventListener("onmouseover", function(e) {
-            setTimeout(function(e) {
-                ext.initExtension(_self);
-                apf.tween.single(debugInfo, {
-                    from:0,
-                    to:1,
-                    steps: 10,
-                    type:"fade",
-                    interval: 30
-                }); 
-            }, 500);
-        });
-
-       btnRun.$button1.addEventListener("onmouseout", function(e) {
-            ext.initExtension(_self);
-            apf.tween.single(debugInfo, {
-                from:1,
-                to:0,
-                steps: 10,
-                type:"fade",
-                interval: 30
-            });
+        tooltip.add( btnRun.$button1, {
+            message : "Run &amp; Debug your <span>Node.js</span> applications.\
+            For more help, check out our guided tour in the Help menu.\
+            Want your language supported? Tweet us \
+            <a href='http://twitter.com/Cloud9IDE' target='_blank'>@Cloud9IDE</a>!",
+            width : "203px",
+            timeout : 1000
         });
         
         var c = 0;
