@@ -13,7 +13,8 @@
             "process-manager"
         ],
         "consumes": [
-            "eventbus"
+            "eventbus",
+            "ide"
         ]
     }
 }

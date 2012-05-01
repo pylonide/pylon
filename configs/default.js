@@ -1,5 +1,6 @@
 var fs = require("fs");
 var argv = require('optimist').argv;
+var path = require("path");
 
 var clientExtensions = {};
 var clientDirs = fs.readdirSync(__dirname + "/../plugins-client");
@@ -12,7 +13,7 @@ for (var i = 0; i < clientDirs.length; i++) {
     clientExtensions[name] = __dirname + "/../plugins-client/" + dir;
 }
 
-var projectDir = argv.w || process.cwd();
+var projectDir = (argv.w && path.resolve(process.cwd(), argv.w)) || process.cwd();
 var fsUrl = "/workspace";
 
 var port = argv.p || process.env.PORT || 3131;

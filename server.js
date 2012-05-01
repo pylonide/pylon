@@ -10,7 +10,7 @@ if (configName.indexOf("-") === 0) {
     configName = "default";
 }
 
-var configPath = path.resolve("./configs/", configName);
+var configPath = path.resolve(__dirname, "./configs/", configName);
 
 architect.createApp(configPath, function (err, app) {
     if (err) {
