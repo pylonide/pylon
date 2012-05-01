@@ -14,7 +14,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var markup = require("text!ext/consolehints/consolehints.xml");
 var css = require("text!ext/consolehints/consolehints.css");
-var Console = require("ext/console/console");
+var c9console = require("ext/console/console");
 var commands = require("ext/commands/commands");
 
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
@@ -77,12 +77,11 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     alone  : true,
     markup : markup,
     css    : css,
-    deps   : [Console],
+    deps   : [c9console],
     hidden : true,
     nodes  : [],
     autoOpen : true,
-    excludeParent : true,
-    
+
     hook : function(){
         var _self = this;
         
@@ -92,7 +91,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             var hideInput = e.ext.hideInput;
             e.ext.hideInput = function(){
                 _self.hide();
-                hideInput.apply(Console, arguments);
+                hideInput.apply(c9console, arguments);
             }
         });
     },
@@ -112,12 +111,12 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     _self.hide();
             });
             
-            Console.messages.commandhints = function(message) {
+            c9console.onMessageMethods.commandhints = function(message) {
                 var cmds = message.body;
                 for (var cmd in cmds)
                     commands.commands[cmd] = cmds[cmd];
             };
-            Console.messages["internal-autocomplete"] = function(message) {
+            c9console.onMessageMethods["internal-autocomplete"] = function(message) {
                 var cmds = message.body;
                 _self.show(txtConsoleInput, "", cmds.matches, txtConsoleInput.getValue().length - 1);
             };
@@ -127,7 +126,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             setTimeout(function() {
                 ide.send({
                     command: "commandhints",
-                    cwd: Console.getCwd()
+                    cwd: c9console.getCwd()
                 });
             }, 1000);
             
@@ -170,8 +169,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             };
     
             Object.keys(redefinedKeys).forEach(function(keyCode) {
-                var previousKey = Console.keyEvents[keyCode];
-                Console.keyEvents[keyCode] = function(target) {
+                var previousKey = c9console.keyEvents[keyCode];
+                c9console.keyEvents[keyCode] = function(target) {
                     if (winHints.style.display === "none" && previousKey) {
                         previousKey(target);
                     }
@@ -187,7 +186,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             });
         };
         
-        if (Console && Console.messages) {
+        if (c9console && c9console.onMessageMethods) {
             initConsoleDeps();
         }
         else {
@@ -301,7 +300,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                         ide.send({
                             command: "internal-autocomplete",
                             argv: [cmd1, cmd2],
-                            cwd: Console.getCwd()
+                            cwd: c9console.getCwd()
                         });
                     }
                     else {

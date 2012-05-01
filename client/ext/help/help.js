@@ -37,16 +37,18 @@ define(function(require, exports, module) {
 
         hook : function(){
             var _self = this;
-            
+
+            var mnuHelp = new apf.menu();
+
             this.nodes.push(
-                menus.addItemByPath("Help/", null, 100000)
+                menus.addItemByPath("Help/", mnuHelp, 100000)
             );
 
             var c = 0;
             menus.addItemByPath("Help/About", new apf.item({ onclick : function(){ _self.showAbout(); }}), c += 100);
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
             menus.addItemByPath("Help/Documentation", new apf.item({ onclick : function(){ window.open('http://support.cloud9ide.com/forums') }}), c += 100);
-            menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('http://c9.io/site/tag/changelog/') }}), c += 100);
+            var mnuChangelog = menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('http://c9.io/site/tag/changelog/') }}), c += 100);
             menus.addItemByPath("Help/Quick Start", new apf.item({ onclick : function(){ quickstart.launchQS(); }}), c += 100);
             menus.addItemByPath("Help/Take a Guided Tour", new apf.item({ onclick : function(){ guidedtour.launchGT(); }}), c += 100);
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
@@ -72,27 +74,33 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/Get in Touch/Twitter (for Cloud9 IDE support)", new apf.item({ onclick : function(){ window.open('https://twitter.com/#!/C9Support'); }}), c += 100);
             menus.addItemByPath("Help/Get in Touch/Twitter (for general Cloud9 tweets)", new apf.item({ onclick : function(){ window.open('https://twitter.com/#!/cloud9ide'); }}), c += 100);
             menus.addItemByPath("Help/Get in Touch/Facebook for Cloud9", new apf.item({ onclick : function(){ window.open('https://www.facebook.com/Cloud9IDE'); }}), c += 100);
-    
-            if (window.location.host.indexOf("c9.io") >= 0 || window.location.host.indexOf("stage.io") >= 0) {                
-                var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
-    
-                var response = apf.ajax(blogURL, {
-                    method: "GET",
-                    contentType: "application/json",
-                    async: true,
-                    data: JSON.stringify({
-                        agent: navigator.userAgent,
-                        type: "C9 SERVER EXCEPTION"
-                    }),
-                    callback: function( data, state) {
-                        if (state == apf.SUCCESS) {
-                            if (data !== undefined) {
-                                var jsonBlog = JSON.parse(data);
-                                var latestDate = jsonBlog.posts[0].date;
-        
-                                mnuChangelog.setAttribute("caption", mnuChangelog.caption + " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
+
+            if (window.cloud9config.hosted) {
+                mnuHelp.addEventListener("prop.visible", function(e) {
+                    if (e.value) {
+                        var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog";
+
+                        var response = apf.ajax(blogURL, {
+                            method: "GET",
+                            contentType: "application/json",
+                            async: true,
+                            data: JSON.stringify({
+                                agent: navigator.userAgent,
+                                type: "C9 SERVER EXCEPTION"
+                            }),
+                            callback: function( data, state) {
+                                if (state == apf.SUCCESS) {
+                                    if (data !== undefined) {
+                                        var jsonBlog = JSON.parse(data);
+                                        var latestDate = jsonBlog.posts[0].date;
+
+                                        mnuChangelog.setAttribute("caption", mnuChangelog.caption + " (" + latestDate.split(" ")[0].replace(/-/g, ".") + ")");
+                                    }
+                                }
                             }
-                        }
+                        });
+
+                        mnuHelp.removeEventListener("prop.visible", arguments.callee);
                     }
                 });
             }

@@ -108,14 +108,16 @@ var createItem = module.exports.test.createItem = function(line, ide) {
                         ansiColor -= 2;
                     return "<span class=\"term_ansi" + ansiColor + "Color\">";
                 }
-                else
+                else {
                     return "";
+                }
             }
         })
         .replace(/(\u0007|\u001b)\[(K|2J)/g, "");
 
     if (open > 0)
         return line + (new Array(open + 1).join("</span>"));
+
     return line;
 };
 
@@ -128,6 +130,7 @@ var getOutputElement = function(choice) {
         element: txtConsole.$ext,
         id: "console"
     };
+
     if (!choice)
         return ret;
 
@@ -158,15 +161,11 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
         eventsAttached = true;
     }
 
-    if (!bufferInterval[outputId]) {
+    if (!bufferInterval[outputId])
         setBufferInterval(parentEl, outputId);
-    }
 
-    // This is a bit cumbersome, but it solves the issue in which logging stuff
-    // in the console at a high speed keeps the browser incredibly busy, and
-    // sometimes it even crashes. An interval is created in which every 100ms
-    // The lines stored in the document fragment are appended in the actual console
-    // output.
+    // Interval console output so the browser doesn't crash from high-volume
+    // buffers
     if (!childBuffer[outputId]) {
         childBuffer[outputId] = document.createDocumentFragment();
         childBufferInterval[outputId] = setInterval(function() {
@@ -185,6 +184,7 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
             fragment.appendChild(div);
         }
     }
+
     childBuffer[outputId].appendChild(fragment);
 };
 
@@ -194,27 +194,28 @@ var messages = {
     command: "<span style='color:#86c2f6'><span>&gt;&gt;&gt;</span><div>__MSG__</div></span>"
 };
 
-module.exports.log = function(msg, type, pre, post, useOutput) {
+module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
     msg = msg.toString().escapeHTML();
     if (!type)
         type = "log";
 
-    if (messages[type]) {
+    if (messages[type])
         msg = messages[type].replace("__MSG__", msg);
-    }
 
     var out = getOutputElement(useOutput);
     var parentEl = out.element;
     var outputId = out.id;
 
-    if (!bufferInterval[outputId]) {
+    if (!bufferInterval[outputId])
         setBufferInterval(parentEl, outputId);
-    }
 
-    parentEl.innerHTML +=
-        "<div class='item console_" + type + "'>" +
-            (pre || "") + msg + (post || "") +
-        "</div>";
+    var containerOutput = ['<div'];
+    if (tracerId)
+        containerOutput.push(' id="', tracerId, '"');
+    containerOutput.push(" class='item output_section console_",
+            type, "'>", (pre || ""), msg, (post || ""), "</div>");
+
+    parentEl.innerHTML += containerOutput.join("");
 };
 
 });

@@ -16,6 +16,7 @@
         <script type="text/javascript">
         //<![CDATA[
 
+            var baseUrl = window.location.host;
             window.cloud9config = {
                 startdate: new Date(),
                 davPrefix: <%davPrefix%>,
@@ -29,6 +30,7 @@
                 version: <%version%>,
                 staticUrl: "[%staticUrl%]/",
                 socketIoUrl: <%socketIoUrl%>,
+                hosted: baseUrl.indexOf("c9.io") >= 0 || baseUrl.indexOf("stage.io") >= 0 || baseUrl.indexOf("c9.dev") >= 0,
                 settings: <%settingsXml%>
             };
 

@@ -258,7 +258,10 @@ module.exports = ext = {
             return;
 
         if (command.msg)
-            c9console.write([command.msg]);
+            c9console.write([command.msg], data);
+        else
+            c9console.write('"' + cmd + '" command executed', data);
+        c9console.commandCompleted(data.tracer_id);
             
         var res = commands.exec(cmd, null, data);
         return res === undefined ? false : res;
