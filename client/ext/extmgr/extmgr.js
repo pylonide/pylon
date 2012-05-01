@@ -65,10 +65,11 @@ module.exports = ext.register("ext/extmgr/extmgr", {
 
     init : function(amlNode){
         // Save the manually-loaded extensions
+        var _self = this;
         ide.addEventListener("settings.save", function(e){
             if (!_self.loadedSettings)
                 return;
-            
+
             var eNode = e.model.data.selectSingleNode("auto/extensions");
             if (eNode) {
                 eNode.parentNode.removeChild(eNode);

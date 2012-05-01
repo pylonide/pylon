@@ -82,10 +82,8 @@ module.exports = ext.register("ext/console/console", {
     },
 
     getLogStreamOutObject : function(tracer_id, idIsPid) {
-        console.log(tracer_id, idIsPid);
         if (idIsPid)
             tracer_id = this.pidToTracerMap[tracer_id];
-        console.log(tracer_id, idIsPid);
         var id = "section" + tracer_id;
         return {
             $ext : document.getElementById("console_" + id),
@@ -303,7 +301,6 @@ module.exports = ext.register("ext/console/console", {
         if (!e.message.type)
             return;
 
-        console.log(e.message);
         var message = e.message;
         var extra = message.extra;
         if (!extra && message.body)
@@ -640,8 +637,6 @@ module.exports = ext.register("ext/console/console", {
                 _self.cancelCliAction();
             }
         });
-
-        apf.extend(this.allCommands, ext.commandsLut);
 
         // For now, until the local client gets upgraded
         if (window.cloud9config.hosted)
