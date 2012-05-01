@@ -213,7 +213,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         return false;
     },
 
-    execGotoLine: function(line) {
+    execGotoLine: function(line, preview) {
         var editor = editors.currentEditor;
         if (!editor || !editor.amlEditor)
             return;
