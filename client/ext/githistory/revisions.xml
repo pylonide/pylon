@@ -1,0 +1,561 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:style><![CDATA[
+        #page_turner {
+            position: absolute;
+            background: white;
+            width: 10px;
+            height: 10px;
+            z-index: 99999;
+            right: 0px;
+            top: 0px;
+            box-shadow: rgba(0, 0, 0, 0.1) -2px 2px 5px;
+            -webkit-transform-origin-x: 100%;
+            -webkit-transform-origin-y: 0%;
+            background: -moz-linear-gradient(45deg,  rgba(255,255,255,1) 0%, rgba(255,255,255,1) 30%, rgba(247,247,247,1) 44%, rgba(238,238,238,1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0) 100%);
+            background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,rgba(255,255,255,1)), color-stop(30%,rgba(255,255,255,1)), color-stop(44%,rgba(247,247,247,1)), color-stop(50%,rgba(238,238,238,1)), color-stop(51%,rgba(255,255,255,0)), color-stop(100%,rgba(255,255,255,0)));
+            background: -webkit-linear-gradient(45deg,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(247,247,247,1) 44%,rgba(238,238,238,1) 50%,rgba(255,255,255,0) 51%,rgba(255,255,255,0) 100%);
+            background: -o-linear-gradient(45deg,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(247,247,247,1) 44%,rgba(238,238,238,1) 50%,rgba(255,255,255,0) 51%,rgba(255,255,255,0) 100%);
+            background: -ms-linear-gradient(45deg,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(247,247,247,1) 44%,rgba(238,238,238,1) 50%,rgba(255,255,255,0) 51%,rgba(255,255,255,0) 100%);
+            background: linear-gradient(45deg,  rgba(255,255,255,1) 0%,rgba(255,255,255,1) 30%,rgba(247,247,247,1) 44%,rgba(238,238,238,1) 50%,rgba(255,255,255,0) 51%,rgba(255,255,255,0) 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=1 );
+        }
+
+        .hve_container:hover #page_turner {
+            -webkit-transition: -webkit-box-shadow linear 0.8s,
+                -webkit-transform linear 0.8s, height linear 0.8s, width linear 0.8s;
+             -webkit-transform: translateX(-190px) translateY(335px) rotate(55deg) scaleY(0.5);
+            box-shadow: rgba(0, 0, 0, 0.3) -30px 30px 30px;
+            height: 400px;
+            width: 400px;
+        }
+
+        .hve_container {
+            -webkit-perspective-origin-x: 0px;
+            -webkit-perspective-origin-y: 25%;
+            -webkit-perspective: 0;
+        }
+
+        .hve_container:hover .historical_editor {
+            -webkit-transform-origin-x: 0%;
+            -webkit-transition: -webkit-box-shadow linear 0.8s,
+                -webkit-transform linear 0.8s, border-top-right-radius linear 0.8s;
+            -webkit-transform: scaleX(0);
+        }
+
+        #revisions_loading {
+            position: absolute;
+            top: -2000px;
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid #333;
+            border-radius: 8px;
+            -moz-border-radius: 8px;
+            padding: 20px 30px;
+            z-index: 99999;
+        }
+
+        #revisions_loading p {
+            font-size: 26px;
+            color: #fff;
+            padding: 0;
+            margin: 0;
+        }
+
+        #revisions_loading img {
+            float: left;
+        }
+        
+        .revision_hl_add {
+            position: absolute;
+            background: rgb(168, 232, 166);
+        }
+
+        .revision_hl_remove {
+            position: absolute;
+            background: rgb(243, 207, 207);
+        }
+
+        .revision_hl_newlines {
+            position: absolute;
+            background: #ccc;
+        }
+
+        .animate_editor_clone {
+            -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8);
+            -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        @-webkit-keyframes bouncein {
+          0%  {
+            top: 73px;
+            -webkit-animation-timing-function: ease-out;
+          }
+          50% {
+            top: 10px;
+            -webkit-animation-timing-function: ease-in;
+          }
+          100% {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+          }
+        }
+
+        @-moz-keyframes bouncein {
+          0%  {
+            top: 73px;
+            -moz-animation-timing-function: ease-out;
+          }
+          50% {
+            top: 10px;
+            -moz-animation-timing-function: ease-in;
+          }
+          100% {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+          }
+        }
+
+        .bounce_into_current {
+            -webkit-animation-name: bouncein;
+            -webkit-animation-iteration-count: 1;
+            -webkit-animation-duration: 2s;
+
+            -moz-animation-name: bouncein;
+            -moz-animation-iteration-count: 1;
+            -moz-animation-duration: 2s;
+        }
+
+        @-webkit-keyframes bounceout {
+          0%  {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+          }
+          50% {
+            top: 10px;
+            -webkit-animation-timing-function: ease-in;
+          }
+          100% {
+            top: 73px;
+            -webkit-animation-timing-function: ease-out;
+          }
+        }
+
+        @-moz-keyframes bounceout {
+          0%  {
+            top: 124px;
+            -moz-animation-timing-function: ease-out;
+          }
+          50% {
+            top: 10px;
+            -moz-animation-timing-function: ease-in;
+          }
+          100% {
+            top: 73px;
+            -webkit-animation-timing-function: ease-out;
+          }
+        }
+
+        .bounce_outta_current {
+            -webkit-animation-name: bounceout;
+            -webkit-animation-iteration-count: 1;
+            -webkit-animation-duration: 2s;
+
+            -moz-animation-name: bounceout;
+            -moz-animation-iteration-count: 1;
+            -moz-animation-duration: 2s;
+        }
+
+        @-webkit-keyframes restorerevision {
+          0%  {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+          }
+          50% {
+            top: 10px;
+            -webkit-animation-timing-function: ease-in;
+            -webkit-transform: scale(1.15);
+          }
+          100% {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+            -webkit-transform: scale(1.0);
+          }
+        }
+
+        @-moz-keyframes restorerevision {
+          0%  {
+            top: 124px;
+            -moz-animation-timing-function: ease-out;
+          }
+          50% {
+            top: 10px;
+            -moz-animation-timing-function: ease-in;
+            -moz-transform: scale(1.15);
+          }
+          100% {
+            top: 124px;
+            -webkit-animation-timing-function: ease-out;
+            -moz-transform: scale(1.0);
+          }
+        }
+
+        .restore_revision {
+            -webkit-animation-name: restorerevision;
+            -webkit-animation-iteration-count: 1;
+            -webkit-animation-duration: 1.5s;
+
+            -moz-animation-name: restorerevision;
+            -moz-animation-iteration-count: 1;
+            -moz-animation-duration: 1.5s;
+        }
+
+        #slider_tooltip {
+            position: absolute;
+            top: 50px;
+            padding: 8px 10px;
+            background: #333;
+            border: 1px solid #000;
+            border-radius: 8px;
+            color: #fff;
+            text-shadow: 0em -0.1em 0em black;
+            font-weight: bold;
+            font-size: 12px;
+            z-index: 200;
+            -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
+            -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.6);
+            -moz-transform: scale(0.1);
+            -webkit-transform: scale(0.1);
+            -o-transform: scale(0.1);
+            -ms-transform: scale(0.1);
+            transform: scale(0.1);
+        }
+
+        #slider_tooltip table {
+            border: none;
+        }
+
+        #slider_tooltip td {
+            vertical-align: top;
+        }
+
+        #slider_tooltip .rev_header {
+            color: rgb(192, 220, 175);
+            text-align: right;
+            padding-right: 8px;
+        }
+
+        #history_graphics {
+            position: absolute;
+            top: 124px;
+            left: 11px;
+        }
+        #small_ghistory {
+            width: 4px;
+            height: 97%;
+            top: 1.5%;
+            left: 5px;
+            z-index: 1;
+        }
+
+        #medium_ghistory {
+            width: 6px;
+            height: 98%;
+            top: 1%;
+            left: 3px;
+            z-index: 2;
+        }
+
+        #large_ghistory {
+            width: 8px;
+            height: 99%;
+            top: 0.5%;
+            z-index: 3;
+        }
+
+        .history_graphic {
+            float: left;
+            position: relative;
+            background: #666;
+            border: 1px solid #999;
+            /*-webkit-border-top-left-radius: 5px;
+            -webkit-border-bottom-left-radius: 5px;
+            -moz-border-radius-topleft: 5px;
+            -moz-border-radius-bottomleft: 5px;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;*/
+            -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75);
+            -moz-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.75);
+        }
+
+        .current_label {
+            background: #2d2d2d;
+            color: #fff;
+            text-shadow: 0.0em -0.1em 0.1em #000;
+            -webkit-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
+            -moz-box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border: 1px solid #999;
+        }
+
+        .current_label.black {
+            background-color: #333;
+        }
+
+        .versions_label {
+            background: none;
+            color: #fff;
+            text-shadow: 0em -0.1em 0em black;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .versions_label table {
+            border: none;
+        }
+
+        .versions_label td {
+            vertical-align: top;
+        }
+
+        .versions_label .rev_header {
+            color: rgb(192, 220, 175);
+            text-align: right;
+            padding-right: 8px;
+        }
+
+        .versions_label.rounded {
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border: 1px solid #999;
+        }
+
+        .versions_search {
+            border-radius: 15px;
+            -moz-border-radius: 15px;
+            -webkit-border-radius: 15px;
+            border: 1px solid #999;
+            background: none;
+            position: absolute;
+            top: 21px;
+            right: 50%;
+            z-index: 100;
+            -moz-box-shadow: rgba(0, 0, 0, 0.50) 0px 0px 5px inset;
+            box-shadow: rgba(0, 0, 0, 0.50) 0px 0px 5px inset;
+            background-color: #555;
+        }
+
+        .versions_search .sbtb_icon {
+            background: url('/static/style/images/revisions_search.png') 0px -1px;
+        }
+
+        .versions_search .sbtb_middle {
+            background: none;
+            border: none;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            box-shadow: none;
+        }
+
+        .versions_search .sbtb_middle input {
+            color: #ddd;
+        }
+
+        .versions_search .btnclose {
+            background-image: url('/static/style/images/versions_search_close.png');
+            background-position: 0px 0px;
+        }
+        #versionsHistoricalSlider {
+            height: 10px;
+            margin: 14px 34px 0 0;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        #versionsSliderBg {
+            height: 3px;
+            background: white;
+            position: relative;
+            top: 25px;
+            margin-right: 34px;
+            border: 1px solid #333;
+        }
+
+        #versionsHistoricalSlider u {
+            position: absolute;
+            top: 4px;
+            height: 8px;
+            width: 8px;
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border: 1px solid #333;
+            background: #fff;
+            cursor: pointer;
+            margin-left: 0px;
+            z-index: 1;
+            opacity: 1.0;
+        }
+
+        #versionsHistoricalSlider u.pop {
+            -webkit-transform: scale(2.5);
+            -moz-transform: scale(2.5);
+            -o-transform: scale(2.5);
+            -ms-transform: scale(2.5);
+            transform: scale(2.5);
+            background: none;
+            border: 1px solid #6C99BB;
+            transition-property: opacity, top;
+            -webkit-transition-property: opacity, top;
+            -moz-transition-property: opacity, top;
+            -webkit-transition-property: opacity, top;
+            -o-transition-property: opacity, top;
+            transition-duration: 0.4s;
+            -webkit-transition-duration: 0.4s;
+            -moz-transition-duration: 0.4s;
+            -o-transition-duration: 0.4s;
+            top: -10px;
+            opacity: 0;
+            cursor: default;
+        }
+
+        #versionsHistoricalSlider u:hover, #versionsHistoricalSlider u.current {
+            border: 1px solid #fff;/*green;*/
+            background-color: rgb(192, 220, 175);
+            top: 3px;
+            height: 10px;
+            width: 10px;
+            margin-left: -1px;
+            z-index: 10;
+            -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
+            -moz-box-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 1);
+        }
+    ]]></a:style>
+    <a:script><![CDATA[
+        function formatDate(timestamp) {
+            var d = new Date(timestamp*1000);
+            return d.toString("MMMM dd, yyyy hh:mm tt");
+        }
+    ]]></a:script>
+    <a:model id="mdlCommits"></a:model>
+    <a:menu id="menuCommits" skinset="skin_revisions" skin="commitsmenu"
+      width="300" height="300" visible="false">
+        <a:list id="lstCommits" skinset="skin_revisions" skin="commitlist"
+          anchors="0 0 0 0" flex="1" border="0" multiselect="false"
+          autoselect="false" model="mdlCommits" prerender="true"
+          onselect="require('ext/revisions/revisions').loadRevisionFromList()">
+            <a:each
+              match         = "[commit]"
+              filter        = "{tbRevisionsSearch.value}"
+              filter-fields = "@committername,@committeremail,@authorname,@authoremail,@hash,@parenthash,@treehash,@message"
+              sort          = "[@timestamp]"
+              data-type     = "number"
+              order         = "descending">
+                <a:caption><?lm
+                    <p class="date">{formatDate([@timestamp])}</p>
+                    <p class="author">[@authorname] {apf.htmlentities([@authoremail])}</p>
+                    <p class="hash">{[@hash].substr(0, 10)}</p>
+                ?></a:caption>
+            </a:each>
+        </a:list>
+    </a:menu>
+    <a:vbox id="hveContainer" class="hve_container"
+      style="z-index : 99998; position: absolute; background: #fff">
+        <a:codeeditor id="historicalVersionEditor"
+          class             = "historical_editor"
+          flex              = "1"
+          visible           = "false"
+          syntax            = "{require('ext/code/code').getSyntax(%[.])}"
+          theme             = "ace/theme/textmate"
+          folding           = "false"
+          overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
+          behaviors         = "[{require('ext/settings/settings').model}::editors/code/@behaviors]"
+          selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
+          activeline        = "false"
+          showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+          showprintmargin   = "false"
+          printmargincolumn = "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]"
+          softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
+          tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
+          scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
+          
+          fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
+          wrapmode          = "false"
+          wraplimitmin      = "80"
+          wraplimitmax      = "80"
+          gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
+          highlightselectedword = "false"
+          autohidehorscrollbar  = "true"
+          
+          contextmenu       = "mnuCtxEditor"
+          debugger          = "null"
+          readonly          = "true"
+        />
+    </a:vbox>
+    <a:codeeditor id="currentVersionEditor"
+      flex              = "1"
+      visible           = "false"
+      syntax            = "{require('ext/code/code').getSyntax(%[.])}"
+      theme             = "ace/theme/textmate"
+      folding           = "false"
+      overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
+      behaviors         = "[{require('ext/settings/settings').model}::editors/code/@behaviors]"
+      selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
+      activeline        = "false"
+      showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+      showprintmargin   = "false"
+      printmargincolumn = "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]"
+      softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
+      tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
+      scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
+      
+      fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
+      wrapmode          = "false"
+      wraplimitmin      = "80"
+      wraplimitmax      = "80"
+      gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
+      highlightselectedword = "false"
+      autohidehorscrollbar  = "true"
+      
+      contextmenu       = "mnuCtxEditor"
+      debugger          = "null"
+      readonly          = "true"
+      style             = "z-index : 99998; position: absolute; background: #fff"
+    />
+    <a:codeeditor id="historicalPlaceholder"
+      flex              = "1"
+      visible           = "false"
+      syntax            = "{require('ext/code/code').getSyntax(%[.])}"
+      theme             = "ace/theme/textmate"
+      folding           = "false"
+      overwrite         = "[{require('ext/settings/settings').model}::editors/code/@overwrite]"
+      behaviors         = "[{require('ext/settings/settings').model}::editors/code/@behaviors]"
+      selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
+      activeline        = "false"
+      showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
+      showprintmargin   = "false"
+      printmargincolumn = "[{require('ext/settings/settings').model}::editors/code/@printmargincolumn]"
+      softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
+      tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
+      scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
+      
+      fontsize          = "[{require('ext/settings/settings').model}::editors/code/@fontsize]"
+      wrapmode          = "false"
+      wraplimitmin      = "80"
+      wraplimitmax      = "80"
+      gutter            = "[{require('ext/settings/settings').model}::editors/code/@gutter]"
+      highlightselectedword = "false"
+      autohidehorscrollbar  = "true"
+      
+      contextmenu       = "mnuCtxEditor"
+      debugger          = "null"
+      readonly          = "true"
+      style             = "z-index : 99998; position: absolute; top: -10000px; background: #fff"
+    />
+</a:application>
