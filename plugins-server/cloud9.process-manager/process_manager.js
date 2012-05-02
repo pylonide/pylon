@@ -45,7 +45,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     this.spawn = function(runnerId, options, eventName, callback) {
         if (this.disposed)
             return callback("cannot run script - the process manager has already been disposed");
-
+            
         var self = this;
         var runnerFactory = this.runners[runnerId];
         if (!runnerFactory)
@@ -68,7 +68,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     this.exec = function(runnerId, options, onStart, onExit) {
         if (this.disposed)
             return onStart("cannot run script - the process manager has already been disposed");
-
+            
         var self = this;
         
         var runnerFactory = this.runners[runnerId];

@@ -15,7 +15,8 @@
         ],
         "consumes": [
             "process-manager",
-            "sandbox"
+            "sandbox",
+            "ide"
         ]
     }
 }
