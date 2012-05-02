@@ -53,7 +53,8 @@ util.inherits(NpmPlugin, Plugin);
         this.pm.spawn("npm", {
             args: message.argv.slice(1),
             cwd: message.cwd,
-            nodeVersion: message.version
+            nodeVersion: message.version,
+            extra: message.extra
         }, this.workspaceId + "::npm", function(err, pid) {
             if (err)
                 self.error(err, 1, message, client);

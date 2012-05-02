@@ -14,15 +14,13 @@ var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var ext = require("core/ext");
 var settings = require("core/settings");
-var Logger = require("ext/console/logger");
-var code = require("ext/code/code");
+var logger = require("ext/console/logger");
 var css = require("text!ext/console/console.css");
 var markup = require("text!ext/console/console.xml");
 var theme = require("text!ext/console/themes/arthur.css");
-var InputHistory = require("ext/console/input_history");
+var inputHistory = require("ext/console/input_history");
 
 // Some constants used throughout the plugin
-var RE_band = /^\s*!/;
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
@@ -36,7 +34,7 @@ module.exports = ext.register("ext/console/console", {
     height : 200,
     hidden : true,
 
-    inputHistory : new InputHistory(),
+    cliInputHistory : new inputHistory(),
 
     command_id_tracer : 1,
     tracerToPidMap : {},
@@ -60,23 +58,23 @@ module.exports = ext.register("ext/console/console", {
             var res = message.body;
             if (res.cwd) {
                 this.$cwd = res.cwd.replace(ide.workspaceDir, "/workspace");
-                Logger.logNodeStream("Working directory changed", null, outputElDetails, ide);
+                logger.logNodeStream("Working directory changed", null, outputElDetails, ide);
             }
         },
 
         error: function(message, outputElDetails) {
-            Logger.logNodeStream(message.body, null, outputElDetails, ide);
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
         info: function (message, outputElDetails) {
-            Logger.logNodeStream(message.body, null, outputElDetails, ide);
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
         __default__: function(message, outputElDetails) {
             var res = message.body;
             if (res) {
-                res.out && Logger.logNodeStream(res.out, null, outputElDetails, ide);
-                res.err && Logger.logNodeStream(res.err, null, outputElDetails, ide);
+                res.out && logger.logNodeStream(res.out, null, outputElDetails, ide);
+                res.err && logger.logNodeStream(res.err, null, outputElDetails, ide);
             }
         }
     },
@@ -95,7 +93,7 @@ module.exports = ext.register("ext/console/console", {
         var words = Object.keys(commands.commands);
         var tabs = "\t\t\t\t";
 
-        Logger.logNodeStream(
+        logger.logNodeStream(
             words.sort()
                 .map(function(w) { return w + tabs + commands.commands[w].hint; })
                 .join("\n"),
@@ -116,7 +114,6 @@ module.exports = ext.register("ext/console/console", {
             if (page) {
                 if (page.$editor.focus)
                     page.$editor.focus();
-                //this.hide();
             }
         }
         else {
@@ -124,7 +121,6 @@ module.exports = ext.register("ext/console/console", {
                 this.showInput(true);
             else
                 txtConsoleInput.focus();
-            //this.show();
         }
     },
 
@@ -142,8 +138,14 @@ module.exports = ext.register("ext/console/console", {
 
         var lsOutObject = this.getLogStreamOutObject(data.tracer_id);
         lines.forEach(function(line) {
-            Logger.logNodeStream(line, null, lsOutObject, ide);
+            logger.logNodeStream(line, null, lsOutObject, ide);
         });
+    },
+
+    commandTextHandler: function(e) {
+        var code = e.keyCode;
+        if (this.keyEvents[code])
+            this.keyEvents[code](e.currentTarget);
     },
 
     keyupHandler: function(e) {
@@ -156,15 +158,13 @@ module.exports = ext.register("ext/console/console", {
             return this.commandTextHandler(e);
     },
 
-    outputLogSection: function(line) {
-        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner',
-            this.command_id_tracer,
-            '" onclick="return require(\'ext/console/console\').handleCliBlockAction(event)"></div>']
+    createOutputBlock: function(line, useOutput) {
+        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner', this.command_id_tracer,
+            '" onclick="return require(\'ext/console/console\').handleOutputBlockClick(event)"></div>']
             .join("");
 
         var outputId = "console_section" + this.command_id_tracer;
-        Logger.log(line, "prompt", spinnerBtn,
-            '<div class="prompt_spacer"></div>', null, outputId);
+        logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>', useOutput, outputId);
 
         var outputEl = document.getElementById(outputId);
         apf.setStyleClass(outputEl, "loading");
@@ -172,7 +172,7 @@ module.exports = ext.register("ext/console/console", {
         return this.command_id_tracer;
     },
 
-    evalCmd: function(line) {
+    evalInputCommand: function(line) {
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
         if (!argv || argv.length === 0) // no commmand line input
@@ -180,9 +180,9 @@ module.exports = ext.register("ext/console/console", {
 
         // Replace any quotes in the command
         argv[0] = argv[0].replace(/["'`]/g, "");
-        this.inputHistory.push(line);
+        this.cliInputHistory.push(line);
 
-        this.outputLogSection(this.getPrompt(line));
+        this.createOutputBlock(this.getPrompt(line));
 
         tabConsole.set("console");
 
@@ -193,26 +193,17 @@ module.exports = ext.register("ext/console/console", {
             predefinedCmds = require("ext/console/output");
         var defCmd = predefinedCmds.getPredefinedOutput(argv);
         if (defCmd !== "") {
-            this.commandCompleted(this.command_id_tracer);
-            Logger.logNodeStream(defCmd, null,
+            this.markProcessAsCompleted(this.command_id_tracer);
+            logger.logNodeStream(defCmd, null,
                 this.getLogStreamOutObject(this.command_id_tracer), ide);
             this.command_id_tracer++;
         }
         else {
-            if (cmd.trim().charAt(0) === "!") {
-                cmd = "bash";
-                argv[0] = argv[0].replace(RE_band, "");
-                line = line.replace(RE_band, "");
-            }
-
             var data = {
                 command: cmd,
                 argv: argv,
                 line: line,
                 cwd: this.getCwd(),
-                // the requireshandling flag indicates that this message cannot
-                // be silently ignored by the server.
-                // An error event should be thrown if no plugin handles this message.
                 requireshandling: true,
                 tracer_id: this.command_id_tracer
             };
@@ -220,21 +211,22 @@ module.exports = ext.register("ext/console/console", {
             if (cmd.trim() === "npm")
                 data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
 
-            showConsole = this.execAction(cmd, data);
+            showConsole = this.sendCommandToExtensions(cmd, data);
         }
 
         if (showConsole === true)
             this.show();
     },
 
-    // Executes a command (presumably coming from the CLI).
-    execAction : function(cmd, data) {
+    sendCommandToExtensions : function(cmd, data) {
         ide.dispatchEvent("track_action", {
             type: "console",
             cmd: cmd,
             argv: data.argv
         });
 
+        // If no local extensions handle the command, send it server-side for
+        // those extensions to handle it
         if (ext.execCommand(cmd, data) !== false) {
             var commandEvt = "consolecommand." + cmd;
             var consoleEvt = "consolecommand";
@@ -243,7 +235,7 @@ module.exports = ext.register("ext/console/console", {
 
             if (commandEvResult !== false && consoleEvResult !== false) {
                 if (!ide.onLine) {
-                    this.write("Cannot execute command. You are currently offline.", {
+                    this.write("Cannot send command to server. You are currently offline.", {
                         tracer_id : this.command_id_tracer
                     });
                 }
@@ -256,8 +248,7 @@ module.exports = ext.register("ext/console/console", {
                 }
             }
             else {
-                // If any of the `consolecommand` events returns false, it means
-                // that we don't want the console to show up.
+                // Return false to `evalInputCommand` to not show the output area
                 return false;
             }
         }
@@ -266,13 +257,7 @@ module.exports = ext.register("ext/console/console", {
         return true;
     },
 
-    commandTextHandler: function(e) {
-        var code = e.keyCode;
-        if (this.keyEvents[code])
-            this.keyEvents[code](e.currentTarget);
-    },
-
-    commandCompleted: function(id, idIsPid) {
+    markProcessAsCompleted: function(id, idIsPid) {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
@@ -280,7 +265,7 @@ module.exports = ext.register("ext/console/console", {
             var pNode = spinnerElement.parentNode;
             if (pNode.className.indexOf("quitting") !== -1) {
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
-                Logger.logNodeStream("Process successfully quit", null,
+                logger.logNodeStream("Process successfully quit", null,
                     this.getLogStreamOutObject(id), ide);
             }
 
@@ -308,7 +293,7 @@ module.exports = ext.register("ext/console/console", {
 
         switch(message.type) {
             case "node-start":
-                var command_id = this.outputLogSection("Running Node Process");
+                var command_id = this.createOutputBlock("Running Node Process", true);
                 this.tracerToPidMap[command_id] = message.pid;
                 this.pidToTracerMap[message.pid] = command_id;
 
@@ -320,7 +305,7 @@ module.exports = ext.register("ext/console/console", {
                     var url = location.protocol + "//" +
                         ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
                         "." + location.host;
-                    Logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
+                    logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
                         "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
                         null, this.getLogStreamOutObject(message.pid, true), ide);
                 }
@@ -328,15 +313,15 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer++;
                 return;
             case "node-data":
-                Logger.logNodeStream(message.data, message.stream,
+                logger.logNodeStream(message.data, message.stream,
                     this.getLogStreamOutObject(message.pid, true), ide);
                 return;
             case "node-exit":
-                this.commandCompleted(message.pid, true);
+                this.markProcessAsCompleted(message.pid, true);
                 return;
             case "kill":
                 if (message.err) {
-                    Logger.logNodeStream(message.err, null,
+                    logger.logNodeStream(message.err, null,
                         this.getLogStreamOutObject(extra.command_id), ide);
                 }
                 break;
@@ -361,16 +346,16 @@ module.exports = ext.register("ext/console/console", {
                         id = message.pid;
                     }
 
-                    Logger.logNodeStream(message.data, message.stream,
+                    logger.logNodeStream(message.data, message.stream,
                         this.getLogStreamOutObject(id, type === "pid"), ide);
                     return;
                 }
 
                 if (message.type.match(/-exit$/)) {
                     if (extra.command_id)
-                        this.commandCompleted(extra.command_id);
+                        this.markProcessAsCompleted(extra.command_id);
                     else
-                        this.commandCompleted(message.pid, true);
+                        this.markProcessAsCompleted(message.pid, true);
                     return;
                 }
                 break;
@@ -379,7 +364,7 @@ module.exports = ext.register("ext/console/console", {
         // If we get to this point and `extra` is available, it's a process that
         // sends all its stdout _after_ it has quit. Thus, we complete it here
         if (extra)
-            this.commandCompleted(extra.command_id);
+            this.markProcessAsCompleted(extra.command_id);
 
         if (message.type !== "result")
             return;
@@ -407,15 +392,14 @@ module.exports = ext.register("ext/console/console", {
 
     hook: function() {
         var _self = this;
-        
+
         //@todo this should be done via commands instead
-        // Listen for new extension registrations to add to the
-        // hints
+        // Listen for new extension registrations to add to the hints
         ide.addEventListener("ext.register", function(e){
             if (e.ext.commands)
                 apf.extend(commands.commands, e.ext.commands);
         });
-        
+
         commands.addCommand({
             name: "help",
             hint: "show general help information and a list of available commands",
@@ -423,7 +407,7 @@ module.exports = ext.register("ext/console/console", {
                 _self.help();
             }
         });
-        
+
         commands.addCommand({
             name: "clear",
             hint: "clear all the messages from the console",
@@ -439,7 +423,7 @@ module.exports = ext.register("ext/console/console", {
                 _self.switchconsole();
             }
         });
-        
+
         commands.addCommand({
             name: "toggleconsole",
             bindKey: {mac: "Ctrl-Esc", win: "F6"},
@@ -450,7 +434,7 @@ module.exports = ext.register("ext/console/console", {
                     _self.hide();
             }
         });
-        
+
         commands.addCommand({
             name: "toggleinputbar",
             exec: function () {
@@ -460,12 +444,12 @@ module.exports = ext.register("ext/console/console", {
                     _self.hideInput();
             }
         });
-        
+
         this.nodes.push(
             menus.addItemByPath("Goto/Switch to Command Line", new apf.item({
                 command : "switchconsole"
             }), 350),
-            
+
             this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
                 type    : "check",
                 command : "toggleconsole",
@@ -492,7 +476,7 @@ module.exports = ext.register("ext/console/console", {
         menus.addItemByPath("Tools/NPM/", null, 60000),
         menus.addItemByPath("Tools/NPM/Install", new apf.item({}), 1000),
         menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({}), 2000)
-        
+
         ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
                 e.model.setQueryValue("auto/console/@autoshow", true);
@@ -501,15 +485,15 @@ module.exports = ext.register("ext/console/console", {
 
             if (apf.isTrue(e.model.queryValue("auto/console/@maximized"))) {
                 _self.show(true);
-                _self.maximize();
+                _self.maximizeConsoleHeight();
             }
             else if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
                 _self.show(true);
-            
+
             if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
                 _self.showInput();
         });
-        
+
         stProcessRunning.addEventListener("activate", function() {
             var autoshow = settings.model.queryValue("auto/console/@autoshow");
             if (_self.autoOpen && apf.isTrue(autoshow)) {
@@ -525,28 +509,12 @@ module.exports = ext.register("ext/console/console", {
         var _self = this;
 
         this.$cwd  = "/workspace"; // code smell
-        
+
         apf.importCssString(this.css);
 
         // Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.previousSibling.hide();
-        
-        commands.addCommand({
-            name: "escapeconsole",
-            bindKey: {mac: "Esc", win: "Esc"},
-            isAvailable : function(){
-                return apf.activeElement == txtConsoleInput;
-            },
-            exec: function () {
-                _self.switchconsole();
-            }
-        });
-
-        // before the actual run target gets called we clear the console
-        ide.addEventListener("beforeRunning", function () {
-            _self.clear();
-        });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
@@ -557,7 +525,7 @@ module.exports = ext.register("ext/console/console", {
             if (data.isfile)
                 editors.showFile(path);
             else
-                Logger.log("'" + path + "' is not a file.");
+                logger.log("'" + path + "' is not a file.");
         });
 
         txtConsoleInput.addEventListener("keyup", this.keyupHandler.bind(this));
@@ -595,36 +563,47 @@ module.exports = ext.register("ext/console/console", {
                 _self.height = winDbgConsole.height)
         });
 
-        this.nodes.push(
-            winDbgConsole
-        );
+        this.nodes.push(winDbgConsole);
 
         this.keyEvents[KEY_UP] = function(input) {
-            var newVal = _self.inputHistory.getPrev() || "";
+            var newVal = _self.cliInputHistory.getPrev() || "";
             input.setValue(newVal);
         };
         this.keyEvents[KEY_DOWN] = function(input) {
-            var newVal = _self.inputHistory.getNext() || "";
+            var newVal = _self.cliInputHistory.getNext() || "";
             input.setValue(newVal);
         };
         this.keyEvents[KEY_CR] = function(input) {
             var inputVal = input.getValue().trim();
             if (inputVal === "/?")
                 return false;
-            _self.evalCmd(inputVal);
+            _self.evalInputCommand(inputVal);
             input.setValue("");
         };
 
-        if (this.logged.length)
+        if (this.logged.length) {
             this.logged.forEach(function(text){
                 txtConsole.addValue(text);
             });
+        }
 
-        // To be uncommented and fully implemented when merged with navbar
+        commands.addCommand({
+            name: "escapeconsole",
+            bindKey: {mac: "Esc", win: "Esc"},
+            isAvailable : function(){
+                return apf.activeElement == txtConsoleInput;
+            },
+            exec: function () {
+                _self.switchconsole();
+            }
+        });
+
         commands.addCommand({
             name: "abortclicommand",
             bindKey: {mac: "Ctrl-C", win: "Ctrl-C"},
             isAvailable : function(){
+                // Determines if any input is selected, in which case we do
+                // not want to cancel
                 if (apf.activeElement === txtConsoleInput) {
                     var selection = window.getSelection();
                     var range = selection.getRangeAt(0);
@@ -634,38 +613,37 @@ module.exports = ext.register("ext/console/console", {
                 return false;
             },
             exec: function () {
-                _self.cancelCliAction();
+                _self.killProcess();
             }
         });
 
-        // For now, until the local client gets upgraded
-        if (window.cloud9config.hosted)
-            apf.setStyleClass(txtConsole.$ext, "feedback");
+        // @TODO Defunct
+        apf.setStyleClass(txtConsole.$ext, "feedback");
+        apf.setStyleClass(txtOutput.$ext, "feedback");
     },
 
-    handleCliBlockAction : function(e) {
+    /**
+     * When the user clicks on the indicator next to the prompt output, it can
+     * be in multiple states. If a process is running, this cancels the process.
+     * If finished, this will either expand or collapse the output block
+     */
+    handleOutputBlockClick : function(e) {
         var pNode = e.target.parentNode;
 
         if (pNode.className.indexOf("loaded") !== -1) {
             if (pNode.className.indexOf("collapsed") !== -1)
-                this.expandCliBlock(pNode);
+                this.expandOutputBlock(pNode);
             else
-                this.collapseCliBlock(pNode);
+                this.collapseOutputBlock(pNode);
         }
         else {
-            this.cancelCliAction(pNode);
+            this.killProcess(pNode);
         }
     },
 
-    /**
-     * Cancel a CLI command. If `pNode` is undefined, it will subtract 1 from
-     * `this.command_id_tracer`. `pNode` would be undefined if the user pressed
-     * ctrl-c in the input area
-     * 
-     * @param DOMElement pNode The parent container block of the close button
-     */
-    cancelCliAction : function(pNode) {
+    killProcess : function(pNode) {
         var command_id;
+        // Simply get the ID of the last command sent to the server
         if (typeof pNode === "undefined")
             command_id = (this.command_id_tracer - 1)
         else
@@ -676,7 +654,7 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         apf.setStyleClass(pNode, "quitting_proc");
-        Logger.logNodeStream("Killing this process...", null,
+        logger.logNodeStream("Quitting this process...", null,
             this.getLogStreamOutObject(command_id), ide);
 
         ide.send({
@@ -686,14 +664,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     /**
-     * Expands a CLI block (prompt, stdin and stdout) from its collapsed state.
-     * This can happen from both clicking the expand arrow and also clicking on
-     * the collapsed block itself.
-     *
      * @param DOMElement pNode The container block to be expanded
      * @param Event e The click event
      */
-    expandCliBlock : function(pNode, e) {
+    expandOutputBlock : function(pNode, e) {
         if (typeof e !== "undefined" && e.target.className.indexOf("prompt_spinner") !== -1)
             return;
 
@@ -707,12 +681,9 @@ module.exports = ext.register("ext/console/console", {
     },
 
     /**
-     * Collapses a CLI block (prompt, stdin and stdout) down to just the prmompt
-     * and stdin line
-     *
      * @param DOMElement pNode The container block to be collapsed
      */
-    collapseCliBlock : function(pNode) {
+    collapseOutputBlock : function(pNode) {
         // 20 = padding
         var startingHeight = apf.getHtmlInnerHeight(pNode) - 20;
         pNode.style.height = startingHeight + "px";
@@ -724,18 +695,18 @@ module.exports = ext.register("ext/console/console", {
             apf.layout.forceResize(tabConsole.$ext);
         });
 
-        pNode.setAttribute("onclick", 'require("ext/console/console").expandCliBlock(this, event)');
+        pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');
     },
 
     logged : [],
     log : function(text){
-        if (this.inited) 
+        if (this.inited)
             txtConsole.addValue(text);
         else
             this.logged.push(text);
     },
 
-    maximize: function(){
+    maximizeConsoleHeight: function(){
         if (this.maximized)
             return;
         this.maximized = true;
@@ -751,7 +722,7 @@ module.exports = ext.register("ext/console/console", {
         btnConsoleMax.setValue(true);
     },
 
-    restore : function(){
+    restoreConsoleHeight : function(){
         if (!this.maximized)
             return;
         this.maximized = false;
@@ -760,26 +731,26 @@ module.exports = ext.register("ext/console/console", {
         winDbgConsole.removeAttribute('anchors');
         this.maxHeight = window.innerHeight - 70;
         winDbgConsole.$ext.style.maxHeight =  this.maxHeight + "px";
-        
+
         winDbgConsole.setAttribute('height', this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height);
         winDbgConsole.$ext.style.zIndex = this.lastZIndex;
 
         settings.model.setQueryValue("auto/console/@maximized", false);
         btnConsoleMax.setValue(false);
     },
-    
+
     showInput : function(temporary){
         if (!this.hiddenInput)
             return;
-        
+
         ext.initExtension(this);
-        
+
         this.$collapsedHeight = this.collapsedHeight;
         if (this.hidden)
             winDbgConsole.setAttribute("height", this.collapsedHeight + "px")
         txtConsoleInput.parentNode.show();
         apf.layout.forceResize();
-        
+
         if (temporary) {
             var _self = this;
             txtConsoleInput.addEventListener("blur", function(){
@@ -794,17 +765,17 @@ module.exports = ext.register("ext/console/console", {
             this.hiddenInput = false;
         }
     },
-    
+
     hideInput : function(force){
         if (!force && (!this.inited || this.hiddenInput))
             return;
-        
+
         this.$collapsedHeight = 0;
         if (this.hidden)
             winDbgConsole.setAttribute("height", "0")
         txtConsoleInput.parentNode.hide();
         apf.layout.forceResize();
-        
+
         settings.model.setQueryValue("auto/console/@showinput", false);
         this.hiddenInput = true;
     },
@@ -815,7 +786,7 @@ module.exports = ext.register("ext/console/console", {
     _show: function(shouldShow, immediate) {
         if (this.hidden != shouldShow)
             return;
-            
+
         this.hidden = !shouldShow;
 
         if (this.animating)
@@ -833,22 +804,22 @@ module.exports = ext.register("ext/console/console", {
                     this.maxHeight = window.innerHeight - 70;
                     winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
                 }
-                
+
                 winDbgConsole.height = height + 1;
                 winDbgConsole.setAttribute("height", height);
                 winDbgConsole.previousSibling[shouldShow ? "show" : "hide"]();
                 winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                
+
                 _self.animating = false;
-    
+
                 settings.model.setQueryValue("auto/console/@expanded", shouldShow);
-            
+
                 apf.layout.forceResize();
             }, 100);
         };
 
         var _self = this;
-        var cfg, height;
+        var height;
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (shouldShow) {
             height = Math.max(this.minHeight, Math.min(this.maxHeight, this.height));
@@ -856,7 +827,7 @@ module.exports = ext.register("ext/console/console", {
             tabConsole.show();
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
-            
+
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
             if (!immediate && animOn) {
@@ -870,9 +841,9 @@ module.exports = ext.register("ext/console/console", {
         }
         else {
             height = this.$collapsedHeight;
-            
+
             if (winDbgConsole.parentNode != mainRow)
-                this.restore();
+                this.restoreConsoleHeight();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
@@ -880,7 +851,7 @@ module.exports = ext.register("ext/console/console", {
 
             if (!immediate && animOn) {
                 var timer = setInterval(function(){apf.layout.forceResize()}, 10);
-                
+
                 Firmin.animate(winDbgConsole.$ext, {
                     height: height + "px",
                     timingFunction: "ease-in-out"
@@ -904,9 +875,9 @@ module.exports = ext.register("ext/console/console", {
 
     destroy: function(){
         commands.removeCommandsByName(
-            ["help", "clear", "switchconsole", "toggleconsole", 
+            ["help", "clear", "switchconsole", "toggleconsole",
              "escapeconsole", "toggleinputbar"]);
-        
+
         this.nodes.each(function(item) { item.destroy(true, true); });
         this.nodes = [];
     }
