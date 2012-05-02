@@ -23,6 +23,8 @@
                 sessionId: <%sessionId%>,
                 workspaceId: <%workspaceId%>,
                 name: <%name%>,
+                uid: <%uid%>,
+                pid: <%pid%>,
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
@@ -63,7 +65,7 @@
                     aceConfig.set("workerPath", "/static/build/worker");
                     aceConfig.set("modePath", "/static/build/mode");
                     aceConfig.set("themePath", "/static/build/theme");
-                    
+
                     //loader.animateLoader(50);
                     apf.addEventListener("load", function(){
                         //Load extensions

@@ -170,7 +170,9 @@ exports.DEFAULT_DAVPLUGINS = ["auth", "codesearch", "filelist", "filesearch"];
                 debug: _self.options.debug,
                 staticUrl: staticUrl,
                 socketIoUrl: _self.options.socketIoUrl,
-                sessionId: req.sessionID, // set by connect
+                sessionId: req.sessionID, // set by connect,
+                uid: req.session.uid || req.session.anonid || 0,
+                pid: _self.options.pid || process.pid || 0,
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),
                 readonly: (permissions.dav !== "rw"),

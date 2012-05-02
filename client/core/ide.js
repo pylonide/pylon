@@ -23,6 +23,8 @@ define(function(require, exports, module) {
         this.workspaceId    = window.cloud9config.workspaceId;
         this.readonly       = window.cloud9config.readonly;
         this.projectName    = window.cloud9config.projectName;
+        this.uid            = window.cloud9config.uid;
+        this.pid            = window.cloud9config.pid;
 
         this.loggedIn       = true;
 
