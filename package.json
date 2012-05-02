@@ -34,8 +34,7 @@
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/97d7acb5c78e3a2e8f9c267ec2e68a3340a04c7f"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"],
-        "gnu-tools":    ["npm", "https://github.com/c9/node-gnu-tools/tarball/7484b39ed9c12183865737a33d959b72c9494979"]
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"]
     },
 
     "repository" : {
