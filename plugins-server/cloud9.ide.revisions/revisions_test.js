@@ -1,12 +1,11 @@
 "use strict";
-require("../../../../support/paths");
 
 var testCase = require('nodeunit').testCase;
 var sinon = require("sinon");
 var Fs = require("fs");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
-var RevisionsPlugin = require("./revisions");
+var RevisionsPlugin = require("./revisions").RevisionsPlugin;
 var rimraf = require("rimraf");
 var Diff_Match_Patch = require("./diff_match_patch");
 

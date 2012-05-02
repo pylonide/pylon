@@ -5,7 +5,8 @@
  * @copyright 2012, Ajax.org B.V.
  */
 
-var Plugin = require("cloud9/plugin");
+require("amd-loader");
+var Plugin = require("../cloud9.core/plugin");
 var Diff_Match_Patch = require("./diff_match_patch");
 var Fs = require("fs");
 var Path = require("path");
@@ -34,12 +35,17 @@ var SAVE_INTERVAL = 1000;
  *  Revision cache will be purged every PURGE_INTERVAL to clear up unfreed memory.
  **/
 var Diff = new Diff_Match_Patch();
+var name = "revisions";
 
-var RevisionsPlugin = module.exports = function(ide, workspace) {
+module.exports = function setup(options, imports, register) {
+    imports.ide.register(name, RevisionsPlugin, register);
+};
+
+var RevisionsPlugin = module.exports.RevisionsPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
-    this.name = "revisions";
     this.docQueue = [];
+    this.name = name;
 
     this.saveInterval = setInterval(this.saveQueue.bind(this), SAVE_INTERVAL);
 };
