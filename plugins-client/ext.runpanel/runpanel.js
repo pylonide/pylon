@@ -391,7 +391,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     $addMenuItem : function(cfg, divider){
         var _self = this;
         
-        if (!this.mnuRunCfg.populated)
+        if (this.mnuRunCfg.populated)
             return;
 
         if (!divider)
