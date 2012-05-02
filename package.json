@@ -29,7 +29,7 @@
 
     "mappings": {
         "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/3413b7df892e57ad29cfb56dbd0faf993209b21c"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/8f3ac853d8d5cd9cf82e4bd600aa447c1aaa72b3"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/d941eb6409af7d1352ce21db5628e8c72b5b12f0"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/57f61714ecac0bf8536315db962b1a88a8dea8b3"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/b9685564abb0398bae06cec3451b785d080349e6"],
