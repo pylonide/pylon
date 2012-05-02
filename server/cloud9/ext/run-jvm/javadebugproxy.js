@@ -30,7 +30,6 @@ var DebugProxy = module.exports = function(port, debugOptions) {
     });
 
     service.addEventListener("debugger_command_0", function(msg) {
-        console.log("to client: " + JSON.stringify(msg) + "\n\n");
         _self.emit("message", msg.data);
     });
 };
@@ -43,7 +42,6 @@ sys.inherits(DebugProxy, process.EventEmitter);
         var _self = this;
     	var reader = new MessageReader(this.socket, function(messageText) {
 	    	// Validate init and error procedures, if any
-	        console.log("Init>", messageText);
 	        reader.destroy();
 	    });
 
@@ -52,21 +50,28 @@ sys.inherits(DebugProxy, process.EventEmitter);
         // Init debug
         setTimeout(function() {
             _self.send({
-              seq: 0,
-              type: 'request',
-              command: 'init',
-              arguments: {
-                address:  { port: _self.options.port },
-                main_class: _self.options.main_class,
-                classpath: _self.options.classpath,
-                sourcepath: _self.options.sourcepath
-              }
+                seq: 0,
+                type: 'request',
+                command: 'init',
+                arguments: {
+                    address:  { port: _self.options.port },
+                    main_class: _self.options.main_class,
+                    classpath: _self.options.classpath,
+                    sourcepath: _self.options.sourcepath
+                }
             });
         }, 1000);
     };
 
+    this.disconnect = function() {
+        this.send({
+            seq: 0,
+            type: 'request',
+            command: 'disconnect'
+        });
+    };
+
     this.send = function(msgJson) {
-        console.log("from client: " + JSON.stringify(msgJson) + "\n\n");
         this.service.debuggerCommand(0, JSON.stringify(msgJson));
     };
 

@@ -19,8 +19,7 @@ var JVMRuntimePlugin = module.exports = function(ide, workspace) {
     this.ide = ide;
     this.workspace = workspace;
     this.hooks = ["command"];
-    // this.name = "jvm-runtime";
-    this.name = "node-runtime";
+    this.name = "jvm-runtime";
 };
 
 sys.inherits(JVMRuntimePlugin, Plugin);
@@ -53,10 +52,13 @@ sys.inherits(JVMRuntimePlugin, Plugin);
                 break;
             case "rundebug":
             case "rundebugbrk":
-                netutil.findFreePort(this.JAVA_DEBUG_PORT, this.JAVA_DEBUG_PORT + 1000, "localhost", function(err, port) {
+                netutil.findFreePort(this.JAVA_DEBUG_PORT, this.JAVA_DEBUG_PORT + 1000, "localhost",
+                    function(err, port) {
                     if (err) return _self.$error("Could not find a free port", 9, message);
 
-                    _self.$debug(message, port);
+                    message.port = port;
+                    message.debug = true;
+                    _self.$run(message, client);
                 });
                 break;
             case "debugnode":
@@ -67,7 +69,7 @@ sys.inherits(JVMRuntimePlugin, Plugin);
                     this.ide.broadcast('{"type": "node-debug-ready"}', _self.name);
                 break;
             case "kill":
-                this.$procExit(true);
+                this.$procExit();
                 break;
             default:
                 res = false;
@@ -85,19 +87,27 @@ sys.inherits(JVMRuntimePlugin, Plugin);
         }), this.name);
     };
 
+    function srcToJavaClass(file) {
+        return file.substring("src/".length)
+            .replace(new RegExp("/", "g"), ".")
+            .replace(/\.java$/, "");
+    }
+
     // Maybe future refactor to run the debug process from here
     // Only debug pure java console projects
-    this.$debug = function (message, port) {
+    this.$debug = function (message, file, args, cwd) {
         var _self = this;
 
-        var appPath = '/home/eweda/runtime-CodeCompletePlugin.Cloud9Eclipse/test/src';
+        var appPath = cwd;
         var debugOptions = {
-            main_class: 'timeloop',
-            port: port,
+            main_class: srcToJavaClass(file),
+            port: message.port,
             host: 'localhost',
-            classpath: appPath,
-            sourcepath: appPath
+            classpath: appPath + 'bin',
+            sourcepath: appPath + 'src'
         };
+
+        console.log(JSON.stringify(debugOptions));
 
         if (this.javaDebugProxy)
             return this.$error("Debug session already running", 4, message);
@@ -175,25 +185,23 @@ sys.inherits(JVMRuntimePlugin, Plugin);
                 // lets check what we need to run
                 var args = [].concat(file).concat(message.args || []);
                 // message.runner = "java", "jy", "jrb", "groovy", "js-rhino"
-                _self.$runJVM(message.runner, file.substring(cwd.length), args, cwd, message.env || {}, message.debug || false);
+                // Only java debug is now supported
+                if (message.debug && message.runner === 'java')
+                    _self.$debug(message, file.substring(cwd.length), args, cwd);
+                else
+                    _self.$runJVM(message.runner, file.substring(cwd.length), args, cwd);
            });
         });
     };
 
-    this.$runJVM = function(runner, file, args, cwd, env, debug) {
+    this.$runJVM = function(runner, file, args, cwd) {
         var _self = this;
-
-        // mixin process env
-        for (var key in process.env) {
-            if (!(key in env))
-                env[key] = process.env[key];
-        }
 
         var jvmInstance;
 
         switch (runner) {
             case "java":
-                var javaClass = file.substring("src/".length).replace(new RegExp("/", "g"), ".").replace(/\.java$/, "");
+                var javaClass = srcToJavaClass(file);
                 console.log("java class: " + javaClass);
                 jvmInstance = new JVMInstance(cwd, javaClass);
                 break;
@@ -295,8 +303,9 @@ sys.inherits(JVMRuntimePlugin, Plugin);
             catch(e) {}
         }
 
-        if (this.debugClient) {
-            // TODO disconnect javaDebugProxy if not already disconnected
+        if (this.javaDebugProxy) {
+            // disconnect javaDebugProxy if not already disconnected
+            this.javaDebugProxy.disconnect();
         }
         this.workspace.getExt("state").publishState();
 

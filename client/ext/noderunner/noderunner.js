@@ -204,7 +204,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         ide.send({
             "command": "kill",
-            "runner" : "node",
+            "runner" : ddRunnerSelector.value,
             "pid"    : this.nodePid
         });
         ide.send({"command": "state", "action": "publish"});
