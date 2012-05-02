@@ -33,18 +33,15 @@ var SAVE_INTERVAL = 1000;
  *
  *  Revision cache will be purged every PURGE_INTERVAL to clear up unfreed memory.
  **/
-var PURGE_INTERVAL = 60 * 60 * 1000;
 var Diff = new Diff_Match_Patch();
 
 var RevisionsPlugin = module.exports = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
     this.name = "revisions";
-    this.revisions = {};
     this.docQueue = [];
 
     this.saveInterval = setInterval(this.saveQueue.bind(this), SAVE_INTERVAL);
-    this.purgeInterval = setInterval(this.purgeCache.bind(this), PURGE_INTERVAL);
 };
 
 require("util").inherits(RevisionsPlugin, Plugin);
@@ -173,11 +170,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * the `callback` function with the error as the first argument.
      **/
     this.getRevisions = function(filePath, callback) {
-        // We might already have parsed it.
-        if (this.revisions[filePath]) {
-            return callback(null, this.revisions[filePath]);
-        }
-
         // Physical location of the workspace
         if (!this.ide.workspaceDir) {
             return callback(new Error(
@@ -190,7 +182,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
         var absPath = PathUtils.getAbsolutePath.call(this, filePath) + "." + FILE_SUFFIX;
 
         var cacheRevision = function(path, rev, cb) {
-            self.revisions[path] = rev;
             cb(null, rev);
         };
 
@@ -448,7 +439,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 return callback(new Error("Couldn't retrieve revisions for " + path));
 
             revObj.revisions[revision.ts] = revision;
-            self.saveToDisk(path, function(err, savedRevisionInfo) {
+            self.saveToDisk(path, revObj, function(err, savedRevisionInfo) {
                 if (err)
                     callback(err);
 
@@ -458,31 +449,26 @@ require("util").inherits(RevisionsPlugin, Plugin);
         });
     };
 
-    this.saveToDisk = function(path, callback) {
-        var revisions = this.revisions;
-        if (!path || !revisions || !revisions[path]) {
-            return callback(new Error("No path or no revision history in this filepath: " + path));
+    this.saveToDisk = function(path, revObj, callback) {
+        if (!path || !revObj) {
+            return callback(new Error("Missing or wrong parameters (path, revObj):", path, revObj));
         }
 
-        var finalPath = PathUtils.getAbsolutePath.call(this, path) + "." + FILE_SUFFIX;
-        Path.exists(finalPath, function(exists) {
+        var absPath = PathUtils.getAbsolutePath.call(this, path) + "." + FILE_SUFFIX;
+        Path.exists(absPath, function(exists) {
             if (!exists)
-                return callback(new Error("Backup file path doesn't exist:" + finalPath));
+                return callback(new Error("Backup file path doesn't exist:" + absPath));
 
-            Fs.writeFile(finalPath, JSON.stringify(revisions[path]), function (err) {
+            Fs.writeFile(absPath, JSON.stringify(revObj), function (err) {
                 if (err)
-                    return callback(new Error("Could not save backup file" + finalPath));
+                    return callback(new Error("Could not save backup file" + absPath));
 
                 callback(null, {
-                    absPath: finalPath,
+                    absPath: absPath,
                     path: path,
-                    revObj: revisions[path]
+                    revObj: revObj
                 });
             });
         });
-    };
-
-    this.purgeCache = function() {
-        this.revisions = {};
     };
 }).call(RevisionsPlugin.prototype);
