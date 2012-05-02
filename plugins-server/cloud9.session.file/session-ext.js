@@ -105,19 +105,12 @@ FileStore.prototype.set = function(sid, sess, fn){
   var path = self.basePath + "/" + sid;
   var tmpPath = path + "~" + new Date().getTime();
   fs.writeFile(path, JSON.stringify(sess), function(err) {
-      if (err) {
-          fn && fn(err);
-      }
-      else {
-          fs.rename(tmpPath, path, function(err) {
-              if (err) {
-                  fn && fn(err);
-              }
-              else {
-                  fn && fn();
-              }
-          });
-      }
+      if (err)
+        return fn && fn(err);
+
+      fs.rename(tmpPath, path, function(err) {
+        fn && fn(err);
+      });
   });
 };
 
