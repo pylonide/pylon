@@ -12,75 +12,19 @@
     </p:settings>
 
     <p:process>
-        <!--p:vcs
-          type       = "svn"
-          cmd        = "update"
-          repository = "{platform}" /-->
-
         <p:combine
           type     = "script"
           defines  = "1"
           group    = "apf"
           out      = "{cwd}/build/apf_release.js"
           filehead = "1" />
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "modules"
-          out      = "{cwd}/../../client/js/modules.js"
-          filehead = "1" /-->
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "core"
-          out      = "{cwd}/../../client/js/core.js"
-          filehead = "1" /-->
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "ace"
-          out      = "{cwd}/../../client/js/ace.js"
-          filehead = "1" /-->
-        <p:compress
+        <!--p:compress
           cmd      = "yuicompressor"
           in       = "{cwd}/build/apf_release.js"
           out      = "{cwd}/build/apf_release.js" />
-
+-->
     </p:process>
 
-    <p:process>
-        <!--p:vcs
-          type       = "svn"
-          cmd        = "update"
-          repository = "{platform}" /-->
-
-        <p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "apf"
-          out      = "{cwd}/build/apf_debug.js"
-          filehead = "1" />
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "modules"
-          out      = "{cwd}/../../client/js/modules.js"
-          filehead = "1" /-->
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "core"
-          out      = "{cwd}/../../client/js/core.js"
-          filehead = "1" /-->
-        <!--p:combine
-          type     = "script"
-          defines  = "1"
-          group    = "ace"
-          out      = "{cwd}/../../client/js/ace.js"
-          filehead = "1" /-->
-
-    </p:process>
-    
     <p:files>
         <p:node path="{platform}" mask="*.js" group="apf">
             <p:node path="jpack_begin.js" />
@@ -145,87 +89,6 @@
             <p:node path="processinginstructions" />
             <p:node path="jpack_end.js" />
         </p:node>
-
-        <!--p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/oop.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/core.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/event.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/lang.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/textinput.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/conf/keybindings/default_mac.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/conf/keybindings/default_win.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/plugin_manager.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/commands/default_commands.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/keybinding.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/event_emitter.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/range.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/selection.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/tokenizer.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/text_highlight_rules.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/text.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/document.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/search.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/background_tokenizer.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/editor.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/undomanager.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/gutter.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/marker.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/lib/dom.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/text.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/layer/cursor.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/scrollbar.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/renderloop.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/virtual_renderer.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/doc_comment_highlight_rules.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/javascript_highlight_rules.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/matching_brace_outdent.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/javascript.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/textmate.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/eclipse.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/theme/eclipse.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml_highlight_rules.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/xml.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css_highlight_rules.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/matching_brace_outdent.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/css.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html_highlight_rules.js" group="ace" />
-        <p:node path="{__dirname}/../../../support/ace/build/ace/mode/html.js" group="ace" />
-
-        <p:node path="{__dirname}/../../../client/core/ide.js" group="core" />
-        <p:node path="{__dirname}/../../../client/core/ext.js" group="core" />
-        <p:node path="{__dirname}/../../../client/core/util.js" group="core" />
-
-        <p:node path="{__dirname}/../../../client/ext/filesystem/filesystem.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/settings/settings.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/editors/editors.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/themes/themes.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/themes_default/themes_default.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/panels/panels.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/tree/tree.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/save/save.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/gotofile/gotofile.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/newresource/newresource.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/undo/undo.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/clipboard/clipboard.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/searchinfiles/searchinfiles.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/searchreplace/searchreplace.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/quickwatch/quickwatch.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/quicksearch/quicksearch.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/gotoline/gotoline.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/html/html.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/browser/browser.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/code/code.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/extmgr/extmgr.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/run/run.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/debugger/debugger.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/noderunner/noderunner.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/console/console.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/tabbehaviors/tabbehaviors.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/keybindings/keybindings.js" group="modules" />
-        <p:node path="{__dirname}/../../../client/ext/watcher/watcher.js" group="modules" /-->
     </p:files>
 
     <p:defines defaults="defines.xml">
@@ -261,8 +124,8 @@
         <p:define name="__WITH_INLINE_DATABINDING" value="1" />
         <!--p:define name="__WITH_AML_BINDINGS" value="1" /-->
         <p:define name="__WITH_KEYBOARD" value="1" />
-	<!--p:define name="__ENABLE_SELENIUM_PLAYER" value="0" />
-	<p:define name="__ENABLE_UIRECORDER_HOOK" value="1" /-->
+        <!--p:define name="__ENABLE_SELENIUM_PLAYER" value="0" />
+        <p:define name="__ENABLE_UIRECORDER_HOOK" value="1" /-->
 
         <!--p:define name="__WITH_MODEL_VALIDATION" value="1" /-->
         <p:define name="__WITH_MOUSESCROLL" value="1" />>
@@ -270,7 +133,7 @@
         <p:define name="__WITH_NS_SUPPORT" value="1" />
 
         <!--p:define name="__WITH_PARTIAL_AML_LOADING" value="1" /-->
-        <p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="1" />
+        <!--p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="0" /-->
         <p:define name="__WITH_PLANE" value="1" />
         <p:define name="__WITH_POPUP" value="1" />
 
@@ -440,6 +303,7 @@
         <p:define name="__AMLTELEPORT" value="1" />
 
         <p:define name="__AMLLABEL" value="1" />
+	<p:define name="__AMLSPLITBUTTON"  value="1" />
         <p:define name="__AMLBUTTON" value="1" />
         <!--p:define name="__AMLSTATUSBAR" value="1" /-->
 
