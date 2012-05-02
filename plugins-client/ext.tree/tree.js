@@ -192,6 +192,13 @@ module.exports = ext.register("ext/tree/tree", {
 
             var nodes   = parent.childNodes;
             var files   = e.files;
+            
+            if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
+                files.filter(function(file) {
+                    return file.name.charAt(0) != '.'
+                })
+            }
+            
             var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
@@ -265,7 +272,7 @@ module.exports = ext.register("ext/tree/tree", {
             type    : "check",
             caption : "Show Hidden Files",
             visible : "{trFiles.visible}",
-            checked : "[{require('ext/settings/settings').model}::auto/projecttree/@showhidden]",
+            checked : "[{require('core/settings').model}::auto/projecttree/@showhidden]",
             onclick : function(e){
                 setTimeout(function() {
                     _self.changed = true;
