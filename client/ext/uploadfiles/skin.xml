@@ -110,8 +110,10 @@
         <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
             .list-uploadactivity .item .uploadactivity-caption {
                 height  : 17px;
-                padding : 4px 0 0 0;
+                padding : 4px 30px 0 0;
             }
+            
+            
         ]]></a:style>
 
         <a:presentation>
