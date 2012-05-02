@@ -408,14 +408,6 @@ module.exports = ext.register("ext/console/console", {
     hook: function() {
         var _self = this;
         
-        //@todo this should be done via commands instead
-        // Listen for new extension registrations to add to the
-        // hints
-        ide.addEventListener("ext.register", function(e){
-            if (e.ext.commands)
-                apf.extend(commands.commands, e.ext.commands);
-        });
-        
         commands.addCommand({
             name: "help",
             hint: "show general help information and a list of available commands",

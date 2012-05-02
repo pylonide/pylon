@@ -1,4 +1,7 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:state id="stTestRun" />
+    <a:menu id="mnuRunSettings" />
+
     <a:window id="winTestPanel" 
       flex     = "1" 
       skin     = "fm-window" 

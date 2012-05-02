@@ -63,6 +63,8 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
         var _self = this;
+        
+        this.markupInsertionPoint = colLeft;
 
         // Register this panel on the left-side panels
         panels.register(this, {
@@ -247,8 +249,6 @@ module.exports = ext.register("ext/tree/tree", {
         this.panel = winFilesViewer;
         this.nodes.push(winFilesViewer);
 
-        colLeft.appendChild(winFilesViewer);
-        
         ide.addEventListener("afteroffline", function(){
             trFiles.selectable = false;
             //_self.button.enable();

@@ -70,8 +70,9 @@
                         require(plugins, function(){
                             ide.dispatchEvent("extload", {modules: plugins});
 
+                            cloud9config.totalTime = new Date() - cloud9config.startdate;
                             console.log("Total Load Time " 
-                                + (new Date() - window.cloud9config.startdate) + "ms");
+                                + (cloud9config.totalTime) + "ms");
 
                             ide.addEventListener("$event.extload", function(cb){
                                 cb();

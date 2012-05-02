@@ -39,27 +39,16 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     defaultWidth    : 290,
 
     hook : function(){
+        var _self = this;
+        
+        this.markupInsertionPoint = colLeft;
+        
         panels.register(this, {
             position : 4000,
             caption: "Test",
             "class": "testing"
         });
-        
-        var _self = this;
 
-        //ide.addEventListener("init.testrunner", function(){
-            apf.document.documentElement.appendChild(new apf.state({
-                id : "stTestRun"
-            }));
-            
-            apf.document.documentElement.appendChild(new apf.menu({
-                id : "mnuRunSettings"
-                //pinned : "true"
-            }));
-            
-            //ide.removeEventListener("init.testrunner", arguments.callee);
-        //});
-        
         ide.addEventListener("settings.load", function(e){
             if (!e.model.queryValue("auto/testpanel/@autorun"))
                 e.model.setQueryValue("auto/testpanel/@autorun", "none");
@@ -106,14 +95,12 @@ module.exports = ext.register("ext/testpanel/testpanel", {
 
     init : function() {
         var _self  = this;
-        this.panel = winTestPanel;
         
-        this.nodes.push(winTestPanel);
+        this.panel = winTestPanel;
+        this.nodes.push(winTestPanel, mnuRunSettings, stTestRun);
         
         ide.dispatchEvent("init.testrunner");
 
-        colLeft.appendChild(winTestPanel);
-        
         mnuFilter.onitemclick = function(e){
             if (e.value && e.relatedNode.type == "radio")
                 _self.filter(e.value);

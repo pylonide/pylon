@@ -40,6 +40,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     hook : function(){
         var _self = this;
         
+        this.markupInsertionPoint = colLeft;
+        
         panels.register(this, {
             position : 3000,
             caption: "Run & Debug",
@@ -75,6 +77,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 "id" : "mnuRunCfg",
                 "onprop.visible" : function(e){
                     if (e.value) {
+                        if (!this.populated) {
+                            _self.$populateMenu();
+                            this.populated = true;
+                        }
+                        
                         if (!self.tabEditors 
                           || tabEditors.length == 0
                           || _self.excludedTypes[tabEditors.getPage().id.split(".").pop()])
@@ -151,19 +158,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
         }), c += 100);
         
-        this.model.addEventListener("afterload", function(e) {
-            _self.$populateMenu();
-        });
-
-        ide.addEventListener("settings.load", function(){
-            settings.setDefaults("auto/node-version", [
-                ["version", "auto"]
-            ]);
-        });
-
         settings.addSettings("General", markupSettings);
         
         ide.addEventListener("settings.load", function(e){
+            settings.setDefaults("auto/node-version", [
+                ["version", "auto"]
+            ]);
+            
             var runConfigs = e.model.queryNode("auto/configurations");
             if (!runConfigs) {
                 runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
@@ -285,8 +286,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         apf.importCssString(cssString);
         
         this.panel = winRunPanel;
-
-        colLeft.appendChild(winRunPanel);
         this.nodes.push(winRunPanel);
         
         lstRunCfg.addEventListener("click", function(e){
@@ -298,7 +297,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         lstRunCfg.addEventListener("afterremove", function(e){
             _self.mnuRunCfg.childNodes.each(function(item){
-                if (item.getAttribute("node") == e.args[0].xmlNode)
+                if (_self.mnuRunCfg.populated && item.node == e.args[0].xmlNode)
                     item.destroy(true, true);
             });
         });
@@ -393,6 +392,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     $addMenuItem : function(cfg, divider){
         var _self = this;
+        
+        if (!this.mnuRunCfg.populated)
+            return;
 
         if (!divider)
             divider = this.mnuRunCfg.getElementsByTagNameNS("", "divider")[0];
