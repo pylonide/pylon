@@ -194,9 +194,10 @@ module.exports = ext.register("ext/tree/tree", {
             var files   = e.files;
             
             if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
-                files.filter(function(file) {
-                    return file.name.charAt(0) != '.'
-                })
+                for (var file in files) {
+                    if (file.charAt(0) == '.')
+                        delete files[file];
+                }
             }
             
             var removed = [];
