@@ -237,7 +237,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             util.alert(
                 "Could not upload file(s)", "An error occurred while dropping this file(s)",
                 "Your browser does not offer support for drag and drop for file uploads. " +
-                "Please try with a recent version of Chrome or Firefox browsers."
+                "Please try with a recent version of Chrome or Firefox."
             );
             return false;
         }
@@ -341,7 +341,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         else {
                             fs.createFolder(folder, trFiles, true, function(folder) {
                                 if (!folder) {
-                                    _self.removeFromQueue(file.name);
+                                    _self.removeFromQueue(file.filepath);
                                     next();
                                 }
                                 // check if there are subfolders to be created
@@ -382,33 +382,37 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         // add files in dirty state
         var parent = file.targetFolder;
         var path = parent.getAttribute("path");
-        
+        var filename = apf.escapeXML(file.name);
+        var filepath = apf.escapeXML(path) + "/" + apf.escapeXML(file.name);
         // expand target folder in tree
         trFiles.slideOpen(null, parent, true);
         
         // add node to file tree
         var xmlNode = "<file type='fileupload'" +
-            " name='" + apf.escapeXML(file.name) + "'" +
-            " path='" + apf.escapeXML(path) + "/" + apf.escapeXML(file.name) + "'" +
+            " name='" + filename + "'" +
+            " path='" + path + "'" +
         "/>";
         
-        file.treeNode = trFiles.add(xmlNode, parent);
+        trFiles.add(xmlNode, parent);
+        file.treeNode = trFiles.queryNode("//file[@path='" + path +  "'][@name='" + filename + "']");
+        file.filepath = filepath;
         file.path = path;
         // add file to upload activity list
-        var queueNode = '<file name="' + apf.escapeXML(file.name) + '" />';
+        var queueNode = '<file name="' + filename + '" filepath="' + filepath + '" />';
         
         file.queueNode = mdlUploadActivity.appendXml(queueNode);
         
         this.uploadQueue.push(file);
     },
     
-    removeFromQueue: function(name) {
+    removeFromQueue: function(filepath) {
         var file;
         for (var i = 0, l = this.uploadQueue.length; i < l; i++) {
             file = this.uploadQueue[i];
-            if (file.name == name) {
+            if (file.filepath == filepath) {
                 this.uploadQueue.splice(i, 1);
-                this.removeCurrentUploadFile(name);
+                apf.xmldb.removeNode(file.queueNode);
+                apf.xmldb.removeNode(file.treeNode);
                 break;
             }
         }
@@ -474,7 +478,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                                 btnUploadOverwriteAll.hide();
                                 btnUploadSkipAll.hide();
                             }
-                            uploadFileExistsMsg.$ext.innerHTML = "\"" + apf.escapeXML(file.name) + "\" already exists, do you want to replace it?. Replacing it will overwrite it's current contents.";
+                            uploadFileExistsMsg.$ext.innerHTML = "\"" + apf.escapeXML(file.name) + "\" already exists, do you want to replace it? Replacing it will overwrite its current contents.";
                         }
                     }
                     else {
@@ -502,6 +506,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.existingOverwriteAll = false;
             _self.existingSkipAll = false;
             (davProject.realWebdav || davProject).setAttribute("showhidden", require('ext/settings/settings').model.queryValue("auto/projecttree/@showhidden"));
+            
             this.hideUploadActivityTimeout = setTimeout(function() {
                 mdlUploadActivity.load("<data />");
                 boxUploadActivity.hide();
@@ -533,7 +538,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             else {
                 util.alert(
                     "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
-                    "Please remove all files larger that 50MB from the list to continue."
+                    "Please remove all files larger than 50MB from the list to continue."
                 );
             }
             
@@ -615,14 +620,14 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             // change file from uploading to file to regular file in tree
             apf.xmldb.setAttribute(file.treeNode, "type", "file");
             
-            // remove file from upload activity lilst
+            // remove file from upload activity list
             setTimeout(function() {
                 if (!_self.lockHideQueue)
                     apf.xmldb.removeNode(file.queueNode);
                 else
                     _self.lockHideQueueItems.push(file);
             }, 2000);
-            
+
             _self.uploadNextFile();
         });
     },
