@@ -81,7 +81,9 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             return;
         
         var _self = this;
-        ide.addEventListener("init.ext/editors/editors", this.$preinit = function(){
+        ide.addEventListener("init.ext/code/code", this.$preinit = function(){
+            _self.markupInsertionPoint = ceEditor.parentNode;
+            
             ext.initExtension(_self);
         });
     },
@@ -89,11 +91,16 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     init : function(){
         var _self = this;
         
-        ide.addEventListener("theme_change", function(e){
-            var theme = e.theme || "ace/theme/textmate";
-            _self.checkTheme(theme);
+        ide.addEventListener("theme.init", function(e){
+            var cssClass = e.theme.cssClass;
+            
+            var bg = apf.getStyleRule("." + cssClass + " .ace_scroller", "background-color");
+            apf.importStylesheet([
+                ["." + cssClass + " .bar-status", "background-color", bg + ", 0.0)"],
+                ["." + cssClass + " .bar-status:hover", "background-color", bg + ", 0.95)"]
+            ]);
         });
-
+        
         ide.addEventListener("vim.changeMode", function(e) {
             if (!window["lblInsertActive"])
                 return;
@@ -168,65 +175,26 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             });
         });
         
-        ide.addEventListener("init.ext/code/code", function(){
-            ceEditor.parentNode.appendChild(barIdeStatus);
-            _self.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
-            barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance);
-            barIdeStatus.setAttribute("bottom", _self.sbWidth + _self.edgeDistance);
-    
-            hboxStatusBarSettings.$ext.style.overflow = "hidden";
-    
-            for (var i = 0, l = _self.prefsItems.length; i < l; i++) {
-                var pItem = _self.prefsItems[i];
-                if (typeof pItem.pos === "number")
-                    mnuStatusBarPrefs.insertBefore(pItem.item, mnuStatusBarPrefs.childNodes[pItem.pos]);
-                else
-                    mnuStatusBarPrefs.appendChild(pItem.item);
+        this.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
+        barIdeStatus.setAttribute("right", this.sbWidth + this.edgeDistance);
+        barIdeStatus.setAttribute("bottom", this.sbWidth + this.edgeDistance);
+
+        ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
+            if (e.changed) {
+                _self.horScrollAutoHide = e.value ? "true" : "false";
+                apf.layout.forceResize(tabEditors.parentNode.$ext);
             }
-    
-            !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();    
-            wrapMode.addEventListener("click", function(e) {
-                if (e.currentTarget.checked)
-                    wrapModeViewport.enable();     
-                else
-                    wrapModeViewport.disable();
-            });
-            
-            var editor = ceEditor.$editor;
-            var theme = editor && editor.getTheme() || "ace/theme/textmate";
-            _self.checkTheme(theme);
-    
-    //        if (this.toggleOnInit)
-    //            this.toggleStatusBar();
-    
-            ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
-                if (e.changed) {
-                    _self.horScrollAutoHide = e.value ? "true" : "false";
-                    apf.layout.forceResize(tabEditors.parentNode.$ext);
-                }
-            });
         });
 
+        //@todo que??
         ide.addEventListener("track_action", function(e) {
-            if(e.type === "vim" && window["lblInsertActive"]) {
-                if(e.action === "disable")
+            if (e.type === "vim" && window["lblInsertActive"]) {
+                if (e.action === "disable")
                     lblInsertActive.hide();
                 else if (e.mode === "insert")
                     lblInsertActive.show();
             }
         });
-    },
-
-    addPrefsItem: function(menuItem, position){
-        if(!self["mnuStatusBarPrefs"]) {
-            this.prefsItems.push({ item: menuItem, pos : position });
-        }
-        else {
-            if (typeof position === "number")
-                mnuStatusBarPrefs.insertBefore(menuItem, mnuStatusBarPrefs.childNodes[position]);
-            else
-                mnuStatusBarPrefs.appendChild(menuItem);
-        }
     },
 
     setSelectionLength : function(editor) {
@@ -280,21 +248,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         settings.save();
     },
 
-    checkTheme: function(theme){
-        require(["require", theme], function (require) {
-            var reqTheme = require(theme);
-            if(reqTheme.isDark)
-                apf.setStyleClass(barIdeStatus.$ext, "ace_dark");
-            else
-                apf.setStyleClass(barIdeStatus.$ext, '', ["ace_dark"]);
-
-            var aceBg = apf.getStyle(ceEditor.$editor.renderer.scroller, "background-color");
-            aceBg = aceBg.replace("rgb", "rgba").replace(")", "");
-            apf.setStyleRule(".bar-status", "background-color", aceBg + ", 0.0)");
-            apf.setStyleRule(".bar-status:hover", "background-color", aceBg + ", 0.95)");
-        });
-    },
-
     setPosition : function() {
         if (self.ceEditor && ceEditor.$editor) {
             var _self = this;
@@ -306,6 +259,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
             if (this.$barMoveTimer)
                 clearTimeout(this.$barMoveTimer);
+                
             this.$barMoveTimer = setTimeout(function() {
                 if (typeof barIdeStatus !== "undefined") {
                     barIdeStatus.setAttribute("bottom", bottom);
