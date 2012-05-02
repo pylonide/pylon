@@ -30,7 +30,7 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 Requirements:
 
-  * NodeJS >= 0.6.15
+  * NodeJS >= 0.6.15 & NPM
   * Sourcemint: `npm install -g sm`
 
 Install:
