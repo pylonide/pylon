@@ -1,11 +1,11 @@
 {
-    "name": "ext.html",
+    "name": "ext.preview",
     "version": "0.0.1",
-    "main": "html-ext.js",
+    "main": "preview-ext.js",
     "private": true,
     "plugin": {
         "provides": [
-            "ext.html"
+            "ext.preview"
         ],
         "consumes": [
             "client-plugins"

@@ -83,7 +83,7 @@ module.exports = {
                     "ext/quickwatch/quickwatch",
                     "ext/quicksearch/quicksearch",
                     "ext/gotoline/gotoline",
-                    "ext/html/html",
+                    "ext/preview/preview",
                     "ext/log/log",
                     "ext/help/help",
                     //"ext/ftp/ftp",

@@ -165,18 +165,16 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 ["version", "auto"]
             ]);
             
+            settings.setDefaults("general", [
+                ["saveallbeforerun", "false"]
+            ]);
+            
+            settings.setDefaults("auto/configurations", [
+                ["debug", "true"],
+                ["autohide", "true"]
+            ]);
+
             var runConfigs = e.model.queryNode("auto/configurations");
-            if (!runConfigs) {
-                runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
-                apf.xmldb.setAttribute(runConfigs, "debug", "true");
-
-                e.model.setQueryValue("general/@saveallbeforerun", false);
-            }
-            if (!e.model.queryNode("auto/configurations/@debug"))
-                e.model.setQueryValue("auto/configurations/@debug", true);
-            if (!e.model.queryNode("auto/configurations/@autohide"))
-                e.model.setQueryValue("auto/configurations/@autohide", true);
-
             if (!runConfigs.selectSingleNode("config[@curfile]")) {
                 var setLast = false;
                 if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
