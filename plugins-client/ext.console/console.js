@@ -21,7 +21,6 @@ var theme = require("text!ext/console/themes/arthur.css");
 var inputHistory = require("ext/console/input_history");
 
 // Some constants used throughout the plugin
-var RE_band = /^\s*!/;
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
@@ -115,7 +114,6 @@ module.exports = ext.register("ext/console/console", {
             if (page) {
                 if (page.$editor.focus)
                     page.$editor.focus();
-                //this.hide();
             }
         }
         else {
@@ -123,7 +121,6 @@ module.exports = ext.register("ext/console/console", {
                 this.showInput(true);
             else
                 txtConsoleInput.focus();
-            //this.show();
         }
     },
 
@@ -161,13 +158,13 @@ module.exports = ext.register("ext/console/console", {
             return this.commandTextHandler(e);
     },
 
-    outputLogSection: function(line) {
+    createOutputBlock: function(line, useOutput) {
         var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner', this.command_id_tracer,
-            '" onclick="return require(\'ext/console/console\').handleCliBlockAction(event)"></div>']
+            '" onclick="return require(\'ext/console/console\').handleOutputBlockClick(event)"></div>']
             .join("");
 
         var outputId = "console_section" + this.command_id_tracer;
-        logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>', null, outputId);
+        logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>', useOutput, outputId);
 
         var outputEl = document.getElementById(outputId);
         apf.setStyleClass(outputEl, "loading");
@@ -175,7 +172,7 @@ module.exports = ext.register("ext/console/console", {
         return this.command_id_tracer;
     },
 
-    evalCmd: function(line) {
+    evalInputCommand: function(line) {
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
         if (!argv || argv.length === 0) // no commmand line input
@@ -185,7 +182,7 @@ module.exports = ext.register("ext/console/console", {
         argv[0] = argv[0].replace(/["'`]/g, "");
         this.cliInputHistory.push(line);
 
-        this.outputLogSection(this.getPrompt(line));
+        this.createOutputBlock(this.getPrompt(line));
 
         tabConsole.set("console");
 
@@ -202,12 +199,6 @@ module.exports = ext.register("ext/console/console", {
             this.command_id_tracer++;
         }
         else {
-            if (cmd.trim().charAt(0) === "!") {
-                cmd = "bash";
-                argv[0] = argv[0].replace(RE_band, "");
-                line = line.replace(RE_band, "");
-            }
-
             var data = {
                 command: cmd,
                 argv: argv,
@@ -257,8 +248,7 @@ module.exports = ext.register("ext/console/console", {
                 }
             }
             else {
-                // If any of the `consolecommand` events returns false, it means
-                // that we don't want the console to show up.
+                // Return false to `evalInputCommand` to not show the output area
                 return false;
             }
         }
@@ -303,7 +293,7 @@ module.exports = ext.register("ext/console/console", {
 
         switch(message.type) {
             case "node-start":
-                var command_id = this.outputLogSection("Running Node Process");
+                var command_id = this.createOutputBlock("Running Node Process", true);
                 this.tracerToPidMap[command_id] = message.pid;
                 this.pidToTracerMap[message.pid] = command_id;
 
@@ -526,11 +516,6 @@ module.exports = ext.register("ext/console/console", {
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.previousSibling.hide();
 
-        // before the actual run target gets called we clear the console
-        ide.addEventListener("beforeRunning", function () {
-            _self.clear();
-        });
-
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
@@ -592,7 +577,7 @@ module.exports = ext.register("ext/console/console", {
             var inputVal = input.getValue().trim();
             if (inputVal === "/?")
                 return false;
-            _self.evalCmd(inputVal);
+            _self.evalInputCommand(inputVal);
             input.setValue("");
         };
 
@@ -634,6 +619,7 @@ module.exports = ext.register("ext/console/console", {
 
         // @TODO Defunct
         apf.setStyleClass(txtConsole.$ext, "feedback");
+        apf.setStyleClass(txtOutput.$ext, "feedback");
     },
 
     /**
@@ -641,7 +627,7 @@ module.exports = ext.register("ext/console/console", {
      * be in multiple states. If a process is running, this cancels the process.
      * If finished, this will either expand or collapse the output block
      */
-    handleCliBlockAction : function(e) {
+    handleOutputBlockClick : function(e) {
         var pNode = e.target.parentNode;
 
         if (pNode.className.indexOf("loaded") !== -1) {
@@ -668,7 +654,7 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         apf.setStyleClass(pNode, "quitting_proc");
-        logger.logNodeStream("Killing this process...", null,
+        logger.logNodeStream("Quitting this process...", null,
             this.getLogStreamOutObject(command_id), ide);
 
         ide.send({

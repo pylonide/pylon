@@ -212,6 +212,7 @@ module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
     var containerOutput = ['<div'];
     if (tracerId)
         containerOutput.push(' id="', tracerId, '"');
+
     containerOutput.push(" class='item output_section console_",
             type, "'>", (pre || ""), msg, (post || ""), "</div>");
 
