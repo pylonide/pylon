@@ -70,7 +70,8 @@ util.inherits(HgPlugin, Plugin);
         this.pm.spawn("shell", {
             command: "hg",
             args: message.argv.slice(1),
-            cwd: message.cwd
+            cwd: message.cwd,
+            extra: message.extra
         }, this.channel, function(err, pid) {
             if (err)
                 self.error(err, 1, message, client);

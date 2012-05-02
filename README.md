@@ -30,7 +30,7 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 Requirements:
 
-  * NodeJS >= 0.6.15
+  * NodeJS >= 0.6.15 & NPM
   * Sourcemint: `npm install -g sm`
 
 Install:
@@ -47,7 +47,7 @@ Optionally, you may specify the directory you'd like to edit:
 
     bin/cloud9.sh -w ~/git/myproject
     
-Cloud9 will be started as a web server on port `3131`, you can access it by
+Cloud9 will be started as a web server on port `-p 3131`, you can access it by
 pointing your browser to: [http://localhost:3131](http://localhost:3131)
 
 ## Updating

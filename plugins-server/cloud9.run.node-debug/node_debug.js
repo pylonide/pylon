@@ -27,13 +27,14 @@ var exports = module.exports = function setup(options, imports, register) {
 exports.factory = function(uid, ide) {
     return function(args, eventEmitter, eventName) {
         var cwd = args.cwd || ide.workspaceDir;
-        return new Runner(uid, args.file, args.args, cwd, args.env, args.breakOnStart, eventEmitter, eventName);
+        return new Runner(uid, args.file, args.args, cwd, args.env, args.breakOnStart, args.extra, eventEmitter, eventName);
     };
 };
 
-var Runner = exports.Runner = function(uid, file, args, cwd, env, breakOnStart, eventEmitter, eventName) {
-    NodeRunner.call(this, uid, file, args, cwd, env, eventEmitter, eventName);
+var Runner = exports.Runner = function(uid, file, args, cwd, env, breakOnStart, extra, eventEmitter, eventName) {
+    NodeRunner.call(this, uid, file, args, cwd, env, extra, eventEmitter, eventName);
     this.breakOnStart = breakOnStart;
+    this.extra = extra;
     this.msgQueue = [];
 };
 
@@ -105,14 +106,16 @@ function mixin(Class, Parent) {
             send({
                 "type": "node-debug",
                 "pid": self.pid,
-                "body": body
+                "body": body,
+                "extra": self.extra
             });
         });
 
         this.nodeDebugProxy.on("connection", function() {
             send({
                 "type": "node-debug-ready",
-                "pid": self.pid
+                "pid": self.pid,
+                "extra": self.extra
             });
             self._flushSendQueue();
         });

@@ -96,7 +96,8 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 file: file,
                 args: args,
                 env: env,
-                nodeVersion: version
+                nodeVersion: version,
+                extra: message.extra
             }, self.channel, function(err, pid) {
                 if (err)
                     self.error(err, 1, message, client);
@@ -118,7 +119,8 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 args: args,
                 env: env,
                 breakOnStart: breakOnStart,
-                nodeVersion: version
+                nodeVersion: version,
+                extra: message.extra
             }, self.channel, function(err, pid) {
                 if (err)
                     self.error(err, 1, message, client);

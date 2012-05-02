@@ -162,6 +162,7 @@ module.exports = {
             "./cloud9.ide.npm",
             "./cloud9.ide.run-node",
             "./cloud9.ide.run-python",
+            "./cloud9.ide.revisions",
             {
                 packagePath: "./cloud9.ide.settings",
                 settingsPath: projectDir + "/.settings"
