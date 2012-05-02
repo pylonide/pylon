@@ -18,9 +18,9 @@
                       onclick = "
                         var console = require('ext/console/console');
                         if (this.value)
-                            console.maximize();
+                            console.maximizeConsoleHeight();
                         else
-                            console.restore();
+                            console.restoreConsoleHeight();
                       "/>
                     <a:divider skin="divider_console"></a:divider>
                     <a:button
