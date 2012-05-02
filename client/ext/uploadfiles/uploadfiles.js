@@ -78,7 +78,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 }), itemCtxTreeNewFile)
             );
             
-            if(ide.infraEnv) {
+            ide.addEventListener("init.c9/ext/auth/auth", function(){
                 _self.nodes.push(
                     ide.mnuFile.appendChild(new apf.item({
                         caption : "Download Project",
@@ -98,7 +98,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     }), btnTreeRefresh)
                 );
                 btnUploadFiles.setProperty("right", "81");
-            }
+            });
         });
     },
     
