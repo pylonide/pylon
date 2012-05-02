@@ -148,6 +148,7 @@ apf.Sort = function(xmlNode){
         },
 
         "number" : function (t){
+            if (!t) t = 0;
             return (t.length < sort_intmask.length
                 ? sort_intmask[sort_intmask.length - t.length]
                 : "") + t;

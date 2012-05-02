@@ -254,8 +254,8 @@ apf.BindingColumnRule = function(struct, tagName){
 
         pNode.resort({
             order : "ascending",
-            xpath : (this.cvalue || this.compile("value")).xpaths[1]
-            //type : 
+            xpath : (this.cvalue || this.compile("value")).xpaths[1],
+            type : this["data-type"]
         }, false, initial || !pNode.length);
         
         
