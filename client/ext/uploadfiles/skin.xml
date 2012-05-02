@@ -61,7 +61,7 @@
                 display: block;
                 position: absolute;
                 right: 5px;
-                top: 0;
+                top: 1px;
             }
             
             .list-uploadactivity .item.hover {

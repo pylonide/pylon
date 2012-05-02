@@ -55,7 +55,7 @@
                     }
                     else {
                         <div class="uploadactivity-caption">[@name]</div>
-                        <div class="uploadactivity-delete" onclick="require('ext/uploadfiles/uploadfiles').removeFromQueue('{[@name]}')"></div>
+                        <div class="uploadactivity-delete" onclick="require('ext/uploadfiles/uploadfiles').removeFromQueue('{[@filepath]}')"></div>
                     }
                 ?></a:caption>
             </a:each>
