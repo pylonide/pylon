@@ -17,7 +17,7 @@
             
             .list-uploadactivity .item {
                 height      : 20px;
-                padding     : 0 12px 2px 5px;
+                padding     : 0 5px 2px 5px;
                 position    : relative;
                 cursor      : default;
                 border-bottom:1px solid transparent;
@@ -34,7 +34,7 @@
 
             .list-uploadactivity .item .uploadactivity-caption,
             .list-uploadactivity .item .uploadactivity-progress {
-                display     : inline-block;
+                display     : block;
                 height      : 18px;
                 padding     : 3px 0 0 0;
                 margin      : 0 0 0 5px;
@@ -50,14 +50,18 @@
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
+                padding-right: 30px;
             }
             .list-uploadactivity .item .uploadactivity-caption.bold {
                 font-weight: bold;
             }
             
             .list-uploadactivity .item .uploadactivity-progress {
-                display     : inline-block;
                 color       : #179439;
+                display: block;
+                position: absolute;
+                right: 5px;
+                top: 0;
             }
             
             .list-uploadactivity .item.hover {
