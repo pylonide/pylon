@@ -1,11 +1,16 @@
 # Cloud9 IDE
 
-The Cloud9 IDE is an open source project started by [ajax.org], built on top of [Node.JS].
+The Cloud9 IDE is an open source project started by [ajax.org], built on top of
+[Node.JS].
 
-This Integrated Development Environment aims to bring all great features from other existing IDE's and source code editors like Eclipse, Netbeans, Textmate, and many others together, bundled as plugins.
-Cloud9's main focus is on Javascript development, it is able to set a new standard for client and server development integration.
+This Integrated Development Environment aims to bring all great features from
+other existing IDE's and source code editors like Eclipse, Netbeans, Textmate,
+and many others together, bundled as plugins.
+Cloud9's main focus is on Javascript development, it is able to set a new
+standard for client and server development integration.
 
-And if you find that functionality is missing? Just write a plugin and patch it yourself!
+And if you find that functionality is missing? Just write a plugin and patch it
+yourself!
 
 Written in Javascript, for Javascripters.
 
@@ -18,100 +23,79 @@ Written in Javascript, for Javascripters.
   * Bundled plugins: browser, clipboard, code (editor), console, debugger, docs, editors, filesystem, html, keybindings, newresource, noderunner, panels, refactor, richtext, save, searchreplace, settings, tree, undo
 
 ## Browser Support
-We are developing on firefox and chrome and this is a development repo, other browsers might be less stable until a proper release.
 
-## Usage
+We support the newer versions of Chrome, Firefox and Safari.
 
-After a Git checkout of the project or download (see Installation section), the command you need to run the IDE locally is the following:
+## Installation and Usage
 
-To start cloud9 and install all submodules you can use the quickstart options for your platform on the console or from your explorer/finder and opens it in your default browser:
+Requirements:
 
-Linux and OSX:
+  * NodeJS >= 0.6.15
+  * Sourcemint: `npm install -g sm`
 
-    $ bin/cloud9.sh
+Install:
 
-Windows:
+    sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
 
-    > bin\cloud9-win32.bat
+This creates a `cloud9` directory in your current directory, just `cd` into it
+and run `bin/cloud9.sh` to start:
 
-Note you'll need a git version 1.7 or higher to use the stock shell script provided.
-
-If you want to start it manually try:
-
-    $ node server.js
-
-This runs the IDE with itself set as the workspace. When you open the url 
-
-    http://localhost:3131
+    cd cloud9
+    bin/cloud9.sh
     
-in your browser, it will show the directory structure of the current workspace in a tree. Since none is provided by the startup command above, it will show the IDE directory contents as a default workspace.
+Optionally, you may specify the directory you'd like to edit:
 
-You can specify your own workspace as follows:
+    bin/cloud9.sh -w ~/git/myproject
+    
+Cloud9 will be started as a web server on port `3131`, you can access it by
+pointing your browser to: [http://localhost:3131](http://localhost:3131)
 
-    $ node server.js -w /path/to/your/awesome/workspace
+## Updating
 
-And as a result the tree will display the contents of that directory.
+To update to the latest version (if this doesn't work, just make a fresh clone):
 
-Use the `-p` option to specify the port:
+    git pull
+    sm update
 
-    $ node server.js -p 3987
+## Development
 
-You can specify the ip cloud9 is listening to using:
+To work on a subcomponent that is copied into node_modules, you can use `sm edit`.
+For instance, to work on ACE, run the following from the checkout root:
 
-    $ node bin/cloud9.js -l 192.168.2.1
+    sm edit ace
 
-Or specify to listen to all ip's
+This is somewhat equivalent to `npm link` but instead of linking to a system wide
+shared package it clones the source into the node_modules/<name> directory.
+The idea is to only "edit" when you need to make changes and when done issue
+"sm save <name>" (not yet implemented) which will pull up sourcetree to commit,
+push code and switch package back to read mode (frozen). The status page 
 
-    $ node bin/cloud9.js -l all
+    sm status
 
-To see more usage information and additional command line options use.
+shows problematic and improvement oriented action steps to improve the state of
+the program. These relate to git status and dependency changes that need to be
+made to bring the dependencies up to date and ready to publish which leads to deployment.
 
-    $ node bin/cloud9.js -h
+The line on the status page will have a (W) if it is setup for editing.
 
-## Installation
+To launch Sourcetree for all dirty/ahead repositories in the dependency
+tree use (need to have Sourcetree command-line tools installed (`stree`)):
 
-Via git (or downloaded tarball):
+    sm fix
 
-    $ git clone git://github.com/ajaxorg/cloud9.git
+The sourcemint package manager works alongside NPM so to link in a
+(system-wide shared) NPM package use:
 
+    rm -R node_modules/architect
+    npm link architect
 
-Try to run Cloud9 (bin/cloud9.sh). If this throws an error update submodules after cloning:
-
-    $ git submodule update --init --recursive
-
-Via [npm](http://github.com/isaacs/npm):
-
-    $ npm install cloud9
-
-## Startup errors: Binaries and node.js
-
-Starting Cloud9 using cloud9.sh or .bat uses nodejs and node-o3-xml binaries that are distributed with Cloud9.
-We have included binaries for OSX 64 bit Intel (10.5/10.6), 32 and 64 bit Ubuntu and Windows 32 bit.
-All binaries are based on node 0.2.x latest stable.
-If you get an error about unable to load o3-xml or an architecture error, you will need to compile nodejs and node-o3-xml yourself and put it in the right directory of cloud9. For information how to compile node, please check www.nodejs.org. You will need to compile and install nodejs before you can compile node-o3-xml.
-
-    $ git clone http://github.com/ajaxorg/o3
-    $ cd o3
-    $ ./tools/node_modules_build
-    $ cp build/default/o3.node cloud9dir/support/jsdav/support/node-o3-xml-v4/lib/o3-xml/
-
-after this you can start cloud9 manually using node bin/cloud9.js
-
-## How to compile a custom node.js binary
-
-There is a known V8 bug in the 0.2.x banch of node, which prevents the debugger from working under Linux. To work around this bug the node binary has to be compiled with gcc 4.4:
-
-    $ export GCC_VERSION=44
-    $ configure
-    $ make
-
-## Documentation
-
-Documentation is in the making. 
+`sm` always works on your program sub-tree other than pulling things in
+from the cache.
 
 ## Open Source Projects Used
 
-The Cloud9 IDE couldn't be this cool if it weren't for the wildly productive [Node.JS] community producing so many high quality software.
+The Cloud9 IDE couldn't be this cool if it weren't for the wildly productive
+[Node.JS] community producing so many high quality software.
 Main projects that we use as building blocks:
 
   * [async.js] by [fjakobs]
@@ -139,7 +123,7 @@ Thanks to all developers and contributors of these projects!
 
 The GPL version 3, read it at [http://www.gnu.org/licenses/gpl.txt](http://www.gnu.org/licenses/gpl.txt)
 
-##Contributing
+## Contributing
 
 Cloud9 wouldn't be where it is now without contributions. Feel free to fork and improve/enhance Cloud9 in any way your want. If you feel that the Cloud9 community will benefit from your changes, please open a pull request. To protect the interests of the Cloud9 contributors and users we require contributors to sign a Contributors License Agreement (CLA) before we pull the changes into the main repository. Our CLA is the simplest of agreements, requiring that the contributions you make to an ajax.org project are only those you're allowed to make. This helps us significantly reduce future legal risk for everyone involved. It is easy, helps everyone, takes ten minutes, and only needs to be completed once.  There are two versions of the agreement:
 
