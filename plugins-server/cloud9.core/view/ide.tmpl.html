@@ -48,7 +48,7 @@
 
             var apfLoc = "[%staticUrl%]/apf-packaged/apf_" + VERSION + ".js";
 
-            var config = <%requirejsConfig%>;
+            var config = <%requirejsConfig%>; 
             require(config, [apfLoc], function(){
                 var list = ["core/ide", "core/ext", "core/util", 
                     "core/settings", "ext/main/main", "ext/editors/editors",

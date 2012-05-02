@@ -24,14 +24,14 @@ apfdebug:
 
 # packages core
 core:
-	mkdir -p client/build
-	node r.js -o core.build.js
+	mkdir -p build/
+	node r.js -o build/core.build.js
 
 # packages ext
-ext: core
-	mkdir -p client/build
-	node r.js -o app.build.js
-	#gzip client/build/packed.js
+ext: core 
+	mkdir -p build/
+	node build/packed_helper.js
+	node r.js -o build/app.build.js
 
 # calls dryice on worker & packages it
 worker:

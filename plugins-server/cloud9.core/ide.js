@@ -84,6 +84,8 @@ util.inherits(Ide, EventEmitter);
 
     this.$serveIndex = function(req, res, next) {
         var _self = this;
+        if (_self.options.real)
+            process.exit(1);
         var indexFile =  _self.options.real === true ? "ide.tmpl.packed.html" : "ide.tmpl.html";
         
         fs.readFile(Path.join(__dirname, "/view/", indexFile), "utf8", function(err, index) {

@@ -12,7 +12,7 @@ for (var i = 0; i < clientDirs.length; i++) {
     var name = dir.split(".")[1];
     clientExtensions[name] = __dirname + "/../plugins-client/" + dir;
 }
-
+    	console.log(clientExtensions);
 var projectDir = (argv.w && path.resolve(process.cwd(), argv.w)) || process.cwd();
 var fsUrl = "/workspace";
 
