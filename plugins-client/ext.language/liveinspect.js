@@ -18,13 +18,11 @@ module.exports = (function () {
     
     var hook = function () {
         var self = this;
-        ide.addEventListener("init.ext/debugger/debugger", function() {
-            ext.initExtension(self);
-            
-            // listen to changes that affect the debugger, so we can toggle the visibility based on this
-            stRunning.addEventListener("prop.active", checkDebuggerActive);
-            stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
-        });
+        ext.initExtension(self);
+        
+        // listen to changes that affect the debugger, so we can toggle the visibility based on this
+        stRunning.addEventListener("prop.active", checkDebuggerActive);
+        stDebugProcessRunning.addEventListener("prop.active", checkDebuggerActive);
     };
     
     var init = function () {

@@ -1,7 +1,4 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:state id="stTestRun" />
-    <a:menu id="mnuRunSettings" />
-
     <a:window id="winTestPanel" 
       flex     = "1" 
       skin     = "fm-window" 
@@ -101,7 +98,7 @@
                         if ([@status] === '0')
                             <span style='color:red'>\[[@status-message]\]</span>
                         else if ([@status] == '1')
-                            <span style='color:green'>\[PASS{[@status-message] and " [@status-message]"}\]</span>
+                            <span style='color:green'>\[PASS{[@status-message] &amp;&amp; " [@status-message]"}\]</span>
                         else if ([@status] == '-1')
                             <span>\[{[@status-message].uCaseFirst()}\]</span>
                         else

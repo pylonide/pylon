@@ -83,6 +83,12 @@ module.exports = ext = {
         else
             this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
 
+        if (oExtension.commands) {
+            for (var cmd in oExtension.commands)
+                oExtension.commands[cmd].ext = path;
+            apf.extend(this.commandsLut, oExtension.commands);
+        }
+
         //Don't init general extensions that cannot live alone
         if (!force && oExtension.type == this.GENERAL && !oExtension.alone) {
             oExtension.path = path;
@@ -108,8 +114,9 @@ module.exports = ext = {
             });
         }
         
-        var initTime = parseInt(this.model.queryValue("plugin[@path='" + path + "']/@init") || 0);
-        this.model.queryNode("plugin[@path='" + path + "']").setAttribute("hook", Number(new Date() - dt) - initTime);
+        ide.dispatchEvent("ext.register", {ext: oExtension});
+        
+        this.model.queryNode("plugin[@path='" + path + "']").setAttribute("time", Number(new Date() - dt));
 
         return oExtension;
     },
@@ -175,9 +182,7 @@ module.exports = ext = {
     initExtension : function(oExtension, amlParent) {
         if (oExtension.inited)
             return;
-        
-        var dt = new Date();
-        
+            
         oExtension.inited = true; // Prevent Re-entry
 
         var skin = oExtension.skin;
@@ -219,8 +224,6 @@ module.exports = ext = {
         ide.dispatchEvent("init." + oExtension.path, {
             ext : oExtension
         });
-        
-        this.model.queryNode("plugin[@path='" + oExtension.path + "']").setAttribute("init", Number(new Date() - dt));
     },
 
     enableExt : function(path) {
