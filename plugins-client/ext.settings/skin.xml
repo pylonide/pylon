@@ -14,63 +14,39 @@
             }
             
             .bar-preferences .header {
-                background-color : #f6f6f6;
-                height           : 39px;
-                padding          : 0;
+                background-color : rgba(0,0,0,.05);
+                background-image : -webkit-linear-gradient(bottom,rgba(0,0,0,.05), transparent);
+                height           : 29px;
+                line-height      : 30px;
+                padding          : 0 0 0 10px;
                 cursor           : default;
-                border-bottom    : 1px solid white;
-                font-weight      : bold;
-                font-size        : 13px;
                 position         : relative;
                 overflow         : visible;
-                display          : block;
-                font-family      : Tahoma, Arial;
-                font-size        : 13px;
-                color            : #303030;
-                font-weight      : bold;
+                font-family      : Arial;
+                font-size        : 11.3px;
+                color            : #3b3b3b;
                 margin           : 5px 4px 10px 4px;
+                text-transform   : uppercase;
+                text-shadow      : 0 1px 0 rgba(255,255,255,.35);
                 
-                text-shadow : none;
+                border-radius: 3px;
                 
-                -moz-border-radius    : 3px;
-                -webkit-border-radius : 3px;
-                
-                -moz-box-shadow: 1px 1px 1px -1px rgba(0, 0, 0, 0.15);
-                -webkit-box-shadow: 1px 1px 1px -1px rgba(0, 0, 0, 0.15);
-                box-shadow: 1px 1px 1px -1px rgba(0, 0, 0, 0.15);
-                
-                filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#ffffff', endColorstr='#ebebeb');
-                -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#ffffff', endColorstr='#ebebeb')";
-                
-                background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 1)), color-stop(1, rgba(235, 235, 235,1)));
-                -webkit-background-origin: padding-box; 
-                -webkit-background-clip: content-box;
-                
-                background:-moz-linear-gradient(
-                    center bottom,
-                    rgba(235, 235, 235, 1) 15%,
-                    rgba(255, 255, 255,1) 60%
-                
-                )  repeat scroll 0 0 transparent;
+                -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
+                   -moz-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
+                        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
             }
             
             .bar-preferences .header SPAN {
-                background-image    : url(images/preferences.png);
-                background-position : 0 0;
-                background-repeat   : no-repeat;
-                width:21px;
-                height:21px;
-                position:absolute;
-                top:11px;
-                left:10px;
-            }
-            
-            .bar-preferences .header DIV {
-                padding : 12px 0 0 39px;
+                display: none;
             }
             
             .bar-preferences .cbcontainer {
                 margin : 0px 0 0 5px;
+                padding-left: 28px;
+            }
+
+            .bar-preferences .cbcontainer .checkbox {
+                left: 8px;
             }
             
             .bar-preferences .first {
@@ -79,13 +55,22 @@
             
             .bar-preferences .underlined,
             .bar-preferences .underlined2 {
-                border-bottom : 1px dashed #b9b9b9;
-                margin        : 5px 0 0 5px;
+                margin        : 5px 5px 0 5px;
                 padding-bottom : 6px;
                 
-                -moz-box-shadow    : 1px 1px 1px -1px rgba(255, 255, 255, 0.5);
-                -webkit-box-shadow : 1px 1px 1px -1px rgba(255, 255, 255, 0.5);
-                box-shadow         : 1px 1px 1px -1px rgba(255, 255, 255, 0.5);
+            }
+
+            .bar-preferences .underlined:not(:last-child),
+            .bar-preferences .underlined2:not(:last-child) {
+                border-bottom : 1px solid #b9b9b9;
+                
+                -webkit-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
+                   -moz-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
+                        box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
+            }
+
+            .bar-preferences .underlined:last-child {
+                margin-bottom: 10px;
             }
             
             .bar-preferences .underlined2 {
