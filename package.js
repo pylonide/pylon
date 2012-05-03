@@ -1,10 +1,7 @@
 require("asyncjs");
 
 // used by apf-node below
-if (process.version.split(".")[1] > 2)
-    XMLParser = require('libxml/lib/libxml');
-else
-    XMLParser = require('node-o3-xml');
+XMLParser = require('libxml/lib/libxml');
 
 require("apf");
 require("node-o3-xml");
@@ -14,21 +11,7 @@ var Util   = require("util"),
     Fs    = require("fs"),
     Path  = require("path");
 
-if (module === require.main) {
-    if (!Path.existsSync(__dirname + "/support/apf")) {
-        console.log("Setting up path to Ajax.org Platform (apf)");
-        require("child_process").exec("ln -s " + Path.normalize(__dirname + "/../apf") + " " + __dirname + "/support/apf", function(err) {
-            if (err) {
-                console.log("ERROR: could not create symlink: ", err);
-                return process.exit(1);
-            }
-            boot();
-        });
-    }
-    else
-        boot();
-}
-
+boot();
 
 function boot() {
     require("apf/apf-node");
