@@ -260,6 +260,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if (e.dataTransfer.files.length < 1)
             return false;
         
+        if (e.currentTarget.id == "tabEditorsDropArea")
+            this.openOnUpload = true;
+            
         this.onDrop(e);
         
         return true;
@@ -390,11 +393,11 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         // add node to file tree
         var xmlNode = "<file type='fileupload'" +
             " name='" + filename + "'" +
-            " path='" + path + "'" +
+            " path='" + filepath + "'" +
         "/>";
         
         trFiles.add(xmlNode, parent);
-        file.treeNode = trFiles.queryNode("//file[@path='" + path +  "'][@name='" + filename + "']");
+        file.treeNode = trFiles.queryNode("//file[@path='" + filepath +  "'][@name='" + filename + "']");
         file.filepath = filepath;
         file.path = path;
         // add file to upload activity list
@@ -620,6 +623,11 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             // change file from uploading to file to regular file in tree
             apf.xmldb.setAttribute(file.treeNode, "type", "file");
             
+            // open file when it was dropped in the editor
+            if (_self.openOnUpload) {
+                if (file.size < MAX_OPENFILE_SIZE)
+                    ide.dispatchEvent("openfile", {doc: ide.createDocument(file.treeNode)});
+            }
             // remove file from upload activity list
             setTimeout(function() {
                 if (!_self.lockHideQueue)
