@@ -792,6 +792,12 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
 
+        var menuShowInvisibles = new apf.item({
+            type    : "check",
+            caption : "Show Invisibles",
+            checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
+        });
+
         ide.addEventListener("reload", function(e) {
             var doc = e.doc;
             doc.state = doc.$page.$editor.getState
@@ -813,6 +819,11 @@ module.exports = ext.register("ext/code/code", {
             }
 
             apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
+        });
+
+        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
+            // add preferences to the statusbar plugin
+            e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
         });
 
         ide.addEventListener("updatefile", function(e){

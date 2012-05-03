@@ -63,8 +63,6 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
         var _self = this;
-        
-        this.markupInsertionPoint = colLeft;
 
         // Register this panel on the left-side panels
         panels.register(this, {
@@ -192,14 +190,6 @@ module.exports = ext.register("ext/tree/tree", {
 
             var nodes   = parent.childNodes;
             var files   = e.files;
-            
-            if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
-                for (var file in files) {
-                    if (file.charAt(0) == '.')
-                        delete files[file];
-                }
-            }
-            
             var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
@@ -257,6 +247,8 @@ module.exports = ext.register("ext/tree/tree", {
         this.panel = winFilesViewer;
         this.nodes.push(winFilesViewer);
 
+        colLeft.appendChild(winFilesViewer);
+        
         ide.addEventListener("afteroffline", function(){
             trFiles.selectable = false;
             //_self.button.enable();
@@ -273,7 +265,7 @@ module.exports = ext.register("ext/tree/tree", {
             type    : "check",
             caption : "Show Hidden Files",
             visible : "{trFiles.visible}",
-            checked : "[{require('core/settings').model}::auto/projecttree/@showhidden]",
+            checked : "[{require('ext/settings/settings').model}::auto/projecttree/@showhidden]",
             onclick : function(e){
                 setTimeout(function() {
                     _self.changed = true;
