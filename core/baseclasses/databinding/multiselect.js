@@ -198,11 +198,11 @@ apf.MultiselectBinding = function(){
             };
 
             this.getFirstTraverseNode = function(xmlNode){
-                return this.getTraverseNodes()[0];//(xmlNode || this.xmlRoot).childNodes[0];
+                return this.getTraverseNodes(xmlNode)[0];//(xmlNode || this.xmlRoot).childNodes[0];
             };
 
             this.getLastTraverseNode = function(xmlNode){
-                var nodes = this.getTraverseNodes();//(xmlNode || this.xmlRoot).childNodes;
+                var nodes = this.getTraverseNodes(xmlNode);//(xmlNode || this.xmlRoot).childNodes;
                 return nodes[nodes.length - 1];
             };
 

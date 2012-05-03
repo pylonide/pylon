@@ -1080,7 +1080,7 @@ apf.BaseTree = function(){
                 
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
-                     - (selHtml.offsetHeight);
+                     //- (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
                 

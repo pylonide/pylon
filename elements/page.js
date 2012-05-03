@@ -276,7 +276,6 @@ apf.page = function(struct, tagName){
         }
     });
 
-    //beforeNode, pNode, withinParent
     this.addEventListener("DOMNodeInserted", function(e){
         if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
             return;
@@ -322,9 +321,6 @@ apf.page = function(struct, tagName){
     };
 
     this.$deactivate = function(fakeOther){
-        //if (this.disabled)
-            //return false;
-
         this.$active = false;
 
         if (this.parentNode.$hasButtons) {
