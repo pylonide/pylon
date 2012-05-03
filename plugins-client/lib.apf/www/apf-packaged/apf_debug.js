@@ -1,9 +1,9 @@
 
-/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
-/*FILEHEAD(apf.js)SIZE(96350)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(apf.js)SIZE(96350)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1725,7 +1725,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(46109)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(46109)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2816,7 +2816,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(core/lib/util/color.js)SIZE(10920)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/color.js)SIZE(10920)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3059,7 +3059,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3085,7 +3085,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3229,7 +3229,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3318,7 +3318,7 @@ apf.delcookie = function (name, domain){
 
 
 
-/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25965)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4100,7 +4100,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4126,7 +4126,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4152,7 +4152,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -4366,7 +4366,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4392,7 +4392,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4420,7 +4420,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4539,7 +4539,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4564,7 +4564,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(core/lib/util/plane.js)SIZE(8624)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/plane.js)SIZE(8624)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4796,7 +4796,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5176,7 +5176,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5202,7 +5202,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(core/lib/util/style.js)SIZE(18681)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/style.js)SIZE(18681)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5715,7 +5715,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5740,7 +5740,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5766,7 +5766,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/utilities.js)SIZE(14497)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/utilities.js)SIZE(14497)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6279,7 +6279,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6441,7 +6441,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(core/lib/util/xml.js)SIZE(49534)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/xml.js)SIZE(49534)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7876,7 +7876,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7901,7 +7901,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7981,7 +7981,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8260,7 +8260,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8418,7 +8418,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(core/lib/offline.js)SIZE(19757)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline.js)SIZE(19757)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8448,7 +8448,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8474,7 +8474,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8500,7 +8500,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8526,7 +8526,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8552,7 +8552,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8578,7 +8578,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8604,7 +8604,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8630,7 +8630,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9063,7 +9063,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10129,7 +10129,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10153,33 +10153,7 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
-/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10205,7 +10179,33 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10231,7 +10231,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/html.js)SIZE(15340)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/html.js)SIZE(15340)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10257,7 +10257,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10283,7 +10283,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/layout.js)SIZE(13425)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/layout.js)SIZE(13425)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10702,7 +10702,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10728,7 +10728,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10844,7 +10844,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11240,7 +11240,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11265,7 +11265,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11290,7 +11290,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/skins.js)SIZE(12336)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/skins.js)SIZE(12336)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11642,7 +11642,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(core/lib/sort.js)SIZE(8266)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/sort.js)SIZE(8266)TIME(Thu, 03 May 2012 18:42:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11878,7 +11878,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11904,7 +11904,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12898,13 +12898,13 @@ return {
 
 
 
-/*FILEHEAD(core/lib/uirecorder.js)SIZE(397)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder.js)SIZE(397)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
 
 
-/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12930,7 +12930,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13957,7 +13957,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13981,7 +13981,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14006,7 +14006,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14030,32 +14030,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14080,7 +14055,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14105,7 +14080,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14130,8 +14105,7 @@ apf.xmldb = new (function(){
 
 
 
-
-/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14157,7 +14131,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14183,7 +14157,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14209,7 +14183,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14235,7 +14209,33 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15132,7 +15132,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15157,7 +15157,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15183,24 +15183,24 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/lib/uirecorder/capture.js)SIZE(21922)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/capture.js)SIZE(21922)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/playback.js)SIZE(28844)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/playback.js)SIZE(28844)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/ui.js)SIZE(18464)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/ui.js)SIZE(18464)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
 
-/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15686,7 +15686,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15729,7 +15729,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16346,7 +16346,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16967,7 +16967,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17031,7 +17031,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(core/markup/aml/text.js)SIZE(3974)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/text.js)SIZE(3974)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17131,7 +17131,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17260,7 +17260,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17297,7 +17297,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17343,7 +17343,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17384,7 +17384,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17570,7 +17570,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17604,7 +17604,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17675,7 +17675,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17786,7 +17786,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17899,7 +17899,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17924,7 +17924,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17949,7 +17949,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17993,7 +17993,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18044,7 +18044,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18201,7 +18201,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18252,7 +18252,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18333,7 +18333,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18369,7 +18369,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18430,7 +18430,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18473,7 +18473,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18535,7 +18535,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18561,7 +18561,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18586,7 +18586,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18611,7 +18611,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18636,7 +18636,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18661,7 +18661,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18686,7 +18686,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18711,7 +18711,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18736,7 +18736,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18761,7 +18761,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18786,7 +18786,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18811,7 +18811,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18836,7 +18836,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18861,7 +18861,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18886,7 +18886,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18911,7 +18911,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18936,7 +18936,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18961,7 +18961,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18986,7 +18986,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19011,7 +19011,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19036,7 +19036,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19071,7 +19071,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19104,7 +19104,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19146,7 +19146,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19171,7 +19171,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(core/markup/xinclude/include.js)SIZE(6818)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xinclude/include.js)SIZE(6818)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19360,7 +19360,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19386,7 +19386,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19413,7 +19413,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19439,7 +19439,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19465,7 +19465,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19491,7 +19491,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19517,7 +19517,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19543,7 +19543,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19569,7 +19569,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19595,7 +19595,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19621,7 +19621,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19647,7 +19647,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19673,7 +19673,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19699,7 +19699,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19726,7 +19726,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19752,7 +19752,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19778,7 +19778,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19804,7 +19804,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19830,7 +19830,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19856,7 +19856,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19882,7 +19882,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19908,7 +19908,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19934,7 +19934,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19960,7 +19960,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19986,7 +19986,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20012,7 +20012,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20038,7 +20038,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(18882)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(18882)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20536,7 +20536,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20562,7 +20562,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21372,7 +21372,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20758)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20758)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22002,7 +22002,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22738,7 +22738,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58946)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58946)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24206,7 +24206,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47627)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47627)TIME(Thu, 03 May 2012 18:42:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25439,7 +25439,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25618,7 +25618,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(71734)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(71734)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27492,7 +27492,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27598,7 +27598,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28141,7 +28141,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/cache.js)SIZE(12532)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/cache.js)SIZE(12532)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28507,7 +28507,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(core/baseclasses/rename.js)SIZE(15023)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/rename.js)SIZE(15023)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28921,7 +28921,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28948,7 +28948,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29267,7 +29267,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30169,7 +30169,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30226,7 +30226,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30892,7 +30892,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57877)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57877)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32306,7 +32306,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53544)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53544)TIME(Thu, 03 May 2012 18:42:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33680,7 +33680,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5249)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5249)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33832,7 +33832,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35321,7 +35321,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35426,7 +35426,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30523)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30523)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36217,7 +36217,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36245,7 +36245,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36272,7 +36272,7 @@ apf.__MULTICHECK__ = 1 << 22;
 
 
 
-/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36537,7 +36537,7 @@ apf.teleportLog = function(extra){
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36564,7 +36564,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37312,7 +37312,7 @@ apf.$viewportVirtual = function(amlNode){
 
 
 
-/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37340,7 +37340,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37446,7 +37446,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37472,7 +37472,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37497,7 +37497,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37522,58 +37522,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37599,7 +37548,58 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/window.js)SIZE(50587)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/window.js)SIZE(50587)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38761,11 +38761,11 @@ apf.window = new apf.window();
 
 
 
-/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
-/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38957,7 +38957,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39213,7 +39213,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39238,7 +39238,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(core/browsers/non_ie.js)SIZE(24354)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/non_ie.js)SIZE(24354)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39595,12 +39595,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/o3.js)SIZE(9115)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/o3.js)SIZE(9131)TIME(Thu, 03 May 2012 19:43:50 GMT)*/
 
 
 
 
-/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39626,7 +39626,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/webkit.js)SIZE(8405)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/webkit.js)SIZE(8405)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39803,11 +39803,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
-/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /**
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -39828,7 +39828,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40041,7 +40041,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /**
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -40095,7 +40095,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40121,7 +40121,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40147,7 +40147,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40405,7 +40405,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /**
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -40427,7 +40427,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40610,7 +40610,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40896,7 +40896,7 @@ if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
 
 
 
-/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40922,12 +40922,12 @@ if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
 
 
 
-/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
 
-/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40953,7 +40953,7 @@ if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
 
 
 
-/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43408,7 +43408,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43530,7 +43530,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 /**
@@ -44161,7 +44161,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(elements/bindingrule.js)SIZE(8842)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingrule.js)SIZE(8842)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44418,7 +44418,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44443,7 +44443,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44568,7 +44568,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44672,7 +44672,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(elements/actiontracker.js)SIZE(36828)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actiontracker.js)SIZE(36828)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45278,7 +45278,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45333,7 +45333,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45494,7 +45494,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45520,7 +45520,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46144,7 +46144,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46169,7 +46169,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46297,7 +46297,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46368,7 +46368,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(21714)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(21714)TIME(Thu, 03 May 2012 18:42:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46975,7 +46975,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(elements/bindingdndrule.js)SIZE(3623)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingdndrule.js)SIZE(3623)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47093,7 +47093,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47423,7 +47423,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47472,7 +47472,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47779,7 +47779,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48044,7 +48044,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48106,7 +48106,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48162,7 +48162,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(elements/browser.js)SIZE(6466)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/browser.js)SIZE(6466)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48375,7 +48375,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49012,7 +49012,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/caldropdown.js)SIZE(36424)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/caldropdown.js)SIZE(36424)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49038,7 +49038,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/calendar.js)SIZE(28862)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/calendar.js)SIZE(28862)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49063,7 +49063,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49089,7 +49089,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49114,7 +49114,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/checkbox.js)SIZE(8188)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/checkbox.js)SIZE(8188)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49385,7 +49385,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49410,7 +49410,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49791,7 +49791,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(elements/colorpicker2.js)SIZE(16009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/colorpicker2.js)SIZE(16009)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50214,7 +50214,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50256,7 +50256,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50333,7 +50333,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(elements/datagrid.js)SIZE(53921)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/datagrid.js)SIZE(53921)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51510,7 +51510,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51536,7 +51536,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/divider.js)SIZE(2882)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/divider.js)SIZE(2882)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51629,7 +51629,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(elements/dropdown.js)SIZE(15434)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/dropdown.js)SIZE(15434)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52080,7 +52080,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52106,7 +52106,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52290,7 +52290,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52315,7 +52315,7 @@ apf.aml.setElement("errorbox", apf.errorbox);
 
 
 
-/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52356,7 +52356,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/flashplayer.js)SIZE(5856)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/flashplayer.js)SIZE(5856)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52381,33 +52381,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52433,7 +52407,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/frame.js)SIZE(4838)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/frame.js)SIZE(4838)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52582,7 +52582,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52607,7 +52607,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52632,7 +52632,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/hbox.js)SIZE(41656)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/hbox.js)SIZE(41656)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53625,7 +53625,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53651,7 +53651,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53897,7 +53897,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54625,7 +54625,7 @@ apf.aml.setElement("item",  apf.item);
 
 
 
-/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54712,7 +54712,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54870,7 +54870,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54896,7 +54896,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55255,7 +55255,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(elements/loader.js)SIZE(3558)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/loader.js)SIZE(3558)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55371,7 +55371,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55397,7 +55397,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55423,7 +55423,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55449,7 +55449,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56022,7 +56022,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56130,7 +56130,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(elements/modalwindow.js)SIZE(24684)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/modalwindow.js)SIZE(24684)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56762,7 +56762,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57886,7 +57886,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/notifier.js)SIZE(15297)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/notifier.js)SIZE(15297)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57912,7 +57912,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/page.js)SIZE(27116)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/page.js)SIZE(27116)TIME(Thu, 03 May 2012 18:42:02 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58672,7 +58672,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58698,7 +58698,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58723,7 +58723,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58766,7 +58766,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58792,7 +58792,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58817,7 +58817,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59090,7 +59090,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59117,7 +59117,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59671,7 +59671,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59697,7 +59697,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60345,7 +60345,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60460,7 +60460,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61401,7 +61401,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61427,7 +61427,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(elements/skin.js)SIZE(9698)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/skin.js)SIZE(9698)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61641,7 +61641,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/slider.js)SIZE(32341)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/slider.js)SIZE(32341)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61666,7 +61666,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61691,7 +61691,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62549,7 +62549,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62604,7 +62604,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(elements/spinner.js)SIZE(16965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/spinner.js)SIZE(16965)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63144,7 +63144,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63307,7 +63307,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63725,7 +63725,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63818,7 +63818,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(elements/state.js)SIZE(10893)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/state.js)SIZE(10893)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64154,7 +64154,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64180,7 +64180,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64205,7 +64205,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64231,7 +64231,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64330,7 +64330,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(elements/table.js)SIZE(17204)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/table.js)SIZE(17204)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64809,7 +64809,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64838,7 +64838,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64864,7 +64864,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65220,7 +65220,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(elements/textbox.js)SIZE(28629)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/textbox.js)SIZE(28629)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66049,7 +66049,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66075,7 +66075,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66169,7 +66169,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(elements/tree.js)SIZE(17445)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/tree.js)SIZE(17445)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66517,7 +66517,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66542,33 +66542,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66594,7 +66568,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66620,7 +66594,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67919,7 +67919,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67945,7 +67945,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68086,7 +68086,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68342,7 +68342,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68367,7 +68367,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68392,7 +68392,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68418,7 +68418,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68631,7 +68631,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68657,7 +68657,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68683,7 +68683,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68709,7 +68709,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68735,7 +68735,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68865,7 +68865,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68891,7 +68891,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(10831)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(10831)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68917,7 +68917,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68943,7 +68943,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68969,12 +68969,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
 
-/*FILEHEAD(elements/textbox/masking.js)SIZE(12869)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/textbox/masking.js)SIZE(12869)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69418,7 +69418,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69443,7 +69443,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69468,7 +69468,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69493,7 +69493,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69518,7 +69518,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69543,33 +69543,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69595,7 +69569,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69621,7 +69595,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69647,7 +69621,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69673,7 +69647,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69699,7 +69673,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69725,7 +69699,33 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4360)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4360)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69845,7 +69845,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(jpack_end.js)SIZE(773)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(jpack_end.js)SIZE(773)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 
 
@@ -69877,7 +69877,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-node.js)SIZE(1244)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(apf-node.js)SIZE(1245)TIME(Thu, 03 May 2012 18:51:04 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69902,33 +69902,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(apf-o3.js)SIZE(14015)TIME(Thu, 03 May 2012 19:22:45 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69954,7 +69928,33 @@ apf.start();
 
 
 
-/*FILEHEAD(loader.js)SIZE(15799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(loader.js)SIZE(15799)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69987,7 +69987,7 @@ apf.start();
 
 
 
-/*FILEHEAD(loader2.js)SIZE(18652)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(loader2.js)SIZE(18652)TIME(Thu, 03 May 2012 18:41:51 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70018,2744 +70018,3 @@ apf.start();
  */
 
 
-
-
-/*FILEHEAD(node_modules/libxml/test.js)SIZE(46)TIME(Mon, 02 Jan 2012 09:59:27 GMT)*/
-
-require("./support/o3/modules/xml/test/test");
-
-/*FILEHEAD(node_modules/libxml/example/example.js)SIZE(1843)TIME(Mon, 02 Jan 2012 09:44:35 GMT)*/
-
-var xml = require("../lib/libxml");
-var xmlData = "\
-<?xml version=\"1.0\"?>\n\
-<catalog>\n\
-   <book id=\"bk101\" available=\"true\">\n\
-      <author>Gambardella, Matthew</author>\n\
-      <title>XML Developer's Guide</title>\n\
-      <genre>Computer</genre>\n\
-      <price>44.95</price>\n\
-      <publish_date>2000-10-01</publish_date>\n\
-      <description>An in-depth look at creating applications \n\
-      with XML.</description>\n\
-   </book>\n\
-   <book id=\"bk102\" available=\"false\">\n\
-      <author>Ralls, Kim</author>\n\
-      <title>Midnight Rain</title>\n\
-      <genre>Fantasy</genre>\n\
-      <price>5.95</price>\n\
-      <publish_date>2000-12-16</publish_date>\n\
-      <description>A former architect battles corporate zombies, \n\
-      an evil sorceress, and her own childhood to become queen \n\
-      of the world.</description>\n\
-   </book>\n\
-</catalog>";
-
-var doc = xml.parseFromString(xmlData);
-console.log("-parsed document:\n" + doc.xml);
-
-console.log("\n-traversing document element:");
-var elem = doc.documentElement;
-var childNodes = elem.childNodes;
-
-for (var i=0; i<childNodes.length; i++) {
-    console.log("name of child " + i + ": " 
-        + childNodes[i].nodeName);
-    console.log("type of child " + i + ": " 
-        + childNodes[i].nodeName);  
-}
-
-console.log("\n-attributes on first child of the document element:");       
-var child = elem.firstChild.nextSibling;
-var attributes = child.attributes;
-
-console.log(child.nodeName);
-for (var i=0; i<attributes.length; i++) {
-    console.log("attribute " + i + ": " 
-        + attributes[i].name + " = " 
-        + attributes[i].value);
-}
-
-console.log("\n-xpath query:");
-var xpathNodeList = elem.selectNodes("descendant-or-self::node()[@available='true']");
-console.log("first element of the xpath querry: " + xpathNodeList[0].getAttribute("id"));
-
-/*FILEHEAD(node_modules/libxml/lib/libxml/index.js)SIZE(60)TIME(Mon, 02 Jan 2012 09:44:35 GMT)*/
-
-var o3 = require('./o3.node').root;
-module.exports = o3.xml;
-
-/*FILEHEAD(node_modules/libxml/support/o3/modules/o3.js)SIZE(661)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
-
-try {
-	try{
-    	module.exports = require('./o3.node').root
-	} catch(ex) {
-    	module.exports = require('../build/default/o3.node').root
-	}
-} catch (ex) {
-    if (process.platform == "cygwin")
-		module.exports = require('./o3-cygwin.node').root;
-	else if (process.platform == "darwin") 
-        module.exports = require('./o3-darwin.node').root;
-    else if(process.platform == "sunos"){
-	    module.exports = require('./o3-sunos.node').root;
-	}else {
-        try{ 	                           
-            module.exports = require('./o3-linux32.node').root;
-        } catch(x){
-            module.exports = require('./o3-linux64.node').root;
-        }
-    }
-}
-
-
-/*FILEHEAD(node_modules/libxml/support/o3/modules/fastxml/index.js)SIZE(54)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
-
-var o3 = require('./o3');
-module.exports = o3.fastxml;
-
-/*FILEHEAD(node_modules/libxml/support/o3/modules/fastxml/example/example.js)SIZE(1809)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
-
-var fastxml = require("../lib/o3-fastxml"),
-	doc,
-	xmlData = "\
-<?xml version=\"1.0\"?>\n\
-<catalog>\n\
-   <book id=\"bk101\" available=\"true\">\n\
-      <author>Gambardella, Matthew</author>\n\
-      <title>XML Developer's Guide</title>\n\
-      <genre>Computer</genre>\n\
-      <price>44.95</price>\n\
-      <publish_date>2000-10-01</publish_date>\n\
-      <description>An in-depth look at creating applications \n\
-      with XML.</description>\n\
-   </book>\n\
-   <book id=\"bk102\" available=\"false\">\n\
-      <author>Ralls, Kim</author>\n\
-      <title>Midnight Rain</title>\n\
-      <genre>Fantasy</genre>\n\
-      <price>5.95</price>\n\
-      <publish_date>2000-12-16</publish_date>\n\
-      <description>A former architect battles corporate zombies, \n\
-      an evil sorceress, and her own childhood to become queen \n\
-      of the world.</description>\n\
-   </book>\n\
-</catalog>";
-
-doc = fastxml.parseFromString(xmlData);
-console.log("-parsed document:\n" + doc.xml);
-console.log("\n-traversing document element:");
-var elem = doc.documentElement,
-childNodes = elem.childNodes;
-for (var i=0; i<childNodes.length; i++) {
-	console.log("name of child " + i + ": " 
-		+ childNodes[i].nodeName);
-	console.log("type of child " + i + ": " 
-		+ childNodes[i].nodeName);	
-}
-
-console.log("\n-attributes on first child of the document element:");		
-var child = elem.firstChild.nextSibling,
-attributes = child.attributes;
-console.log(child.nodeName);
-for (var i=0; i<attributes.length; i++) {
-	console.log("attribute " + i + ": " 
-		+ attributes[i].name + " = " 
-		+ attributes[i].value);
-}
-
-console.log("\n-xpath query:");
-var xpathNodeList = elem.selectNodes(
-	"descendant-or-self::node()[@available='true']");
-console.log("first element of the xpath querry: " 
-	+ xpathNodeList[0].getAttribute("id"));	
-
-/*FILEHEAD(node_modules/libxml/support/o3/modules/fastxml/test/test.js)SIZE(14955)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
-
-var fs = require('fs');
-var sys = require('sys');
-var fastxml = require("../lib/o3-fastxml");
-
-function diff(node, node1) {
-    if (node.nodeType != node1.nodeType)
-        return false;
-    if (node.nodeName != node1.nodeName)
-        return false;
-    if (node.nodeValue != node1.nodeValue)
-        return false;
-    switch (node.nodeType) {
-    case node.DOCUMENT:
-        return diff(node.documentElement, node1.documentElement);
-    case node.ELEMENT:
-        var childNodes;
-        var attributes;
-        var length;
-
-        childNodes = node.childNodes;
-        length = childNodes.length;
-        if (length != node1.childNodes.length)
-            return false;
-        for (var i = 0; i < length; ++i) {
-            if (!diff(childNodes[i], node1.childNodes[i]))
-                return false;
-        }
-        attributes = node.attributes;
-        length = attributes.length;
-        if (length != node1.attributes.length)
-            return false;
-        for (var i = 0; i < length; ++i) {
-            if (!diff(attributes[i], node1.attributes[i]))
-                return false;
-        }
-        return true;
-    case node.ATTRIBUTE:
-        return true;
-    default:
-        return true;
-    };
-}
-
-function check(expected,actual) {
-	var l = expected.length;	
-	if (l != actual.length) {
-		console.log('expected: ' + expected.toString()
-			+ '\n\nactual: ' + actual.toString());	
-		return false;
-	}
-	
-	for (var i=0; i<l; i++) {
-		if (expected[i] != actual[i]) {
-			console.log('expected: ' + expected.length
-				+ '\n\nactual: ' + actual.length);	
-
-			return false;
-		}
-	}
-	
-	return true;		
-}
-
-function readFile(file) {
-    file = __dirname + "/" + file;
-	var size = fs.statSync(file).size,
-		buf = new Buffer(size),
-		fd = fs.openSync(file, 'r');
-	if (!size)
-		return "";
-	fs.readSync(fd, buf, 0, size, 0);
-	fs.closeSync(fd);
-	return buf.toString();
-} 
-
-var test = {
-test0 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    ref_parent.insertBefore(elem.childNodes[1].childNodes[3],
-                            ref_parent.childNodes[3]);
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test0.xml")));
-},
-
-test1 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    ref_parent.insertBefore(elem.childNodes[1].childNodes[3],
-                            ref_parent.childNodes[7]);
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test1.xml")));
-},
-
-test2 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    ref_parent.insertBefore(elem.childNodes[1].childNodes[3], ref_parent.childNodes[4])
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test2.xml")));
-},
-
-test3 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    ref_parent.insertBefore(doc.createElement("subtitle"), ref_parent.childNodes[7])
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test3.xml")));
-},
-
-test4 : function() {
-    var elem        = fastxml.parseFromString(readFile("test.xml")).
-                      documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    try {
-        ref_parent.insertBefore(fastxml.parseFromString(readFile("test.xml")).
-                                createElement("subtitle"), to.childNodes[7])
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test5 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    ref_parent.appendChild(elem.childNodes[1].childNodes[3]);
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test5.xml")));
-},
-
-test6 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    ref_parent.appendChild(ref_parent.childNodes[3]);
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test6.xml")));
-},
-
-test7 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    elem.normalize();
-    ref_parent.appendChild(ref_parent.childNodes[12]);
-    return diff(doc, fastxml.parseFromString(readFile("test7.xml")));
-},
-
-test8 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement,
-        to      = elem.childNodes[1];
-
-    to.appendChild(doc.createElement("subtitle"));
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test8.xml")));
-},
-
-test9 : function() {
-    var elem        = fastxml.parseFromString(readFile("test.xml")).
-                      documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    try {
-        ref_parent.appendChild(fastxml.parseFromString(readFile("test.xml")).
-                               createElement("subtitle"))
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test10 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    try {
-        ref_parent.insertBefore(elem, ref_parent.childNodes[3]);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test11 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    try {
-        ref_parent.appendChild(elem);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test12 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    try {
-        ref_parent.insertBefore(null, ref_parent.childNodes[3]);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test13 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-        child       = ref_parent.removeChild(ref_parent.childNodes[3]);
-
-    elem.normalize();
-    return !child.parent
-        && diff(doc, fastxml.parseFromString(readFile("test13.xml")));
-},
-
-test14 : function() {
-	return true; // turned off
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-    
-    ref_parent.removeChild(ref_parent.childNodes[3]);
-    try {
-        ref_parent.removeChild(child);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test15 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-    
-    try {
-        ref_parent.removeChild(null);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test16 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elem    = doc.getElementById("bk102");  
-
-    elem.normalize();
-    return elem.parentNode.nodeName == "catalog"
-        && diff(elem, fastxml.parseFromString(readFile("test16.xml")).
-                documentElement);
-},
-
-test17 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elem    = doc.getElementById("bk103");  
-
-    return !elem;
-},
-
-test18 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elems   = doc.getElementsByTagName("book"),
-        elem    = elems[1];
-
-    elem.normalize();
-    return elems.length = 2
-        && elem.parentNode.nodeName == "catalog"
-        && diff(elem, fastxml.parseFromString(readFile("test18.xml")).
-                documentElement);
-},
-
-test19 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elems   = doc.getElementsByTagName("shelf"),
-        elem    = elems[0];  
-
-    return elems.length == 0
-        && !elem;
-},
-
-test20 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement.childNodes[3];
-
-    return elem.getAttribute("id") == "bk102";
-},
-
-test21 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement.childNodes[3];
-
-    return !elem.getAttribute("isbn");
-},
-
-test22 : function() {
-	return true; // turned off
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement.childNodes[3];
-
-    try {
-        elem.getAttribute("@id");
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test23 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement;
-        ref_parent  = elem.childNodes[3];
-
-    ref_parent.setAttribute("id", "bk103");
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test23.xml")));
-},
-
-test24 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement;
-        ref_parent  = elem.childNodes[3];
-
-    ref_parent.setAttribute("isbn", "9783161484100");
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test24.xml")));
-},
-
-test25 : function() {
-	return true; // turned off
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement.childNodes[3];
-
-    try {
-        elem.setAttribute("@id", "bk103");
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test26 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        attr    = doc.createAttribute("isbn");
-
-    attr.nodeValue = "9783161484100";
-    return attr.ownerDocument = doc
-        && !attr.parent
-        && attr.nodeType == attr.ATTRIBUTE
-        && attr.nodeName ==  "isbn"
-        && attr.nodeValue == "9783161484100";
-},
-
-test27 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3],
-        attr        = doc.createAttribute("isbn");
-
-    attr.nodeValue = "9783161484100";
-    ref_parent.setAttributeNode(attr);
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test27.xml")));
-},
-
-test28 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3],
-        attr        = ref_parent.getAttributeNode("id");
-    
-    ref_parent.setAttributeNode(attr);
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test28.xml")));
-},
-
-test29 : function() {
-    var doc         = fastxml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3],
-        attr        = elem.childNodes[1].getAttributeNode("id");
-    
-    ref_parent.setAttributeNode(attr);
-    elem.normalize();
-    return diff(doc, fastxml.parseFromString(readFile("test29.xml")));
-},
-
-test30 : function() {
-    var elem        = fastxml.parseFromString(readFile("test.xml")).
-                      documentElement,
-        ref_parent  = elem.childNodes[3];
-    
-    try {
-        ref_parent.setAttributeNode(fastxml.parseFromString(readFile("test.xml")).
-                                    createAttribute("subtitle"))
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test31 : function() {
-    var doc     = fastxml.parseFromString(readFile("test.xml")),
-        elem    = doc.createElement("element"),
-        attr    = doc.createAttribute("attribute"),
-        text    = doc.createTextNode("Lorem ipsum");
-        cdata   = doc.createCDATASection("Lorem ipsum");
-        comment = doc.createComment("Lorem ipsum");
-
-    return elem.nodeType == elem.ELEMENT && elem.nodeName == "element" && !elem.parent
-        && attr.nodeType == attr.ATTRIBUTE && attr.nodeName == "attribute" && !attr.parent
-        && text.nodeType == text.TEXT && text.nodeValue == "Lorem ipsum" && !text.parent
-        && cdata.nodeType == cdata.CDATA_SECTION && cdata.nodeValue == "Lorem ipsum" && !cdata.parent
-        && comment.nodeType == cdata.COMMENT && comment.nodeValue == "Lorem ipsum" && !comment.parent;
-},
-
-test32 : function() {
-	var elem = fastxml.parseFromString(
-			readFile('xpath.xml')).documentElement,
-	expected = ['Everyday Italian','Harry Potter',
-		'XQuery Kick Start','Learning XML'],
-	actual = [],
-	xpath = '/bookstore/book/title';
-
-	
-	var selected = elem.selectNodes(xpath);
-	for (var i=0; i<selected.length; i++) 
-		actual.push(selected[i].nodeValue);
-	
-	return check(expected, actual);
-},
-
-test33 : function() {
-	var elem = fastxml.parseFromString(
-			readFile('xpath.xml')).documentElement,
-	expected = ['Everyday Italian'],
-	actual = [],
-	xpath = '/bookstore/book[1]/title';
-
-	
-	var selected = elem.selectNodes(xpath);
-	for (var i=0; i<selected.length; i++) 
-		actual.push(selected[i].nodeValue);
-	
-	return check(expected, actual);
-},
-
-test34 : function() {
-	var elem = fastxml.parseFromString(
-			readFile('xpath.xml')).documentElement,
-	expected = [30.00,29.99,49.99,39.95],
-	actual = [],
-	xpath = '/bookstore/book/price/text()';
-
-	
-	var selected = elem.selectNodes(xpath);
-	for (var i=0; i<selected.length; i++) 
-		actual.push(selected[i].nodeValue);
-	
-	return check(expected, actual);
-},
-
-test35 : function() {
-	var elem = fastxml.parseFromString(
-			readFile('xpath.xml')).documentElement,
-	expected = [49.99,39.95],
-	actual = [],
-	xpath = '/bookstore/book[price>35]/price ';
-
-	
-	var selected = elem.selectNodes(xpath);
-	for (var i=0; i<selected.length; i++) 
-		actual.push(selected[i].nodeValue);
-	
-	return check(expected, actual);
-},
-
-test36 : function() {
-	var elem = fastxml.parseFromString(
-			readFile('xpath.xml')).documentElement,
-	expected = ['Everyday Italian','Harry Potter',
-		'XQuery Kick Start','Learning XML'],
-	actual = [],
-	xpath = "descendant-or-self::node()[@lang='en']";
-
-	
-	var selected = elem.selectNodes(xpath);
-	for (var i=0; i<selected.length; i++) 
-		actual.push(selected[i].nodeValue);
-	
-	return check(expected, actual);
-}
-
-};
-
-
-for (var i in test) {
-    
-    if (test[i]())
-        console.log("test " + i + " succeeded\n");
-    else {
-        console.log("test " + i + " failed\n");
-        break;
-    }
-}
-
-
-/*FILEHEAD(node_modules/libxml/support/o3/modules/xml/index.js)SIZE(52)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
-
-var o3 = require('./o3.js')
-module.exports = o3.xml;
-
-/*FILEHEAD(node_modules/libxml/support/o3/modules/xml/example/example.js)SIZE(1797)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
-
-var xml = require("../lib/o3-xml"),
-	doc,
-	xmlData = "\
-<?xml version=\"1.0\"?>\n\
-<catalog>\n\
-   <book id=\"bk101\" available=\"true\">\n\
-      <author>Gambardella, Matthew</author>\n\
-      <title>XML Developer's Guide</title>\n\
-      <genre>Computer</genre>\n\
-      <price>44.95</price>\n\
-      <publish_date>2000-10-01</publish_date>\n\
-      <description>An in-depth look at creating applications \n\
-      with XML.</description>\n\
-   </book>\n\
-   <book id=\"bk102\" available=\"false\">\n\
-      <author>Ralls, Kim</author>\n\
-      <title>Midnight Rain</title>\n\
-      <genre>Fantasy</genre>\n\
-      <price>5.95</price>\n\
-      <publish_date>2000-12-16</publish_date>\n\
-      <description>A former architect battles corporate zombies, \n\
-      an evil sorceress, and her own childhood to become queen \n\
-      of the world.</description>\n\
-   </book>\n\
-</catalog>";
-
-doc = xml.parseFromString(xmlData);
-console.log("-parsed document:\n" + doc.xml);
-console.log("\n-traversing document element:");
-var elem = doc.documentElement,
-childNodes = elem.childNodes;
-for (var i=0; i<childNodes.length; i++) {
-	console.log("name of child " + i + ": " 
-		+ childNodes[i].nodeName);
-	console.log("type of child " + i + ": " 
-		+ childNodes[i].nodeName);	
-}
-
-console.log("\n-attributes on first child of the document element:");		
-var child = elem.firstChild.nextSibling,
-attributes = child.attributes;
-console.log(child.nodeName);
-for (var i=0; i<attributes.length; i++) {
-	console.log("attribute " + i + ": " 
-		+ attributes[i].name + " = " 
-		+ attributes[i].value);
-}
-
-console.log("\n-xpath query:");
-var xpathNodeList = elem.selectNodes(
-	"descendant-or-self::node()[@available='true']");
-console.log("first element of the xpath querry: " 
-	+ xpathNodeList[0].getAttribute("id"));	
-
-/*FILEHEAD(node_modules/libxml/support/o3/modules/xml/test/test.js)SIZE(15174)TIME(Mon, 02 Jan 2012 11:01:09 GMT)*/
-
-var fs = require('fs');
-var sys = require('sys');
-
-try {
-    var xml = require("libxml");
-} catch (e) {
-    var xml = require("../../../../../lib/libxml");
-}
-
-function diff(node, node1) {
-    if (node.nodeType != node1.nodeType)
-        return false;
-    if (node.nodeName != node1.nodeName)
-        return false;
-    if (node.nodeValue != node1.nodeValue)
-        return false;
-    switch (node.nodeType) {
-    case node.DOCUMENT:
-        return diff(node.documentElement, node1.documentElement);
-    case node.ELEMENT:
-        var childNodes;
-        var attributes;
-        var length;
-
-        childNodes = node.childNodes;
-        length = childNodes.length;
-        if (length != node1.childNodes.length)
-            return false;
-        for (var i = 0; i < length; ++i) {
-            if (!diff(childNodes[i], node1.childNodes[i]))
-                return false;
-        }
-        attributes = node.attributes;
-        length = attributes.length;
-        if (length != node1.attributes.length)
-            return false;
-        for (var i = 0; i < length; ++i) {
-            if (!diff(attributes[i], node1.attributes[i]))
-                return false;
-        }
-        return true;
-    case node.ATTRIBUTE:
-        return true;
-    default:
-        return true;
-    };
-}
-
-function check(expected,actual) {
-    var l = expected.length;    
-    if (l != actual.length) {
-        console.log('expected no: ' + expected.length
-            + '\n\nactual no: ' + actual.length);   
-        return false;
-    }
-    
-    for (var i=0; i<l; i++) {
-        if (expected[i] != actual[i]) {
-            console.log('expected: ' + expected.toString()
-                + '\n\nactual: ' + actual.toString());  
-
-            return false;
-        }
-    }
-    
-    return true;        
-}
-
-function readFile(file) {
-    file = __dirname + "/" + file;
-    var size = fs.statSync(file).size,
-        buf = new Buffer(size),
-        fd = fs.openSync(file, 'r');
-    if (!size)
-        return "";
-    fs.readSync(fd, buf, 0, size, 0);
-    fs.closeSync(fd);
-    return buf.toString();
-} 
-
-var test = {
-test0 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    ref_parent.insertBefore(elem.childNodes[1].childNodes[3],
-                            ref_parent.childNodes[3]);
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test0.xml")));
-},
-
-test1 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    ref_parent.insertBefore(elem.childNodes[1].childNodes[3],
-                            ref_parent.childNodes[7]);
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test1.xml")));
-},
-
-test2 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    ref_parent.insertBefore(elem.childNodes[1].childNodes[3], ref_parent.childNodes[4])
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test2.xml")));
-},
-
-test3 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    ref_parent.insertBefore(doc.createElement("subtitle"), ref_parent.childNodes[7])
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test3.xml")));
-},
-
-test4 : function() {
-    var elem        = xml.parseFromString(readFile("test.xml")).
-                      documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    try {
-        ref_parent.insertBefore(xml.parseFromString(readFile("test.xml")).
-                                createElement("subtitle"), to.childNodes[7])
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test5 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    ref_parent.appendChild(elem.childNodes[1].childNodes[3]);
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test5.xml")));
-},
-
-test6 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    ref_parent.appendChild(ref_parent.childNodes[3]);
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test6.xml")));
-},
-
-test7 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    elem.normalize();
-    ref_parent.appendChild(ref_parent.childNodes[12]);
-    return diff(doc, xml.parseFromString(readFile("test7.xml")));
-},
-
-test8 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement,
-        to      = elem.childNodes[1];
-
-    to.appendChild(doc.createElement("subtitle"));
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test8.xml")));
-},
-
-test9 : function() {
-    var elem        = xml.parseFromString(readFile("test.xml")).
-                      documentElement,
-        ref_parent  = elem.childNodes[1];
-
-    try {
-        ref_parent.appendChild(xml.parseFromString(readFile("test.xml")).
-                               createElement("subtitle"))
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test10 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    try {
-        ref_parent.insertBefore(elem, ref_parent.childNodes[3]);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test11 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    try {
-        ref_parent.appendChild(elem);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test12 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-
-    try {
-        ref_parent.insertBefore(null, ref_parent.childNodes[3]);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test13 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-        child       = ref_parent.removeChild(ref_parent.childNodes[3]);
-
-    elem.normalize();
-    return !child.parent
-        && diff(doc, xml.parseFromString(readFile("test13.xml")));
-},
-
-test14 : function() {
-    return true; // turned off
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-    
-    ref_parent.removeChild(ref_parent.childNodes[3]);
-    try {
-        ref_parent.removeChild(child);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test15 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3];
-    
-    try {
-        ref_parent.removeChild(null);
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test16 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elem    = doc.getElementById("bk102");  
-
-    elem.normalize();
-    return elem.parentNode.nodeName == "catalog"
-        && diff(elem, xml.parseFromString(readFile("test16.xml")).
-                documentElement);
-},
-
-test17 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elem    = doc.getElementById("bk103");  
-
-    return !elem;
-},
-
-test18 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elems   = doc.getElementsByTagName("book"),
-        elem    = elems[1];
-
-    elem.normalize();
-    return elems.length = 2
-        && elem.parentNode.nodeName == "catalog"
-        && diff(elem, xml.parseFromString(readFile("test18.xml")).
-                documentElement);
-},
-
-test19 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elems   = doc.getElementsByTagName("shelf"),
-        elem    = elems[0];  
-
-    return elems.length == 0
-        && !elem;
-},
-
-test20 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement.childNodes[3];
-
-    return elem.getAttribute("id") == "bk102";
-},
-
-test21 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement.childNodes[3];
-
-    return !elem.getAttribute("isbn");
-},
-
-test22 : function() {
-    return true; // turned off
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement.childNodes[3];
-
-    try {
-        elem.getAttribute("@id");
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test23 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement;
-        ref_parent  = elem.childNodes[3];
-
-    ref_parent.setAttribute("id", "bk103");
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test23.xml")));
-},
-
-test24 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement;
-        ref_parent  = elem.childNodes[3];
-
-    ref_parent.setAttribute("isbn", "9783161484100");
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test24.xml")));
-},
-
-test25 : function() {
-    return true; // turned off
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elem    = doc.documentElement.childNodes[3];
-
-    try {
-        elem.setAttribute("@id", "bk103");
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test26 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        attr    = doc.createAttribute("isbn");
-
-    attr.nodeValue = "9783161484100";
-    return attr.ownerDocument = doc
-        && !attr.parent
-        && attr.nodeType == attr.ATTRIBUTE
-        && attr.nodeName ==  "isbn"
-        && attr.nodeValue == "9783161484100";
-},
-
-test27 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3],
-        attr        = doc.createAttribute("isbn");
-
-    attr.nodeValue = "9783161484100";
-    ref_parent.setAttributeNode(attr);
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test27.xml")));
-},
-
-test28 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3],
-        attr        = ref_parent.getAttributeNode("id");
-    
-    ref_parent.setAttributeNode(attr);
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test28.xml")));
-},
-
-test29 : function() {
-    var doc         = xml.parseFromString(readFile("test.xml")),
-        elem        = doc.documentElement,
-        ref_parent  = elem.childNodes[3],
-        attr        = elem.childNodes[1].getAttributeNode("id");
-    
-    ref_parent.setAttributeNode(attr);
-    elem.normalize();
-    return diff(doc, xml.parseFromString(readFile("test29.xml")));
-},
-
-test30 : function() {
-    var elem        = xml.parseFromString(readFile("test.xml")).
-                      documentElement,
-        ref_parent  = elem.childNodes[3];
-    
-    try {
-        ref_parent.setAttributeNode(xml.parseFromString(readFile("test.xml")).
-                                    createAttribute("subtitle"))
-        return false;
-    } catch (ex) {
-        return true;
-    }
-},
-
-test31 : function() {
-    var doc     = xml.parseFromString(readFile("test.xml")),
-        elem    = doc.createElement("element"),
-        attr    = doc.createAttribute("attribute"),
-        text    = doc.createTextNode("Lorem ipsum");
-        cdata   = doc.createCDATASection("Lorem ipsum");
-        comment = doc.createComment("Lorem ipsum");
-
-    return elem.nodeType == elem.ELEMENT && elem.nodeName == "element" && !elem.parent
-        && attr.nodeType == attr.ATTRIBUTE && attr.nodeName == "attribute" && !attr.parent
-        && text.nodeType == text.TEXT && text.nodeValue == "Lorem ipsum" && !text.parent
-        && cdata.nodeType == cdata.CDATA_SECTION && cdata.nodeValue == "Lorem ipsum" && !cdata.parent
-        && comment.nodeType == cdata.COMMENT && comment.nodeValue == "Lorem ipsum" && !comment.parent;
-},
-
-test32 : function() {
-    var elem = xml.parseFromString(
-            readFile('xpath.xml')).documentElement,
-    expected = ['Everyday Italian','Harry Potter',
-        'XQuery Kick Start','Learning XML'],
-    actual = [],
-    xpath = '/bookstore/book/title';
-
-    
-    var selected = elem.selectNodes(xpath);
-    for (var i=0; i<selected.length; i++) 
-        actual.push(selected[i].nodeValue);
-    
-    return check(expected, actual);
-},
-
-test33 : function() {
-    var elem = xml.parseFromString(
-            readFile('xpath.xml')).documentElement,
-    expected = ['Everyday Italian'],
-    actual = [],
-    xpath = '/bookstore/book[1]/title';
-
-    
-    var selected = elem.selectNodes(xpath);
-    for (var i=0; i<selected.length; i++) 
-        actual.push(selected[i].nodeValue);
-    
-    return check(expected, actual);
-},
-
-test34 : function() {
-    var elem = xml.parseFromString(
-            readFile('xpath.xml')).documentElement,
-    expected = [30.00,29.99,49.99,39.95],
-    actual = [],
-    xpath = '/bookstore/book/price/text()';
-
-    
-    var selected = elem.selectNodes(xpath);
-    for (var i=0; i<selected.length; i++) 
-        actual.push(selected[i].nodeValue);
-    
-    return check(expected, actual);
-},
-
-test35 : function() {
-    var elem = xml.parseFromString(
-            readFile('xpath.xml')).documentElement,
-    expected = [49.99,39.95],
-    actual = [],
-    xpath = '/bookstore/book[price>35]/price ';
-
-    
-    var selected = elem.selectNodes(xpath);
-    for (var i=0; i<selected.length; i++) 
-        actual.push(selected[i].nodeValue);
-    
-    return check(expected, actual);
-},
-
-test36 : function() {
-    var elem = xml.parseFromString(
-            readFile('xpath.xml')).documentElement,
-    expected = ['Everyday Italian','Harry Potter',
-        'XQuery Kick Start','Learning XML'],
-    actual = [],
-    xpath = "descendant-or-self::node()[@lang='en']";
-
-    
-    var selected = elem.selectNodes(xpath);
-    for (var i=0; i<selected.length; i++) 
-        actual.push(selected[i].nodeValue);
-    
-    return check(expected, actual);
-}
-
-};
-
-
-for (var i in test) {
-    
-    if (test[i]())
-        console.log("test " + i + " succeeded\n");
-    else {
-        console.log("test " + i + " failed\n");
-        process.exit(1);
-    }
-}
-
-
-/*FILEHEAD(node_modules/libxml/support/o3/tools/create_manifest.js)SIZE(3377)TIME(Mon, 02 Jan 2012 09:55:08 GMT)*/
-
-var fs = require('fs'),
-
-var BUILDMODE = 'Release',
-GUID = '8a66ecac-63fd-4afa-9d42-3034d18c88f4',  
-BASENAME = 'o3', 
-FULLNAME = BASENAME + '-' + GUID,
-IEEXTGUID = '218BAC91-2A05-4372-BD7F-5AE59C149D3E',
-CHROMEGUID = 'npaodepeeohfoeeglfcafddnjhejcgeg', 
-FFEXTGUID = BASENAME + '@ajax.org',
-DOMAIN = 'o3.ajax.org',
-URL = 'http://' + DOMAIN,
-GITHUB = 'http://github.com/ajaxorg/o3-plugin-builds/raw/master/',
-VERSION = '0.9', 
-VERSIONSTRING = 'v' + VERSION.replace('.','_'),
-DESCRIPTION = 'Ajax.org o3 plugin', 
-MIMEDESCRIPTION = 'Ajax.org o3 plugin', 
-TYPEDESCRIPTION = 'Ajax.org o3 plugin',
-COMPANY = 'Ajax.org',
-FILEDESCRIPTION = 'Ajax.org o3 plugin',
-IDENTIFIER = 'org.ajax.o3-plugin',
-LEGALCOPYRIGHT = 'Copyright © 2008-2010 Ajax.org (http://www.ajax.org)',
-OSXUPDATER = 'update_installer',
-OSXINSTALLERBASE = BASENAME + 'plugin-osx',
-OSXINSTALLER = OSXINSTALLERBASE +'32.dmg', 
-OSXVERSION = OSXINSTALLER + '.version', 
-WINUPDATER = BASENAME + 'update.exe',
-WININSTALLER = BASENAME + 'plugin-win32d.exe',
-WINVERSION = WININSTALLER + '.version',
-GUIDDEF = '0x' + GUID.substring(0,8) + ',0x' + GUID.substring(9,13) 
-     + ',0x' + GUID.substring(14,18) + ',{0x' + GUID.substring(19,21)
-     + ',0x' + GUID.substring(21,23) + ',0x' + GUID.substring(24,26)
-     + ',0x' + GUID.substring(26,28) + ',0x' + GUID.substring(28,30)
-     + ',0x' + GUID.substring(30,32) + ',0x' + GUID.substring(32,34)
-     + ',0x' + GUID.substring(34,36) + '}'; 
-
-RegexpMap = [
-[/#BUILDMODE#/g, BUILDMODE],
-[/#GUID#/g,GUID],  
-[/#BASENAME#/g,BASENAME], 
-[/#FULLNAME#/g,FULLNAME],
-[/#IEEXTGUID#/g,IEEXTGUID],
-[/#CHROMEGUID#/g,CHROMEGUID], 
-[/#FFEXTGUID#/g,FFEXTGUID],
-[/#DOMAIN#/g,DOMAIN],
-[/#URL#/g,URL],
-[/#GITHUB#/g,GITHUB],
-[/#VERSION#/g,VERSION], 
-[/#VERSIONSTRING#/g,VERSIONSTRING],
-[/#DESCRIPTION#/g,DESCRIPTION], 
-[/#MIMEDESCRIPTION#/g,MIMEDESCRIPTION], 
-[/#TYPEDESCRIPTION#/g,TYPEDESCRIPTION],
-[/#COMPANY#/g,COMPANY],
-[/#FILEDESCRIPTION#/g,FILEDESCRIPTION],
-[/#LEGALCOPYRIGHT#/g,LEGALCOPYRIGHT],
-[/#IDENTIFIER#/g,IDENTIFIER],
-[/#OSXUPDATER#/g,OSXUPDATER],
-[/#OSXINSTALLER#/g,OSXINSTALLER],
-[/#OSXINSTALLERBASE#/g,OSXINSTALLERBASE],
-[/#OSXVERSION#/g,OSXVERSION],
-[/#WINUPDATER#/g,WINUPDATER],
-[/#WININSTALLER#/g,WININSTALLER],
-[/#WINVERSION#/g,WINVERSION],
-[/#GUIDDEF#/g, GUIDDEF]
-],
-
-files = [
-    'hosts/installer/installer.js',
-    'hosts/plugin/Info.plist',
-    'hosts/plugin/plugin.r',
-    'hosts/plugin/plugin.rc',
-    'include/guid.h',
-    'include/app_data.h',   
-    'hosts/installer/osx/distribution.dist',
-    'tools/osx/build_installer',
-    'tools/osx/build_plugin',
-    'tools/osx/generate_version',
-    'tools/osx/update_installer'
-];
-
-function readFile(file) {
-    var size = fs.statSync(file).size,
-        buf = new Buffer(size),
-        fd = fs.openSync(file, 'r');
-    if (!size)
-        return "";
-    fs.readSync(fd, buf, 0, size, 0);
-    fs.closeSync(fd);
-    return buf.toString();
-}
-
-function writeFile(file, data) {
-    var size = data.length,
-        buf = new Buffer(data),
-        fd = fs.openSync(file, 'w');
-        
-    fs.writeSync(fd, buf, 0, size, 0);
-    fs.closeSync(fd);
-}
-
-function patchFile(file) {
-    var data = readFile(file + '.template');
-    for (var v=0; v < RegexpMap.length; v++) 
-        data = data.replace(RegexpMap[v][0],RegexpMap[v][1]);
-
-    writeFile(file, data);  
-}
-
-for (var f=0; f < files.length; f++) 
-    patchFile(files[f]);
-    
-
-/*FILEHEAD(node_modules/libxml/support/o3/tools/gluegen.js)SIZE(49995)TIME(Mon, 02 Jan 2012 09:54:40 GMT)*/
-
-#!/bin/node
-var fs = require('fs');
-
-var includeTrace = false, 
-    immLog = false, log = false;
-    logFileName = 'codegenLog.txt',
-    errFileName = 'codegenErr.txt'; 
-var i,l,files = [], arguments = process.argv, arg;
-
-for (i=2, l=arguments.length; i<l; i++) {
-    arg = arguments[i];
-    switch(arg) {
-        case '-h':
-            // TODO:
-            break;
-        case '-l':
-            log = true;
-            break;
-        case '-v':
-            immLog = true;
-            break;
-        case '-trace':
-            includeTrace = true;
-            break;
-        default:
-            files.push(arg);            
-    }   
-}   
-
-function readFile(file) {
-    var size = fs.statSync(file).size,
-        buf = new Buffer(size),
-        fd = fs.openSync(file, 'r');
-    if (!size)
-        return "";
-    fs.readSync(fd, buf, 0, size, 0);
-    fs.closeSync(fd);
-    return buf.toString();
-}
-
-function writeFile(file, data) {
-    var size = data.length,
-        buf = new Buffer(data),
-        fd = fs.openSync(file, 'w');
-        
-    fs.writeSync(fd, buf, 0, size, 0);
-    fs.closeSync(fd);
-}
-
-
-function fileWriter(fileName) {
-    return function(str) {
-        writeFile(fileName, str);
-    }
-} 
-
-//include("tools/o3_Reporter.js");
-var Reporter = {
-    errors : {general:[]},
-    logs   : {general:[]},        
-    currentFile   : 'general',    
-    logWriter : console.log, //o3.print,//o3.stdOut.write,
-    errorWriter: console.log, //o3.print,//o3.stdOut.write,
-    immediate: false,    
-    
-    reset : function() {
-        with(this) { 
-            errors = {general:[]};
-            logs = {general:[]};
-            currentFile = 'general';
-        }
-    },
-    newFile : function(fileName) {
-        with(this) { 
-            currentFile = fileName;
-            if (!logs[fileName]) 
-                logs[fileName] = [];
-            if (!errors[fileName])
-                errors[fileName]= [];           
-        }        
-    },
-    error : function(){
-        with(this) {
-            var i,l;
-            errorWriter('ERROR: ' + currentFile + ': ');
-            for (i=0,l=arguments.length; i<l; i++) {
-                errors[currentFile].push(arguments[i]);
-                errorWriter(arguments[i]);
-            }    
-        }
-    },
-    globalError : function() {
-        with(this) {
-            var i,l;
-                errorWriter('GLOBAL ERROR: ');
-            for (i=0,l=arguments.length; i<l; i++) {
-                errors['general'].push(arguments[i]);
-                errorWriter(arguments[i]);
-            }    
-        }
-    },
-    log : function(){
-        with(this) {
-            var i,l;
-            if (immediate)
-                    //o3.stdOut.write(currentFile + ': ');
-                    logWriter(currentFile + ': ');
-            for (i=0,l=arguments.length; i<l; i++) {
-                logs[currentFile].push(arguments[i]);
-                if (immediate)
-                    //o3.stdOut.write(arguments[i]);
-                    logWriter(arguments[i]);
-            }    
-        }
-    },
-    dumpLogs : function(){
-        with(this) {
-            dump("Logs", logs, logWriter);
-        }    
-    },
-    dumpErrors : function(){
-        with(this) { 
-            dump("Errors", errors, errorWriter);            
-        }    
-    },
-    dump : function(title, dataObj, writeMethod) {
-        var file, data, t=[];
-        t.push(title, ': \n================================\n');
-        for (file in dataObj) {
-            data = dataObj[file];
-            if (data.length) 
-                t.push('\n',file,': \n','-----------------\n',data.join(''));            
-        }
-        t.push('\n\n');
-        writeMethod(t.join(''));
-    } 
-};
-
-//include("tools/o3_FileHandler.js");
-var FileHandler = {
-   scanFiles : function(topNode) {
-        function checkFile(file) {          
-            var name = file.substring(file.lastIndexOf('/')+1),
-                glueName,
-                glueFile,            
-                data = readFile(file);
-
-            if (data.indexOf('o3_glue_gen()') == -1 || name == 'cScr.h' 
-                || name.indexOf('.h') == -1) {
-                //Reporter.log('no need to gen glue for: ',name,'\n');
-                return false;
-            }
-            
-            glueName = name.substring(0,name.lastIndexOf('.h'))
-                + '_glue.h';
-            glueFile = file.substring(0,file.lastIndexOf('/')+1) + glueName;
-            var stat,fd;
-            try {
-                stat = fs.statSync(glueFile)
-            } catch (e) {   
-                if (fd = fs.openSync(glueFile, 'w')) {
-                    fs.closeSync(fd);
-                    Reporter.log('created glue file: ',glueName,'\n');
-                    return glueFile;
-                }
-                else {
-                    Reporter.error('glue file could not be created: ' 
-                        ,glueName,'\n');
-                    return 0;    
-                }
-            }
-
-            // TODO: this should be '<'
-            if (stat.mtime != fs.statSync(file).mtime) {
-                Reporter.log('found old glue file, old time: '
-                    ,stat.mtime,'\n');
-                return glueFile;
-            } 
-            
-            Reporter.log('glue file was uptodate: ',topNode.name,'\n');
-            return 0;    
-        }            
-
-        var glueFile;
-        /*if (!topNode.exists) {
-            Reporter.globalError('filehandler: file does not exist? ', 
-                topNode.name, '\n');
-            return;
-        }*/
-        var stat = fs.statSync(topNode)
-        if (stat.isFile()) {
-            Reporter.newFile(topNode);
-            if (glueFile = checkFile(topNode))
-                this.genGlue(topNode, glueFile);
-
-        }
-        else if (stat.isDirectory()){
-            var i,l,children = fs.readdirSync(topNode);
-            for (i=0, l=children.length; i<l; i++) {
-                this.scanFiles(topNode + '/' + children[i]);
-            }
-        }
-        else {
-            Reporter.globalError('invalid file node: ',topNode,'\n');
-        }    
-          
-   },
-   genGlue : function(srcFile, glueFile) {     
-        var i,l,result = [],
-            scanned = Lexer.scan(readFile(srcFile)),
-            classes = Parser.parse(scanned.tree);
-        
-        for (i=0, l=classes.length; i<l; i++) {
-            if (classes[i].gen)
-                result.push(Generator.run(classes[i].struct, classes[i].traits));
-        }
-        try{    
-            writeFile(glueFile,result.join(''));   
-        } catch(e) {
-            Reporter.error('Could not write to the file: ', glueFile, '\n');
-        }     
-   }
-};
-
-//include("tools/o3_Parser.js");
-var Lexer = {    
-    scan : function(data) {
-        
-        var tree = [],          // parse tree
-            plain_text = 0,     // block of raw text data (from c++ static string or comment)
-            stack = [],         // tree stack
-            type = 0,           // token type
-            text_tok = 0,       // plain_text block starting token
-            last_token,         // tempvar
-            lines = []          // array of linepositions
-            
-        data.replace(TokRegexp, function(token, rx_lut, rx_ws, rx_word, rx_misc, pos) {
-            // check the type
-            if (rx_lut)
-                type = TokenType[rx_lut];
-            else if (rx_ws)
-                type = TokenType.WhiteSpace;
-            else if (rx_word)
-                type = TokenType.Word;
-            else 
-                type = 0;    
-            
-            // if we are not inside a plain text block:
-            if (!text_tok) {
-                switch (type) {
-                    case TokenType.Quot:
-                    case TokenType.Comment:
-                        tree[tree.length] = {type: type, pos: pos, token: token, plain_text: null};
-                        // start a new plain text block: 
-                        text_tok = token;
-                        plain_text = [token];
-                        break;
-                        
-                    case TokenType.BrackStart: 
-                        tree[tree.length] = last_token = 
-                            {type: type, pos: pos, token: token, subtree: null};
-                        // push current tree on the stack
-                        stack.push(tree);                
-                        // start new tree, and the old tree (current) last element 
-                        // will point to the new tree    
-                        tree = last_token.subtree = [{type: 0, pos: pos, token: token}];
-                        break;
-                        
-                    case TokenType.BrackEnd:
-                        // check if the bracket match with the starting bracket
-                        if (tree[0].token != TokClose[token])  {                            
-                          // report error: brackets dont match
-                          Reporter.error("lexer: closure token did not match, ' opened: '", 
-                          tree[0].token, "' closed: '", token, "' position : ", 
-                            position(lines, pos).toString(),"\n");                        
-                        }
-                        else {
-                            tree[tree.length] = {type: type, pos: pos, token: token};
-                            // continue the last tree on the stack
-                            tree = stack.pop();
-                        }
-                        break;
-                        
-                    case TokenType.EndOfLine: 
-                        lines[lines.length] = pos;
-                        break;
-                        
-                    case TokenType.WhiteSpace:
-                        break;
-                    
-                    default: 
-                        tree[tree.length] = {type: type, pos: pos, token: token};
-                        break;
-                }
-            }
-            // if we are in a plain_text block
-            else {
-                plain_text.push(token);
-                switch (type) {
-                    case TokenType.Quot: 
-                        if (text_tok == token){
-                            text_tok = 0;
-                            tree[tree.length-1].plain_text = plain_text.join('');
-                        }
-                        break;                
-                    case TokenType.Comment: 
-                        if (token == '*/' && text_tok == '/*') {
-                            text_tok = 0;
-                            tree[tree.length-1].plain_text = plain_text.join('');
-                        }
-                        break;
-                    case TokenType.EndOfLine: 
-                        lines[lines.length] = pos;
-                        if (text_tok == '//'){
-                            text_tok = 0;
-                            plain_text.pop();
-                            tree[tree.length-1].plain_text = plain_text.join('');
-                        }
-                        break;
-                }                
-            }
-        });
-        while (stack.length) {
-            // report error not closed
-            Reporter.error("lexer: closure problem, bracket not closed.\n");
-            stack.pop();
-        }
-        if (text_tok)
-            // plain_text mode not closed      
-            Reporter.error("lexer: text block not closed.\n");
-
-        return {tree: tree, lines: lines};            
-} 
-}; // lexer
-
-var Parser = {
-    readName : function(tree, i, traits) {
-        Reporter.log("readName: ", tree[i].token, '\n');
-         traits.___name = tree[i+1].subtree[1].plain_text;
-        return 0;
-    },
-    readExt : function(tree, i, traits) {
-        Reporter.log("readExt: ", tree[i].token, '\n');
-        traits.___ext = tree[i+1].subtree[1].plain_text;
-        return 0;
-    },
-    readProp : function(tree, i, traits) {
-        var index = i,
-            t;
-            
-        while ( (t = tree[index].token) != ';' && t != '(')
-            index++;
-            
-        if (t == ';')
-            return this.readImmProp(tree, i, traits);
-        else
-            return this.readFunLike(tree, i, traits);   
-        
-    },
-    readImmProp : function(tree, i, traits){
-        Reporter.log("readImmProp: ",tree[i].token,'\n');
-        var name,
-            index=i,
-            type = tree[i].token,
-            getter = (type != 'o3_set'),
-            setter = (type != 'o3_get');        
-        
-        while ( (t = tree[index].token) != ';')
-            index++;
-        
-        if (!(name = this.checkName(traits))) {                 
-            name = tree[index-1].token.replace(/^m?\_+/, "");
-            name = name.replace(/_[a-z]/g, function(m,a) {
-                return m.slice(1).toUpperCase();                    
-            });     
-        }       
-            
-        if (getter)
-            traits.add(name , {
-                imm: true,
-                type:'get',
-                ret: tree[i+1].token,
-                toString:0,
-                member: tree[index-1].token
-            });
-        
-        if (setter)
-            traits.add(name, {
-                imm: true,
-                type:'set',
-                ret: tree[i+1].token,
-                toString:0,
-                member: tree[index-1].token    
-            });
-
-        return 1;
-    },
-    readFunLike : function(tree, index, traits) {
-        Reporter.log("readFunLike: ",tree[index].token,'\n');
-        var br, // position of the '(' 
-            subtree,
-            name,
-            ret = [],
-            r,i,j,l,t,tl,coma,tgt=0,
-            op_count, name_pos, arg_type, arg_name, arg_def, args = [],
-            eq, def;
-        
-        // check where the bracket starts with the args    
-        for (br = index; tree[br].token != '(' && br<index+10; br++);
-            
-        if (br==i+5) {
-            Reporter.error("tokenizer: could not find the args for the function!!!\n");
-            return 1;
-        }
-                
-        for (r = index+1; r<br-1; r++)
-            ret.push(tree[r].token);
-        
-        // travers the function arguments
-        for (subtree = tree[br].subtree, l = subtree.length, i=1; i<l; i++) {
-            eq = mod = arg_def = arg_name = tgt = op_count = mod_count = 0;
-            arg_type = []; 
-            
-            // function with no args...
-            if (subtree[i].token == ')')
-                break;
-                
-            // traverse an argument
-            for (j = i; j < l-1 && subtree[j].token != ','; j++) {
-                
-                switch (subtree[j].token) {
-                    case 'o3_tgt':
-                        tgt = 1;
-                        mod_count++;
-                        break;
-                    case 'const':
-                    case 'unsigned':                    
-                        mod_count++;
-                        break;
-                    case '*':
-                    case '&':
-                        op_count++;
-                        break;
-                    case '=': 
-                        eq = j; 
-                        break;                        
-                }        
-            }
-            // at this point j is the pos of the next ',' or trailing ')'                
-            
-            if (eq) {
-                name_pos = eq - 1;                
-                if (subtree[eq+1].plain_text)
-                    def = subtree[eq+1].plain_text;
-                else {
-                    def = subtree[eq+1].token;
-                    if (def == '-')
-                        def += subtree[eq+2].token;
-                    else if(def == 'Str')
-                        def += subtree[eq+2].token + 
-                               subtree[eq+2].subtree[1].plain_text +
-                               subtree[eq+3].token;
-                }   
-            } 
-            else if (op_count + mod_count + 1 == j-i ) {
-                // no name for the arg
-                name_pos = null;             
-            }
-            else {
-                name_pos = j-1;
-            }
-                        
-            // parse the full type            
-            for (t=i+tgt, tl = name_pos ? name_pos : j; t<tl; t++) {
-                arg_type.push(subtree[t].token);
-            }                
-                        
-            args.push({
-                tgt : tgt,
-                def : def,
-                name: name_pos ? subtree[name_pos].token : null,
-                type: arg_type.join(' ')
-            });
-            i = j;
-        }
-        
-        var ext = this.checkExt(traits);        
-        if (!(name = this.checkName(traits)))
-            name = tree[br-1].token;
-        
-        traits.add(name, {
-            type:tree[index].token.replace('o3_', ''),
-            ret:ret.join(''),
-            args:args,            
-            ftype:0,
-            ext: ext,
-            name: tree[br-1].token,
-            toString:0            
-        });
-        return 1;
-    },
-    checkExt : function(traits) {
-        if (traits.___ext) {            
-            var ret = traits.___ext;
-            traits.___ext = null;
-            delete traits.___ext;
-            return ret.replace(/\"/g, '');
-        }
-        return 0;    
-    },
-    checkName : function(traits) {
-        if (traits.___name) {            
-            var ret = traits.___name;
-            traits.___name = null;
-            delete traits.___name;
-            return ret.replace(/\"/g, '');
-        }
-        return 0;    
-    },
-    readEnum : function(tree, index, traits) {  
-        var subtree = tree[index+1].subtree,i,j,l,enumName,value=-1;
-        
-        enumName = subtree[1].plain_text.replace(/\"/g, '');
-        Enums[enumName] = 1;
-        
-        for (i=3; i<subtree.length; ++i) {
-            for(j=i, l=subtree.length-1; j<l && subtree[j].token != ','; j++)
-                ;
-            
-            switch(j-i) {
-                case 1: // simple case
-                    value++; 
-                    break;
-                case 3: // enum entry with value
-                    value = subtree[j-1].token;
-                    break
-                default:
-                    Reporter.error("tokenizer: syntax error in enum.\n");
-            }
-            
-            traits.add(subtree[i].token, {
-                type:'get',
-                ret:'int',
-                value: value,
-                name: subtree[i],
-                enu: enumName,
-                toString:0            
-            });
-            
-            i=j;
-        }
-        return 1;
-    },
-    
-    parse : function(tree, classes, in_struct, scope) {
-        var struct_found,           // struct_found found in this level
-            ns_found,               // ns_found found in this level
-            traits,                 // array of traits collected
-            first_recur,            // call was first recursion
-            tagname,                // tag name (o3_ext, o3_fun, etc.) 
-            elem;                   // next tree element in the loop
-                
-        if (!classes) {
-            classes = [];
-            first_recur = 1;
-        }
-        
-        for (var i = 0, i_len = tree.length; i < i_len; i++) {            
-            elem = tree[i];
-            
-            if (elem.token == '{' && (ns_found || struct_found)) {
-                // traverse the sub tree with a recursive call
-                this.parse(elem.subtree, classes, struct_found, 
-                    ns_found || struct_found);
-                // class/namespace parsed, reset and continue
-                ns_found = struct_found = base_class_found = null;
-                continue;
-            }
-            
-            if (elem.type != TokenType.Word) 
-                continue;
-                
-            switch (elem.token) {
-                    case 'class':
-                    case 'struct':                    
-                        struct_found = tree[i+1].token;        
-                        break;
-                    case 'namespace':
-                        ns_found = tree[i+1].token;
-                        break;  
-                    default:
-                        // skipp tokens untill we find an o3 tag
-                        if (!(typename = elem.token.match(/^o3_(\w+)/)))
-                            continue;
-                        if (!in_struct)
-                            // report error, o3_ tag out of class scope
-                            continue;
-                        if (!traits) {
-                            // first trait for the current struct, lets create
-                            // a container object for the trait of this struct
-                            classes.push({
-                                traits: traits = {
-                                    ext : {},                   // ext traits
-                                    cls : {},                   // cls traits
-                                    add : function(name, o) {   // add trait function
-                                        var tName = name,
-                                            tType = o.ext ? 'ext' : 'cls';
-                                        if (o.type == 'set')
-                                            tName = name.replace(/^set(\w)/, 
-                                                function(m, a){ return a.toLowerCase();});
-                                          
-                                        if (tName == 'toString')
-                                            tName = '_toString';
-                                        (this[tType][tName] ? this[tType][tName] : this[tType][tName] = []).push(o);        
-                                    }   
-                                },
-                                struct: in_struct,
-                                base:''
-                            });
-                        }
-                        switch(typename[0]) {
-                            case 'o3_name': 
-                                i += this.readName(tree, i, traits);                        
-                                break;
-                            case 'o3_prop': 
-                                i += this.readImmProp(tree, i, traits);                        
-                                break;
-                            case 'o3_ext':
-                                i += this.readExt(tree, i, traits);
-                                break;        
-                            case 'o3_fun':
-                                i += this.readFunLike(tree, i, traits);                        
-                                break;
-                            case 'o3_get':
-                            case 'o3_set':                             
-                                i += this.readProp(tree, i, traits);                        
-                                break;
-                            case 'o3_enum':                             
-                                i += this.readEnum(tree, i, traits);                        
-                                break;                                
-                            case 'o3_begin_class':
-                                traits.base = tree[i+1].subtree[1].token;                                    
-                            case 'o3_end_class': 
-                            case 'o3_add_iface':
-                            case 'o3_cls':    
-                                break;
-                            case 'o3_glue_gen':
-                                classes[classes.length-1].gen = 1;
-                                // macro was not in a comment block...
-                                break
-                            default : 
-                                if (typename[0].indexOf("o3_trace") == 0)
-                                    break;
-                                // report error
-                                Reporter.error("tokenizer: found unknown o3_tag : ",typename[0],"\n");
-                        }
-            } 
-                         
-                              
-        }
-        if (first_recur)
-            return classes;
-    }
-}; // parser    
-
-var TokenType = {
-    BrackStart : 2,
-    BrackEnd : 3,
-    Quot : 4,
-    Word : 5,
-    EndOfLine : 6,            
-    Comment : 7,
-    WhiteSpace : 8,
-    '"': 4, 
-    '\'': 4,
-    '[': 2,
-    ']': 3, 
-    '{': 2, 
-    '}': 3, 
-    '(': 2, 
-    ')': 3,
-    '\n': 6, 
-    '\r\n': 6, 
-    '//': 7, 
-    '/*': 7, 
-    '*/': 7
-};
-
-var TokClose = {'}': '{', ']': '[', ')': '('};
-var TokRegexp = /(["'{(\[\])}\]]|\r?[\n]|\/[\/*]|\*\/)|([ \t]+)|([\w._])+|(\\?[\w._?,:;!=+-\\\/^&|*"'[\]{}()%$#@~`<>])/g;
- 
-function posToString(){
-    return 'Ln : ' + this.line + ', Col : ' + this.col;
-}
-
-function position(lines,pos) {
-    for (var i = 0, j = lines.length; i < j && lines[i] < pos; i++);
-    return {line: i+1, col: pos - lines[i - 1], toString: posToString};
-};
-
-//include("tools/o3_Generator.js");
-var Generator = {
-    //properties:
-    //{
-    //      cls: {
-    //          prop1: [trait1,trait2,...],
-    //          prop2: [...]
-    //          ...
-    //      }
-    //      ext: {
-    //          prop1: [...],
-    //          ...
-    //      }
-    // }
- 
-    // Generates the whole glue file for a class
-    run : function(className, properties) {
-        var t=[];
-        t.push('#ifdef O3_WITH_GLUE\n',
-            '#pragma warning( disable : 4100)\n',
-            '#pragma warning( disable : 4189)\n',            
-            'namespace o3 {\n\n\n',        
-            this.genSelect(className),
-            this.genTables(className, properties),
-            this.genInvokes(className, properties),
-            '}\n#endif\n',
-            '#pragma warning(default : 4100)\n',
-            '#pragma warning(default : 4189)\n');
-        return t.join('');    
-    },
-    
-    // Generates the select function
-    genSelect : function(className) {
-        var t = [];
-        t.push('Trait* ',className,'::select()\n{\n   return clsTraits();\n}\n\n');
-        return t.join('');
-    },
-
-    // Generates the tables
-    genTables : function(className, properties) {
-        function wss(n) {
-            var i,t=[];
-            for (i=0; i<n; i++)
-                t.push(' ');
-            return t.join('');            
-        }
-
-        var uid=0,  // unique id (for properties) (Trait::offset)
-        sid=0,      // serial id (for traits)     (Trait::index) 
-        ext=0,      
-        set,        // set of properties to generater invoke for 
-        prop,propName, // current property in the loop and its name
-        i,i_l,  
-        tr,         // current trait for the current property in the loop
-        tType,      // first round its 'cls' then 'ext' in the second
-        clsName,    // name of the class for cls traits, name of the class
-                    // to extend for ext traits
-        t=[];       // table
-                   
-        // traverse first the ext then the cls properties
-        for (;ext<2;ext++) {                       
-            tType = ext?'ext':'cls';
-            set = properties[tType];
-            
-            t.push('Trait* ', className,'::', tType , 'Traits()\n',
-                '{\n', '      ', 'static Trait TRAITS[] = {\n');
-            t.push('         {      0,      Trait::TYPE_BEGIN,      "', className, 
-                '",',wss(19-className.length),'0,',wss(20),'0,              0,      ', 
-                (ext ? '0                  }' : (properties.base + '::clsTraits()  }')),
-                ',\n');    
-            // traverse the selected set of properties by trait names
-            for (propName in set) {
-                prop = set[propName];
-                prop.uid = uid;
-                // bahhh temp. workaround for a stupid IE bug...
-                if (propName == '_toString')
-                    propName = 'toString';
-                
-                // traverse the set of properties that has the same name 
-                for (i=0, i_l=prop.length; i<i_l; i++) {
-                        tr = prop[i];
-                        tr.sid = sid++;        
-                        clsName = ext ? tr.ext : className;
-                        t.push('         {      ', uid, uid > 9 ? ',     ' : ',      ',
-                            'Trait::TYPE_', tr.type.toUpperCase(), ',        "', 
-                            clsName, '",',wss(19-clsName.length),'"', propName, 
-                            '",', wss(19-propName.length), tType, 'Invoke,      ', 
-                            tr.sid, tr.sid > 9 ? ',     ' : ',      ','0                  },\n' );
-                }
-                uid++;
-            }
-            t.push('         {      0,      Trait::TYPE_END,        "', className, 
-                '",',wss(19-className.length),'0,',wss(20),'0,              0,      ',
-                '0                  }', ',\n');
-            t.push('      };\n\n','      ','return TRAITS;\n}\n\n');                        
-            uid = sid = 0;        
-        }
-        
-        return t.join('');
-    },
-    
-    // Generates the invoke functions
-    genInvokes : function(className, properties) {
-        var t = [],
-            tType,
-            set,
-            propName,
-            prop,
-            hasProps = {ext:false, cls:false},
-            ext;
-        
-        // check if there are any properties at all...
-        for (ext=0;ext<2;ext++) { 
-            tType = ext?'ext':'cls';
-            for (var i in properties[tType]) {
-                hasProps[tType] = true;
-                break;
-            }
-        }
-        
-        // generate the clsInvoke and extInvoke functions    
-        for (ext=0;ext<2;ext++) { 
-            tType = ext?'ext':'cls';
-            set = properties[tType];            
-            t.push('siEx ',className,'::',tType,'Invoke(iScr* pthis, iCtx* ctx, int index, int argc,\n',
-                   '           const Var* argv, Var* rval)\n{\n');
-            // against unreference arguments warning: 
-            t.push('      siEx ex;\n');
-            // generate the switch only if there are any properties
-            if (hasProps[tType]) {
-                t.push('      ', className, '* pthis1 = (', className, '*) pthis;\n\n');
-                t.push('      ', 'switch(index) {\n');
-                for (propName in set) {
-                    prop = set[propName];
-                    this.genBlockForProp(prop,t,'         ');        
-                }    
-                t.push('      }\n');
-            }
-            t.push('      ','return ex;\n}\n\n');
-        }
-        
-        return t.join('');    
-    },
-    
-    // Generates all the 'case' blocks in the invoke function for a property
-    genBlockForProp : function(prop,t,ws) {                
-        function overloadType(prop) {
-            if (prop.length < 2)
-                return 0;
-            if (prop.length == 2) { 
-                var t1 = prop[0].type,
-                    t2 = prop[1].type;
-                if (  (t1 = 'get' &&  t2 == 'set') 
-                    ||(t1 = 'set' &&  t2 == 'get') )
-                        return 0;
-                return 1;        
-            }            
-            for (var i in prop)
-                if (prop[i].type == 'get') 
-                    return 2;
-            return 1;                
-        };
-    
-        var v, trait, first, overloads = [], ws2 = ws + '   ';
-        
-        // for one property there can belong more traits, 
-        // a getter and a setter for example, or several overloads
-        // for the same function, or a getter and several overloads
-        // for the setter function...
-        switch(overloadType(prop)){
-            // no overloads
-            case 0:
-                for (v=0;v<prop.length; v++) {
-                    trait = prop[v];
-                    t.push(ws, 'case ', trait.sid, ':\n');
-                    this.genBlockForTrait(trait,t,ws2, true);
-                    t.push('\n',ws2, 'break;\n');
-                }                    
-                break;
-            
-            // overloaded function / setter
-            case 1:                
-                t.push(ws, 'case ', prop[0].sid, ':\n');
-                this.genBlockForOverloads(prop, t, ws2);
-                t.push(ws2, 'break;\n');
-                break;
-            
-            // overloaded setter with a getter
-            case 2:
-                for (v=0;v<prop.length; v++) {
-                    trait = prop[v];
-                    if (trait.type == 'get') {
-                        t.push(ws, 'case ', trait.sid, ':\n');
-                        this.genBlockForTrait(trait,t,ws2);
-                        t.push('\n',ws2, 'break;\n');
-                    }
-                    else { 
-                      overloads.push(trait);  
-                      if (!first)
-                        first = v;    
-                    }
-                }
-                t.push(ws, 'case ', prop[first].sid, ':\n');
-                this.genBlockForOverloads(overloads, t, ws2);
-                t.push('\n',ws2, 'break;\n');
-                break;
-            
-            // error
-            default:
-                // TODO: implement checking for invalid overloads...
-                Reporter.error('generator: illegal overload');
-        }
-    },
-    
-    
-    genBlockForTrait : function(trait,t,ws,check) {        
-        function genImmCall(trait) {
-            if (trait.type == 'get')
-                return {call: 'pthis1->' + trait.member};
-            
-            return genArgsForCall({args: [{type:trait.ret.replace(/si[A-Z][\w]+/, function(m,a){
-                                            return m.slice(1)+' *';
-                                    }
-                                )}]});     
-        };
-        function genEnumCall(trait) {            
-            return trait.value;
-        };
-
-        // '*rval = ' type of assignement
-        function genCallWrapper(trait) {
-            var siSg, base;
-            
-            if (trait.imm && trait.type == 'set') {
-                return {start:'pthis1->' + trait.member + ' = ', close:';'};
-            }
-            
-            switch (trait.ret) {
-                case 'void': 
-                    return {start:'', close:';'};
-                case 'bool':    case 'int':     case 'int32_t':
-                case 'int64_t': case 'size_t':  case 'double':
-                case 'Str':     case 'WStr':    case 'siScr':
-                case 'Var':
-                    return {start:'*rval = ', close:';'};
-                case 'Buf':
-                    return {start:'*rval = o3_new(cScrBuf)(', close:');'};            
-                default: {
-                    if (trait.ret.indexOf('tVec') != -1) {
-                        base = trait.ret.match(/<[\w]+>/);
-                        base = base[0].substring(1,base[0].length-1);
-                        return {start:'*rval = o3_new(tScrVec<' + base + '>)(', close:');'};
-                    }                    
-                    if (siSg = trait.ret.match(/si[\w]+/)){
-                        return {start:'*rval = ' + siSg[0] + '(', close:');'};
-                    }
-                    if (Enums[trait.ret]) {
-                        return {start:'*rval = ', close:';'};
-                    }
-                    Reporter.error('generator: unknown return type: ', trait.ret, '\n');
-                }
-            
-            }
-        };
-        // arguments for the function call + arg count check    
-        function genArgsForCall(trait) {
-            var args = trait.args, i, min=-1, max=0, fetch='', spec_arg=false, def_start='', def_close='', 
-            wrap_start='', wrap_close='', argc_check=[], call = [],info,arglist=false;    
-            
-            for (i=0; i<args.length; i++) {
-                if (!(info = ArgInfo[args[i].type]))
-                    info = ArgInfo.si(args[i].type)
-                 
-                if (info.arglist) {
-                    arglist=true;
-                    call.push(info.fetch);                  
-                    call.push(',');
-                    if (!args[i+1] || args[i+1].type != 'int')
-                        Reporter.error('generator: genArgsForCall failed: Var* as '
-                            +'function argument must be followed by an int argument (argc)');
-                    i++; 
-                    continue;
-                }
-                 
-                fetch = args[i].tgt ? 'pthis' : info.fetch;
-                wrap_start = info.wrap ? info.wrap + '(' : '';
-                wrap_close = info.wrap ? ')' : '';
-
-                // second wrapper for the Buf...
-                if (info.wrap2) {
-                    wrap_start = info.wrap2 + '(' + wrap_start;
-                    wrap_close += ')';
-                }     
-
-                // not real script argument like siEx*, iCtx*, o3_tgt, etc.
-                spec_arg = info.type ? (args[i].tgt ? true : false) : true;
-                
-                if (args[i].def && !spec_arg) {
-                    if (min<0)
-                        min = max;
-                    // if it was an siEx* param for example we dont want to check the arg count
-                    def_start = spec_arg ? '' : ('argc > ' + max + ' ? ');
-                    def_close = ' : ' + args[i].def;
-                }
-                    
-                call.push(wrap_start, def_start);
-                if (!spec_arg) {
-                    call.push('argv[',max++,']');
-                    if (!info.direct)   
-                        call.push('.');
-                }   
-                
-                call.push(fetch,def_close,wrap_close, ',');            
-                                    
-                iSg=fetch=def_start=def_close=wrap_start=wrap_close='';
-                spec_arg= false;        
-            }
-            if (args.length > 0)
-                call.pop(); // remove last ',' 
-                        
-            if (min>0)
-                argc_check.push('argc < ', min, ' && ');
-            if (min==-1)
-                argc_check.push('argc != ', max);
-            else
-                argc_check.push('argc > ', max );
-            
-            return {
-                    call: call.join(''), 
-                    argc_check: arglist ? null : argc_check.join('')
-                };
-                    
-            // like: {call: 'ctx, argv[0].toInt(), &ex', argc_check: 'argc!=1'}
-        };    
-        
-        var args, wrapper = genCallWrapper(trait);
-        
-        if (trait.imm)
-            t.push(ws, wrapper.start, genImmCall(trait).call, wrapper.close)
-        else if (trait.enu)
-            t.push(ws, wrapper.start, genEnumCall(trait), wrapper.close)
-        else { 
-            args = genArgsForCall(trait);
-            if (check)             
-                t.push(ws, 'if (', args.argc_check, ')\n', ws, '   ', 
-                    'return o3_new(cEx)("Invalid argument count. ( ',trait.name,' )");\n');
-            
-            t.push(ws, wrapper.start, 'pthis1->',
-                trait.cName ? trait.cName : trait.name, '(', args.call, ')' , wrapper.close);
-        }
-    },
-    
-    genBlockForOverloads : function(overloads, t, ws) {
-        function classifyArgs(fun) {            
-            var min=0, max=0, spec=[], scr=[], foundDef, arg, varInfo;
-            for (var i=0; i<fun.args.length; i++) {
-                arg = fun.args[i];
-                if (arg.tgt) {
-                    spec.push(arg);
-                    continue;
-                }                
-                
-                varInfo = ArgInfo[arg.type] ? ArgInfo[arg.type] : ArgInfo.si(arg.type);
-                                                
-                if ( varInfo && varInfo.type ) {
-                    arg.si=varInfo.wrap;
-                    arg.varType = varInfo.type;
-                    scr.push(arg);
-                    if (arg.def)
-                        foundDef = true;                    
-                    max++;
-                    if (!foundDef)
-                        min++;
-                }                
-                
-                else {
-                    spec.push(arg);
-                    continue;
-                }                                            
-            }
-            fun.specArgs = spec;    // helper arguments of the c++ function (ex,ctx,pthis)
-            fun.scrArgs = scr;      // arguments of the js method
-            fun.min = min;          // min argc for the js method
-            fun.max = max;          // max argc for the js method
-        };
-        // compares two array of overloads
-        function funListEqual(funs1, funs2) {
-            diff = false;
-            if (funs1.length == funs2.length) {
-                for (var j=0; j<funs1.length; j++) 
-                    if (funs1[j] != funs2[j]) {
-                        diff = true;
-                        break;        
-                    }
-            }       
-            else 
-                diff = true;        
-            return !diff;        
-        };
-        // grouping overloads based on their possible argument counts
-        // example: with 1 arg overload1 and overload2 can be called,
-        //          with 2-3 args only overload2 can be called, etc...
-        function argcPartition(funs) {
-            var valid = {}, ret = [],
-                group;
-            
-            for (var f=0; f<funs.length; f++)
-                for (var i=funs[f].min; i<funs[f].max+1; i++)
-                    (valid[i] ? valid[i] : valid[i]=[]).push(funs[f]);                                       
-                
-            for (var i in valid) {
-                if (group && funListEqual(group, valid[i])) {
-                    ret[ret.length-1].max = i;                        
-                    continue;
-                }
-                
-                else {                
-                    group = valid[i];
-                    ret.push({
-                        fun : group,
-                        min : i,
-                        max : i
-                    });
-                    continue;    
-                }                                                    
-            }
-            
-            return ret;
-        };
-        // grouping overloads based on the type of the 'index'-th script argument
-        // example: index = 2
-        //          if the type (=t) of 2nd script argument is 
-        //          TYPE_NULL <= t >=TYPE_INT32 onverload1 must be called 
-        //          else either overload2 or overload3 can be called check the 3rd arg
-        function typePartition(funs, index) {
-            var i,blocks=[],type,sorted = {si:{}},isSi,si,last=-1;
-            
-            for (i=0; i<funs.length; i++) {
-                type = funs[i].scrArgs[index].varType;
-                si = funs[i].scrArgs[index].si;
-                
-                if (type && !si)
-                    (sorted[type] ? sorted[type] : sorted[type] = []).push(funs[i]);
-                else if (type){
-                    (sorted.si[si] ? sorted.si[si] : sorted.si[si] = []).push(funs[i]);
-                } else {
-                    Reporter.error('generator: type partition failed: ',type,'\n');
-                }
-            }                                                
-                            
-            for (i in Types) {
-                type = Types[i];                            
-                
-                if (!sorted[type])
-                    continue;
-                
-                if (type == 'STR') {
-                    // stupid exception case, dont know how to get rid of it yet...
-                    ++i;
-                } 
-                
-                blocks.push({
-                    fun : sorted[type],
-                    min : Types[last+1], 
-                    max : Types[i]
-                });                               
-                
-                last = i*1;                                                
-            }
-
-            if (blocks.length)
-                blocks[blocks.length-1].max = Types[Types.length-1];              
-            
-            for (si in sorted.si) {
-                blocks.push({
-                    fun : sorted.si[si],
-                    si : si  
-                });
-                continue;
-            }
-            
-            return blocks;
-        };
-        function recursiveGen(blocks, ws, t, level) {
-            var i,j,si,siVar,funs,b,toCheck = 'argc', min, max, index = 0;
-            with(Generator) {                        
-                if (level) {
-                    toCheck = 'type' + (level-1);
-                    t.push(ws, 'Var::Type ',toCheck,' = argv[',level-1,
-                        '].type();\n');
-
-                    for (i=0; i<blocks.length; i++) {                        
-                        if (si = blocks[i].si) {
-                            siVar = si.toLowerCase(),'_', level-1;                            
-                            
-                            t.push(ws, index++ ? 'else if(' : 'if (' ,si, ' ', siVar,
-                                ' = ', si, '(argv[', level-1, '].toScr())',') {\n');                                                            
-                        
-                            funs = blocks[i].fun;
-                            if (funs.length == 1) {
-                                genBlockForTrait(funs[0],t,ws + '   ');
-                                t.push('\n');
-                            } 
-                            else {
-                                recursiveGen(typePartition(funs, level),
-                                    ws + '   ', t, level+1);
-                            } 
-                            t.push(ws, '   return ex;\n')
-                            t.push(ws, '}\n');
-                        }    
-                    }
-                } 
-                
-                for (i=0; i<blocks.length; i++) {
-                    b = blocks[i];
-                    if (b.si)
-                        continue; // already handled
-                    
-                    min = level ? "Var::TYPE_" + b.min : b.min;
-                    max = level ? "Var::TYPE_" + b.max : b.max;
-                    t.push(ws, index++ ? 'else if(' : 'if (');
-                    if (b.min == b.max) {
-                        t.push(toCheck, '==', min, ') {\n');
-                    }
-                    else {
-                        t.push(min, ' <= ', toCheck, 
-                            ' && ' , max,' >= ', toCheck, ') {\n');                        
-                    }
-                    
-                    if (b.fun.length == 1) {
-                        genBlockForTrait(b.fun[0],t,ws + '   ');
-                        t.push('\n');
-                    }
-                    else {
-                        recursiveGen(typePartition(b.fun, level),
-                                ws + '   ', t, level+1);
-                    }
-                    
-                    t.push(ws,'}\n');                        
-                }
-                
-                if (blocks.length)
-                    t.push(ws,'else{\n',ws,'   return o3_new(cEx)(', 
-                        level ? '"Invalid argument type."' : '"Invalid argument count."',
-                        ');\n', ws,  '}\n');
-            }    
-        };
-        
-        for (var i=0; i<overloads.length; i++)    
-            classifyArgs(overloads[i]);
-            
-        return recursiveGen(argcPartition(overloads), ws, t, 0);                
-    }
-}; // generator
-
-var ArgInfo = {
-    'bool'              : {fetch:'toBool()',    type:'BOOL'},
-    'int'               : {fetch:'toInt32()',   type:'INT32'},
-    'int32_t'           : {fetch:'toInt32()',   type:'INT32'},
-    'size_t'            : {fetch:'toInt32()',   type:'INT32'},
-    'int64_t'           : {fetch:'toInt64()',   type:'INT64'},
-    'double'            : {fetch:'toDouble()',  type:'DOUBLE'},
-    'const char *'       : {fetch:'toStr()',     type:'STR'},
-    'const Str &'       : {fetch:'toStr()',     type:'STR'},
-    'const wchar_t *'   : {fetch:'toWStr()',    type:'WSTR'},
-    'const Var &'       : {fetch:'',            type:'VAR', 
-        direct: true},
-    'Var *'             : {fetch:'argv,argc',   arglist: true},
-    'const WStr &'      : {fetch:'toWStr()',    type:'WSTR'},
-    'const Buf &'       : {fetch:'toScr()',     type:'SCR', 
-        wrap : 'siBuf', wrap2 : 'Buf'},
-    'iScr *'            : {fetch:'toScr()',     type:'SCR'},
-    'iCtx *'            : {fetch:'ctx'},
-    'siEx *'            : {fetch:'&ex'},
-
-    si : function(si) {
-        if (si.match(/i[\w]+ \*/)) 
-            return {
-                fetch : 'toScr()',
-                wrap : 's' + si.substring(0,si.indexOf('*')),
-                type : 'SCR'
-            }
-        else
-            Reporter.error('generator: unknown arg type: ',si,'\n');
-        return {};    
-    }    
-};
-
-var Types = [
-      'VOID',
-      'NULL',
-      'BOOL',
-      'INT32',
-      'INT64',
-      'DOUBLE',
-      'STR',
-      'WSTR',
-      'SCR'           
-];   
-
-var Enums = {};
-
-Reporter.immediate = immLog;
-Reporter.logWriter = console.log;
-Reporter.errorWriter = console.log;
-
-// by default it generates all glue in ./include
-if (files.length == 0) {
-    FileHandler.scanFiles('include');
-    FileHandler.scanFiles('modules');   
-}
-
-// if there were files/folders specified, let's traverse them
-
-for (i=0; i<files.length; i++) {    
-    FileHandler.scanFiles(files[i]);
-} 
-
-// if -l was specified let's log to stdout 
-// (if -i was specified then it is already logged out at this point no need to log it again)
-if (!Reporter.immediate && log) 
-    Reporter.dumpLogs();
-
-// in any case, let's save the logs and errors into files
-Reporter.logWriter = fileWriter(logFileName);
-Reporter.errorWriter = fileWriter(errFileName);    
-Reporter.dumpLogs();
-Reporter.dumpErrors();
-
-
-
-/*FILEHEAD(node_modules/libxml/support/o3/tools/logserver.js)SIZE(298)TIME(Mon, 02 Jan 2012 09:54:58 GMT)*/
-
-var util = require('util');
-var dgram = require('dgram');
-
-var server = dgram.createSocket("udp4");
-
-server.on("message", function (msg, rinfo) {
-  util.puts(msg+"\n");
-});
-
-server.on("listening", function () {
-  util.puts("Log server listening " + server.address().address);
-})
-
-server.bind(3333);

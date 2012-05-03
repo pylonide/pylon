@@ -36,12 +36,13 @@
 
     "mappings": {
         "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/9c8b180b1b294c6ff1348a4b8ddab9ca311b6158"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/fcb620ca070c72f5bf97911ac4b2b9745ba42f4f"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/00f2fb3ba522de1fac0765ee8e62de468be53816"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"],
-        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/f3a26c581829da4ee65c32961fbd5ae0001c964a"]
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/b830cc5961190d8442ff7ac3c0c566924a7df195"]
     },
 
     "repository" : {
@@ -55,6 +56,6 @@
 
     "scripts": {
         "start": "sh ./bin/cloud9.sh",
-        "postinstall": "node ./node_modules/mappings/scripts/postinstall-notice.js"
+        "postinstall": "sh ./postinstall.sh"
     }
 }
