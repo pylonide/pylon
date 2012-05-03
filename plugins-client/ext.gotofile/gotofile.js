@@ -14,7 +14,6 @@ var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
-var filelist = require("ext/filelist/filelist");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -103,7 +102,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             if (_self.dirty && txtGoToFile.value.length > 0 && _self.modelCache.data) {
                 _self.dirty = false;
-                _self.updateFileCache(true);
+                _self.updateFileCache();
             }
         });
         
@@ -153,12 +152,24 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         this.nodes.push(winGoToFile);
     },
     
-    updateFileCache : function(isDirty){
+    updateFileCache : function(){
         var _self = this;
 
-        filelist.getFileList(isDirty, function(data, state){
-            if (state != apf.SUCCESS)
+        //@todo create an allfiles plugin that plugins like gotofile can depend on
+        davProject.report(ide.davPrefix, 'filelist', {
+            showHiddenFiles: "1" //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
+          }, 
+          function(data, state, extra){
+            if (state == apf.ERROR) {
+                if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
+                    return;
+                }
+
+                //@todo
                 return;
+            }
+            if (state == apf.TIMEOUT)
+                return; //@todo
 
             /**
              * Putting this in a worker won't help
@@ -325,7 +336,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             txtGoToFile.select();
             txtGoToFile.focus();
-            this.dirty = true; //@todo this can be optimized by only marking as dirty on certain events
+            this.dirty = true;
             
             // If we had a filter and new content, lets refilter
             if (this.lastSearch) {

@@ -46,8 +46,6 @@ module.exports = ext.register("ext/settings/settings", {
     hook : function(){
         var _self = this;
         
-        this.markupInsertionPoint = colLeft;
-        
         panels.register(this, {
             position : 100000,
             caption: "Preferences",
@@ -87,6 +85,9 @@ module.exports = ext.register("ext/settings/settings", {
 
     init : function(amlNode){
         this.panel = winSettings;
+
+        colLeft.appendChild(winSettings);
+        
         this.nodes.push(winSettings);
         
         // this has to be done out here for some reason
