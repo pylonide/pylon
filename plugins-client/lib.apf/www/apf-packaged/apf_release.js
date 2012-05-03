@@ -1,9 +1,9 @@
 
-/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(apf.js)SIZE(96350)TIME(Mon, 30 Apr 2012 22:00:16 GMT)*/
+/*FILEHEAD(apf.js)SIZE(96380)TIME(Thu, 03 May 2012 17:10:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1390,8 +1390,10 @@ apf.setTimeout = function(f, t){
     }, ms);
 }*/
 
-document.documentElement.className += " has_apf";
-document.documentElement.style.display = "none";
+/*if (document) {
+    document.documentElement.className += " has_apf";
+    document.documentElement.style.display = "none";
+}*/
 
 apf.browserDetect();
 apf.Init.run("apf");
@@ -1403,7 +1405,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(46109)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(46109)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2477,7 +2479,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(core/lib/util/color.js)SIZE(10920)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/color.js)SIZE(10920)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2720,7 +2722,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2746,7 +2748,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2890,7 +2892,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2979,7 +2981,7 @@ apf.delcookie = function (name, domain){
 
 
 
-/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25965)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3761,7 +3763,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3787,7 +3789,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3813,7 +3815,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -4024,7 +4026,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4050,7 +4052,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4078,7 +4080,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4191,7 +4193,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4216,7 +4218,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(core/lib/util/plane.js)SIZE(8624)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/plane.js)SIZE(8624)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4448,7 +4450,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Sun, 29 Apr 2012 22:45:13 GMT)*/
+/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4786,9 +4788,6 @@ apf.popup = {
         while (this.cache[uId]) {
             if (apf.isChildOf(this.cache[uId].content, htmlNode, true))
                 return;
-
-            if (!this.cache[uId].options)
-                return;
             
             uId = this.cache[uId].options.allowTogether;
         }
@@ -4831,7 +4830,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4857,7 +4856,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(core/lib/util/style.js)SIZE(18681)TIME(Mon, 30 Apr 2012 05:31:13 GMT)*/
+/*FILEHEAD(core/lib/util/style.js)SIZE(18681)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5363,7 +5362,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5388,7 +5387,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5414,7 +5413,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/utilities.js)SIZE(14497)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/utilities.js)SIZE(14497)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5894,7 +5893,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6056,7 +6055,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(core/lib/util/xml.js)SIZE(49534)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/xml.js)SIZE(49534)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7470,7 +7469,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7495,7 +7494,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7575,7 +7574,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7854,7 +7853,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8004,7 +8003,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(core/lib/offline.js)SIZE(19757)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline.js)SIZE(19757)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8034,7 +8033,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8060,7 +8059,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8086,7 +8085,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8112,7 +8111,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8138,7 +8137,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8164,7 +8163,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8190,7 +8189,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8216,7 +8215,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8619,7 +8618,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9685,7 +9684,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9709,33 +9708,7 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
-/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9761,7 +9734,33 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9787,7 +9786,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/html.js)SIZE(15340)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/html.js)SIZE(15340)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9813,7 +9812,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9839,7 +9838,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/layout.js)SIZE(13425)TIME(Mon, 30 Apr 2012 03:25:30 GMT)*/
+/*FILEHEAD(core/lib/layout.js)SIZE(13425)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10258,7 +10257,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10284,7 +10283,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10400,7 +10399,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10796,7 +10795,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10821,7 +10820,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10846,7 +10845,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/skins.js)SIZE(12336)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/skins.js)SIZE(12336)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11180,7 +11179,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(core/lib/sort.js)SIZE(8239)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/sort.js)SIZE(8266)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11325,7 +11324,7 @@ apf.Sort = function(xmlNode){
         },
 
         "number" : function (t){
-            if (!t && t !== 0) t = 0;
+            if (!t) t = 0;
             return (t.length < sort_intmask.length
                 ? sort_intmask[sort_intmask.length - t.length]
                 : "") + t;
@@ -11409,7 +11408,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11435,7 +11434,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Mon, 30 Apr 2012 22:55:42 GMT)*/
+/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12417,13 +12416,13 @@ return {
 
 
 
-/*FILEHEAD(core/lib/uirecorder.js)SIZE(397)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder.js)SIZE(397)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
 
 
-/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12449,7 +12448,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13471,7 +13470,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13495,7 +13494,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13520,7 +13519,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13544,32 +13543,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13594,7 +13568,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13619,7 +13593,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13644,8 +13618,7 @@ apf.xmldb = new (function(){
 
 
 
-
-/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13671,7 +13644,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13697,7 +13670,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13723,7 +13696,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13749,7 +13722,33 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14591,7 +14590,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14616,7 +14615,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14642,24 +14641,24 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/lib/uirecorder/capture.js)SIZE(21922)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/capture.js)SIZE(21922)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/playback.js)SIZE(28844)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/playback.js)SIZE(28844)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/ui.js)SIZE(18464)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/ui.js)SIZE(18464)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
 
-/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15121,7 +15120,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15164,7 +15163,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15747,7 +15746,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Sun, 29 Apr 2012 18:41:38 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16340,7 +16339,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16404,7 +16403,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(core/markup/aml/text.js)SIZE(3974)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/text.js)SIZE(3974)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16504,7 +16503,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16633,7 +16632,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16670,7 +16669,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16716,7 +16715,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16757,7 +16756,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16943,7 +16942,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16977,7 +16976,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17048,7 +17047,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17159,7 +17158,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17268,7 +17267,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17293,7 +17292,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17318,7 +17317,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17362,7 +17361,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17413,7 +17412,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17570,7 +17569,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17621,7 +17620,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17702,7 +17701,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17738,7 +17737,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17799,7 +17798,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17842,7 +17841,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17904,7 +17903,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17930,7 +17929,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17955,7 +17954,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17980,7 +17979,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18005,7 +18004,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18030,7 +18029,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18055,7 +18054,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18080,7 +18079,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18105,7 +18104,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18130,7 +18129,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18155,7 +18154,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18180,7 +18179,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18205,7 +18204,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18230,7 +18229,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18255,7 +18254,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18280,7 +18279,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18305,7 +18304,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18330,7 +18329,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18355,7 +18354,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18380,7 +18379,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18405,7 +18404,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18440,7 +18439,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18473,7 +18472,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18515,7 +18514,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18540,7 +18539,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(core/markup/xinclude/include.js)SIZE(6818)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xinclude/include.js)SIZE(6818)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18723,7 +18722,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18749,7 +18748,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18776,7 +18775,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18802,7 +18801,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18828,7 +18827,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18854,7 +18853,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18880,7 +18879,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18906,7 +18905,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18932,7 +18931,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18958,7 +18957,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18984,7 +18983,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19010,7 +19009,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19036,7 +19035,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19062,7 +19061,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19089,7 +19088,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19115,7 +19114,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19141,7 +19140,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19167,7 +19166,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19193,7 +19192,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19219,7 +19218,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19245,7 +19244,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19271,7 +19270,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19297,7 +19296,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19323,7 +19322,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19349,7 +19348,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19375,7 +19374,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19401,7 +19400,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(18882)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(18882)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19899,7 +19898,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19925,7 +19924,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Sun, 29 Apr 2012 18:52:31 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20722,7 +20721,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20758)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20758)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21322,7 +21321,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22048,7 +22047,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58946)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58946)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23486,7 +23485,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47613)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47627)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24685,7 +24684,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24855,7 +24854,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(71734)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(71734)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26667,7 +26666,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26773,7 +26772,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27294,7 +27293,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/cache.js)SIZE(12532)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/cache.js)SIZE(12532)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27660,7 +27659,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(core/baseclasses/rename.js)SIZE(15023)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/rename.js)SIZE(15023)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28074,7 +28073,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28101,7 +28100,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28419,7 +28418,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29315,7 +29314,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29372,7 +29371,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30038,7 +30037,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57877)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57877)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31443,7 +31442,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53542)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53544)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32817,7 +32816,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5249)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5249)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32969,7 +32968,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34455,7 +34454,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34560,7 +34559,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30523)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30523)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35351,7 +35350,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35379,7 +35378,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35406,7 +35405,7 @@ apf.__MULTICHECK__ = 1 << 22;
 
 
 
-/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35634,7 +35633,7 @@ apf.__TELEPORT__ = 1 << 28;
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35661,7 +35660,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36409,7 +36408,7 @@ apf.$viewportVirtual = function(amlNode){
 
 
 
-/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36437,7 +36436,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36543,7 +36542,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36569,7 +36568,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36594,7 +36593,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36619,58 +36618,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36696,7 +36644,58 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/window.js)SIZE(50587)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/window.js)SIZE(50587)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37830,11 +37829,11 @@ apf.window = new apf.window();
 
 
 
-/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38023,7 +38022,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38275,7 +38274,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38300,7 +38299,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(core/browsers/non_ie.js)SIZE(24354)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/non_ie.js)SIZE(24354)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38657,12 +38656,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/o3.js)SIZE(9017)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/o3.js)SIZE(9019)TIME(Thu, 03 May 2012 17:07:31 GMT)*/
 
 
 
 
-/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38688,7 +38687,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/webkit.js)SIZE(8405)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/webkit.js)SIZE(8405)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38865,11 +38864,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /**
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -38890,7 +38889,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39103,7 +39102,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /**
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -39157,7 +39156,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39183,7 +39182,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39209,7 +39208,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39467,7 +39466,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /**
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -39489,7 +39488,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39672,7 +39671,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39698,7 +39697,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39724,12 +39723,12 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
 
-/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39755,7 +39754,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42210,7 +42209,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42332,7 +42331,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 /**
@@ -42958,7 +42957,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(elements/bindingrule.js)SIZE(8842)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingrule.js)SIZE(8842)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43209,7 +43208,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43234,7 +43233,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43359,7 +43358,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43463,7 +43462,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(elements/actiontracker.js)SIZE(36828)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actiontracker.js)SIZE(36828)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44053,7 +44052,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44108,7 +44107,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44269,7 +44268,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44295,7 +44294,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44902,7 +44901,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44927,7 +44926,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45055,7 +45054,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45126,7 +45125,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(21698)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(21714)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45733,7 +45732,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(elements/bindingdndrule.js)SIZE(3623)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingdndrule.js)SIZE(3623)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45851,7 +45850,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46181,7 +46180,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46230,7 +46229,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46537,7 +46536,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46802,7 +46801,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46864,7 +46863,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46920,7 +46919,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(elements/browser.js)SIZE(6466)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/browser.js)SIZE(6466)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47133,7 +47132,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47753,7 +47752,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/caldropdown.js)SIZE(36424)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/caldropdown.js)SIZE(36424)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47779,7 +47778,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/calendar.js)SIZE(28862)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/calendar.js)SIZE(28862)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47804,7 +47803,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47830,7 +47829,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47855,7 +47854,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/checkbox.js)SIZE(8188)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/checkbox.js)SIZE(8188)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48126,7 +48125,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48151,7 +48150,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48532,7 +48531,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(elements/colorpicker2.js)SIZE(16009)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/colorpicker2.js)SIZE(16009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48955,7 +48954,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48997,7 +48996,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49074,7 +49073,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(elements/datagrid.js)SIZE(53921)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/datagrid.js)SIZE(53921)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50248,7 +50247,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50274,7 +50273,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/divider.js)SIZE(2882)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/divider.js)SIZE(2882)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50367,7 +50366,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(elements/dropdown.js)SIZE(15434)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/dropdown.js)SIZE(15434)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50818,7 +50817,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50844,7 +50843,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51028,7 +51027,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51053,7 +51052,7 @@ apf.aml.setElement("errorbox", apf.errorbox);
 
 
 
-/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51094,7 +51093,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/flashplayer.js)SIZE(5856)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/flashplayer.js)SIZE(5856)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51119,33 +51118,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51171,7 +51144,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/frame.js)SIZE(4838)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/frame.js)SIZE(4838)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51320,7 +51319,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51345,7 +51344,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51370,7 +51369,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/hbox.js)SIZE(41656)TIME(Sun, 29 Apr 2012 03:08:39 GMT)*/
+/*FILEHEAD(elements/hbox.js)SIZE(41656)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52363,7 +52362,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52389,7 +52388,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52635,7 +52634,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53359,7 +53358,7 @@ apf.aml.setElement("item",  apf.item);
 
 
 
-/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53446,7 +53445,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53604,7 +53603,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53630,7 +53629,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53989,7 +53988,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(elements/loader.js)SIZE(3558)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/loader.js)SIZE(3558)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54105,7 +54104,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54131,7 +54130,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54157,7 +54156,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54183,7 +54182,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54756,7 +54755,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54864,7 +54863,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(elements/modalwindow.js)SIZE(24684)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/modalwindow.js)SIZE(24684)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55496,7 +55495,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56599,7 +56598,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/notifier.js)SIZE(15297)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/notifier.js)SIZE(15297)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56625,7 +56624,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/page.js)SIZE(27212)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(elements/page.js)SIZE(27116)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56892,7 +56891,6 @@ apf.page = function(struct, tagName){
         }
     });
 
-    //beforeNode, pNode, withinParent
     this.addEventListener("DOMNodeInserted", function(e){
         if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
             return;
@@ -56938,9 +56936,6 @@ apf.page = function(struct, tagName){
     };
 
     this.$deactivate = function(fakeOther){
-        //if (this.disabled)
-            //return false;
-
         this.$active = false;
 
         if (this.parentNode.$hasButtons) {
@@ -57385,7 +57380,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57411,7 +57406,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57436,7 +57431,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57479,7 +57474,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57505,7 +57500,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57530,7 +57525,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57803,7 +57798,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57830,7 +57825,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58383,7 +58378,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58409,7 +58404,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59032,7 +59027,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59147,7 +59142,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60086,7 +60081,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60112,7 +60107,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(elements/skin.js)SIZE(9698)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/skin.js)SIZE(9698)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60309,7 +60304,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/slider.js)SIZE(32341)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/slider.js)SIZE(32341)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60334,7 +60329,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60359,7 +60354,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61207,7 +61202,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61262,7 +61257,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(elements/spinner.js)SIZE(16965)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/spinner.js)SIZE(16965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61802,7 +61797,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61965,7 +61960,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62383,7 +62378,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62476,7 +62471,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(elements/state.js)SIZE(10893)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/state.js)SIZE(10893)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62801,7 +62796,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62827,7 +62822,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62852,7 +62847,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62878,7 +62873,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62977,7 +62972,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(elements/table.js)SIZE(17204)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/table.js)SIZE(17204)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63454,7 +63449,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63483,7 +63478,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63509,7 +63504,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63865,7 +63860,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(elements/textbox.js)SIZE(28629)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/textbox.js)SIZE(28629)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64694,7 +64689,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64720,7 +64715,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64814,7 +64809,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(elements/tree.js)SIZE(17445)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/tree.js)SIZE(17445)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65162,7 +65157,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65187,33 +65182,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65239,7 +65208,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65265,7 +65234,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66550,7 +66545,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66576,7 +66571,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66717,7 +66712,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66973,7 +66968,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66998,7 +66993,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67023,7 +67018,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67049,7 +67044,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67262,7 +67257,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67288,7 +67283,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67314,7 +67309,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67340,7 +67335,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67366,7 +67361,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67493,7 +67488,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67519,7 +67514,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(10831)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(10831)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67545,7 +67540,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67571,7 +67566,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67597,12 +67592,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
 
-/*FILEHEAD(elements/textbox/masking.js)SIZE(12869)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/textbox/masking.js)SIZE(12869)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68046,7 +68041,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68071,7 +68066,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68096,7 +68091,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68121,7 +68116,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68146,7 +68141,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68171,33 +68166,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68223,7 +68192,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68249,7 +68218,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68275,7 +68244,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68301,7 +68270,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68327,7 +68296,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68353,7 +68322,33 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4360)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4360)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68473,7 +68468,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(jpack_end.js)SIZE(773)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(jpack_end.js)SIZE(773)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
@@ -68505,7 +68500,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-node.js)SIZE(1241)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(apf-node.js)SIZE(1244)TIME(Thu, 03 May 2012 16:31:13 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68530,33 +68525,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Thu, 03 May 2012 17:07:08 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68582,7 +68551,33 @@ apf.start();
 
 
 
-/*FILEHEAD(loader.js)SIZE(15799)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(loader.js)SIZE(15799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68615,7 +68610,7 @@ apf.start();
 
 
 
-/*FILEHEAD(loader2.js)SIZE(18652)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(loader2.js)SIZE(18652)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
