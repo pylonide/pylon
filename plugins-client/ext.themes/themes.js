@@ -27,18 +27,30 @@ module.exports = ext.register("ext/themes/themes", {
     register : function(themes){
         var _self = this;
         
+        var timer;
+        
         for (var name in themes) {
             menus.addItemByPath("View/Themes/" + name, new apf.item({
                 type    : "radio",
                 value   : themes[name],
                 
                 onmouseover: function(e) {
-                    _self.set(this.value, true);
+                    var value = this.value;
+                    
+                    clearTimeout(timer);
+                    timer = setTimeout(function(){
+                        _self.set(value, true);
+                    }, 200);
                 },
                 
                 onmouseout: function(e) {
-                    if (!_self.saved)
-                        _self.set(_self.currTheme);
+                    clearTimeout(timer);
+                    
+                    if (!_self.saved) {
+                        timer = setTimeout(function(){
+                            _self.set(_self.currTheme);
+                        }, 200);
+                    }
                 }
             }));
         }
@@ -51,10 +63,9 @@ module.exports = ext.register("ext/themes/themes", {
         
         this.setThemedGUI(path);
         
-        if (!preview) {
-            this.saved = true;
+        this.saved = !preview;
+        if (!preview)
             this.currTheme = path;
-        }
     },
     
     loaded : {},

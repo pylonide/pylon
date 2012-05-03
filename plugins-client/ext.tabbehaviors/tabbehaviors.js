@@ -247,7 +247,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.accessList.remove(page);
                 _self.accessList.unshift(page);
                 
-                this.accessList.changed = true;
+                _self.accessList.changed = true;
                 settings.save();
             }
         });
@@ -275,7 +275,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         _self.accessList.remove(page);
                         _self.accessList.unshift(page);
                         
-                        this.accessList.changed = true;
+                        _self.accessList.changed = true;
                         settings.save();
                     }
                     
