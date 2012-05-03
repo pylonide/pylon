@@ -16,6 +16,7 @@ var noderunner = require("ext/noderunner/noderunner");
 var testpanel = require("ext/testpanel/testpanel");
 var console = require("ext/console/console");
 var template = require("text!ext/nodeunit/nodeunit.template");
+var filelist = require("ext/filelist/filelist");
 
 var parser = require("treehugger/js/parse");
 require("treehugger/traverse");
@@ -64,32 +65,41 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             }))
         );
 
-        davProject.report(ide.davPrefix, 'filelist', {},
-          function(data, state, extra){
-            if (state == apf.ERROR) {
-                if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
-                    return;
-                }
-
-                //@todo
+        filelist.getFileList(false, function(data, state){
+            if (state != apf.SUCCESS)
                 return;
-            }
-            if (state == apf.TIMEOUT)
-                return; //@todo
 
-            var nodes = data.selectNodes("//d:href");
-            for (var node, i = 0; i < nodes.length; i++) {
-                node = nodes[i];
-
-                //@todo support for submodules
-                if (node.firstChild.nodeValue.match(/_test\.js$/)) {
-                    var file = apf.getXml("<file />");
-                    var path = ide.davPrefix + "/" + node.firstChild.nodeValue;
-                    file.setAttribute("name", path.split("/").pop());
-                    file.setAttribute("path", path);
-                    file.setAttribute("type", "nodeunit");
-                    apf.xmldb.appendChild(testpanel.findParent(path), file);
+            var tests = data.replace(/^\./gm, "").match (/^.*_test\.js$|^(node_modules\/[^\/]*\/)?\/test\/.*\.js$/gm);
+            var subProjects = {}, mainProject = [];
+            tests.join("\n").replace(
+                new RegExp("^\\/node_modules\\/([^\\/]*)\\/.*$|^.*$", "gm"),
+                function(m, name, generic) { 
+                    if (name)
+                        (subProjects[name] || (subProjects[name] = [])).push(m) 
+                    else
+                        mainProject.push(m);
                 }
+            );
+            
+            function addFiles(project, parent){
+                var str = [];
+                for (var i = project.length - 1; i >= 0; i--) {
+                    str.push("<file path='" 
+                        + apf.escapeXML(ide.davPrefix + project[i])
+                        + "' name='" + apf.escapeXML(project[i].split("/").pop()) 
+                        + "' type='nodeunit' />");
+                }
+                
+                mdlTests.insert("<files>" + str.join("") + "</files>", {
+                    insertPoint : parent
+                });
+            }
+            
+            addFiles(mainProject, mdlTests.queryNode("repo[1]"));
+            
+            for (var name in subProjects) {
+                var parent = testpanel.addRepo(name);
+                addFiles(subProjects[name], parent);
             }
         });
 

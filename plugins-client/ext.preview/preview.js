@@ -12,12 +12,6 @@ var ext = require("core/ext");
 var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
 
-var previewExtensions = [
-    "htm", "html", "xhtml",
-    "conf", "log", "text", "txt",
-    "xml", "xsl"
-];
-
 module.exports = ext.register("ext/html/html", {
     name  : "HTML Editor",
     dev   : "Ajax.org",
@@ -26,28 +20,10 @@ module.exports = ext.register("ext/html/html", {
     deps  : [code],
     nodes : [],
 
-    afterSwitchOrOpen : function(node) {
-        var name = node.$model.data.getAttribute("name");
-        var fileExtension = name.split(".").pop().toLowerCase();
-
-        if (previewExtensions.indexOf(fileExtension) > -1) {
-            //ext.initExtension(this);
-            this.page = node;
-            this.enable();
-        }
-        else {
-            this.disable();
-        }
-    },
-
     init : function(){
         var _self = this;
         
         this.nodes.push(
-//            menus.$insertByIndex(barTools, new apf.divider({
-//                skin : "c9-divider"
-//            }), 300),
-            
             menus.$insertByIndex(barTools, new apf.button({
                 skin : "c9-toolbarbutton",
                 //icon : "preview.png" ,
@@ -65,22 +41,11 @@ module.exports = ext.register("ext/html/html", {
         
         ide.addEventListener("init.ext/editors/editors", function(e) {
             tabEditors.addEventListener("afterswitch", function(e){
-                _self.afterSwitchOrOpen(e.nextPage);
+                _self.enable();
             });
             ide.addEventListener("closefile", function(e){
                 if (tabEditors.getPages().length == 1)
                     _self.disable();
-            });
-            ide.addEventListener("afteropenfile", function(e){
-                // Only listen for event from editors.js
-                if (e.editor && e.node.$model)
-                    _self.afterSwitchOrOpen(e.node);
-            });
-            ide.addEventListener("updatefile", function(e) {
-                var page = tabEditors.getPage(e.newPath);
-                if (!page || !page.$active)
-                    return;
-                _self.afterSwitchOrOpen(page);
             });
         });
 
