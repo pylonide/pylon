@@ -5,10 +5,8 @@
     "private": true,
     "plugin": {
         "provides": [
-            "ext.packed"
-        ],
-        "consumes": [
             "client-plugins"
-        ]
+        ],
+        "consumes": [ ]
     }
 }
