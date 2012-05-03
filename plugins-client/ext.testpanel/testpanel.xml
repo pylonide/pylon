@@ -98,7 +98,7 @@
                         if ([@status] === '0')
                             <span style='color:red'>\[[@status-message]\]</span>
                         else if ([@status] == '1')
-                            <span style='color:green'>\[PASS{[@status-message] &amp;&amp; " [@status-message]"}\]</span>
+                            <span style='color:green'>\[PASS{[@status-message] and " [@status-message]"}\]</span>
                         else if ([@status] == '-1')
                             <span>\[{[@status-message].uCaseFirst()}\]</span>
                         else

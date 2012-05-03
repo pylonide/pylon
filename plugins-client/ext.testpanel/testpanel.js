@@ -13,7 +13,7 @@ var util = require("core/util");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/testpanel/testpanel.xml");
 var fs = require("ext/filesystem/filesystem");
-var settings = require("ext/settings/settings");
+var settings = require("core/settings");
 
 function escapeXpathString(name){
     if (name.indexOf('"') > -1) {
@@ -61,8 +61,9 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         //});
         
         ide.addEventListener("settings.load", function(e){
-            if (!e.model.queryValue("auto/testpanel/@autorun"))
-                e.model.setQueryValue("auto/testpanel/@autorun", "none");
+            settings.setDefaults("auto/testpanel", [
+                ["autorun", "none"]
+            ]);
         });
         
         ide.addEventListener("afterfilesave", function(e) {
@@ -80,8 +81,8 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                     _self.run(sel);
             }
             else if (autoRun == "pattern") {
-                var list = (new Function('path', _self.getPattern()))(
-                    e.node.getAttribute("path"));
+                var func = new Function('path', _self.getPattern());
+                var list = func(e.node.getAttribute("path"));
                 
                 if (!list || list.dataType != apf.ARRAY) {
                     util.alert("Wrong output from pattern",
@@ -165,14 +166,19 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         this.submodules = [];
         fs.readFile("/workspace/.git/config", function(data){
             data.replace(/\[submodule "([^"]*)"\]/g, function(s, m){
-                var doc = mdlTests.data.ownerDocument;
-                var node = doc.createElement("repo");
-                node.setAttribute("name", m);
-                mdlTests.appendXml(node);
-                
-                _self.submodules.push(m);
+                _self.addRepo(m);
             });
         });
+    },
+    
+    addRepo : function(name){
+        var doc = mdlTests.data.ownerDocument;
+        var node = doc.createElement("repo");
+        node.setAttribute("name", name);
+        mdlTests.appendXml(node);
+        this.submodules.push(name);
+        
+        return node;
     },
     
     getPattern : function(){
@@ -419,13 +425,13 @@ module.exports = ext.register("ext/testpanel/testpanel", {
 
     enable : function(){
         this.nodes.each(function(item){
-            item.enable();
+            item.enable && item.enable();
         });
     },
     
     disable : function(){
         this.nodes.each(function(item){
-            item.disable();
+            item.disable && item.disable();
         });
     },
 
