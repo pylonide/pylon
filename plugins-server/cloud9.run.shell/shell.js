@@ -23,14 +23,15 @@ var exports = module.exports = function setup(options, imports, register) {
 
 exports.factory = function(uid) {
     return function(args, eventEmitter, eventName) {
-        return new Runner(uid, args.command, args.args, args.cwd, args.env, eventEmitter, eventName);
+        return new Runner(uid, args.command, args.args, args.cwd, args.env, args.extra, eventEmitter, eventName);
     };
 };
 
-var Runner = exports.Runner = function(uid, command, args, cwd, env, eventEmitter, eventName) {
+var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, eventEmitter, eventName) {
     this.uid = uid;
     this.command = command;
     this.args = args || [];
+    this.extra = extra;
 
     this.runOptions = {};
     if (cwd)
@@ -133,7 +134,8 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, eventEmitte
                     "type": self.name + "-data",
                     "pid": pid,
                     "stream": stream,
-                    "data": data.toString("utf8")
+                    "data": data.toString("utf8"),
+                    "extra": self.extra
                 });
             };
         }
@@ -142,14 +144,16 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, eventEmitte
             emit({
                 "type": self.name + "-exit",
                 "pid": pid,
-                "code": code
+                "code": code,
+                "extra": self.extra
             });
         });
 
         process.nextTick(function() {
             emit({
                 "type": self.name + "-start",
-                "pid": pid
+                "pid": pid,
+                "extra": self.extra
             });
         });
     };

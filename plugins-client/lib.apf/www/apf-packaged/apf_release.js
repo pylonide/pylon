@@ -4786,6 +4786,9 @@ apf.popup = {
         while (this.cache[uId]) {
             if (apf.isChildOf(this.cache[uId].content, htmlNode, true))
                 return;
+
+            if (!this.cache[uId].options)
+                return;
             
             uId = this.cache[uId].options.allowTogether;
         }
@@ -11322,6 +11325,7 @@ apf.Sort = function(xmlNode){
         },
 
         "number" : function (t){
+            if (!t && t !== 0) t = 0;
             return (t.length < sort_intmask.length
                 ? sort_intmask[sort_intmask.length - t.length]
                 : "") + t;
@@ -23677,11 +23681,11 @@ apf.MultiselectBinding = function(){
             };
 
             this.getFirstTraverseNode = function(xmlNode){
-                return this.getTraverseNodes()[0];//(xmlNode || this.xmlRoot).childNodes[0];
+                return this.getTraverseNodes(xmlNode)[0];//(xmlNode || this.xmlRoot).childNodes[0];
             };
 
             this.getLastTraverseNode = function(xmlNode){
-                var nodes = this.getTraverseNodes();//(xmlNode || this.xmlRoot).childNodes;
+                var nodes = this.getTraverseNodes(xmlNode);//(xmlNode || this.xmlRoot).childNodes;
                 return nodes[nodes.length - 1];
             };
 
@@ -32506,7 +32510,7 @@ apf.BaseTree = function(){
                 
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
-                     - (selHtml.offsetHeight);
+                     //- (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
                 
@@ -45380,8 +45384,8 @@ apf.BindingColumnRule = function(struct, tagName){
 
         pNode.resort({
             order : "ascending",
-            xpath : (this.cvalue || this.compile("value")).xpaths[1]
-            //type : 
+            xpath : (this.cvalue || this.compile("value")).xpaths[1],
+            type : this["data-type"]
         }, false, initial || !pNode.length);
         
         

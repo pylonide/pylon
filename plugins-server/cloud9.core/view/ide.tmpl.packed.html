@@ -30,6 +30,7 @@
                 staticUrl: <%staticUrl%>,
                 settings: <%settingsXml%>,
                 socketIoUrl: <%socketIoUrl%>,
+                socketIoTransports: <%socketIoTransports%>,
                 settings: <%settingsXml%>
             };
             
@@ -57,8 +58,9 @@
                         // Load extensions
                         ide.dispatchEvent("extload", {modules: list});
                         
+                        cloud9config.totalTime = new Date() - cloud9config.startdate;
                         console.log("Total Load Time " 
-                            + (new Date() - window.cloud9config.startdate) + "ms");
+                            + (cloud9config.totalTime) + "ms");
                             
                         ide.addEventListener("$event.extload", function(cb){
                             cb();

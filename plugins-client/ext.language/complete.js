@@ -65,6 +65,7 @@ module.exports = {
     hook: function(ext, worker) {
         var _self = this;
         worker.on("complete", function(event) {
+            if(ext.disabled) return;
             _self.onComplete(event);
         });
         
@@ -83,9 +84,12 @@ module.exports = {
                 return apf.activeElement.localName == "codeeditor";
             },
             exec: function(editor) {
+                if(ext.disabled) return;
                 _self.invoke();
             }
         });
+        
+        this.ext = ext;
     },
     
     showCompletionBox: function(matches, prefix) {

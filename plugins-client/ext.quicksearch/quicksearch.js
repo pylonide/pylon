@@ -70,15 +70,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
             _self.updateBarPosition();
         });
-
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                _self.offsetWidth = _self.defaultOffset + e.width;
-            else
-                _self.offsetWidth = _self.defaultOffset;
-
-            _self.updateBarPosition();
-        });
         
         this.nodes.push(
             menus.addItemByPath("Find/~", new apf.divider(), 1000),

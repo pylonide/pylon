@@ -508,16 +508,19 @@ module.exports = ext.register("ext/save/save", {
 
         var self = this;
         var doSave = function() {
-            window.winConfirm && winConfirm.hide();
             winSaveAs.hide();
             self._saveAsNoUI(page, path, newPath, isReplace);
 
-            if (btnConfirmOk.caption == "Yes")
-                btnConfirmOk.setCaption("Ok");
+            if (window.winConfirm) {
+                winConfirm.hide();
+                
+                if (btnConfirmOk.caption == "Yes")
+                    btnConfirmOk.setCaption("Ok");
+            }
         };
         
         var doCancel = function() {
-            if (btnConfirmOk.caption == "Yes")
+            if (window.winConfirm && btnConfirmOk.caption == "Yes")
                 btnConfirmOk.setCaption("Ok");
         };
         if (path !== newPath || parseInt(file.getAttribute("newfile") || 0, 10) === 1) {

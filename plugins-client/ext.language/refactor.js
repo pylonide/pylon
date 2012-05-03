@@ -21,12 +21,15 @@ module.exports = {
     hook: function(ext, worker) {
         var _self = this;
         this.worker = worker;
+        this.ext = ext;
         
         worker.on("enableRefactorings", function(event) {
+            if(ext.disabled) return;
             _self.enableRefactorings(event);
         });
         
         worker.on("variableLocations", function(event) {
+            if(ext.disabled) return;
             _self.enableVariableRefactor(event.data);
         });
 
@@ -48,6 +51,7 @@ module.exports = {
                 return editor && editor.ceEditor;
             },
             exec: function(editor) {
+                if(ext.disabled) return;
                 _self.renameVariable();
             }
         });
@@ -87,6 +91,7 @@ module.exports = {
     },
     
     renameVariable: function() {
+        if(this.ext.disabled) return;
         this.worker.emit("fetchVariablePositions", {data: editors.currentEditor.amlEditor.$editor.getCursorPosition()});
     },
     

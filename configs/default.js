@@ -58,6 +58,7 @@ module.exports = {
                 packagePath: "./cloud9.core",
                 fsUrl: fsUrl,
                 hosted: false,
+                socketIoTransports: [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
                 bundledPlugins: [
                     "helloworld"
                 ],
@@ -84,7 +85,7 @@ module.exports = {
                     "ext/quickwatch/quickwatch",
                     "ext/quicksearch/quicksearch",
                     "ext/gotoline/gotoline",
-                    "ext/html/html",
+                    "ext/preview/preview",
                     "ext/log/log",
                     "ext/help/help",
                     //"ext/ftp/ftp",
@@ -108,6 +109,7 @@ module.exports = {
                     "ext/menus/menus",
                     "ext/tooltip/tooltip",
                     "ext/sidebar/sidebar",
+                    "ext/filelist/filelist",
                     "ext/beautify/beautify",
                     "ext/offline/offline",
                     "ext/stripws/stripws",
@@ -119,7 +121,7 @@ module.exports = {
                     "ext/guidedtour/guidedtour",
                     "ext/quickstart/quickstart",
                     "ext/jslanguage/jslanguage",
-                    "ext/autotest/autotest",
+                    //"ext/autotest/autotest",
                     "ext/tabsessions/tabsessions",
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
@@ -143,7 +145,7 @@ module.exports = {
                 packagePath: "./cloud9.session.file",
                 sessionsPath: __dirname + "/../.architect/sessions"
             },
-             "./cloud9.permissions",
+            "./cloud9.permissions",
             {
                 packagePath: "./cloud9.client-plugins",
                 plugins: clientExtensions
@@ -163,6 +165,7 @@ module.exports = {
             "./cloud9.ide.npm",
             "./cloud9.ide.run-node",
             "./cloud9.ide.run-python",
+            "./cloud9.ide.revisions",
             {
                 packagePath: "./cloud9.ide.settings",
                 settingsPath: projectDir + "/.settings"
