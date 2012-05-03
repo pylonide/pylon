@@ -2,14 +2,14 @@
 
 # packages apf
 apf:
-	cd node_modules/packager; sm update; node package.js projects/apf_cloud9.apr
+	cd node_modules/packager; node package.js projects/apf_cloud9.apr
 	cd node_modules/packager; cat build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../plugins-client/lib.apf/www/apf-packaged/apf_release.js
 
 # package debug version of apf
 apfdebug:
 	cd node_modules/packager/projects; cat apf_cloud9.apr | sed 's/<p:define name=\"__DEBUG\" value=\"0\" \/>/<p:define name=\"__DEBUG\" value=\"1\" \/>/g' > apf_cloud9_debug2.apr
 	cd node_modules/packager/projects; cat apf_cloud9_debug2.apr | sed 's/apf_release/apf_debug/g' > apf_cloud9_debug.apr; rm apf_cloud9_debug2.apr
-	cd node_modules/packager; sm update; node package.js projects/apf_cloud9_debug.apr
+	cd node_modules/packager; node package.js projects/apf_cloud9_debug.apr
 	cd node_modules/packager; cat build/apf_debug.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../plugins-client/lib.apf/apf_debug.js
 
 # packages core
