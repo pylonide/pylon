@@ -1,26 +1,16 @@
 .PHONY:    apf ext worker mode theme package test
 
-UNAME := $(shell uname)
-
-# don't know what the uname values are for other platforms
-ifeq ($(UNAME), Darwin)
-	nodeToUse := "node-darwin"
-endif
-ifeq ($(UNAME), SunOS)
-	nodeToUse := "node-sunos"
-endif
-
 # packages apf
 apf:
-	cd support/packager; ../node-builds-v4/$(nodeToUse) package.js projects/apf_cloud9.apr
-	cd support/packager; cat build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../client/js/apf_release.js
+	cd node_modules/packager; node package.js projects/apf_cloud9.apr
+	cd node_modules/packager; cat build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../plugins-client/lib.apf/www/apf-packaged/apf_release.js
 
 # package debug version of apf
 apfdebug:
-	cd support/packager/projects; cat apf_cloud9.apr | sed 's/<p:define name=\"__DEBUG\" value=\"0\" \/>/<p:define name=\"__DEBUG\" value=\"1\" \/>/g' > apf_cloud9_debug2.apr
-	cd support/packager/projects; cat apf_cloud9_debug2.apr | sed 's/apf_release/apf_debug/g' > apf_cloud9_debug.apr; rm apf_cloud9_debug2.apr
-	cd support/packager; ../node-builds-v4/$(nodeToUse) package.js projects/apf_cloud9_debug.apr
-	cd support/packager; cat build/apf_debug.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../client/js/apf_debug.js
+	cd node_modules/packager/projects; cat apf_cloud9.apr | sed 's/<p:define name=\"__DEBUG\" value=\"0\" \/>/<p:define name=\"__DEBUG\" value=\"1\" \/>/g' > apf_cloud9_debug2.apr
+	cd node_modules/packager/projects; cat apf_cloud9_debug2.apr | sed 's/apf_release/apf_debug/g' > apf_cloud9_debug.apr; rm apf_cloud9_debug2.apr
+	cd node_modules/packager; node package.js projects/apf_cloud9_debug.apr
+	cd node_modules/packager; cat build/apf_debug.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../client/js/apf_debug.js
 
 # packages core
 core:
