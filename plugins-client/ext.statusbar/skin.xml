@@ -26,7 +26,7 @@
                 background-color: transparent;
             }
 
-            .ace_dark.bar-status:hover {
+            .dark .bar-status:hover {
                 -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
                 box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             }
@@ -42,7 +42,7 @@
                 overflow: visible;
             }
 
-            .ace_dark.bar-status .label {
+            .dark .bar-status .label {
                 color: rgba(255, 255, 255, 0.4);
             }
             
@@ -94,19 +94,19 @@
                 background-position : -11px -19px;
             }
 
-            .ace_dark .btn-expand-statusbar {
+            .dark .btn-expand-statusbar {
                 background-position : -28px 7px;
             }
 
-            .ace_dark .btn-expand-statusbarOver {
+            .dark .btn-expand-statusbarOver {
                 background-position : -28px -19px;
             }
 
-            .ace_dark.expanded .btn-expand-statusbar {
+            .dark .expanded .btn-expand-statusbar {
                 background-position : -42px -18px;
             }
 
-            .ace_dark.expanded .btn-expand-statusbarOver {
+            .dark .expanded .btn-expand-statusbarOver {
                 background-position : -42px 7px;
 
             }
@@ -144,15 +144,15 @@
                 background-position : 0 -46px;
             }
 
-            .ace_dark .btn-statusbar-icon {
+            .dark .btn-statusbar-icon {
                 background-position : -22px 0;
             }
 
-            .ace_dark .btn-statusbar-iconOver {
+            .dark .btn-statusbar-iconOver {
                 background-position : -22px -23px;
             }
 
-            .ace_dark .btn-statusbar-iconDown {
+            .dark .btn-statusbar-iconDown {
                 background-position : -22px -46px;
             }
         ]]></a:style>
