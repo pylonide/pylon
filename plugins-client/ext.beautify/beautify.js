@@ -84,15 +84,7 @@ module.exports = ext.register("ext/beautify/beautify", {
         sel.setSelectionRange(Range.fromPoints(range.start, end));
     },
 
-    init: function () {
-        var _self = this;
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                _self.disable();
-            else
-                _self.enable();
-        });
-    },
+    init: function () {},
 
     hook: function () {
         var _self = this;

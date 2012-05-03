@@ -1,0 +1,14 @@
+{
+    "name": "ext.filelist",
+    "version": "0.0.1",
+    "main": "filelist-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.filelist"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

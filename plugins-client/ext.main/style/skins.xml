@@ -305,7 +305,7 @@
         .black-menu-bar.closed .c9-logo {
         	background-position: 0px -346px;
         }
-        .black-menu-bar.closed .c9-logo.mnubtn:hover {
+        .black-menu-bar.closed .c9-logo.mnubtnOver {
         	background-position: -39px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnDown {
@@ -315,7 +315,7 @@
         .black-menu-bar .c9-logo {
             background-position: -117px -346px;
         }
-        .black-menu-bar .c9-logo.mnubtn:hover {
+        .black-menu-bar .c9-logo.mnubtnOver {
         	background-position: -156px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnDown {
@@ -8066,7 +8066,7 @@
 		margin-right : -20px;
 		margin-top   : 0;
 		height       : 21px;
-		overflow     : hidden;
+		overflow     : visible;
     }
     .editor_tab .tab_middle {
         height   : 18px;
@@ -8150,7 +8150,7 @@
     .editor_tab .curbtn .tab_middle {
         background-color    : #e8e8e8;
         color               : #000;
-        padding-top         : 5px;
+        padding-top         : 4px;
         text-shadow         : 0 1px 0 0 rgba(255,255,255,.4);
     }
     .editor_tab .loading_active .sessiontab_saving,
@@ -8290,7 +8290,7 @@
     .editor_tab .curbtn {
         color       : #333333;
         cursor      : default;
-        text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
+        text-shadow : rgba(255, 255, 255, .4) 0px 1px 0px;
         z-index     : 10;
     }
 
@@ -8689,7 +8689,10 @@
     .editor_tab .session_btn:not(.curbtn) .tab_middle,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:before,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:after {
-        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.15) inset;
+        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
+    }
+    .editor_tab .session_btn:not(.curbtn) .tab_middle {
+        box-shadow   : 0 0px 0 1px rgba(0,0,0,0.7), 0 -3px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
     }
     .editor_tab .session_btn .tab_middle {
         background-image    : url(images/c9-repeat-x.png);
@@ -8704,12 +8707,12 @@
 
     .editor_tab .session_btn .tab_middle:before {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : 0 -159px, 0 -79px;
+        background-position : 0 -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
     }
     .editor_tab .session_btn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : -31px -159px, 0 -79px;
+        background-position : -31px -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
     }
     
@@ -8727,15 +8730,16 @@
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -57px;
         background-repeat   : repeat-x;
+        box-shadow          : 0 0px 0 1px rgba(0,0,0,0.7);
         color               : #000;
     }
     .editor_tab .curbtn .tab_middle:before {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : 0px -160px, 0 -57px;
+        background-position : 0px -132px, 0 -57px;
     }
     .editor_tab .curbtn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : -31px -159px, 0 -57px;
+        background-position : -31px -132px, 0 -57px;
     }
 
     /* ------------------------------------------------------------------------------------------
