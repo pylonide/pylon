@@ -22,8 +22,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     type       : ext.GENERAL,
     deps       : [panels],
     menus      : [],
-    accessed   : [],
-    $tabAccessCycle : 2,
+    accessList  : [],
+    accessedTab : 0,
     sep        : null,
     more       : null,
     menuOffset : 4, //@todo this should use new menus api
@@ -215,8 +215,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
             else if (page.fake) {
                 _self.addItem(page);
-                if (_self.accessed.indexOf(page) == -1)
-                    _self.accessed.unshift(page);
+                if (_self.accessList.indexOf(page) == -1)
+                    _self.accessList.unshift(page);
             }
         });
 
@@ -229,22 +229,22 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 return;
 
             _self.removeItem(page);
-            _self.accessed.remove(page);
+            _self.accessList.remove(page);
         });
 
-        var cycleKey = apf.isMac ? 18 : 17, tabKey = 9;
+        var cycleKey = apf.isMac ? 18 : 17;
         tabEditors.addEventListener("afterswitch", function(e) {
             var page = e.nextPage;
 
             if (!_self.cycleKeyPressed) {
-                _self.accessed.remove(page);
-                _self.accessed.push(page);
+                _self.accessList.remove(page);
+                _self.accessList.unshift(page);
             }
         });
 
         tabEditors.addEventListener("close", function(e) {
             if (tabEditors.getPage() == e.page)
-                this.nextTabInLine = _self.accessed[_self.accessed.length - _self.$tabAccessCycle];
+                this.nextTabInLine = _self.accessList[1];
         });
 
         apf.addEventListener("keydown", function(eInfo) {
@@ -258,12 +258,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.cycleKeyPressed = false;
                 
                 if (_self.$dirtyNextTab) {
-                    _self.$tabAccessCycle = 2;
+                    _self.accessedTab = 0;
                     
                     var page = tabEditors.getPage();
-                    if (_self.accessed[_self.accessed.length - 1] != page) {
-                        _self.accessed.remove(page);
-                        _self.accessed.push(page);
+                    if (_self.accessList[_self.accessedTab] != page) {
+                        _self.accessList.remove(page);
+                        _self.accessList.unshift(page);
                     }
                     
                     _self.$dirtyNextTab = false;
@@ -430,47 +430,29 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
     
     nexttab : function(){
-        if (tabEditors.getPages().length === 1) {
+        if (tabEditors.length === 1)
             return;
-        }
 
-        var n = this.accessed.length - this.$tabAccessCycle++;
-        if (n < 0) {
-            n = this.accessed.length - 1;
-            this.$tabAccessCycle = 2;
-        }
+        if (++this.accessedTab >= this.accessList.length)
+            this.accessedTab = 0;
 
-        var tabs = tabEditors;
-        var next = this.accessed[n];
-        if (next == tabs.getPage() || ide.dispatchEvent("beforenexttab", {
-            page: next
-        }) === false)
-            return this.nexttab();
-
-        tabs.set(next);
+        var next = this.accessList[this.accessedTab];
+        tabEditors.set(next);
         
         this.$dirtyNextTab = true;
     },
 
     previoustab : function(){
-        if (tabEditors.getPages().length === 1) {
+        if (tabEditors.length === 1)
             return;
-        }
-        
-        var n = this.accessed.length - (this.$tabAccessCycle - 1);
-        if (n ===  this.accessed.length) {
-            n = 0;
-            this.$tabAccessCycle = this.accessed.length;
-        }
 
-        var tabs = tabEditors;
-        var next = this.accessed[n];
-        if (next == tabs.getPage() || ide.dispatchEvent("beforeprevioustab", {
-            page: next
-        }) === false)
-            return this.previoustab();
-            
-        tabs.set(next);
+        if (--this.accessedTab < 0)
+            this.accessedTab = this.accessList.length - 1;
+
+        var next = this.accessList[this.accessedTab];
+        tabEditors.set(next);
+        
+        this.$dirtyNextTab = true;
     },
 
     gototabright: function(e) {
@@ -687,7 +669,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         var no = this.nodes.push(mnu) - 1;
 
         page.$tabMenu = mnu;
-        this.accessed.push(page);
+        this.accessList.push(page);
 
         this.updateState();
     },
