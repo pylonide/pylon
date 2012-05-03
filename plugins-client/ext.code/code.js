@@ -293,9 +293,9 @@ module.exports = ext.register("ext/code/code", {
         else {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
-            doc.acesession = new EditSession(doc.acedoc);
             var syntax = _self.getSyntax(doc.getNode());
-            doc.acesession.setMode(ceEditor.getMode(syntax));
+            var mode = ceEditor.getMode(syntax);
+            doc.acesession = new EditSession(doc.acedoc, mode);
             doc.acesession.syntax = syntax;
             doc.acedoc = doc.acesession.getDocument();
             doc.acesession.c9doc = doc;
@@ -326,10 +326,7 @@ module.exports = ext.register("ext/code/code", {
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
             });
 
-            if (doc.value)
-                ceEditor.setProperty("value", doc.acesession);
-            else
-                ceEditor.setProperty("value", "");
+            ceEditor.setProperty("value", doc.acesession || "");
 
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self)
