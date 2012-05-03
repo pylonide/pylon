@@ -1135,7 +1135,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             editor.setSession(newSession);
             doc = newSession.doc;
         }
-
+        
+        editor.setReadOnly(true);
         editor.selection.clearSelection();
 
         // Look for the node that references the revision we are loading and
