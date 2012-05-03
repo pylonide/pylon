@@ -14,10 +14,12 @@ module.exports = {
 
     disabledMarkerTypes: {},
 
-    hook: function(language, worker) {
+    hook: function(ext, worker) {
         var _self = this;
+        this.ext = ext;
         worker.on("markers", function(event) {
-            _self.addMarkers(event, language.editor);
+            if(ext.disabled) return;
+            _self.addMarkers(event, ext.editor);
         });
     },
 
@@ -105,6 +107,7 @@ module.exports = {
      * it does so instanteously, rather than with a 500ms delay, thereby avoid ugly box bouncing etc.
      */
     onChange: function(session, event) {
+        if(this.ext.disabled) return;
         var range = event.data.range;
         var isInserting = event.data.action.substring(0, 6) !== "remove";
         var text = event.data.text;
