@@ -107,6 +107,7 @@ module.exports = {
                     "ext/menus/menus",
                     "ext/tooltip/tooltip",
                     "ext/sidebar/sidebar",
+                    "ext/filelist/filelist",
                     "ext/beautify/beautify",
                     "ext/offline/offline",
                     "ext/stripws/stripws",
