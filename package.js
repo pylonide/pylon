@@ -50,4 +50,5 @@ function boot() {
         }
     }
     apf.ProcParser.parse(Fs.readFileSync(project, "utf8"));
+    setTimeout(function(){process.exit();}, 1000); // we want to remove this, but the process is hanging. investigate with bert and ben
 }
