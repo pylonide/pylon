@@ -34,6 +34,7 @@ var beautify = require("ext/beautify/beautify");
 var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
+var language = require("ext/language/language");
 
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
@@ -1376,6 +1377,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             statusbar.offsetWidth = BAR_WIDTH;
             statusbar.setPosition();
             stripws.disable();
+            language.disable();
         }
 
         var model = page.$mdlRevisions;
@@ -1406,6 +1408,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         statusbar.offsetWidth = 0;
         statusbar.setPosition();
         stripws.enable();
+        language.enable();
 
         if (lstRevisions) {
             lstRevisions.selectList([]); // Unselect everything
