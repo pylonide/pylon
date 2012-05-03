@@ -6,7 +6,7 @@
         "asyncjs": "~0.0.2"   
     },
     "mappings": {
-        "node-o3-xml":    ["npm", "https://github.com/ajaxorg/node-o3-xml/tarball/b8b71b5d9a62c8347215a041ac5f4e288da69b97"],
-        "node-o3-xml-v4": ["npm", "https://github.com/ajaxorg/node-o3-xml-v4/tarball/520868fd4ccc899e27839778b83286afd8c2735a"]
+        "node-o3-xml":    ["npm", "https://github.com/ajaxorg/node-o3-xml/tarball/b8eb2bdeaf8c6da3c85874e6af84754ee7eaa429"],
+        "node-o3-xml-v4": ["npm", "https://github.com/ajaxorg/node-o3-xml-v4/tarball/c6048121d06ebf175186ae6e8707de84622d5f96"]
     }
 }
