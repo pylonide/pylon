@@ -119,6 +119,7 @@ module.exports = ext.register("ext/language/language", {
                 oldSelection = _self.editor.selection;
             }, 100);
         });
+        
 
         this.editor.on("change", function(e) {
             e.range = {
@@ -225,6 +226,7 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.disabled = false;
+        this.setPath();
     },
 
     disable: function () {
@@ -233,6 +235,7 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.disabled = true;
+        marker.addMarkers({data:[]}, this.editor);
     },
 
     destroy: function () {
