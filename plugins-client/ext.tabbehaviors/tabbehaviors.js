@@ -246,6 +246,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (!_self.cycleKeyPressed) {
                 _self.accessList.remove(page);
                 _self.accessList.unshift(page);
+                
+                this.accessList.changed = true;
                 settings.save();
             }
         });
@@ -272,9 +274,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                     if (_self.accessList[_self.accessedTab] != page) {
                         _self.accessList.remove(page);
                         _self.accessList.unshift(page);
+                        
+                        this.accessList.changed = true;
+                        settings.save();
                     }
                     
-                    settings.save();
                     _self.$dirtyNextTab = false;
                 }
             }
@@ -473,7 +477,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.set(next);
         
         this.$dirtyNextTab = true;
-        this.accessList.changed = true;
     },
 
     previoustab : function(){
@@ -487,7 +490,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.set(next);
         
         this.$dirtyNextTab = true;
-        this.accessList.changed = true;
     },
 
     gototabright: function(e) {
