@@ -609,10 +609,10 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 _self.$corner.style.left = (width - 5) + "px"
             });
             
-        if (apf.isTrue(this.getAttribute("globalcommands"))){
-            if(this.$editor.keyBinding.setDefaultHandler)
-                this.$editor.keyBinding.setDefaultHandler(null);
-        }
+        // if (apf.isTrue(this.getAttribute("globalcommands"))){
+        //     if(this.$editor.keyBinding.setDefaultHandler)
+        //         this.$editor.keyBinding.setDefaultHandler(null);
+        // }
 
         // read defaults...
         var ed  = this.$editor;
