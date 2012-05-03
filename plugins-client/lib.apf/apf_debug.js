@@ -3,7 +3,7 @@
 
 
 
-/*FILEHEAD(apf.js)SIZE(96380)TIME(Thu, 03 May 2012 17:10:00 GMT)*/
+/*FILEHEAD(apf.js)SIZE(96350)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -175,7 +175,9 @@ VERSION:'3.0beta',
     OFFLINE : 4,
 
     
-    debug         : false,
+    debug         : true,
+    debugType     : "Memory",
+    debugFilter   : "!teleport",
     
 
     includeStack  : [],
@@ -493,6 +495,15 @@ VERSION:'3.0beta',
     },
 
     
+    /**
+     * Restarts the application.
+     */
+    reboot : function(){
+        apf.console.info("Restarting application...");
+
+        location.href = location.href;
+    },
+    
 
     /**
      * Extends an object with one or more other objects by copying all their
@@ -593,6 +604,9 @@ VERSION:'3.0beta',
         this.host     = location.hostname && sHref.replace(/(\/\/[^\/]*)\/.*$/, "$1");
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
 
+        
+        apf.console.info("Starting Ajax.org Platform Application...");
+        apf.console.warn("Debug build of Ajax.org Platform " + (apf.VERSION ? "version " + apf.VERSION : ""));
         
 
         //mozilla root detection
@@ -747,11 +761,23 @@ VERSION:'3.0beta',
         // for speed, we check for the most common  case first
         if (arguments.length == 1) {
             
+            if (!classRef) {
+                throw new Error(apf.formatErrorString(0, this,
+                    "Implementing class",
+                    "Could not implement from '" + classRef[i] + "'", this));
+            }
+            
             classRef.call(this);//classRef
         }
         else {
             for (var a, i = 0, l = arguments.length; i < l; i++) {
                 a = arguments[i];
+                
+                if (!a) {
+                    throw new Error(apf.formatErrorString(0, this,
+                        "Implementing class",
+                        "Could not implement from '" + arguments[i] + "'", this));
+                }
                 
                 arguments[i].call(this);//classRef
             }
@@ -826,6 +852,196 @@ VERSION:'3.0beta',
      */
     console : {
         
+        /**
+         * @private
+         */
+        data : {
+            time  : {
+                messages : {}
+            },
+
+            log   : {
+                messages : {}
+            },
+            
+            custom   : {
+                messages : {}
+            },
+
+            warn  : {
+                messages : {}
+            },
+
+            error : {
+                messages : {}
+            },
+            
+            repeat : {
+                messages : {}
+            }
+        },
+
+        /**
+         * @private
+         */
+        toggle : function(node, id){
+            var sPath = apf.$debugwin ? apf.$debugwin.resPath : apf.basePath + "core/debug/resources/";
+            if (node.style.display == "block") {
+                node.style.display = "none";
+                node.parentNode.style.backgroundImage = "url(" + sPath + "splus.gif)";
+                node.innerHTML = "";
+            }
+            else {
+                node.style.display = "block";
+                node.parentNode.style.backgroundImage = "url(" + sPath + "smin.gif)";
+                node.innerHTML = this.cache[id]
+                    .replace(/\&/g, "&amp;")
+                    .replace(/\t/g,"&nbsp;&nbsp;&nbsp;")
+                    .replace(/ /g,"&nbsp;")
+                    .replace(/\</g, "&lt;")
+                    .replace(/\n/g, "<br />");
+
+                var p  = node.parentNode.parentNode.parentNode,
+                    el = node.parentNode.parentNode;
+                if(p.scrollTop + p.offsetHeight < el.offsetTop + el.offsetHeight)
+                    p.scrollTop = el.offsetTop + el.offsetHeight - p.offsetHeight;
+            }
+        },
+
+        cache : [],
+        history : [],
+        typeLut : {time: "log", repeat: "log"},
+        $lastmsg : "",
+        $lastmsgcount : 0,
+
+        $detectSameMessage : function(){
+            apf.console.$lastmsg = "";
+            if (apf.console.$lastmsgcount) {
+                var msg = apf.console.$lastmsgcount + " times the same message";
+                apf.console.$lastmsgcount = 0;
+                apf.console.write(msg, "repeat");
+                clearTimeout(apf.console.$timer);
+            }
+        },
+        
+        teleportList : [],
+        teleport : function(log){
+            if (this.teleportModel)
+                log.setXml(this.teleportModel.data);
+            
+            this.teleportList.push(log);
+        },
+        setTeleportModel : function(mdl){
+            if (this.teleportModel == mdl)
+                return;
+            
+            this.teleportModel = mdl;
+            var xml = apf.getXml("<teleport />");
+            for (var i = 0; i < this.teleportList.length; i++) {
+                this.teleportList[i].setXml(xml);
+            }
+            
+            mdl.load(xml);
+        },
+
+        /**
+         * @private
+         * @event debug Fires when a message is sent to the console.
+         *   object:
+         *      {String} message the content of the message.
+         */
+        write : function(msg, type, subtype, data, forceWin, nodate){
+            clearTimeout(this.$timer);
+            if (msg == this.$lastmsg) {
+                this.$lastmsgcount++;
+                this.$timer = $setTimeout(this.$detectSameMessage, 1000);
+                return;
+            }
+
+            this.$detectSameMessage();
+            this.$lastmsg = msg;
+            this.$timer = $setTimeout(this.$detectSameMessage, 1000);
+            
+            //if (!apf.debug) return;
+            if (!Number.prototype.toPrettyDigit) {
+                Number.prototype.toPrettyDigit = function() {
+                    var n = this.toString();
+                    return (n.length == 1) ? "0" + n : n;
+                }
+            }
+
+            var dt   = new Date(),
+                ms   = String(dt.getMilliseconds());
+            while (ms.length < 3)
+                ms += "0";
+            var date = dt.getHours().toPrettyDigit()   + ":"
+                     + dt.getMinutes().toPrettyDigit() + ":"
+                     + dt.getSeconds().toPrettyDigit() + "." + ms;
+
+            msg = (!nodate ? "<span class='console_date'>[" + date + "]</span> " : "")
+                    + String(msg)
+                        .replace(/(<[^>]+>)| /g, function(m, tag, sp){
+                            if (tag) return tag;
+                            return "&nbsp;";
+                        })
+                        //.replace(/\n/g, "\n<br />")
+                        .replace(/\t/g,"&nbsp;&nbsp;&nbsp;");
+            var sPath = apf.$debugwin && apf.$debugwin.resPath
+                ? apf.$debugwin.resPath
+                : apf.basePath + "core/debug/resources/";
+
+            if (data) {
+                msg += "<blockquote style='margin:2px 0 0 0;"
+                    +  "background:url(" + sPath + "splus.gif) no-repeat 2px 3px'>"
+                    +  "<strong style='width:120px;cursor:default;display:block;padding:0 0 0 17px' "
+                    +  "onmousedown='(self.apf || window.opener.apf).console.toggle(this.nextSibling, "
+                    +  (this.cache.push(data) - 1) + ")'>"
+                    +  "</strong><div style='display:none;background-color:#EEEEEE;"
+                    +  "padding:3px 3px 20px 3px;overflow:auto;max-height:200px'>"
+                    +  "</div></blockquote>";
+            }
+
+            msg = "<div class='console_line console_" 
+                + type + "' >" + msg + "</div>"; //\n<br style='line-height:0'/>
+
+            //deprecated
+            if (!subtype)
+                subtype = "default";
+
+            this.history.push([this.typeLut[type] || type, msg]);
+
+            if (this.win && !this.win.closed)
+                this.showWindow(msg);
+
+            //if (apf.debugFilter.match(new RegExp("!" + subtype + "(\||$)", "i")))
+            //    return;
+
+            this.debugInfo.push(msg);
+
+            if (self.console && (!document.all || apf.config.debug)) {
+                console[type == "warn" ? "warn" : 
+                    (type == "error" ? "error" : "log")]
+                        (apf.html_entity_decode(msg.replace(/<[^>]*>/g, "")));
+            }
+
+            if (apf.dispatchEvent)
+                apf.dispatchEvent("debug", {message: msg, type: type});
+        },
+        
+        clear : function(){
+            this.history = [];
+        },
+        
+        getAll : function(err, wrn, log) {
+            var hash = {"error": err, "warn": wrn, "log": log, "custom": 1};
+            var out = [];
+            for (var i = 0, l = this.history.length; i < l; i++) {
+                if (hash[this.history[i][0]])
+                    out.push(this.history[i][1]);
+            }
+            return out.join("");
+        },
+        
 
         /**
          * Writes a message to the console.
@@ -834,6 +1050,8 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         debug : function(msg, subtype, data){
+            
+            this.write(msg, "time", subtype, data);
             
         },
 
@@ -845,6 +1063,8 @@ VERSION:'3.0beta',
          */
         time : function(msg, subtype, data){
             
+            this.write(msg, "time", subtype, data);
+            
         },
 
         /**
@@ -854,6 +1074,8 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         log : function(msg, subtype, data){
+            
+            this.write(apf.htmlentities(msg).replace(/\n/g, "<br />"), "log", subtype, data);
             
         },
 
@@ -866,6 +1088,8 @@ VERSION:'3.0beta',
          */
         info : function(msg, subtype, data){
             
+            this.log(apf.htmlentities(msg).replace(/\n/g, "<br />"), subtype, data);
+            
         },
 
         /**
@@ -877,6 +1101,8 @@ VERSION:'3.0beta',
          */
         warn : function(msg, subtype, data){
             
+            this.write(apf.htmlentities(msg).replace(/\n/g, "<br />"), "warn", subtype, data);
+            
         },
 
         /**
@@ -887,6 +1113,8 @@ VERSION:'3.0beta',
          * @param {String} data     extra data that might help in debugging.
          */
         error : function(msg, subtype, data){
+            
+            this.write(msg.replace(/\n/g, "<br />"), "error", subtype, data);
             
         },
 
@@ -909,6 +1137,35 @@ VERSION:'3.0beta',
         }
         
         
+        ,
+        debugInfo : [],
+        debugType : "",
+
+        /**
+         * Shows a browser window with the contents of the console.
+         * @param {String} msg a new message to add to the new window.
+         */
+        showWindow : function(msg){
+            if (!this.win || this.win.closed) {
+                this.win = window.open("", "debug");
+                this.win.document.write(
+                    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
+                  + '<body style="margin:0;font-family:Verdana;font-size:8pt;"></body>');
+            }
+            if (!this.win) {
+                if (!this.haspopupkiller)
+                    alert("Could not open debug window, please check your popupkiller");
+                this.haspopupkiller = true;
+            }
+            else {
+                this.win.document.write((msg || this.debugInfo.join(""))
+                    .replace(/\{imgpath\}/g, apf.debugwin
+                        ? apf.debugwin.resPath
+                        : apf.basePath + "core/debug/resources/"));
+            }
+        }
+
+        
     },
 
     html_entity_decode : function(s){return s},
@@ -924,8 +1181,68 @@ VERSION:'3.0beta',
      */
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         
-        apf.lastErrorMessage = message;
-        return message;
+        var str = [];
+        if (amlContext && amlContext.ownerDocument) {
+            if (amlContext.nodeType == 9)
+                amlContext = amlContext.documentElement;
+
+            //Determine file context
+            if (amlContext.ownerDocument.documentElement) {
+                var file = amlContext.ownerDocument.documentElement.getAttribute("filename");
+                if (!file && amlContext.ownerDocument.documentElement.tagName == "html")
+                    file = location.href;
+                file = file
+                    ? apf.removePathContext(apf.hostPath, file)
+                    : "Unkown filename";
+            }
+            else file = "Unknown filename";
+
+            //Get serialized version of context
+            if (apf.$debugwin)
+                var amlStr = apf.$debugwin.$serializeObject(amlContext);
+            else
+                var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
+                    .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
+                    .replace(/xmlns:a="[^"]*"\s*/g, "");
+
+            //Determine line number
+            var diff, linenr = 0, w = amlContext.previousSibling
+                || amlContext.parentNode && amlContext.parentNode.previousSibling;
+            while (w && w[apf.TAGNAME] != "body") {
+                diff    = (w.outerHTML || w.xml || w.serialize()).split("\n").length;
+                linenr += diff - 1;
+                w       = w.previousSibling || w.parentNode && w.parentNode.previousSibling;
+            }
+            if (w && w[apf.TAGNAME] != "body")
+                linenr = "unknown";
+            else if(amlContext.ownerDocument 
+              && amlContext.ownerDocument.documentElement.tagName == "html")
+                linenr += apf.lineBodyStart;
+
+            //Grmbl line numbers are wrong when \n's in attribute space
+
+            //Set file and line number
+            str.push("aml file: [line: " + linenr + "] " + file);
+        }
+
+        if (control)
+            str.push("Element: "
+              + (apf.$debugwin && !apf.isDebugWindow
+                ? apf.$debugwin.$serializeObject(control)
+                : "'" + (control.name
+                    || (control.$aml ? control.getAttribute("id") : null)
+                    || "{Anonymous}")
+                    + "' [" + control.tagName + "]"));
+        if (process)
+            str.push("Process: " + process.replace(/ +/g, " "));
+        if (message)
+            str.push("Message: [" + number + "] " + message.replace(/ +/g, " "));
+        if (outputname)
+            str.push(outputname + ": " + output);
+        if (amlContext && amlStr)
+            str.push("Related Markup: " + amlStr);
+
+        return (apf.lastErrorMessage = str.join("\n"));
         
     },
 
@@ -975,6 +1292,9 @@ VERSION:'3.0beta',
      * @type  {void}
      */
     include : function(sourceFile, doBase, type, text, callback){
+        
+        if (apf.started)
+            apf.console.info("including js file: " + sourceFile);
         
         
         var sSrc = doBase ? apf.getAbsolutePath(apf.basePath || "", sourceFile) : sourceFile;
@@ -1314,6 +1634,8 @@ VERSION:'3.0beta',
      */
     unload : function(exclude){
         
+        apf.console.info("Initiating self destruct...");
+        
 
         this.isDestroying = true;
 
@@ -1390,10 +1712,8 @@ apf.setTimeout = function(f, t){
     }, ms);
 }*/
 
-/*if (document) {
-    document.documentElement.className += " has_apf";
-    document.documentElement.style.display = "none";
-}*/
+document.documentElement.className += " has_apf";
+document.documentElement.style.display = "none";
 
 apf.browserDetect();
 apf.Init.run("apf");
@@ -1822,13 +2142,16 @@ apf.Class.prototype = new (function(){
         else if (exclNr === 0) {
             options = {
                 parsecode : true
-                
+                , nothrow : this.target.match(/-debug$/) ? true : false 
             };
         }
         
         if (this.liveedit)
             (options || (options = {})).liveedit = true;
         
+        
+        if (apf.config.debugLm)
+            (options || (options = {})).nothrow = true;
         
 
         //Compile pValue through JSLT parser
@@ -1840,6 +2163,9 @@ apf.Class.prototype = new (function(){
         //Special case for model due to needed extra signalling
         if (prop == MODEL)
             (this.$modelParsed = fParsed).instruction = pValue
+        
+        else if (exclNr === 0)
+            this.$lastFParsed = fParsed;
         
 
         //if it's only text return setProperty()
@@ -2210,6 +2536,9 @@ apf.Class.prototype = new (function(){
         }
         else {*/
             
+            if (options && !options.bubbles && options.currentTarget && options.currentTarget != this)
+                throw new Error("Invalid use of options detected in dispatch Event");
+            
         
             //@todo rewrite this and all dependencies to match w3c
             if ((!e || !e.currentTarget) && (!options || !options.currentTarget)) {
@@ -2268,6 +2597,8 @@ apf.Class.prototype = new (function(){
         if (--apf.$eventDepth == 0 && this.ownerDocument 
           && !this.ownerDocument.$domParser.$parseContext
           && !apf.isDestroying && apf.loaded
+          
+          && eventName != "debug"
           
           && apf.queue
         ) {
@@ -2451,6 +2782,12 @@ apf.Class.prototype = new (function(){
             }
         }
 
+        
+        if (deep !== false && this.childNodes && this.childNodes.length) {
+            apf.console.warn("You have destroyed an Aml Node without destroying "
+                           + "it's children. Please be aware that if you don't "
+                           + "maintain a reference, memory might leak");
+        }
         
         
         //Remove id from global js space
@@ -3912,7 +4249,10 @@ apf.hotkeys = {};
         }
 
         
-        if (!key) return;
+        if (!hashId)
+            console.warn("missing modifier keys for hotkey: " + hotkey);
+        if (!key)
+            throw new Error("missing key for hotkey: " + hotkey);
         
 
         if (!_self.$keys[hashId])
@@ -4116,6 +4456,9 @@ apf.nameserver = {
             this.lookup[type] = [];
         
         
+        if(this.onchange)
+            this.onchange(type, item);
+        
         
         return this.lookup[type].push(item) - 1;
     },
@@ -4124,6 +4467,9 @@ apf.nameserver = {
         if (!this.lookup[type])
             this.lookup[type] = {};
 
+        
+        if (this.onchange)
+            this.onchange(type, item, id);
         
         
         if (this.waiting[id]) {
@@ -4969,6 +5315,13 @@ apf.setStyleClass = function(oHtml, className, exclusion, userAction){
         return;
 
     
+    if (oHtml.nodeFunc) {
+        throw new Error(apf.formatErrorString(0, this,
+            "Setting style class",
+            "Trying to set style class on aml node. Only xml or html nodes can \
+             be passed to this function"));
+    }
+    
 
     if (className) {
         if (exclusion)
@@ -5570,7 +5923,16 @@ apf.parseExpression = function(str){
         return str;
 
     
+    try {
+    
         return eval(RegExp.$1);
+    
+    }
+    catch(e) {
+        throw new Error(apf.formatErrorString(0, null,
+            "Parsing Expression",
+            "Invalid expression given '" + str + "'"));
+    }
     
 };
 apf.parseExpression.regexp = /^\{([\s\S]*)\}$/;
@@ -5857,6 +6219,18 @@ apf.getNode = function(data, tree){
  */
 apf.getFirstElement = function(xmlNode){
     
+    try {
+        xmlNode.firstChild.nodeType == 1
+            ? xmlNode.firstChild
+            : xmlNode.firstChild.nextSibling
+    }
+    catch (e) {
+        throw new Error(apf.formatErrorString(1052, null,
+            "Xml Selection",
+            "Could not find element:\n"
+            + (xmlNode ? xmlNode.xml : "null")));
+    }
+    
 
     return xmlNode.firstChild.nodeType == 1
         ? xmlNode.firstChild
@@ -5870,6 +6244,18 @@ apf.getFirstElement = function(xmlNode){
  * @throw error when no child element is found.
  */
 apf.getLastElement = function(xmlNode){
+    
+    try {
+        xmlNode.lastChild.nodeType == 1
+            ? xmlNode.lastChild
+            : xmlNode.lastChild.nextSibling
+    }
+    catch (e) {
+        throw new Error(apf.formatErrorString(1053, null,
+            "Xml Selection",
+            "Could not find last element:\n"
+            + (xmlNode ? xmlNode.xml : "null")));
+    }
     
 
     return xmlNode.lastChild.nodeType == 1
@@ -6607,6 +6993,17 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
         //Temp hack
         var isAddId = paths[i].match(/(\w+)\[@([\w-]+)=(\w+)\]/);
         
+        if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
+            throw new Error(apf.formatErrorString(1041, this,
+                "Select via xPath",
+                "Could not use xPath to create xmlNode: " + xPath));
+        }
+        if (!isAddId && paths[i].match(/\/\//)) {
+            throw new Error(apf.formatErrorString(1041, this,
+                "Select via xPath",
+                "Could not use xPath to create xmlNode: " + xPath));
+        }
+        
 
         if (isAddId)
             paths[i] = isAddId[1];
@@ -6987,6 +7384,11 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 
     if (xmlNode.nodeType != 2 && !xmlNode.parentNode && !xmlNode.ownerElement) {
         
+        throw new Error(apf.formatErrorString(0, null,
+            "Converting XML to Xpath",
+            "Error xml node without parent and non matching context cannot\
+             be converted to xml.", xmlNode));
+        
 
         return false;
     }
@@ -7017,6 +7419,11 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 //for RDB: Xpath statement --> xmlNode
 apf.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
+        
+        throw new Error(apf.formatErrorString(0, null,
+            "Converting Xpath to XML",
+            "Error context xml node is empty, thus xml node cannot \
+             be found for '" + xpath + "'"));
         
 
         return false;
@@ -7988,6 +8395,14 @@ apf.extend(apf.config, {
         
         "debug" : function(value) {
             
+            if (value) {
+                apf.$debugwin.activate();
+                apf.addEventListener("load", function(){
+                    //$setTimeout("apf.$debugwin.activate();", 200) //@todo has a bug in gecko, chrome
+                    apf.removeEventListener("load", arguments.callee);
+                });
+            }
+            
             apf.debug = value;
         }
     }
@@ -8373,7 +8788,14 @@ apf.getData = function(instruction, options){
     var result, chr = instruction.charAt(0), callback = options.callback;
 
     
-    var gCallback = 
+    var gCallback  = function(data, state, extra){
+        var _self = this;
+        $setTimeout(function(){
+            s2.call(_self, data, state, extra);
+        });
+    }
+    
+    var s2 = 
     
 
     function(data, state, extra){
@@ -8441,10 +8863,21 @@ apf.getData = function(instruction, options){
             }
             
             
+            if (!model) {
+                throw new Error("Could not find model '" + model + "' in " + instruction); //@todo apf3.0 make proper error
+            }
+            
         
             return gCallback(model.data.selectSingleNode(xpath), apf.SUCCESS, {});
         }
         else {
+            
+            if (!options.xmlNode) {
+                return apf.console.error(apf.formatErrorString(0, null,
+                    "Loading data",
+                    "Xpath found without model and no xmlNode specified" 
+                    + instruction));
+            }
             
             
             return gCallback(options.xmlNode.data.selectSingleNode(fParsed.xpaths[1]), apf.SUCCESS, {});
@@ -8548,6 +8981,8 @@ apf.setModel = function(instruction, amlNode){
         //@todo apf3.0 check here if string is valid url (relative or absolute)
         if (instruction.indexOf(".") == -1 && instruction.indexOf("/") == -1) {
             
+            apf.console.warn("Could not find model '" + instruction + "'");
+            
             return;
         }
     }
@@ -8559,11 +8994,21 @@ apf.setModel = function(instruction, amlNode){
             if (fParsed.xpaths.length == 2 && fParsed.xpaths[0] != '#' && fParsed.xpaths [1] != '#') {
                 
                 
+                if (!apf.nameserver.get("model", fParsed.xpaths[0])) {
+                    throw new Error("Could not find model '" + fParsed.xpaths[0] + "' in " + instruction); //@todo apf3.0 make proper error
+                }
+                
                 
                 apf.nameserver.get("model", fParsed.xpaths[0]).register(amlNode, fParsed.xpaths[1]);
                 
                 return;
             }
+        }
+        
+        else {
+            //throw new Error(apf.formatErrorString(0, amlNode,
+            apf.console.warn("Xpath found without model. This might fail if no\
+                context is specified using local(): " + instruction);
         }
         
     }
@@ -11067,6 +11512,12 @@ apf.skins = {
         var type = skinName[1];
 
         
+        if (!this.skins[name]) {
+            throw new Error(apf.formatErrorString(1076, null,
+                "Retrieving Skin",
+                "Could not find skin '" + name + "'", amlNode.$aml));
+        }
+        
 
         amlNode.iconPath  = this.skins[name].iconPath;
         amlNode.mediaPath = this.skins[name].mediaPath;
@@ -11082,6 +11533,10 @@ apf.skins = {
                 return false;
             
             
+            throw new Error(apf.formatErrorString(1077, null,
+                "Retrieving Template",
+                "Could not find skin '" + name + "'"));
+            
             
             return false;
         }
@@ -11094,6 +11549,12 @@ apf.skins = {
         if (!originals) {
             originals = this.skins[name].originals[type] = {};
 
+            
+            if (!$xmlns(skin, "presentation", apf.ns.aml)[0]) {
+                throw new Error(apf.formatErrorString(1078, null,
+                    "Retrieving Template",
+                    "Missing presentation tag in '" + name + "'"));
+            }
             
 
             var nodes = $xmlns(skin, "presentation", apf.ns.aml)[0].childNodes;
@@ -11170,6 +11631,8 @@ apf.skins = {
         //Assuming image url
         {
             
+            //@todo check here if it is really a url
+            
 
             oHtml.style.backgroundImage = "url(" + (iconPath || "")
                 + strQuery + ")";
@@ -11234,6 +11697,13 @@ apf.Sort = function(xmlNode){
         else if (xmlNode["sort-method"]) {
             settings.method = self[xmlNode["sort-method"]];
             
+            
+            if (!settings.method) {
+                throw new Error(apf.formatErrorString(0, null, 
+                    "Sorting nodes",
+                    "Invalid or missing sort function name provided '" 
+                    + xmlNode["sort-method"] + "'", xmlNode));
+            }
             
         }
         else
@@ -11797,6 +12267,12 @@ var ID        = "id",
                     : modules.htmlcss;
 
         
+        if (!info.method)
+            throw new Error(apf.formatErrorString(0, this,
+                "Single Value Tween",
+                "Could not find method for tweening operation '"
+                + info.type + "'"));
+        
 
         if (useCSSAnim) {
             var type = CSSPROPS[info.type];
@@ -11978,6 +12454,12 @@ var ID        = "id",
                             : modules.htmlcss;
 
 
+            
+            if (!data.method)
+                throw new Error(apf.formatErrorString(0, this,
+                    "Multi Value Tween",
+                    "Could not find method for tweening operation '"
+                    + data.type + "'"));
             
 
             if (animCSS) {
@@ -12726,6 +13208,11 @@ apf.xmldb = new (function(){
     // make sure that "0" is never a listener index
     this.$listeners = [null];
     this.addNodeListener = function(xmlNode, o, uId){
+        
+        if (!o || (!o.$xmlUpdate && !o.setProperty))
+            throw new Error(apf.formatErrorString(1040, null,
+                "Adding Node listener",
+                "Interface not supported."));
         
 
         var id, listen = String(xmlNode.getAttribute(this.xmlListenTag) || "");
@@ -13999,9 +14486,24 @@ apf.http = function(){
             httpUrl = autoroute ? this["route-server"] : url;
 
         
+        if (!options.hideLogMessage) {
+            apf.console.teleport(this.queue[id].log = new apf.teleportLog({
+                id      : id,
+                tp      : this,
+                type    : options.type,
+                method  : this.method || options.method || "GET",
+                url     : url,
+                route   : autoroute ? httpUrl : "",
+                data    : new String(data && data.xml ? data.xml : data),
+                start   : new Date()
+            }));
+        }
+        
         var headers = [];
         
         function setRequestHeader(name, value){
+            
+            headers.push(name + ": " + value);
             
             http.setRequestHeader(name, value);
         }
@@ -14092,12 +14594,25 @@ apf.http = function(){
         }
         
         
+        if (!options.hideLogMessage)
+            this.queue[id].log.request(headers);
+        
 
         function handleError(){
             var msg = self.navigator && self.navigator.onLine
                 ? "File or Resource not available " + url
                 : "Browser is currently working offline";
 
+            
+            apf.console.warn(msg, "teleport");
+            if (!options.hideLogMessage)
+                _self.queue[id].log.response({
+                    
+                    end     : new Date(),
+                    
+                    message : msg,
+                    http    : http
+                });
             
 
             var state = self.navigator && navigator.onLine
@@ -14278,10 +14793,22 @@ apf.http = function(){
         }
         
         
+        if (!qItem.options.hideLogMessage) {
+            apf.console.info("[HTTP] Receiving [" + id + "]"
+                + (http.isCaching
+                    ? "[<span style='color:orange'>cached</span>]"
+                    : "")
+                + " from " + qItem.url,
+                "teleport",
+                http.responseText);
+        }
+        
 
         //Gonna check for validity of the http response
         var errorMessage = [],
             extra = {
+                
+                end      : new Date(),
                 
                 tpModule : this,
                 http     : http,
@@ -14353,6 +14880,9 @@ apf.http = function(){
             extra.message = errorMessage.join("\n");
 
             
+            if (qItem.log)
+                qItem.log.response(extra);
+            
 
             // Send callback error state
             if (!callback || !callback(extra.data, apf.ERROR, extra))
@@ -14363,6 +14893,9 @@ apf.http = function(){
 
         
 
+        
+        if (qItem.log)
+            qItem.log.response(extra);
         
 
         //Http call was successfull Success
@@ -14397,9 +14930,13 @@ apf.http = function(){
         http.abort();
 
         
+        apf.console.info("HTTP Timeout [" + id + "]", "teleport");
+        
 
         var extra;
         var noClear = callback ? callback(null, apf.TIMEOUT, extra = {
+            
+            end     : new Date(),
             
             userdata: qItem.options.userdata,
             http    : http,
@@ -14410,6 +14947,9 @@ apf.http = function(){
             retries : qItem.retries || 0
         }) : false;
         
+        
+        if (qItem.log)
+            qItem.log.response(extra);
         
         
         if (!noClear)
@@ -14502,6 +15042,8 @@ apf.http = function(){
 
         
 
+        
+        apf.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
         
 
         qItem.retries++;
@@ -14766,6 +15308,12 @@ apf.DOMParser.prototype = new (function(){
                 doc.$parentNode = options.host; //This is for sub docs that need to access the outside tree
             
             
+            //Check for children in Aml node
+            /*if (!xmlNode.childNodes.length) {
+                apf.console.warn("DOMParser got markup without any children");
+                return (docFrag || doc);
+            }*/
+            
             
             //Let's start building our tree
             amlNode = this.$createNode(doc, xmlNode.nodeType, xmlNode); //Root node
@@ -14997,9 +15545,23 @@ apf.DOMParser.prototype = new (function(){
                 }
 
                 
+                if (!namespaceURI) {
+                    throw new Error("Missing namespace definition."); //@todo apf3.0 make proper error
+                }
+                if (!apf.namespaces[namespaceURI]) {
+                    if (this.allowAnyElement)
+                        namespaceURI = apf.ns.xhtml;
+                    else 
+                        throw new Error("Missing namespace handler for '" + namespaceURI + "'"); //@todo apf3.0 make proper error
+                }
+                
                 
                 var els = apf.namespaces[namespaceURI].elements;
 
+                
+                if (!(els[nodeName] || els["@default"])) {
+                    throw new Error("Missing element constructor: " + nodeName); //@todo apf3.0 make proper error
+                }
                 
                 
                 o = new (els[nodeName] || els["@default"])(null, nodeName);
@@ -15054,6 +15616,10 @@ apf.DOMParser.prototype = new (function(){
                 break;
             case 7:
                 var target = nodeName || xmlNode && xmlNode.nodeName;
+                
+                if(!apf.aml.processingInstructions[target])
+                    throw new Error(apf.formatErrorString(0, null,
+                        "The processing instruction does not exist", "Could not find the processing instruction with target: " + target));
                 
                 o = new apf.aml.processingInstructions[target]();
 
@@ -15397,6 +15963,12 @@ apf.AmlNode = function(){
      */
     this.insertBefore = function(amlNode, beforeNode, noHtmlDomEdit){
         
+        if (!amlNode || !amlNode.hasFeature || !amlNode.hasFeature(apf.__AMLNODE__)){
+            throw new Error(apf.formatErrorString(1072, this,
+                "Insertbefore DOM operation",
+                "Invalid argument passed. Expecting an AmlElement."));
+        }
+        
 
         if (this.nodeType == this.NODE_DOCUMENT) {
             if (this.childNodes.length) {
@@ -15433,6 +16005,15 @@ apf.AmlNode = function(){
         if (beforeNode) {
             index = this.childNodes.indexOf(beforeNode);
             if (index < 0) {
+                
+                if (beforeNode == this)
+                    throw new Error(apf.formatErrorString(1072, this,
+                        "Insertbefore DOM operation",
+                        "Before node is the same node as inserted node"));
+                else 
+                    throw new Error(apf.formatErrorString(1072, this,
+                        "Insertbefore DOM operation",
+                        "Before node is not a child of the parent node specified"));
                 
 
                 return false;
@@ -15568,10 +16149,23 @@ apf.AmlNode = function(){
      */
     this.removeNode = function(doOnlyAdmin, noHtmlDomEdit){
         
+        if (doOnlyAdmin && typeof doOnlyAdmin != "boolean") {
+            throw new Error(apf.formatErrorString(0, this,
+                "Removing node from parent",
+                "Invalid DOM Call. removeNode() does not take any arguments."));
+        }
+        
 
         if (!this.parentNode || !this.parentNode.childNodes)
             return this;
 
+        
+        if (!this.parentNode.childNodes.contains(this)) {
+            /*throw new Error(apf.formatErrorString(0, this,
+                "Removing node from parent",
+                "Passed node is not a child of this node.", this.$aml));*/
+            return false;
+        }
         
 
         this.parentNode.childNodes.remove(this);
@@ -15615,6 +16209,12 @@ apf.AmlNode = function(){
      * supported.
      */
     this.removeChild = function(childNode) {
+        
+        if (!childNode || !childNode.hasFeature || !childNode.hasFeature(apf.__AMLNODE__)) {
+            throw new Error(apf.formatErrorString(0, this,
+                "Removing a child node",
+                "Invalid Argument. removeChild() requires one argument of type AMLElement."));
+        }
         
 
         childNode.removeNode();
@@ -15896,6 +16496,12 @@ apf.AmlElement = function(struct, tagName){
          */
         "id": function(value){
             
+            if (value == "apf") {
+                throw new Error(apf.formatErrorString(0, this, 
+                    "Setting Name of Element",
+                    "Cannot set name of element to 'apf'"));
+            }
+            
             
             if (this.name == value)
                 return;
@@ -15909,6 +16515,9 @@ apf.AmlElement = function(struct, tagName){
             }
     
             
+            if (self[value])
+                throw new Error("ID collision of APF element: '" + value + "'");
+            
     
             if (!self[value] || !self[value].hasFeature) {
                 try {
@@ -15916,7 +16525,16 @@ apf.AmlElement = function(struct, tagName){
                 }
                 catch(ex) {
                     
+                    var error = true;
+                    
                 }
+            }
+            
+            if (error && value in self) {
+                apf.console.warn("trying to set a value in the global scope with "
+                                + "a reserved name '" + value + "'.\nNothing wrong "
+                                + "with that, except that you will not be able to "
+                                + "reference\nthe object from the global scope in JS.")
             }
             
             
@@ -16113,6 +16731,8 @@ apf.AmlElement = function(struct, tagName){
      */
     this.replaceMarkup = function(amlDefNode, options) {
         
+        apf.console.info("Remove all children from element");
+        
 
         if (!options)
             options = {};
@@ -16159,6 +16779,8 @@ apf.AmlElement = function(struct, tagName){
      *    clear
      */
     this.insertMarkup = function(amlDefNode, options){
+        
+        apf.console.info("Loading sub markup from external source");
         
 
         
@@ -16306,6 +16928,12 @@ apf.AmlElement = function(struct, tagName){
         if (this.$booleanProperties[prop])
             value = apf.isTrue(value);
 
+        
+        if (typeof this[prop] == "function") {
+            throw new Error("Could not set property/attribute '" + prop
+                + "' which has the same name as a method on this object: '"
+                + this.toString() + "'");
+        }
         
 
         this[prop] = value;
@@ -17253,6 +17881,10 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
         this.$setDynamicProperty("calcdata", this.data);
         
+        
+        if (this.target.match(/\-debug$/)) {
+            apf.console.info(this.$lastFParsed.toString());
+        }
         
     }, true);
     
@@ -18670,9 +19302,13 @@ apf.aml.setElement("include", apf.XiInclude);
     
     function loadIncludeFile(path){
         
+        apf.console.info("Loading include file: " + path);
+        
 
         var _self = this;
         apf.getData(path, apf.extend(this.options || {}, {
+            
+            type : "markup",
             
             callback : function(xmlString, state, extra){
                 if (state != apf.SUCCESS) {
@@ -18711,6 +19347,8 @@ apf.aml.setElement("include", apf.XiInclude);
                 }
                 xmlNode.setAttribute("filename", extra.url);
 
+                
+                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 
 
                 finish.call(_self, xmlNode); //@todo add recursive includes support here
@@ -20306,6 +20944,9 @@ apf.GuiElement = function(){
             this.visible = true;
 
         
+        if (apf.debug && this.$ext && this.$ext.nodeType)
+            this.$ext.setAttribute("uniqueId", this.$uniqueId);
+        
 
         
         if (this.$focussable && typeof this.focussable == "undefined")
@@ -20400,6 +21041,11 @@ apf.GuiElement = function(){
 
                     if (!self[menuId]) {
                         
+                        throw new Error(apf.formatErrorString(0, this,
+                            "Showing contextmenu",
+                            "Could not find contextmenu by name: '" + menuId + "'"),
+                            this.$aml);
+                        
                         
                         return;
                     }
@@ -20429,6 +21075,11 @@ apf.GuiElement = function(){
                 : this.contextmenus[0].getAttribute("menu")
 
             if (!self[menuId]) {
+                
+                throw new Error(apf.formatErrorString(0, this,
+                    "Showing contextmenu",
+                    "Could not find contextmenu by name: '" + menuId + "'",
+                    this.$aml));
                 
                 
                 return;
@@ -21198,11 +21849,25 @@ apf.Presentation = function(){
 
     this.$getNewContext = function(type, amlNode){
         
+        if (type != type.toLowerCase()) {
+            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
+        }
+
+        if (!this.$originalNodes[type]) {
+            throw new Error(apf.formatErrorString(0, this,
+                "Getting new skin item",
+                "Missing node in skin description '" + type + "'"));
+        }
+        
 
         this.$pNodes[type] = this.$originalNodes[type].cloneNode(true);
     };
 
     this.$hasLayoutNode = function(type){
+        
+        if (type != type.toLowerCase()) {
+            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
+        }
         
 
         return this.$originalNodes[type] ? true : false;
@@ -21210,9 +21875,25 @@ apf.Presentation = function(){
 
     this.$getLayoutNode = function(type, section, htmlNode){
         
+        if (type != type.toLowerCase()) {
+            throw new Error("Invalid layout node name ('" + type + "'). lowercase required");
+        }
+        if (!this.$pNodes) {
+            throw new Error("Skin not loaded for :" + this.serialize(true));
+        }
+        
 
         var node = this.$pNodes[type] || this.$originalNodes[type];
         if (!node) {
+            
+            if (!this.$dcache)
+                this.$dcache = {}
+
+            if (!this.$dcache[type + "." + this.skinName]) {
+                this.$dcache[type + "." + this.skinName] = true;
+                apf.console.info("Could not find node '" + type
+                                 + "' in '" + this.skinName + "'", "skin");
+            }
             
             return false;
         }
@@ -22026,10 +22707,20 @@ apf.ValidationGroup = function(name){
 
         if (page) {
             
+            try {
+            
                 if (page.validation && !eval(page.validation)) {
                     alert(page.invalidmsg);
                     found = true;
                 }
+            
+            }
+            catch(e) {
+                throw new Error(apf.formatErrorString(0, this,
+                    "Validating Page",
+                    "Error in javascript validation string of page: '"
+                    + page.validation + "'", page.$aml));
+            }
             
         }
 
@@ -22259,11 +22950,15 @@ apf.DataBinding = function(){
         }
         
         
+        if (!attr) {
+            apf.console.error("Could not find attribute handler for property '" 
+                + prop + "' on " + this.localName + ":" + (this.id || ""));
+            return;
+        }
+        
         
         
 
-        
-        try {
         
             if (attr.cvalue.asyncs) { //if async
                 var _self = this;
@@ -22277,13 +22972,6 @@ apf.DataBinding = function(){
             else {
                 var value = attr.cvalue.call(this, xmlNode);
             }
-        
-        }
-        catch(e){
-            apf.console.warn("[400] Could not execute binding for property "
-                + prop + "\n\n" + e.message);
-            return;
-        }
         
         
         this.setProperty(prop, undoObj && undoObj.extra.range || value, true); //@todo apf3.0 range
@@ -22476,6 +23164,13 @@ apf.DataBinding = function(){
             }
             
             
+            if (this.$amlLoaded && !this.$attrBindings) {
+                apf.console.warn("Could not load data yet in " + (this.localName
+                  ? this.localName + "[" + (this.name || "") + "]"
+                  : this.nodeName) + ". The loaded data is queued "
+                      + "until smartbinding rules are loaded or set manually.");
+            }
+            
             
             return this.$loadqueue = [xmlNode, cacheId];
         }
@@ -22486,6 +23181,10 @@ apf.DataBinding = function(){
             this.dataParent.parent.signalXmlUpdate[this.$uniqueId] = !xmlNode;
 
         if (!xmlNode && (!cacheId || !this.$isCached || !this.$isCached(cacheId))) {
+            
+            apf.console.warn("No xml root node was given to load in "
+                + this.localName + "[" + (this.name || '') + "]. Clearing any "
+                + "loaded xml in this component");
             
 
             this.clear(noClearMsg);
@@ -22512,6 +23211,11 @@ apf.DataBinding = function(){
         if (this.dispatchEvent("beforeload", {xmlNode : xmlNode}) === false)
             return false;
 
+        
+        apf.console.info("Loading XML data in "
+          + (this.localName 
+            ? this.localName + "[" + (this.name || '') + "]"
+            : this.nodeName));
         
 
         this.clear(true, true);
@@ -22603,6 +23307,9 @@ apf.DataBinding = function(){
 
             //||apf.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
+            
+            if (!mdl)
+                throw new Error("Could not find model");
             
 
             var amlNode = this;
@@ -23058,6 +23765,11 @@ apf.DataBinding = function(){
             return;
         
         
+        if (!apf.nameserver.get(prop, value))
+            throw new Error(apf.formatErrorString(1064, this,
+                "Setting " + prop,
+                "Could not find " + prop + " by name '" + value + "'"));
+        
 
         apf.nameserver.get(prop, value).register(this);
         
@@ -23077,6 +23789,10 @@ apf.DataBinding = function(){
         if (fParsed.models) {
             
             if (this.hasFeature(apf.__MULTISELECT__)) {
+                
+                if (eachBinds[prop]) {
+                    //throw new Error("Cannot use external model inside " + prop + " rule"); //@todo apf3.0 convert to apf error
+                }
                 
             }
             
@@ -23411,6 +24127,11 @@ apf.DataBinding = function(){
                 var xpath = apf.xmlToXpath(value, null, true) || ".";
                 
                 
+                if (model.queryNode(xpath) != value) {
+                    throw new Error("xml data node is not attached to model (" 
+                        + xpath + ") : " + value + ":" + (value && value.xml));
+                }
+                
                 
                 model.register(this, xpath);
                 return;
@@ -23619,6 +24340,13 @@ apf.MultiselectBinding = function(){
                     var htmlNode = apf.xmldb.findHtmlNode(sNodes[i], _self);
 
                     
+                    if (!_self.$findContainer){
+                        throw new Error(apf.formatErrorString(_self,
+                            "Sorting Nodes",
+                            "This component does not \
+                             implement _self.$findContainer"));
+                    }
+                    
 
                     var container = _self.$findContainer(htmlNode);
 
@@ -23711,6 +24439,11 @@ apf.MultiselectBinding = function(){
      * @param {XMLElement} [xmlNode] the parent element on which the each query is applied.
      */
     this.getTraverseNodes = function(xmlNode){
+        
+        if (!this.each) {
+            throw new Error("Could not render bound data. Missing 'each' rule for "
+                + this.localName + (this.id && "[" + this.id + "]" || "")); //@todo apf3.0 make into proper apf error
+        }
         
 
         
@@ -24222,6 +24955,11 @@ apf.MultiselectBinding = function(){
             this.$fill(result);
 
             
+            if (this.selectable && !this.xmlRoot.selectSingleNode(this.each))
+                apf.console.warn("No traversable nodes were found for "
+                                 + this.name + " [" + this.localName + "]\n\
+                                  Traverse Rule : " + this.$getBindRule("each")[4].getAttribute("match"));
+            
 
             if (this.selectable && (length === 0 || !this.xmlRoot.selectSingleNode(this.each)))
                 return;
@@ -24304,6 +25042,12 @@ apf.MultiselectBinding = function(){
                 //Set Component in listening state until data becomes available again.
                 var model = this.getModel(true);
 
+                
+                if (!model)
+                    throw new Error(apf.formatErrorString(0, this,
+                        "Setting change notifier on component",
+                        "Component without a model is listening for changes",
+                        this.$aml));
                 
 
                 return model.$waitForXml(this);
@@ -24391,6 +25135,13 @@ apf.MultiselectBinding = function(){
      * representation is created via $add().
      */
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth, action){
+        
+        if (!this.each) {
+            throw new Error(apf.formatErrorString(1060, this,
+                "adding Nodes for load",
+                "No each SmartBinding rule was specified. This rule is \
+                 required for a " + this.localName + " component.", this.$aml));
+        }
         
 
         var htmlNode, lastNode;
@@ -24524,6 +25275,10 @@ apf.MultiselectBinding = function(){
         if (this.xmlRoot && !this.$bindRuleTimer && this.$amlLoaded) {
             var _self = this;
             apf.queue.add("reload" + this.$uniqueId, function(){
+                
+                apf.console.log("Reloading multiselect based on attribute '"
+                                 + prop + "' bind change to value '"
+                                 + value + "'\n\n" + _self.serialize(true));
                 
                 _self.reload();
             });
@@ -24787,6 +25542,15 @@ apf.StandardBinding = function(){
             }
             
             if (retreatToListenMode || this.xmlRoot == xmlNode) {
+                
+                //RLD: Disabled because sometimes indeed components do not 
+                //have a model when their xmlRoot is removed.
+                if (!model) {
+                    throw new Error(apf.formatErrorString(0, this, 
+                        "Setting change notifier on component", 
+                        "Component without a model is listening for changes", 
+                        this.$aml));
+                }
                 
 
                 //Set Component in listening state untill data becomes available again.
@@ -25123,6 +25887,14 @@ apf.MultiSelect = function(){
             return;
 
         
+        //We're not removing the XMLRoot, that would be suicide ;)
+        if (nodeList.contains(this.xmlRoot)) {
+            throw new Error(apf.formatErrorString(0,
+                "Removing nodes",
+                "You are trying to delete the xml root of this \
+                 element. This is not allowed."));
+        }
+        
 
         var changes = [];
         for (var i = 0; i < nodeList.length; i++) {
@@ -25334,6 +26106,13 @@ apf.MultiSelect = function(){
                 addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); 
 
             
+            if (!pNode) {
+                throw new Error(apf.formatErrorString(0, amlNode,
+                    "Executing add action",
+                    "Missing parent node. You can only add nodes to a list if it\
+                     has data loaded. Unable to perform action."));
+            }
+            
 
             if (amlNode.$executeAction("appendChild",
               [pNode, addXmlNode, beforeNode], "add", addXmlNode) !== false
@@ -25352,6 +26131,11 @@ apf.MultiSelect = function(){
             if (rule.get)
                 return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
             else {
+                
+                throw new Error(apf.formatErrorString(0, this,
+                    "Executing add action",
+                    "Missing add action defined in action rules. Unable to \
+                     perform action."));
                 
             }
         }
@@ -25411,6 +26195,16 @@ apf.MultiSelect = function(){
             if (!this.bindingRules && !this.caption) 
                 return false;
 
+            
+            if (!this.caption && !this.bindingRules[this.$mainBind] && !this.bindingRules["caption"]) {
+                if (noError)
+                    return false;
+                
+                throw new Error(apf.formatErrorString(1074, this,
+                    "Retrieving the value of this component.",
+                    "No value rule has been defined. There is no way \
+                     to determine the value of the selected item."));
+            }
             
 
             return this.$applyBindRule(this.$mainBind, xmlNode || this.selected, null, true)
@@ -25502,6 +26296,10 @@ apf.MultiSelect = function(){
 
         /**** Type Detection ****/
         if (!xmlNode) {
+            
+            throw new Error(apf.formatErrorString(1075, this,
+                "Making a selection",
+                "No selection was specified"))
             
 
             return false;
@@ -25774,6 +26572,10 @@ apf.MultiSelect = function(){
             }
 
             if (!xmlNode) {
+                
+                apf.console.warn("Component : " + this.name + " ["
+                    + this.localName + "]\nMessage : xmlNode whilst selecting a "
+                    + "list of xmlNodes could not be found. Ignoring.")
                 
                 continue;
             }
@@ -26157,6 +26959,25 @@ apf.MultiSelect = function(){
         }
         
         
+        var rule = this.$getBindRule("value", this.xmlRoot);
+        if (rule) {
+            /*var compiled = rule.cvalue || rule.cmatch;
+            if (compiled.type != 3) {
+                throw new Error(apf.formatErrorString(0,
+                    "Setting value attribute",
+                    "Value attribute does not have legal value."));
+            }*/
+
+            if (rule.models[0] == this.$model && rule.cvalue.xpaths[0] != "#") {
+                throw new Error(apf.formatErrorString(0, this,
+                    "Setting value attribute",
+                    "Value should not point to the same model where the items\
+                     are loaded from. Please use value=\"[mdlName::xpath]\" to\
+                     specify the value. Use selected=\"[xpath]\" to just select\
+                     a node without making a databinding to it."));
+            }
+        }
+        
 
         if (value || value === 0 || this["default"])
             this.select(String(value) || this["default"]);
@@ -26217,6 +27038,11 @@ apf.MultiSelect = function(){
                 return;
         }
         
+        
+        if (prop == "selection" && (this.getAttribute("selection") || "*").substr(0, 1) != "*"){
+            apf.console.warn("Selection attribute (" + this.getAttributeNode("selection") 
+                + ") should select multiple nodes. Please prefix xpath query with a * (ex.: *[item]).");
+        }
         
 
         if (this.$isSelecting) {
@@ -26932,6 +27758,15 @@ apf.DataAction = function(){
         var actionRule = this.$actions && this.$actions.getRule(name, xmlContext);
         if (!actionRule && apf.config.autoDisableActions && this.$actions) {
             
+            if (!xmlContext) {
+                apf.console.warn("Tried starting new action but no xml \
+                    context was specified.");
+            }
+            else {
+                apf.console.warn("Tried starting new action but no '" + name
+                    + "' action rule was found.");
+            }
+            
 
             return false;
         }
@@ -26994,6 +27829,9 @@ apf.DataAction = function(){
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         
 
+        
+        apf.console.info("Executing action '" + action + "' for " + (this.name || "")
+                         + " [" + (this.localName || "") + "]");
         
 
         //Get Rules from Array
@@ -27075,6 +27913,13 @@ apf.DataAction = function(){
         //recompile bindrule to create nodes
         if (!rule) {
             
+            if (this.$getBindRule(setName))
+                throw new Error("There is no rule that matches the xml node for this operation.\
+                                 Please make sure you are matching a node and using the value to \
+                                 specify it's value <a:" + setName + " match='person' \
+                                 value='[@name]' /> : " + xmlNode.xml); //@todo make apf Error
+            else
+            
                 return false;
         }
 
@@ -27091,6 +27936,9 @@ apf.DataAction = function(){
                 compiled = null;
         });
 
+        
+        if (!compiled)
+            throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make apf Error
         
 
         var atAction, model, node,
@@ -28175,7 +29023,8 @@ apf.BaseButton = function(){
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);
         
-        if (!oNode) return;
+        if (!oNode)
+            return apf.console.warn("No background defined in the Button skin", "button");
         
 
         if (value) {
@@ -29159,6 +30008,12 @@ apf.BaseList = function(){
                     : "") + " custom='1' />";
             }
             else {
+                
+                apf.console.warn("No add action rule is defined for element while more='true'.");
+                /*throw new Error(apf.formatErrorString(0, this,
+                    "Could not start more",
+                    "No add action rule is defined for this component",
+                    this.$aml));*/
                 
                 //return false;
                 xmlNode = "<item />";
@@ -30234,17 +31089,26 @@ apf.BaseTab = function(){
             }
             
             
+            apf.console.warn("Setting tab page which doesn't exist, \
+                              referenced by name: '" + next + "'");
+            
 
             return false;
         }
 
         if (page.parentNode != this) {
             
+            apf.console.warn("Setting active page on page component which \
+                              isn't a child of this tab component. Cancelling.");
+            
 
             return false;
         }
 
         if (!page.visible || page.disabled) {
+            
+            apf.console.warn("Setting active page on page component which \
+                              is not visible or disabled. Cancelling.");
             
 
             return false;
@@ -33499,6 +34363,9 @@ apf.DragDrop = function(){
      */
     this.enableDragDrop = function(){
         
+        apf.console.info("Initializing Drag&Drop for " + this.localName
+            + "[" + (this.name || '') + "]");
+        
 
         //Set cursors
         //SHOULD come from skin
@@ -35627,6 +36494,43 @@ apf.__TELEPORT__ = 1 << 28;
 }).call(apf.Teleport.prototype = new apf.AmlElement());
 
 
+apf.teleportLog = function(extra){
+    var xml, request = extra.method + " " + extra.url + " HTTP/1.1\n\n" + extra.data;
+
+    this.setXml = function(pNode){
+        if (!xml) {
+            var doc = pNode.ownerDocument;
+            xml = doc.createElement(extra.tp.localName || extra.type || "http");
+            xml.appendChild(doc.createElement("request")).appendChild(doc.createTextNode(request || "-"));
+            xml.appendChild(doc.createElement("response")).appendChild(doc.createTextNode(response || "-"));
+        }
+
+        apf.xmldb.appendChild(pNode, xml);
+    }
+
+    this.request = function(headers){
+        request = request.replace(/\n\n/, "\n" + headers.join("\n") + "\n\n");
+
+        if (xml)
+            apf.setQueryValue(xml, "request/text()", request);
+
+        this.request = function(){}
+    }
+
+    var response = "";
+    this.response = function(extra){
+        try {
+            var headers = extra.http.getAllResponseHeaders();
+            response = "HTTP/1.1 " + extra.status + " " + extra.statusText + "\n"
+                + (headers ? headers + "\n" : "\n")
+                + extra.http.responseText;
+
+            if (xml)
+                apf.setQueryValue(xml, "response/text()", response);
+        } catch(ex) {}
+    }
+}
+
 
 
 
@@ -36877,6 +37781,12 @@ apf.window = function(){
             list    = fParent.$tabList;
 
         
+        if (list[tabindex]) {
+            apf.console.warn("Aml node already exist for tabindex " + tabindex
+                             + ". Will insert " + amlNode.tagName + " ["
+                             + (amlNode.name || "") + "] before existing one");
+        }
+        
 
         if (!amlNode.$isWindowContainer)
             amlNode.$focusParent = fParent;
@@ -36912,6 +37822,8 @@ apf.window = function(){
         if (aEl == amlNode && !force)
             return; //or maybe when force do $focus
 
+        
+        var hadAlreadyFocus = aEl == amlNode;
         
 
         this.$settingFocus = amlNode;
@@ -36950,6 +37862,10 @@ apf.window = function(){
         
 
         
+        if (!hadAlreadyFocus)
+            apf.console.info("Focus given to " + amlNode.localName +
+                " [" + (amlNode.name || "") + "]");
+        
 
         
     };
@@ -36959,6 +37875,9 @@ apf.window = function(){
         if (aEl != amlNode)
             return false;
 
+        
+        apf.console.info(aEl.localName + " ["
+            + (aEl.name || "") + "] was blurred.");
         
 
         aEl.$focusParent.$lastFocussed = null;
@@ -37164,6 +38083,9 @@ apf.window = function(){
         if (amlNode && (switchWindows || amlNode != apf.document.documentElement)) {
             start   = (list || []).indexOf(amlNode);
             if (start == -1) {
+                
+                apf.console.warn("Moving focus from element which isn't in the list\
+                                  of it's parent. This should never happen.");
                 
 
                 return;
@@ -37724,6 +38646,10 @@ apf.window = function(){
         
 
          
+        apf.console.info("Start parsing main application");
+        
+        
+        apf.Latometer.start();
         
         
         //Put this in callback in between the two phases
@@ -37772,7 +38698,13 @@ apf.window = function(){
                 //END OF ENTIRE APPLICATION STARTUP
         
                 
+                apf.console.info("Initialization finished");
                 
+                
+                
+                apf.Latometer.end();
+                apf.Latometer.addPoint("Total load time");
+                apf.Latometer.start(true);
                 
           }
         }); //async
@@ -37977,6 +38909,9 @@ apf.runGecko = function(){
      Error Object like IE
      ****************************************************************************/
     function Error(nr, msg){
+        
+        if (!apf.$debugwin.nativedebug) 
+            apf.$debugwin.errorHandler(msg, "", 0);
         
         
         this.message = msg;
@@ -38204,6 +39139,10 @@ apf.runIE = function(){
                 : "beforeEnd", str);
         }
         catch(e) {
+            
+            apf.console.warn("Warning found block element inside a " 
+              + pNode.tagName 
+              + " element. Rendering will give unexpected results");
             
             
             pNode.insertAdjacentHTML("afterEnd", str);
@@ -38656,7 +39595,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/o3.js)SIZE(9019)TIME(Thu, 03 May 2012 17:07:31 GMT)*/
+/*FILEHEAD(core/browsers/o3.js)SIZE(9115)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
@@ -39693,6 +40632,266 @@ global.SHA1 = function(str) {
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+
+
+
+/**
+ * Returns a string giving information on a javascript object.
+ *
+ * @param {mixed} obj the object to investigate
+ */
+apf.dump =
+apf.vardump = function(obj, o, depth, stack){
+	o = o || {};
+	if(o.maxdepth === undefined)o.maxdepth = 99;
+
+    if (apf.isWebkit) //@todo RIK please fix this issue.
+        return "";
+    if (!obj) return obj + "";
+    if (!stack) stack = "";
+    if (!depth) depth = 0;
+    var str;
+    switch (obj.dataType) {
+        case apf.STRING:
+            return "\"" + (o.clip?(obj.length>o.clip?(obj.slice(0,o.clip)+"..."):obj):obj).replace(/[\"]/g,"'") + "\"";
+        case apf.NUMBER:
+            return obj;
+        case apf.BOOLEAN:
+            return (obj ? "true" : "false");
+        case apf.DATE:
+            return "Date(\"" + obj + "\)";
+        case apf.ARRAY:
+            if(obj[obj.length-2]=='$__vardump'){
+                return "this"+obj[obj.length-1]; 
+            }
+            obj.push('$__vardump',stack);
+            str = ["[ "];
+            for (var i = 0; i < obj.length-2; i++) {
+                str.push( str.length>1?",":"",
+                    (depth >= o.maxdepth ? typeof(obj[i]) :
+                    apf.vardump(obj[i], o, depth + 1, stack+'['+i+']')) );
+            }
+            str.push( " ]");
+            obj.pop();obj.pop();
+            return str.join('');
+        default:
+            if (typeof obj == "function")
+                return "function";
+        	if (obj.nodeType !== undefined)
+                return o.xml?(str=obj.xml,o.clip?((str=str.replace(/\s*[\r\n]\s*/g,"")).length>o.clip?str.slice(0,o.clip)+"...>":str):str):("<" + obj.tagName+"../>") ;
+                //return depth == 0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
+            if (depth >= o.maxdepth)
+                return "object";
+
+            //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
+            if (obj['$__vardump']) return "this"+obj['$__vardump']+"";
+            obj['$__vardump'] = stack;
+            str = ["{"+(o.clip?"":"\n")];
+            for (var prop in obj) if(prop!='$__vardump'){
+            	if(o.clipobj && str.join('').length>o.clipobj){str.push( ", ..."); break;}
+                try {
+                    var propname = prop;
+                    if(str.length>1)str.push(o.clip?", ":",\n");
+                    str.push( o.clip?"":("\t".repeat(depth+1)), propname, ": ",
+                      (depth >= o.maxdepth ? typeof(obj[prop]):
+                        apf.vardump(obj[prop], o, depth + 1, stack+'.'+prop)) );
+                } catch(e) {
+                    str.push( o.clip?"":("\t".repeat(depth+1)) , prop , ": dumperror");
+                }
+            }
+            str.push(o.clip?"":"\n", o.clip?"":("\t".repeat(depth)), "}");
+            
+            function cleanup(obj){
+                if(obj['$__vardump']!== undefined)
+                    delete obj['$__vardump'];
+                else return;
+                for(var prop in obj){
+                    var v = obj[prop];
+                    if(typeof(v)=='object' && v) cleanup(v);
+                }
+            }
+            cleanup(obj);
+            
+            return str.join('');
+    }
+};
+
+if (apf.isOpera) {
+    window.console = {};
+    ["log", "debug", "info", "warn", "error"].forEach(function(type) {
+        window.console[type] = function() {
+            if (typeof arguments === "undefined") return null;
+            if (arguments.length === 1) { // single argument provided
+                opera.postError(type + ": " + arguments[0]);
+                return type + ": " + arguments[0];
+            }
+            var s      = arguments[0],
+                // string substitution patterns of firebug console
+                regexp = /%([sdifo])/g,
+                i      = 0,
+                match  = null;
+            // replace found matches with given arguments
+            while (match = regexp.exec(s)) {
+                s = s.replace(match[0], String(arguments[++i]));
+            }
+            // display log messages
+            var len = arguments.length;
+            while (len > i++) {
+                if (arguments[i]) {
+                    s += ' ';
+                    s += String(arguments[i]);
+                }
+            }
+            opera.postError(type + ": " + s);
+        };
+    });
+}
+
+/**
+ * Returns a string giving more detailed informations on a javascript object.
+ *
+ * @param {mixed} obj the object to investigate
+ */
+apf.dump2 =
+apf.vardump2 = function (obj, depth, recur, stack){
+    if(!obj) return obj + "";
+    if(!depth) depth = 0;
+
+    switch(obj.dataType){
+        case "string":    return "\"" + obj + "\"";
+        case "number":    return obj;
+        case "boolean": return obj ? "true" : "false";
+        case "date": return "Date[" + new Date() + "]";
+        case "array":
+            var str = "{\n";
+            for(var i=0;i < obj.length;i++){
+                str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : apf.vardump(obj[i], depth+1, !recur)) + "\n";
+            }
+            str += "     ".repeat(depth) + "}";
+            
+            return str;
+        default:
+            if(typeof obj == "function") return "function";
+            //if(obj.xml) return depth==0 ? "[ " + obj.xml + " ]" : "XML Element";
+            if(obj.xml || obj.serialize) return depth==0 ? "[ " + (obj.xml || obj.serialize()) + " ]" : "XML Element";
+            
+            if(!recur && depth>0) return "object";
+        
+            //((typeof obj[prop]).match(/(function|object)/) ? RegExp.$1 : obj[prop])
+            var str = "{\n";
+            for(prop in obj){
+                try{
+                    str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : apf.vardump(obj[prop], depth+1, !recur)) + "\n";
+                }catch(e){
+                    str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
+                }
+            }
+            str += "     ".repeat(depth) + "}";
+            
+            return str;
+    }
+}
+
+String.prototype.s = function(){
+    return this.replace(/[\r\n]/g, "");
+}
+
+/**
+ * Alerts string giving information on a javascript object.
+ * This is older version of this function
+ *
+ * @param {mixed} obj the object to investigate
+ */
+apf.alert_r = function(obj, recur){
+    alert(apf.vardump(obj, null, recur));
+}
+
+/**
+ * Alerts string giving information on a javascript object.
+ *
+ * @param {mixed} obj the object to investigate
+ */
+apf.alert_r2 = function(obj, recur){
+    alert(apf.vardump2(obj, null, !recur));
+}
+
+/**
+ * Object timing the time between one point and another.
+ *
+ * @param {Boolean} nostart whether the profiler should start measuring at creation.
+ * @constructor
+ */
+apf.ProfilerClass = function(nostart){
+    this.totalTime = 0;
+
+    /**
+     * Starts the timer.
+     * @param {Boolean} clear resets the total time.
+     */
+    this.start = function(clear){
+        if (clear) this.totalTime = 0;
+        this.startTime = new Date().getTime();
+
+        this.isStarted = true;
+    }
+
+    /**
+     * Stops the timer.
+     * @method
+     */
+    this.stop =
+    this.end = function(){
+        if (!this.startTime) return;
+        this.totalTime += new Date().getTime() - this.startTime;
+        this.isStarted = false;
+    }
+
+    /**
+     * Sends the total time to the console.
+     * @param {String} msg Message displayed in the console.
+     */
+    this.addPoint = function(msg){
+        this.end();
+        apf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
+        this.start(true);
+    }
+
+    if (!nostart)
+        this.start();
+};
+
+apf.Latometer = new apf.ProfilerClass(true);//backward compatibility
+
+if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
+    window.console = {};
+    ["log", "debug", "info", "warn", "error"].forEach(function(type) {
+        window.console[type] = function() {
+            if (typeof arguments === "undefined") return null;
+            if (arguments.length === 1) { // single argument provided
+                opera.postError(type + ": " + arguments[0]);
+                return type + ": " + arguments[0];
+            }
+            var s      = arguments[0],
+                // string substitution patterns of firebug console
+                regexp = /%([sdifo])/g,
+                i      = 0,
+                match  = null;
+            // replace found matches with given arguments
+            while (match = regexp.exec(s)) {
+                s = s.replace(match[0], String(arguments[++i]));
+            }
+            // display log messages
+            var len = arguments.length;
+            while (len > i++) {
+                if (arguments[i]) {
+                    s += ' ';
+                    s += String(arguments[i]);
+                }
+            }
+            opera.postError(type + ": " + s);
+        };
+    });
+}
 
 
 
@@ -41738,10 +42937,10 @@ apf.lm_exec = new (function(){
     // value of node by xpath
     function __val(n, x){
         if (!n)
-            return ("")
+            return (wlvl > 1 && wnode(x),"")
         return (n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || ("");
+          && n.nodeValue || (wlvl > 2 && wxpath(x, "_val"),"");
     }
 
     var __valattrrx = /(["'])/g;
@@ -41750,10 +42949,10 @@ apf.lm_exec = new (function(){
     }
     function __valattr(n, x){
         if (!n)
-            return ("")
+            return (wlvl > 1 && wnode(x),"")
         return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || ("");
+          &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (wlvl > 2 && wxpath(x, "_val"),"");
     }
 
     
@@ -41763,18 +42962,18 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return ("");
+            return (wlvl > 0 && wmodel(m, x, "_valm"),"");
         return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) 
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
-          && n.nodeValue || ("");
+          && n.nodeValue || (wlvl > 2 && wxpath(x),"");
     }
 
     function __nod(n, x){           // node by xpath
-        return n ? n.selectSingleNode(x) : (null);
+        return n ? n.selectSingleNode(x) : (wlvl > 1 && wnode(x, "_nod"),null);
     }
 
     function _nods(n, x){           // array of nodes by xpath
-        return n ? n.selectNodes(x) : ([]);
+        return n ? n.selectNodes(x) : (wlvl > 1 && wnode(x, "_nods"),[]);
     }
 
     function __nodm(m, x){          // node of model by xpath
@@ -41782,7 +42981,7 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (null);
+            return (wlvl > 0 && wmodel(m, x, "_nodm"),null);
 
         return n.selectSingleNode(x);
     }
@@ -41792,13 +42991,13 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return ([]);
+            return (wlvl > 0 && wmodel(m, x, "_nodsm"),[]);
 
         return n.selectNodes(x);
     }
 
     function __cnt(n, x){        // count nodes by xpath
-        return n ? n.selectNodes(x).length:(0);
+        return n ? n.selectNodes(x).length:(wlvl > 1 && wnode(x, "_cnt"),0);
     }
 
     function __cntm(m, x){      // count nodes from model by xpath
@@ -41806,7 +43005,7 @@ apf.lm_exec = new (function(){
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
           || ((n = apf.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
-            return (0);
+            return (wlvl>0&&wmodel(m,x,"_cntm"),0);
 
         return n.selectNodes(x).length;
     }
@@ -41843,10 +43042,10 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return ("");
+            return (wlvl>0&&wmodel(m,x,"_xml"),"");
 
         return (n && (n = n.selectSingleNode(x))) && n.xml ||
-        ("");
+        (wlvl>0&&!n&&wnode(x,"_xml"),"");
     }
 
     function _xmls(n, m, x){    // serialize nodes by xpath with .xml concatenated
@@ -41854,7 +43053,7 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return ("");
+            return (wlvl>0&&wmodel(m,x,"_xmls"),"");
         for(var i = 0,j = ((n=n.selectNodes(x))).length,o = [];i<j;i++)
             o[i] = n[i].xml;
         return o.join("");
@@ -41865,7 +43064,7 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return ("");
+            return (wlvl>0&&wmodel(m,x,"_valcr"),"");
 
         if(cr){
             apf.createNodeFromXpath( ni, x );
@@ -41874,7 +43073,7 @@ apf.lm_exec = new (function(){
             return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) &&
                 (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n))) && n.nodeValue || ""
         }
-        return ("");
+        return (wlvl>2&&wxpath(x,"_valcr"),"");
     }
 
     function _nodcr(n, cr, m, x){ // node with create flag
@@ -41882,14 +43081,14 @@ apf.lm_exec = new (function(){
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
             ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
-            return (null);
+            return (wlvl>0&&wmodel(m,x,"_nodcr"),null);
         return n.selectSingleNode(x) || (cr && apf.createNodeFromXpath( n, x ));
     }
 
     function _valst(n, x){      // a value with state holding
         var m = apf.xmldb.findModel(n);
         if(!m)
-            return ("");
+            return (wlvl>0&&wmodel(m,x,"_valst"),"");
         return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + (!x || x == "." ? "" : "/" + x) + "]";
     }
 
@@ -41926,7 +43125,7 @@ apf.lm_exec = new (function(){
         // check what n is.. if string parse
         if(n && n.charAt && n.charAt(0)=="<")
             return apf.getXmlDom(n).documentElement;
-        
+        if(!n && wlvl>1)wnode("-","_local");
         return n;
     }
 
@@ -42824,6 +44023,11 @@ apf.XPath = {
             this.cache[sExpr] = this.compile(sExpr);
 
         
+        if (sExpr.length > 20) {
+            this.lastExpr    = sExpr;
+            this.lastCompile = this.cache[sExpr];
+        }
+        
         
         if (typeof this.cache[sExpr] == "string"){
             if (this.cache[sExpr] == ".")
@@ -43150,6 +44354,12 @@ apf.BindingRule = function(struct, tagName){
     });
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        
+        if (!this.match && (!this.value && !this.childNodes.length && !this.get
+          || this.localName == "each") || this.select) {
+            throw new Error(apf.formatErrorString(0, this, "Bindingrule",
+                "Missing attribute 'match'")); //@todo apf3.0 turn this into a good error
+        }
         
 
         var first;
@@ -43819,6 +45029,9 @@ apf.actiontracker = function(struct, tagName){
             if (!UndoObj) return;
 
             
+            if (id != undoStack.length - 1) //@todo callstack got corrupted?
+                throw new Error("callstack got corrupted");
+            
             undoStack.length--;
             redoStack.push(UndoObj); //@todo check: moved from outside if(single)
 
@@ -43845,6 +45058,8 @@ apf.actiontracker = function(struct, tagName){
             return;
 
         
+        this.log && this.log("Executing " + (undo ? "undo" : "redo"));
+        
 
         //Undo the last X places - where X = id;
         if (id == -1)
@@ -43858,6 +45073,12 @@ apf.actiontracker = function(struct, tagName){
             if (!undoStack[undoStack.length - 1]) {
                 undoStack.length--;
 
+                
+                apf.console.error("The actiontracker is in an invalid \
+                                   state. The entire undo and redo stack will \
+                                   be cleared to prevent further corruption\
+                                   This is a serious error, please contact \
+                                   the system administrator.");
                 
 
                 this.$undostack = [];
@@ -43895,6 +45116,11 @@ apf.actiontracker = function(struct, tagName){
                   bubbles : true
               })) === false) {
 
+                
+                this.log && this.log("You have cancelled the automatic undo \
+                    process! Please be aware that if you don't retry this call \
+                    the queue will fill up and none of the other actions will \
+                    be sent through.");
                 
 
                 return true; //don't delete the call from the queue
@@ -44677,6 +45903,8 @@ apf.aml.setElement("auth", apf.auth);
             return false;
 
         
+        apf.console.info("Retrying login...", "auth");
+        
 
         //@todo shouldn't I be using inProces here?
         var name, pos = 0, len = 0, _self = this,
@@ -44706,6 +45934,9 @@ apf.aml.setElement("auth", apf.auth);
         
 
         
+        apf.console.info("Logging " + type + " on service '"
+            + service + "'", "auth");
+        
 
         //Execute login call
         options.callback = function(data, state, extra){
@@ -44734,6 +45965,9 @@ apf.aml.setElement("auth", apf.auth);
                 if (isRelogin) //If we're retrying then we'll step out here
                     return _self.authRequired();
 
+                
+                apf.console.info("Log " + type + " failure for service '"
+                    + service + "'", "auth");
                 
 
                 var commError = new Error(apf.formatErrorString(0, null,
@@ -44789,6 +46023,9 @@ apf.aml.setElement("auth", apf.auth);
             }));
 
             
+            apf.console.info("Log " + type + " success for service '"
+                + service + "'", "auth");
+            
             
             _self.setProperty("authenticated", true);
         };
@@ -44819,6 +46056,12 @@ apf.aml.setElement("auth", apf.auth);
             else if (qItem.id)
                 qItem.tpModule.retry(qItem.id);
 
+            
+            //Dunno what's up, lets tell the developer
+            else
+                apf.console.warn("Unable to retry queue item after "
+                  + "successfull logging in. It seems the protocol that sent "
+                  + "the message doesn't allow it.");
             
         }
 
@@ -47338,7 +48581,8 @@ apf.button  = function(struct, tagName){
 
     this.$propHandlers["icon"] = function(value){
         
-        if (!this.oIcon) return;
+        if (!this.oIcon)
+            return apf.console.warn("No icon defined in the Button skin", "button");
         
 
         if (value)
@@ -47465,6 +48709,12 @@ apf.button  = function(struct, tagName){
             this.$setState("Down", {});
 
         
+        if (!menu) {
+            throw new Error(apf.formatErrorString(0, this,
+                "Showing submenu",
+                "Could not find submenu '" + this.submenu + "'"));
+        }
+        
 
         var menuPressed = this.parentNode.menuIsPressed;
         if (menuPressed && menuPressed != this) {
@@ -47522,6 +48772,12 @@ apf.button  = function(struct, tagName){
         this.parentNode.menuIsPressed = this;
 
         
+        if (!menu) {
+            throw new Error(apf.formatErrorString(0, this,
+                "Showing submenu",
+                "Could not find submenu '" + this.submenu + "'"));
+        }
+        
 
         //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
 
@@ -47548,7 +48804,11 @@ apf.button  = function(struct, tagName){
         if (!value){
             if (this.value && this.parentNode) {
                 
+                try{
+                
                 menuDown.call(this);
+                
+                }catch(ex){}
                 
             }
 
@@ -49545,6 +50805,9 @@ apf.datagrid = function(struct, tagName){
         for (var h, i = 0, l = rules.length; i < l; i++) {
             h = rules[i];
             
+            
+            if (!h.$width)
+                throw new Error("missing width"); //temporary check
             
             
             if (h.visible !== false) {
@@ -53149,6 +54412,10 @@ apf.item  = function(struct, tagName){
         var menu = self[this.submenu];
         if (!menu) {
             
+            throw new Error(apf.formatErrorString(0, this,
+                "Displaying submenu",
+                "Could not find submenu '" + this.submenu + "'", this.$aml));
+            
 
             return;
         }
@@ -56414,6 +57681,8 @@ apf.model = function(struct, tagName){
         this.dispatchEvent("beforeretrieve");
 
         
+        var amlNode = options.amlNode;
+        
 
         var callback = options.callback, _self = this;
         options.callback = function(data, state, extra){
@@ -56425,6 +57694,12 @@ apf.model = function(struct, tagName){
             if (state != apf.SUCCESS) {
                 var oError;
 
+                
+                oError = new Error(apf.formatErrorString(0,
+                    _self, "Inserting xml data", "Could not insert data\n"
+                  + "Instruction:" + instruction + "\n"
+                  + "Url: " + extra.url + "\n"
+                  + "Info: " + extra.message + "\n\n" + data));
                 
 
                 if (extra.tpModule.retryTimeout(extra, state, 
@@ -56492,6 +57767,12 @@ apf.model = function(struct, tagName){
             options.insertPoint = this.data;
 
         
+        if (!options.insertPoint) {
+            throw new Error(apf.formatErrorString(0, amlNode || _self,
+                "Inserting data", "Could not determine insertion point for "
+              + "instruction: " + instruction));
+        }
+        
 
         //if(this.dispatchEvent("beforeinsert", parentXMLNode) === false) return false;
 
@@ -56541,6 +57822,13 @@ apf.model = function(struct, tagName){
         if (!xmlNode)
             xmlNode = this.data;
 
+        
+        if (!xmlNode) {
+            throw new Error(apf.formatErrorString(0, this, 
+                "Submitting model",
+                "Could not submit data, because no data was passed and the "
+              + "model does not have data loaded."));
+        }
         
 
         if (!type)
@@ -56747,6 +58035,10 @@ apf.page = function(struct, tagName){
                 }, false);
 
                 btncontainer.appendChild(elBtnClose);
+            }
+            
+            else {
+                apf.console.warn("Missing close button in tab skin");
             }
             
         }
@@ -57989,7 +59281,8 @@ apf.radiobutton = function(struct, tagName){
      */
     this.$propHandlers["icon"] = function(value){
         
-        if (!this.oIcon) return;
+        if (!this.oIcon)
+            return apf.console.warn("No icon defined in the Button skin", "button");
         
 
         if (value)
@@ -58680,6 +59973,9 @@ apf.rpc = function(struct, tagName){
         
         if (!apf[value]) {
             
+            throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass",
+                "Could not find Ajax.org Teleport RPC Component '" + value + "'", this));
+            
             return;
         }
         var _self = this;
@@ -58707,6 +60003,10 @@ apf.rpc = function(struct, tagName){
      */
     this.setCallback = function(name, func){
         
+        if (!this.$methods[name])
+            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
+                "Trying to set callback: method not found."));
+        
             
         this.$methods[name].callback = func;
     };
@@ -58723,6 +60023,10 @@ apf.rpc = function(struct, tagName){
      * @param {String} url  the target url of method defined on this object.
      */
     this.setUrl = function(name, url) {
+        
+        if (!this.$methods[name])
+            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
+                "Trying to set callback: method not found."));
         
 
         this.$methods[name].setProperty("url", url);
@@ -58859,6 +60163,11 @@ apf.rpc = function(struct, tagName){
      */
     this.purge = function(callback, userdata, async, extradata){
         
+        if (!this.stack[this.url] || !this.stack[this.url].length) {
+            throw new Error(apf.formatErrorString(0, null, "Executing a multicall", 
+                "No RPC calls where executed before calling purge()."));
+        }
+        
 
         // Get Data
         var data = this.createMessage("multicall", [this.stack[this.url]]), //function of module
@@ -58902,6 +60211,10 @@ apf.rpc = function(struct, tagName){
      */
     this.$addMethod = function(amlNode){
         if (amlNode.localName != "method"){
+            
+            throw new Error(apf.formatErrorString(0, this,
+                "Parsing RPC Teleport node",
+                "Found element which is not a method", this));
             
             return false;
         }
@@ -58969,6 +60282,11 @@ apf.rpc = function(struct, tagName){
             this.forceMulticall = true;
     
         //Set information later neeed
+        
+        if (!this[method])
+            throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
+                "Could not find RPC function by name '" + method + "' in data "
+              + "instruction '" + options.instruction + "'"));
         
         
         var props = this.$methods[method];
@@ -59402,6 +60720,8 @@ apf.scrollbar = function(struct, tagName){
     
     this.setScrollPosition = function(position, preventEvent) {
         if (position == NaN) {
+            
+            apf.console.warn("Scrollbar is hidden while scrolling.");
             
             return;
         }
@@ -60193,6 +61513,15 @@ apf.aml.setElement("skin", apf.skin);
         }
 
         
+        if (!found) {
+            throw new Error(apf.formatErrorString(0, null,
+                "Checking for the aml namespace",
+                "The Ajax.org Platform xml namespace was not found in "
+                + (xmlNode.getAttribute("filename")
+                    ? "in '" + xmlNode.getAttribute("filename") + "'"
+                    : "")));
+        }
+        
 
         return found;
     }
@@ -60228,12 +61557,16 @@ apf.aml.setElement("skin", apf.skin);
     
     function loadSkinFile(path){
         
+        apf.console.info("Loading include file: " + path);
+        
 
         var _self = this;
         
         apf.getData(
         
           path, {
+          
+          type : "skin",
           
           callback: function(xmlString, state, extra){
              if (state != apf.SUCCESS) {
@@ -60264,6 +61597,8 @@ apf.aml.setElement("skin", apf.skin);
             var xmlNode = apf.getXml(xmlString);//apf.getAmlDocFromString(xmlString);
             
             
+            checkForAmlNamespace(xmlNode);
+            
             
             if (!xmlNode) {
                 throw new Error(apf.formatErrorString(0, _self,
@@ -60275,6 +61610,8 @@ apf.aml.setElement("skin", apf.skin);
             
             
             {
+                
+                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
                 
                 
                 finish.call(_self, xmlNode);
@@ -61074,6 +62411,12 @@ apf.smartbinding = function(struct, tagName){
         this[prop] = value;
         
         
+        /*if (!apf.nameserver.get(name, attr[i].nodeValue))
+            throw new Error(apf.formatErrorString(1036, this, 
+                "Connecting " + name, 
+                "Could not find " + name + " by name '" 
+                + attr[i].nodeValue + "'"));*/
+        
     };
     
     this.add = function(node){
@@ -61194,6 +62537,10 @@ apf.smartbinding = function(struct, tagName){
         if (this.parentNode.hasFeature(apf.__DATABINDING__))
             this.register(this.parentNode);
 
+        
+        apf.console.info(this.name
+            ? "Creating SmartBinding [" + this.name + "]"
+            : "Creating implicitly assigned SmartBinding");
         
     });
 }).call(apf.smartbinding.prototype = new apf.AmlElement());
@@ -62681,6 +64028,13 @@ apf.state = function(struct, tagName){
             for (var i = 0; i < q.length; i++) {
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
                     
+                    /*throw new Error(apf.formatErrorString(1013, this,
+                        "Setting State",
+                        "Could not find object to give state: '"
+                        + q[i][0] + "' on property '" + q[i][1] + "'"));*/
+                    apf.console.warn("Could not find object to give state: " 
+                        + q[i][0] + "' on property '" + q[i][1] + "'");
+                    
                     
                     continue;
                 }
@@ -62702,6 +64056,8 @@ apf.state = function(struct, tagName){
             this.dispatchEvent("activate");
 
             
+            apf.console.info("Setting state '" + this.name + "' to ACTIVE");
+            
         }
 
         //Deactivate State
@@ -62709,6 +64065,8 @@ apf.state = function(struct, tagName){
             this.setProperty("active", false);
             this.dispatchEvent("deactivate");
 
+            
+            apf.console.info("Setting state '" + this.name + "' to INACTIVE");
             
         }
     };
@@ -63088,6 +64446,8 @@ apf.table = function(struct, tagName){
     
     this.$propHandlers["columns"] = function(value){
         if (!value.match(/^((?:\d+\%?|\*)\s*(?:,\s*|\s*$))+$/)) {
+            
+            apf.console.warn("Invalid column string found for table: " + value);
             
             return;
         }
@@ -65554,6 +66914,12 @@ apf.webdav = function(struct, tagName){
         }
 
         
+        try{
+            apf.console.error(extra.message.toString() + " (username: " + extra.username
+                              + ", server: " + extra.server + ")", "webdav");
+        }
+        catch(ex){}
+        
 
         return this.dispatchEvent("authfailure", extra);
     }
@@ -65582,6 +66948,9 @@ apf.webdav = function(struct, tagName){
             unregister.call(this, "auth-callback");
         }
 
+        
+        apf.console.error(extra.message + " (username: " + extra.username
+                          + ", server: " + extra.server + ")", "webdav");
         
 
         return this.dispatchEvent("connectionerror", extra);
@@ -66229,6 +67598,8 @@ apf.webdav = function(struct, tagName){
 
         this.doRequest(function(data, state, extra) {
             
+            apf.console.dir(data);
+            
         }, sPath, buildPropertiesBlock.call(this, oPropsSet, oPropsDel),
            sLock ? {"If": "<" + sLock + ">"} : null, true);
     };
@@ -66468,6 +67839,9 @@ apf.webdav = function(struct, tagName){
                 this.report(args[0], args[1], args[2], cb);
                 break;
             default:
+                
+                throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
+                    "Invalid WebDAV method '" + method + "'"));
                 
                 break;
         }
@@ -67458,6 +68832,9 @@ apf.rest = function(){
 
         var options = this.$methods[functionName];
 
+        
+        if ("NOTIFY|SEND|POST|PUT".indexOf(options["http-method"]) > -1)
+            apf.console.log("Found method " + options["http-method"] + ". Taking body from last argument");
         
         
         var body = "NOTIFY|SEND|POST|PUT".indexOf(options["http-method"].toUpperCase()) > -1 ? args.pop() : "",
@@ -68500,7 +69877,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-node.js)SIZE(1244)TIME(Thu, 03 May 2012 16:31:13 GMT)*/
+/*FILEHEAD(apf-node.js)SIZE(1244)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68525,7 +69902,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Thu, 03 May 2012 17:07:08 GMT)*/
+/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68641,3 +70018,2744 @@ apf.start();
  */
 
 
+
+
+/*FILEHEAD(node_modules/libxml/test.js)SIZE(46)TIME(Mon, 02 Jan 2012 09:59:27 GMT)*/
+
+require("./support/o3/modules/xml/test/test");
+
+/*FILEHEAD(node_modules/libxml/example/example.js)SIZE(1843)TIME(Mon, 02 Jan 2012 09:44:35 GMT)*/
+
+var xml = require("../lib/libxml");
+var xmlData = "\
+<?xml version=\"1.0\"?>\n\
+<catalog>\n\
+   <book id=\"bk101\" available=\"true\">\n\
+      <author>Gambardella, Matthew</author>\n\
+      <title>XML Developer's Guide</title>\n\
+      <genre>Computer</genre>\n\
+      <price>44.95</price>\n\
+      <publish_date>2000-10-01</publish_date>\n\
+      <description>An in-depth look at creating applications \n\
+      with XML.</description>\n\
+   </book>\n\
+   <book id=\"bk102\" available=\"false\">\n\
+      <author>Ralls, Kim</author>\n\
+      <title>Midnight Rain</title>\n\
+      <genre>Fantasy</genre>\n\
+      <price>5.95</price>\n\
+      <publish_date>2000-12-16</publish_date>\n\
+      <description>A former architect battles corporate zombies, \n\
+      an evil sorceress, and her own childhood to become queen \n\
+      of the world.</description>\n\
+   </book>\n\
+</catalog>";
+
+var doc = xml.parseFromString(xmlData);
+console.log("-parsed document:\n" + doc.xml);
+
+console.log("\n-traversing document element:");
+var elem = doc.documentElement;
+var childNodes = elem.childNodes;
+
+for (var i=0; i<childNodes.length; i++) {
+    console.log("name of child " + i + ": " 
+        + childNodes[i].nodeName);
+    console.log("type of child " + i + ": " 
+        + childNodes[i].nodeName);  
+}
+
+console.log("\n-attributes on first child of the document element:");       
+var child = elem.firstChild.nextSibling;
+var attributes = child.attributes;
+
+console.log(child.nodeName);
+for (var i=0; i<attributes.length; i++) {
+    console.log("attribute " + i + ": " 
+        + attributes[i].name + " = " 
+        + attributes[i].value);
+}
+
+console.log("\n-xpath query:");
+var xpathNodeList = elem.selectNodes("descendant-or-self::node()[@available='true']");
+console.log("first element of the xpath querry: " + xpathNodeList[0].getAttribute("id"));
+
+/*FILEHEAD(node_modules/libxml/lib/libxml/index.js)SIZE(60)TIME(Mon, 02 Jan 2012 09:44:35 GMT)*/
+
+var o3 = require('./o3.node').root;
+module.exports = o3.xml;
+
+/*FILEHEAD(node_modules/libxml/support/o3/modules/o3.js)SIZE(661)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
+
+try {
+	try{
+    	module.exports = require('./o3.node').root
+	} catch(ex) {
+    	module.exports = require('../build/default/o3.node').root
+	}
+} catch (ex) {
+    if (process.platform == "cygwin")
+		module.exports = require('./o3-cygwin.node').root;
+	else if (process.platform == "darwin") 
+        module.exports = require('./o3-darwin.node').root;
+    else if(process.platform == "sunos"){
+	    module.exports = require('./o3-sunos.node').root;
+	}else {
+        try{ 	                           
+            module.exports = require('./o3-linux32.node').root;
+        } catch(x){
+            module.exports = require('./o3-linux64.node').root;
+        }
+    }
+}
+
+
+/*FILEHEAD(node_modules/libxml/support/o3/modules/fastxml/index.js)SIZE(54)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
+
+var o3 = require('./o3');
+module.exports = o3.fastxml;
+
+/*FILEHEAD(node_modules/libxml/support/o3/modules/fastxml/example/example.js)SIZE(1809)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
+
+var fastxml = require("../lib/o3-fastxml"),
+	doc,
+	xmlData = "\
+<?xml version=\"1.0\"?>\n\
+<catalog>\n\
+   <book id=\"bk101\" available=\"true\">\n\
+      <author>Gambardella, Matthew</author>\n\
+      <title>XML Developer's Guide</title>\n\
+      <genre>Computer</genre>\n\
+      <price>44.95</price>\n\
+      <publish_date>2000-10-01</publish_date>\n\
+      <description>An in-depth look at creating applications \n\
+      with XML.</description>\n\
+   </book>\n\
+   <book id=\"bk102\" available=\"false\">\n\
+      <author>Ralls, Kim</author>\n\
+      <title>Midnight Rain</title>\n\
+      <genre>Fantasy</genre>\n\
+      <price>5.95</price>\n\
+      <publish_date>2000-12-16</publish_date>\n\
+      <description>A former architect battles corporate zombies, \n\
+      an evil sorceress, and her own childhood to become queen \n\
+      of the world.</description>\n\
+   </book>\n\
+</catalog>";
+
+doc = fastxml.parseFromString(xmlData);
+console.log("-parsed document:\n" + doc.xml);
+console.log("\n-traversing document element:");
+var elem = doc.documentElement,
+childNodes = elem.childNodes;
+for (var i=0; i<childNodes.length; i++) {
+	console.log("name of child " + i + ": " 
+		+ childNodes[i].nodeName);
+	console.log("type of child " + i + ": " 
+		+ childNodes[i].nodeName);	
+}
+
+console.log("\n-attributes on first child of the document element:");		
+var child = elem.firstChild.nextSibling,
+attributes = child.attributes;
+console.log(child.nodeName);
+for (var i=0; i<attributes.length; i++) {
+	console.log("attribute " + i + ": " 
+		+ attributes[i].name + " = " 
+		+ attributes[i].value);
+}
+
+console.log("\n-xpath query:");
+var xpathNodeList = elem.selectNodes(
+	"descendant-or-self::node()[@available='true']");
+console.log("first element of the xpath querry: " 
+	+ xpathNodeList[0].getAttribute("id"));	
+
+/*FILEHEAD(node_modules/libxml/support/o3/modules/fastxml/test/test.js)SIZE(14955)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
+
+var fs = require('fs');
+var sys = require('sys');
+var fastxml = require("../lib/o3-fastxml");
+
+function diff(node, node1) {
+    if (node.nodeType != node1.nodeType)
+        return false;
+    if (node.nodeName != node1.nodeName)
+        return false;
+    if (node.nodeValue != node1.nodeValue)
+        return false;
+    switch (node.nodeType) {
+    case node.DOCUMENT:
+        return diff(node.documentElement, node1.documentElement);
+    case node.ELEMENT:
+        var childNodes;
+        var attributes;
+        var length;
+
+        childNodes = node.childNodes;
+        length = childNodes.length;
+        if (length != node1.childNodes.length)
+            return false;
+        for (var i = 0; i < length; ++i) {
+            if (!diff(childNodes[i], node1.childNodes[i]))
+                return false;
+        }
+        attributes = node.attributes;
+        length = attributes.length;
+        if (length != node1.attributes.length)
+            return false;
+        for (var i = 0; i < length; ++i) {
+            if (!diff(attributes[i], node1.attributes[i]))
+                return false;
+        }
+        return true;
+    case node.ATTRIBUTE:
+        return true;
+    default:
+        return true;
+    };
+}
+
+function check(expected,actual) {
+	var l = expected.length;	
+	if (l != actual.length) {
+		console.log('expected: ' + expected.toString()
+			+ '\n\nactual: ' + actual.toString());	
+		return false;
+	}
+	
+	for (var i=0; i<l; i++) {
+		if (expected[i] != actual[i]) {
+			console.log('expected: ' + expected.length
+				+ '\n\nactual: ' + actual.length);	
+
+			return false;
+		}
+	}
+	
+	return true;		
+}
+
+function readFile(file) {
+    file = __dirname + "/" + file;
+	var size = fs.statSync(file).size,
+		buf = new Buffer(size),
+		fd = fs.openSync(file, 'r');
+	if (!size)
+		return "";
+	fs.readSync(fd, buf, 0, size, 0);
+	fs.closeSync(fd);
+	return buf.toString();
+} 
+
+var test = {
+test0 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    ref_parent.insertBefore(elem.childNodes[1].childNodes[3],
+                            ref_parent.childNodes[3]);
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test0.xml")));
+},
+
+test1 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    ref_parent.insertBefore(elem.childNodes[1].childNodes[3],
+                            ref_parent.childNodes[7]);
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test1.xml")));
+},
+
+test2 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    ref_parent.insertBefore(elem.childNodes[1].childNodes[3], ref_parent.childNodes[4])
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test2.xml")));
+},
+
+test3 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    ref_parent.insertBefore(doc.createElement("subtitle"), ref_parent.childNodes[7])
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test3.xml")));
+},
+
+test4 : function() {
+    var elem        = fastxml.parseFromString(readFile("test.xml")).
+                      documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    try {
+        ref_parent.insertBefore(fastxml.parseFromString(readFile("test.xml")).
+                                createElement("subtitle"), to.childNodes[7])
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test5 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    ref_parent.appendChild(elem.childNodes[1].childNodes[3]);
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test5.xml")));
+},
+
+test6 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    ref_parent.appendChild(ref_parent.childNodes[3]);
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test6.xml")));
+},
+
+test7 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    elem.normalize();
+    ref_parent.appendChild(ref_parent.childNodes[12]);
+    return diff(doc, fastxml.parseFromString(readFile("test7.xml")));
+},
+
+test8 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement,
+        to      = elem.childNodes[1];
+
+    to.appendChild(doc.createElement("subtitle"));
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test8.xml")));
+},
+
+test9 : function() {
+    var elem        = fastxml.parseFromString(readFile("test.xml")).
+                      documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    try {
+        ref_parent.appendChild(fastxml.parseFromString(readFile("test.xml")).
+                               createElement("subtitle"))
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test10 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    try {
+        ref_parent.insertBefore(elem, ref_parent.childNodes[3]);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test11 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    try {
+        ref_parent.appendChild(elem);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test12 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    try {
+        ref_parent.insertBefore(null, ref_parent.childNodes[3]);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test13 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+        child       = ref_parent.removeChild(ref_parent.childNodes[3]);
+
+    elem.normalize();
+    return !child.parent
+        && diff(doc, fastxml.parseFromString(readFile("test13.xml")));
+},
+
+test14 : function() {
+	return true; // turned off
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+    
+    ref_parent.removeChild(ref_parent.childNodes[3]);
+    try {
+        ref_parent.removeChild(child);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test15 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+    
+    try {
+        ref_parent.removeChild(null);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test16 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elem    = doc.getElementById("bk102");  
+
+    elem.normalize();
+    return elem.parentNode.nodeName == "catalog"
+        && diff(elem, fastxml.parseFromString(readFile("test16.xml")).
+                documentElement);
+},
+
+test17 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elem    = doc.getElementById("bk103");  
+
+    return !elem;
+},
+
+test18 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elems   = doc.getElementsByTagName("book"),
+        elem    = elems[1];
+
+    elem.normalize();
+    return elems.length = 2
+        && elem.parentNode.nodeName == "catalog"
+        && diff(elem, fastxml.parseFromString(readFile("test18.xml")).
+                documentElement);
+},
+
+test19 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elems   = doc.getElementsByTagName("shelf"),
+        elem    = elems[0];  
+
+    return elems.length == 0
+        && !elem;
+},
+
+test20 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement.childNodes[3];
+
+    return elem.getAttribute("id") == "bk102";
+},
+
+test21 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement.childNodes[3];
+
+    return !elem.getAttribute("isbn");
+},
+
+test22 : function() {
+	return true; // turned off
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement.childNodes[3];
+
+    try {
+        elem.getAttribute("@id");
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test23 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement;
+        ref_parent  = elem.childNodes[3];
+
+    ref_parent.setAttribute("id", "bk103");
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test23.xml")));
+},
+
+test24 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement;
+        ref_parent  = elem.childNodes[3];
+
+    ref_parent.setAttribute("isbn", "9783161484100");
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test24.xml")));
+},
+
+test25 : function() {
+	return true; // turned off
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement.childNodes[3];
+
+    try {
+        elem.setAttribute("@id", "bk103");
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test26 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        attr    = doc.createAttribute("isbn");
+
+    attr.nodeValue = "9783161484100";
+    return attr.ownerDocument = doc
+        && !attr.parent
+        && attr.nodeType == attr.ATTRIBUTE
+        && attr.nodeName ==  "isbn"
+        && attr.nodeValue == "9783161484100";
+},
+
+test27 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3],
+        attr        = doc.createAttribute("isbn");
+
+    attr.nodeValue = "9783161484100";
+    ref_parent.setAttributeNode(attr);
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test27.xml")));
+},
+
+test28 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3],
+        attr        = ref_parent.getAttributeNode("id");
+    
+    ref_parent.setAttributeNode(attr);
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test28.xml")));
+},
+
+test29 : function() {
+    var doc         = fastxml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3],
+        attr        = elem.childNodes[1].getAttributeNode("id");
+    
+    ref_parent.setAttributeNode(attr);
+    elem.normalize();
+    return diff(doc, fastxml.parseFromString(readFile("test29.xml")));
+},
+
+test30 : function() {
+    var elem        = fastxml.parseFromString(readFile("test.xml")).
+                      documentElement,
+        ref_parent  = elem.childNodes[3];
+    
+    try {
+        ref_parent.setAttributeNode(fastxml.parseFromString(readFile("test.xml")).
+                                    createAttribute("subtitle"))
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test31 : function() {
+    var doc     = fastxml.parseFromString(readFile("test.xml")),
+        elem    = doc.createElement("element"),
+        attr    = doc.createAttribute("attribute"),
+        text    = doc.createTextNode("Lorem ipsum");
+        cdata   = doc.createCDATASection("Lorem ipsum");
+        comment = doc.createComment("Lorem ipsum");
+
+    return elem.nodeType == elem.ELEMENT && elem.nodeName == "element" && !elem.parent
+        && attr.nodeType == attr.ATTRIBUTE && attr.nodeName == "attribute" && !attr.parent
+        && text.nodeType == text.TEXT && text.nodeValue == "Lorem ipsum" && !text.parent
+        && cdata.nodeType == cdata.CDATA_SECTION && cdata.nodeValue == "Lorem ipsum" && !cdata.parent
+        && comment.nodeType == cdata.COMMENT && comment.nodeValue == "Lorem ipsum" && !comment.parent;
+},
+
+test32 : function() {
+	var elem = fastxml.parseFromString(
+			readFile('xpath.xml')).documentElement,
+	expected = ['Everyday Italian','Harry Potter',
+		'XQuery Kick Start','Learning XML'],
+	actual = [],
+	xpath = '/bookstore/book/title';
+
+	
+	var selected = elem.selectNodes(xpath);
+	for (var i=0; i<selected.length; i++) 
+		actual.push(selected[i].nodeValue);
+	
+	return check(expected, actual);
+},
+
+test33 : function() {
+	var elem = fastxml.parseFromString(
+			readFile('xpath.xml')).documentElement,
+	expected = ['Everyday Italian'],
+	actual = [],
+	xpath = '/bookstore/book[1]/title';
+
+	
+	var selected = elem.selectNodes(xpath);
+	for (var i=0; i<selected.length; i++) 
+		actual.push(selected[i].nodeValue);
+	
+	return check(expected, actual);
+},
+
+test34 : function() {
+	var elem = fastxml.parseFromString(
+			readFile('xpath.xml')).documentElement,
+	expected = [30.00,29.99,49.99,39.95],
+	actual = [],
+	xpath = '/bookstore/book/price/text()';
+
+	
+	var selected = elem.selectNodes(xpath);
+	for (var i=0; i<selected.length; i++) 
+		actual.push(selected[i].nodeValue);
+	
+	return check(expected, actual);
+},
+
+test35 : function() {
+	var elem = fastxml.parseFromString(
+			readFile('xpath.xml')).documentElement,
+	expected = [49.99,39.95],
+	actual = [],
+	xpath = '/bookstore/book[price>35]/price ';
+
+	
+	var selected = elem.selectNodes(xpath);
+	for (var i=0; i<selected.length; i++) 
+		actual.push(selected[i].nodeValue);
+	
+	return check(expected, actual);
+},
+
+test36 : function() {
+	var elem = fastxml.parseFromString(
+			readFile('xpath.xml')).documentElement,
+	expected = ['Everyday Italian','Harry Potter',
+		'XQuery Kick Start','Learning XML'],
+	actual = [],
+	xpath = "descendant-or-self::node()[@lang='en']";
+
+	
+	var selected = elem.selectNodes(xpath);
+	for (var i=0; i<selected.length; i++) 
+		actual.push(selected[i].nodeValue);
+	
+	return check(expected, actual);
+}
+
+};
+
+
+for (var i in test) {
+    
+    if (test[i]())
+        console.log("test " + i + " succeeded\n");
+    else {
+        console.log("test " + i + " failed\n");
+        break;
+    }
+}
+
+
+/*FILEHEAD(node_modules/libxml/support/o3/modules/xml/index.js)SIZE(52)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
+
+var o3 = require('./o3.js')
+module.exports = o3.xml;
+
+/*FILEHEAD(node_modules/libxml/support/o3/modules/xml/example/example.js)SIZE(1797)TIME(Mon, 02 Jan 2012 09:47:02 GMT)*/
+
+var xml = require("../lib/o3-xml"),
+	doc,
+	xmlData = "\
+<?xml version=\"1.0\"?>\n\
+<catalog>\n\
+   <book id=\"bk101\" available=\"true\">\n\
+      <author>Gambardella, Matthew</author>\n\
+      <title>XML Developer's Guide</title>\n\
+      <genre>Computer</genre>\n\
+      <price>44.95</price>\n\
+      <publish_date>2000-10-01</publish_date>\n\
+      <description>An in-depth look at creating applications \n\
+      with XML.</description>\n\
+   </book>\n\
+   <book id=\"bk102\" available=\"false\">\n\
+      <author>Ralls, Kim</author>\n\
+      <title>Midnight Rain</title>\n\
+      <genre>Fantasy</genre>\n\
+      <price>5.95</price>\n\
+      <publish_date>2000-12-16</publish_date>\n\
+      <description>A former architect battles corporate zombies, \n\
+      an evil sorceress, and her own childhood to become queen \n\
+      of the world.</description>\n\
+   </book>\n\
+</catalog>";
+
+doc = xml.parseFromString(xmlData);
+console.log("-parsed document:\n" + doc.xml);
+console.log("\n-traversing document element:");
+var elem = doc.documentElement,
+childNodes = elem.childNodes;
+for (var i=0; i<childNodes.length; i++) {
+	console.log("name of child " + i + ": " 
+		+ childNodes[i].nodeName);
+	console.log("type of child " + i + ": " 
+		+ childNodes[i].nodeName);	
+}
+
+console.log("\n-attributes on first child of the document element:");		
+var child = elem.firstChild.nextSibling,
+attributes = child.attributes;
+console.log(child.nodeName);
+for (var i=0; i<attributes.length; i++) {
+	console.log("attribute " + i + ": " 
+		+ attributes[i].name + " = " 
+		+ attributes[i].value);
+}
+
+console.log("\n-xpath query:");
+var xpathNodeList = elem.selectNodes(
+	"descendant-or-self::node()[@available='true']");
+console.log("first element of the xpath querry: " 
+	+ xpathNodeList[0].getAttribute("id"));	
+
+/*FILEHEAD(node_modules/libxml/support/o3/modules/xml/test/test.js)SIZE(15174)TIME(Mon, 02 Jan 2012 11:01:09 GMT)*/
+
+var fs = require('fs');
+var sys = require('sys');
+
+try {
+    var xml = require("libxml");
+} catch (e) {
+    var xml = require("../../../../../lib/libxml");
+}
+
+function diff(node, node1) {
+    if (node.nodeType != node1.nodeType)
+        return false;
+    if (node.nodeName != node1.nodeName)
+        return false;
+    if (node.nodeValue != node1.nodeValue)
+        return false;
+    switch (node.nodeType) {
+    case node.DOCUMENT:
+        return diff(node.documentElement, node1.documentElement);
+    case node.ELEMENT:
+        var childNodes;
+        var attributes;
+        var length;
+
+        childNodes = node.childNodes;
+        length = childNodes.length;
+        if (length != node1.childNodes.length)
+            return false;
+        for (var i = 0; i < length; ++i) {
+            if (!diff(childNodes[i], node1.childNodes[i]))
+                return false;
+        }
+        attributes = node.attributes;
+        length = attributes.length;
+        if (length != node1.attributes.length)
+            return false;
+        for (var i = 0; i < length; ++i) {
+            if (!diff(attributes[i], node1.attributes[i]))
+                return false;
+        }
+        return true;
+    case node.ATTRIBUTE:
+        return true;
+    default:
+        return true;
+    };
+}
+
+function check(expected,actual) {
+    var l = expected.length;    
+    if (l != actual.length) {
+        console.log('expected no: ' + expected.length
+            + '\n\nactual no: ' + actual.length);   
+        return false;
+    }
+    
+    for (var i=0; i<l; i++) {
+        if (expected[i] != actual[i]) {
+            console.log('expected: ' + expected.toString()
+                + '\n\nactual: ' + actual.toString());  
+
+            return false;
+        }
+    }
+    
+    return true;        
+}
+
+function readFile(file) {
+    file = __dirname + "/" + file;
+    var size = fs.statSync(file).size,
+        buf = new Buffer(size),
+        fd = fs.openSync(file, 'r');
+    if (!size)
+        return "";
+    fs.readSync(fd, buf, 0, size, 0);
+    fs.closeSync(fd);
+    return buf.toString();
+} 
+
+var test = {
+test0 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    ref_parent.insertBefore(elem.childNodes[1].childNodes[3],
+                            ref_parent.childNodes[3]);
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test0.xml")));
+},
+
+test1 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    ref_parent.insertBefore(elem.childNodes[1].childNodes[3],
+                            ref_parent.childNodes[7]);
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test1.xml")));
+},
+
+test2 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    ref_parent.insertBefore(elem.childNodes[1].childNodes[3], ref_parent.childNodes[4])
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test2.xml")));
+},
+
+test3 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    ref_parent.insertBefore(doc.createElement("subtitle"), ref_parent.childNodes[7])
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test3.xml")));
+},
+
+test4 : function() {
+    var elem        = xml.parseFromString(readFile("test.xml")).
+                      documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    try {
+        ref_parent.insertBefore(xml.parseFromString(readFile("test.xml")).
+                                createElement("subtitle"), to.childNodes[7])
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test5 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    ref_parent.appendChild(elem.childNodes[1].childNodes[3]);
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test5.xml")));
+},
+
+test6 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    ref_parent.appendChild(ref_parent.childNodes[3]);
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test6.xml")));
+},
+
+test7 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    elem.normalize();
+    ref_parent.appendChild(ref_parent.childNodes[12]);
+    return diff(doc, xml.parseFromString(readFile("test7.xml")));
+},
+
+test8 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement,
+        to      = elem.childNodes[1];
+
+    to.appendChild(doc.createElement("subtitle"));
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test8.xml")));
+},
+
+test9 : function() {
+    var elem        = xml.parseFromString(readFile("test.xml")).
+                      documentElement,
+        ref_parent  = elem.childNodes[1];
+
+    try {
+        ref_parent.appendChild(xml.parseFromString(readFile("test.xml")).
+                               createElement("subtitle"))
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test10 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    try {
+        ref_parent.insertBefore(elem, ref_parent.childNodes[3]);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test11 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    try {
+        ref_parent.appendChild(elem);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test12 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+
+    try {
+        ref_parent.insertBefore(null, ref_parent.childNodes[3]);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test13 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+        child       = ref_parent.removeChild(ref_parent.childNodes[3]);
+
+    elem.normalize();
+    return !child.parent
+        && diff(doc, xml.parseFromString(readFile("test13.xml")));
+},
+
+test14 : function() {
+    return true; // turned off
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+    
+    ref_parent.removeChild(ref_parent.childNodes[3]);
+    try {
+        ref_parent.removeChild(child);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test15 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3];
+    
+    try {
+        ref_parent.removeChild(null);
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test16 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elem    = doc.getElementById("bk102");  
+
+    elem.normalize();
+    return elem.parentNode.nodeName == "catalog"
+        && diff(elem, xml.parseFromString(readFile("test16.xml")).
+                documentElement);
+},
+
+test17 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elem    = doc.getElementById("bk103");  
+
+    return !elem;
+},
+
+test18 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elems   = doc.getElementsByTagName("book"),
+        elem    = elems[1];
+
+    elem.normalize();
+    return elems.length = 2
+        && elem.parentNode.nodeName == "catalog"
+        && diff(elem, xml.parseFromString(readFile("test18.xml")).
+                documentElement);
+},
+
+test19 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elems   = doc.getElementsByTagName("shelf"),
+        elem    = elems[0];  
+
+    return elems.length == 0
+        && !elem;
+},
+
+test20 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement.childNodes[3];
+
+    return elem.getAttribute("id") == "bk102";
+},
+
+test21 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement.childNodes[3];
+
+    return !elem.getAttribute("isbn");
+},
+
+test22 : function() {
+    return true; // turned off
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement.childNodes[3];
+
+    try {
+        elem.getAttribute("@id");
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test23 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement;
+        ref_parent  = elem.childNodes[3];
+
+    ref_parent.setAttribute("id", "bk103");
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test23.xml")));
+},
+
+test24 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement;
+        ref_parent  = elem.childNodes[3];
+
+    ref_parent.setAttribute("isbn", "9783161484100");
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test24.xml")));
+},
+
+test25 : function() {
+    return true; // turned off
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elem    = doc.documentElement.childNodes[3];
+
+    try {
+        elem.setAttribute("@id", "bk103");
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test26 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        attr    = doc.createAttribute("isbn");
+
+    attr.nodeValue = "9783161484100";
+    return attr.ownerDocument = doc
+        && !attr.parent
+        && attr.nodeType == attr.ATTRIBUTE
+        && attr.nodeName ==  "isbn"
+        && attr.nodeValue == "9783161484100";
+},
+
+test27 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3],
+        attr        = doc.createAttribute("isbn");
+
+    attr.nodeValue = "9783161484100";
+    ref_parent.setAttributeNode(attr);
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test27.xml")));
+},
+
+test28 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3],
+        attr        = ref_parent.getAttributeNode("id");
+    
+    ref_parent.setAttributeNode(attr);
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test28.xml")));
+},
+
+test29 : function() {
+    var doc         = xml.parseFromString(readFile("test.xml")),
+        elem        = doc.documentElement,
+        ref_parent  = elem.childNodes[3],
+        attr        = elem.childNodes[1].getAttributeNode("id");
+    
+    ref_parent.setAttributeNode(attr);
+    elem.normalize();
+    return diff(doc, xml.parseFromString(readFile("test29.xml")));
+},
+
+test30 : function() {
+    var elem        = xml.parseFromString(readFile("test.xml")).
+                      documentElement,
+        ref_parent  = elem.childNodes[3];
+    
+    try {
+        ref_parent.setAttributeNode(xml.parseFromString(readFile("test.xml")).
+                                    createAttribute("subtitle"))
+        return false;
+    } catch (ex) {
+        return true;
+    }
+},
+
+test31 : function() {
+    var doc     = xml.parseFromString(readFile("test.xml")),
+        elem    = doc.createElement("element"),
+        attr    = doc.createAttribute("attribute"),
+        text    = doc.createTextNode("Lorem ipsum");
+        cdata   = doc.createCDATASection("Lorem ipsum");
+        comment = doc.createComment("Lorem ipsum");
+
+    return elem.nodeType == elem.ELEMENT && elem.nodeName == "element" && !elem.parent
+        && attr.nodeType == attr.ATTRIBUTE && attr.nodeName == "attribute" && !attr.parent
+        && text.nodeType == text.TEXT && text.nodeValue == "Lorem ipsum" && !text.parent
+        && cdata.nodeType == cdata.CDATA_SECTION && cdata.nodeValue == "Lorem ipsum" && !cdata.parent
+        && comment.nodeType == cdata.COMMENT && comment.nodeValue == "Lorem ipsum" && !comment.parent;
+},
+
+test32 : function() {
+    var elem = xml.parseFromString(
+            readFile('xpath.xml')).documentElement,
+    expected = ['Everyday Italian','Harry Potter',
+        'XQuery Kick Start','Learning XML'],
+    actual = [],
+    xpath = '/bookstore/book/title';
+
+    
+    var selected = elem.selectNodes(xpath);
+    for (var i=0; i<selected.length; i++) 
+        actual.push(selected[i].nodeValue);
+    
+    return check(expected, actual);
+},
+
+test33 : function() {
+    var elem = xml.parseFromString(
+            readFile('xpath.xml')).documentElement,
+    expected = ['Everyday Italian'],
+    actual = [],
+    xpath = '/bookstore/book[1]/title';
+
+    
+    var selected = elem.selectNodes(xpath);
+    for (var i=0; i<selected.length; i++) 
+        actual.push(selected[i].nodeValue);
+    
+    return check(expected, actual);
+},
+
+test34 : function() {
+    var elem = xml.parseFromString(
+            readFile('xpath.xml')).documentElement,
+    expected = [30.00,29.99,49.99,39.95],
+    actual = [],
+    xpath = '/bookstore/book/price/text()';
+
+    
+    var selected = elem.selectNodes(xpath);
+    for (var i=0; i<selected.length; i++) 
+        actual.push(selected[i].nodeValue);
+    
+    return check(expected, actual);
+},
+
+test35 : function() {
+    var elem = xml.parseFromString(
+            readFile('xpath.xml')).documentElement,
+    expected = [49.99,39.95],
+    actual = [],
+    xpath = '/bookstore/book[price>35]/price ';
+
+    
+    var selected = elem.selectNodes(xpath);
+    for (var i=0; i<selected.length; i++) 
+        actual.push(selected[i].nodeValue);
+    
+    return check(expected, actual);
+},
+
+test36 : function() {
+    var elem = xml.parseFromString(
+            readFile('xpath.xml')).documentElement,
+    expected = ['Everyday Italian','Harry Potter',
+        'XQuery Kick Start','Learning XML'],
+    actual = [],
+    xpath = "descendant-or-self::node()[@lang='en']";
+
+    
+    var selected = elem.selectNodes(xpath);
+    for (var i=0; i<selected.length; i++) 
+        actual.push(selected[i].nodeValue);
+    
+    return check(expected, actual);
+}
+
+};
+
+
+for (var i in test) {
+    
+    if (test[i]())
+        console.log("test " + i + " succeeded\n");
+    else {
+        console.log("test " + i + " failed\n");
+        process.exit(1);
+    }
+}
+
+
+/*FILEHEAD(node_modules/libxml/support/o3/tools/create_manifest.js)SIZE(3377)TIME(Mon, 02 Jan 2012 09:55:08 GMT)*/
+
+var fs = require('fs'),
+
+var BUILDMODE = 'Release',
+GUID = '8a66ecac-63fd-4afa-9d42-3034d18c88f4',  
+BASENAME = 'o3', 
+FULLNAME = BASENAME + '-' + GUID,
+IEEXTGUID = '218BAC91-2A05-4372-BD7F-5AE59C149D3E',
+CHROMEGUID = 'npaodepeeohfoeeglfcafddnjhejcgeg', 
+FFEXTGUID = BASENAME + '@ajax.org',
+DOMAIN = 'o3.ajax.org',
+URL = 'http://' + DOMAIN,
+GITHUB = 'http://github.com/ajaxorg/o3-plugin-builds/raw/master/',
+VERSION = '0.9', 
+VERSIONSTRING = 'v' + VERSION.replace('.','_'),
+DESCRIPTION = 'Ajax.org o3 plugin', 
+MIMEDESCRIPTION = 'Ajax.org o3 plugin', 
+TYPEDESCRIPTION = 'Ajax.org o3 plugin',
+COMPANY = 'Ajax.org',
+FILEDESCRIPTION = 'Ajax.org o3 plugin',
+IDENTIFIER = 'org.ajax.o3-plugin',
+LEGALCOPYRIGHT = 'Copyright © 2008-2010 Ajax.org (http://www.ajax.org)',
+OSXUPDATER = 'update_installer',
+OSXINSTALLERBASE = BASENAME + 'plugin-osx',
+OSXINSTALLER = OSXINSTALLERBASE +'32.dmg', 
+OSXVERSION = OSXINSTALLER + '.version', 
+WINUPDATER = BASENAME + 'update.exe',
+WININSTALLER = BASENAME + 'plugin-win32d.exe',
+WINVERSION = WININSTALLER + '.version',
+GUIDDEF = '0x' + GUID.substring(0,8) + ',0x' + GUID.substring(9,13) 
+     + ',0x' + GUID.substring(14,18) + ',{0x' + GUID.substring(19,21)
+     + ',0x' + GUID.substring(21,23) + ',0x' + GUID.substring(24,26)
+     + ',0x' + GUID.substring(26,28) + ',0x' + GUID.substring(28,30)
+     + ',0x' + GUID.substring(30,32) + ',0x' + GUID.substring(32,34)
+     + ',0x' + GUID.substring(34,36) + '}'; 
+
+RegexpMap = [
+[/#BUILDMODE#/g, BUILDMODE],
+[/#GUID#/g,GUID],  
+[/#BASENAME#/g,BASENAME], 
+[/#FULLNAME#/g,FULLNAME],
+[/#IEEXTGUID#/g,IEEXTGUID],
+[/#CHROMEGUID#/g,CHROMEGUID], 
+[/#FFEXTGUID#/g,FFEXTGUID],
+[/#DOMAIN#/g,DOMAIN],
+[/#URL#/g,URL],
+[/#GITHUB#/g,GITHUB],
+[/#VERSION#/g,VERSION], 
+[/#VERSIONSTRING#/g,VERSIONSTRING],
+[/#DESCRIPTION#/g,DESCRIPTION], 
+[/#MIMEDESCRIPTION#/g,MIMEDESCRIPTION], 
+[/#TYPEDESCRIPTION#/g,TYPEDESCRIPTION],
+[/#COMPANY#/g,COMPANY],
+[/#FILEDESCRIPTION#/g,FILEDESCRIPTION],
+[/#LEGALCOPYRIGHT#/g,LEGALCOPYRIGHT],
+[/#IDENTIFIER#/g,IDENTIFIER],
+[/#OSXUPDATER#/g,OSXUPDATER],
+[/#OSXINSTALLER#/g,OSXINSTALLER],
+[/#OSXINSTALLERBASE#/g,OSXINSTALLERBASE],
+[/#OSXVERSION#/g,OSXVERSION],
+[/#WINUPDATER#/g,WINUPDATER],
+[/#WININSTALLER#/g,WININSTALLER],
+[/#WINVERSION#/g,WINVERSION],
+[/#GUIDDEF#/g, GUIDDEF]
+],
+
+files = [
+    'hosts/installer/installer.js',
+    'hosts/plugin/Info.plist',
+    'hosts/plugin/plugin.r',
+    'hosts/plugin/plugin.rc',
+    'include/guid.h',
+    'include/app_data.h',   
+    'hosts/installer/osx/distribution.dist',
+    'tools/osx/build_installer',
+    'tools/osx/build_plugin',
+    'tools/osx/generate_version',
+    'tools/osx/update_installer'
+];
+
+function readFile(file) {
+    var size = fs.statSync(file).size,
+        buf = new Buffer(size),
+        fd = fs.openSync(file, 'r');
+    if (!size)
+        return "";
+    fs.readSync(fd, buf, 0, size, 0);
+    fs.closeSync(fd);
+    return buf.toString();
+}
+
+function writeFile(file, data) {
+    var size = data.length,
+        buf = new Buffer(data),
+        fd = fs.openSync(file, 'w');
+        
+    fs.writeSync(fd, buf, 0, size, 0);
+    fs.closeSync(fd);
+}
+
+function patchFile(file) {
+    var data = readFile(file + '.template');
+    for (var v=0; v < RegexpMap.length; v++) 
+        data = data.replace(RegexpMap[v][0],RegexpMap[v][1]);
+
+    writeFile(file, data);  
+}
+
+for (var f=0; f < files.length; f++) 
+    patchFile(files[f]);
+    
+
+/*FILEHEAD(node_modules/libxml/support/o3/tools/gluegen.js)SIZE(49995)TIME(Mon, 02 Jan 2012 09:54:40 GMT)*/
+
+#!/bin/node
+var fs = require('fs');
+
+var includeTrace = false, 
+    immLog = false, log = false;
+    logFileName = 'codegenLog.txt',
+    errFileName = 'codegenErr.txt'; 
+var i,l,files = [], arguments = process.argv, arg;
+
+for (i=2, l=arguments.length; i<l; i++) {
+    arg = arguments[i];
+    switch(arg) {
+        case '-h':
+            // TODO:
+            break;
+        case '-l':
+            log = true;
+            break;
+        case '-v':
+            immLog = true;
+            break;
+        case '-trace':
+            includeTrace = true;
+            break;
+        default:
+            files.push(arg);            
+    }   
+}   
+
+function readFile(file) {
+    var size = fs.statSync(file).size,
+        buf = new Buffer(size),
+        fd = fs.openSync(file, 'r');
+    if (!size)
+        return "";
+    fs.readSync(fd, buf, 0, size, 0);
+    fs.closeSync(fd);
+    return buf.toString();
+}
+
+function writeFile(file, data) {
+    var size = data.length,
+        buf = new Buffer(data),
+        fd = fs.openSync(file, 'w');
+        
+    fs.writeSync(fd, buf, 0, size, 0);
+    fs.closeSync(fd);
+}
+
+
+function fileWriter(fileName) {
+    return function(str) {
+        writeFile(fileName, str);
+    }
+} 
+
+//include("tools/o3_Reporter.js");
+var Reporter = {
+    errors : {general:[]},
+    logs   : {general:[]},        
+    currentFile   : 'general',    
+    logWriter : console.log, //o3.print,//o3.stdOut.write,
+    errorWriter: console.log, //o3.print,//o3.stdOut.write,
+    immediate: false,    
+    
+    reset : function() {
+        with(this) { 
+            errors = {general:[]};
+            logs = {general:[]};
+            currentFile = 'general';
+        }
+    },
+    newFile : function(fileName) {
+        with(this) { 
+            currentFile = fileName;
+            if (!logs[fileName]) 
+                logs[fileName] = [];
+            if (!errors[fileName])
+                errors[fileName]= [];           
+        }        
+    },
+    error : function(){
+        with(this) {
+            var i,l;
+            errorWriter('ERROR: ' + currentFile + ': ');
+            for (i=0,l=arguments.length; i<l; i++) {
+                errors[currentFile].push(arguments[i]);
+                errorWriter(arguments[i]);
+            }    
+        }
+    },
+    globalError : function() {
+        with(this) {
+            var i,l;
+                errorWriter('GLOBAL ERROR: ');
+            for (i=0,l=arguments.length; i<l; i++) {
+                errors['general'].push(arguments[i]);
+                errorWriter(arguments[i]);
+            }    
+        }
+    },
+    log : function(){
+        with(this) {
+            var i,l;
+            if (immediate)
+                    //o3.stdOut.write(currentFile + ': ');
+                    logWriter(currentFile + ': ');
+            for (i=0,l=arguments.length; i<l; i++) {
+                logs[currentFile].push(arguments[i]);
+                if (immediate)
+                    //o3.stdOut.write(arguments[i]);
+                    logWriter(arguments[i]);
+            }    
+        }
+    },
+    dumpLogs : function(){
+        with(this) {
+            dump("Logs", logs, logWriter);
+        }    
+    },
+    dumpErrors : function(){
+        with(this) { 
+            dump("Errors", errors, errorWriter);            
+        }    
+    },
+    dump : function(title, dataObj, writeMethod) {
+        var file, data, t=[];
+        t.push(title, ': \n================================\n');
+        for (file in dataObj) {
+            data = dataObj[file];
+            if (data.length) 
+                t.push('\n',file,': \n','-----------------\n',data.join(''));            
+        }
+        t.push('\n\n');
+        writeMethod(t.join(''));
+    } 
+};
+
+//include("tools/o3_FileHandler.js");
+var FileHandler = {
+   scanFiles : function(topNode) {
+        function checkFile(file) {          
+            var name = file.substring(file.lastIndexOf('/')+1),
+                glueName,
+                glueFile,            
+                data = readFile(file);
+
+            if (data.indexOf('o3_glue_gen()') == -1 || name == 'cScr.h' 
+                || name.indexOf('.h') == -1) {
+                //Reporter.log('no need to gen glue for: ',name,'\n');
+                return false;
+            }
+            
+            glueName = name.substring(0,name.lastIndexOf('.h'))
+                + '_glue.h';
+            glueFile = file.substring(0,file.lastIndexOf('/')+1) + glueName;
+            var stat,fd;
+            try {
+                stat = fs.statSync(glueFile)
+            } catch (e) {   
+                if (fd = fs.openSync(glueFile, 'w')) {
+                    fs.closeSync(fd);
+                    Reporter.log('created glue file: ',glueName,'\n');
+                    return glueFile;
+                }
+                else {
+                    Reporter.error('glue file could not be created: ' 
+                        ,glueName,'\n');
+                    return 0;    
+                }
+            }
+
+            // TODO: this should be '<'
+            if (stat.mtime != fs.statSync(file).mtime) {
+                Reporter.log('found old glue file, old time: '
+                    ,stat.mtime,'\n');
+                return glueFile;
+            } 
+            
+            Reporter.log('glue file was uptodate: ',topNode.name,'\n');
+            return 0;    
+        }            
+
+        var glueFile;
+        /*if (!topNode.exists) {
+            Reporter.globalError('filehandler: file does not exist? ', 
+                topNode.name, '\n');
+            return;
+        }*/
+        var stat = fs.statSync(topNode)
+        if (stat.isFile()) {
+            Reporter.newFile(topNode);
+            if (glueFile = checkFile(topNode))
+                this.genGlue(topNode, glueFile);
+
+        }
+        else if (stat.isDirectory()){
+            var i,l,children = fs.readdirSync(topNode);
+            for (i=0, l=children.length; i<l; i++) {
+                this.scanFiles(topNode + '/' + children[i]);
+            }
+        }
+        else {
+            Reporter.globalError('invalid file node: ',topNode,'\n');
+        }    
+          
+   },
+   genGlue : function(srcFile, glueFile) {     
+        var i,l,result = [],
+            scanned = Lexer.scan(readFile(srcFile)),
+            classes = Parser.parse(scanned.tree);
+        
+        for (i=0, l=classes.length; i<l; i++) {
+            if (classes[i].gen)
+                result.push(Generator.run(classes[i].struct, classes[i].traits));
+        }
+        try{    
+            writeFile(glueFile,result.join(''));   
+        } catch(e) {
+            Reporter.error('Could not write to the file: ', glueFile, '\n');
+        }     
+   }
+};
+
+//include("tools/o3_Parser.js");
+var Lexer = {    
+    scan : function(data) {
+        
+        var tree = [],          // parse tree
+            plain_text = 0,     // block of raw text data (from c++ static string or comment)
+            stack = [],         // tree stack
+            type = 0,           // token type
+            text_tok = 0,       // plain_text block starting token
+            last_token,         // tempvar
+            lines = []          // array of linepositions
+            
+        data.replace(TokRegexp, function(token, rx_lut, rx_ws, rx_word, rx_misc, pos) {
+            // check the type
+            if (rx_lut)
+                type = TokenType[rx_lut];
+            else if (rx_ws)
+                type = TokenType.WhiteSpace;
+            else if (rx_word)
+                type = TokenType.Word;
+            else 
+                type = 0;    
+            
+            // if we are not inside a plain text block:
+            if (!text_tok) {
+                switch (type) {
+                    case TokenType.Quot:
+                    case TokenType.Comment:
+                        tree[tree.length] = {type: type, pos: pos, token: token, plain_text: null};
+                        // start a new plain text block: 
+                        text_tok = token;
+                        plain_text = [token];
+                        break;
+                        
+                    case TokenType.BrackStart: 
+                        tree[tree.length] = last_token = 
+                            {type: type, pos: pos, token: token, subtree: null};
+                        // push current tree on the stack
+                        stack.push(tree);                
+                        // start new tree, and the old tree (current) last element 
+                        // will point to the new tree    
+                        tree = last_token.subtree = [{type: 0, pos: pos, token: token}];
+                        break;
+                        
+                    case TokenType.BrackEnd:
+                        // check if the bracket match with the starting bracket
+                        if (tree[0].token != TokClose[token])  {                            
+                          // report error: brackets dont match
+                          Reporter.error("lexer: closure token did not match, ' opened: '", 
+                          tree[0].token, "' closed: '", token, "' position : ", 
+                            position(lines, pos).toString(),"\n");                        
+                        }
+                        else {
+                            tree[tree.length] = {type: type, pos: pos, token: token};
+                            // continue the last tree on the stack
+                            tree = stack.pop();
+                        }
+                        break;
+                        
+                    case TokenType.EndOfLine: 
+                        lines[lines.length] = pos;
+                        break;
+                        
+                    case TokenType.WhiteSpace:
+                        break;
+                    
+                    default: 
+                        tree[tree.length] = {type: type, pos: pos, token: token};
+                        break;
+                }
+            }
+            // if we are in a plain_text block
+            else {
+                plain_text.push(token);
+                switch (type) {
+                    case TokenType.Quot: 
+                        if (text_tok == token){
+                            text_tok = 0;
+                            tree[tree.length-1].plain_text = plain_text.join('');
+                        }
+                        break;                
+                    case TokenType.Comment: 
+                        if (token == '*/' && text_tok == '/*') {
+                            text_tok = 0;
+                            tree[tree.length-1].plain_text = plain_text.join('');
+                        }
+                        break;
+                    case TokenType.EndOfLine: 
+                        lines[lines.length] = pos;
+                        if (text_tok == '//'){
+                            text_tok = 0;
+                            plain_text.pop();
+                            tree[tree.length-1].plain_text = plain_text.join('');
+                        }
+                        break;
+                }                
+            }
+        });
+        while (stack.length) {
+            // report error not closed
+            Reporter.error("lexer: closure problem, bracket not closed.\n");
+            stack.pop();
+        }
+        if (text_tok)
+            // plain_text mode not closed      
+            Reporter.error("lexer: text block not closed.\n");
+
+        return {tree: tree, lines: lines};            
+} 
+}; // lexer
+
+var Parser = {
+    readName : function(tree, i, traits) {
+        Reporter.log("readName: ", tree[i].token, '\n');
+         traits.___name = tree[i+1].subtree[1].plain_text;
+        return 0;
+    },
+    readExt : function(tree, i, traits) {
+        Reporter.log("readExt: ", tree[i].token, '\n');
+        traits.___ext = tree[i+1].subtree[1].plain_text;
+        return 0;
+    },
+    readProp : function(tree, i, traits) {
+        var index = i,
+            t;
+            
+        while ( (t = tree[index].token) != ';' && t != '(')
+            index++;
+            
+        if (t == ';')
+            return this.readImmProp(tree, i, traits);
+        else
+            return this.readFunLike(tree, i, traits);   
+        
+    },
+    readImmProp : function(tree, i, traits){
+        Reporter.log("readImmProp: ",tree[i].token,'\n');
+        var name,
+            index=i,
+            type = tree[i].token,
+            getter = (type != 'o3_set'),
+            setter = (type != 'o3_get');        
+        
+        while ( (t = tree[index].token) != ';')
+            index++;
+        
+        if (!(name = this.checkName(traits))) {                 
+            name = tree[index-1].token.replace(/^m?\_+/, "");
+            name = name.replace(/_[a-z]/g, function(m,a) {
+                return m.slice(1).toUpperCase();                    
+            });     
+        }       
+            
+        if (getter)
+            traits.add(name , {
+                imm: true,
+                type:'get',
+                ret: tree[i+1].token,
+                toString:0,
+                member: tree[index-1].token
+            });
+        
+        if (setter)
+            traits.add(name, {
+                imm: true,
+                type:'set',
+                ret: tree[i+1].token,
+                toString:0,
+                member: tree[index-1].token    
+            });
+
+        return 1;
+    },
+    readFunLike : function(tree, index, traits) {
+        Reporter.log("readFunLike: ",tree[index].token,'\n');
+        var br, // position of the '(' 
+            subtree,
+            name,
+            ret = [],
+            r,i,j,l,t,tl,coma,tgt=0,
+            op_count, name_pos, arg_type, arg_name, arg_def, args = [],
+            eq, def;
+        
+        // check where the bracket starts with the args    
+        for (br = index; tree[br].token != '(' && br<index+10; br++);
+            
+        if (br==i+5) {
+            Reporter.error("tokenizer: could not find the args for the function!!!\n");
+            return 1;
+        }
+                
+        for (r = index+1; r<br-1; r++)
+            ret.push(tree[r].token);
+        
+        // travers the function arguments
+        for (subtree = tree[br].subtree, l = subtree.length, i=1; i<l; i++) {
+            eq = mod = arg_def = arg_name = tgt = op_count = mod_count = 0;
+            arg_type = []; 
+            
+            // function with no args...
+            if (subtree[i].token == ')')
+                break;
+                
+            // traverse an argument
+            for (j = i; j < l-1 && subtree[j].token != ','; j++) {
+                
+                switch (subtree[j].token) {
+                    case 'o3_tgt':
+                        tgt = 1;
+                        mod_count++;
+                        break;
+                    case 'const':
+                    case 'unsigned':                    
+                        mod_count++;
+                        break;
+                    case '*':
+                    case '&':
+                        op_count++;
+                        break;
+                    case '=': 
+                        eq = j; 
+                        break;                        
+                }        
+            }
+            // at this point j is the pos of the next ',' or trailing ')'                
+            
+            if (eq) {
+                name_pos = eq - 1;                
+                if (subtree[eq+1].plain_text)
+                    def = subtree[eq+1].plain_text;
+                else {
+                    def = subtree[eq+1].token;
+                    if (def == '-')
+                        def += subtree[eq+2].token;
+                    else if(def == 'Str')
+                        def += subtree[eq+2].token + 
+                               subtree[eq+2].subtree[1].plain_text +
+                               subtree[eq+3].token;
+                }   
+            } 
+            else if (op_count + mod_count + 1 == j-i ) {
+                // no name for the arg
+                name_pos = null;             
+            }
+            else {
+                name_pos = j-1;
+            }
+                        
+            // parse the full type            
+            for (t=i+tgt, tl = name_pos ? name_pos : j; t<tl; t++) {
+                arg_type.push(subtree[t].token);
+            }                
+                        
+            args.push({
+                tgt : tgt,
+                def : def,
+                name: name_pos ? subtree[name_pos].token : null,
+                type: arg_type.join(' ')
+            });
+            i = j;
+        }
+        
+        var ext = this.checkExt(traits);        
+        if (!(name = this.checkName(traits)))
+            name = tree[br-1].token;
+        
+        traits.add(name, {
+            type:tree[index].token.replace('o3_', ''),
+            ret:ret.join(''),
+            args:args,            
+            ftype:0,
+            ext: ext,
+            name: tree[br-1].token,
+            toString:0            
+        });
+        return 1;
+    },
+    checkExt : function(traits) {
+        if (traits.___ext) {            
+            var ret = traits.___ext;
+            traits.___ext = null;
+            delete traits.___ext;
+            return ret.replace(/\"/g, '');
+        }
+        return 0;    
+    },
+    checkName : function(traits) {
+        if (traits.___name) {            
+            var ret = traits.___name;
+            traits.___name = null;
+            delete traits.___name;
+            return ret.replace(/\"/g, '');
+        }
+        return 0;    
+    },
+    readEnum : function(tree, index, traits) {  
+        var subtree = tree[index+1].subtree,i,j,l,enumName,value=-1;
+        
+        enumName = subtree[1].plain_text.replace(/\"/g, '');
+        Enums[enumName] = 1;
+        
+        for (i=3; i<subtree.length; ++i) {
+            for(j=i, l=subtree.length-1; j<l && subtree[j].token != ','; j++)
+                ;
+            
+            switch(j-i) {
+                case 1: // simple case
+                    value++; 
+                    break;
+                case 3: // enum entry with value
+                    value = subtree[j-1].token;
+                    break
+                default:
+                    Reporter.error("tokenizer: syntax error in enum.\n");
+            }
+            
+            traits.add(subtree[i].token, {
+                type:'get',
+                ret:'int',
+                value: value,
+                name: subtree[i],
+                enu: enumName,
+                toString:0            
+            });
+            
+            i=j;
+        }
+        return 1;
+    },
+    
+    parse : function(tree, classes, in_struct, scope) {
+        var struct_found,           // struct_found found in this level
+            ns_found,               // ns_found found in this level
+            traits,                 // array of traits collected
+            first_recur,            // call was first recursion
+            tagname,                // tag name (o3_ext, o3_fun, etc.) 
+            elem;                   // next tree element in the loop
+                
+        if (!classes) {
+            classes = [];
+            first_recur = 1;
+        }
+        
+        for (var i = 0, i_len = tree.length; i < i_len; i++) {            
+            elem = tree[i];
+            
+            if (elem.token == '{' && (ns_found || struct_found)) {
+                // traverse the sub tree with a recursive call
+                this.parse(elem.subtree, classes, struct_found, 
+                    ns_found || struct_found);
+                // class/namespace parsed, reset and continue
+                ns_found = struct_found = base_class_found = null;
+                continue;
+            }
+            
+            if (elem.type != TokenType.Word) 
+                continue;
+                
+            switch (elem.token) {
+                    case 'class':
+                    case 'struct':                    
+                        struct_found = tree[i+1].token;        
+                        break;
+                    case 'namespace':
+                        ns_found = tree[i+1].token;
+                        break;  
+                    default:
+                        // skipp tokens untill we find an o3 tag
+                        if (!(typename = elem.token.match(/^o3_(\w+)/)))
+                            continue;
+                        if (!in_struct)
+                            // report error, o3_ tag out of class scope
+                            continue;
+                        if (!traits) {
+                            // first trait for the current struct, lets create
+                            // a container object for the trait of this struct
+                            classes.push({
+                                traits: traits = {
+                                    ext : {},                   // ext traits
+                                    cls : {},                   // cls traits
+                                    add : function(name, o) {   // add trait function
+                                        var tName = name,
+                                            tType = o.ext ? 'ext' : 'cls';
+                                        if (o.type == 'set')
+                                            tName = name.replace(/^set(\w)/, 
+                                                function(m, a){ return a.toLowerCase();});
+                                          
+                                        if (tName == 'toString')
+                                            tName = '_toString';
+                                        (this[tType][tName] ? this[tType][tName] : this[tType][tName] = []).push(o);        
+                                    }   
+                                },
+                                struct: in_struct,
+                                base:''
+                            });
+                        }
+                        switch(typename[0]) {
+                            case 'o3_name': 
+                                i += this.readName(tree, i, traits);                        
+                                break;
+                            case 'o3_prop': 
+                                i += this.readImmProp(tree, i, traits);                        
+                                break;
+                            case 'o3_ext':
+                                i += this.readExt(tree, i, traits);
+                                break;        
+                            case 'o3_fun':
+                                i += this.readFunLike(tree, i, traits);                        
+                                break;
+                            case 'o3_get':
+                            case 'o3_set':                             
+                                i += this.readProp(tree, i, traits);                        
+                                break;
+                            case 'o3_enum':                             
+                                i += this.readEnum(tree, i, traits);                        
+                                break;                                
+                            case 'o3_begin_class':
+                                traits.base = tree[i+1].subtree[1].token;                                    
+                            case 'o3_end_class': 
+                            case 'o3_add_iface':
+                            case 'o3_cls':    
+                                break;
+                            case 'o3_glue_gen':
+                                classes[classes.length-1].gen = 1;
+                                // macro was not in a comment block...
+                                break
+                            default : 
+                                if (typename[0].indexOf("o3_trace") == 0)
+                                    break;
+                                // report error
+                                Reporter.error("tokenizer: found unknown o3_tag : ",typename[0],"\n");
+                        }
+            } 
+                         
+                              
+        }
+        if (first_recur)
+            return classes;
+    }
+}; // parser    
+
+var TokenType = {
+    BrackStart : 2,
+    BrackEnd : 3,
+    Quot : 4,
+    Word : 5,
+    EndOfLine : 6,            
+    Comment : 7,
+    WhiteSpace : 8,
+    '"': 4, 
+    '\'': 4,
+    '[': 2,
+    ']': 3, 
+    '{': 2, 
+    '}': 3, 
+    '(': 2, 
+    ')': 3,
+    '\n': 6, 
+    '\r\n': 6, 
+    '//': 7, 
+    '/*': 7, 
+    '*/': 7
+};
+
+var TokClose = {'}': '{', ']': '[', ')': '('};
+var TokRegexp = /(["'{(\[\])}\]]|\r?[\n]|\/[\/*]|\*\/)|([ \t]+)|([\w._])+|(\\?[\w._?,:;!=+-\\\/^&|*"'[\]{}()%$#@~`<>])/g;
+ 
+function posToString(){
+    return 'Ln : ' + this.line + ', Col : ' + this.col;
+}
+
+function position(lines,pos) {
+    for (var i = 0, j = lines.length; i < j && lines[i] < pos; i++);
+    return {line: i+1, col: pos - lines[i - 1], toString: posToString};
+};
+
+//include("tools/o3_Generator.js");
+var Generator = {
+    //properties:
+    //{
+    //      cls: {
+    //          prop1: [trait1,trait2,...],
+    //          prop2: [...]
+    //          ...
+    //      }
+    //      ext: {
+    //          prop1: [...],
+    //          ...
+    //      }
+    // }
+ 
+    // Generates the whole glue file for a class
+    run : function(className, properties) {
+        var t=[];
+        t.push('#ifdef O3_WITH_GLUE\n',
+            '#pragma warning( disable : 4100)\n',
+            '#pragma warning( disable : 4189)\n',            
+            'namespace o3 {\n\n\n',        
+            this.genSelect(className),
+            this.genTables(className, properties),
+            this.genInvokes(className, properties),
+            '}\n#endif\n',
+            '#pragma warning(default : 4100)\n',
+            '#pragma warning(default : 4189)\n');
+        return t.join('');    
+    },
+    
+    // Generates the select function
+    genSelect : function(className) {
+        var t = [];
+        t.push('Trait* ',className,'::select()\n{\n   return clsTraits();\n}\n\n');
+        return t.join('');
+    },
+
+    // Generates the tables
+    genTables : function(className, properties) {
+        function wss(n) {
+            var i,t=[];
+            for (i=0; i<n; i++)
+                t.push(' ');
+            return t.join('');            
+        }
+
+        var uid=0,  // unique id (for properties) (Trait::offset)
+        sid=0,      // serial id (for traits)     (Trait::index) 
+        ext=0,      
+        set,        // set of properties to generater invoke for 
+        prop,propName, // current property in the loop and its name
+        i,i_l,  
+        tr,         // current trait for the current property in the loop
+        tType,      // first round its 'cls' then 'ext' in the second
+        clsName,    // name of the class for cls traits, name of the class
+                    // to extend for ext traits
+        t=[];       // table
+                   
+        // traverse first the ext then the cls properties
+        for (;ext<2;ext++) {                       
+            tType = ext?'ext':'cls';
+            set = properties[tType];
+            
+            t.push('Trait* ', className,'::', tType , 'Traits()\n',
+                '{\n', '      ', 'static Trait TRAITS[] = {\n');
+            t.push('         {      0,      Trait::TYPE_BEGIN,      "', className, 
+                '",',wss(19-className.length),'0,',wss(20),'0,              0,      ', 
+                (ext ? '0                  }' : (properties.base + '::clsTraits()  }')),
+                ',\n');    
+            // traverse the selected set of properties by trait names
+            for (propName in set) {
+                prop = set[propName];
+                prop.uid = uid;
+                // bahhh temp. workaround for a stupid IE bug...
+                if (propName == '_toString')
+                    propName = 'toString';
+                
+                // traverse the set of properties that has the same name 
+                for (i=0, i_l=prop.length; i<i_l; i++) {
+                        tr = prop[i];
+                        tr.sid = sid++;        
+                        clsName = ext ? tr.ext : className;
+                        t.push('         {      ', uid, uid > 9 ? ',     ' : ',      ',
+                            'Trait::TYPE_', tr.type.toUpperCase(), ',        "', 
+                            clsName, '",',wss(19-clsName.length),'"', propName, 
+                            '",', wss(19-propName.length), tType, 'Invoke,      ', 
+                            tr.sid, tr.sid > 9 ? ',     ' : ',      ','0                  },\n' );
+                }
+                uid++;
+            }
+            t.push('         {      0,      Trait::TYPE_END,        "', className, 
+                '",',wss(19-className.length),'0,',wss(20),'0,              0,      ',
+                '0                  }', ',\n');
+            t.push('      };\n\n','      ','return TRAITS;\n}\n\n');                        
+            uid = sid = 0;        
+        }
+        
+        return t.join('');
+    },
+    
+    // Generates the invoke functions
+    genInvokes : function(className, properties) {
+        var t = [],
+            tType,
+            set,
+            propName,
+            prop,
+            hasProps = {ext:false, cls:false},
+            ext;
+        
+        // check if there are any properties at all...
+        for (ext=0;ext<2;ext++) { 
+            tType = ext?'ext':'cls';
+            for (var i in properties[tType]) {
+                hasProps[tType] = true;
+                break;
+            }
+        }
+        
+        // generate the clsInvoke and extInvoke functions    
+        for (ext=0;ext<2;ext++) { 
+            tType = ext?'ext':'cls';
+            set = properties[tType];            
+            t.push('siEx ',className,'::',tType,'Invoke(iScr* pthis, iCtx* ctx, int index, int argc,\n',
+                   '           const Var* argv, Var* rval)\n{\n');
+            // against unreference arguments warning: 
+            t.push('      siEx ex;\n');
+            // generate the switch only if there are any properties
+            if (hasProps[tType]) {
+                t.push('      ', className, '* pthis1 = (', className, '*) pthis;\n\n');
+                t.push('      ', 'switch(index) {\n');
+                for (propName in set) {
+                    prop = set[propName];
+                    this.genBlockForProp(prop,t,'         ');        
+                }    
+                t.push('      }\n');
+            }
+            t.push('      ','return ex;\n}\n\n');
+        }
+        
+        return t.join('');    
+    },
+    
+    // Generates all the 'case' blocks in the invoke function for a property
+    genBlockForProp : function(prop,t,ws) {                
+        function overloadType(prop) {
+            if (prop.length < 2)
+                return 0;
+            if (prop.length == 2) { 
+                var t1 = prop[0].type,
+                    t2 = prop[1].type;
+                if (  (t1 = 'get' &&  t2 == 'set') 
+                    ||(t1 = 'set' &&  t2 == 'get') )
+                        return 0;
+                return 1;        
+            }            
+            for (var i in prop)
+                if (prop[i].type == 'get') 
+                    return 2;
+            return 1;                
+        };
+    
+        var v, trait, first, overloads = [], ws2 = ws + '   ';
+        
+        // for one property there can belong more traits, 
+        // a getter and a setter for example, or several overloads
+        // for the same function, or a getter and several overloads
+        // for the setter function...
+        switch(overloadType(prop)){
+            // no overloads
+            case 0:
+                for (v=0;v<prop.length; v++) {
+                    trait = prop[v];
+                    t.push(ws, 'case ', trait.sid, ':\n');
+                    this.genBlockForTrait(trait,t,ws2, true);
+                    t.push('\n',ws2, 'break;\n');
+                }                    
+                break;
+            
+            // overloaded function / setter
+            case 1:                
+                t.push(ws, 'case ', prop[0].sid, ':\n');
+                this.genBlockForOverloads(prop, t, ws2);
+                t.push(ws2, 'break;\n');
+                break;
+            
+            // overloaded setter with a getter
+            case 2:
+                for (v=0;v<prop.length; v++) {
+                    trait = prop[v];
+                    if (trait.type == 'get') {
+                        t.push(ws, 'case ', trait.sid, ':\n');
+                        this.genBlockForTrait(trait,t,ws2);
+                        t.push('\n',ws2, 'break;\n');
+                    }
+                    else { 
+                      overloads.push(trait);  
+                      if (!first)
+                        first = v;    
+                    }
+                }
+                t.push(ws, 'case ', prop[first].sid, ':\n');
+                this.genBlockForOverloads(overloads, t, ws2);
+                t.push('\n',ws2, 'break;\n');
+                break;
+            
+            // error
+            default:
+                // TODO: implement checking for invalid overloads...
+                Reporter.error('generator: illegal overload');
+        }
+    },
+    
+    
+    genBlockForTrait : function(trait,t,ws,check) {        
+        function genImmCall(trait) {
+            if (trait.type == 'get')
+                return {call: 'pthis1->' + trait.member};
+            
+            return genArgsForCall({args: [{type:trait.ret.replace(/si[A-Z][\w]+/, function(m,a){
+                                            return m.slice(1)+' *';
+                                    }
+                                )}]});     
+        };
+        function genEnumCall(trait) {            
+            return trait.value;
+        };
+
+        // '*rval = ' type of assignement
+        function genCallWrapper(trait) {
+            var siSg, base;
+            
+            if (trait.imm && trait.type == 'set') {
+                return {start:'pthis1->' + trait.member + ' = ', close:';'};
+            }
+            
+            switch (trait.ret) {
+                case 'void': 
+                    return {start:'', close:';'};
+                case 'bool':    case 'int':     case 'int32_t':
+                case 'int64_t': case 'size_t':  case 'double':
+                case 'Str':     case 'WStr':    case 'siScr':
+                case 'Var':
+                    return {start:'*rval = ', close:';'};
+                case 'Buf':
+                    return {start:'*rval = o3_new(cScrBuf)(', close:');'};            
+                default: {
+                    if (trait.ret.indexOf('tVec') != -1) {
+                        base = trait.ret.match(/<[\w]+>/);
+                        base = base[0].substring(1,base[0].length-1);
+                        return {start:'*rval = o3_new(tScrVec<' + base + '>)(', close:');'};
+                    }                    
+                    if (siSg = trait.ret.match(/si[\w]+/)){
+                        return {start:'*rval = ' + siSg[0] + '(', close:');'};
+                    }
+                    if (Enums[trait.ret]) {
+                        return {start:'*rval = ', close:';'};
+                    }
+                    Reporter.error('generator: unknown return type: ', trait.ret, '\n');
+                }
+            
+            }
+        };
+        // arguments for the function call + arg count check    
+        function genArgsForCall(trait) {
+            var args = trait.args, i, min=-1, max=0, fetch='', spec_arg=false, def_start='', def_close='', 
+            wrap_start='', wrap_close='', argc_check=[], call = [],info,arglist=false;    
+            
+            for (i=0; i<args.length; i++) {
+                if (!(info = ArgInfo[args[i].type]))
+                    info = ArgInfo.si(args[i].type)
+                 
+                if (info.arglist) {
+                    arglist=true;
+                    call.push(info.fetch);                  
+                    call.push(',');
+                    if (!args[i+1] || args[i+1].type != 'int')
+                        Reporter.error('generator: genArgsForCall failed: Var* as '
+                            +'function argument must be followed by an int argument (argc)');
+                    i++; 
+                    continue;
+                }
+                 
+                fetch = args[i].tgt ? 'pthis' : info.fetch;
+                wrap_start = info.wrap ? info.wrap + '(' : '';
+                wrap_close = info.wrap ? ')' : '';
+
+                // second wrapper for the Buf...
+                if (info.wrap2) {
+                    wrap_start = info.wrap2 + '(' + wrap_start;
+                    wrap_close += ')';
+                }     
+
+                // not real script argument like siEx*, iCtx*, o3_tgt, etc.
+                spec_arg = info.type ? (args[i].tgt ? true : false) : true;
+                
+                if (args[i].def && !spec_arg) {
+                    if (min<0)
+                        min = max;
+                    // if it was an siEx* param for example we dont want to check the arg count
+                    def_start = spec_arg ? '' : ('argc > ' + max + ' ? ');
+                    def_close = ' : ' + args[i].def;
+                }
+                    
+                call.push(wrap_start, def_start);
+                if (!spec_arg) {
+                    call.push('argv[',max++,']');
+                    if (!info.direct)   
+                        call.push('.');
+                }   
+                
+                call.push(fetch,def_close,wrap_close, ',');            
+                                    
+                iSg=fetch=def_start=def_close=wrap_start=wrap_close='';
+                spec_arg= false;        
+            }
+            if (args.length > 0)
+                call.pop(); // remove last ',' 
+                        
+            if (min>0)
+                argc_check.push('argc < ', min, ' && ');
+            if (min==-1)
+                argc_check.push('argc != ', max);
+            else
+                argc_check.push('argc > ', max );
+            
+            return {
+                    call: call.join(''), 
+                    argc_check: arglist ? null : argc_check.join('')
+                };
+                    
+            // like: {call: 'ctx, argv[0].toInt(), &ex', argc_check: 'argc!=1'}
+        };    
+        
+        var args, wrapper = genCallWrapper(trait);
+        
+        if (trait.imm)
+            t.push(ws, wrapper.start, genImmCall(trait).call, wrapper.close)
+        else if (trait.enu)
+            t.push(ws, wrapper.start, genEnumCall(trait), wrapper.close)
+        else { 
+            args = genArgsForCall(trait);
+            if (check)             
+                t.push(ws, 'if (', args.argc_check, ')\n', ws, '   ', 
+                    'return o3_new(cEx)("Invalid argument count. ( ',trait.name,' )");\n');
+            
+            t.push(ws, wrapper.start, 'pthis1->',
+                trait.cName ? trait.cName : trait.name, '(', args.call, ')' , wrapper.close);
+        }
+    },
+    
+    genBlockForOverloads : function(overloads, t, ws) {
+        function classifyArgs(fun) {            
+            var min=0, max=0, spec=[], scr=[], foundDef, arg, varInfo;
+            for (var i=0; i<fun.args.length; i++) {
+                arg = fun.args[i];
+                if (arg.tgt) {
+                    spec.push(arg);
+                    continue;
+                }                
+                
+                varInfo = ArgInfo[arg.type] ? ArgInfo[arg.type] : ArgInfo.si(arg.type);
+                                                
+                if ( varInfo && varInfo.type ) {
+                    arg.si=varInfo.wrap;
+                    arg.varType = varInfo.type;
+                    scr.push(arg);
+                    if (arg.def)
+                        foundDef = true;                    
+                    max++;
+                    if (!foundDef)
+                        min++;
+                }                
+                
+                else {
+                    spec.push(arg);
+                    continue;
+                }                                            
+            }
+            fun.specArgs = spec;    // helper arguments of the c++ function (ex,ctx,pthis)
+            fun.scrArgs = scr;      // arguments of the js method
+            fun.min = min;          // min argc for the js method
+            fun.max = max;          // max argc for the js method
+        };
+        // compares two array of overloads
+        function funListEqual(funs1, funs2) {
+            diff = false;
+            if (funs1.length == funs2.length) {
+                for (var j=0; j<funs1.length; j++) 
+                    if (funs1[j] != funs2[j]) {
+                        diff = true;
+                        break;        
+                    }
+            }       
+            else 
+                diff = true;        
+            return !diff;        
+        };
+        // grouping overloads based on their possible argument counts
+        // example: with 1 arg overload1 and overload2 can be called,
+        //          with 2-3 args only overload2 can be called, etc...
+        function argcPartition(funs) {
+            var valid = {}, ret = [],
+                group;
+            
+            for (var f=0; f<funs.length; f++)
+                for (var i=funs[f].min; i<funs[f].max+1; i++)
+                    (valid[i] ? valid[i] : valid[i]=[]).push(funs[f]);                                       
+                
+            for (var i in valid) {
+                if (group && funListEqual(group, valid[i])) {
+                    ret[ret.length-1].max = i;                        
+                    continue;
+                }
+                
+                else {                
+                    group = valid[i];
+                    ret.push({
+                        fun : group,
+                        min : i,
+                        max : i
+                    });
+                    continue;    
+                }                                                    
+            }
+            
+            return ret;
+        };
+        // grouping overloads based on the type of the 'index'-th script argument
+        // example: index = 2
+        //          if the type (=t) of 2nd script argument is 
+        //          TYPE_NULL <= t >=TYPE_INT32 onverload1 must be called 
+        //          else either overload2 or overload3 can be called check the 3rd arg
+        function typePartition(funs, index) {
+            var i,blocks=[],type,sorted = {si:{}},isSi,si,last=-1;
+            
+            for (i=0; i<funs.length; i++) {
+                type = funs[i].scrArgs[index].varType;
+                si = funs[i].scrArgs[index].si;
+                
+                if (type && !si)
+                    (sorted[type] ? sorted[type] : sorted[type] = []).push(funs[i]);
+                else if (type){
+                    (sorted.si[si] ? sorted.si[si] : sorted.si[si] = []).push(funs[i]);
+                } else {
+                    Reporter.error('generator: type partition failed: ',type,'\n');
+                }
+            }                                                
+                            
+            for (i in Types) {
+                type = Types[i];                            
+                
+                if (!sorted[type])
+                    continue;
+                
+                if (type == 'STR') {
+                    // stupid exception case, dont know how to get rid of it yet...
+                    ++i;
+                } 
+                
+                blocks.push({
+                    fun : sorted[type],
+                    min : Types[last+1], 
+                    max : Types[i]
+                });                               
+                
+                last = i*1;                                                
+            }
+
+            if (blocks.length)
+                blocks[blocks.length-1].max = Types[Types.length-1];              
+            
+            for (si in sorted.si) {
+                blocks.push({
+                    fun : sorted.si[si],
+                    si : si  
+                });
+                continue;
+            }
+            
+            return blocks;
+        };
+        function recursiveGen(blocks, ws, t, level) {
+            var i,j,si,siVar,funs,b,toCheck = 'argc', min, max, index = 0;
+            with(Generator) {                        
+                if (level) {
+                    toCheck = 'type' + (level-1);
+                    t.push(ws, 'Var::Type ',toCheck,' = argv[',level-1,
+                        '].type();\n');
+
+                    for (i=0; i<blocks.length; i++) {                        
+                        if (si = blocks[i].si) {
+                            siVar = si.toLowerCase(),'_', level-1;                            
+                            
+                            t.push(ws, index++ ? 'else if(' : 'if (' ,si, ' ', siVar,
+                                ' = ', si, '(argv[', level-1, '].toScr())',') {\n');                                                            
+                        
+                            funs = blocks[i].fun;
+                            if (funs.length == 1) {
+                                genBlockForTrait(funs[0],t,ws + '   ');
+                                t.push('\n');
+                            } 
+                            else {
+                                recursiveGen(typePartition(funs, level),
+                                    ws + '   ', t, level+1);
+                            } 
+                            t.push(ws, '   return ex;\n')
+                            t.push(ws, '}\n');
+                        }    
+                    }
+                } 
+                
+                for (i=0; i<blocks.length; i++) {
+                    b = blocks[i];
+                    if (b.si)
+                        continue; // already handled
+                    
+                    min = level ? "Var::TYPE_" + b.min : b.min;
+                    max = level ? "Var::TYPE_" + b.max : b.max;
+                    t.push(ws, index++ ? 'else if(' : 'if (');
+                    if (b.min == b.max) {
+                        t.push(toCheck, '==', min, ') {\n');
+                    }
+                    else {
+                        t.push(min, ' <= ', toCheck, 
+                            ' && ' , max,' >= ', toCheck, ') {\n');                        
+                    }
+                    
+                    if (b.fun.length == 1) {
+                        genBlockForTrait(b.fun[0],t,ws + '   ');
+                        t.push('\n');
+                    }
+                    else {
+                        recursiveGen(typePartition(b.fun, level),
+                                ws + '   ', t, level+1);
+                    }
+                    
+                    t.push(ws,'}\n');                        
+                }
+                
+                if (blocks.length)
+                    t.push(ws,'else{\n',ws,'   return o3_new(cEx)(', 
+                        level ? '"Invalid argument type."' : '"Invalid argument count."',
+                        ');\n', ws,  '}\n');
+            }    
+        };
+        
+        for (var i=0; i<overloads.length; i++)    
+            classifyArgs(overloads[i]);
+            
+        return recursiveGen(argcPartition(overloads), ws, t, 0);                
+    }
+}; // generator
+
+var ArgInfo = {
+    'bool'              : {fetch:'toBool()',    type:'BOOL'},
+    'int'               : {fetch:'toInt32()',   type:'INT32'},
+    'int32_t'           : {fetch:'toInt32()',   type:'INT32'},
+    'size_t'            : {fetch:'toInt32()',   type:'INT32'},
+    'int64_t'           : {fetch:'toInt64()',   type:'INT64'},
+    'double'            : {fetch:'toDouble()',  type:'DOUBLE'},
+    'const char *'       : {fetch:'toStr()',     type:'STR'},
+    'const Str &'       : {fetch:'toStr()',     type:'STR'},
+    'const wchar_t *'   : {fetch:'toWStr()',    type:'WSTR'},
+    'const Var &'       : {fetch:'',            type:'VAR', 
+        direct: true},
+    'Var *'             : {fetch:'argv,argc',   arglist: true},
+    'const WStr &'      : {fetch:'toWStr()',    type:'WSTR'},
+    'const Buf &'       : {fetch:'toScr()',     type:'SCR', 
+        wrap : 'siBuf', wrap2 : 'Buf'},
+    'iScr *'            : {fetch:'toScr()',     type:'SCR'},
+    'iCtx *'            : {fetch:'ctx'},
+    'siEx *'            : {fetch:'&ex'},
+
+    si : function(si) {
+        if (si.match(/i[\w]+ \*/)) 
+            return {
+                fetch : 'toScr()',
+                wrap : 's' + si.substring(0,si.indexOf('*')),
+                type : 'SCR'
+            }
+        else
+            Reporter.error('generator: unknown arg type: ',si,'\n');
+        return {};    
+    }    
+};
+
+var Types = [
+      'VOID',
+      'NULL',
+      'BOOL',
+      'INT32',
+      'INT64',
+      'DOUBLE',
+      'STR',
+      'WSTR',
+      'SCR'           
+];   
+
+var Enums = {};
+
+Reporter.immediate = immLog;
+Reporter.logWriter = console.log;
+Reporter.errorWriter = console.log;
+
+// by default it generates all glue in ./include
+if (files.length == 0) {
+    FileHandler.scanFiles('include');
+    FileHandler.scanFiles('modules');   
+}
+
+// if there were files/folders specified, let's traverse them
+
+for (i=0; i<files.length; i++) {    
+    FileHandler.scanFiles(files[i]);
+} 
+
+// if -l was specified let's log to stdout 
+// (if -i was specified then it is already logged out at this point no need to log it again)
+if (!Reporter.immediate && log) 
+    Reporter.dumpLogs();
+
+// in any case, let's save the logs and errors into files
+Reporter.logWriter = fileWriter(logFileName);
+Reporter.errorWriter = fileWriter(errFileName);    
+Reporter.dumpLogs();
+Reporter.dumpErrors();
+
+
+
+/*FILEHEAD(node_modules/libxml/support/o3/tools/logserver.js)SIZE(298)TIME(Mon, 02 Jan 2012 09:54:58 GMT)*/
+
+var util = require('util');
+var dgram = require('dgram');
+
+var server = dgram.createSocket("udp4");
+
+server.on("message", function (msg, rinfo) {
+  util.puts(msg+"\n");
+});
+
+server.on("listening", function () {
+  util.puts("Log server listening " + server.address().address);
+})
+
+server.bind(3333);
