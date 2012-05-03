@@ -1,5 +1,9 @@
 {
     "name": "apf",
     "version": "0.1.0",
-    "private": true
+    "private": true,
+    "main": "apf-node",
+    "dependencies": {
+        "libxml": "0.0.3"
+    }
 }
