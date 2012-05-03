@@ -185,25 +185,22 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$initWorker();
     },
 
-    setSaveButtonCaption: function(caption) {
+    setSaveButtonCaption: function(caption, page) {
         if (caption) {
             return btnSave.setCaption(caption);
         }
 
-        if (!tabEditors.activepage) {
-            btnSave.setCaption("");
+        var page = page || tabEditors.getPage();
+        if (page) {
+            var hasChanged = Util.pageHasChanged(tabEditors.getPage());
+            if (Util.isAutoSaveEnabled() && hasChanged) {
+                return btnSave.setCaption("Saving...");
+            }
+            else if (!hasChanged) {
+                return btnSave.setCaption("All changes saved");
+            }
         }
-
-        var hasChanged = Util.pageHasChanged(tabEditors.getPage());
-        if (Util.isAutoSaveEnabled() && hasChanged) {
-            btnSave.setCaption("Saving...");
-        }
-        else if (!hasChanged) {
-            btnSave.setCaption("All changes saved");
-        }
-        else {
-            btnSave.setCaption("");
-        }
+        btnSave.setCaption("");
     },
 
     init: function() {
@@ -415,7 +412,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
-        this.setSaveButtonCaption();
+        this.setSaveButtonCaption(null, e.page);
 
         var self = this;
         setTimeout(function() {
@@ -1138,7 +1135,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             editor.setSession(newSession);
             doc = newSession.doc;
         }
-
+        
+        editor.setReadOnly(true);
         editor.selection.clearSelection();
 
         // Look for the node that references the revision we are loading and
