@@ -11,6 +11,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
+var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",
@@ -27,29 +28,23 @@ module.exports = ext.register("ext/themes/themes", {
     register : function(themes){
         var _self = this;
         
-        var timer;
-        
         for (var name in themes) {
             menus.addItemByPath("View/Themes/" + name, new apf.item({
                 type    : "radio",
                 value   : themes[name],
+                //group   : this.group
                 
                 onmouseover: function(e) {
-                    var value = this.value;
-                    
-                    clearTimeout(timer);
-                    timer = setTimeout(function(){
-                        _self.set(value, true);
-                    }, 200);
+                    //_self.currTheme = settings.model.queryValue("editors/code/@theme");
+                    //settings.model.setQueryValue("editors/code/@theme", this.value);
+                    _self.set(this.value);
+                    _self.saved = false;
                 },
                 
                 onmouseout: function(e) {
-                    clearTimeout(timer);
-                    
                     if (!_self.saved) {
-                        timer = setTimeout(function(){
-                            _self.set(_self.currTheme);
-                        }, 200);
+                        settings.model.setQueryValue("editors/code/@theme", _self.currTheme);
+                        _self.saved = false;
                     }
                 }
             }));
@@ -58,14 +53,14 @@ module.exports = ext.register("ext/themes/themes", {
         this.themes = themes;
     },
 
-    set : function(path, preview){
+    set : function(path){
         settings.model.setQueryValue("editors/code/@theme", path);
-        
         this.setThemedGUI(path);
         
-        this.saved = !preview;
-        if (!preview)
-            this.currTheme = path;
+        ide.dispatchEvent("theme_change", {theme: path});
+        
+        this.saved = true;
+        ide.dispatchEvent("track_action", {type: "theme change", theme: path});
     },
     
     loaded : {},
@@ -73,8 +68,6 @@ module.exports = ext.register("ext/themes/themes", {
         var _self = this;
         
         require(["require", path], function (require, theme) {
-            ide.dispatchEvent("theme.change", {theme: theme, path: path});
-            
             if (theme.isDark)
                 apf.setStyleClass(document.body, "dark");
             else
@@ -108,7 +101,23 @@ module.exports = ext.register("ext/themes/themes", {
                  + bg + " inset !important;"]
             ], self, _self.stylesheet);
             
-            ide.dispatchEvent("theme.init", {theme: theme, path: path});
+//            apf.setStyleRule(
+//                "body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
+//                "color", fg + " !important", _self.stylesheet, self);
+//            apf.setStyleRule(
+//                "body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
+//                "background-color", bg + " !important", _self.stylesheet, self);
+//            
+//            apf.setStyleRule(
+//                ".ace_corner", 
+//                "border-color", bg + " !important", _self.stylesheet, self);
+//            apf.setStyleRule(
+//                ".ace_corner", 
+//                "box-shadow", "4px 4px 0px " + bg + " inset !important;", _self.stylesheet, self);
+//            
+//            apf.setStyleRule(
+//                ".editor_bg", 
+//                "display", "none", _self.stylesheet, self);
         });
     },
 
@@ -130,9 +139,7 @@ module.exports = ext.register("ext/themes/themes", {
                 }
             },
             "onitemclick" : function(e){
-                var path = e.relatedNode.value;
-                _self.set(path);
-                ide.dispatchEvent("track_action", {type: "theme change", theme: path});
+                _self.set(e.relatedNode.value);
             }
         }), 350000);
 
@@ -142,7 +149,7 @@ module.exports = ext.register("ext/themes/themes", {
         });
         
         ide.addEventListener("settings.load", function(e){
-            var theme = _self.currTheme = e.model.queryValue("editors/code/@theme")
+            var theme = e.model.queryValue("editors/code/@theme")
                 || _self.defaultTheme;
             
             _self.setThemedGUI(theme);

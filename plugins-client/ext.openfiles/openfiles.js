@@ -27,8 +27,6 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     hook : function(){
         var _self = this;
         
-        this.markupInsertionPoint = colLeft;
-        
         panels.register(this, {
             position : 2000,
             caption: "Open Files",
@@ -170,6 +168,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         
         this.panel = winOpenFiles;
         this.nodes.push(winOpenFiles);
+        
+        colLeft.appendChild(winOpenFiles);
         
         lstOpenFiles.addEventListener("afterselect", function(e) {
             var node = this.selected;
