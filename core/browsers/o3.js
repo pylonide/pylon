@@ -5,10 +5,13 @@
 apf.runO3 = function(){
     //apf.importClass(runNonIe, true, self);
     // 
+
+    /*define your XMLParser in the packager
     if (process.version.split(".")[1] > 2)
         var XMLParser = require("libxml/lib/libxml");
     else // probably won't work, but who runs node < 0.2 ? 
-        var XMLParser = require('node-o3-xml'); // needs definition in package.json
+        var XMLParser = require('node-o3-xml');
+    */
     
     //var XMLParser = require('o3').xml;
     //var XMLDocument = XMLParser.parseFromString("<root />", "text/xml");

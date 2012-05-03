@@ -26,7 +26,7 @@ var util = require("util");
 
 self = window = global;
 
-self.sys = util;
+self.util = util;
 
 require("./apf-o3");
 require("./loader-o3");
