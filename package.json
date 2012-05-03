@@ -56,6 +56,6 @@
 
     "scripts": {
         "start": "sh ./bin/cloud9.sh",
-        "postinstall": "node ./node_modules/mappings/scripts/postinstall-notice.js"
+        "postinstall": "sh ./postinstall.sh"
     }
 }
