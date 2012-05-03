@@ -35,7 +35,8 @@
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/5e3d927ede95f9e6889569c66fb39a3e6a8b89d7"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"],
-        "gnu-tools":    ["npm", "https://github.com/c9/node-gnu-tools/tarball/7484b39ed9c12183865737a33d959b72c9494979"]
+        "gnu-tools":    ["npm", "https://github.com/c9/node-gnu-tools/tarball/7484b39ed9c12183865737a33d959b72c9494979"],
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/4f159e2a2d806de21f5aa9713f80963e121d358d"]
     },
 
     "repository" : {

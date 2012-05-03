@@ -1,0 +1,14 @@
+{
+    "name": "ext.packed",
+    "version": "0.0.1",
+    "main": "packed-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.packed"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

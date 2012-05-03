@@ -61,6 +61,7 @@ module.exports = {
                 bundledPlugins: [
                     "helloworld"
                 ],
+                real: argv.r,
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",

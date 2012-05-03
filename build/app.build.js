@@ -67,7 +67,7 @@ paths: {
 	'plugins-client/ext.colorpicker/colorpicker',
 	'plugins-client/ext.revisions/revisions',
 	'plugins-client/ext.language/language'], 
-out: "./build/src/packed.js",
+out: "../plugins-client/ext.packed/packed.js",
 inlineText: true,
 findNestedDependencies: true,
 optimizeAllPluginResources: false,

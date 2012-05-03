@@ -28,9 +28,9 @@ var Ide = module.exports = function(options) {
     var staticUrl = options.staticUrl || "/static";
 
     this.workspaceDir = options.workspaceDir;
-    
+
+
     options.plugins = options.plugins || [];
-    
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
@@ -40,7 +40,7 @@ var Ide = module.exports = function(options) {
         debug: options.debug === true,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId,
-        plugins: options.plugins.length > 0 ? options.plugins : (options.real ? [ "build/packed" ] : []),
+        plugins: options.real ? [ "plugins-client/ext.packed/packed" ] : options.plugins,
         bundledPlugins: options.bundledPlugins || [],
         requirejsConfig: options.requirejsConfig,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
@@ -84,10 +84,9 @@ util.inherits(Ide, EventEmitter);
 
     this.$serveIndex = function(req, res, next) {
         var _self = this;
-        if (_self.options.real)
-            process.exit(1);
+
         var indexFile =  _self.options.real === true ? "ide.tmpl.packed.html" : "ide.tmpl.html";
-        
+
         fs.readFile(Path.join(__dirname, "/view/", indexFile), "utf8", function(err, index) {
             if (err)
                 return next(err);
