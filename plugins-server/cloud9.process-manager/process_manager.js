@@ -143,9 +143,10 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     this.kill = function(pid) {
         var child = this.processes[pid];
         if (!child || !child.pid)
-            return;
+            return false;
 
         child.kill();
+        return true;
     };
 
 }).call(ProcessManager.prototype);

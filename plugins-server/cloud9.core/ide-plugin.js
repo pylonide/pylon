@@ -47,6 +47,7 @@ module.exports = function setup(options, imports, register) {
             davPrefix: baseUrl + "/workspace",
             projectName: options.projectName || "",
             socketIoUrl: socketUrl.replace(/^\//, ""),
+            socketIoTransports: options.socketIoTransports,
             baseUrl: baseUrl,
             debug: false,
             staticUrl: staticPrefix,

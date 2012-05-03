@@ -23,6 +23,7 @@ var Ide = module.exports = function(options) {
     assert(options.workspaceDir, "option 'workspaceDir' is required");
     assert(options.requirejsConfig, "option 'requirejsConfig' is required");
     assert(options.socketIoUrl, "option 'socketIoUrl' is required");
+    assert(options.socketIoTransports, "option 'socketIoTransports' is required");
     assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
@@ -35,6 +36,7 @@ var Ide = module.exports = function(options) {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
         socketIoUrl: options.socketIoUrl,
+        socketIoTransports: options.socketIoTransports,
         davPrefix: options.davPrefix,
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
         debug: options.debug === true,
@@ -121,6 +123,7 @@ util.inherits(Ide, EventEmitter);
                 debug: _self.options.debug,
                 staticUrl: staticUrl,
                 socketIoUrl: _self.options.socketIoUrl,
+                socketIoTransports: _self.options.socketIoTransports,
                 sessionId: req.sessionID, // set by connect
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),

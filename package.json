@@ -24,7 +24,14 @@
         
         "optimist": "~0.3.1",
         
-        "mappings": "0.1.x"        
+        "mappings": "0.1.x",
+        "amd-loader": "~0.0.4"
+    },
+    
+    "devDependencies": {
+        "nodeunit": "~0.7.4",
+        "sinon": "~1.3.4",
+        "rimraf": "~2.0.1"
     },
 
     "mappings": {
@@ -32,7 +39,7 @@
         "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/94a5e3f348da95ccdea6c80e864e523c9e666286"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/57f61714ecac0bf8536315db962b1a88a8dea8b3"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/5e3d927ede95f9e6889569c66fb39a3e6a8b89d7"],
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/00f2fb3ba522de1fac0765ee8e62de468be53816"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"],
         "gnu-tools":    ["npm", "https://github.com/c9/node-gnu-tools/tarball/7484b39ed9c12183865737a33d959b72c9494979"],

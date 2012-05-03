@@ -74,7 +74,8 @@ util.inherits(GitPlugin, Plugin);
             command: "git",
             args: message.argv.slice(1),
             cwd: message.cwd,
-            env: this.gitEnv
+            env: this.gitEnv,
+            extra: message.extra
         }, this.channel, function(err, pid) {
             if (err)
                 self.error(err, 1, message, client);
