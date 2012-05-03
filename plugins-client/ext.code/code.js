@@ -395,7 +395,7 @@ module.exports = ext.register("ext/code/code", {
             if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
                 return false;
 
-            if (this.wrappedCommand.isAvailable)
+            if (this.wrappedCommand && this.wrappedCommand.isAvailable)
                 return this.wrappedCommand.isAvailable(editor);
 
             return true;
@@ -409,14 +409,15 @@ module.exports = ext.register("ext/code/code", {
         }
             
         var fnWrap = function(command) {
-            return {
-                name: command.name,
-                readOnly: command.readOnly || false,
-                focusContext: true,
-                isAvailable: isAvailable,
-                wrappedCommand: command,
-                exec: exec
-            }
+			if (command)
+				return {
+					name: command.name,
+					readOnly: command.readOnly || false,
+					focusContext: true,
+					isAvailable: isAvailable,
+					wrappedCommand: command,
+					exec: exec
+				}
         }
 
         if (!defaultCommands.wrapped) {
