@@ -26,8 +26,9 @@ self.onmessage = function (e) {
                     
                     // Processing ...
                     var reader = new FileReaderSync();
+                    self.postMessage({type: "debug", filepath: filepath, value: "before readAsArrayBuffer"});
                     var file = reader.readAsArrayBuffer(data.file);
-                    
+                    self.postMessage({type: "debug", filepath: filepath, value: "after readAsArrayBuffer"});
                     var blob = file;
                     var blobsize = blob.byteLength;
         
@@ -68,12 +69,13 @@ self.onmessage = function (e) {
 
 // uploading file in chunks
 self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
+    self.postMessage({type: "debug", filepath: filepath, value: "start uploadChunk"});
     var http = new XMLHttpRequest();
     http.open("PUT", filepath, true);
     http.onreadystatechange = function(){
         if (http.readyState != 4)
             return;
-        
+        self.postMessage({type: "debug", filepath: filepath, value: "end uploadChunk"});
         if (end == blobsize) {
             // file upload complete
             delete connections[filepath];

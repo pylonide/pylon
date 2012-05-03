@@ -188,6 +188,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     break;
                 case "debug":
                     console.log(JSON.stringify(data));
+                    break;
                 default:
                     console.log("unknown message from uploadworker: ", data.type);
             }
@@ -382,6 +383,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     addToQueue: function(file) {
+        console.log("addToQueue...", file.name);
         // add files in dirty state
         var parent = file.targetFolder;
         var path = parent.getAttribute("path");
@@ -519,6 +521,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     /** Check for files exceeding filesize limit */
     checkUploadSize: function(files) {
+        console.log("Checking file sizes of all files");
         var file;
         var files_too_big = [];
         for (var filesize, totalsize = 0, i = 0, l = files.length; i < l; ++i) {
@@ -553,6 +556,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     /** Check the number of dropped files exceeds the limit */
     checkNumberOfFiles: function(files) {
+        console.log("Checking number of files");
         if (files.length > MAX_CONCURRENT_FILES) {
             util.alert(
                 "Could not upload files", "An error occurred while dropping these files",
@@ -600,12 +604,15 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     },
     
     onComplete: function() {
+        console.log("onComplete");
         var _self = this;
         var file = this.currentFile;
         var path = file.path;
         
         apf.xmldb.setAttribute(file.queueNode, "progress", "100");
+        console.log("webdav readdir...");
         fs.webdav.exec("readdir", [path], function(data) {
+            console.log("webdav readdir done...");
             if (data instanceof Error) {
                 // @todo: in case of error, show nice alert dialog.
                 return _self.uploadNextFile();
