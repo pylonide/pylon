@@ -136,7 +136,7 @@
             padding: 0 74px 0 22px;
             margin: 0;
             height: 25px;
-            background-color: #232323;
+            background: #262626 -webkit-linear-gradient(top, #292929, #242424);
             box-shadow: 0 1px 0 0 #353535 inset;
             border-bottom: 1px solid #000;
             border-top: 1px solid #000;
@@ -1527,11 +1527,6 @@
                          0 1px 0 0 rgba(255,255,255,.15) inset;
             z-index : 100000000;
         }
-        
-        .c9-menu-btnDown .c9-label{
-            color: #212121;
-            text-shadow : 0 1px 0 #5b5d63;
-        }
 
         /* Why are we using an extra div here??? */
         .c9-menu-btnDown .c9-fix {
@@ -2251,7 +2246,7 @@
         }
 
         .mnubtn.deploy .icon {
-            background-image:url(images/deploy.png);
+            background-position: 50% -334px;
         }
 
         .mnubtn.the_store .icon {
@@ -8044,7 +8039,7 @@
         font-family : Arial;
         font-size : 12px;
         border-bottom : 1px solid #000;
-        background: rgba(26,26,26,.9) url(images/c9-noise.png);
+        background: rgba(24,24,24,.9) url(images/c9-noise.png);
         width : auto;
 
         -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
@@ -8054,7 +8049,7 @@
         position: relative;
     }
         
-    .editor_tab .btnsesssioncontainer>div {
+    .editor_tab .btnsesssioncontainer > div {
         cursor: default;
         display : inline-block;
         position : relative;
@@ -8155,6 +8150,7 @@
     .editor_tab .curbtn .tab_middle {
         background-color    : #e8e8e8;
         color               : #000;
+        padding-top         : 5px;
         text-shadow         : 0 1px 0 0 rgba(255,255,255,.4);
     }
     .editor_tab .loading_active .sessiontab_saving,
@@ -8257,9 +8253,6 @@
         position            : relative;
         overflow            : hidden;
         padding             : 4px 0 0 0;
-    }
-    .editor_tab .curbtn .tab_middle{
-        padding-top : 5px;
     }
     .editor_tab .tab_left,
     .editor_tab .tab_right {
@@ -8704,7 +8697,7 @@
         background-position : 0 -79px;
     }
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
-        background-color    : #2F2F2F;
+        background-color    : #303030;
         color               : #cecece;
         -webkit-transition: background-color .1s linear;
     }
