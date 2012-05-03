@@ -58,6 +58,7 @@ module.exports = {
                 packagePath: "./cloud9.core",
                 fsUrl: fsUrl,
                 hosted: false,
+                socketIoTransports: [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
                 bundledPlugins: [
                     "helloworld"
                 ],
@@ -142,7 +143,7 @@ module.exports = {
                 packagePath: "./cloud9.session.file",
                 sessionsPath: __dirname + "/../.architect/sessions"
             },
-             "./cloud9.permissions",
+            "./cloud9.permissions",
             {
                 packagePath: "./cloud9.client-plugins",
                 plugins: clientExtensions
