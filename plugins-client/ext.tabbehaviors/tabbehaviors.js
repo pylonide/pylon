@@ -14,6 +14,7 @@ var menus = require("ext/menus/menus");
 var openfiles = require("ext/openfiles/openfiles");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
+var settings = require("core/settings");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -215,8 +216,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
             else if (page.fake) {
                 _self.addItem(page);
-                if (_self.accessList.indexOf(page) == -1)
-                    _self.accessList.unshift(page);
+                
+                if (_self.accessList.indexOf(page) == -1) {
+                    var idx = _self.accessList.indexOf(page.id);
+                    if (idx == -1) //Load accesslist from index
+                        _self.accessList.unshift(page);
+                    else
+                        _self.accessList[idx] = page;
+                }
             }
         });
 
@@ -239,6 +246,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (!_self.cycleKeyPressed) {
                 _self.accessList.remove(page);
                 _self.accessList.unshift(page);
+                settings.save();
             }
         });
 
@@ -266,6 +274,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                         _self.accessList.unshift(page);
                     }
                     
+                    settings.save();
                     _self.$dirtyNextTab = false;
                 }
             }
@@ -280,6 +289,30 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 page = _self.changedPages[i];
                 page.removeEventListener("aftersavedialogclosed", arguments.callee);
             }
+        });
+        
+        ide.addEventListener("settings.save", function(e){
+            if (_self.accessList.changed) {
+                var list = _self.accessList.slice(0);
+                list.forEach(function(page, i){ this[i] = page.id }, list);
+                e.model.setQueryValue("auto/tabcycle/text()", JSON.stringify(list));
+                _self.accessList.changed = false;
+            }
+        });
+        
+        ide.addEventListener("settings.load", function(e){
+            var list, json = e.model.queryValue("auto/tabcycle/text()");
+            if (json) {
+                try { 
+                    list = JSON.parse(json);
+                }
+                catch(e) {
+                    return;
+                }
+            }
+            
+            if (list)
+                _self.accessList = list;
         });
     },
     
@@ -440,6 +473,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.set(next);
         
         this.$dirtyNextTab = true;
+        this.accessList.changed = true;
     },
 
     previoustab : function(){
@@ -453,6 +487,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         tabEditors.set(next);
         
         this.$dirtyNextTab = true;
+        this.accessList.changed = true;
     },
 
     gototabright: function(e) {
@@ -666,10 +701,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 tabEditors.set(this.getAttribute("relPage"));
             }
         }));
-        var no = this.nodes.push(mnu) - 1;
+        this.nodes.push(mnu) - 1;
 
         page.$tabMenu = mnu;
-        this.accessList.push(page);
 
         this.updateState();
     },
