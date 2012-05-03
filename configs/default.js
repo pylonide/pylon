@@ -119,7 +119,7 @@ module.exports = {
                     "ext/guidedtour/guidedtour",
                     "ext/quickstart/quickstart",
                     "ext/jslanguage/jslanguage",
-                    "ext/autotest/autotest",
+                    //"ext/autotest/autotest",
                     "ext/tabsessions/tabsessions",
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
