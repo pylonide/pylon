@@ -3,10 +3,10 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "asyncjs": "~0.0.2"   
+        "asyncjs": "~0.0.2",
+        "libxml": "0.0.3"   
     },
     "mappings": {
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/94a5e3f348da95ccdea6c80e864e523c9e666286"],
         "node-o3-xml":    ["npm", "https://github.com/ajaxorg/node-o3-xml/tarball/b8eb2bdeaf8c6da3c85874e6af84754ee7eaa429"],
         "node-o3-xml-v4": ["npm", "https://github.com/ajaxorg/node-o3-xml-v4/tarball/c6048121d06ebf175186ae6e8707de84622d5f96"]
     }

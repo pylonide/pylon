@@ -1,4 +1,11 @@
 require("asyncjs");
+
+// used by apf-node below
+if (process.version.split(".")[1] > 2)
+    XMLParser = require('libxml/lib/libxml');
+else
+    XMLParser = require('node-o3-xml');
+
 require("apf");
 require("node-o3-xml");
 require("node-o3-xml-v4");
@@ -25,7 +32,7 @@ if (module === require.main) {
 
 function boot() {
     require("apf/apf-node");
-    
+
     require("./lib/proc");
     require("./lib/files");
     require("./lib/defines");
