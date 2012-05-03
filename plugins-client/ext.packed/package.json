@@ -1,7 +1,7 @@
 {
     "name": "ext.packed",
     "version": "0.0.1",
-    "main": "packed-ext.js",
+    "main": "packed.js",
     "private": true,
     "plugin": {
         "provides": [

@@ -28,10 +28,11 @@ core:
 	node r.js -o build/core.build.js
 
 # packages ext
-ext: core 
+ext: 
 	mkdir -p build/
 	node build/packed_helper.js
 	node r.js -o build/app.build.js
+	echo "module = {exports: undefined};"|cat - plugins-client/ext.packed/packed.js > temp_file && mv temp_file plugins-client/ext.packed/packed.js
 
 # calls dryice on worker & packages it
 worker:

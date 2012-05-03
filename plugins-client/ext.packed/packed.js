@@ -1,3 +1,4 @@
+module = {exports: undefined};
 (function () {
 (function () {
 /* ***** BEGIN LICENSE BLOCK *****
@@ -19996,11 +19997,11 @@ c,b,e){var d=g.xdRegExp.exec(a),f;if(!d)return!0;a=d[2];d=d[3];d=d.split(":");f=
 b,e)})}},write:function(a,c,b){if(c in j){var e=g.jsEscape(j[c]);b.asModule(a+"!"+c,"define(function () { return '"+e+"';});\n")}},writeFile:function(a,c,b,e,d){var c=g.parseName(c),f=c.moduleName+"."+c.ext,h=b.toUrl(c.moduleName+"."+c.ext)+".js";g.load(f,b,function(){var b=function(a){return e(h,a)};b.asModule=function(a,b){return e.asModule(a,h,b)};g.write(a,f,b,d)},d)}}})})();
 
 
-/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
-/*FILEHEAD(apf.js)SIZE(96380)TIME(Thu, 03 May 2012 17:10:00 GMT)*/
+/*FILEHEAD(apf.js)SIZE(96350)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21387,10 +21388,8 @@ apf.setTimeout = function(f, t){
     }, ms);
 }*/
 
-/*if (document) {
-    document.documentElement.className += " has_apf";
-    document.documentElement.style.display = "none";
-}*/
+document.documentElement.className += " has_apf";
+document.documentElement.style.display = "none";
 
 apf.browserDetect();
 apf.Init.run("apf");
@@ -21402,7 +21401,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(46109)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(46109)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21680,7 +21679,6 @@ apf.Class.prototype = new (function(){
 
         if (struct && (struct.htmlNode || this.nodeFunc == apf.NODE_HIDDEN)) {
             this.$pHtmlNode = struct.htmlNode;
-            
             
                 if (this.ownerDocument && this.ownerDocument.$domParser)
                     this.ownerDocument.$domParser.$continueParsing(this);
@@ -22476,7 +22474,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(core/lib/util/color.js)SIZE(10920)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/color.js)SIZE(10920)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22719,7 +22717,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22745,7 +22743,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22889,7 +22887,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22978,7 +22976,7 @@ apf.delcookie = function (name, domain){
 
 
 
-/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25965)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23760,7 +23758,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23786,7 +23784,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23812,7 +23810,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -24023,7 +24021,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24049,7 +24047,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24077,7 +24075,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24190,7 +24188,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24215,7 +24213,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(core/lib/util/plane.js)SIZE(8624)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/plane.js)SIZE(8624)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24447,7 +24445,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24827,7 +24825,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24853,7 +24851,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(core/lib/util/style.js)SIZE(18681)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/style.js)SIZE(18681)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25359,7 +25357,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25384,7 +25382,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25410,7 +25408,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/utilities.js)SIZE(14497)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/utilities.js)SIZE(14497)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25890,7 +25888,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26052,7 +26050,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(core/lib/util/xml.js)SIZE(49534)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/xml.js)SIZE(49534)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27466,7 +27464,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27491,7 +27489,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27571,7 +27569,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27850,7 +27848,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28000,7 +27998,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(core/lib/offline.js)SIZE(19757)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline.js)SIZE(19757)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28030,7 +28028,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28056,7 +28054,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28082,7 +28080,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28108,7 +28106,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28134,7 +28132,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28160,7 +28158,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28186,7 +28184,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28212,7 +28210,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28615,7 +28613,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29681,7 +29679,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29705,33 +29703,7 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
-/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29757,7 +29729,33 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29783,7 +29781,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/html.js)SIZE(15340)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/html.js)SIZE(15340)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29809,7 +29807,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29835,7 +29833,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/layout.js)SIZE(13425)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/layout.js)SIZE(13425)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30254,7 +30252,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30280,7 +30278,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30396,7 +30394,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30792,7 +30790,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30817,7 +30815,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30842,7 +30840,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/skins.js)SIZE(12336)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/skins.js)SIZE(12336)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31176,7 +31174,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(core/lib/sort.js)SIZE(8266)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/sort.js)SIZE(8266)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31405,7 +31403,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31431,7 +31429,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32413,13 +32411,13 @@ return {
 
 
 
-/*FILEHEAD(core/lib/uirecorder.js)SIZE(397)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder.js)SIZE(397)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
 
 
-/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32445,7 +32443,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33467,7 +33465,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33491,7 +33489,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33516,7 +33514,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33540,32 +33538,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33590,7 +33563,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33615,7 +33588,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33640,8 +33613,7 @@ apf.xmldb = new (function(){
 
 
 
-
-/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33667,7 +33639,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33693,7 +33665,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33719,7 +33691,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33745,7 +33717,33 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34587,7 +34585,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34612,7 +34610,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34638,24 +34636,24 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/lib/uirecorder/capture.js)SIZE(21922)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/capture.js)SIZE(21922)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/playback.js)SIZE(28844)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/playback.js)SIZE(28844)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/ui.js)SIZE(18464)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/ui.js)SIZE(18464)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
 
-/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35117,7 +35115,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35160,7 +35158,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35743,7 +35741,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36336,7 +36334,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36400,7 +36398,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(core/markup/aml/text.js)SIZE(3974)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/text.js)SIZE(3974)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36500,7 +36498,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36629,7 +36627,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36666,7 +36664,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36712,7 +36710,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36753,7 +36751,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36939,7 +36937,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36973,7 +36971,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37044,7 +37042,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37155,7 +37153,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37264,7 +37262,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37289,7 +37287,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37314,7 +37312,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37358,7 +37356,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37409,7 +37407,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37566,7 +37564,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37617,7 +37615,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37698,7 +37696,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37734,7 +37732,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37795,7 +37793,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37838,7 +37836,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37900,7 +37898,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37926,7 +37924,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37951,7 +37949,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37976,7 +37974,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38001,7 +37999,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38026,7 +38024,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38051,7 +38049,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38076,7 +38074,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38101,7 +38099,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38126,7 +38124,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38151,7 +38149,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38176,7 +38174,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38201,7 +38199,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38226,7 +38224,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38251,7 +38249,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38276,7 +38274,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38301,7 +38299,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38326,7 +38324,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38351,7 +38349,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38376,7 +38374,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38401,7 +38399,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38436,7 +38434,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38469,7 +38467,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38511,7 +38509,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38536,7 +38534,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(core/markup/xinclude/include.js)SIZE(6818)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xinclude/include.js)SIZE(6818)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38719,7 +38717,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38745,7 +38743,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38772,7 +38770,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38798,7 +38796,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38824,7 +38822,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38850,7 +38848,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38876,7 +38874,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38902,7 +38900,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38928,7 +38926,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38954,7 +38952,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38980,7 +38978,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39006,7 +39004,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39032,7 +39030,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39058,7 +39056,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39085,7 +39083,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39111,7 +39109,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39137,7 +39135,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39163,7 +39161,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39189,7 +39187,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39215,7 +39213,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39241,7 +39239,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39267,7 +39265,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39293,7 +39291,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39319,7 +39317,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39345,7 +39343,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39371,7 +39369,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39397,7 +39395,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(18882)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(18882)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39895,7 +39893,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39921,7 +39919,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40718,7 +40716,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20758)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20758)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41318,7 +41316,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42044,7 +42042,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58946)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58946)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43482,7 +43480,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47627)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47627)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44681,7 +44679,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44851,7 +44849,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(71734)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(71734)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46663,7 +46661,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46769,7 +46767,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47290,7 +47288,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/cache.js)SIZE(12532)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/cache.js)SIZE(12532)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47656,7 +47654,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(core/baseclasses/rename.js)SIZE(15023)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/rename.js)SIZE(15023)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48070,7 +48068,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48097,7 +48095,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48415,7 +48413,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49311,7 +49309,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49368,7 +49366,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50034,7 +50032,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57877)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57877)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51439,7 +51437,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53544)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53544)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52813,7 +52811,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5249)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5249)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52965,7 +52963,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54451,7 +54449,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54556,7 +54554,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30523)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30523)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55347,7 +55345,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55375,7 +55373,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55402,7 +55400,7 @@ apf.__MULTICHECK__ = 1 << 22;
 
 
 
-/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55630,7 +55628,7 @@ apf.__TELEPORT__ = 1 << 28;
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55657,7 +55655,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56405,7 +56403,7 @@ apf.$viewportVirtual = function(amlNode){
 
 
 
-/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56433,7 +56431,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56539,7 +56537,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56565,7 +56563,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56590,7 +56588,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56615,58 +56613,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56692,7 +56639,58 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/window.js)SIZE(50587)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/window.js)SIZE(50587)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57826,11 +57824,11 @@ apf.window = new apf.window();
 
 
 
-/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
-/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58019,7 +58017,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58271,7 +58269,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58296,7 +58294,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(core/browsers/non_ie.js)SIZE(24354)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/non_ie.js)SIZE(24354)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58653,12 +58651,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/o3.js)SIZE(9019)TIME(Thu, 03 May 2012 17:07:31 GMT)*/
+/*FILEHEAD(core/browsers/o3.js)SIZE(9131)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
 
-/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58684,7 +58682,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/webkit.js)SIZE(8405)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/webkit.js)SIZE(8405)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58861,11 +58859,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
-/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /**
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -58886,7 +58884,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59099,7 +59097,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /**
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -59153,7 +59151,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59179,7 +59177,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59205,7 +59203,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59463,7 +59461,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /**
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -59485,7 +59483,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59668,7 +59666,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59694,7 +59692,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59720,12 +59718,12 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
 
-/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59751,7 +59749,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62206,7 +62204,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62328,7 +62326,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 /**
@@ -62954,7 +62952,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(elements/bindingrule.js)SIZE(8842)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingrule.js)SIZE(8842)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63205,7 +63203,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63230,7 +63228,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63355,7 +63353,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63459,7 +63457,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(elements/actiontracker.js)SIZE(36828)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actiontracker.js)SIZE(36828)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64049,7 +64047,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64104,7 +64102,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64265,7 +64263,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64291,7 +64289,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64898,7 +64896,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64923,7 +64921,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65051,7 +65049,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65122,7 +65120,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(21714)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(21714)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65729,7 +65727,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(elements/bindingdndrule.js)SIZE(3623)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingdndrule.js)SIZE(3623)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65847,7 +65845,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66177,7 +66175,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66226,7 +66224,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66533,7 +66531,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66798,7 +66796,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66860,7 +66858,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66916,7 +66914,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(elements/browser.js)SIZE(6466)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/browser.js)SIZE(6466)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67129,7 +67127,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67749,7 +67747,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/caldropdown.js)SIZE(36424)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/caldropdown.js)SIZE(36424)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67775,7 +67773,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/calendar.js)SIZE(28862)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/calendar.js)SIZE(28862)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67800,7 +67798,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67826,7 +67824,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67851,7 +67849,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/checkbox.js)SIZE(8188)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/checkbox.js)SIZE(8188)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68122,7 +68120,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68147,7 +68145,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68528,7 +68526,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(elements/colorpicker2.js)SIZE(16009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/colorpicker2.js)SIZE(16009)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68951,7 +68949,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68993,7 +68991,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69070,7 +69068,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(elements/datagrid.js)SIZE(53921)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/datagrid.js)SIZE(53921)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70244,7 +70242,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70270,7 +70268,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/divider.js)SIZE(2882)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/divider.js)SIZE(2882)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70363,7 +70361,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(elements/dropdown.js)SIZE(15434)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/dropdown.js)SIZE(15434)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70814,7 +70812,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70840,7 +70838,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71024,7 +71022,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71049,7 +71047,7 @@ apf.aml.setElement("errorbox", apf.errorbox);
 
 
 
-/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71090,7 +71088,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/flashplayer.js)SIZE(5856)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/flashplayer.js)SIZE(5856)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71115,33 +71113,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71167,7 +71139,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/frame.js)SIZE(4838)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/frame.js)SIZE(4838)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71316,7 +71314,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71341,7 +71339,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71366,7 +71364,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/hbox.js)SIZE(41656)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/hbox.js)SIZE(41656)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72359,7 +72357,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72385,7 +72383,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72631,7 +72629,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73355,7 +73353,7 @@ apf.aml.setElement("item",  apf.item);
 
 
 
-/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73442,7 +73440,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73600,7 +73598,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73626,7 +73624,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73985,7 +73983,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(elements/loader.js)SIZE(3558)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/loader.js)SIZE(3558)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74101,7 +74099,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74127,7 +74125,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74153,7 +74151,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74179,7 +74177,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74752,7 +74750,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74860,7 +74858,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(elements/modalwindow.js)SIZE(24684)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/modalwindow.js)SIZE(24684)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75492,7 +75490,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -76595,7 +76593,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/notifier.js)SIZE(15297)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/notifier.js)SIZE(15297)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -76621,7 +76619,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/page.js)SIZE(27116)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/page.js)SIZE(27116)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77377,7 +77375,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77403,7 +77401,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77428,7 +77426,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77471,7 +77469,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77497,7 +77495,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77522,7 +77520,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77795,7 +77793,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77822,7 +77820,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -78375,7 +78373,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -78401,7 +78399,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -79024,7 +79022,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -79139,7 +79137,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -80078,7 +80076,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -80104,7 +80102,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(elements/skin.js)SIZE(9698)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/skin.js)SIZE(9698)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -80301,7 +80299,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/slider.js)SIZE(32341)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/slider.js)SIZE(32341)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -80326,7 +80324,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -80351,7 +80349,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -81199,7 +81197,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -81254,7 +81252,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(elements/spinner.js)SIZE(16965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/spinner.js)SIZE(16965)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -81794,7 +81792,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -81957,7 +81955,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82375,7 +82373,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82468,7 +82466,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(elements/state.js)SIZE(10893)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/state.js)SIZE(10893)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82793,7 +82791,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82819,7 +82817,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82844,7 +82842,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82870,7 +82868,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82969,7 +82967,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(elements/table.js)SIZE(17204)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/table.js)SIZE(17204)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -83446,7 +83444,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -83475,7 +83473,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -83501,7 +83499,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -83857,7 +83855,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(elements/textbox.js)SIZE(28629)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/textbox.js)SIZE(28629)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -84686,7 +84684,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -84712,7 +84710,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -84806,7 +84804,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(elements/tree.js)SIZE(17445)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/tree.js)SIZE(17445)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -85154,7 +85152,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -85179,33 +85177,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -85231,7 +85203,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -85257,7 +85229,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86542,7 +86540,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86568,7 +86566,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86709,7 +86707,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86965,7 +86963,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86990,7 +86988,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87015,7 +87013,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87041,7 +87039,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87254,7 +87252,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87280,7 +87278,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87306,7 +87304,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87332,7 +87330,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87358,7 +87356,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87485,7 +87483,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87511,7 +87509,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(10831)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(10831)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87537,7 +87535,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87563,7 +87561,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87589,12 +87587,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
 
-/*FILEHEAD(elements/textbox/masking.js)SIZE(12869)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/textbox/masking.js)SIZE(12869)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88038,7 +88036,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88063,7 +88061,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88088,7 +88086,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88113,7 +88111,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88138,7 +88136,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88163,33 +88161,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88215,7 +88187,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88241,7 +88213,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88267,7 +88239,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88293,7 +88265,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88319,7 +88291,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88345,7 +88317,33 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4360)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4360)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88465,7 +88463,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(jpack_end.js)SIZE(773)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(jpack_end.js)SIZE(773)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 
 
@@ -88497,7 +88495,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-node.js)SIZE(1244)TIME(Thu, 03 May 2012 16:31:13 GMT)*/
+/*FILEHEAD(apf-node.js)SIZE(1245)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88522,33 +88520,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Thu, 03 May 2012 17:07:08 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(apf-o3.js)SIZE(14015)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88574,7 +88546,33 @@ apf.start();
 
 
 
-/*FILEHEAD(loader.js)SIZE(15799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(loader.js)SIZE(15799)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88607,7 +88605,7 @@ apf.start();
 
 
 
-/*FILEHEAD(loader2.js)SIZE(18652)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+/*FILEHEAD(loader2.js)SIZE(18652)TIME(Thu, 03 May 2012 21:03:39 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88647,7 +88645,7 @@ define("plugins-client/lib.apf/www/apf-packaged/apf_release", function(){});
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define('plugins-client/cloud9.core/www/core/document',['require','exports','module'],function(require, exports, module) {
+define('core/document',['require','exports','module'],function(require, exports, module) {
 
 var Document = function(node, docValue){
     this.$init();
@@ -88682,6 +88680,912 @@ module.exports = Document;
 
 });
 define('text!core/util.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:window\n      id        = "winAlert"\n      title     = ""\n      icon      = ""\n      skin      = "bk-window2"\n      class     = "relative"\n      center    = "true"\n      render    = "runtime"\n      kbclose   = "true"\n      buttons   = "close"\n      width     = "512">\n        <a:vbox width="100%">\n            <a:hbox edge="15 10 25 10" padding="10">\n                <div class="alertWarn" margin="0 10 0 10"/>\n                <a:vbox flex="1" padding="5">\n                    <h3 id="winAlertHeader"></h3>\n                    <div id="winAlertMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>\n                </a:vbox>\n            </a:hbox>\n<!--            <a:divider skin="hordivider" />-->\n            <a:hbox edge="6 10 10" pack="end">\n                <a:button id="winAlertButton" default="3" onclick="winAlert.hide();" skin="btn-default-css3">OK</a:button>\n            </a:hbox>\n        </a:vbox>\n    </a:window>\n    \n    <a:window\n      id        = "winConfirm"\n      title     = "Confirm"\n      icon      = ""\n      center    = "true"\n      render    = "runtime"\n      kbclose   = "true"\n      buttons   = "close"\n      width     = "512"\n      skin      = "bk-window2"\n      class     = "relative">\n        <a:vbox padding="10" edge="15 20 25 20">\n            <h3 id="winConfirmHeader"></h3>\n            <div id="winConfirmMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>\n        </a:vbox>\n    \n        <a:hbox edge="6 10 10" pack="end" padding="8">\n            <a:button id="btnConfirmCancel" onclick="winConfirm.hide()" skin="btn-default-css3">Cancel</a:button>\n            <a:button id="btnConfirmOk" default="3" skin="btn-default-css3" class="btn-green" onclick="winConfirm.hide()">Ok</a:button>\n        </a:hbox>\n    </a:window>\n    \n    <a:window\n      id        = "winQuestion"\n      title     = "Question"\n      icon      = ""\n      center    = "true"\n      render    = "runtime"\n      kbclose   = "true"\n      buttons   = "close"\n      width     = "512"\n      skin      = "bk-window2"\n      onkeydown = "\n        if(event.keyCode == 89) {\n            btnQuestionYes.dispatchEvent(\'click\', {htmlEvent: {}});\n        }\n        if(event.keyCode == 78) {\n            btnQuestionNo.dispatchEvent(\'click\', {htmlEvent: {}});\n        }\n      "\n      class     = "relative">\n        <a:vbox padding="10" edge="15 20 25 20">\n            <h3 id="winQuestionHeader"></h3>\n            <div id="winQuestionMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>\n        </a:vbox>\n    \n        <a:hbox edge="6 10 10" pack="end" padding="8">\n            <a:button id="btnQuestionYesToAll" skin="btn-default-css3" class="btn-green" visible="false">Yes to all</a:button>\n            <a:button id="btnQuestionNoToAll" skin="btn-default-css3" class="btn-red" visible="false">No to all</a:button>\n            <a:filler/>\n            <a:button id="btnQuestionYes" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>\n            <a:button id="btnQuestionNo" skin="btn-default-css3" class="btn-red">No</a:button>\n        </a:hbox>\n    </a:window>\n</a:application>\n';});
+
+module.exports = function setup(options, imports, register) {
+    var base = require.resolve("treehugger/package.json").slice(0, -13);
+    imports.static.addStatics([{
+        path: base + "/lib",
+        mount: "/treehugger/lib",
+        rjs: {
+            treehugger: "/treehugger/lib/treehugger"
+        }
+    }]);
+
+    register(null, {
+        "client.treehugger": {}
+    });
+};
+define("treehugger/treehugger-lib", function(){});
+
+module.exports = function setup(options, imports, register) {
+    var base = require.resolve("v8debug/package.json").slice(0, -13);
+    imports.static.addStatics([{
+        path: base + "/lib",
+        mount: "/v8debug/lib",
+        rjs: {
+            debug: "/v8debug/lib/v8debug",
+            v8debug: "/v8debug/lib/v8debug"
+        }
+    }]);
+
+    register(null, {
+        "client.v8debug": {}
+    });
+};
+define("lib-v8debug/lib/v8debug/v8debug-lib", function(){});
+
+/**
+ * Utilities for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
+define('core/util',['require','exports','module','text!core/util.xml','core/util'],function(require, exports, module) {
+    
+var markup = require("text!core/util.xml");
+
+exports.alert = function(title, header, msg, onhide) {
+    if (!self.winAlert)
+        apf.document.documentElement.insertMarkup(markup);
+    
+    winAlert.show();
+    winAlert.setAttribute('title', title);
+    winAlertHeader.$ext.innerHTML = header;
+    winAlertMsg.$ext.innerHTML = msg;
+    if (onhide)
+        winAlert.onhide = function() {
+            winAlertMsg.onhide = null;
+            onhide();
+        };
+    else
+        winAlert.onhide = null;
+};
+
+exports.confirm = function(title, header, msg, onconfirm, oncancel) {
+    if (!self.winConfirm)
+        apf.document.documentElement.insertMarkup(markup);
+    
+    winConfirm.show();
+    winConfirm.setAttribute("title", title);
+    winConfirmHeader.$ext.innerHTML = header;
+    winConfirmMsg.$ext.innerHTML = msg;
+    btnConfirmOk.onclick = onconfirm;
+    btnConfirmCancel.onclick = oncancel;
+};
+
+exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoall) {
+    if (!self.winQuestion)
+        apf.document.documentElement.insertMarkup(markup);
+    
+    winQuestion.show();
+    winQuestion.setAttribute("title", title);
+    winQuestionHeader.$ext.innerHTML = header;
+    winQuestionMsg.$ext.innerHTML = msg;
+    btnQuestionYes.onclick = onyes;
+    btnQuestionYesToAll.onclick = onyestoall;
+    btnQuestionNo.onclick = onno;
+    btnQuestionNoToAll.onclick = onnotoall;
+};
+
+exports.removeInteractive = function (amlNode) {
+    if (window.cloud9config.readonly == true)
+        return false;
+
+    if (amlNode.confirmed == undefined)
+        amlNode.confirmed = false;
+
+    if (!amlNode.confirmed) {
+        var files = amlNode.getSelection();
+
+        function confirm(file) {
+            var name = file.getAttribute("name");
+            var type = file.getAttribute("type");
+            require("core/util").question(
+                "Confirm Remove",
+                "You are about to remove the " + type + " " + name,
+                "Do you want continue? (This change cannot be undone)",
+                function () { // Yes
+                    amlNode.confirmed = true;
+                    amlNode.remove(file);
+                    amlNode.confirmed = false;
+                    if (files.length > 0)
+                        confirm(files.shift());
+                    else
+                        winQuestion.hide();
+                },
+                function () { // Yes to all
+                    amlNode.confirmed = true;
+                    amlNode.remove(file);
+                    files.forEach(function (file) {
+                        amlNode.remove(file);
+                    });
+                    amlNode.confirmed = false;
+                    winQuestion.hide();
+                },
+                function () { // No
+                    if (files.length > 0)
+                        confirm(files.shift());
+                    else
+                        winQuestion.hide();
+                },
+                function () { // No to all
+                    winQuestion.hide();
+                }
+            );
+            btnQuestionYesToAll.setAttribute("visible", files.length > 0);
+            btnQuestionNoToAll.setAttribute("visible", files.length > 0);
+        }
+        confirm(files.shift());
+        return false;
+    } else
+        return true;
+};
+
+var SupportedIcons = {
+   "application/xhtml+xml":'html',
+   "text/css": "css",
+   "text/x-scss": "css",
+   "text/x-sass": "css",
+   "text/html":'html',
+    "application/pdf":'page_white_acrobat',
+    "image":'image',
+    "application/xml":'page_white_code_red',
+    "image/svg+xml": "page_white_picture",
+    "text/plain": 'page_white_text',
+    "application/javascript": 'page_white_code',
+    "application/json": 'page_white_code',
+    "text/x-script.python": 'page_white_code',
+    "text/x-script.ocaml": 'page_white_code',
+    "text/x-script.clojure": 'page_white_code',
+    "application/x-httpd-php": 'page_white_php',
+    "application/x-sh": "page_white_wrench",
+    "text/x-coldfusion": 'page_white_coldfusion',
+    "text/x-script.ruby": "page_white_ruby",
+    "text/x-script.coffeescript": 'page_white_cup',
+    "text/cpp": 'page_white_cplusplus',
+    "text/x-c": 'page_white_c',
+    "text/x-csharp": 'page_white_csharp',
+    "text/text/x-java-source": 'page_white_cup',
+    "text/x-markdown": 'page_white_text'
+};
+
+var contentTypes = {
+    "js": "application/javascript",
+    "json": "application/json",
+    "css": "text/css",
+    "scss": "text/x-scss",
+    "sass": "text/x-sass",
+
+    "xml": "application/xml",
+    "rdf": "application/rdf+xml",
+    "rss": "application/rss+xml",
+    "svg": "image/svg+xml",
+    "wsdl": "application/wsdl+xml",
+    "xslt": "application/xslt+xml",
+    "atom": "application/atom+xml",
+    "mathml": "application/mathml+xml",
+    "mml": "application/mathml+xml",
+
+    "php": "application/x-httpd-php",
+    "phtml": "application/x-httpd-php",
+    "html": "text/html",
+    "xhtml": "application/xhtml+xml",
+    "coffee": "text/x-script.coffeescript",
+    "py": "text/x-script.python",
+
+    "ru": "text/x-script.ruby",
+    "gemspec": "text/x-script.ruby",
+    "rake": "text/x-script.ruby",
+    "rb": "text/x-script.ruby",
+
+    "c": "text/x-c",
+    "cc": "text/x-c",
+    "cpp": "text/x-c",
+    "cxx": "text/x-c",
+    "h": "text/x-c",
+    "hh": "text/x-c",
+    "hpp": "text/x-c",
+
+    "bmp": "image",
+    "djv": "image",
+    "djvu": "image",
+    "gif": "image",
+    "ico": "image",
+    "jpeg": "image",
+    "jpg": "image",
+    "pbm": "image",
+    "pgm": "image",
+    "png": "image",
+    "pnm": "image",
+    "ppm": "image",
+    "psd": "image",
+    "svgz": "image",
+    "tif": "image",
+    "tiff": "image",
+    "xbm": "image",
+    "xpm": "image",
+
+    "clj": "text/x-script.clojure",
+    "ml": "text/x-script.ocaml",
+    "mli": "text/x-script.ocaml",
+    "cfm": "text/x-coldfusion",
+    "sql": "text/x-sql",
+
+    "sh": "application/x-sh",
+    "bash": "application/x-sh"
+};
+
+exports.getFileIcon = function(xmlNode) {
+    var name = xmlNode.getAttribute('name');
+    var icon  = "page_white_text";
+    var ext;
+
+    if (name) {
+        ext = name.split(".").pop().toLowerCase();
+        icon = SupportedIcons[contentTypes[ext]] || "page_white_text";
+    }
+    return icon + ".png";
+};
+
+
+exports.getContentType = function(filename) {
+    var type = filename.split(".").pop().toLowerCase() || "";
+    return contentTypes[type] || "text/plain";
+};
+
+exports.xmlEntityMap = {
+    "quot": "34", "amp": "38", "apos": "39", "lt": "60", "gt": "62",
+    "nbsp": "160", "iexcl": "161", "cent": "162", "pound": "163", "curren": "164",
+    "yen": "165", "brvbar": "166", "sect": "167", "uml": "168", "copy": "169",
+    "ordf": "170", "laquo": "171", "not": "172", "shy": "173", "reg": "174",
+    "macr": "175", "deg": "176", "plusmn": "177", "sup2": "178", "sup3": "179",
+    "acute": "180", "micro": "181", "para": "182", "middot": "183", "cedil": "184",
+    "sup1": "185", "ordm": "186", "raquo": "187", "frac14": "188", "frac12": "189",
+    "frac34": "190", "iquest": "191", "agrave": "192", "aacute": "193",
+    "acirc": "194", "atilde": "195", "auml": "196", "aring": "197", "aelig": "198",
+    "ccedil": "199", "egrave": "200", "eacute": "201", "ecirc": "202",
+    "euml": "203", "igrave": "204", "iacute": "205", "icirc": "206", "iuml": "207",
+    "eth": "208", "ntilde": "209", "ograve": "210", "oacute": "211", "ocirc": "212",
+    "otilde": "213", "ouml": "214", "times": "215", "oslash": "216", "ugrave": "217",
+    "uacute": "218", "ucirc": "219", "uuml": "220", "yacute": "221", "thorn": "222",
+    "szlig": "223", "agrave": "224", "aacute": "225", "acirc": "226", "atilde": "227",
+    "auml": "228", "aring": "229", "aelig": "230", "ccedil": "231", "egrave": "232",
+    "eacute": "233", "ecirc": "234", "euml": "235", "igrave": "236", "iacute": "237",
+    "icirc": "238", "iuml": "239", "eth": "240", "ntilde": "241", "ograve": "242",
+    "oacute": "243", "ocirc": "244", "otilde": "245", "ouml": "246", "divide": "247",
+    "oslash": "248", "ugrave": "249", "uacute": "250", "ucirc": "251", "uuml": "252",
+    "yacute": "253", "thorn": "254", "yuml": "255", "oelig": "338", "oelig": "339",
+    "scaron": "352", "scaron": "353", "yuml": "376", "fnof": "402", "circ": "710",
+    "tilde": "732", "alpha": "913", "beta": "914", "gamma": "915", "delta": "916",
+    "epsilon": "917", "zeta": "918", "eta": "919", "theta": "920", "iota": "921",
+    "kappa": "922", "lambda": "923", "mu": "924", "nu": "925", "xi": "926",
+    "omicron": "927", "pi": "928", "rho": "929", "sigma": "931", "tau": "932",
+    "upsilon": "933", "phi": "934", "chi": "935", "psi": "936", "omega": "937",
+    "alpha": "945", "beta": "946", "gamma": "947", "delta": "948", "epsilon": "949",
+    "zeta": "950", "eta": "951", "theta": "952", "iota": "953", "kappa": "954",
+    "lambda": "955", "mu": "956", "nu": "957", "xi": "958", "omicron": "959",
+    "pi": "960", "rho": "961", "sigmaf": "962", "sigma": "963", "tau": "964",
+    "upsilon": "965", "phi": "966", "chi": "967", "psi": "968", "omega": "969",
+    "thetasym": "977", "upsih": "978", "piv": "982", "ensp": "8194", "emsp": "8195",
+    "thinsp": "8201", "zwnj": "8204", "zwj": "8205", "lrm": "8206", "rlm": "8207",
+    "ndash": "8211", "mdash": "8212", "lsquo": "8216", "rsquo": "8217",
+    "sbquo": "8218", "ldquo": "8220", "rdquo": "8221", "bdquo": "8222",
+    "dagger": "8224", "dagger": "8225", "bull": "8226", "hellip": "8230",
+    "permil": "8240", "prime": "8242", "prime": "8243", "lsaquo": "8249",
+    "rsaquo": "8250", "oline": "8254", "frasl": "8260", "euro": "8364",
+    "image": "8465", "weierp": "8472", "real": "8476", "trade": "8482",
+    "alefsym": "8501", "larr": "8592", "uarr": "8593", "rarr": "8594",
+    "darr": "8595", "harr": "8596", "crarr": "8629", "larr": "8656", "uarr": "8657",
+    "rarr": "8658", "darr": "8659", "harr": "8660", "forall": "8704", "part": "8706",
+    "exist": "8707", "empty": "8709", "nabla": "8711", "isin": "8712",
+    "notin": "8713", "ni": "8715", "prod": "8719", "sum": "8721", "minus": "8722",
+    "lowast": "8727", "radic": "8730", "prop": "8733", "infin": "8734",
+    "ang": "8736", "and": "8743", "or": "8744", "cap": "8745", "cup": "8746",
+    "int": "8747", "there4": "8756", "sim": "8764", "cong": "8773", "asymp": "8776",
+    "ne": "8800", "equiv": "8801", "le": "8804", "ge": "8805", "sub": "8834",
+    "sup": "8835", "nsub": "8836", "sube": "8838", "supe": "8839", "oplus": "8853",
+    "otimes": "8855", "perp": "8869", "sdot": "8901", "lceil": "8968",
+    "rceil": "8969", "lfloor": "8970", "rfloor": "8971", "lang": "9001",
+    "rang": "9002", "loz": "9674", "spades": "9824", "clubs": "9827",
+    "hearts": "9829", "diams": "9830"
+};
+
+/**
+ * Escape an xml string making it ascii compatible.
+ * @param  {String}  str      the xml string to escape.
+ * @param  {Boolean} noQuotes do not escape quotes.
+ * @return {String} the escaped string.
+ */
+exports.escapeXml = function(str, noQuotes) {
+    str = (String(str) || "")
+        .replace(/&/g, "&#38;")
+        .replace(/</g, "&#60;")
+        .replace(/>/g, "&#62;");
+    if (!noQuotes) {
+        str = str.replace(/"/g, "&#34;")
+                 .replace(/'/g, "&#39;");
+    }
+    return str.replace(/&([a-z]+);/gi, function(a, m) {
+        if (exports.xmlEntityMap[(m = m.toLowerCase())])
+            return "&#" + exports.xmlEntityMap[m] + ";";
+        return a;
+    });
+};
+
+// taken from http://xregexp.com/
+exports.escapeRegExp = function(str) {
+    return str.replace(/[-[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
+}
+
+/**
+ * Determines whether a string is true in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   true   The function returns true.
+ *   'true' The function returns true.
+ *   'on'   The function returns true.
+ *   1      The function returns true.
+ *   '1'    The function returns true.
+ * @return {Boolean} whether the string is considered to imply truth.
+ */
+exports.isTrue = function(c){
+    return (c === true || c === "true" || c === "on" || typeof c == "number" && c > 0 || c === "1");
+};
+
+/**
+ * Determines whether a string is false in the html attribute sense.
+ * @param {mixed} value the variable to check
+ *   Possible values:
+ *   false   The function returns true.
+ *   'false' The function returns true.
+ *   'off'   The function returns true.
+ *   0       The function returns true.
+ *   '0'     The function returns true.
+ * @return {Boolean} whether the string is considered to imply untruth.
+ */
+exports.isFalse = function(c){
+    return (c === false || c === "false" || c === "off" || c === 0 || c === "0");
+};
+
+/*
+ * JavaScript Linkify - v0.3 - 6/27/2009
+ * http://benalman.com/projects/javascript-linkify/
+ *
+ * Copyright (c) 2009 "Cowboy" Ben Alman
+ * Dual licensed under the MIT and GPL licenses.
+ * http://benalman.com/about/license/
+ *
+ * Some regexps adapted from http://userscripts.org/scripts/review/7122
+ */
+exports.linkify=function(){var k="[a-z\\d.-]+://",h="(?:(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])\\.){3}(?:[0-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])",c="(?:(?:[^\\s!@#$%^&*()_=+[\\]{}\\\\|;:'\",.<>/?]+)\\.)+",n="(?:ac|ad|aero|ae|af|ag|ai|al|am|an|ao|aq|arpa|ar|asia|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|biz|bi|bj|bm|bn|bo|br|bs|bt|bv|bw|by|bz|cat|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|cn|coop|com|co|cr|cu|cv|cx|cy|cz|de|dj|dk|dm|do|dz|ec|edu|ee|eg|er|es|et|eu|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gov|gp|gq|gr|gs|gt|gu|gw|gy|hk|hm|hn|hr|ht|hu|id|ie|il|im|info|int|in|io|iq|ir|is|it|je|jm|jobs|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mg|mh|mil|mk|ml|mm|mn|mobi|mo|mp|mq|mr|ms|mt|museum|mu|mv|mw|mx|my|mz|name|na|nc|net|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|org|pa|pe|pf|pg|ph|pk|pl|pm|pn|pro|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|st|su|sv|sy|sz|tc|td|tel|tf|tg|th|tj|tk|tl|tm|tn|to|tp|travel|tr|tt|tv|tw|tz|ua|ug|uk|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|xn--0zwm56d|xn--11b5bs3a9aj6g|xn--80akhbyknj4f|xn--9t4b11yi5a|xn--deba0ad|xn--g6w251d|xn--hgbk6aj7f53bba|xn--hlcj6aya9esc7a|xn--jxalpdlp|xn--kgbechtv|xn--zckzah|ye|yt|yu|za|zm|zw)",f="(?:"+c+n+"|"+h+")",o="(?:[;/][^#?<>\\s]*)?",e="(?:\\?[^#<>\\s]*)?(?:#[^<>\\s]*)?",d="\\b"+k+"[^<>\\s]+",a="\\b"+f+o+e+"(?!\\w)",m="mailto:",j="(?:"+m+")?[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@"+f+e+"(?!\\w)",l=new RegExp("(?:"+d+"|"+a+"|"+j+")","ig"),g=new RegExp("^"+k,"i"),b={"'":"`",">":"<",")":"(","]":"[","}":"{","B;":"B+","b:":"b9"},i={callback:function(q,p){return p?'<a href="'+p+'" title="'+p+'">'+q+"</a>":q},punct_regexp:/(?:[!?.,:;'"]|(?:&|&amp;)(?:lt|gt|quot|apos|raquo|laquo|rsaquo|lsaquo);)$/};return function(u,z){z=z||{};var w,v,A,p,x="",t=[],s,E,C,y,q,D,B,r;for(v in i){if(z[v]===undefined){z[v]=i[v]}}while(w=l.exec(u)){A=w[0];E=l.lastIndex;C=E-A.length;if(/[\/:]/.test(u.charAt(C-1))){continue}do{y=A;r=A.substr(-1);B=b[r];if(B){q=A.match(new RegExp("\\"+B+"(?!$)","g"));D=A.match(new RegExp("\\"+r,"g"));if((q?q.length:0)<(D?D.length:0)){A=A.substr(0,A.length-1);E--}}if(z.punct_regexp){A=A.replace(z.punct_regexp,function(F){E-=F.length;return""})}}while(A.length&&A!==y);p=A;if(!g.test(p)){p=(p.indexOf("@")!==-1?(!p.indexOf(m)?"":m):!p.indexOf("irc.")?"irc://":!p.indexOf("ftp.")?"ftp://":"http://")+p}if(s!=C){t.push([u.slice(s,C)]);s=E}t.push([A,p])}t.push([u.substr(s)]);for(v=0;v<t.length;v++){x+=z.callback.apply(window,t[v])}return x||u}}();
+
+});
+
+/**
+ * Main IDE object for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
+
+define('core/ide',['require','exports','module','core/document','core/util'],function(require, exports, module) {
+    var Document = require("core/document");
+    var util = require("core/util");
+
+    var ide = new apf.Class().$init();
+
+    ide.createDocument = function(node, value){
+        return new Document(node, value);
+    };
+
+    ide.start = function() {
+        this.workspaceDir   = window.cloud9config.workspaceDir.replace(/\/+$/, "");
+        this.davPrefix      = window.cloud9config.davPrefix.replace(/\/+$/, "");
+        this.staticPrefix   = window.cloud9config.staticUrl;
+        this.sessionId      = window.cloud9config.sessionId;
+        this.workspaceId    = window.cloud9config.workspaceId;
+        this.readonly       = window.cloud9config.readonly;
+        this.projectName    = window.cloud9config.projectName;
+
+        this.loggedIn       = true;
+
+        this.onLine         = false;
+        this.offlineFileSystemSupport = false;
+
+        this.dispatchEvent("load");
+        
+       var loc = location.href;
+        if (
+            location.protocol !== "file:"
+            && loc.indexOf("dev") === -1
+            && (loc.indexOf("c9.io") > -1))
+        {
+            window.onerror = function(m, u, l) {
+                apf.ajax("/api/debug", {
+                    method      : "POST",
+                    contentType : "application/json",
+                    data        : JSON.stringify({
+                        agent       : navigator.userAgent,
+                        type        : "General Javascript Error",
+                        e           : [m, u, l],
+                        workspaceId : ide.workspaceId
+                    })
+                });
+            };
+    
+            //Catch all APF Routed errors
+            apf.addEventListener("error", function(e){
+                apf.ajax("/api/debug", {
+                    method      : "POST",
+                    contentType : "application/json",
+                    data        : JSON.stringify({
+                        agent       : navigator.userAgent,
+                        type        : "APF Error",
+                        message     : e.message,
+                        tgt         : e.currentTarget && e.currentTarget.serialize(),
+                        url         : e.url,
+                        state       : e.state,
+                        e           : e.error,
+                        workspaceId : ide.workspaceId
+                    })
+                });
+            });
+        }
+    };
+
+    ide.start();
+
+    ide.addEventListener("extload", function() {
+        // fire up the socket connection:
+        var options = {
+            "remember transport": false,
+            transports: window.cloud9config.socketIoTransports,
+            reconnect: false,
+            resource: window.cloud9config.socketIoUrl,
+            "connect timeout": 500,
+            "try multiple transports": true,
+            "transport options": {
+                "xhr-polling": {
+                    timeout: 60000
+                },
+                "jsonp-polling": {
+                    timeout: 60000
+                }
+            }
+        };
+
+        ide.socketConnect = function() {
+            clearInterval(ide.$retryTimer);
+
+            // NOTE: This is a workaround for an init bug in socket.io
+            // @see https://github.com/LearnBoost/socket.io-client/issues/390
+            if (!ide.socket.socket.transport) {
+                // Try and connect until we succeed.
+                // NOTE: This may log a connection error to the error console but will recover gracefully and eventually connect.
+                ide.socketDisconnect();
+            } else {
+                ide.socket.json.send({
+                    command: "attach",
+                    sessionId: ide.sessionId,
+                    workspaceId: ide.workspaceId
+                });
+            }
+        };
+
+        ide.socketDisconnect = function() {
+            // On disconnect retry every 1 second for 5 seconds then issue `disconnected`
+            // and retry every 5 seconds indefinitely.
+            var retries = 0;
+            function retryTimer(delay) {
+                clearInterval(ide.$retryTimer);
+                ide.$retryTimer = setInterval(function() {
+                    retries += 1;
+                    if (retries === 5) {
+                        ide.dispatchEvent("socketDisconnect");
+                        retryTimer(5000);
+                    } else {
+                        var sock = ide.socket.socket;
+                        if (!sock.connecting && !sock.reconnecting && !ide.testOffline && ide.loggedIn) {
+                            sock.connect();
+                        }
+                    }
+                }, delay);
+            }
+            retryTimer(1000);
+        };
+
+        ide.socketMessage = function(message) {
+            if (typeof message == "string") {
+                try {
+                    message = JSON.parse(message);
+                }
+                catch(e) {
+                    window.console && console.error("Error parsing socket message", e, "message:", message);
+                    return;
+                }
+            }
+
+            if (message.type == "attached") {
+                ide.dispatchEvent("socketConnect"); //This is called too often!!
+            }
+
+            if (message.type === "error") {
+                // TODO: Don't display all errors?
+                util.alert(
+                    "Error on server",
+                    "Received following error from server:",
+                    JSON.stringify(message.message)
+                );
+            }
+            
+            ide.dispatchEvent("socketMessage", {
+                message: message
+            });
+        };
+
+        // for unknown reasons io is sometimes undefined
+        try {
+            ide.socket = io.connect(null, options);
+        }
+        catch (e) {
+            util.alert(
+                "Error starting up",
+                "Error starting up the IDE", "There was an error starting up the IDE.<br>Please clear your browser cache and reload the page.",
+                function() {
+                    window.location.reload();
+                }
+            );
+
+            var socketIoScriptEl = Array.prototype.slice.call(
+                document.getElementsByTagName("script")).filter(function(script) {
+                    return script.src && script.src.indexOf("socket.io.js") >= 0;
+                }
+            )[0];
+
+            var status;
+            if (socketIoScriptEl) {
+                apf.ajax(socketIoScriptEl.src, {
+                    callback: function(data, state, extra) {
+                        try {
+                            status = parseInt(extra.http.status, 10);
+                        } catch(ex) {}
+                        apf.dispatchEvent("error", {
+                            message: "socket.io client lib not loaded",
+                            error: {
+                                status: status,
+                                state: state,
+                                data: data,
+                                extra: extra
+                            }
+                        });
+                    }
+                });
+            } else {
+                apf.dispatchEvent("error", {
+                    message: "socket.io client lib not loaded",
+                    error: e
+                });
+            }
+            return;
+        }
+
+        ide.socket.on("message",    ide.socketMessage);
+        ide.socket.on("connect",    ide.socketConnect);
+        ide.socket.on("disconnect", ide.socketDisconnect);
+        this.inited = true;
+    });
+
+    ide.$msgQueue = [];
+    ide.addEventListener("socketConnect", function() {
+        while(ide.$msgQueue.length) {
+            var q = ide.$msgQueue;
+            ide.$msgQueue = [];
+            q.forEach(function(msg) {
+                ide.socket.json.send(msg);
+            });
+        }
+    });
+
+    ide.send = function(msg) {
+        if (!ide.socket || !ide.socket.socket.connected) {
+            ide.$msgQueue.push(msg);
+            return;
+        }
+
+        ide.socket.json.send(msg);
+    };
+
+    ide.getActivePageModel = function() {
+        var page = tabEditors.getPage();
+        if (!page)
+            return null;
+
+        var corrected = this.dispatchEvent("activepagemodel", {
+            model: page.$model
+        });
+        
+        return corrected && corrected.data 
+            ? corrected.data 
+            : page.$model.data;
+    };
+
+    ide.getAllPageModels = function() {
+        return tabEditors.getPages().map(function(page) {
+            return page.$model.data;
+        });
+    };
+
+    module.exports = ide;
+});
+
+/**
+ * Extension manager for the Ajax.org Cloud IDE
+ *
+ * @copyright 2010, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
+define('core/ext',['require','exports','module','core/ide','core/util'],function(require, exports, module) {
+
+var ide = require("core/ide");
+var util = require("core/util");
+
+//Prevent the introduction of globals
+//apf.AmlElement.prototype.$propHandlers.id = function(value){
+//    if (this.name == value)
+//        return;
+//
+//    if (this.name) {
+//        //#ifdef __WITH_NAMESERVER
+//        apf.nameserver.remove(this.localName, this);
+//        apf.nameserver.remove("all", this);
+//        //#endif
+//    }
+//
+//    if (apf.nameserver.get("all", value))
+//        console.warn("ID collision of APF element: '" + value + "'");
+//
+//    //#ifdef __WITH_NAMESERVER
+//    apf.nameserver.register(this.localName, value, this);
+//    apf.nameserver.register("all", value, this);
+//    //#endif
+//    
+//    this.name = value;
+//};
+
+var ext;
+module.exports = ext = {
+    //Extension types
+    GENERAL       : 1,
+    defLength     : 1,
+
+    extHandlers   : {
+        1 : {
+            register : function(oExtension){
+                if (!oExtension.hook)
+                    ext.initExtension(oExtension);
+            },
+            unregister : function(oExtension) {}
+        }
+    },
+    extensions    : [],
+    extLut        : {},
+    commandsLut   : {},
+    typeLut       : {
+        1 : "General"
+    },
+
+    model : new apf.model(),
+
+    currentLayoutMode : null,
+
+    addType : function(defName, regHandler, unregHandler){
+        this[defName.toUpperCase()] = ++this.defLength;
+        this.extHandlers[this.defLength] = {
+            register : regHandler,
+            unregister : unregHandler
+        };
+        this.typeLut[this.defLength] = defName;
+    },
+
+    register : function(path, oExtension, force){
+        if (oExtension.registered)
+            return oExtension;
+
+        var dt = new Date();
+
+        if (!this.model.data)
+            this.model.load("<plugins />");
+
+        if (!this.model.queryNode("plugin[@path='" + path + "']"))
+            this.model.appendXml('<plugin type="' + this.typeLut[oExtension.type]
+                + '" name="' + (oExtension.name || "") + '" path="' + path
+                + '" dev="' + (oExtension.dev || "") + '" enabled="1" userext="0" />');
+        else
+            this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+
+        //Don't init general extensions that cannot live alone
+        if (!force && oExtension.type == this.GENERAL && !oExtension.alone) {
+            oExtension.path = path;
+            return oExtension;
+        }
+
+        oExtension.registered = true;
+        oExtension.path = path;
+
+        this.extHandlers[oExtension.type].register(oExtension);
+
+        this.extLut[path] = oExtension;
+        this.extensions.push(oExtension);
+
+        if (oExtension.hook) {
+            oExtension.hook();
+            
+            ide.addEventListener("$event.hook." + oExtension.path, function(callback){
+                callback.call(this, {ext : oExtension});
+            });
+            ide.dispatchEvent("hook." + oExtension.path, {
+                ext : oExtension
+            });
+        }
+        
+        var initTime = parseInt(this.model.queryValue("plugin[@path='" + path + "']/@init") || 0);
+        this.model.queryNode("plugin[@path='" + path + "']").setAttribute("hook", Number(new Date() - dt) - initTime);
+
+        return oExtension;
+    },
+
+    unregister : function(oExtension, silent){
+        //Check exts that depend on oExtension
+        var using = oExtension.using;
+        if (using) {
+            var inUseBy = [];
+            for (var use, i = 0, l = using.length; i < l; i++) {
+                if ((use = using[i]).registered)
+                    inUseBy.push(use.path);
+            }
+
+            if (inUseBy.length) {
+                //@todo move this to outside this function
+                if (!silent)
+                    util.alert(
+                        "Could not disable extension",
+                        "Extension is still in use",
+                        "This extension cannot be disabled, because it is still in use by the following extensions:<br /><br />"
+                        + " - " + inUseBy.join("<br /> - ")
+                        + "<br /><br /> Please disable those extensions first.");
+                return false;
+            }
+        }
+
+        delete oExtension.registered;
+        this.extensions.remove(oExtension);
+        delete this.extLut[oExtension.path];
+
+        //Check commands to clean up
+        var commands = oExtension.commands;
+        if (commands) {
+            for (var cmd in commands) {
+                if (this.commandsLut[cmd])
+                    delete this.commandsLut[cmd];
+            }
+        }
+
+        //Check deps to clean up
+        var deps = oExtension.deps;
+        if (deps) {
+            for (var dep, ii = 0, ll = deps.length; ii < ll; ii++) {
+                dep = deps[ii];
+                if (dep.registered && dep.type == this.GENERAL && !oExtension.alone)
+                    this.unregister(dep, true);
+            }
+        }
+
+        this.extHandlers[oExtension.type].unregister(oExtension);
+
+        this.model.setQueryValue("plugin[@path='" + oExtension.path + "']/@enabled", 0);
+
+        if (oExtension.inited) {
+            oExtension.destroy();
+            delete oExtension.inited;
+        }
+
+        return true;
+    },
+
+    initExtension : function(oExtension, amlParent) {
+        if (oExtension.inited)
+            return;
+        
+        var dt = new Date();
+        
+        oExtension.inited = true; // Prevent Re-entry
+
+        var skin = oExtension.skin;
+        if (skin && typeof skin == "object") {
+            var data = oExtension.skin.data;
+            oExtension.skinNode = new apf.skin(apf.extend({}, oExtension.skin, {data: null}));
+            oExtension.skinNode.setProperty("src", data);
+            apf.document.documentElement.appendChild(oExtension.skinNode);
+        }
+
+        //Load markup
+        var markup = oExtension.markup;
+        if (markup) 
+            (oExtension.markupInsertionPoint || amlParent || apf.document.documentElement).insertMarkup(markup);
+
+        var deps = oExtension.deps;
+        if (deps) {
+            deps.each(function(dep){
+                if (!dep.registered)
+                    ext.register(dep.path, dep, true);
+
+                (dep.using || (dep.using = [])).pushUnique(oExtension);
+            });
+        }
+
+        if (this.currentKeybindings) {
+            var name = oExtension.path.substr(oExtension.path.lastIndexOf("/") + 1);
+            var keyBindings = this.currentKeybindings[name];
+
+            if (keyBindings)
+                oExtension.currentKeybindings = keyBindings;
+        }
+
+        oExtension.init(amlParent);
+        
+        ide.addEventListener("$event.init." + oExtension.path, function(callback){
+            callback.call(this, {ext : oExtension});
+        });
+        ide.dispatchEvent("init." + oExtension.path, {
+            ext : oExtension
+        });
+        
+        this.model.queryNode("plugin[@path='" + oExtension.path + "']").setAttribute("init", Number(new Date() - dt));
+    },
+
+    enableExt : function(path) {
+        var ext = require(path);
+        if(!ext.enable)
+            return;
+
+        ext.enable();
+        this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 1);
+    },
+
+    disableExt : function(path) {
+        var ext = require(path);
+        if(!ext.disable)
+            return;
+
+        ext.disable();
+        this.model.setQueryValue("plugin[@path='" + path + "']/@enabled", 0);
+    },
+
+    execCommand: function(cmd, data) {
+        if (cmd)
+            cmd = cmd.trim();
+        else
+            cmd = "";
+
+        var commands = self["req"+"uire"]("ext/commands/commands");
+        var c9console = self["requ"+"ire"]("ext/console/console");
+
+        var command = commands.commands[cmd];
+        if (!command || !command.exec)
+            return;
+
+        if (command.msg)
+            c9console.write([command.msg], data);
+        else
+            c9console.write('"' + cmd + '" command executed', data);
+        c9console.markProcessAsCompleted(data.tracer_id);
+
+        var res = commands.exec(cmd, null, data);
+        return res === undefined ? false : res;
+    }
+};
+
+});
 
 /**
  * Extension manager for the Ajax.org Cloud IDE
@@ -88894,39 +89798,6 @@ module.exports = {
 module.exports.init();
 
 });
-
-module.exports = function setup(options, imports, register) {
-    var base = require.resolve("treehugger/package.json").slice(0, -13);
-    imports.static.addStatics([{
-        path: base + "/lib",
-        mount: "/treehugger/lib",
-        rjs: {
-            treehugger: "/treehugger/lib/treehugger"
-        }
-    }]);
-
-    register(null, {
-        "client.treehugger": {}
-    });
-};
-define("plugins-client/lib.treehugger/treehugger-lib", function(){});
-
-module.exports = function setup(options, imports, register) {
-    var base = require.resolve("v8debug/package.json").slice(0, -13);
-    imports.static.addStatics([{
-        path: base + "/lib",
-        mount: "/v8debug/lib",
-        rjs: {
-            debug: "/v8debug/lib/v8debug",
-            v8debug: "/v8debug/lib/v8debug"
-        }
-    }]);
-
-    register(null, {
-        "client.v8debug": {}
-    });
-};
-define("plugins-client/lib.v8debug/v8debug-lib", function(){});
 }());
 define("build/src/core.packed", function(){});
 

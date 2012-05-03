@@ -42,7 +42,7 @@ var Ide = module.exports = function(options) {
         debug: options.debug === true,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId,
-        plugins: options.real ? [ "plugins-client/ext.packed/packed" ] : options.plugins,
+        plugins: options.real ? [ "ext/packed/packed" ] : options.plugins,
         bundledPlugins: options.bundledPlugins || [],
         requirejsConfig: options.requirejsConfig,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
