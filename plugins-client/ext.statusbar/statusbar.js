@@ -117,15 +117,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
         
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                _self.offsetWidth = e.width;
-            else
-                _self.offsetWidth = 0;
-
-            _self.setPosition();
-        });
-        
         ide.addEventListener("init.ext/editors/editors", function(){
             tabEditors.addEventListener("afterswitch", function(e) {
                 if (e.nextPage.type != "ext/code/code")
