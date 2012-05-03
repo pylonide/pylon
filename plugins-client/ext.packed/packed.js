@@ -1876,22 +1876,6 @@ exports.preventDefault = function(e) {
         e.returnValue = false;
 };
 
-exports.getDocumentX = function(e) {
-    if (e.clientX) {
-        return e.clientX + dom.getPageScrollLeft();
-    } else {
-        return e.pageX;
-    }
-};
-
-exports.getDocumentY = function(e) {
-    if (e.clientY) {
-        return e.clientY + dom.getPageScrollTop();
-    } else {
-        return e.pageY;
-    }
-};
-
 /*
  * @return {Number} 0 for left button, 1 for middle button, 2 for right button
  */
@@ -2488,6 +2472,7 @@ var Editor = function(renderer, session) {
 
     this.commands = new CommandManager(useragent.isMac ? "mac" : "win", defaultCommands);
     this.textInput  = new TextInput(renderer.getTextAreaContainer(), this);
+    this.renderer.textarea = this.textInput.getElement();
     this.keyBinding = new KeyBinding(this);
 
     // TODO detect touch event support
@@ -2793,11 +2778,7 @@ var Editor = function(renderer, session) {
 
     this.$cursorChange = function() {
         this.renderer.updateCursor();
-
-        // move text input over the cursor
-        // this is required for iOS and IME
-        this.renderer.moveTextAreaToCursor(this.textInput.getElement());
-    }
+    };
 
     /**
      * Editor@onDocumentChange(e) 
@@ -2866,7 +2847,6 @@ var Editor = function(renderer, session) {
 
         this.$highlightBrackets();
         this.$updateHighlightActiveLine();
-        this.$updateHighlightGutterLine();
     };
 
     /** internal, hide
@@ -2898,21 +2878,6 @@ var Editor = function(renderer, session) {
         }
     };
 
-    /** internal, hide
-     * Editor.$updateHighlightGutterLine()
-     * 
-     * 
-     **/
-    this.$updateHighlightGutterLine = function(){
-        if (typeof this.$lastrow == "number")
-            this.renderer.removeGutterDecoration(this.$lastrow, "ace_gutter_active_line");
-
-        this.$lastrow = null;
-
-        if (this.$highlightGutterLine)
-            this.renderer.addGutterDecoration(
-                this.$lastrow = this.getCursorPosition().row, "ace_gutter_active_line");
-    }
 
     /**
      * Editor@onSelectionChange(e) 
@@ -2934,7 +2899,6 @@ var Editor = function(renderer, session) {
             session.$selectionMarker = session.addMarker(range, "ace_selection", style);
         } else {
             this.$updateHighlightActiveLine();
-            this.$updateHighlightGutterLine();
         }
 
         if (this.$highlightSelectedWord)
@@ -3013,7 +2977,6 @@ var Editor = function(renderer, session) {
         // Update the active line marker as due to folding changes the current
         // line range on the screen might have changed.
         this.$updateHighlightActiveLine();
-        this.$updateHighlightGutterLine();
         // TODO: This might be too much updating. Okay for now.
         this.renderer.updateFull();
     };
@@ -3299,12 +3262,11 @@ var Editor = function(renderer, session) {
     };
 
     this.$highlightGutterLine = true;
-    this.setHighlightGutterLine = function(shouldHighlightGutterLine) {
-        if (this.$highlightGutterLine == shouldHighlightGutterLine)
+    this.setHighlightGutterLine = function(shouldHighlight) {
+        if (this.$highlightGutterLine == shouldHighlight)
             return;
 
-        this.$highlightGutterLine = shouldHighlightGutterLine;
-        this.$updateHighlightGutterLine();
+        this.renderer.setHighlightGutterLine(shouldHighlight);
     };
 
     this.getHighlightGutterLine = function() {
@@ -4674,7 +4636,9 @@ var TextInput = function(parentNode, host) {
     var text = dom.createElement("textarea");
     if (useragent.isTouchPad)
         text.setAttribute("x-palm-disable-auto-cap", true);
-        
+
+    text.setAttribute("wrap", "off");
+
     text.style.left = "-10000px";
     text.style.position = "fixed";
     parentNode.insertBefore(text, parentNode.firstChild);
@@ -4956,10 +4920,10 @@ var MouseEvent = require("./mouse_event").MouseEvent;
 
 var MouseHandler = function(editor) {
     this.editor = editor;
-    
-    new DefaultHandlers(editor);
-    new DefaultGutterHandler(editor);
-    
+
+    new DefaultHandlers(this);
+    new DefaultGutterHandler(this);
+
     event.addListener(editor.container, "mousedown", function(e) {
         editor.focus();
         return event.preventDefault(e);
@@ -4976,7 +4940,7 @@ var MouseHandler = function(editor) {
     event.addMultiMouseDownListener(mouseTarget, 0, 3, 600, this.onMouseEvent.bind(this, "tripleclick"));
     event.addMultiMouseDownListener(mouseTarget, 0, 4, 600, this.onMouseEvent.bind(this, "quadclick"));
     event.addMouseWheelListener(editor.container, this.onMouseWheel.bind(this, "mousewheel"));
-    
+
     var gutterEl = editor.renderer.$gutter;
     event.addListener(gutterEl, "mousedown", this.onMouseEvent.bind(this, "guttermousedown"));
     event.addListener(gutterEl, "click", this.onMouseEvent.bind(this, "gutterclick"));
@@ -4998,7 +4962,7 @@ var MouseHandler = function(editor) {
     this.onMouseEvent = function(name, e) {
         this.editor._emit(name, new MouseEvent(e, this.editor));
     };
-    
+
     this.$dragDelay = 250;
     this.setDragDelay = function(dragDelay) {
         this.$dragDelay = dragDelay;
@@ -5022,10 +4986,48 @@ var MouseHandler = function(editor) {
         mouseEvent.speed = this.$scrollSpeed * 2;
         mouseEvent.wheelX = e.wheelX;
         mouseEvent.wheelY = e.wheelY;
-        
+
         this.editor._emit(name, mouseEvent);
     };
 
+    this.setState = function(state) {
+        this.state = state;
+    };
+
+    this.captureMouse = function(ev, state) {
+        if (state)
+            this.setState(state);
+
+        this.x = ev.x;
+        this.y = ev.y;
+
+        // do not move textarea during selection
+        var kt = this.editor.renderer.$keepTextAreaAtCursor;
+        this.editor.renderer.$keepTextAreaAtCursor = false;
+
+        var self = this;
+        var onMouseSelection = function(e) {
+            self.x = e.clientX;
+            self.y = e.clientY;
+        };
+
+        var onMouseSelectionEnd = function(e) {
+            clearInterval(timerId);
+            self[self.state + "End"] && self[self.state + "End"](e);
+            self.$clickSelection = null;
+            self.editor.renderer.$keepTextAreaAtCursor = kt;
+            self.editor.renderer.$moveTextAreaToCursor();
+        };
+
+        var onSelectionInterval = function() {
+            self[self.state] && self[self.state]();
+        }
+
+        event.capture(this.editor.container, onMouseSelection, onMouseSelectionEnd);
+        var timerId = setInterval(onSelectionInterval, 20);
+
+        ev.preventDefault();
+    };
 }).call(MouseHandler.prototype);
 
 exports.MouseHandler = MouseHandler;
@@ -5054,6 +5056,7 @@ exports.MouseHandler = MouseHandler;
  * Contributor(s):
  *      Fabian Jakobs <fabian AT ajax DOT org>
  *      Mike de Boer <mike AT ajax DOT org>
+ *      Harutyun Amirjanyan <harutyun AT c9 DOT io>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -5069,241 +5072,290 @@ exports.MouseHandler = MouseHandler;
  *
  * ***** END LICENSE BLOCK ***** */
 
-define('ace/mouse/default_handlers', ['require', 'exports', 'module' , 'ace/lib/event', 'ace/lib/dom', 'ace/lib/browser_focus'], function(require, exports, module) {
+define('ace/mouse/default_handlers', ['require', 'exports', 'module' , 'ace/lib/dom', 'ace/lib/browser_focus'], function(require, exports, module) {
 "use strict";
 
-var event = require("../lib/event");
 var dom = require("../lib/dom");
 var BrowserFocus = require("../lib/browser_focus").BrowserFocus;
 
-var STATE_UNKNOWN = 0;
-var STATE_SELECT = 1;
-var STATE_DRAG = 2;
 
 var DRAG_OFFSET = 5; // pixels
 
-function DefaultHandlers(editor) {
-    this.editor = editor;
-    this.$clickSelection = null;
-    this.browserFocus = new BrowserFocus();
 
-    editor.setDefaultHandler("mousedown", this.onMouseDown.bind(this));
-    editor.setDefaultHandler("dblclick", this.onDoubleClick.bind(this));
-    editor.setDefaultHandler("tripleclick", this.onTripleClick.bind(this));
-    editor.setDefaultHandler("quadclick", this.onQuadClick.bind(this));
-    editor.setDefaultHandler("mousewheel", this.onScroll.bind(this));
+
+function DefaultHandlers(mouseHandler) {
+    mouseHandler.$clickSelection = null;
+    mouseHandler.browserFocus = new BrowserFocus();
+
+    var editor = mouseHandler.editor;
+    editor.setDefaultHandler("mousedown", this.onMouseDown.bind(mouseHandler));
+    editor.setDefaultHandler("dblclick", this.onDoubleClick.bind(mouseHandler));
+    editor.setDefaultHandler("tripleclick", this.onTripleClick.bind(mouseHandler));
+    editor.setDefaultHandler("quadclick", this.onQuadClick.bind(mouseHandler));
+    editor.setDefaultHandler("mousewheel", this.onScroll.bind(mouseHandler));
+
+    var exports = ["select", "startSelect", "drag", "dragEnd", "dragWait",
+        "dragWaitEnd", "startDrag"];
+
+    exports.forEach(function(x) {
+        mouseHandler[x] = this[x];
+    }, this);
+
+    mouseHandler.selectByLines = this.extendSelectionBy.bind(mouseHandler, "getLineRange");
+    mouseHandler.selectByWords = this.extendSelectionBy.bind(mouseHandler, "getWordRange");
 }
 
 (function() {
-    
+
     this.onMouseDown = function(ev) {
+        this.mousedownEvent = ev;
         var inSelection = ev.inSelection();
-        var pageX = ev.pageX;
-        var pageY = ev.pageY;
         var pos = ev.getDocumentPosition();
         var editor = this.editor;
         var _self = this;
-        
+
+        this.ev = ev
         var selectionRange = editor.getSelectionRange();
         var selectionEmpty = selectionRange.isEmpty();
-        var state = STATE_UNKNOWN;
-        
+
         var button = ev.getButton();
         if (button !== 0) {
             if (selectionEmpty) {
                 editor.moveCursorToPosition(pos);
                 editor.selection.clearSelection();
             }
-            if (button == 2) {
-                editor.textInput.onContextMenu({x: ev.clientX, y: ev.clientY}, selectionEmpty);
-                event.capture(editor.container, function(){}, editor.textInput.onContextMenuClose);
-            }
+            // 2: contextmenu, 1: linux paste
+            this.moveTextarea = function() {
+                editor.textInput.onContextMenu({x: _self.x, y: _self.y});
+            };
+            this.moveTextareaEnd = editor.textInput.onContextMenuClose;
+            
+            editor.textInput.onContextMenu({x: this.x, y: this.y}, selectionEmpty);
+            this.captureMouse(ev, "moveTextarea");
+
             return;
         }
 
         // if this click caused the editor to be focused should not clear the
         // selection
-        if (
-            inSelection && (
-                !this.browserFocus.isFocused()
-                || new Date().getTime() - this.browserFocus.lastFocus < 20
-                || !editor.isFocused()
-            )
-        ) {
+        if (inSelection && !editor.isFocused()) {
             editor.focus();
             return;
         }
 
-        if (!inSelection) {
+        if (!inSelection || this.$clickSelection || ev.getShiftKey()) {
             // Directly pick STATE_SELECT, since the user is not clicking inside
             // a selection.
-            onStartSelect(pos);
-        }
-
-        var mousePageX = pageX, mousePageY = pageY;
-        var mousedownTime = (new Date()).getTime();
-        var dragCursor, dragRange, dragSelectionMarker;
-
-        var onMouseSelection = function(e) {
-            mousePageX = event.getDocumentX(e);
-            mousePageY = event.getDocumentY(e);
-        };
-
-        var onMouseSelectionEnd = function(e) {
-            clearInterval(timerId);
-            if (state == STATE_UNKNOWN)
-                onStartSelect(pos);
-            else if (state == STATE_DRAG)
-                onMouseDragSelectionEnd(e);
-
-            _self.$clickSelection = null;
-            state = STATE_UNKNOWN;
-        };
-
-        var onMouseDragSelectionEnd = function(e) {
-            dom.removeCssClass(editor.container, "ace_dragging");
-            editor.session.removeMarker(dragSelectionMarker);
-
-            if (!editor.$mouseHandler.$clickSelection) {
-                if (!dragCursor) {
-                    editor.moveCursorToPosition(pos);
-                    editor.selection.clearSelection();
-                }
-            }
-
-            if (!dragCursor)
-                return;
-
-            if (dragRange.contains(dragCursor.row, dragCursor.column)) {
-                dragCursor = null;
-                return;
-            }
-
-            editor.clearSelection();
-            if (e && (e.ctrlKey || e.altKey)) {
-                var session = editor.session;
-                var newRange = session.insert(dragCursor, session.getTextRange(dragRange));
+            this.startSelect(pos);
+        } else if (inSelection) {
+            var e = ev.domEvent;
+            if ((e.ctrlKey || e.altKey)) {
+                this.startDrag();
             } else {
-                var newRange = editor.moveText(dragRange, dragCursor);
+                this.mousedownEvent.time = (new Date()).getTime();
+                this.setState("dragWait");
             }
-            if (!newRange) {
-                dragCursor = null;
-                return;
-            }
-
-            editor.selection.setSelectionRange(newRange);
-        };
-
-        var onSelectionInterval = function() {
-            if (state == STATE_UNKNOWN) {
-                var distance = calcDistance(pageX, pageY, mousePageX, mousePageY);
-                var time = (new Date()).getTime();
-
-                if (distance > DRAG_OFFSET) {
-                    state = STATE_SELECT;
-                    var cursor = editor.renderer.screenToTextCoordinates(mousePageX, mousePageY);
-                    onStartSelect(cursor);
-                }
-                else if ((time - mousedownTime) > editor.getDragDelay()) {
-                    state = STATE_DRAG;
-                    dragRange = editor.getSelectionRange();
-                    var style = editor.getSelectionStyle();
-                    dragSelectionMarker = editor.session.addMarker(dragRange, "ace_selection", style);
-                    editor.clearSelection();
-                    dom.addCssClass(editor.container, "ace_dragging");
-                }
-
-            }
-
-            if (state == STATE_DRAG)
-                onDragSelectionInterval();
-            else if (state == STATE_SELECT)
-                onUpdateSelectionInterval();
-        };
-
-        function onStartSelect(pos) {
-            if (ev.getShiftKey()) {
-                editor.selection.selectToPosition(pos);
-            }
-            else {
-                if (!_self.$clickSelection) {
-                    editor.moveCursorToPosition(pos);
-                    editor.selection.clearSelection();
-                }
-            }
-            state = STATE_SELECT;
         }
 
-        var onUpdateSelectionInterval = function() {
-            var anchor;
-            var cursor = editor.renderer.screenToTextCoordinates(mousePageX, mousePageY);
-
-            if (_self.$clickSelection) {
-                if (_self.$clickSelection.contains(cursor.row, cursor.column)) {
-                    editor.selection.setSelectionRange(_self.$clickSelection);
-                }
-                else {
-                    if (_self.$clickSelection.compare(cursor.row, cursor.column) == -1) {
-                        anchor = _self.$clickSelection.end;
-                    }
-                    else {
-                        anchor = _self.$clickSelection.start;
-                    }
-                    editor.selection.setSelectionAnchor(anchor.row, anchor.column);
-                    editor.selection.selectToPosition(cursor);
-                }
-            }
-            else {
-                editor.selection.selectToPosition(cursor);
-            }
-
-            editor.renderer.scrollCursorIntoView();
-        };
-
-        var onDragSelectionInterval = function() {
-            dragCursor = editor.renderer.screenToTextCoordinates(mousePageX, mousePageY);
-            editor.moveCursorToPosition(dragCursor);
-        };
-
-        event.capture(editor.container, onMouseSelection, onMouseSelectionEnd);
-        var timerId = setInterval(onSelectionInterval, 20);
-
-        return ev.preventDefault();
+        this.captureMouse(ev)
     };
-    
+
+    this.startSelect = function(pos) {
+        pos = pos || this.editor.renderer.screenToTextCoordinates(this.x, this.y);
+        if (this.mousedownEvent.getShiftKey()) {
+            this.editor.selection.selectToPosition(pos);
+        }
+        else if (!this.$clickSelection) {
+            this.editor.moveCursorToPosition(pos);
+            this.editor.selection.clearSelection();
+        }
+        this.setState("select");
+    }
+
+    this.select = function() {
+        var anchor, editor = this.editor;
+        var cursor = editor.renderer.screenToTextCoordinates(this.x, this.y);
+
+        if (this.$clickSelection) {
+            var cmp = this.$clickSelection.comparePoint(cursor);
+
+            if (cmp == -1) {
+                anchor = this.$clickSelection.end;
+            } else if (cmp == 1) {
+                anchor = this.$clickSelection.start;
+            } else {
+                cursor = this.$clickSelection.end;
+                anchor = this.$clickSelection.start;
+            }
+            editor.selection.setSelectionAnchor(anchor.row, anchor.column);
+        }
+        editor.selection.selectToPosition(cursor);
+
+        editor.renderer.scrollCursorIntoView();
+    };
+
+    this.extendSelectionBy = function(unitName) {
+        var anchor, editor = this.editor;
+        var cursor = editor.renderer.screenToTextCoordinates(this.x, this.y);
+        var range = editor.selection[unitName](cursor.row, cursor.column);
+
+        if (this.$clickSelection) {
+            var cmpStart = this.$clickSelection.comparePoint(range.start);
+            var cmpEnd = this.$clickSelection.comparePoint(range.end);
+
+            if (cmpStart == -1 && cmpEnd <= 0) {
+                anchor = this.$clickSelection.end;
+                cursor = range.start;
+            } else if (cmpEnd == 1 && cmpStart >= 0) {
+                anchor = this.$clickSelection.start;
+                cursor = range.end;
+            } else if (cmpStart == -1 && cmpEnd == 1) {
+                cursor = range.end;
+                anchor = range.start;
+            } else {
+                cursor = this.$clickSelection.end;
+                anchor = this.$clickSelection.start;
+            }
+            editor.selection.setSelectionAnchor(anchor.row, anchor.column);
+        }
+        editor.selection.selectToPosition(cursor);
+
+        editor.renderer.scrollCursorIntoView();
+    };
+
+    this.startDrag = function() {
+        var editor = this.editor;
+        this.setState("drag");
+        this.dragRange = editor.getSelectionRange();
+        var style = editor.getSelectionStyle();
+        this.dragSelectionMarker = editor.session.addMarker(this.dragRange, "ace_selection", style);
+        editor.clearSelection();
+        dom.addCssClass(editor.container, "ace_dragging");
+        if (!this.$dragKeybinding) {
+            this.$dragKeybinding = {
+                handleKeyboard: function(data, hashId, keyString, keyCode) {
+                    if (keyString == "esc")
+                        return {command: this.command};
+                },
+                command: {
+                    exec: function(editor) {
+                        var self = editor.$mouseHandler;
+                        self.dragCursor = null
+                        self.dragEnd();
+                        self.startSelect();
+                    }
+                }
+            }
+        }
+
+        editor.keyBinding.addKeyboardHandler(this.$dragKeybinding);
+    };
+
+    this.dragWait = function() {
+        var distance = calcDistance(this.mousedownEvent.x, this.mousedownEvent.y, this.x, this.y);
+        var time = (new Date()).getTime();
+        var editor = this.editor;
+
+        if (distance > DRAG_OFFSET) {
+            this.startSelect();
+        } else if ((time - this.mousedownEvent.time) > editor.getDragDelay()) {
+            this.startDrag()
+        }
+    };
+
+    this.dragWaitEnd = function(e) {
+        this.mousedownEvent.domEvent = e;
+        this.startSelect();
+    };
+
+    this.drag = function() {
+        var editor = this.editor;
+        this.dragCursor = editor.renderer.screenToTextCoordinates(this.x, this.y);
+        editor.moveCursorToPosition(this.dragCursor);
+        editor.renderer.scrollCursorIntoView();
+    };
+
+    this.dragEnd = function(e) {
+        var editor = this.editor;
+        var dragCursor = this.dragCursor;
+        var dragRange = this.dragRange;
+        dom.removeCssClass(editor.container, "ace_dragging");
+        editor.session.removeMarker(this.dragSelectionMarker);
+        editor.keyBinding.removeKeyboardHandler(this.$dragKeybinding);
+
+        if (!dragCursor)
+            return;
+
+        editor.clearSelection();
+        if (e && (e.ctrlKey || e.altKey)) {
+            var session = editor.session;
+            var newRange = dragRange;
+            newRange.end = session.insert(dragCursor, session.getTextRange(dragRange));
+            newRange.start = dragCursor;
+        } else if (dragRange.contains(dragCursor.row, dragCursor.column)) {
+            return;
+        } else {
+            var newRange = editor.moveText(dragRange, dragCursor);
+        }
+
+        if (!newRange)
+            return;
+
+        editor.selection.setSelectionRange(newRange);
+    };
+
     this.onDoubleClick = function(ev) {
         var pos = ev.getDocumentPosition();
         var editor = this.editor;
-        
+
+        this.setState("selectByWords");
+
         editor.moveCursorToPosition(pos);
         editor.selection.selectWord();
         this.$clickSelection = editor.getSelectionRange();
     };
-    
+
     this.onTripleClick = function(ev) {
         var pos = ev.getDocumentPosition();
         var editor = this.editor;
-        
+
+        this.setState("selectByLines");
+
         editor.moveCursorToPosition(pos);
         editor.selection.selectLine();
         this.$clickSelection = editor.getSelectionRange();
     };
-    
+
     this.onQuadClick = function(ev) {
         var editor = this.editor;
-        
+
         editor.selectAll();
         this.$clickSelection = editor.getSelectionRange();
+        this.setState("select");
     };
-    
+
     this.onScroll = function(ev) {
         var editor = this.editor;
-        
+        var isScrolable = editor.renderer.isScrollableBy(ev.wheelX * ev.speed, ev.wheelY * ev.speed);
+        if (isScrolable) {
+            this.$passScrollEvent = false;
+        } else {
+            if (this.$passScrollEvent)
+                return;
+
+            if (!this.$scrollStopTimeout) {
+                var self = this;
+                this.$scrollStopTimeout = setTimeout(function() {
+                    self.$passScrollEvent = true;
+                    self.$scrollStopTimeout = null;
+                }, 200);
+            }
+        }
+
         editor.renderer.scrollBy(ev.wheelX * ev.speed, ev.wheelY * ev.speed);
-        if (editor.renderer.isScrollableBy(ev.wheelX * ev.speed, ev.wheelY * ev.speed))
-            return ev.preventDefault();
+        return ev.preventDefault();
     };
-    
+
 }).call(DefaultHandlers.prototype);
 
 exports.DefaultHandlers = DefaultHandlers;
@@ -5580,13 +5632,24 @@ exports.EventEmitter = EventEmitter;
 define('ace/mouse/default_gutter_handler', ['require', 'exports', 'module' ], function(require, exports, module) {
 "use strict";
 
-function GutterHandler(editor) {
-    editor.setDefaultHandler("gutterclick", function(e) {
+function GutterHandler(mouseHandler) {
+    var editor = mouseHandler.editor;
+
+    mouseHandler.editor.setDefaultHandler("guttermousedown", function(e) {
+        if (e.domEvent.target.className.indexOf("ace_gutter-cell") == -1)
+            return;
+
+        if (!editor.isFocused())
+            return;
+
         var row = e.getDocumentPosition().row;
         var selection = editor.session.selection;
-        
+
         selection.moveCursorTo(row, 0);
         selection.selectLine();
+
+        mouseHandler.$clickSelection = selection.getRange();
+        mouseHandler.captureMouse(e, "selectByLines");
     });
 }
 
@@ -5643,11 +5706,8 @@ var MouseEvent = exports.MouseEvent = function(domEvent, editor) {
     this.domEvent = domEvent;
     this.editor = editor;
     
-    this.pageX = event.getDocumentX(domEvent);
-    this.pageY = event.getDocumentY(domEvent);
-    
-    this.clientX = domEvent.clientX;
-    this.clientY = domEvent.clientY;
+    this.x = this.clientX = domEvent.clientX;
+    this.y = this.clientY = domEvent.clientY;
 
     this.$pos = null;
     this.$inSelection = null;
@@ -5681,10 +5741,8 @@ var MouseEvent = exports.MouseEvent = function(domEvent, editor) {
     this.getDocumentPosition = function() {
         if (this.$pos)
             return this.$pos;
-            
-        var pageX = event.getDocumentX(this.domEvent);
-        var pageY = event.getDocumentY(this.domEvent);
-        this.$pos = this.editor.renderer.screenToTextCoordinates(pageX, pageY);
+        
+        this.$pos = this.editor.renderer.screenToTextCoordinates(this.clientX, this.clientY);
         return this.$pos;
     };
     
@@ -9012,11 +9070,11 @@ var Selection = function(session) {
     this.doc = session.getDocument();
 
     this.clearSelection();
-    this.selectionLead = this.doc.createAnchor(0, 0);
-    this.selectionAnchor = this.doc.createAnchor(0, 0);
+    this.lead = this.selectionLead = this.doc.createAnchor(0, 0);
+    this.anchor = this.selectionAnchor = this.doc.createAnchor(0, 0);
 
     var self = this;
-    this.selectionLead.on("change", function(e) {
+    this.lead.on("change", function(e) {
         self._emit("changeCursor");
         if (!self.$isEmpty)
             self._emit("changeSelection");
@@ -9041,8 +9099,8 @@ var Selection = function(session) {
     **/
     this.isEmpty = function() {
         return (this.$isEmpty || (
-            this.selectionAnchor.row == this.selectionLead.row &&
-            this.selectionAnchor.column == this.selectionLead.column
+            this.anchor.row == this.lead.row &&
+            this.anchor.column == this.lead.column
         ));
     };
 
@@ -9065,7 +9123,7 @@ var Selection = function(session) {
     * Gets the current position of the cursor.
     **/
     this.getCursor = function() {
-        return this.selectionLead.getPosition();
+        return this.lead.getPosition();
     };
 
     /**
@@ -9076,7 +9134,7 @@ var Selection = function(session) {
     * Sets the row and column position of the anchor. This function also emits the `'changeSelection'` event.
     **/
     this.setSelectionAnchor = function(row, column) {
-        this.selectionAnchor.setPosition(row, column);
+        this.anchor.setPosition(row, column);
 
         if (this.$isEmpty) {
             this.$isEmpty = false;
@@ -9094,7 +9152,7 @@ var Selection = function(session) {
         if (this.$isEmpty)
             return this.getSelectionLead()
         else
-            return this.selectionAnchor.getPosition();
+            return this.anchor.getPosition();
     };
 
     /** 
@@ -9103,7 +9161,7 @@ var Selection = function(session) {
     * Returns an object containing the `row` and `column` of the calling selection lead.
     **/
     this.getSelectionLead = function() {
-        return this.selectionLead.getPosition();
+        return this.lead.getPosition();
     };
 
     /**
@@ -9115,7 +9173,7 @@ var Selection = function(session) {
     **/
     this.shiftSelection = function(columns) {
         if (this.$isEmpty) {
-            this.moveCursorTo(this.selectionLead.row, this.selectionLead.column + columns);
+            this.moveCursorTo(this.lead.row, this.lead.column + columns);
             return;
         };
 
@@ -9140,8 +9198,8 @@ var Selection = function(session) {
     * Returns `true` if the selection is going backwards in the document.
     **/
     this.isBackwards = function() {
-        var anchor = this.selectionAnchor;
-        var lead = this.selectionLead;
+        var anchor = this.anchor;
+        var lead = this.lead;
         return (anchor.row > lead.row || (anchor.row == lead.row && anchor.column > lead.column));
     };
 
@@ -9151,8 +9209,8 @@ var Selection = function(session) {
     * [Returns the [[Range `Range`]] for the selected text.]{: #Selection.getRange}
     **/
     this.getRange = function() {
-        var anchor = this.selectionAnchor;
-        var lead = this.selectionLead;
+        var anchor = this.anchor;
+        var lead = this.lead;
 
         if (this.isEmpty())
             return Range.fromPoints(lead, lead);
@@ -9197,18 +9255,23 @@ var Selection = function(session) {
     *
     **/
     this.setSelectionRange = function(range, reverse) {
-        if (reverse) {
-            this.setSelectionAnchor(range.end.row, range.end.column);
-            this.selectTo(range.start.row, range.start.column);
+        if (range.isEmpty()) {
+            this.lead.setPosition(range.start.row, range.start.column);
+            this.clearSelection();
+        } else if (reverse) {
+            this.$isEmpty = false;
+            this.anchor.setPosition(range.end.row, range.end.column);
+            this.lead.setPosition(range.start.row, range.start.column);
         } else {
-            this.setSelectionAnchor(range.start.row, range.start.column);
-            this.selectTo(range.end.row, range.end.column);
+            this.$isEmpty = false;
+            this.anchor.setPosition(range.start.row, range.start.column);
+            this.lead.setPosition(range.end.row, range.end.column);
         }
         this.$desiredColumn = null;
     };
 
     this.$moveSelection = function(mover) {
-        var lead = this.selectionLead;
+        var lead = this.lead;
         if (this.$isEmpty)
             this.setSelectionAnchor(lead.row, lead.column);
 
@@ -9339,7 +9402,7 @@ var Selection = function(session) {
     **/
     this.getWordRange = function(row, column) {
         if (typeof column == "undefined") {
-            var cursor = row || this.selectionLead;
+            var cursor = row || this.lead;
             row = cursor.row;
             column = cursor.column;
         }
@@ -9362,7 +9425,7 @@ var Selection = function(session) {
     };
 
     this.getLineRange = function(row, excludeLastChar) {
-        var rowStart = typeof row == "number" ? row : this.selectionLead.row;
+        var rowStart = typeof row == "number" ? row : this.lead.row;
         var rowEnd;
 
         var foldLine = this.session.getFoldLine(rowStart);
@@ -9411,7 +9474,7 @@ var Selection = function(session) {
     * Moves the cursor left one column.
     **/
     this.moveCursorLeft = function() {
-        var cursor = this.selectionLead.getPosition(),
+        var cursor = this.lead.getPosition(),
             fold;
 
         if (fold = this.session.getFoldAt(cursor.row, cursor.column, -1)) {
@@ -9437,19 +9500,19 @@ var Selection = function(session) {
     * Moves the cursor right one column.
     **/
     this.moveCursorRight = function() {
-        var cursor = this.selectionLead.getPosition(),
+        var cursor = this.lead.getPosition(),
             fold;
         if (fold = this.session.getFoldAt(cursor.row, cursor.column, 1)) {
             this.moveCursorTo(fold.end.row, fold.end.column);
         }
-        else if (this.selectionLead.column == this.doc.getLine(this.selectionLead.row).length) {
-            if (this.selectionLead.row < this.doc.getLength() - 1) {
-                this.moveCursorTo(this.selectionLead.row + 1, 0);
+        else if (this.lead.column == this.doc.getLine(this.lead.row).length) {
+            if (this.lead.row < this.doc.getLength() - 1) {
+                this.moveCursorTo(this.lead.row + 1, 0);
             }
         }
         else {
             var tabSize = this.session.getTabSize();
-            var cursor = this.selectionLead;
+            var cursor = this.lead;
             if (this.session.isTabStop(cursor) && this.doc.getLine(cursor.row).slice(cursor.column, cursor.column+tabSize).split(" ").length-1 == tabSize)
                 this.moveCursorBy(0, tabSize);
             else
@@ -9463,8 +9526,8 @@ var Selection = function(session) {
     * Moves the cursor to the start of the line.
     **/
     this.moveCursorLineStart = function() {
-        var row = this.selectionLead.row;
-        var column = this.selectionLead.column;
+        var row = this.lead.row;
+        var column = this.lead.column;
         var screenRow = this.session.documentToScreenRow(row, column);
 
         // Determ the doc-position of the first character at the screen line.
@@ -9496,7 +9559,7 @@ var Selection = function(session) {
     * Moves the cursor to the end of the line.
     **/
     this.moveCursorLineEnd = function() {
-        var lead = this.selectionLead;
+        var lead = this.lead;
         var lastRowColumnPosition =
             this.session.getDocumentLastRowColumnPosition(lead.row, lead.column);
         this.moveCursorTo(
@@ -9531,8 +9594,8 @@ var Selection = function(session) {
     * Moves the cursor to the word on the right.
     **/
     this.moveCursorLongWordRight = function() {
-        var row = this.selectionLead.row;
-        var column = this.selectionLead.column;
+        var row = this.lead.row;
+        var column = this.lead.column;
         var line = this.doc.getLine(row);
         var rightOfCursor = line.substring(column);
 
@@ -9578,8 +9641,8 @@ var Selection = function(session) {
     * Moves the cursor to the word on the left.
     **/
     this.moveCursorLongWordLeft = function() {
-        var row = this.selectionLead.row;
-        var column = this.selectionLead.column;
+        var row = this.lead.row;
+        var column = this.lead.column;
 
         // skip folds
         var fold;
@@ -9660,8 +9723,8 @@ var Selection = function(session) {
     };
 
     this.moveCursorShortWordRight = function() {
-        var row = this.selectionLead.row;
-        var column = this.selectionLead.column;
+        var row = this.lead.row;
+        var column = this.lead.column;
         var line = this.doc.getLine(row);
         var rightOfCursor = line.substring(column);
 
@@ -9678,8 +9741,8 @@ var Selection = function(session) {
     };
 
     this.moveCursorShortWordLeft = function() {
-        var row = this.selectionLead.row;
-        var column = this.selectionLead.column;
+        var row = this.lead.row;
+        var column = this.lead.column;
 
         var fold;
         if (fold = this.session.getFoldAt(row, column, -1))
@@ -9718,8 +9781,8 @@ var Selection = function(session) {
     **/
     this.moveCursorBy = function(rows, chars) {
         var screenPos = this.session.documentToScreenPosition(
-            this.selectionLead.row,
-            this.selectionLead.column
+            this.lead.row,
+            this.lead.column
         );
 
         if (chars === 0) {
@@ -9762,7 +9825,7 @@ var Selection = function(session) {
         }
 
         this.$keepDesiredColumnOnChange = true;
-        this.selectionLead.setPosition(row, column);
+        this.lead.setPosition(row, column);
         this.$keepDesiredColumnOnChange = false;
 
         if (!keepDesiredColumn)
@@ -9784,8 +9847,8 @@ var Selection = function(session) {
 
     // remove listeners from document
     this.detach = function() {
-        this.selectionLead.detach();
-        this.selectionAnchor.detach();
+        this.lead.detach();
+        this.anchor.detach();
         this.session = this.doc = null;
     }
 
@@ -14700,6 +14763,9 @@ var VirtualRenderer = function(container, theme) {
     // TODO: this breaks rendering in Cloud9 with multiple ace instances
 //    // Imports CSS once per DOM document ('ace_editor' serves as an identifier).
 //    dom.importCssString(editorCss, "ace_editor", container.ownerDocument);
+    
+    // in IE <= 9 the native cursor always shines through
+    this.$keepTextAreaAtCursor = !useragent.isIE;
 
     dom.addCssClass(container, "ace_editor");
 
@@ -14717,6 +14783,7 @@ var VirtualRenderer = function(container, theme) {
     this.content.className = "ace_content";
     this.scroller.appendChild(this.content);
 
+    this.setHighlightGutterLine(true);
     this.$gutterLayer = new GutterLayer(this.$gutter);
     this.$gutterLayer.on("changeGutterWidth", this.onResize.bind(this, true));
     this.setFadeFoldWidgets(true);
@@ -15067,6 +15134,33 @@ var VirtualRenderer = function(container, theme) {
             dom.removeCssClass(this.$gutter, "ace_fade-fold-widgets");
     };
 
+    this.$highlightGutterLine = false;
+    this.setHighlightGutterLine = function(shouldHighlight) {
+        if (this.$highlightGutterLine == shouldHighlight)
+            return;
+        this.$highlightGutterLine = shouldHighlight;
+        
+        
+        if (!this.$gutterLineHighlight) {
+            this.$gutterLineHighlight = dom.createElement("div");
+            this.$gutterLineHighlight.className = "ace_gutter_active_line";
+            this.$gutter.appendChild(this.$gutterLineHighlight);
+            return;
+        }
+
+        this.$gutterLineHighlight.style.display = shouldHighlight ? "" : "none";
+        this.$updateGutterLineHighlight();
+    };
+
+    this.getHighlightGutterLine = function() {
+        return this.$highlightGutterLine;
+    };
+
+    this.$updateGutterLineHighlight = function() {
+        this.$gutterLineHighlight.style.top = this.$cursorLayer.$pixelPos.top + "px";
+        this.$gutterLineHighlight.style.height = this.layerConfig.lineHeight + "px";
+    };
+    
     this.$updatePrintMargin = function() {
         var containerEl;
 
@@ -15114,30 +15208,23 @@ var VirtualRenderer = function(container, theme) {
         return this.container;
     };
 
-    /**
-    * VirtualRenderer.moveTextAreaToCursor(textarea) -> Void
-    * - textarea (DOMElement): A text area to work with
-    *
-    * Changes the position of `textarea` to where the cursor is pointing.
-    **/
-    this.moveTextAreaToCursor = function(textarea) {
-        // in IE the native cursor always shines through
-        // this persists in IE9
-        if (useragent.isIE)
+    // move text input over the cursor
+    // this is required for iOS and IME
+    this.$moveTextAreaToCursor = function() {
+        if (!this.$keepTextAreaAtCursor)
             return;
 
-        if (this.layerConfig.lastRow === 0)
+        var posTop = this.$cursorLayer.$pixelPos.top;
+        var posLeft = this.$cursorLayer.$pixelPos.left;
+        posTop -= this.layerConfig.offset;
+
+        if (posTop < 0 || posTop > this.layerConfig.height)
             return;
 
-        var pos = this.$cursorLayer.getPixelPosition();
-        if (!pos)
-            return;
-
-        var bounds = this.content.getBoundingClientRect();
-        var offset = this.layerConfig.offset;
-
-        textarea.style.left = (bounds.left + pos.left) + "px";
-        textarea.style.top = (bounds.top + pos.top - this.scrollTop + offset) + "px";
+        posLeft += (this.showGutter ? this.$gutterLayer.gutterWidth : 0) - this.scrollLeft;
+        var bounds = this.container.getBoundingClientRect();
+        this.textarea.style.left = (bounds.left + posLeft) + "px";
+        this.textarea.style.top = (bounds.top + posTop) + "px";
     };
 
     /**
@@ -15258,6 +15345,8 @@ var VirtualRenderer = function(container, theme) {
             this.$markerBack.update(this.layerConfig);
             this.$markerFront.update(this.layerConfig);
             this.$cursorLayer.update(this.layerConfig);
+            this.$moveTextAreaToCursor();
+            this.$highlightGutterLine && this.$updateGutterLineHighlight();
             return;
         }
 
@@ -15274,6 +15363,8 @@ var VirtualRenderer = function(container, theme) {
             this.$markerBack.update(this.layerConfig);
             this.$markerFront.update(this.layerConfig);
             this.$cursorLayer.update(this.layerConfig);
+            this.$moveTextAreaToCursor();
+            this.$highlightGutterLine && this.$updateGutterLineHighlight();
             return;
         }
 
@@ -15293,8 +15384,11 @@ var VirtualRenderer = function(container, theme) {
                 this.$gutterLayer.update(this.layerConfig);
         }
 
-        if (changes & this.CHANGE_CURSOR)
+        if (changes & this.CHANGE_CURSOR) {
             this.$cursorLayer.update(this.layerConfig);
+            this.$moveTextAreaToCursor();
+            this.$highlightGutterLine && this.$updateGutterLineHighlight();
+        }
 
         if (changes & (this.CHANGE_MARKER | this.CHANGE_MARKER_FRONT)) {
             this.$markerFront.update(this.layerConfig);
@@ -15371,7 +15465,7 @@ var VirtualRenderer = function(container, theme) {
         // For debugging.
         // console.log(JSON.stringify(this.layerConfig));
 
-        this.$gutterLayer.element.style.marginTop = (-offset) + "px";
+        this.$gutter.style.marginTop = (-offset) + "px";
         this.content.style.marginTop = (-offset) + "px";
         this.content.style.width = longestLine + 2 * this.$padding + "px";
         this.content.style.height = minHeight + "px";
@@ -15721,14 +15815,24 @@ var VirtualRenderer = function(container, theme) {
         // todo: handle horizontal scrolling
     };
 
-    this.screenToTextCoordinates = function(pageX, pageY) {
+    this.pixelToScreenCoordinates = function(x, y) {
+        var canvasPos = this.scroller.getBoundingClientRect();
+
+        var offset = (x + this.scrollLeft - canvasPos.left - this.$padding) / this.characterWidth;
+        var row = Math.floor((y + this.scrollTop - canvasPos.top) / this.lineHeight);
+        var col = Math.round(offset);
+
+        return {row: row, column: col, side: offset - col > 0 ? 1 : -1};
+    };
+
+    this.screenToTextCoordinates = function(x, y) {
         var canvasPos = this.scroller.getBoundingClientRect();
 
         var col = Math.round(
-            (pageX + this.scrollLeft - canvasPos.left - this.$padding - dom.getPageScrollLeft()) / this.characterWidth
+            (x + this.scrollLeft - canvasPos.left - this.$padding) / this.characterWidth
         );
         var row = Math.floor(
-            (pageY + this.scrollTop - canvasPos.top - dom.getPageScrollTop()) / this.lineHeight
+            (y + this.scrollTop - canvasPos.top) / this.lineHeight
         );
 
         return this.session.screenToDocumentPosition(row, Math.max(col, 0));
@@ -16736,9 +16840,9 @@ var Text = function(parentEl) {
             if (a) {
                 return new Array(c.length+1).join("&#160;");
             } else if (c == "&") {
-                return useragent.isOldGecko ? "&" : "&amp;";
+                return "&#38;";
             } else if (c == "<") {
-                return "&lt;";
+                return "&#60;";
             } else if (c == "\t") {
                 var tabSize = self.session.getScreenTabSize(screenColumn + tabIdx);
                 screenColumn += tabSize - 1;
@@ -16752,10 +16856,7 @@ var Text = function(parentEl) {
                     (self.config.characterWidth * 2) +
                     "px'>" + space + "</span>";
             } else if (b) {
-                if (self.showInvisibles)
-                    return "<span class='ace_invisible ace_invalid'>" + self.SPACE_CHAR + "</span>";
-                else
-                    return "&#160;";
+                return "<span class='ace_invisible ace_invalid'>" + self.SPACE_CHAR + "</span>";
             } else {
                 screenColumn += 1;
                 return "<span class='ace_cjk' style='width:" +
@@ -17123,6 +17224,9 @@ var Cursor = function(parentEl) {
         if (overwrite != this.overwrite)
             this.$setOverite(overwrite);
 
+        // cache for textarea and gutter highlight
+        this.$pixelPos = pixelPos;
+
         this.restartTimer();
     };
 
@@ -17418,6 +17522,12 @@ define("text!ace/css/editor.css", [], "\n" +
   "    z-index: 1000;\n" +
   "}\n" +
   "\n" +
+  ".ace_gutter_active_line {\n" +
+  "    position: absolute;\n" +
+  "    right: 0;\n" +
+  "    width: 100%;\n" +
+  "}\n" +
+  "\n" +
   ".ace_gutter.horscroll {\n" +
   "    box-shadow: 0px 0px 20px rgba(0,0,0,0.4);\n" +
   "}\n" +
@@ -17476,8 +17586,8 @@ define("text!ace/css/editor.css", [], "\n" +
   ".ace_editor textarea {\n" +
   "    position: fixed;\n" +
   "    z-index: 0;\n" +
-  "    width: 10px;\n" +
-  "    height: 30px;\n" +
+  "    width: 0.5em;\n" +
+  "    height: 1em;\n" +
   "    opacity: 0;\n" +
   "    background: transparent;\n" +
   "    appearance: none;\n" +
@@ -18761,10 +18871,10 @@ function onMouseDown(e) {
     var inSelection = e.inSelection() || (selection.isEmpty() && isSamePoint(pos, cursor));
 
 
-    var mouseX = e.pageX, mouseY = e.pageY;
+    var mouseX = e.x, mouseY = e.y;
     var onMouseSelection = function(e) {
-        mouseX = event.getDocumentX(e);
-        mouseY = event.getDocumentY(e);
+        mouseX = e.clientX;
+        mouseY = e.clientY;
     };
 
     var blockSelect = function() {
@@ -19886,11 +19996,11 @@ c,b,e){var d=g.xdRegExp.exec(a),f;if(!d)return!0;a=d[2];d=d[3];d=d.split(":");f=
 b,e)})}},write:function(a,c,b){if(c in j){var e=g.jsEscape(j[c]);b.asModule(a+"!"+c,"define(function () { return '"+e+"';});\n")}},writeFile:function(a,c,b,e,d){var c=g.parseName(c),f=c.moduleName+"."+c.ext,h=b.toUrl(c.moduleName+"."+c.ext)+".js";g.load(f,b,function(){var b=function(a){return e(h,a)};b.asModule=function(a,b){return e.asModule(a,h,b)};g.write(a,f,b,d)},d)}}})})();
 
 
-/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(jpack_begin.js)SIZE(0)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(apf.js)SIZE(96350)TIME(Mon, 30 Apr 2012 22:00:16 GMT)*/
+/*FILEHEAD(apf.js)SIZE(96380)TIME(Thu, 03 May 2012 17:10:00 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21277,8 +21387,10 @@ apf.setTimeout = function(f, t){
     }, ms);
 }*/
 
-document.documentElement.className += " has_apf";
-document.documentElement.style.display = "none";
+/*if (document) {
+    document.documentElement.className += " has_apf";
+    document.documentElement.style.display = "none";
+}*/
 
 apf.browserDetect();
 apf.Init.run("apf");
@@ -21290,7 +21402,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(core/class.js)SIZE(46109)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/class.js)SIZE(46109)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22364,7 +22476,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(core/lib/util/color.js)SIZE(10920)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/color.js)SIZE(10920)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22607,7 +22719,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/abstractevent.js)SIZE(4316)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22633,7 +22745,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/async.js)SIZE(4124)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22777,7 +22889,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/cookie.js)SIZE(3073)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22866,7 +22978,7 @@ apf.delcookie = function (name, domain){
 
 
 
-/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25965)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/ecmaext.js)SIZE(25965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23648,7 +23760,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/flash.js)SIZE(22995)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23674,7 +23786,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/hook.js)SIZE(10100)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23700,7 +23812,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/lib/util/hotkey.js)SIZE(6514)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -23911,7 +24023,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/iepngfix.js)SIZE(3570)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23937,7 +24049,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/json.js)SIZE(26243)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23965,7 +24077,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/nameserver.js)SIZE(5807)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24078,7 +24190,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/o3.js)SIZE(8157)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24103,7 +24215,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(core/lib/util/plane.js)SIZE(8624)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/plane.js)SIZE(8624)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24335,7 +24447,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Sun, 29 Apr 2012 22:45:13 GMT)*/
+/*FILEHEAD(core/lib/util/popup.js)SIZE(13264)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24715,7 +24827,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/silverlight.js)SIZE(25659)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24741,7 +24853,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(core/lib/util/style.js)SIZE(18681)TIME(Mon, 30 Apr 2012 05:31:13 GMT)*/
+/*FILEHEAD(core/lib/util/style.js)SIZE(18681)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25247,7 +25359,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/syntax.js)SIZE(12610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25272,7 +25384,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/textdiff.js)SIZE(89290)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25298,7 +25410,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(core/lib/util/utilities.js)SIZE(14497)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/utilities.js)SIZE(14497)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25778,7 +25890,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -25940,7 +26052,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(core/lib/util/xml.js)SIZE(49534)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/xml.js)SIZE(49534)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27354,7 +27466,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/xmldiff.js)SIZE(36580)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27379,7 +27491,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/util/zmanager.js)SIZE(2524)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27459,7 +27571,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/history.js)SIZE(9996)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27738,7 +27850,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/lib/config.js)SIZE(8137)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27888,7 +28000,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(core/lib/offline.js)SIZE(19757)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline.js)SIZE(19757)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27918,7 +28030,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/application.js)SIZE(11733)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27944,7 +28056,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/gears.js)SIZE(4771)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27970,7 +28082,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/detector.js)SIZE(4827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27996,7 +28108,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/models.js)SIZE(5471)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28022,7 +28134,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/queue.js)SIZE(7009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28048,7 +28160,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/state.js)SIZE(7979)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28074,7 +28186,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/offline/transactions.js)SIZE(9781)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28100,7 +28212,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/data.js)SIZE(16420)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28503,7 +28615,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/date.js)SIZE(40737)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29569,7 +29681,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/draw.js)SIZE(66997)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29593,33 +29705,7 @@ apf.setModel = function(instruction, amlNode){
  */
 
 
-/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/flow.js)SIZE(71086)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29645,7 +29731,33 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/flow2.js)SIZE(70664)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/lib/geolocation.js)SIZE(11303)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29671,7 +29783,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/html.js)SIZE(15340)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/html.js)SIZE(15340)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29697,7 +29809,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/language.js)SIZE(8586)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29723,7 +29835,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(core/lib/layout.js)SIZE(13425)TIME(Mon, 30 Apr 2012 03:25:30 GMT)*/
+/*FILEHEAD(core/lib/layout.js)SIZE(13425)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30142,7 +30254,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/printer.js)SIZE(5120)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30168,7 +30280,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/lib/queue.js)SIZE(3410)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30284,7 +30396,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/resize.js)SIZE(13139)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30680,7 +30792,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/resize2.js)SIZE(10417)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30705,7 +30817,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/selection.js)SIZE(32184)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30730,7 +30842,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(core/lib/skins.js)SIZE(12336)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/skins.js)SIZE(12336)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31064,7 +31176,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(core/lib/sort.js)SIZE(8239)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/sort.js)SIZE(8266)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31209,6 +31321,7 @@ apf.Sort = function(xmlNode){
         },
 
         "number" : function (t){
+            if (!t) t = 0;
             return (t.length < sort_intmask.length
                 ? sort_intmask[sort_intmask.length - t.length]
                 : "") + t;
@@ -31292,7 +31405,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage.js)SIZE(9036)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31318,7 +31431,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Mon, 30 Apr 2012 22:55:42 GMT)*/
+/*FILEHEAD(core/lib/tween.js)SIZE(35741)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32300,13 +32413,13 @@ return {
 
 
 
-/*FILEHEAD(core/lib/uirecorder.js)SIZE(397)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder.js)SIZE(397)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
 
 
-/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/vector.js)SIZE(46289)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32332,7 +32445,7 @@ return {
 
 
 
-/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/lib/xmldb.js)SIZE(40941)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33354,7 +33467,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/draw/canvas.js)SIZE(21818)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33378,7 +33491,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/draw/chartdraw.js)SIZE(47182)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33403,7 +33516,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/draw/vml.js)SIZE(20284)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33427,32 +33540,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/air.file.js)SIZE(10053)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33477,7 +33565,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/air.js)SIZE(9669)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33502,7 +33590,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/air.sql.js)SIZE(11835)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33527,8 +33615,7 @@ apf.xmldb = new (function(){
 
 
 
-
-/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/cookie.js)SIZE(10315)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33554,7 +33641,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/flash.js)SIZE(15459)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33580,7 +33667,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/gears.js)SIZE(12314)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33606,7 +33693,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/html5.js)SIZE(8229)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33632,7 +33719,33 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/storage/memory.js)SIZE(10210)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/lib/teleport/http.js)SIZE(36015)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34474,7 +34587,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/teleport/iframe.js)SIZE(5720)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34499,7 +34612,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/teleport/socket.js)SIZE(19222)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34525,24 +34638,24 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(core/lib/uirecorder/capture.js)SIZE(21922)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/capture.js)SIZE(21922)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/playback.js)SIZE(28844)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/playback.js)SIZE(28844)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/lib/uirecorder/ui.js)SIZE(18464)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/lib/uirecorder/ui.js)SIZE(18464)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
 
-/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/markup/domparser.js)SIZE(18376)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35004,7 +35117,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml.js)SIZE(1478)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35047,7 +35160,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/markup/aml/node.js)SIZE(22631)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35630,7 +35743,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Sun, 29 Apr 2012 18:41:38 GMT)*/
+/*FILEHEAD(core/markup/aml/element.js)SIZE(22982)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36223,7 +36336,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/characterdata.js)SIZE(2018)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36287,7 +36400,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(core/markup/aml/text.js)SIZE(3974)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/text.js)SIZE(3974)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36387,7 +36500,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/markup/aml/attr.js)SIZE(4674)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36516,7 +36629,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/cdatasection.js)SIZE(1300)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36553,7 +36666,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/comment.js)SIZE(1509)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36599,7 +36712,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/configuration.js)SIZE(1384)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36640,7 +36753,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/document.js)SIZE(9508)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36826,7 +36939,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/documentfragment.js)SIZE(1286)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36860,7 +36973,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/event.js)SIZE(2086)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36931,7 +37044,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/namednodemap.js)SIZE(3407)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37042,7 +37155,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37151,7 +37264,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/range.js)SIZE(15809)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37176,7 +37289,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/selection.js)SIZE(8861)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37201,7 +37314,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/aml/textrectangle.js)SIZE(1662)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37245,7 +37358,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml.js)SIZE(1530)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37296,7 +37409,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/element.js)SIZE(5022)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37453,7 +37566,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/body.js)SIZE(1783)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37504,7 +37617,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/html.js)SIZE(2693)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37585,7 +37698,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/ignore.js)SIZE(1360)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37621,7 +37734,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/input.js)SIZE(2187)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37682,7 +37795,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/option.js)SIZE(1537)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37725,7 +37838,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37787,7 +37900,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd.js)SIZE(12998)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37813,7 +37926,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/element.js)SIZE(1869)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37838,7 +37951,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/enumeration.js)SIZE(1844)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37863,7 +37976,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37888,7 +38001,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/length.js)SIZE(1527)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37913,7 +38026,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/list.js)SIZE(1215)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37938,7 +38051,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37963,7 +38076,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37988,7 +38101,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxlength.js)SIZE(1597)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38013,7 +38126,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/maxscale.js)SIZE(1436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38038,7 +38151,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38063,7 +38176,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38088,7 +38201,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/minlength.js)SIZE(1610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38113,7 +38226,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/minscale.js)SIZE(1436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38138,7 +38251,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/pattern.js)SIZE(1537)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38163,7 +38276,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/restriction.js)SIZE(1644)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38188,7 +38301,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/schema.js)SIZE(1124)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38213,7 +38326,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/simpletype.js)SIZE(2201)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38238,7 +38351,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38263,7 +38376,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xsd/union.js)SIZE(2331)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38288,7 +38401,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/html5.js)SIZE(3232)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38323,7 +38436,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xforms.js)SIZE(4191)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38356,7 +38469,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xinclude.js)SIZE(1325)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38398,7 +38511,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xinclude/fallback.js)SIZE(1322)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38423,7 +38536,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(core/markup/xinclude/include.js)SIZE(6818)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xinclude/include.js)SIZE(6818)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38606,7 +38719,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/markup/xslt/xslt.js)SIZE(13722)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38632,7 +38745,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit.js)SIZE(34638)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38659,7 +38772,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38685,7 +38798,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38711,7 +38824,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38737,7 +38850,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38763,7 +38876,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38789,7 +38902,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38815,7 +38928,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38841,7 +38954,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38867,7 +38980,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38893,7 +39006,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38919,7 +39032,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38945,7 +39058,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38972,7 +39085,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38998,7 +39111,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39024,7 +39137,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39050,7 +39163,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39076,7 +39189,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39102,7 +39215,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39128,7 +39241,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39154,7 +39267,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39180,7 +39293,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39206,7 +39319,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39232,7 +39345,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39258,7 +39371,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39284,7 +39397,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(18882)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/anchoring.js)SIZE(18882)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39782,7 +39895,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable.js)SIZE(20162)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39808,7 +39921,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Sun, 29 Apr 2012 18:52:31 GMT)*/
+/*FILEHEAD(core/baseclasses/guielement.js)SIZE(33764)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -40605,7 +40718,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20758)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/presentation.js)SIZE(20758)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41205,7 +41318,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/validation.js)SIZE(27683)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -41931,7 +42044,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58946)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding.js)SIZE(58946)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43369,7 +43482,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47613)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/multiselect.js)SIZE(47627)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43564,11 +43677,11 @@ apf.MultiselectBinding = function(){
             };
 
             this.getFirstTraverseNode = function(xmlNode){
-                return this.getTraverseNodes()[0];//(xmlNode || this.xmlRoot).childNodes[0];
+                return this.getTraverseNodes(xmlNode)[0];//(xmlNode || this.xmlRoot).childNodes[0];
             };
 
             this.getLastTraverseNode = function(xmlNode){
-                var nodes = this.getTraverseNodes();//(xmlNode || this.xmlRoot).childNodes;
+                var nodes = this.getTraverseNodes(xmlNode);//(xmlNode || this.xmlRoot).childNodes;
                 return nodes[nodes.length - 1];
             };
 
@@ -44568,7 +44681,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44738,7 +44851,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(71734)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/multiselect.js)SIZE(71734)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46550,7 +46663,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/childvalue.js)SIZE(3934)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46656,7 +46769,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/dataaction.js)SIZE(27069)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47177,7 +47290,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/cache.js)SIZE(12532)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/cache.js)SIZE(12532)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47543,7 +47656,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(core/baseclasses/rename.js)SIZE(15023)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/rename.js)SIZE(15023)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47957,7 +48070,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/a11y.js)SIZE(5144)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47984,7 +48097,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/basebutton.js)SIZE(10335)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48302,7 +48415,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/baselist.js)SIZE(39277)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49198,7 +49311,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/basesimple.js)SIZE(1729)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49255,7 +49368,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49921,7 +50034,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57877)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/basetab.js)SIZE(57877)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51326,7 +51439,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53542)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/basetree.js)SIZE(53544)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52393,7 +52506,7 @@ apf.BaseTree = function(){
                 
                 selHtml = apf.xmldb.getHtmlNode(sNode, this);
                 top     = apf.getAbsolutePosition(selHtml, this.$container)[1]
-                     - (selHtml.offsetHeight);
+                     //- (selHtml.offsetHeight);
                 if (top <= oExt.scrollTop)
                     oExt.scrollTop = top;
                 
@@ -52700,7 +52813,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5249)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/delayedrender.js)SIZE(5249)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52852,7 +52965,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/dragdrop.js)SIZE(56327)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54338,7 +54451,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/focussable.js)SIZE(3405)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54443,7 +54556,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30523)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/interactive.js)SIZE(30523)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55234,7 +55347,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/media.js)SIZE(18898)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55262,7 +55375,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/multicheck.js)SIZE(16594)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55289,7 +55402,7 @@ apf.__MULTICHECK__ = 1 << 22;
 
 
 
-/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/teleport.js)SIZE(8790)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55517,7 +55630,7 @@ apf.__TELEPORT__ = 1 << 28;
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/transaction.js)SIZE(23494)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55544,7 +55657,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56292,7 +56405,7 @@ apf.$viewportVirtual = function(amlNode){
 
 
 
-/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/xforms.js)SIZE(9367)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56320,7 +56433,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/clipboard.js)SIZE(3386)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56426,7 +56539,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56452,7 +56565,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56477,7 +56590,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56502,58 +56615,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56579,7 +56641,58 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(core/window.js)SIZE(50587)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+/*FILEHEAD(core/window-o3.js)SIZE(5461)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(core/window.js)SIZE(50587)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57713,11 +57826,11 @@ apf.window = new apf.window();
 
 
 
-/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/gears.js)SIZE(1391)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/gecko.js)SIZE(6753)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57906,7 +58019,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/ie.js)SIZE(14081)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58158,7 +58271,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/iphone.js)SIZE(11827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58183,7 +58296,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(core/browsers/non_ie.js)SIZE(24354)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/non_ie.js)SIZE(24354)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58540,12 +58653,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/o3.js)SIZE(9017)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/o3.js)SIZE(9019)TIME(Thu, 03 May 2012 17:07:31 GMT)*/
 
 
 
 
-/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/opera.js)SIZE(6583)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58571,7 +58684,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(core/browsers/webkit.js)SIZE(8405)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/webkit.js)SIZE(8405)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58748,11 +58861,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
-/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/barrett.js)SIZE(2650)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /**
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -58773,7 +58886,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/base64.js)SIZE(6758)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58986,7 +59099,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/bigint.js)SIZE(20439)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /**
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -59040,7 +59153,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/blowfish.js)SIZE(26046)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59066,7 +59179,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/md4.js)SIZE(9799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59092,7 +59205,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/md5.js)SIZE(10997)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59350,7 +59463,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/rsa.js)SIZE(5048)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /**
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -59372,7 +59485,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/crypto/sha1.js)SIZE(5258)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59555,7 +59668,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/debug/debug.js)SIZE(9811)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59581,7 +59694,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/debug/debugwin.js)SIZE(42735)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59607,12 +59720,12 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/debug/profiler.js)SIZE(24827)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
 
-/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/parsers/js.js)SIZE(9016)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59638,7 +59751,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/parsers/livemarkup.js)SIZE(113264)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62093,7 +62206,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/parsers/url.js)SIZE(4570)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62215,7 +62328,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(core/parsers/xpath.js)SIZE(21971)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 /**
@@ -62841,7 +62954,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(elements/bindingrule.js)SIZE(8842)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingrule.js)SIZE(8842)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63092,7 +63205,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/accordion.js)SIZE(22288)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63117,7 +63230,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actionrule.js)SIZE(4035)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63242,7 +63355,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actions.js)SIZE(3251)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63346,7 +63459,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(elements/actiontracker.js)SIZE(36828)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actiontracker.js)SIZE(36828)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63936,7 +64049,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/application.js)SIZE(1834)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63991,7 +64104,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/appsettings.js)SIZE(9304)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64152,7 +64265,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/audio.js)SIZE(12958)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64178,7 +64291,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(elements/auth.js)SIZE(24087)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64785,7 +64898,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/axis.js)SIZE(14009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64810,7 +64923,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bar.js)SIZE(4205)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64938,7 +65051,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingcolorrule.js)SIZE(2906)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65009,7 +65122,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(21698)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingcolumnrule.js)SIZE(21714)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65267,8 +65380,8 @@ apf.BindingColumnRule = function(struct, tagName){
 
         pNode.resort({
             order : "ascending",
-            xpath : (this.cvalue || this.compile("value")).xpaths[1]
-            //type : 
+            xpath : (this.cvalue || this.compile("value")).xpaths[1],
+            type : this["data-type"]
         }, false, initial || !pNode.length);
         
         
@@ -65616,7 +65729,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(elements/bindingdndrule.js)SIZE(3623)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingdndrule.js)SIZE(3623)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65734,7 +65847,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingeachrule.js)SIZE(11503)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66064,7 +66177,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingloadrule.js)SIZE(1529)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66113,7 +66226,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingquicksandrule.js)SIZE(12333)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66420,7 +66533,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindings.js)SIZE(8618)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66685,7 +66798,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/bindingseriesrule.js)SIZE(1944)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66747,7 +66860,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/body.js)SIZE(1861)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66803,7 +66916,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(elements/browser.js)SIZE(6466)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/browser.js)SIZE(6466)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67016,7 +67129,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/button.js)SIZE(31088)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67636,7 +67749,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/caldropdown.js)SIZE(36424)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/caldropdown.js)SIZE(36424)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67662,7 +67775,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/calendar.js)SIZE(28862)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/calendar.js)SIZE(28862)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67687,7 +67800,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/calendarlist.js)SIZE(15123)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67713,7 +67826,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/chart.js)SIZE(9687)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67738,7 +67851,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(elements/checkbox.js)SIZE(8188)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/checkbox.js)SIZE(8188)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68009,7 +68122,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/collection.js)SIZE(2383)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68034,7 +68147,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/colorpicker.js)SIZE(12736)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68415,7 +68528,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(elements/colorpicker2.js)SIZE(16009)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/colorpicker2.js)SIZE(16009)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68838,7 +68951,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/comment.js)SIZE(1324)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68880,7 +68993,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/contextmenu.js)SIZE(2557)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68957,7 +69070,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(elements/datagrid.js)SIZE(53921)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/datagrid.js)SIZE(53921)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70131,7 +70244,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/defaults.js)SIZE(1838)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70157,7 +70270,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/divider.js)SIZE(2882)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/divider.js)SIZE(2882)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70250,7 +70363,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(elements/dropdown.js)SIZE(15434)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/dropdown.js)SIZE(15434)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70701,7 +70814,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/editor.js)SIZE(18601)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70727,7 +70840,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/errorbox.js)SIZE(6106)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70911,7 +71024,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/event.js)SIZE(2115)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70936,7 +71049,7 @@ apf.aml.setElement("errorbox", apf.errorbox);
 
 
 
-/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/filler.js)SIZE(1385)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -70977,7 +71090,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/flashplayer.js)SIZE(5856)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/flashplayer.js)SIZE(5856)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71002,33 +71115,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/flowchart.js)SIZE(50799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71054,7 +71141,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(elements/frame.js)SIZE(4838)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/flowchart2.js)SIZE(45889)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/frame.js)SIZE(4838)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71203,7 +71316,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/gallery.js)SIZE(27418)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71228,7 +71341,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/graph.js)SIZE(21525)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -71253,7 +71366,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(elements/hbox.js)SIZE(41656)TIME(Sun, 29 Apr 2012 03:08:39 GMT)*/
+/*FILEHEAD(elements/hbox.js)SIZE(41656)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72246,7 +72359,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/iconmap.js)SIZE(3244)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72272,7 +72385,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/img.js)SIZE(7692)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -72518,7 +72631,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/item.js)SIZE(25150)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73242,7 +73355,7 @@ apf.aml.setElement("item",  apf.item);
 
 
 
-/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/junction.js)SIZE(2555)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73329,7 +73442,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/label.js)SIZE(4978)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73487,7 +73600,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/lineselect.js)SIZE(4747)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73513,7 +73626,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/list.js)SIZE(14336)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73872,7 +73985,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(elements/loader.js)SIZE(3558)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/loader.js)SIZE(3558)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -73988,7 +74101,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/loadindicator.js)SIZE(5234)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74014,7 +74127,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/map.js)SIZE(21831)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74040,7 +74153,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/markupedit.js)SIZE(55951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74066,7 +74179,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(elements/menu.js)SIZE(19411)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74639,7 +74752,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/method.js)SIZE(3973)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -74747,7 +74860,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(elements/modalwindow.js)SIZE(24684)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/modalwindow.js)SIZE(24684)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -75379,7 +75492,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/model.js)SIZE(42646)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -76482,7 +76595,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/notifier.js)SIZE(15297)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/notifier.js)SIZE(15297)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -76508,7 +76621,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(elements/page.js)SIZE(27212)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(elements/page.js)SIZE(27116)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -76775,7 +76888,6 @@ apf.page = function(struct, tagName){
         }
     });
 
-    //beforeNode, pNode, withinParent
     this.addEventListener("DOMNodeInserted", function(e){
         if (e && e.currentTarget != this || !this.$amlLoaded) //|| !e.$oldParent
             return;
@@ -76821,9 +76933,6 @@ apf.page = function(struct, tagName){
     };
 
     this.$deactivate = function(fakeOther){
-        //if (this.disabled)
-            //return false;
-
         this.$active = false;
 
         if (this.parentNode.$hasButtons) {
@@ -77268,7 +77377,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/pager.js)SIZE(9037)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77294,7 +77403,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/palette.js)SIZE(5945)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77319,7 +77428,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/param.js)SIZE(1681)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77362,7 +77471,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/persist.js)SIZE(17598)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77388,7 +77497,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/portal.js)SIZE(25076)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77413,7 +77522,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/progressbar.js)SIZE(8709)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77686,7 +77795,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/propedit.js)SIZE(46649)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -77713,7 +77822,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/radiobutton.js)SIZE(17104)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -78266,7 +78375,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/remote.js)SIZE(20970)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -78292,7 +78401,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc.js)SIZE(21108)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -78915,7 +79024,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/script.js)SIZE(3679)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -79030,7 +79139,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/scrollbar.js)SIZE(32682)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -79969,7 +80078,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/services.js)SIZE(1488)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -79995,7 +80104,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(elements/skin.js)SIZE(9698)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/skin.js)SIZE(9698)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -80192,7 +80301,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/slider.js)SIZE(32341)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/slider.js)SIZE(32341)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -80217,7 +80326,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/slideshow.js)SIZE(47089)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -80242,7 +80351,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/smartbinding.js)SIZE(33619)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -81090,7 +81199,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/source.js)SIZE(1566)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -81145,7 +81254,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(elements/spinner.js)SIZE(16965)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/spinner.js)SIZE(16965)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -81685,7 +81794,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Sat, 28 Apr 2012 17:52:39 GMT)*/
+/*FILEHEAD(elements/splitbutton.js)SIZE(5510)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -81848,7 +81957,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/splitter.js)SIZE(16644)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82266,7 +82375,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/state-group.js)SIZE(3131)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82359,7 +82468,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(elements/state.js)SIZE(10893)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/state.js)SIZE(10893)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82684,7 +82793,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/statusbar.js)SIZE(3824)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82710,7 +82819,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/style.js)SIZE(1888)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82735,7 +82844,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/submitform.js)SIZE(30092)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82761,7 +82870,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/tab.js)SIZE(2990)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -82860,7 +82969,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(elements/table.js)SIZE(17204)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/table.js)SIZE(17204)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -83337,7 +83446,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/teleport.js)SIZE(1019)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -83366,7 +83475,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/template.js)SIZE(2498)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -83392,7 +83501,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/text.js)SIZE(12616)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -83748,7 +83857,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(elements/textbox.js)SIZE(28629)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/textbox.js)SIZE(28629)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -84577,7 +84686,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/toc.js)SIZE(8342)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -84603,7 +84712,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/toolbar.js)SIZE(2787)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -84697,7 +84806,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(elements/tree.js)SIZE(17445)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/tree.js)SIZE(17445)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -85045,7 +85154,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/upload.js)SIZE(28994)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -85070,33 +85179,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/vectorflow.js)SIZE(65716)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -85122,7 +85205,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video.js)SIZE(20319)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -85148,7 +85231,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Sat, 28 Apr 2012 17:30:01 GMT)*/
+/*FILEHEAD(elements/viewport.js)SIZE(1796)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(elements/webdav.js)SIZE(49954)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86433,7 +86542,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/xmpp.js)SIZE(101266)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86459,7 +86568,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actiontracker/undodata.js)SIZE(11852)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86600,7 +86709,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86856,7 +86965,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/audio/type_flash.js)SIZE(12951)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86881,7 +86990,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/audio/type_native.js)SIZE(11013)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86906,7 +87015,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/modalwindow/widget.js)SIZE(7077)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -86932,7 +87041,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/cgi.js)SIZE(7168)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87145,7 +87254,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/header.js)SIZE(3062)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87171,7 +87280,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/jphp.js)SIZE(5874)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87197,7 +87306,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/jsonrpc.js)SIZE(3126)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87223,7 +87332,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/rdb.js)SIZE(8293)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87249,7 +87358,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/rest.js)SIZE(3962)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87376,7 +87485,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/soap.js)SIZE(10943)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87402,7 +87511,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(10831)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/xmlrpc.js)SIZE(10831)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87428,7 +87537,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/rpc/yql.js)SIZE(3962)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87454,7 +87563,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/textbox/autocomplete.js)SIZE(7030)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87480,12 +87589,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/textbox/autocomplete2.js)SIZE(14483)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
 
-/*FILEHEAD(elements/textbox/masking.js)SIZE(12869)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/textbox/masking.js)SIZE(12869)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87929,7 +88038,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/upload/flash.js)SIZE(9564)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87954,7 +88063,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/upload/html4.js)SIZE(9512)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -87979,7 +88088,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/upload/html5.js)SIZE(8910)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88004,7 +88113,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_flv.js)SIZE(17057)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88029,7 +88138,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_native.js)SIZE(10825)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88054,33 +88163,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_qt.js)SIZE(23357)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88106,7 +88189,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_silverlight.js)SIZE(15347)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88132,7 +88215,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_vlc.js)SIZE(12493)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88158,7 +88241,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/video/type_wmp.js)SIZE(12632)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88184,7 +88267,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/xmpp/muc.js)SIZE(18991)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88210,7 +88293,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/xmpp/rdb.js)SIZE(21319)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88236,7 +88319,33 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4360)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(elements/xmpp/roster.js)SIZE(13725)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(processinginstructions/livemarkup.js)SIZE(4360)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88356,7 +88465,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(jpack_end.js)SIZE(773)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(jpack_end.js)SIZE(773)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 
 
@@ -88388,7 +88497,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-node.js)SIZE(1241)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
+/*FILEHEAD(apf-node.js)SIZE(1244)TIME(Thu, 03 May 2012 16:31:13 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88413,33 +88522,7 @@ apf.start();
 
 
 
-/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Mon, 23 Apr 2012 16:35:03 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(apf-o3.js)SIZE(14014)TIME(Thu, 03 May 2012 17:07:08 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88465,7 +88548,33 @@ apf.start();
 
 
 
-/*FILEHEAD(loader.js)SIZE(15799)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(loader-o3.js)SIZE(7470)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+/*FILEHEAD(loader.js)SIZE(15799)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -88498,7 +88607,7 @@ apf.start();
 
 
 
-/*FILEHEAD(loader2.js)SIZE(18652)TIME(Mon, 23 Apr 2012 16:35:04 GMT)*/
+/*FILEHEAD(loader2.js)SIZE(18652)TIME(Thu, 03 May 2012 08:17:15 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -89352,7 +89461,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
 define('text!plugins-client/ext.settings/settings.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:window id="winSettings"\n      skin      = "fm-window"\n      class     = "unselectable"\n      title     = "Preferences"\n      flex      = "1"\n      modal     = "false"\n      model     = "{require(\'ext/settings/settings\').model}"\n      optimize  = "true">\n        <a:hbox\n          anchors  = "0 0 0 0"\n          overflow = "hidden">\n            <a:bar id="barSettings" skinset="prefs" skin="bar-preferences" flex="1" scrollbar="sbShared 2 2 2">\n            </a:bar>\n        </a:hbox>\n    </a:window>\n</a:application>\n';});
 
-define('text!plugins-client/ext.settings/skin.xml',[],function () { return '<?xml version=\'1.0\'?>\n<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">\n    <a:bar name="bar-preferences">\n        <a:style><![CDATA[\n            .bar-preferences {\n                position         : relative;\n                overflow-y       : hidden;\n                overflow-x       : hidden;\n                /*background-image : url(images/panelbg.png);*/\n                color            : #202020;\n                font-family      : Tahoma, Arial;\n                font-size        : 12px;\n                text-shadow : rgba(255, 255, 255, 0.8) 0px 1px 0px;\n            }\n            \n            .bar-preferences .header {\n                background-color : #f6f6f6;\n                height           : 39px;\n                padding          : 0;\n                cursor           : default;\n                border-bottom    : 1px solid white;\n                font-weight      : bold;\n                font-size        : 13px;\n                position         : relative;\n                overflow         : visible;\n                display          : block;\n                font-family      : Tahoma, Arial;\n                font-size        : 13px;\n                color            : #303030;\n                font-weight      : bold;\n                margin           : 5px 4px 10px 4px;\n                \n                text-shadow : none;\n                \n                -moz-border-radius    : 3px;\n                -webkit-border-radius : 3px;\n                \n                -moz-box-shadow: 1px 1px 1px -1px rgba(0, 0, 0, 0.15);\n                -webkit-box-shadow: 1px 1px 1px -1px rgba(0, 0, 0, 0.15);\n                box-shadow: 1px 1px 1px -1px rgba(0, 0, 0, 0.15);\n                \n                filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=\'#ffffff\', endColorstr=\'#ebebeb\');\n                -ms-filter: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=\'#ffffff\', endColorstr=\'#ebebeb\')";\n                \n                background: -webkit-gradient(linear, left top, left bottom, from(rgba(255, 255, 255, 1)), color-stop(1, rgba(235, 235, 235,1)));\n                -webkit-background-origin: padding-box; \n                -webkit-background-clip: content-box;\n                \n                background:-moz-linear-gradient(\n                    center bottom,\n                    rgba(235, 235, 235, 1) 15%,\n                    rgba(255, 255, 255,1) 60%\n                \n                )  repeat scroll 0 0 transparent;\n            }\n            \n            .bar-preferences .header SPAN {\n                background-image    : url(images/preferences.png);\n                background-position : 0 0;\n                background-repeat   : no-repeat;\n                width:21px;\n                height:21px;\n                position:absolute;\n                top:11px;\n                left:10px;\n            }\n            \n            .bar-preferences .header DIV {\n                padding : 12px 0 0 39px;\n            }\n            \n            .bar-preferences .cbcontainer {\n                margin : 0px 0 0 5px;\n            }\n            \n            .bar-preferences .first {\n                margin-top : 10px;\n            }\n            \n            .bar-preferences .underlined,\n            .bar-preferences .underlined2 {\n                border-bottom : 1px dashed #b9b9b9;\n                margin        : 5px 0 0 5px;\n                padding-bottom : 6px;\n                \n                -moz-box-shadow    : 1px 1px 1px -1px rgba(255, 255, 255, 0.5);\n                -webkit-box-shadow : 1px 1px 1px -1px rgba(255, 255, 255, 0.5);\n                box-shadow         : 1px 1px 1px -1px rgba(255, 255, 255, 0.5);\n            }\n            \n            .bar-preferences .underlined2 {\n                margin: 1px 0 0 5px;\n            }\n        ]]></a:style>\n    \n        <a:presentation>\n            <a:main container=".">\n                <div class="bar-preferences">\n                    \n                </div>\n            </a:main>\n        </a:presentation>\n    </a:bar>\n</a:skin>';});
+define('text!plugins-client/ext.settings/skin.xml',[],function () { return '<?xml version=\'1.0\'?>\n<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">\n    <a:bar name="bar-preferences">\n        <a:style><![CDATA[\n            .bar-preferences {\n                position         : relative;\n                overflow-y       : hidden;\n                overflow-x       : hidden;\n                /*background-image : url(images/panelbg.png);*/\n                color            : #202020;\n                font-family      : Tahoma, Arial;\n                font-size        : 12px;\n                text-shadow : rgba(255, 255, 255, 0.8) 0px 1px 0px;\n            }\n            \n            .bar-preferences .header {\n                background-color : rgba(0,0,0,.05);\n                background-image : -webkit-linear-gradient(bottom,rgba(0,0,0,.05), transparent);\n                height           : 29px;\n                line-height      : 30px;\n                padding          : 0 0 0 10px;\n                cursor           : default;\n                position         : relative;\n                overflow         : visible;\n                font-family      : Arial;\n                font-size        : 11.3px;\n                color            : #3b3b3b;\n                margin           : 5px 4px 10px 4px;\n                text-transform   : uppercase;\n                text-shadow      : 0 1px 0 rgba(255,255,255,.35);\n                \n                border-radius: 3px;\n                \n                -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);\n                   -moz-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);\n                        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);\n            }\n            \n            .bar-preferences .header SPAN {\n                display: none;\n            }\n            \n            .bar-preferences .cbcontainer {\n                margin : 0px 0 0 5px;\n                padding-left: 28px;\n            }\n\n            .bar-preferences .cbcontainer .checkbox {\n                left: 8px;\n            }\n            \n            .bar-preferences .first {\n                margin-top : 10px;\n            }\n            \n            .bar-preferences .underlined,\n            .bar-preferences .underlined2 {\n                margin        : 5px 5px 0 5px;\n                padding-bottom : 6px;\n                \n            }\n\n            .bar-preferences .underlined:not(:last-child),\n            .bar-preferences .underlined2:not(:last-child) {\n                border-bottom : 1px solid #b9b9b9;\n                \n                -webkit-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);\n                   -moz-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);\n                        box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);\n            }\n\n            .bar-preferences .underlined:last-child {\n                margin-bottom: 10px;\n            }\n            \n            .bar-preferences .underlined2 {\n                margin: 1px 0 0 5px;\n            }\n        ]]></a:style>\n    \n        <a:presentation>\n            <a:main container=".">\n                <div class="bar-preferences">\n                    \n                </div>\n            </a:main>\n        </a:presentation>\n    </a:bar>\n</a:skin>';});
 
 define('text!plugins-client/ext.panels/settings.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\r\n    <a:checkbox class="underlined" label="Enable UI Animations" value="[general/@animateui]" skin="checkbox_grey" position="1000" />\r\n    <a:checkbox position="1001" class="underlined" label="Animate Scrolling" value="[editors/code/@animatedscroll]" skin="checkbox_grey" />\r\n</a:application>\r\n';});
 
@@ -89404,6 +89513,8 @@ module.exports = ext.register("ext/settings/settings", {
     hook : function(){
         var _self = this;
         
+        this.markupInsertionPoint = colLeft;
+        
         panels.register(this, {
             position : 100000,
             caption: "Preferences",
@@ -89443,9 +89554,6 @@ module.exports = ext.register("ext/settings/settings", {
 
     init : function(amlNode){
         this.panel = winSettings;
-
-        colLeft.appendChild(winSettings);
-        
         this.nodes.push(winSettings);
         
         // this has to be done out here for some reason
@@ -90691,13 +90799,12 @@ module.exports = ext.register("ext/editors/editors", {
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-define('plugins-client/ext.themes/themes',['require','exports','module','core/ide','core/ext','ext/menus/menus','ext/settings/settings','ext/editors/editors'],function(require, exports, module) {
+define('plugins-client/ext.themes/themes',['require','exports','module','core/ide','core/ext','ext/menus/menus','ext/settings/settings'],function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
-var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",
@@ -90714,23 +90821,29 @@ module.exports = ext.register("ext/themes/themes", {
     register : function(themes){
         var _self = this;
         
+        var timer;
+        
         for (var name in themes) {
             menus.addItemByPath("View/Themes/" + name, new apf.item({
                 type    : "radio",
                 value   : themes[name],
-                //group   : this.group
                 
                 onmouseover: function(e) {
-                    //_self.currTheme = settings.model.queryValue("editors/code/@theme");
-                    //settings.model.setQueryValue("editors/code/@theme", this.value);
-                    _self.set(this.value);
-                    _self.saved = false;
+                    var value = this.value;
+                    
+                    clearTimeout(timer);
+                    timer = setTimeout(function(){
+                        _self.set(value, true);
+                    }, 200);
                 },
                 
                 onmouseout: function(e) {
+                    clearTimeout(timer);
+                    
                     if (!_self.saved) {
-                        settings.model.setQueryValue("editors/code/@theme", _self.currTheme);
-                        _self.saved = false;
+                        timer = setTimeout(function(){
+                            _self.set(_self.currTheme);
+                        }, 200);
                     }
                 }
             }));
@@ -90739,14 +90852,14 @@ module.exports = ext.register("ext/themes/themes", {
         this.themes = themes;
     },
 
-    set : function(path){
+    set : function(path, preview){
         settings.model.setQueryValue("editors/code/@theme", path);
+        
         this.setThemedGUI(path);
         
-        ide.dispatchEvent("theme_change", {theme: path});
-        
-        this.saved = true;
-        ide.dispatchEvent("track_action", {type: "theme change", theme: path});
+        this.saved = !preview;
+        if (!preview)
+            this.currTheme = path;
     },
     
     loaded : {},
@@ -90754,6 +90867,8 @@ module.exports = ext.register("ext/themes/themes", {
         var _self = this;
         
         require(["require", path], function (require, theme) {
+            ide.dispatchEvent("theme.change", {theme: theme, path: path});
+            
             if (theme.isDark)
                 apf.setStyleClass(document.body, "dark");
             else
@@ -90787,23 +90902,7 @@ module.exports = ext.register("ext/themes/themes", {
                  + bg + " inset !important;"]
             ], self, _self.stylesheet);
             
-//            apf.setStyleRule(
-//                "body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
-//                "color", fg + " !important", _self.stylesheet, self);
-//            apf.setStyleRule(
-//                "body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
-//                "background-color", bg + " !important", _self.stylesheet, self);
-//            
-//            apf.setStyleRule(
-//                ".ace_corner", 
-//                "border-color", bg + " !important", _self.stylesheet, self);
-//            apf.setStyleRule(
-//                ".ace_corner", 
-//                "box-shadow", "4px 4px 0px " + bg + " inset !important;", _self.stylesheet, self);
-//            
-//            apf.setStyleRule(
-//                ".editor_bg", 
-//                "display", "none", _self.stylesheet, self);
+            ide.dispatchEvent("theme.init", {theme: theme, path: path});
         });
     },
 
@@ -90825,7 +90924,9 @@ module.exports = ext.register("ext/themes/themes", {
                 }
             },
             "onitemclick" : function(e){
-                _self.set(e.relatedNode.value);
+                var path = e.relatedNode.value;
+                _self.set(path);
+                ide.dispatchEvent("track_action", {type: "theme change", theme: path});
             }
         }), 350000);
 
@@ -90835,7 +90936,7 @@ module.exports = ext.register("ext/themes/themes", {
         });
         
         ide.addEventListener("settings.load", function(e){
-            var theme = e.model.queryValue("editors/code/@theme")
+            var theme = _self.currTheme = e.model.queryValue("editors/code/@theme")
                 || _self.defaultTheme;
             
             _self.setThemedGUI(theme);
@@ -91719,6 +91820,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     hook : function(){
         var _self = this;
         
+        this.markupInsertionPoint = colLeft;
+        
         panels.register(this, {
             position : 2000,
             caption: "Open Files",
@@ -91860,8 +91963,6 @@ module.exports = ext.register("ext/openfiles/openfiles", {
         
         this.panel = winOpenFiles;
         this.nodes.push(winOpenFiles);
-        
-        colLeft.appendChild(winOpenFiles);
         
         lstOpenFiles.addEventListener("afterselect", function(e) {
             var node = this.selected;
@@ -92005,6 +92106,8 @@ module.exports = ext.register("ext/tree/tree", {
 
     hook : function(){
         var _self = this;
+        
+        this.markupInsertionPoint = colLeft;
 
         // Register this panel on the left-side panels
         panels.register(this, {
@@ -92132,6 +92235,14 @@ module.exports = ext.register("ext/tree/tree", {
 
             var nodes   = parent.childNodes;
             var files   = e.files;
+            
+            if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
+                for (var file in files) {
+                    if (file.charAt(0) == '.')
+                        delete files[file];
+                }
+            }
+            
             var removed = [];
 
             for (var i = 0; i < nodes.length; ++i) {
@@ -92189,8 +92300,6 @@ module.exports = ext.register("ext/tree/tree", {
         this.panel = winFilesViewer;
         this.nodes.push(winFilesViewer);
 
-        colLeft.appendChild(winFilesViewer);
-        
         ide.addEventListener("afteroffline", function(){
             trFiles.selectable = false;
             //_self.button.enable();
@@ -92207,7 +92316,7 @@ module.exports = ext.register("ext/tree/tree", {
             type    : "check",
             caption : "Show Hidden Files",
             visible : "{trFiles.visible}",
-            checked : "[{require('ext/settings/settings').model}::auto/projecttree/@showhidden]",
+            checked : "[{require('core/settings').model}::auto/projecttree/@showhidden]",
             onclick : function(e){
                 setTimeout(function() {
                     _self.changed = true;
@@ -93146,16 +93255,19 @@ module.exports = ext.register("ext/save/save", {
 
         var self = this;
         var doSave = function() {
-            window.winConfirm && winConfirm.hide();
             winSaveAs.hide();
             self._saveAsNoUI(page, path, newPath, isReplace);
 
-            if (btnConfirmOk.caption == "Yes")
-                btnConfirmOk.setCaption("Ok");
+            if (window.winConfirm) {
+                winConfirm.hide();
+                
+                if (btnConfirmOk.caption == "Yes")
+                    btnConfirmOk.setCaption("Ok");
+            }
         };
         
         var doCancel = function() {
-            if (btnConfirmOk.caption == "Yes")
+            if (window.winConfirm && btnConfirmOk.caption == "Yes")
                 btnConfirmOk.setCaption("Ok");
         };
         if (path !== newPath || parseInt(file.getAttribute("newfile") || 0, 10) === 1) {
@@ -93419,7 +93531,7 @@ define('text!plugins-client/ext.gotofile/gotofile.xml',[],function () { return '
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-define('plugins-client/ext.gotofile/gotofile',['require','exports','module','core/ide','core/ext','ext/menus/menus','ext/commands/commands','ext/editors/editors','text!plugins-client/ext.gotofile/gotofile.xml','ext/gotofile/search'],function(require, exports, module) {
+define('plugins-client/ext.gotofile/gotofile',['require','exports','module','core/ide','core/ext','ext/menus/menus','ext/commands/commands','ext/editors/editors','text!plugins-client/ext.gotofile/gotofile.xml','ext/gotofile/search','ext/filelist/filelist'],function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -93428,6 +93540,7 @@ var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var markup = require("text!plugins-client/ext.gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
+var filelist = require("ext/filelist/filelist");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -93516,7 +93629,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             if (_self.dirty && txtGoToFile.value.length > 0 && _self.modelCache.data) {
                 _self.dirty = false;
-                _self.updateFileCache();
+                _self.updateFileCache(true);
             }
         });
         
@@ -93566,24 +93679,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         this.nodes.push(winGoToFile);
     },
     
-    updateFileCache : function(){
+    updateFileCache : function(isDirty){
         var _self = this;
 
-        //@todo create an allfiles plugin that plugins like gotofile can depend on
-        davProject.report(ide.davPrefix, 'filelist', {
-            showHiddenFiles: "1" //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
-          }, 
-          function(data, state, extra){
-            if (state == apf.ERROR) {
-                if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
-                    return;
-                }
-
-                //@todo
+        filelist.getFileList(isDirty, function(data, state){
+            if (state != apf.SUCCESS)
                 return;
-            }
-            if (state == apf.TIMEOUT)
-                return; //@todo
 
             /**
              * Putting this in a worker won't help
@@ -93750,7 +93851,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             txtGoToFile.select();
             txtGoToFile.focus();
-            this.dirty = true;
+            this.dirty = true; //@todo this can be optimized by only marking as dirty on certain events
             
             // If we had a filter and new content, lets refilter
             if (this.lastSearch) {
@@ -95228,15 +95329,6 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
             _self.updateBarPosition();
         });
-
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                _self.offsetWidth = _self.defaultOffset + e.width;
-            else
-                _self.offsetWidth = _self.defaultOffset;
-
-            _self.updateBarPosition();
-        });
         
         this.nodes.push(
             menus.addItemByPath("Find/~", new apf.divider(), 1000),
@@ -96028,18 +96120,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-define('plugins-client/ext.html/html',['require','exports','module','core/ide','core/ext','ext/code/code','ext/menus/menus'],function(require, exports, module) {
+define('plugins-client/ext.preview/preview',['require','exports','module','core/ide','core/ext','ext/code/code','ext/menus/menus'],function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
 var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
-
-var previewExtensions = [
-    "htm", "html", "xhtml",
-    "conf", "log", "text", "txt",
-    "xml", "xsl"
-];
 
 module.exports = ext.register("ext/html/html", {
     name  : "HTML Editor",
@@ -96049,28 +96135,10 @@ module.exports = ext.register("ext/html/html", {
     deps  : [code],
     nodes : [],
 
-    afterSwitchOrOpen : function(node) {
-        var name = node.$model.data.getAttribute("name");
-        var fileExtension = name.split(".").pop().toLowerCase();
-
-        if (previewExtensions.indexOf(fileExtension) > -1) {
-            //ext.initExtension(this);
-            this.page = node;
-            this.enable();
-        }
-        else {
-            this.disable();
-        }
-    },
-
     init : function(){
         var _self = this;
         
         this.nodes.push(
-//            menus.$insertByIndex(barTools, new apf.divider({
-//                skin : "c9-divider"
-//            }), 300),
-            
             menus.$insertByIndex(barTools, new apf.button({
                 skin : "c9-toolbarbutton",
                 //icon : "preview.png" ,
@@ -96088,22 +96156,11 @@ module.exports = ext.register("ext/html/html", {
         
         ide.addEventListener("init.ext/editors/editors", function(e) {
             tabEditors.addEventListener("afterswitch", function(e){
-                _self.afterSwitchOrOpen(e.nextPage);
+                _self.enable();
             });
             ide.addEventListener("closefile", function(e){
                 if (tabEditors.getPages().length == 1)
                     _self.disable();
-            });
-            ide.addEventListener("afteropenfile", function(e){
-                // Only listen for event from editors.js
-                if (e.editor && e.node.$model)
-                    _self.afterSwitchOrOpen(e.node);
-            });
-            ide.addEventListener("updatefile", function(e) {
-                var page = tabEditors.getPage(e.newPath);
-                if (!page || !page.$active)
-                    return;
-                _self.afterSwitchOrOpen(page);
             });
         });
 
@@ -97234,12 +97291,6 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
 
-        var menuShowInvisibles = new apf.item({
-            type    : "check",
-            caption : "Show Invisibles",
-            checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
-        });
-
         ide.addEventListener("reload", function(e) {
             var doc = e.doc;
             doc.state = doc.$page.$editor.getState
@@ -97261,11 +97312,6 @@ module.exports = ext.register("ext/code/code", {
             }
 
             apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
-        });
-
-        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
-            // add preferences to the statusbar plugin
-            e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
         });
 
         ide.addEventListener("updatefile", function(e){
@@ -97391,9 +97437,9 @@ module.exports = ext.register("ext/code/code", {
 
 });
 
-define('text!plugins-client/ext.statusbar/statusbar.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:bar id="barIdeStatus" \n      skin    = "bar-status" \n      skinset = "c9statusbar"\n      class   = "expanded"\n      visible = "[{require(\'core/settings\').model}::auto/statusbar/@show]"\n      height  = "28"\n      bottom  = "3"\n      right   = "3">\n        <a:hbox height="23">\n            <a:label id="lblInsertActive" caption="INS" visible="false" margin="2 3 0 3" />\n            <a:label id="lblSelectionLength" visible="false" margin="2 3 0 3" />\n            <a:label\n              caption = "{ceEditor.line}:{ceEditor.col}"\n              class   = "lbl_row_col"\n              margin  = "2 6 0 3"\n              onclick = "require(\'core/ide\').dispatchEvent(\'gotoline\')"\n            />\n            <a:divider class="divider-status-bar" width="2" height="20" margin="1 0 1 0" />\n            <!--a:button \n              skin    = "btn-expand-statusbar" \n              skinset = "statusbar"\n              icon    = "statusbar-arrow.png" \n              onclick = "require(\'ext/statusbar/statusbar\').toggleStatusBar()"\n              margin  = "1 1 2 3"\n            /-->\n            <a:hbox id="hboxStatusBarSettings">\n                <a:button id="btnSbPrefs"\n                  skin    = "btn-statusbar-icon" \n                  skinset = "c9statusbar"\n                  height  = "23"\n                  icon    = "pref-ico.png" \n                  submenu = "mnuStatusBarPrefs"\n                  submenudir = "up" />\n            </a:hbox>\n        </a:hbox>\n    </a:bar>\n    \n    <a:menu id="mnuStatusBarPrefs"\n      ref   = "{btnSbPrefs}"\n      class = "mnuSbPrefs"\n      sticky = "true">\n      <a:item type="check" caption="Code Folding" checked="[{require(\'ext/settings/settings\').model}::editors/code/@folding]" />\n      <a:item type="check" caption="Full Line Selection" value="[{require(\'ext/settings/settings\').model}::editors/code/@selectstyle]" values="line|text" />\n      <a:item type="check" caption="Highlight Active Line" checked="[{require(\'ext/settings/settings\').model}::editors/code/@activeline]" />\n      <a:item type="check" caption="Show Gutter" checked="[{require(\'ext/settings/settings\').model}::editors/code/@gutter]" />\n      <a:item type="check" caption="Highlight Selected Word" checked="[{require(\'ext/settings/settings\').model}::editors/code/@highlightselectedword]" />\n      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[{require(\'ext/settings/settings\').model}::editors/code/@behaviors]" />\n      <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[{require(\'ext/settings/settings\').model}::editors/code/@autohidehorscrollbar]" />\n      <a:divider />\n      <a:hbox edge="0 5 2 23" align="center">\n          <a:label flex="1" style="padding: 2px 2px 2px 0">Font Size</a:label>\n          <a:spinner value="[{require(\'ext/settings/settings\').model}::editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" />\n      </a:hbox>\n      <a:hbox edge="0 5 2 0" align="center">\n          <a:checkbox label="Show Print Margin" value="[{require(\'ext/settings/settings\').model}::editors/code/@showprintmargin]" flex="1" skin="checkbox-menu" />\n          <a:spinner value="[{require(\'ext/settings/settings\').model}::editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" />\n      </a:hbox>\n      <a:hbox edge="0 5 2 0" align="center">\n        <a:checkbox id="wrapMode" label="Wrap Lines" value="[{require(\'ext/settings/settings\').model}::editors/code/@wrapmode]" flex="1" skin="checkbox-menu" />    \n      </a:hbox>\n      <a:hbox edge="0 5 2 0" align="center">\n        <a:checkbox id="wrapModeViewport" margin="0 0 0 22" label="To Viewport" value="[{require(\'ext/settings/settings\').model}::editors/code/@wrapmodeViewport]" flex="1" skin="checkbox-menu" />\n      </a:hbox>\n      <a:hbox edge="0 5 2 0" align="center">\n          <a:checkbox label="Soft Tabs" value="[{require(\'ext/settings/settings\').model}::editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>\n          <a:spinner value="[{require(\'ext/settings/settings\').model}::editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />\n      </a:hbox>\n      <a:hbox edge="0 5 2 23" align="center">\n          <a:label flex="1" style="padding: 2px 2px 2px 0">Mouse Scroll Speed</a:label>\n          <a:spinner value="[{require(\'ext/settings/settings\').model}::editors/code/@scrollspeed]" min="1" max="8" width="50" />\n      </a:hbox>\n    </a:menu>\n</a:application>';});
+define('text!plugins-client/ext.statusbar/statusbar.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:bar id="barIdeStatus" \n      skin    = "bar-status" \n      skinset = "c9statusbar"\n      class   = "expanded"\n      visible = "[{require(\'core/settings\').model}::auto/statusbar/@show]"\n      height  = "28"\n      bottom  = "3"\n      right   = "3">\n        <a:hbox height="23">\n            <a:label id="lblInsertActive" caption="INS" visible="false" margin="2 3 0 3" />\n            <a:label id="lblSelectionLength" visible="false" margin="2 3 0 3" />\n            <a:label id="lblRowCol"\n              class   = "lbl_row_col"\n              margin  = "2 6 0 3"\n              onclick = "require(\'core/ide\').dispatchEvent(\'gotoline\')"\n            />\n            <a:divider class="divider-status-bar" width="2" height="20" margin="1 0 1 0" />\n            <!--a:button \n              skin    = "btn-expand-statusbar" \n              skinset = "statusbar"\n              icon    = "statusbar-arrow.png" \n              onclick = "require(\'ext/statusbar/statusbar\').toggleStatusBar()"\n              margin  = "1 1 2 3"\n            /-->\n            <a:hbox id="hboxStatusBarSettings" style="overflow:hidden">\n                <a:button id="btnSbPrefs"\n                  skin    = "btn-statusbar-icon" \n                  skinset = "c9statusbar"\n                  height  = "23"\n                  icon    = "pref-ico.png" \n                  submenu = "mnuStatusBarPrefs"\n                  submenudir = "up" />\n            </a:hbox>\n        </a:hbox>\n    </a:bar>\n    \n    <a:menu id="mnuStatusBarPrefs"\n      ref   = "{btnSbPrefs}"\n      class = "mnuSbPrefs"\n      sticky = "true"\n      render = "runtime">\n      <a:item type="check" caption="Show Invisibles" checked="[{require(\'core/settings\').model}::editors/code/@showinvisibles]" />\n      <a:item type="check" caption="Code Folding" checked="[{require(\'core/settings\').model}::editors/code/@folding]" />\n      <a:item type="check" caption="Full Line Selection" checked="[{require(\'core/settings\').model}::editors/code/@selectstyle]" values="line|text" />\n      <a:item type="check" caption="Highlight Active Line" checked="[{require(\'core/settings\').model}::editors/code/@activeline]" />\n      <a:item type="check" caption="Show Gutter" checked="[{require(\'core/settings\').model}::editors/code/@gutter]" />\n      <a:item type="check" caption="Highlight Selected Word" checked="[{require(\'core/settings\').model}::editors/code/@highlightselectedword]" />\n      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[{require(\'core/settings\').model}::editors/code/@behaviors]" />\n      <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[{require(\'core/settings\').model}::editors/code/@autohidehorscrollbar]" />\n      <a:divider />\n      <a:hbox edge="0 5 2 23" align="center">\n          <a:label flex="1" style="padding: 2px 2px 2px 0">Font Size</a:label>\n          <a:spinner checked="[{require(\'core/settings\').model}::editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" />\n      </a:hbox>\n      <a:hbox edge="0 5 2 0" align="center">\n          <a:checkbox label="Show Print Margin" checked="[{require(\'core/settings\').model}::editors/code/@showprintmargin]" flex="1" skin="checkbox-menu" />\n          <a:spinner checked="[{require(\'core/settings\').model}::editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" />\n      </a:hbox>\n      <a:hbox edge="0 5 2 0" align="center">\n        <a:checkbox id="wrapMode" label="Wrap Lines" checked="[{require(\'core/settings\').model}::editors/code/@wrapmode]" flex="1" skin="checkbox-menu" />    \n      </a:hbox>\n      <a:hbox edge="0 5 2 0" align="center">\n        <a:checkbox id="wrapModeViewport" margin="0 0 0 22" label="To Viewport" checked="[{require(\'core/settings\').model}::editors/code/@wrapmodeViewport]" flex="1" skin="checkbox-menu" />\n      </a:hbox>\n      <a:hbox edge="0 5 2 0" align="center">\n          <a:checkbox label="Soft Tabs" checked="[{require(\'core/settings\').model}::editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>\n          <a:spinner checked="[{require(\'core/settings\').model}::editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />\n      </a:hbox>\n      <a:hbox edge="0 5 2 23" align="center">\n          <a:label flex="1" style="padding: 2px 2px 2px 0">Mouse Scroll Speed</a:label>\n          <a:spinner checked="[{require(\'core/settings\').model}::editors/code/@scrollspeed]" min="1" max="8" width="50" />\n      </a:hbox>\n    </a:menu>\n</a:application>';});
 
-define('text!plugins-client/ext.statusbar/skin.xml',[],function () { return '<?xml version=\'1.0\'?>\n<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">\n    <a:bar name="bar-status">\n        <a:style><![CDATA[\n            .bar-status {\n                position : absolute;\n                color: rgba(0, 0, 0, 0.4);\n                padding: 2px;\n                overflow: hidden;\n                border: 1px solid transparent;\n\n                border-radius: 6px;\n\n                -webkit-transition: background-color 0.2s linear, border 0.2s linear, box-shadow 0.2s linear;\n                -moz-transition: background-color 0.2s linear, border 0.2s linear, -moz-box-shadow 0.2s linear;\n\n                background: transparent url(\'images/editor_bar_bg.png\') 0px 30px repeat-x;\n            }\n\n            .bar-status:hover {\n                border: 1px solid rgba(0, 0, 0, 0.12);\n\n                -moz-box-shadow: inset 0px 1px 0px 0px #f5f5f5;\n                box-shadow: inset 0px 1px 0px 0px #f5f5f5;\n\n                background-color: transparent;\n            }\n\n            .ace_dark.bar-status:hover {\n                -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);\n                box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);\n            }\n            \n            .bar-status .lbl_row_col {\n                text-align: center;\n                color: rgba(0, 0, 0, 0.4);\n            }\n\n            .bar-status .label {\n                color: rgba(0, 0, 0, 0.4);\n                padding-left: 1px;\n                overflow: visible;\n            }\n\n            .ace_dark.bar-status .label {\n                color: rgba(255, 255, 255, 0.4);\n            }\n            \n            .mnuSbPrefs{\n                border-radius : 6px;\n                margin-top : -8px;\n                margin-left : 1px;\n            }\n            \n            .mnuSbPrefs .label {\n                color : #f1f1f1;\n            }\n        ]]></a:style>\n\n        <a:presentation>\n            <a:main container=".">\n                <div class="bar-status">\n                </div>\n            </a:main>\n        </a:presentation>\n    </a:bar>\n    <a:button name="btn-expand-statusbar">\n        <a:style><![CDATA[\n            .btn-expand-statusbar {\n                height              : 8px;\n                width               : 10px;\n                overflow            : hidden;\n                cursor              : pointer;\n                position            : relative;\n                cursor              : default;\n                -moz-user-select    : none;\n                -khtml-user-select  : none;\n                user-select         : none;\n                background-position : 2px 7px;\n                background-repeat   : no-repeat;\n\n                border-radius: 3px;\n            }\n\n            .btn-expand-statusbarOver {\n                background-position : 2px -19px;\n            }\n\n            .expanded .btn-expand-statusbar {\n                background-position : -11px 7px;\n            }\n\n            .expanded .btn-expand-statusbarOver {\n                background-position : -11px -19px;\n            }\n\n            .ace_dark .btn-expand-statusbar {\n                background-position : -28px 7px;\n            }\n\n            .ace_dark .btn-expand-statusbarOver {\n                background-position : -28px -19px;\n            }\n\n            .ace_dark.expanded .btn-expand-statusbar {\n                background-position : -42px -18px;\n            }\n\n            .ace_dark.expanded .btn-expand-statusbarOver {\n                background-position : -42px 7px;\n\n            }\n        ]]></a:style>\n\n        <a:presentation>\n            <a:main\n              caption      = "text()"\n              background = "."\n              icon       = ".">\n                <div class="btn-expand-statusbar"> </div>\n            </a:main>\n        </a:presentation>\n    </a:button>\n    <a:button name="btn-statusbar-icon">\n        <a:style><![CDATA[\n            .btn-statusbar-icon {\n                height              : 23px;\n                width               : 22px;\n                overflow            : hidden;\n                cursor              : pointer;\n                position            : relative;\n                cursor              : default;\n                -moz-user-select    : none;\n                -khtml-user-select  : none;\n                user-select         : none;\n                background-position : 0 0;\n                background-repeat   : no-repeat;\n            }\n            .btn-statusbar-iconOver {\n                background-position : 0 -23px;\n            }\n\n            .btn-statusbar-iconDown {\n                background-position : 0 -46px;\n            }\n\n            .ace_dark .btn-statusbar-icon {\n                background-position : -22px 0;\n            }\n\n            .ace_dark .btn-statusbar-iconOver {\n                background-position : -22px -23px;\n            }\n\n            .ace_dark .btn-statusbar-iconDown {\n                background-position : -22px -46px;\n            }\n        ]]></a:style>\n\n        <a:presentation>\n            <a:main\n              caption      = "text()"\n              background = "."\n              icon       = ".">\n                <div class="btn-statusbar-icon"> </div>\n            </a:main>\n        </a:presentation>\n    </a:button>\n</a:skin>';});
+define('text!plugins-client/ext.statusbar/skin.xml',[],function () { return '<?xml version=\'1.0\'?>\n<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">\n    <a:bar name="bar-status">\n        <a:style><![CDATA[\n            .bar-status {\n                position : absolute;\n                color: rgba(0, 0, 0, 0.4);\n                padding: 2px;\n                overflow: hidden;\n                border: 1px solid transparent;\n\n                border-radius: 6px;\n\n                -webkit-transition: background-color 0.2s linear, border 0.2s linear, box-shadow 0.2s linear;\n                -moz-transition: background-color 0.2s linear, border 0.2s linear, -moz-box-shadow 0.2s linear;\n\n                background: transparent url(\'images/editor_bar_bg.png\') 0px 30px repeat-x;\n            }\n\n            .bar-status:hover {\n                border: 1px solid rgba(0, 0, 0, 0.12);\n\n                -moz-box-shadow: inset 0px 1px 0px 0px #f5f5f5;\n                box-shadow: inset 0px 1px 0px 0px #f5f5f5;\n\n                background-color: transparent;\n            }\n\n            .dark .bar-status:hover {\n                -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);\n                box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);\n            }\n            \n            .bar-status .lbl_row_col {\n                text-align: center;\n                color: rgba(0, 0, 0, 0.4);\n            }\n\n            .bar-status .label {\n                color: rgba(0, 0, 0, 0.4);\n                padding-left: 1px;\n                overflow: visible;\n            }\n\n            .dark .bar-status .label {\n                color: rgba(255, 255, 255, 0.4);\n            }\n            \n            .mnuSbPrefs{\n                border-radius : 6px;\n                margin-top : -8px;\n                margin-left : 1px;\n            }\n            \n            .mnuSbPrefs .label {\n                color : #f1f1f1;\n            }\n        ]]></a:style>\n\n        <a:presentation>\n            <a:main container=".">\n                <div class="bar-status">\n                </div>\n            </a:main>\n        </a:presentation>\n    </a:bar>\n    <a:button name="btn-expand-statusbar">\n        <a:style><![CDATA[\n            .btn-expand-statusbar {\n                height              : 8px;\n                width               : 10px;\n                overflow            : hidden;\n                cursor              : pointer;\n                position            : relative;\n                cursor              : default;\n                -moz-user-select    : none;\n                -khtml-user-select  : none;\n                user-select         : none;\n                background-position : 2px 7px;\n                background-repeat   : no-repeat;\n\n                border-radius: 3px;\n            }\n\n            .btn-expand-statusbarOver {\n                background-position : 2px -19px;\n            }\n\n            .expanded .btn-expand-statusbar {\n                background-position : -11px 7px;\n            }\n\n            .expanded .btn-expand-statusbarOver {\n                background-position : -11px -19px;\n            }\n\n            .dark .btn-expand-statusbar {\n                background-position : -28px 7px;\n            }\n\n            .dark .btn-expand-statusbarOver {\n                background-position : -28px -19px;\n            }\n\n            .dark .expanded .btn-expand-statusbar {\n                background-position : -42px -18px;\n            }\n\n            .dark .expanded .btn-expand-statusbarOver {\n                background-position : -42px 7px;\n\n            }\n        ]]></a:style>\n\n        <a:presentation>\n            <a:main\n              caption      = "text()"\n              background = "."\n              icon       = ".">\n                <div class="btn-expand-statusbar"> </div>\n            </a:main>\n        </a:presentation>\n    </a:button>\n    <a:button name="btn-statusbar-icon">\n        <a:style><![CDATA[\n            .btn-statusbar-icon {\n                height              : 23px;\n                width               : 22px;\n                overflow            : hidden;\n                cursor              : pointer;\n                position            : relative;\n                cursor              : default;\n                -moz-user-select    : none;\n                -khtml-user-select  : none;\n                user-select         : none;\n                background-position : 0 0;\n                background-repeat   : no-repeat;\n            }\n            .btn-statusbar-iconOver {\n                background-position : 0 -23px;\n            }\n\n            .btn-statusbar-iconDown {\n                background-position : 0 -46px;\n            }\n\n            .dark .btn-statusbar-icon {\n                background-position : -22px 0;\n            }\n\n            .dark .btn-statusbar-iconOver {\n                background-position : -22px -23px;\n            }\n\n            .dark .btn-statusbar-iconDown {\n                background-position : -22px -46px;\n            }\n        ]]></a:style>\n\n        <a:presentation>\n            <a:main\n              caption      = "text()"\n              background = "."\n              icon       = ".">\n                <div class="btn-statusbar-icon"> </div>\n            </a:main>\n        </a:presentation>\n    </a:button>\n</a:skin>';});
 
 /**
  * Editor status bar for Cloud9 IDE
@@ -97459,42 +97505,45 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 type : "check",
                 checked : "[{require('ext/settings/settings').model}::auto/statusbar/@show]",
                 "onprop.checked" : function(e){
-                    if (apf.isTrue(e.value))
+                    if (apf.isTrue(e.value)) {
                         _self.preinit();
+                        if (self.barIdeStatus)
+                            barIdeStatus.show();
+                    }
+                    else {
+                        if (self.barIdeStatus)
+                            barIdeStatus.hide();
+                    }
                 }
             }), 600)
         );
     },
     
     preinit : function(){
-        var _self = this;
+        if (this.inited || this.$preinit)
+            return;
         
-        ide.addEventListener("init.ext/editors/editors", function(e){
-            if (!_self.inited && e.ext 
-              && e.ext.currentEditor && e.ext.currentEditor.ceEditor)
-                ext.initExtension(_self);
-                
-            tabEditors.addEventListener("afterswitch", function(e){
-                if (e.nextPage.type != "ext/code/code") {
-                    if (self.barIdeStatus)
-                        barIdeStatus.hide();
-                    return;
-                }
-    
-                ext.initExtension(_self);
-                barIdeStatus.show();
-            });
+        var _self = this;
+        ide.addEventListener("init.ext/code/code", this.$preinit = function(){
+            _self.markupInsertionPoint = ceEditor.parentNode;
+            
+            ext.initExtension(_self);
         });
     },
-
+    
     init : function(){
         var _self = this;
         
-        ide.addEventListener("theme_change", function(e){
-            var theme = e.theme || "ace/theme/textmate";
-            _self.checkTheme(theme);
+        ide.addEventListener("theme.init", function(e){
+            var cssClass = e.theme.cssClass;
+            
+            var bg = apf.getStyleRule("." + cssClass + " .ace_scroller", "background-color");
+            apf.importStylesheet([
+                ["." + cssClass + " .bar-status", "background-color", bg + ", 0.0)"],
+                ["." + cssClass + " .bar-status:hover", "background-color", bg + ", 0.95)"]
+            ]);
         });
-
+        
         ide.addEventListener("vim.changeMode", function(e) {
             if (!window["lblInsertActive"])
                 return;
@@ -97514,95 +97563,67 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             _self.setPosition();
         });
         
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                _self.offsetWidth = e.width;
-            else
-                _self.offsetWidth = 0;
-
-            _self.setPosition();
-        });
-        
-        ide.addEventListener("init.ext/editors/editors", function(){
-            tabEditors.addEventListener("afterswitch", function(e) {
-                if (e.nextPage.type != "ext/code/code")
+        ide.addEventListener("init.ext/editors/editors", function(e){
+            tabEditors.addEventListener("afterswitch", function(e){
+                var editor = e.nextPage.$editor;
+                if (!editor.ceEditor) {
+                    barIdeStatus.hide();
                     return;
-    
-                if (!_self.inited) {
-                    // Wait a moment for the editor to get into place
-                    setTimeout(function() {
-                        ext.initExtension(_self);
-                    });
                 }
+                
+                editor = editor.ceEditor;
+                barIdeStatus.show();
+            
+                _self.setSelectionLength(editor);
+                _self.setCursorPosition(editor);
     
-                if (_self.$changeEvent)
-                    _self.editorSession.selection.removeEventListener("changeSelection", _self.$changeEvent);
-    
-                setTimeout(function() {
-                    if (editors.currentEditor && editors.currentEditor.ceEditor) {
-                        _self.setSelectionLength();
-    
-                        _self.editorSession = editors.currentEditor.ceEditor.$editor.session;
-                        _self.editorSession.selection.addEventListener("changeSelection", _self.$changeEvent = function(e) {
-                            if (_self._timer)
+                var session = editor.$editor.session;
+                if (!session.$hasSBEvents) {
+                    session.selection.addEventListener("changeSelection", 
+                        _self.$changeEventSelection = function(e) {
+                            if (_self._timerselection)
                                 return;
-                            _self._timer = setTimeout(function() {
-                                _self.setSelectionLength();
+        
+                            _self._timerselection = setTimeout(function() {
+                                _self.setSelectionLength(editor);
+                                _self._timerselection = null;
                             }, 50);
                         });
-                    }
-                }, 200);
+                    
+                    session.selection.addEventListener("changeCursor",
+                        _self.$changeEventCursor = function(e) {
+                            if (_self._timercursor)
+                                return;
+        
+                            _self._timercursor = setTimeout(function() {
+                                _self.setCursorPosition(editor);
+                                _self._timercursor = null;
+                            }, 50);
+                        });
+                    session.$hasSBEvents = true;
+                }
             });
-    
+            
             tabEditors.addEventListener("resize", function() {
                 _self.setPosition();
             });
         });
         
-        ide.addEventListener("init.ext/code/code", function(){
-            ceEditor.parentNode.appendChild(barIdeStatus);
-            _self.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
-            barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance);
-            barIdeStatus.setAttribute("bottom", _self.sbWidth + _self.edgeDistance);
-    
-            hboxStatusBarSettings.$ext.style.overflow = "hidden";
-    
-            for (var i = 0, l = _self.prefsItems.length; i < l; i++) {
-                var pItem = _self.prefsItems[i];
-                if (typeof pItem.pos === "number")
-                    mnuStatusBarPrefs.insertBefore(pItem.item, mnuStatusBarPrefs.childNodes[pItem.pos]);
-                else
-                    mnuStatusBarPrefs.appendChild(pItem.item);
+        this.sbWidth = ceEditor.$editor.renderer.scrollBar.width;
+        barIdeStatus.setAttribute("right", this.sbWidth + this.edgeDistance);
+        barIdeStatus.setAttribute("bottom", this.sbWidth + this.edgeDistance);
+
+        ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
+            if (e.changed) {
+                _self.horScrollAutoHide = e.value ? "true" : "false";
+                apf.layout.forceResize(tabEditors.parentNode.$ext);
             }
-    
-            !wrapMode.checked ? wrapModeViewport.disable() : wrapModeViewport.enable();    
-            wrapMode.addEventListener("click", function(e) {
-                if (e.currentTarget.checked) {    
-                    wrapModeViewport.enable();     
-                 }
-                else {
-                    wrapModeViewport.disable();
-                 }      
-            });
-            
-            var editor = ceEditor.$editor;
-            var theme = editor && editor.getTheme() || "ace/theme/textmate";
-            _self.checkTheme(theme);
-    
-    //        if (this.toggleOnInit)
-    //            this.toggleStatusBar();
-    
-            ceEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
-                if (e.changed) {
-                    _self.horScrollAutoHide = e.value ? "true" : "false";
-                    apf.layout.forceResize(tabEditors.parentNode.$ext);
-                }
-            });
         });
 
+        //@todo que??
         ide.addEventListener("track_action", function(e) {
-            if(e.type === "vim" && window["lblInsertActive"]) {
-                if(e.action === "disable")
+            if (e.type === "vim" && window["lblInsertActive"]) {
+                if (e.action === "disable")
                     lblInsertActive.hide();
                 else if (e.mode === "insert")
                     lblInsertActive.show();
@@ -97610,25 +97631,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         });
     },
 
-    addPrefsItem: function(menuItem, position){
-        if(!self["mnuStatusBarPrefs"]) {
-            this.prefsItems.push({ item: menuItem, pos : position });
-        }
-        else {
-            if (typeof position === "number")
-                mnuStatusBarPrefs.insertBefore(menuItem, mnuStatusBarPrefs.childNodes[position]);
-            else
-                mnuStatusBarPrefs.appendChild(menuItem);
-        }
-    },
-
-    setSelectionLength : function() {
-        if (typeof lblSelectionLength === "undefined")
-            return;
-
-        var range = ceEditor.$editor.getSelectionRange();
+    setSelectionLength : function(editor) {
+        var range = editor.$editor.getSelectionRange();
         if (range.start.row != range.end.row || range.start.column != range.end.column) {
-            var doc = ceEditor.getDocument();
+            var doc = editor.getDocument();
             var value = doc.getTextRange(range);
             lblSelectionLength.setAttribute("caption", "(" + value.length + " Bytes)");
             lblSelectionLength.show();
@@ -97636,6 +97642,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             lblSelectionLength.setAttribute("caption", "");
             lblSelectionLength.hide();
         }
+    },
+    
+    setCursorPosition : function(editor){
+        var cursor = editor.$editor.getSelection().getCursor();
+        lblRowCol.setAttribute("caption", (cursor.row + 1) + ":" + (cursor.column + 1));
     },
 
     toggleStatusBar: function(){
@@ -97671,21 +97682,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         settings.save();
     },
 
-    checkTheme: function(theme){
-        require(["require", theme], function (require) {
-            var reqTheme = require(theme);
-            if(reqTheme.isDark)
-                apf.setStyleClass(barIdeStatus.$ext, "ace_dark");
-            else
-                apf.setStyleClass(barIdeStatus.$ext, '', ["ace_dark"]);
-
-            var aceBg = apf.getStyle(ceEditor.$editor.renderer.scroller, "background-color");
-            aceBg = aceBg.replace("rgb", "rgba").replace(")", "");
-            apf.setStyleRule(".bar-status", "background-color", aceBg + ", 0.0)");
-            apf.setStyleRule(".bar-status:hover", "background-color", aceBg + ", 0.95)");
-        });
-    },
-
     setPosition : function() {
         if (self.ceEditor && ceEditor.$editor) {
             var _self = this;
@@ -97697,6 +97693,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
             if (this.$barMoveTimer)
                 clearTimeout(this.$barMoveTimer);
+                
             this.$barMoveTimer = setTimeout(function() {
                 if (typeof barIdeStatus !== "undefined") {
                     barIdeStatus.setAttribute("bottom", bottom);
@@ -97832,7 +97829,7 @@ module.exports = ext.register("ext/imgview/imgview", {
 
 });
 
-define('text!plugins-client/ext.extmgr/extmgr.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:window\n      id        = "winExt"\n      title     = "Extensions Manager"\n      icon      = ""\n      center    = "true"\n      resizable = "true"\n      buttons   = "close"\n      modal     = "false"\n      skin      = "bk-window"\n      width     = "660"\n      height    = "400"\n      kbclose   = "true"\n      draggable = "true">\n        <a:vbox anchors="0 0 0 0" edge="0 0 11 0">\n            <a:tab flex="1" id="tabExtMgr" skin="extensions_tab">\n                <a:page caption="User Extensions">\n                    <a:vbox anchors="10 10 10 10">\n                        <a:hbox align="center" edge="0 0 5 0" padding="5">\n                            <a:textbox id="tbModuleName" flex="1" \n                              realtime="true" />\n                            <a:button width="80"\n                              default = "1"\n                              caption = "Add"\n                              disabled = "{!tbModuleName.value.trim()}"\n                              onclick = "require(\'ext/extmgr/extmgr\').loadExtension()"\n                            />\n                        </a:hbox>\n                        <a:datagrid id = "dgExtUser"\n                          flex       = "1"\n                          model      = "{require(\'core/ext\').model}"\n                          class      = "noscrollbar"\n                          scrollbar  = "sbShared 20 2 2"\n                          autoselect = "false"\n                          each       = "[plugin[@userext=\'1\']]"\n                          onafterselect = "require(\'ext/extmgr/extmgr\').updateEnableBtnState()"\n                          eachvalue  = "[@path]"\n                          empty-message = "No user extensions">\n                            <a:column width="25%" value="[@name]" caption="Name" />\n                            <a:column width="30%" value="[@path]" caption="Path" />\n                            <a:column width="10%" value="[@type]" caption="Type" />\n                            <a:column width="15%" value="[@dev]" caption="Developer" />\n                            <a:column width="10%" value="[@time]ms" caption="Time" align="right" /> \n                            <a:column width="11%" value="{[@enabled] == 1 ? \'Enabled\' : \'Disabled\'}" caption="Enabled" />\n                        </a:datagrid>\n                        \n                    </a:vbox>\n                </a:page>\n                <a:page caption="Defaults">\n                    <a:vbox anchors="10 10 10 10">\n                        <a:datagrid id="dgExt"\n                          flex       = "1"\n                          model      = "{require(\'core/ext\').model}"\n                          class      = "noscrollbar"\n                          scrollbar  = "sbShared 20 2 2"\n                          autoselect = "false"\n                          each       = "[plugin[@userext=\'0\']]"\n                          onafterselect = "require(\'ext/extmgr/extmgr\').updateEnableBtnState()"\n                          eachvalue  = "[@path]">\n                            <a:column width="25%" value="[@name]" caption="Name" /> \n                            <a:column width="30%" value="[@path]" caption="Path" /> \n                            <a:column width="10%" value="[@type]" caption="Type" /> \n                            <a:column width="15%" value="[@dev]" caption="Developer" /> \n                            <a:column width="10%" value="[@time]ms" caption="Time" align="right" /> \n                            <a:column width="11%" value="{[@enabled] == 1 ? \'Enabled\' : \'Disabled\'}" caption="Enabled" /> \n                        </a:datagrid>\n                    </a:vbox>\n                </a:page>\n            </a:tab>\n            <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 0}">\n                <a:button\n                  skin     = "btn-default-css3"\n                  disabled = "{!dgExtUser.selected}"\n                  caption  = "Remove"\n                  margin   = "0 10 0 0"\n                  onclick  = "require(\'ext/extmgr/extmgr\').removeExtension()"\n                />\n                <a:button\n                  id       = "btnUserExtEnable"\n                  skin     = "btn-default-css3"\n                  disabled = "{!dgExtUser.selected}"\n                  caption  = "Disable"\n                  onclick  = "\n                    if (dgExtUser.selected.getAttribute(\'enabled\') == 1)\n                        require(\'ext/extmgr/extmgr\').disableExt(dgExtUser.value);\n                    else\n                        require(\'ext/extmgr/extmgr\').enableExt(dgExtUser.value);\n                  "\n                />\n                <a:button\n                  caption = "Done"\n                  margin = "0 0 0 10"\n                  skin = "btn-default-css3"\n                  onclick = "winExt.close()"\n                />\n            </a:hbox>\n            <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 1}">\n                <a:button\n                  id       = "btnDefaultExtEnable"\n                  skin     = "btn-default-css3"\n                  caption  = "Disable"\n                  disabled = "{!dgExt.selected}"\n                  onclick  = "\n                    if (dgExtUser.selected.getAttribute(\'enabled\') == 1)\n                        require(\'ext/extmgr/extmgr\').disableExt(dgExt.value);\n                    else\n                        require(\'ext/extmgr/extmgr\').enableExt(dgExt.value);\n                  "\n                />\n                <a:button\n                  caption = "Done"\n                  margin = "0 0 0 10"\n                  skin = "btn-default-css3"\n                  onclick = "winExt.close()"\n                />\n            </a:hbox>\n        </a:vbox>\n    </a:window>\n</a:application>';});
+define('text!plugins-client/ext.extmgr/extmgr.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:window\n      id        = "winExt"\n      title     = "Extensions Manager"\n      icon      = ""\n      center    = "true"\n      resizable = "true"\n      buttons   = "close"\n      modal     = "false"\n      skin      = "bk-window"\n      width     = "750"\n      height    = "400"\n      kbclose   = "true"\n      draggable = "true">\n        <a:vbox anchors="0 0 0 0" edge="0 0 11 0">\n            <a:tab flex="1" id="tabExtMgr" skin="extensions_tab">\n                <a:page caption="User Extensions">\n                    <a:vbox anchors="10 10 10 10">\n                        <a:hbox align="center" edge="0 0 5 0" padding="5">\n                            <a:textbox id="tbModuleName" flex="1" \n                              realtime="true" />\n                            <a:button width="80"\n                              default = "1"\n                              caption = "Add"\n                              disabled = "{!tbModuleName.value.trim()}"\n                              onclick = "require(\'ext/extmgr/extmgr\').loadExtension()"\n                            />\n                        </a:hbox>\n                        <a:datagrid id = "dgExtUser"\n                          flex       = "1"\n                          model      = "{require(\'core/ext\').model}"\n                          class      = "noscrollbar"\n                          scrollbar  = "sbShared 20 2 2"\n                          autoselect = "false"\n                          each       = "[plugin[@userext=\'1\']]"\n                          onafterselect = "require(\'ext/extmgr/extmgr\').updateEnableBtnState()"\n                          eachvalue  = "[@path]"\n                          empty-message = "No user extensions">\n                            <a:column width="20%" value="[@name]" caption="Name" />\n                            <a:column width="30%" value="[@path]" caption="Path" />\n                            <a:column width="8%" value="[@type]" caption="Type" /> \n                            <a:column width="8%" value="[@dev]" caption="Developer" /> \n                            <a:column width="8%" value="[@hook]ms" caption="Hook" align="right" data-type="number" /> \n                            <a:column width="8%" value="{[@init] ? [@init] + \'ms\' : \'\'}" caption="Init" align="right" data-type="number" /> \n                            <a:column width="8%" value="[@total]ms" caption="Total" align="right" data-type="number" /> \n                            <a:column width="11%" value="{[@enabled] == 1 ? \'Enabled\' : \'Disabled\'}" caption="Enabled" />\n                        </a:datagrid>\n                        \n                    </a:vbox>\n                </a:page>\n                <a:page caption="Defaults">\n                    <a:vbox anchors="10 10 10 10">\n                        <a:datagrid id="dgExt"\n                          flex       = "1"\n                          model      = "{require(\'core/ext\').model}"\n                          class      = "noscrollbar"\n                          scrollbar  = "sbShared 20 2 2"\n                          autoselect = "false"\n                          each       = "[plugin[@userext=\'0\']]"\n                          onafterselect = "require(\'ext/extmgr/extmgr\').updateEnableBtnState()"\n                          eachvalue  = "[@path]">\n                            <a:column width="20%" value="[@name]" caption="Name" /> \n                            <a:column width="30%" value="[@path]" caption="Path" /> \n                            <a:column width="8%" value="[@type]" caption="Type" /> \n                            <a:column width="8%" value="[@dev]" caption="Developer" /> \n                            <a:column width="8%" value="[@hook]ms" caption="Hook" align="right" data-type="number" /> \n                            <a:column width="8%" value="{[@init] ? [@init] + \'ms\' : \'\'}" caption="Init" align="right" data-type="number" /> \n                            <a:column width="8%" value="[@total]ms" caption="Total" align="right" data-type="number" /> \n                            <a:column width="11%" value="{[@enabled] == 1 ? \'Enabled\' : \'Disabled\'}" caption="Enabled" /> \n                        </a:datagrid>\n                    </a:vbox>\n                </a:page>\n            </a:tab>\n            <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 0}">\n                <a:button\n                  skin     = "btn-default-css3"\n                  disabled = "{!dgExtUser.selected}"\n                  caption  = "Remove"\n                  margin   = "0 10 0 0"\n                  onclick  = "require(\'ext/extmgr/extmgr\').removeExtension()"\n                />\n                <a:button\n                  id       = "btnUserExtEnable"\n                  skin     = "btn-default-css3"\n                  disabled = "{!dgExtUser.selected}"\n                  caption  = "Disable"\n                  onclick  = "\n                    if (dgExtUser.selected.getAttribute(\'enabled\') == 1)\n                        require(\'ext/extmgr/extmgr\').disableExt(dgExtUser.value);\n                    else\n                        require(\'ext/extmgr/extmgr\').enableExt(dgExtUser.value);\n                  "\n                />\n                <a:button\n                  caption = "Done"\n                  margin = "0 0 0 10"\n                  skin = "btn-default-css3"\n                  onclick = "winExt.close()"\n                />\n            </a:hbox>\n            <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 1}">\n                <a:label flex="1" style="padding:5px 0 0 20px;color:white"><?lm\n                    var time = 0;\n                    each([{require(\'core/ext\').model}::plugin[@userext=\'0\']]) {\n                        time += parseInt([@hook]);\n                        time += parseInt([@init]) || 0;\n                    }\n                    "Total Plugin Time: {time}ms, Total Load Time: {cloud9config.totalTime}ms";\n                ?></a:label>\n                <a:button\n                  id       = "btnDefaultExtEnable"\n                  skin     = "btn-default-css3"\n                  caption  = "Disable"\n                  disabled = "{!dgExt.selected}"\n                  onclick  = "\n                    if (dgExtUser.selected.getAttribute(\'enabled\') == 1)\n                        require(\'ext/extmgr/extmgr\').disableExt(dgExt.value);\n                    else\n                        require(\'ext/extmgr/extmgr\').enableExt(dgExt.value);\n                  "\n                />\n                <a:button\n                  caption = "Done"\n                  margin = "0 0 0 10"\n                  skin = "btn-default-css3"\n                  onclick = "winExt.close()"\n                />\n            </a:hbox>\n        </a:vbox>\n    </a:window>\n</a:application>';});
 
 /**
  * Extension Manager for the Cloud9 IDE
@@ -97863,25 +97860,11 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     
     hook : function(){
         var _self = this;
-        var reloadDgExt = true;
         
         menus.addItemByPath("Tools/~", new apf.divider(), 1000000);
         menus.addItemByPath("Tools/Extension Manager...", new apf.item({
             onclick : function(){
-                ext.initExtension(_self);
-                winExt.show();
-
-                // Hackity hackathon
-                // @TODO the problem is apparently that APF does not
-                // like to show the datagrid records when two datagrids are
-                // bound to the same model && that one of the xpath selectors
-                // used to filter the model, has no results
-                setTimeout(function() {
-                    if (reloadDgExt) {
-                        dgExt.reload();
-                        reloadDgExt = false;
-                    }
-                });
+                _self.show();
             }
         }), 2000000);
         
@@ -97919,6 +97902,22 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 eNode.appendChild(copy);
             }
         });
+        
+        // Hackity hackathon
+        // @TODO the problem is apparently that APF does not
+        // like to show the datagrid records when two datagrids are
+        // bound to the same model && that one of the xpath selectors
+        // used to filter the model, has no results
+        // @todo I believe this is only with the debug version of apf
+        setTimeout(function() {
+            dgExt.reload();
+        });
+
+        var nodes = ext.model.queryNodes("plugin");
+        for (var i = 0; i < nodes.length; i++) {
+            apf.xmldb.setAttribute(nodes[i], "total", 
+                parseInt(nodes[i].getAttribute("hook")) + parseInt(nodes[i].getAttribute("init") || 0));
+        }
     },
 
     loadExtension : function(path) {
@@ -97981,6 +97980,11 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             else
                 btnDefaultExtEnable.setAttribute("caption", "Enable");
         }
+    },
+    
+    show : function(){
+        ext.initExtension(this);
+        winExt.show();
     },
 
     enable : function(){
@@ -98062,6 +98066,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     hook : function(){
         var _self = this;
         
+        this.markupInsertionPoint = colLeft;
+        
         panels.register(this, {
             position : 3000,
             caption: "Run & Debug",
@@ -98097,6 +98103,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 "id" : "mnuRunCfg",
                 "onprop.visible" : function(e){
                     if (e.value) {
+                        if (!this.populated) {
+                            _self.$populateMenu();
+                            this.populated = true;
+                        }
+                        
                         if (!self.tabEditors 
                           || tabEditors.length == 0
                           || _self.excludedTypes[tabEditors.getPage().id.split(".").pop()])
@@ -98173,31 +98184,23 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
         }), c += 100);
         
-        this.model.addEventListener("afterload", function(e) {
-            _self.$populateMenu();
-        });
-
-        ide.addEventListener("settings.load", function(){
-            settings.setDefaults("auto/node-version", [
-                ["version", "auto"]
-            ]);
-        });
-
         settings.addSettings("General", markupSettings);
         
         ide.addEventListener("settings.load", function(e){
+            settings.setDefaults("auto/node-version", [
+                ["version", "auto"]
+            ]);
+            
+            settings.setDefaults("general", [
+                ["saveallbeforerun", "false"]
+            ]);
+            
+            settings.setDefaults("auto/configurations", [
+                ["debug", "true"],
+                ["autohide", "true"]
+            ]);
+
             var runConfigs = e.model.queryNode("auto/configurations");
-            if (!runConfigs) {
-                runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
-                apf.xmldb.setAttribute(runConfigs, "debug", "true");
-
-                e.model.setQueryValue("general/@saveallbeforerun", false);
-            }
-            if (!e.model.queryNode("auto/configurations/@debug"))
-                e.model.setQueryValue("auto/configurations/@debug", true);
-            if (!e.model.queryNode("auto/configurations/@autohide"))
-                e.model.setQueryValue("auto/configurations/@autohide", true);
-
             if (!runConfigs.selectSingleNode("config[@curfile]")) {
                 var setLast = false;
                 if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
@@ -98307,8 +98310,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         apf.importCssString(cssString);
         
         this.panel = winRunPanel;
-
-        colLeft.appendChild(winRunPanel);
         this.nodes.push(winRunPanel);
         
         lstRunCfg.addEventListener("click", function(e){
@@ -98320,7 +98321,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         lstRunCfg.addEventListener("afterremove", function(e){
             _self.mnuRunCfg.childNodes.each(function(item){
-                if (item.getAttribute("node") == e.args[0].xmlNode)
+                if (_self.mnuRunCfg.populated && item.node == e.args[0].xmlNode)
                     item.destroy(true, true);
             });
         });
@@ -98415,6 +98416,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     $addMenuItem : function(cfg, divider){
         var _self = this;
+        
+        if (this.mnuRunCfg.populated)
+            return;
 
         if (!divider)
             divider = this.mnuRunCfg.getElementsByTagNameNS("", "divider")[0];
@@ -99176,7 +99180,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
 define('text!plugins-client/ext.console/console.css',[],function () { return '.console_date {\n    display:inline\n}\n.console_text div {\n    padding: 2px 10px;\n}\n.console_text.feedback div {\n    padding-left: 31px;\n}\n.console_text.feedback .output_section {\n    padding: 10px 0 10px 2px;\n    border-bottom: 1px solid #444;\n    overflow: hidden;\n}\n\n.console_text.feedback .output_section.collapsed:hover,\n.console_text.feedback .output_section.collapsed.quit_proc:hover {\n    background: #38393a;\n}\n\n/** Deprecated **/\n.cli_divider {\n    display: block;\n    border-top: 1px solid #444;\n    margin: 6px 5px 6px 30px;\n}\n.console_text.feedback div.prompt_spacer {\n    padding-top: 5px;\n}\n.console_text a:link, .console_text a:hover, .console_text a:active {\n    color: #86C2F6;\n}\n.console_text a:visited {\n    color: #909090;\n}\n.console_text.feedback .prompt_spinner {\n    background: url(/static/ext/main/style/images/console_spinner_proc.gif) no-repeat 0 0;\n    display: inline;\n    width: 21px;\n    height: 14px;\n    padding: 4px 22px 4px 4px;\n    margin-left: 3px;\n}\n.console_text.feedback .output_section.quit_proc {\n    background-color: #372a2a;\n    box-shadow: inset 0px 0px 0px 1px #372a2a, inset 6px 0px 0px 0px #b0423f;\n}\n.console_text.feedback .output_section.loading.has_pid:hover .prompt_spinner {\n    background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 0;\n}\n.console_text.feedback .output_section.loading.has_pid:hover .prompt_spinner:active {\n    background: url(/static/ext/main/style/images/console-action-cancel.png) no-repeat 0 -22px;\n}\n.console_text.feedback div.loaded .prompt_spinner {\n    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat 1px 1px;\n}\n\n.console_text.feedback div.loaded .prompt_spinner:hover {\n    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -23px 1px;\n}\n\n.console_text.feedback div.loaded.collapsed .prompt_spinner {\n    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -48px 1px\n}\n\n.console_text.feedback div.loaded.collapsed .prompt_spinner:hover {\n    background: url(/static/ext/main/style/images/cli-block-expand.png) no-repeat -73px 1px\n}\n\n.cmd_msg > span { float: left; }\n.cmd_msg > span > span { margin:0 0 0 25px; }';});
 
-define('text!plugins-client/ext.console/console.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:bar id="winDbgConsole" height="30" zindex="10000">\n        <a:vbox anchors="0 0 0 0">\n            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime" buttons="">\n                <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">\n                    <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"\n                      onclick  = "\n                        if (tabConsole.activepagenr == 0)\n                            txtConsole.clear();\n                        else if (tabConsole.activepagenr == 1)\n                            txtOutput.clear();\n                      "/>\n                    <a:button id="btnConsoleSettings" skin="btn_icon_only"\n                      icon    = "console_settings.png"\n                      margin  = "2 4 0 0"\n                      submenu = "mnuConsoleSettings" />\n                    <a:button id="btnConsoleMax" skin="btn_icon_only" icon="console_max.png" state="true" margin="2 2 0 0"\n                      onclick = "\n                        var console = require(\'ext/console/console\');\n                        if (this.value)\n                            console.maximize();\n                        else\n                            console.restore();\n                      "/>\n                    <a:divider skin="divider_console"></a:divider>\n                    <a:button\n                      skin="btn_icon_only"\n                      icon="console_close_btn.png"\n                      class="dim22-22"\n                      margin="1 0 0 1"\n                      onclick="require(\'ext/console/console\').hide()"/>\n                </a:hbox>\n                <a:page id="pgOutput" caption="Output" name="output">\n                    <a:text id="txtOutput"\n                      margin     = "3 0 0 0"\n                      anchors    = "0 17 0 0"\n                      flex       = "1"\n                      scrolldown = "true"\n                      focussable = "true"\n                      textselect = "true"\n                      class      = "console_text" />\n                    <a:scrollbar\n                      for    = "txtOutput"\n                      right  = "0"\n                      top    = "0"\n                      bottom = "0"\n                      skin   = "console_scrollbar"\n                      width  = "17" />\n                </a:page>\n                <a:page id="pgConsole" caption="Console" name="console">\n                    <a:text id="txtConsole"\n                      margin     = "3 0 0 0"\n                      anchors    = "0 17 0 0"\n                      flex       = "1"\n                      scrolldown = "true"\n                      focussable = "true"\n                      textselect = "true"\n                      class      = "console_text" />\n                    <a:scrollbar\n                      for       = "txtConsole"\n                      right     = "0"\n                      top       = "0"\n                      bottom    = "0"\n                      skin      = "console_scrollbar"\n                      width     = "17" />\n                </a:page>\n            </a:tab>\n\n            <a:menu id="mnuConsoleSettings">\n                <a:item type="check"\n                  checked = "[{require(\'core/settings\').model}::auto/console/@autoshow]"\n                  caption = "Auto-show console when running" />\n            </a:menu>\n\n            <a:hbox id="cliBox" class="consoleInputBox" edge="1" padding="4" pack="end" visible="false">\n                <a:textbox id="txtConsoleInput"\n                  initial-message = \'Type "help" to get a list of commands\'\n                  margin          = "2 0 0"\n                  skin            = "tb_console"\n                  flex            = "1" />\n                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="switch.png" state="true" height="27"\n                    value = "{!!tabConsole.visible}"\n                    onprop.value="try { require(\'ext/console/console\')[event.value ? \'show\' : \'hide\'](); } catch(e) {} " />\n            </a:hbox>\n        </a:vbox>\n    </a:bar>\n</a:application>\n\n';});
+define('text!plugins-client/ext.console/console.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:bar id="winDbgConsole" height="30" zindex="9000">\n        <a:vbox anchors="0 0 0 0">\n            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime" buttons="">\n                <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">\n                    <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"\n                      onclick  = "\n                        if (tabConsole.activepagenr == 0)\n                            txtConsole.clear();\n                        else if (tabConsole.activepagenr == 1)\n                            txtOutput.clear();\n                      "/>\n                    <a:button id="btnConsoleSettings" skin="btn_icon_only"\n                      icon    = "console_settings.png"\n                      margin  = "2 4 0 0"\n                      submenu = "mnuConsoleSettings" />\n                    <a:button id="btnConsoleMax" skin="btn_icon_only" icon="console_max.png" state="true" margin="2 2 0 0"\n                      onclick = "\n                        var console = require(\'ext/console/console\');\n                        if (this.value)\n                            console.maximizeConsoleHeight();\n                        else\n                            console.restoreConsoleHeight();\n                      "/>\n                    <a:divider skin="divider_console"></a:divider>\n                    <a:button\n                      skin="btn_icon_only"\n                      icon="console_close_btn.png"\n                      class="dim22-22"\n                      margin="1 0 0 1"\n                      onclick="require(\'ext/console/console\').hide()"/>\n                </a:hbox>\n                <a:page id="pgConsole" caption="Console" name="console">\n                    <a:text id="txtConsole"\n                      margin     = "3 0 0 0"\n                      anchors    = "0 17 0 0"\n                      flex       = "1"\n                      scrolldown = "true"\n                      focussable = "true"\n                      textselect = "true"\n                      class      = "console_text" />\n                    <a:scrollbar\n                      for       = "txtConsole"\n                      right     = "0"\n                      top       = "0"\n                      bottom    = "0"\n                      skin      = "console_scrollbar"\n                      width     = "17" />\n                </a:page>\n                <a:page id="pgOutput" caption="Output" name="output">\n                    <a:text id="txtOutput"\n                      margin     = "3 0 0 0"\n                      anchors    = "0 17 0 0"\n                      flex       = "1"\n                      scrolldown = "true"\n                      focussable = "true"\n                      textselect = "true"\n                      class      = "console_text" />\n                    <a:scrollbar\n                      for    = "txtOutput"\n                      right  = "0"\n                      top    = "0"\n                      bottom = "0"\n                      skin   = "console_scrollbar"\n                      width  = "17" />\n                </a:page>\n            </a:tab>\n\n            <a:menu id="mnuConsoleSettings">\n                <a:item type="check"\n                  checked = "[{require(\'core/settings\').model}::auto/console/@autoshow]"\n                  caption = "Auto-show console when running" />\n            </a:menu>\n\n            <a:hbox id="cliBox" class="consoleInputBox" edge="1" padding="4" pack="end" visible="false">\n                <a:textbox id="txtConsoleInput"\n                  initial-message = \'Type "help" to get a list of commands\'\n                  margin          = "2 0 0"\n                  skin            = "tb_console"\n                  flex            = "1" />\n                <a:button id="btnCollapseConsole" skin="btn_console_open" icon="switch.png" state="true" height="27"\n                    value = "{!!tabConsole.visible}"\n                    onprop.value="try { require(\'ext/console/console\')[event.value ? \'show\' : \'hide\'](); } catch(e) {} " />\n            </a:hbox>\n        </a:vbox>\n    </a:bar>\n</a:application>\n\n';});
 
 define('text!plugins-client/ext.console/themes/arthur.css',[],function () { return '/**\n * This stylesheet is generated automatically, please don\'t edit manually.\n * Generated by iterm2css - http://github.com/mikedeboer/iterm2css\n */\n\n.term_ansi0Color {\n    color: rgb(61, 53, 42);\n}\n\n.term_ansi1Color {\n    color: rgb(205, 92, 92);\n}\n\n.term_ansi10Color {\n    color: rgb(136, 170, 34);\n}\n\n.term_ansi11Color {\n    color: rgb(255, 167, 93);\n}\n\n.term_ansi12Color {\n    color: rgb(135, 206, 235);\n}\n\n.term_ansi13Color {\n    color: rgb(153, 102, 0);\n}\n\n.term_ansi14Color {\n    color: rgb(176, 196, 222);\n}\n\n.term_ansi15Color {\n    color: rgb(221, 204, 187);\n}\n\n.term_ansi2Color {\n    color: rgb(134, 175, 128);\n}\n\n.term_ansi3Color {\n    color: rgb(232, 174, 91);\n}\n\n.term_ansi4Color {\n    color: rgb(100, 149, 237);\n}\n\n.term_ansi5Color {\n    color: rgb(222, 184, 135);\n}\n\n.term_ansi6Color {\n    color: rgb(176, 196, 222);\n}\n\n.term_ansi7Color {\n    color: rgb(187, 170, 153);\n}\n\n.term_ansi8Color {\n    color: rgb(85, 68, 68);\n}\n\n.term_ansi9Color {\n    color: rgb(204, 85, 51);\n}\n\n.term_backgroundColor {\n    background-color: rgb(28, 28, 28);\n}\n\n.term_boldColor {\n    color: rgb(255, 255, 255);\n}\n\n.term_cursorColor {\n    background-color: rgb(226, 187, 239);\n}\n\n.term_cursorTextColor {\n    background-color: rgb(0, 0, 0);\n}\n\n.term_foregroundColor {\n    color: rgb(221, 238, 221);\n}\n\n.term_selectedTextColor {\n    color: rgb(255, 255, 255);\n}\n\n.term_selectionColor {\n    color: rgb(77, 77, 77);\n}\n\n';});
 
@@ -99188,7 +99192,7 @@ define('text!plugins-client/ext.console/themes/arthur.css',[],function () { retu
  * @contributor Sergi Mansilla <sergi AT c9 DOT io>
  */
 
-define('plugins-client/ext.console/console',['require','exports','module','core/ide','ext/menus/menus','ext/commands/commands','core/ext','core/settings','ext/console/logger','ext/code/code','text!plugins-client/ext.console/console.css','text!plugins-client/ext.console/console.xml','text!plugins-client/ext.console/themes/arthur.css','ext/console/input_history','ext/console/parser','ext/console/output','ext/editors/editors'],function(require, exports, module) {
+define('plugins-client/ext.console/console',['require','exports','module','core/ide','ext/menus/menus','ext/commands/commands','core/ext','core/settings','ext/console/logger','text!plugins-client/ext.console/console.css','text!plugins-client/ext.console/console.xml','text!plugins-client/ext.console/themes/arthur.css','ext/console/input_history','ext/console/parser','ext/console/output','ext/editors/editors'],function(require, exports, module) {
 
 var editors, parseLine, predefinedCmds; // These modules are loaded on demand
 var ide = require("core/ide");
@@ -99196,15 +99200,13 @@ var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var ext = require("core/ext");
 var settings = require("core/settings");
-var Logger = require("ext/console/logger");
-var code = require("ext/code/code");
+var logger = require("ext/console/logger");
 var css = require("text!plugins-client/ext.console/console.css");
 var markup = require("text!plugins-client/ext.console/console.xml");
 var theme = require("text!plugins-client/ext.console/themes/arthur.css");
-var InputHistory = require("ext/console/input_history");
+var inputHistory = require("ext/console/input_history");
 
 // Some constants used throughout the plugin
-var RE_band = /^\s*!/;
 var KEY_TAB = 9, KEY_CR = 13, KEY_UP = 38, KEY_ESC = 27, KEY_DOWN = 40;
 var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
@@ -99218,7 +99220,7 @@ module.exports = ext.register("ext/console/console", {
     height : 200,
     hidden : true,
 
-    inputHistory : new InputHistory(),
+    cliInputHistory : new inputHistory(),
 
     command_id_tracer : 1,
     tracerToPidMap : {},
@@ -99242,23 +99244,23 @@ module.exports = ext.register("ext/console/console", {
             var res = message.body;
             if (res.cwd) {
                 this.$cwd = res.cwd.replace(ide.workspaceDir, "/workspace");
-                Logger.logNodeStream("Working directory changed", null, outputElDetails, ide);
+                logger.logNodeStream("Working directory changed", null, outputElDetails, ide);
             }
         },
 
         error: function(message, outputElDetails) {
-            Logger.logNodeStream(message.body, null, outputElDetails, ide);
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
         info: function (message, outputElDetails) {
-            Logger.logNodeStream(message.body, null, outputElDetails, ide);
+            logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
         __default__: function(message, outputElDetails) {
             var res = message.body;
             if (res) {
-                res.out && Logger.logNodeStream(res.out, null, outputElDetails, ide);
-                res.err && Logger.logNodeStream(res.err, null, outputElDetails, ide);
+                res.out && logger.logNodeStream(res.out, null, outputElDetails, ide);
+                res.err && logger.logNodeStream(res.err, null, outputElDetails, ide);
             }
         }
     },
@@ -99277,7 +99279,7 @@ module.exports = ext.register("ext/console/console", {
         var words = Object.keys(commands.commands);
         var tabs = "\t\t\t\t";
 
-        Logger.logNodeStream(
+        logger.logNodeStream(
             words.sort()
                 .map(function(w) { return w + tabs + commands.commands[w].hint; })
                 .join("\n"),
@@ -99298,7 +99300,6 @@ module.exports = ext.register("ext/console/console", {
             if (page) {
                 if (page.$editor.focus)
                     page.$editor.focus();
-                //this.hide();
             }
         }
         else {
@@ -99306,7 +99307,6 @@ module.exports = ext.register("ext/console/console", {
                 this.showInput(true);
             else
                 txtConsoleInput.focus();
-            //this.show();
         }
     },
 
@@ -99324,8 +99324,14 @@ module.exports = ext.register("ext/console/console", {
 
         var lsOutObject = this.getLogStreamOutObject(data.tracer_id);
         lines.forEach(function(line) {
-            Logger.logNodeStream(line, null, lsOutObject, ide);
+            logger.logNodeStream(line, null, lsOutObject, ide);
         });
+    },
+
+    commandTextHandler: function(e) {
+        var code = e.keyCode;
+        if (this.keyEvents[code])
+            this.keyEvents[code](e.currentTarget);
     },
 
     keyupHandler: function(e) {
@@ -99338,15 +99344,13 @@ module.exports = ext.register("ext/console/console", {
             return this.commandTextHandler(e);
     },
 
-    outputLogSection: function(line) {
-        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner',
-            this.command_id_tracer,
-            '" onclick="return require(\'ext/console/console\').handleCliBlockAction(event)"></div>']
+    createOutputBlock: function(line, useOutput) {
+        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner', this.command_id_tracer,
+            '" onclick="return require(\'ext/console/console\').handleOutputBlockClick(event)"></div>']
             .join("");
 
         var outputId = "console_section" + this.command_id_tracer;
-        Logger.log(line, "prompt", spinnerBtn,
-            '<div class="prompt_spacer"></div>', null, outputId);
+        logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>', useOutput, outputId);
 
         var outputEl = document.getElementById(outputId);
         apf.setStyleClass(outputEl, "loading");
@@ -99354,7 +99358,7 @@ module.exports = ext.register("ext/console/console", {
         return this.command_id_tracer;
     },
 
-    evalCmd: function(line) {
+    evalInputCommand: function(line) {
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
         if (!argv || argv.length === 0) // no commmand line input
@@ -99362,9 +99366,9 @@ module.exports = ext.register("ext/console/console", {
 
         // Replace any quotes in the command
         argv[0] = argv[0].replace(/["'`]/g, "");
-        this.inputHistory.push(line);
+        this.cliInputHistory.push(line);
 
-        this.outputLogSection(this.getPrompt(line));
+        this.createOutputBlock(this.getPrompt(line));
 
         tabConsole.set("console");
 
@@ -99375,26 +99379,17 @@ module.exports = ext.register("ext/console/console", {
             predefinedCmds = require("ext/console/output");
         var defCmd = predefinedCmds.getPredefinedOutput(argv);
         if (defCmd !== "") {
-            this.commandCompleted(this.command_id_tracer);
-            Logger.logNodeStream(defCmd, null,
+            this.markProcessAsCompleted(this.command_id_tracer);
+            logger.logNodeStream(defCmd, null,
                 this.getLogStreamOutObject(this.command_id_tracer), ide);
             this.command_id_tracer++;
         }
         else {
-            if (cmd.trim().charAt(0) === "!") {
-                cmd = "bash";
-                argv[0] = argv[0].replace(RE_band, "");
-                line = line.replace(RE_band, "");
-            }
-
             var data = {
                 command: cmd,
                 argv: argv,
                 line: line,
                 cwd: this.getCwd(),
-                // the requireshandling flag indicates that this message cannot
-                // be silently ignored by the server.
-                // An error event should be thrown if no plugin handles this message.
                 requireshandling: true,
                 tracer_id: this.command_id_tracer
             };
@@ -99402,21 +99397,22 @@ module.exports = ext.register("ext/console/console", {
             if (cmd.trim() === "npm")
                 data.version = settings.model.queryValue("auto/node-version/@version") || "auto";
 
-            showConsole = this.execAction(cmd, data);
+            showConsole = this.sendCommandToExtensions(cmd, data);
         }
 
         if (showConsole === true)
             this.show();
     },
 
-    // Executes a command (presumably coming from the CLI).
-    execAction : function(cmd, data) {
+    sendCommandToExtensions : function(cmd, data) {
         ide.dispatchEvent("track_action", {
             type: "console",
             cmd: cmd,
             argv: data.argv
         });
 
+        // If no local extensions handle the command, send it server-side for
+        // those extensions to handle it
         if (ext.execCommand(cmd, data) !== false) {
             var commandEvt = "consolecommand." + cmd;
             var consoleEvt = "consolecommand";
@@ -99425,7 +99421,7 @@ module.exports = ext.register("ext/console/console", {
 
             if (commandEvResult !== false && consoleEvResult !== false) {
                 if (!ide.onLine) {
-                    this.write("Cannot execute command. You are currently offline.", {
+                    this.write("Cannot send command to server. You are currently offline.", {
                         tracer_id : this.command_id_tracer
                     });
                 }
@@ -99438,8 +99434,7 @@ module.exports = ext.register("ext/console/console", {
                 }
             }
             else {
-                // If any of the `consolecommand` events returns false, it means
-                // that we don't want the console to show up.
+                // Return false to `evalInputCommand` to not show the output area
                 return false;
             }
         }
@@ -99448,13 +99443,7 @@ module.exports = ext.register("ext/console/console", {
         return true;
     },
 
-    commandTextHandler: function(e) {
-        var code = e.keyCode;
-        if (this.keyEvents[code])
-            this.keyEvents[code](e.currentTarget);
-    },
-
-    commandCompleted: function(id, idIsPid) {
+    markProcessAsCompleted: function(id, idIsPid) {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
@@ -99462,7 +99451,7 @@ module.exports = ext.register("ext/console/console", {
             var pNode = spinnerElement.parentNode;
             if (pNode.className.indexOf("quitting") !== -1) {
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
-                Logger.logNodeStream("Process successfully quit", null,
+                logger.logNodeStream("Process successfully quit", null,
                     this.getLogStreamOutObject(id), ide);
             }
 
@@ -99490,7 +99479,7 @@ module.exports = ext.register("ext/console/console", {
 
         switch(message.type) {
             case "node-start":
-                var command_id = this.outputLogSection("Running Node Process");
+                var command_id = this.createOutputBlock("Running Node Process", true);
                 this.tracerToPidMap[command_id] = message.pid;
                 this.pidToTracerMap[message.pid] = command_id;
 
@@ -99502,7 +99491,7 @@ module.exports = ext.register("ext/console/console", {
                     var url = location.protocol + "//" +
                         ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
                         "." + location.host;
-                    Logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
+                    logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
                         "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
                         null, this.getLogStreamOutObject(message.pid, true), ide);
                 }
@@ -99510,15 +99499,15 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer++;
                 return;
             case "node-data":
-                Logger.logNodeStream(message.data, message.stream,
+                logger.logNodeStream(message.data, message.stream,
                     this.getLogStreamOutObject(message.pid, true), ide);
                 return;
             case "node-exit":
-                this.commandCompleted(message.pid, true);
+                this.markProcessAsCompleted(message.pid, true);
                 return;
             case "kill":
                 if (message.err) {
-                    Logger.logNodeStream(message.err, null,
+                    logger.logNodeStream(message.err, null,
                         this.getLogStreamOutObject(extra.command_id), ide);
                 }
                 break;
@@ -99543,16 +99532,16 @@ module.exports = ext.register("ext/console/console", {
                         id = message.pid;
                     }
 
-                    Logger.logNodeStream(message.data, message.stream,
+                    logger.logNodeStream(message.data, message.stream,
                         this.getLogStreamOutObject(id, type === "pid"), ide);
                     return;
                 }
 
                 if (message.type.match(/-exit$/)) {
                     if (extra.command_id)
-                        this.commandCompleted(extra.command_id);
+                        this.markProcessAsCompleted(extra.command_id);
                     else
-                        this.commandCompleted(message.pid, true);
+                        this.markProcessAsCompleted(message.pid, true);
                     return;
                 }
                 break;
@@ -99561,7 +99550,7 @@ module.exports = ext.register("ext/console/console", {
         // If we get to this point and `extra` is available, it's a process that
         // sends all its stdout _after_ it has quit. Thus, we complete it here
         if (extra)
-            this.commandCompleted(extra.command_id);
+            this.markProcessAsCompleted(extra.command_id);
 
         if (message.type !== "result")
             return;
@@ -99589,15 +99578,7 @@ module.exports = ext.register("ext/console/console", {
 
     hook: function() {
         var _self = this;
-        
-        //@todo this should be done via commands instead
-        // Listen for new extension registrations to add to the
-        // hints
-        ide.addEventListener("ext.register", function(e){
-            if (e.ext.commands)
-                apf.extend(commands.commands, e.ext.commands);
-        });
-        
+
         commands.addCommand({
             name: "help",
             hint: "show general help information and a list of available commands",
@@ -99605,7 +99586,7 @@ module.exports = ext.register("ext/console/console", {
                 _self.help();
             }
         });
-        
+
         commands.addCommand({
             name: "clear",
             hint: "clear all the messages from the console",
@@ -99621,7 +99602,7 @@ module.exports = ext.register("ext/console/console", {
                 _self.switchconsole();
             }
         });
-        
+
         commands.addCommand({
             name: "toggleconsole",
             bindKey: {mac: "Ctrl-Esc", win: "F6"},
@@ -99632,7 +99613,7 @@ module.exports = ext.register("ext/console/console", {
                     _self.hide();
             }
         });
-        
+
         commands.addCommand({
             name: "toggleinputbar",
             exec: function () {
@@ -99642,12 +99623,12 @@ module.exports = ext.register("ext/console/console", {
                     _self.hideInput();
             }
         });
-        
+
         this.nodes.push(
             menus.addItemByPath("Goto/Switch to Command Line", new apf.item({
                 command : "switchconsole"
             }), 350),
-            
+
             this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
                 type    : "check",
                 command : "toggleconsole",
@@ -99674,7 +99655,7 @@ module.exports = ext.register("ext/console/console", {
         menus.addItemByPath("Tools/NPM/", null, 60000),
         menus.addItemByPath("Tools/NPM/Install", new apf.item({}), 1000),
         menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({}), 2000)
-        
+
         ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
                 e.model.setQueryValue("auto/console/@autoshow", true);
@@ -99683,15 +99664,15 @@ module.exports = ext.register("ext/console/console", {
 
             if (apf.isTrue(e.model.queryValue("auto/console/@maximized"))) {
                 _self.show(true);
-                _self.maximize();
+                _self.maximizeConsoleHeight();
             }
             else if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
                 _self.show(true);
-            
+
             if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
                 _self.showInput();
         });
-        
+
         stProcessRunning.addEventListener("activate", function() {
             var autoshow = settings.model.queryValue("auto/console/@autoshow");
             if (_self.autoOpen && apf.isTrue(autoshow)) {
@@ -99707,28 +99688,12 @@ module.exports = ext.register("ext/console/console", {
         var _self = this;
 
         this.$cwd  = "/workspace"; // code smell
-        
+
         apf.importCssString(this.css);
 
         // Append the console window at the bottom below the tab
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.previousSibling.hide();
-        
-        commands.addCommand({
-            name: "escapeconsole",
-            bindKey: {mac: "Esc", win: "Esc"},
-            isAvailable : function(){
-                return apf.activeElement == txtConsoleInput;
-            },
-            exec: function () {
-                _self.switchconsole();
-            }
-        });
-
-        // before the actual run target gets called we clear the console
-        ide.addEventListener("beforeRunning", function () {
-            _self.clear();
-        });
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
@@ -99739,7 +99704,7 @@ module.exports = ext.register("ext/console/console", {
             if (data.isfile)
                 editors.showFile(path);
             else
-                Logger.log("'" + path + "' is not a file.");
+                logger.log("'" + path + "' is not a file.");
         });
 
         txtConsoleInput.addEventListener("keyup", this.keyupHandler.bind(this));
@@ -99777,36 +99742,47 @@ module.exports = ext.register("ext/console/console", {
                 _self.height = winDbgConsole.height)
         });
 
-        this.nodes.push(
-            winDbgConsole
-        );
+        this.nodes.push(winDbgConsole);
 
         this.keyEvents[KEY_UP] = function(input) {
-            var newVal = _self.inputHistory.getPrev() || "";
+            var newVal = _self.cliInputHistory.getPrev() || "";
             input.setValue(newVal);
         };
         this.keyEvents[KEY_DOWN] = function(input) {
-            var newVal = _self.inputHistory.getNext() || "";
+            var newVal = _self.cliInputHistory.getNext() || "";
             input.setValue(newVal);
         };
         this.keyEvents[KEY_CR] = function(input) {
             var inputVal = input.getValue().trim();
             if (inputVal === "/?")
                 return false;
-            _self.evalCmd(inputVal);
+            _self.evalInputCommand(inputVal);
             input.setValue("");
         };
 
-        if (this.logged.length)
+        if (this.logged.length) {
             this.logged.forEach(function(text){
                 txtConsole.addValue(text);
             });
+        }
 
-        // To be uncommented and fully implemented when merged with navbar
+        commands.addCommand({
+            name: "escapeconsole",
+            bindKey: {mac: "Esc", win: "Esc"},
+            isAvailable : function(){
+                return apf.activeElement == txtConsoleInput;
+            },
+            exec: function () {
+                _self.switchconsole();
+            }
+        });
+
         commands.addCommand({
             name: "abortclicommand",
             bindKey: {mac: "Ctrl-C", win: "Ctrl-C"},
             isAvailable : function(){
+                // Determines if any input is selected, in which case we do
+                // not want to cancel
                 if (apf.activeElement === txtConsoleInput) {
                     var selection = window.getSelection();
                     var range = selection.getRangeAt(0);
@@ -99816,38 +99792,37 @@ module.exports = ext.register("ext/console/console", {
                 return false;
             },
             exec: function () {
-                _self.cancelCliAction();
+                _self.killProcess();
             }
         });
 
-        // For now, until the local client gets upgraded
-        if (window.cloud9config.hosted)
-            apf.setStyleClass(txtConsole.$ext, "feedback");
+        // @TODO Defunct
+        apf.setStyleClass(txtConsole.$ext, "feedback");
+        apf.setStyleClass(txtOutput.$ext, "feedback");
     },
 
-    handleCliBlockAction : function(e) {
+    /**
+     * When the user clicks on the indicator next to the prompt output, it can
+     * be in multiple states. If a process is running, this cancels the process.
+     * If finished, this will either expand or collapse the output block
+     */
+    handleOutputBlockClick : function(e) {
         var pNode = e.target.parentNode;
 
         if (pNode.className.indexOf("loaded") !== -1) {
             if (pNode.className.indexOf("collapsed") !== -1)
-                this.expandCliBlock(pNode);
+                this.expandOutputBlock(pNode);
             else
-                this.collapseCliBlock(pNode);
+                this.collapseOutputBlock(pNode);
         }
         else {
-            this.cancelCliAction(pNode);
+            this.killProcess(pNode);
         }
     },
 
-    /**
-     * Cancel a CLI command. If `pNode` is undefined, it will subtract 1 from
-     * `this.command_id_tracer`. `pNode` would be undefined if the user pressed
-     * ctrl-c in the input area
-     * 
-     * @param DOMElement pNode The parent container block of the close button
-     */
-    cancelCliAction : function(pNode) {
+    killProcess : function(pNode) {
         var command_id;
+        // Simply get the ID of the last command sent to the server
         if (typeof pNode === "undefined")
             command_id = (this.command_id_tracer - 1)
         else
@@ -99858,7 +99833,7 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         apf.setStyleClass(pNode, "quitting_proc");
-        Logger.logNodeStream("Killing this process...", null,
+        logger.logNodeStream("Quitting this process...", null,
             this.getLogStreamOutObject(command_id), ide);
 
         ide.send({
@@ -99868,14 +99843,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     /**
-     * Expands a CLI block (prompt, stdin and stdout) from its collapsed state.
-     * This can happen from both clicking the expand arrow and also clicking on
-     * the collapsed block itself.
-     *
      * @param DOMElement pNode The container block to be expanded
      * @param Event e The click event
      */
-    expandCliBlock : function(pNode, e) {
+    expandOutputBlock : function(pNode, e) {
         if (typeof e !== "undefined" && e.target.className.indexOf("prompt_spinner") !== -1)
             return;
 
@@ -99889,12 +99860,9 @@ module.exports = ext.register("ext/console/console", {
     },
 
     /**
-     * Collapses a CLI block (prompt, stdin and stdout) down to just the prmompt
-     * and stdin line
-     *
      * @param DOMElement pNode The container block to be collapsed
      */
-    collapseCliBlock : function(pNode) {
+    collapseOutputBlock : function(pNode) {
         // 20 = padding
         var startingHeight = apf.getHtmlInnerHeight(pNode) - 20;
         pNode.style.height = startingHeight + "px";
@@ -99906,18 +99874,18 @@ module.exports = ext.register("ext/console/console", {
             apf.layout.forceResize(tabConsole.$ext);
         });
 
-        pNode.setAttribute("onclick", 'require("ext/console/console").expandCliBlock(this, event)');
+        pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');
     },
 
     logged : [],
     log : function(text){
-        if (this.inited) 
+        if (this.inited)
             txtConsole.addValue(text);
         else
             this.logged.push(text);
     },
 
-    maximize: function(){
+    maximizeConsoleHeight: function(){
         if (this.maximized)
             return;
         this.maximized = true;
@@ -99933,7 +99901,7 @@ module.exports = ext.register("ext/console/console", {
         btnConsoleMax.setValue(true);
     },
 
-    restore : function(){
+    restoreConsoleHeight : function(){
         if (!this.maximized)
             return;
         this.maximized = false;
@@ -99942,26 +99910,26 @@ module.exports = ext.register("ext/console/console", {
         winDbgConsole.removeAttribute('anchors');
         this.maxHeight = window.innerHeight - 70;
         winDbgConsole.$ext.style.maxHeight =  this.maxHeight + "px";
-        
+
         winDbgConsole.setAttribute('height', this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height);
         winDbgConsole.$ext.style.zIndex = this.lastZIndex;
 
         settings.model.setQueryValue("auto/console/@maximized", false);
         btnConsoleMax.setValue(false);
     },
-    
+
     showInput : function(temporary){
         if (!this.hiddenInput)
             return;
-        
+
         ext.initExtension(this);
-        
+
         this.$collapsedHeight = this.collapsedHeight;
         if (this.hidden)
             winDbgConsole.setAttribute("height", this.collapsedHeight + "px")
         txtConsoleInput.parentNode.show();
         apf.layout.forceResize();
-        
+
         if (temporary) {
             var _self = this;
             txtConsoleInput.addEventListener("blur", function(){
@@ -99976,17 +99944,17 @@ module.exports = ext.register("ext/console/console", {
             this.hiddenInput = false;
         }
     },
-    
+
     hideInput : function(force){
         if (!force && (!this.inited || this.hiddenInput))
             return;
-        
+
         this.$collapsedHeight = 0;
         if (this.hidden)
             winDbgConsole.setAttribute("height", "0")
         txtConsoleInput.parentNode.hide();
         apf.layout.forceResize();
-        
+
         settings.model.setQueryValue("auto/console/@showinput", false);
         this.hiddenInput = true;
     },
@@ -99997,7 +99965,7 @@ module.exports = ext.register("ext/console/console", {
     _show: function(shouldShow, immediate) {
         if (this.hidden != shouldShow)
             return;
-            
+
         this.hidden = !shouldShow;
 
         if (this.animating)
@@ -100015,22 +99983,22 @@ module.exports = ext.register("ext/console/console", {
                     this.maxHeight = window.innerHeight - 70;
                     winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
                 }
-                
+
                 winDbgConsole.height = height + 1;
                 winDbgConsole.setAttribute("height", height);
                 winDbgConsole.previousSibling[shouldShow ? "show" : "hide"]();
                 winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                
+
                 _self.animating = false;
-    
+
                 settings.model.setQueryValue("auto/console/@expanded", shouldShow);
-            
+
                 apf.layout.forceResize();
             }, 100);
         };
 
         var _self = this;
-        var cfg, height;
+        var height;
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (shouldShow) {
             height = Math.max(this.minHeight, Math.min(this.maxHeight, this.height));
@@ -100038,7 +100006,7 @@ module.exports = ext.register("ext/console/console", {
             tabConsole.show();
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
-            
+
             apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
             if (!immediate && animOn) {
@@ -100052,9 +100020,9 @@ module.exports = ext.register("ext/console/console", {
         }
         else {
             height = this.$collapsedHeight;
-            
+
             if (winDbgConsole.parentNode != mainRow)
-                this.restore();
+                this.restoreConsoleHeight();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
@@ -100062,7 +100030,7 @@ module.exports = ext.register("ext/console/console", {
 
             if (!immediate && animOn) {
                 var timer = setInterval(function(){apf.layout.forceResize()}, 10);
-                
+
                 Firmin.animate(winDbgConsole.$ext, {
                     height: height + "px",
                     timingFunction: "ease-in-out"
@@ -100086,9 +100054,9 @@ module.exports = ext.register("ext/console/console", {
 
     destroy: function(){
         commands.removeCommandsByName(
-            ["help", "clear", "switchconsole", "toggleconsole", 
+            ["help", "clear", "switchconsole", "toggleconsole",
              "escapeconsole", "toggleinputbar"]);
-        
+
         this.nodes.each(function(item) { item.destroy(true, true); });
         this.nodes = [];
     }
@@ -100485,7 +100453,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-define('plugins-client/ext.tabbehaviors/tabbehaviors',['require','exports','module','core/ide','core/ext','ext/panels/panels','ext/menus/menus','ext/openfiles/openfiles','ext/commands/commands','ext/editors/editors','ext/tree/tree'],function(require, exports, module) {
+define('plugins-client/ext.tabbehaviors/tabbehaviors',['require','exports','module','core/ide','core/ext','ext/panels/panels','ext/menus/menus','ext/openfiles/openfiles','ext/commands/commands','ext/editors/editors','core/settings','ext/tree/tree'],function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -100494,6 +100462,7 @@ var menus = require("ext/menus/menus");
 var openfiles = require("ext/openfiles/openfiles");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
+var settings = require("core/settings");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -100502,8 +100471,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     type       : ext.GENERAL,
     deps       : [panels],
     menus      : [],
-    accessed   : [],
-    $tabAccessCycle : 2,
+    accessList  : [],
+    accessedTab : 0,
     sep        : null,
     more       : null,
     menuOffset : 4, //@todo this should use new menus api
@@ -100695,8 +100664,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
             else if (page.fake) {
                 _self.addItem(page);
-                if (_self.accessed.indexOf(page) == -1)
-                    _self.accessed.unshift(page);
+                
+                if (_self.accessList.indexOf(page) == -1) {
+                    var idx = _self.accessList.indexOf(page.id);
+                    if (idx == -1) //Load accesslist from index
+                        _self.accessList.unshift(page);
+                    else
+                        _self.accessList[idx] = page;
+                }
             }
         });
 
@@ -100709,22 +100684,25 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 return;
 
             _self.removeItem(page);
-            _self.accessed.remove(page);
+            _self.accessList.remove(page);
         });
 
-        var cycleKey = apf.isMac ? 18 : 17, tabKey = 9;
+        var cycleKey = apf.isMac ? 18 : 17;
         tabEditors.addEventListener("afterswitch", function(e) {
             var page = e.nextPage;
 
             if (!_self.cycleKeyPressed) {
-                _self.accessed.remove(page);
-                _self.accessed.push(page);
+                _self.accessList.remove(page);
+                _self.accessList.unshift(page);
+                
+                _self.accessList.changed = true;
+                settings.save();
             }
         });
 
         tabEditors.addEventListener("close", function(e) {
             if (tabEditors.getPage() == e.page)
-                this.nextTabInLine = _self.accessed[_self.accessed.length - _self.$tabAccessCycle];
+                this.nextTabInLine = _self.accessList[1];
         });
 
         apf.addEventListener("keydown", function(eInfo) {
@@ -100738,12 +100716,15 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.cycleKeyPressed = false;
                 
                 if (_self.$dirtyNextTab) {
-                    _self.$tabAccessCycle = 2;
+                    _self.accessedTab = 0;
                     
                     var page = tabEditors.getPage();
-                    if (_self.accessed[_self.accessed.length - 1] != page) {
-                        _self.accessed.remove(page);
-                        _self.accessed.push(page);
+                    if (_self.accessList[_self.accessedTab] != page) {
+                        _self.accessList.remove(page);
+                        _self.accessList.unshift(page);
+                        
+                        _self.accessList.changed = true;
+                        settings.save();
                     }
                     
                     _self.$dirtyNextTab = false;
@@ -100760,6 +100741,30 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 page = _self.changedPages[i];
                 page.removeEventListener("aftersavedialogclosed", arguments.callee);
             }
+        });
+        
+        ide.addEventListener("settings.save", function(e){
+            if (_self.accessList.changed) {
+                var list = _self.accessList.slice(0);
+                list.forEach(function(page, i){ this[i] = page.id }, list);
+                e.model.setQueryValue("auto/tabcycle/text()", JSON.stringify(list));
+                _self.accessList.changed = false;
+            }
+        });
+        
+        ide.addEventListener("settings.load", function(e){
+            var list, json = e.model.queryValue("auto/tabcycle/text()");
+            if (json) {
+                try { 
+                    list = JSON.parse(json);
+                }
+                catch(e) {
+                    return;
+                }
+            }
+            
+            if (list)
+                _self.accessList = list;
         });
     },
     
@@ -100910,47 +100915,29 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
     
     nexttab : function(){
-        if (tabEditors.getPages().length === 1) {
+        if (tabEditors.length === 1)
             return;
-        }
 
-        var n = this.accessed.length - this.$tabAccessCycle++;
-        if (n < 0) {
-            n = this.accessed.length - 1;
-            this.$tabAccessCycle = 2;
-        }
+        if (++this.accessedTab >= this.accessList.length)
+            this.accessedTab = 0;
 
-        var tabs = tabEditors;
-        var next = this.accessed[n];
-        if (next == tabs.getPage() || ide.dispatchEvent("beforenexttab", {
-            page: next
-        }) === false)
-            return this.nexttab();
-
-        tabs.set(next);
+        var next = this.accessList[this.accessedTab];
+        tabEditors.set(next);
         
         this.$dirtyNextTab = true;
     },
 
     previoustab : function(){
-        if (tabEditors.getPages().length === 1) {
+        if (tabEditors.length === 1)
             return;
-        }
-        
-        var n = this.accessed.length - (this.$tabAccessCycle - 1);
-        if (n ===  this.accessed.length) {
-            n = 0;
-            this.$tabAccessCycle = this.accessed.length;
-        }
 
-        var tabs = tabEditors;
-        var next = this.accessed[n];
-        if (next == tabs.getPage() || ide.dispatchEvent("beforeprevioustab", {
-            page: next
-        }) === false)
-            return this.previoustab();
-            
-        tabs.set(next);
+        if (--this.accessedTab < 0)
+            this.accessedTab = this.accessList.length - 1;
+
+        var next = this.accessList[this.accessedTab];
+        tabEditors.set(next);
+        
+        this.$dirtyNextTab = true;
     },
 
     gototabright: function(e) {
@@ -101164,10 +101151,9 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 tabEditors.set(this.getAttribute("relPage"));
             }
         }));
-        var no = this.nodes.push(mnu) - 1;
+        this.nodes.push(mnu) - 1;
 
         page.$tabMenu = mnu;
-        this.accessed.push(page);
 
         this.updateState();
     },
@@ -102859,15 +102845,15 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         var timer;
         navbar.$ext.addEventListener("mouseover", function(e){
             if (!_self.animating 
-              && navbar.getWidth() >= navbar.$int.scrollWidth
-              && apf.isChildOf(navbar.$ext, e.fromElement, true))
+              && navbar.getWidth() >= navbar.$int.scrollWidth)
+              //&& apf.isChildOf(navbar.$ext, e.fromElement, true))
                 return;
             
             clearTimeout(timer);
             if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
                 timer = setTimeout(function(){
                     _self.animateToFullWidth();
-                }, 300);
+                }, 150);
             }
         });
         
@@ -103081,6 +103067,84 @@ module.exports = ext.register("ext/sidebar/sidebar", {
 });
 
 });
+/**
+ * HTML Editor for the Cloud9 IDE
+ *
+ * @copyright 2010, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
+
+define('plugins-client/ext.filelist/filelist',['require','exports','module','core/ide','core/ext'],function(require, exports, module) {
+
+var ide = require("core/ide");
+var ext = require("core/ext");
+
+/**
+ * Keeps a record of all files in the repository
+ * 
+ * In the future the filelist could keep track of all changes from the watcher
+ * and locally to update the file list. It would then only need to refresh 
+ * after CLI commands and other running processs. This would be purely an 
+ * optimization.
+ */
+module.exports = ext.register("ext/filelist/filelist", {
+    name  : "HTML Editor",
+    dev   : "Ajax.org",
+    type  : ext.GENERAL,
+    alone : true,
+    queue : [],
+
+    init : function(){
+        var _self = this;
+    },
+    
+    getFileList : function(retrieveNewFromServer, callback){
+        if (!retrieveNewFromServer && this.cached)
+            return callback(this.cached, apf.SUCCESS);
+    
+        if (this.retrieving)
+            return this.queue.push(callback);
+    
+        var _self = this;
+        davProject.report(ide.davPrefix, 'filelist', {
+            showHiddenFiles: "1" //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
+          }, 
+          function(data, state, extra){
+            if (state == apf.ERROR) {
+                if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
+                    return callback(null, state);
+                }
+
+                //@todo
+                return;
+            }
+            if (state == apf.TIMEOUT)
+                return callback(null, state); //@todo
+
+            _self.cache = data;
+            callback(data, state);
+            
+            var queue = _self.queue;
+            _self.queue = [];
+            _self.retrieving = false;
+            
+            queue.forEach(function(cb){ cb(data, state) });
+        });
+        
+        this.retrieving = true;
+    },
+
+    enable : function() {
+    },
+
+    disable : function(){
+    },
+
+    destroy : function(){
+    }
+});
+});
+
 define('text!plugins-client/ext.beautify/settings.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:checkbox class="underlined" label="Preserve Empty Lines" value="[beautify/jsbeautify/@preserveempty]" skin="checkbox_grey" position="1000"/>\n    <a:checkbox class="underlined" label="Keep Array Indentation" value="[beautify/jsbeautify/@keeparrayindentation]" skin="checkbox_grey" position="2000"/>\n    <a:checkbox class="underlined" label="JSLint Strict Whitespace" value="[beautify/jsbeautify/@jslinthappy]" skin="checkbox_grey" position="3000"/>\n    <a:hbox edge="5 5 2 5" align="center" position="4000">\n        <a:label flex="1">Braces</a:label>\n        <a:dropdown value="[{require(\'core/settings\').model}::beautify/jsbeautify/@braces]" width="185" height="21">\n            <a:item value="collapse">Braces with control statement</a:item>\n            <a:item value="expand">Braces on own line</a:item>\n            <a:item value="end-expand">End braces on own line</a:item>\n        </a:dropdown>\n    </a:hbox>\n</a:application>\n';});
 
 /**
@@ -103169,15 +103233,7 @@ module.exports = ext.register("ext/beautify/beautify", {
         sel.setSelectionRange(Range.fromPoints(range.start, end));
     },
 
-    init: function () {
-        var _self = this;
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                _self.disable();
-            else
-                _self.enable();
-        });
-    },
+    init: function () {},
 
     hook: function () {
         var _self = this;
@@ -103748,13 +103804,6 @@ module.exports = ext.register("ext/stripws/stripws", {
                 self.stripws();
             }
         });
-
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                self.disable();
-            else
-                self.enable();
-        });
         
         ide.addEventListener("settings.load", function(){
             settings.setDefaults("editors/code", [
@@ -103797,7 +103846,7 @@ module.exports = ext.register("ext/stripws/stripws", {
 });
 });
 
-define('text!plugins-client/ext.testpanel/testpanel.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:window id="winTestPanel" \n      flex     = "1" \n      skin     = "fm-window" \n      title    = "Test Panel" \n      modal    = "false" \n      buttons  = "close" \n      optimize = "true">\n        <a:bar skin="c9-header-bar" top="-30" right="28" height="30">\n            <a:hbox id="barTestTools">\n                <a:button\n                  id       = "btnNewTestType"\n                  caption  = "New"\n                  onclick  = ""\n                  skin     = "c9-toolbarbutton"\n                  class    = "with-arrow"\n                  submenu  = "mnuTestNew" />\n                <a:menu id="mnuTestNew">\n                    \n                </a:menu>\n                \n                <!--a:divider skin="c9-divider-double" /-->\n                \n                <a:splitbutton id="btnTestRun"\n                  caption  = "Run tests"\n                  onclick  = "require(\'ext/testpanel/testpanel\').run(dgTestProject.getSelection());"\n                  submenu  = "mnuRunSettings" \n                  visible  = "{!(stTestRun.active || !dgTestProject.selected)}" />\n            \n                <a:button\n                  icon     = "stop.png"\n                  caption  = "Stop Tests"\n                  skin     = "c9-toolbarbutton"\n                  onclick  = "require(\'ext/testpanel/testpanel\').stop()"\n                  visible  = "{!btnTestRun.visible}"\n                  disabled = "{!stTestRun.active || stTestRun.stopping}" />\n            </a:hbox>\n        </a:bar>\n      \n        <a:button\n          skin="header-btn"\n          class="panel-settings"\n          submenu = "mnuFilter" />\n        <a:menu id="mnuFilter">\n            <a:item type="radio" value="all" selected="true">All</a:item>\n            <a:divider />\n            \n            <a:divider />\n            <a:item type="check" checked="true" onclick="\n                require(\'ext/testpanel/testpanel\').toggleSubmodules(this.value);\n            ">Show Submodules</a:item>\n            <a:item type="check" checked="true" onclick="\n                require(\'ext/testpanel/testpanel\').toggleExpandTests(this.value);\n            ">Auto Expand Tests</a:item>\n            <a:divider />\n            <a:item submenu="mnuAutorunTests">Auto-run Tests</a:item>\n        </a:menu>\n        <a:menu id="mnuAutorunTests">\n            <a:group id="grpAutoRunTests" value="[{require(\'ext/settings/settings\').model}::auto/testpanel/@autorun]" />\n            <a:item group="grpAutoRunTests" type="radio" value="none">None</a:item>\n            <a:divider />\n            <a:item group="grpAutoRunTests" type="radio" value="selection">Selection</a:item>\n            <a:item group="grpAutoRunTests" type="radio" value="pattern" onclick="\n                require(\'ext/testpanel/testpanel\').editAutoRunPattern();\n            ">Pattern</a:item>\n        </a:menu>\n        <a:vbox anchors = "0 0 0 0" id="vboxTestPanel" style="background:#333">\n            <a:model id="mdlTests">\n                <data>\n                    <repo name="Cloud9">\n                    \n                    </repo>\n                </data>\n            </a:model>\n            \n            <a:bar skin="basic" flex="1">\n                <a:datagrid \n                  id        = "dgTestProject"\n                  anchors   = "0 0 0 0"\n                  border    = "0"\n                  options   = "size"\n                  model     = "mdlTests"\n                  each      = "[repo|file|test|assert|error]"\n                  class     = "noscrollbar with-noise"\n                  scrollbar = "sbShared 20 2 2"\n                  multiselect    = "true"\n                  startcollapsed = "true"\n                  contextmenu    = "mnuTestContext"\n                  empty-message  = "No tests yet"\n                  onbeforeremove = "return require(\'core/util\').removeInteractive(this)">\n                    <a:column id="colTestProject" caption="Name" width="60%" tree="1" icon="{require(\'ext/testpanel/testpanel\').getIcon(localName(), [@status], [@type])}"><?lm\n                        if (localName() == "error")\n                            <span style=\'color:red\'>[@name]</span>\n                        else\n                            [@name]\n                    ?></a:column>\n                    <a:column caption="Status" width="41%"><?lm\n                        if ([@status] === \'0\')\n                            <span style=\'color:red\'>\\[[@status-message]\\]</span>\n                        else if ([@status] == \'1\')\n                            <span style=\'color:green\'>\\[PASS{[@status-message] &amp;&amp; " [@status-message]"}\\]</span>\n                        else if ([@status] == \'-1\')\n                            <span>\\[{[@status-message].uCaseFirst()}\\]</span>\n                        else\n                            \'\';\n                    ?></a:column>\n                    \n                    <a:insert match="[file]" get="{return require(\'ext/testpanel/testpanel\').parseFile(xmlNode)}" />\n                    <a:remove match="[file]" set="{require(\'ext/filesystem/filesystem\').remove([@path])}"/>\n                    \n                    <a:expanded match="[test|file[test]]" id="expTestRule" />\n                    <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />\n                </a:datagrid>\n            </a:bar>\n            \n            <!--\n                @todo Edit could be test/assert\n                      Remove could be test and assert\n            -->\n            <a:menu id="mnuTestContext">\n                <a:item match="[test|file|repo[file]]" onclick="require(\'ext/testpanel/testpanel\').run()">Run Tests</a:item>\n                <a:item match="[file]" \n                  onclick="var ide = require(\'core/ide\');ide.dispatchEvent(\'openfile\', {doc: ide.createDocument(dgTestProject.selected)});">Edit</a:item>\n                <a:divider />\n                <a:item match="[file]" onclick="dgTestProject.remove()">Remove</a:item>\n                <a:divider />\n                <a:item match="[file]" onclick="\n                    require(\'ext/tabbehaviors/tabbehaviors\').revealfile(dgTestProject.selected);\n                ">Show in File Tree</a:item>\n            </a:menu>\n        </a:vbox>\n    </a:window>\n</a:application>';});
+define('text!plugins-client/ext.testpanel/testpanel.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:state id="stTestRun" />\n    <a:menu id="mnuRunSettings" />\n\n    <a:window id="winTestPanel" \n      flex     = "1" \n      skin     = "fm-window" \n      title    = "Test Panel" \n      modal    = "false" \n      buttons  = "close" \n      optimize = "true">\n        <a:bar skin="c9-header-bar" top="-30" right="28" height="30">\n            <a:hbox id="barTestTools">\n                <a:button\n                  id       = "btnNewTestType"\n                  caption  = "New"\n                  onclick  = ""\n                  skin     = "c9-toolbarbutton"\n                  class    = "with-arrow"\n                  submenu  = "mnuTestNew" />\n                <a:menu id="mnuTestNew">\n                    \n                </a:menu>\n                \n                <!--a:divider skin="c9-divider-double" /-->\n                \n                <a:splitbutton id="btnTestRun"\n                  caption  = "Run tests"\n                  onclick  = "require(\'ext/testpanel/testpanel\').run(dgTestProject.getSelection());"\n                  submenu  = "mnuRunSettings" \n                  visible  = "{!(stTestRun.active || !dgTestProject.selected)}" />\n            \n                <a:button\n                  icon     = "stop.png"\n                  caption  = "Stop Tests"\n                  skin     = "c9-toolbarbutton"\n                  onclick  = "require(\'ext/testpanel/testpanel\').stop()"\n                  visible  = "{!btnTestRun.visible}"\n                  disabled = "{!stTestRun.active || stTestRun.stopping}" />\n            </a:hbox>\n        </a:bar>\n      \n        <a:button\n          skin="header-btn"\n          class="panel-settings"\n          submenu = "mnuFilter" />\n        <a:menu id="mnuFilter">\n            <a:item type="radio" value="all" selected="true">All</a:item>\n            <a:divider />\n            \n            <a:divider />\n            <a:item type="check" checked="true" onclick="\n                require(\'ext/testpanel/testpanel\').toggleSubmodules(this.value);\n            ">Show Submodules</a:item>\n            <a:item type="check" checked="true" onclick="\n                require(\'ext/testpanel/testpanel\').toggleExpandTests(this.value);\n            ">Auto Expand Tests</a:item>\n            <a:divider />\n            <a:item submenu="mnuAutorunTests">Auto-run Tests</a:item>\n        </a:menu>\n        <a:menu id="mnuAutorunTests">\n            <a:group id="grpAutoRunTests" value="[{require(\'ext/settings/settings\').model}::auto/testpanel/@autorun]" />\n            <a:item group="grpAutoRunTests" type="radio" value="none">None</a:item>\n            <a:divider />\n            <a:item group="grpAutoRunTests" type="radio" value="selection">Selection</a:item>\n            <a:item group="grpAutoRunTests" type="radio" value="pattern" onclick="\n                require(\'ext/testpanel/testpanel\').editAutoRunPattern();\n            ">Pattern</a:item>\n        </a:menu>\n        <a:vbox anchors = "0 0 0 0" id="vboxTestPanel" style="background:#333">\n            <a:model id="mdlTests">\n                <data>\n                    <repo name="Cloud9">\n                    \n                    </repo>\n                </data>\n            </a:model>\n            \n            <a:bar skin="basic" flex="1">\n                <a:datagrid \n                  id        = "dgTestProject"\n                  anchors   = "0 0 0 0"\n                  border    = "0"\n                  options   = "size"\n                  model     = "mdlTests"\n                  each      = "[repo|file|test|assert|error]"\n                  class     = "noscrollbar with-noise"\n                  scrollbar = "sbShared 20 2 2"\n                  multiselect    = "true"\n                  startcollapsed = "true"\n                  contextmenu    = "mnuTestContext"\n                  empty-message  = "No tests yet"\n                  onbeforeremove = "return require(\'core/util\').removeInteractive(this)">\n                    <a:column id="colTestProject" caption="Name" width="60%" tree="1" icon="{require(\'ext/testpanel/testpanel\').getIcon(localName(), [@status], [@type])}"><?lm\n                        if (localName() == "error")\n                            <span style=\'color:red\'>[@name]</span>\n                        else\n                            [@name]\n                    ?></a:column>\n                    <a:column caption="Status" width="41%"><?lm\n                        if ([@status] === \'0\')\n                            <span style=\'color:red\'>\\[[@status-message]\\]</span>\n                        else if ([@status] == \'1\')\n                            <span style=\'color:green\'>\\[PASS{[@status-message] and " [@status-message]"}\\]</span>\n                        else if ([@status] == \'-1\')\n                            <span>\\[{[@status-message].uCaseFirst()}\\]</span>\n                        else\n                            \'\';\n                    ?></a:column>\n                    \n                    <a:insert match="[file]" get="{return require(\'ext/testpanel/testpanel\').parseFile(xmlNode)}" />\n                    <a:remove match="[file]" set="{require(\'ext/filesystem/filesystem\').remove([@path])}"/>\n                    \n                    <a:expanded match="[test|file[test]]" id="expTestRule" />\n                    <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />\n                </a:datagrid>\n            </a:bar>\n            \n            <!--\n                @todo Edit could be test/assert\n                      Remove could be test and assert\n            -->\n            <a:menu id="mnuTestContext">\n                <a:item match="[test|file|repo[file]]" onclick="require(\'ext/testpanel/testpanel\').run()">Run Tests</a:item>\n                <a:item match="[file]" \n                  onclick="var ide = require(\'core/ide\');ide.dispatchEvent(\'openfile\', {doc: ide.createDocument(dgTestProject.selected)});">Edit</a:item>\n                <a:divider />\n                <a:item match="[file]" onclick="dgTestProject.remove()">Remove</a:item>\n                <a:divider />\n                <a:item match="[file]" onclick="\n                    require(\'ext/tabbehaviors/tabbehaviors\').revealfile(dgTestProject.selected);\n                ">Show in File Tree</a:item>\n            </a:menu>\n        </a:vbox>\n    </a:window>\n</a:application>';});
 
 /**
  * Test Panel for the Cloud9 IDE
@@ -103806,7 +103855,7 @@ define('text!plugins-client/ext.testpanel/testpanel.xml',[],function () { return
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-define('plugins-client/ext.testpanel/testpanel',['require','exports','module','core/ide','core/ext','core/util','ext/panels/panels','text!plugins-client/ext.testpanel/testpanel.xml','ext/filesystem/filesystem','ext/settings/settings'],function(require, exports, module) {
+define('plugins-client/ext.testpanel/testpanel',['require','exports','module','core/ide','core/ext','core/util','ext/panels/panels','text!plugins-client/ext.testpanel/testpanel.xml','ext/filesystem/filesystem','core/settings'],function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -103814,7 +103863,7 @@ var util = require("core/util");
 var panels = require("ext/panels/panels");
 var markup = require("text!plugins-client/ext.testpanel/testpanel.xml");
 var fs = require("ext/filesystem/filesystem");
-var settings = require("ext/settings/settings");
+var settings = require("core/settings");
 
 function escapeXpathString(name){
     if (name.indexOf('"') > -1) {
@@ -103840,30 +103889,20 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     defaultWidth    : 290,
 
     hook : function(){
+        var _self = this;
+        
+        this.markupInsertionPoint = colLeft;
+        
         panels.register(this, {
             position : 4000,
             caption: "Test",
             "class": "testing"
         });
-        
-        var _self = this;
 
-        //ide.addEventListener("init.testrunner", function(){
-            apf.document.documentElement.appendChild(new apf.state({
-                id : "stTestRun"
-            }));
-            
-            apf.document.documentElement.appendChild(new apf.menu({
-                id : "mnuRunSettings"
-                //pinned : "true"
-            }));
-            
-            //ide.removeEventListener("init.testrunner", arguments.callee);
-        //});
-        
         ide.addEventListener("settings.load", function(e){
-            if (!e.model.queryValue("auto/testpanel/@autorun"))
-                e.model.setQueryValue("auto/testpanel/@autorun", "none");
+            settings.setDefaults("auto/testpanel", [
+                ["autorun", "none"]
+            ]);
         });
         
         ide.addEventListener("afterfilesave", function(e) {
@@ -103881,8 +103920,8 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                     _self.run(sel);
             }
             else if (autoRun == "pattern") {
-                var list = (new Function('path', _self.getPattern()))(
-                    e.node.getAttribute("path"));
+                var func = new Function('path', _self.getPattern());
+                var list = func(e.node.getAttribute("path"));
                 
                 if (!list || list.dataType != apf.ARRAY) {
                     util.alert("Wrong output from pattern",
@@ -103907,14 +103946,12 @@ module.exports = ext.register("ext/testpanel/testpanel", {
 
     init : function() {
         var _self  = this;
-        this.panel = winTestPanel;
         
-        this.nodes.push(winTestPanel);
+        this.panel = winTestPanel;
+        this.nodes.push(winTestPanel, mnuRunSettings, stTestRun);
         
         ide.dispatchEvent("init.testrunner");
 
-        colLeft.appendChild(winTestPanel);
-        
         mnuFilter.onitemclick = function(e){
             if (e.value && e.relatedNode.type == "radio")
                 _self.filter(e.value);
@@ -103966,14 +104003,19 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         this.submodules = [];
         fs.readFile("/workspace/.git/config", function(data){
             data.replace(/\[submodule "([^"]*)"\]/g, function(s, m){
-                var doc = mdlTests.data.ownerDocument;
-                var node = doc.createElement("repo");
-                node.setAttribute("name", m);
-                mdlTests.appendXml(node);
-                
-                _self.submodules.push(m);
+                _self.addRepo(m);
             });
         });
+    },
+    
+    addRepo : function(name){
+        var doc = mdlTests.data.ownerDocument;
+        var node = doc.createElement("repo");
+        node.setAttribute("name", name);
+        mdlTests.appendXml(node);
+        this.submodules.push(name);
+        
+        return node;
     },
     
     getPattern : function(){
@@ -104220,13 +104262,13 @@ module.exports = ext.register("ext/testpanel/testpanel", {
 
     enable : function(){
         this.nodes.each(function(item){
-            item.enable();
+            item.enable && item.enable();
         });
     },
     
     disable : function(){
         this.nodes.each(function(item){
-            item.disable();
+            item.disable && item.disable();
         });
     },
 
@@ -104253,7 +104295,7 @@ define('text!plugins-client/ext.nodeunit/nodeunit.template',[],function () { ret
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-define('plugins-client/ext.nodeunit/nodeunit',['require','exports','module','core/ide','core/ext','ext/filesystem/filesystem','ext/newresource/newresource','ext/menus/menus','ext/noderunner/noderunner','ext/testpanel/testpanel','ext/console/console','text!plugins-client/ext.nodeunit/nodeunit.template','treehugger/js/parse','treehugger/traverse'],function(require, exports, module) {
+define('plugins-client/ext.nodeunit/nodeunit',['require','exports','module','core/ide','core/ext','ext/filesystem/filesystem','ext/newresource/newresource','ext/menus/menus','ext/noderunner/noderunner','ext/testpanel/testpanel','ext/console/console','text!plugins-client/ext.nodeunit/nodeunit.template','ext/filelist/filelist','treehugger/js/parse','treehugger/traverse'],function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -104264,6 +104306,7 @@ var noderunner = require("ext/noderunner/noderunner");
 var testpanel = require("ext/testpanel/testpanel");
 var console = require("ext/console/console");
 var template = require("text!plugins-client/ext.nodeunit/nodeunit.template");
+var filelist = require("ext/filelist/filelist");
 
 var parser = require("treehugger/js/parse");
 require("treehugger/traverse");
@@ -104312,32 +104355,41 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             }))
         );
 
-        davProject.report(ide.davPrefix, 'filelist', {},
-          function(data, state, extra){
-            if (state == apf.ERROR) {
-                if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
-                    return;
-                }
-
-                //@todo
+        filelist.getFileList(false, function(data, state){
+            if (state != apf.SUCCESS)
                 return;
-            }
-            if (state == apf.TIMEOUT)
-                return; //@todo
 
-            var nodes = data.selectNodes("//d:href");
-            for (var node, i = 0; i < nodes.length; i++) {
-                node = nodes[i];
-
-                //@todo support for submodules
-                if (node.firstChild.nodeValue.match(/_test\.js$/)) {
-                    var file = apf.getXml("<file />");
-                    var path = ide.davPrefix + "/" + node.firstChild.nodeValue;
-                    file.setAttribute("name", path.split("/").pop());
-                    file.setAttribute("path", path);
-                    file.setAttribute("type", "nodeunit");
-                    apf.xmldb.appendChild(testpanel.findParent(path), file);
+            var tests = data.replace(/^\./gm, "").match (/^.*_test\.js$|^(node_modules\/[^\/]*\/)?\/test\/.*\.js$/gm);
+            var subProjects = {}, mainProject = [];
+            tests.join("\n").replace(
+                new RegExp("^\\/node_modules\\/([^\\/]*)\\/.*$|^.*$", "gm"),
+                function(m, name, generic) { 
+                    if (name)
+                        (subProjects[name] || (subProjects[name] = [])).push(m) 
+                    else
+                        mainProject.push(m);
                 }
+            );
+            
+            function addFiles(project, parent){
+                var str = [];
+                for (var i = project.length - 1; i >= 0; i--) {
+                    str.push("<file path='" 
+                        + apf.escapeXML(ide.davPrefix + project[i])
+                        + "' name='" + apf.escapeXML(project[i].split("/").pop()) 
+                        + "' type='nodeunit' />");
+                }
+                
+                mdlTests.insert("<files>" + str.join("") + "</files>", {
+                    insertPoint : parent
+                });
+            }
+            
+            addFiles(mainProject, mdlTests.queryNode("repo[1]"));
+            
+            for (var name in subProjects) {
+                var parent = testpanel.addRepo(name);
+                addFiles(subProjects[name], parent);
             }
         });
 
@@ -106317,80 +106369,6 @@ module.exports = ext.register("ext/jslanguage/jslanguage", {
 
 });
 
-/**
- * auto test Module for the Cloud9 IDE
- *
- * @copyright 2010, Ajax.org B.V.
- * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- */
- 
-define('plugins-client/ext.autotest/autotest',['require','exports','module','core/ide','core/ext','ext/noderunner/noderunner','ext/filesystem/filesystem'],function(require, exports, module) {
-
-var ide = require("core/ide");
-var ext = require("core/ext");
-var noderunner = require("ext/noderunner/noderunner");
-var fs = require("ext/filesystem/filesystem");
-
-module.exports = ext.register("ext/autotest/autotest", {
-    name    : "autotest",
-    dev     : "Ajax.org",
-    type    : ext.GENERAL,
-    alone   : true,
-
-    hook : function() {
-        ide.addEventListener("afterfilesave", function(e) {
-            // We don't want to run tests if it is an auto-save.
-            if (e.silentsave === true) {
-                return;
-            }
-            
-            var node = e.node;
-            var path = node.getAttribute("path");
-            var m = path.match(/^.*(_test|Test)\.js$/);
-            
-            if (m) {
-                run(path);
-            }
-            else {
-                var testPath = path.replace(/\.js$/, "_test.js");
-                if (path == testPath) {
-                    return;
-                }
-                
-                fs.exists(testPath, function(exists) {
-                    if (exists)
-                        run(testPath);
-                        
-                    testPath = path.replace(/\.js$/, "Test.js");
-                    if (path == testPath) return;
-                    fs.exists(testPath, function(exists) {
-                        if (exists)
-                            run(testPath);
-                    });
-                });
-            }
-            
-            function run(path) {
-                path = path.slice(ide.davPrefix.length + 1).replace("//", "/");
-                noderunner.run(path, [], false);
-            }
-        });
-    },
-
-    init : function(amlNode) {
-    },
-    
-    enable : function() {
-    },
-
-    disable : function() {
-    },
-
-    destroy : function() {
-    }
-});
-
-});
 define('text!plugins-client/ext.closeconfirmation/settings.xml',[],function () { return '<a:application xmlns:a="http://ajax.org/2005/aml">\n    <a:checkbox class="underlined" label="Warn Before Exiting" value="[general/@confirmexit]" skin="checkbox_grey" position="2000" />\n</a:application>\n';});
 
 /**
@@ -107374,7 +107352,7 @@ define('text!plugins-client/ext.revisions/style.css',[],function () { return '.c
  * @copyright 2012, Ajax.org B.V.
  */
 
-define('plugins-client/ext.revisions/revisions',['require','exports','module','core/ide','core/ext','ext/editors/editors','ext/menus/menus','ext/tooltip/tooltip','ext/commands/commands','ext/save/save','ext/revisions/revisions_util','ext/settings/settings','text!plugins-client/ext.revisions/settings.xml','ace/edit_session','ace/document','ext/code/proxydocument','text!plugins-client/ext.revisions/revisions.xml','text!plugins-client/ext.revisions/skin.xml','text!plugins-client/ext.revisions/style.css'],function(require, exports, module) {
+define('plugins-client/ext.revisions/revisions',['require','exports','module','core/ide','core/ext','ext/editors/editors','ext/menus/menus','ext/tooltip/tooltip','ext/commands/commands','ext/save/save','ext/revisions/revisions_util','ext/settings/settings','text!plugins-client/ext.revisions/settings.xml','ace/edit_session','ace/document','ext/code/proxydocument','text!plugins-client/ext.revisions/revisions.xml','text!plugins-client/ext.revisions/skin.xml','text!plugins-client/ext.revisions/style.css','ext/beautify/beautify','ext/quicksearch/quicksearch','ext/statusbar/statusbar','ext/stripws/stripws','ext/language/language'],function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -107398,6 +107376,12 @@ var ProxyDocument = require("ext/code/proxydocument");
 var markup = require("text!plugins-client/ext.revisions/revisions.xml");
 var skin = require("text!plugins-client/ext.revisions/skin.xml");
 var cssString = require("text!plugins-client/ext.revisions/style.css");
+
+var beautify = require("ext/beautify/beautify");
+var quicksearch = require("ext/quicksearch/quicksearch");
+var statusbar = require("ext/statusbar/statusbar");
+var stripws = require("ext/stripws/stripws");
+var language = require("ext/language/language");
 
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
@@ -107554,25 +107538,22 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$initWorker();
     },
 
-    setSaveButtonCaption: function(caption) {
+    setSaveButtonCaption: function(caption, page) {
         if (caption) {
             return btnSave.setCaption(caption);
         }
 
-        if (!tabEditors.activepage) {
-            btnSave.setCaption("");
+        var page = page || tabEditors.getPage();
+        if (page) {
+            var hasChanged = Util.pageHasChanged(tabEditors.getPage());
+            if (Util.isAutoSaveEnabled() && hasChanged) {
+                return btnSave.setCaption("Saving...");
+            }
+            else if (!hasChanged) {
+                return btnSave.setCaption("All changes saved");
+            }
         }
-
-        var hasChanged = Util.pageHasChanged(tabEditors.getPage());
-        if (Util.isAutoSaveEnabled() && hasChanged) {
-            btnSave.setCaption("Saving...");
-        }
-        else if (!hasChanged) {
-            btnSave.setCaption("All changes saved");
-        }
-        else {
-            btnSave.setCaption("");
-        }
+        btnSave.setCaption("");
     },
 
     init: function() {
@@ -107784,7 +107765,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
-        this.setSaveButtonCaption();
+        this.setSaveButtonCaption(null, e.page);
 
         var self = this;
         setTimeout(function() {
@@ -108147,7 +108128,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
             return index;
         };
-        
+
         var self = this;
         var pages = tabEditors.getPages();
         var page = pages.filter(function(_page) {
@@ -108507,7 +108488,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             editor.setSession(newSession);
             doc = newSession.doc;
         }
-
+        
+        editor.setReadOnly(true);
         editor.selection.clearSelection();
 
         // Look for the node that references the revision we are loading and
@@ -108733,6 +108715,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                 visibility: "shown",
                 width: BAR_WIDTH
             });
+
+            beautify.disable();
+            quicksearch.offsetWidth = quicksearch.defaultOffset + BAR_WIDTH;
+            quicksearch.updateBarPosition();
+            statusbar.offsetWidth = BAR_WIDTH;
+            statusbar.setPosition();
+            stripws.disable();
+            language.disable();
         }
 
         var model = page.$mdlRevisions;
@@ -108756,6 +108746,14 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPage().$showRevisions = false;
         this.panel.hide();
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
+
+        beautify.enable();
+        quicksearch.offsetWidth = quicksearch.defaultOffset;
+        quicksearch.updateBarPosition();
+        statusbar.offsetWidth = 0;
+        statusbar.setPosition();
+        stripws.enable();
+        language.enable();
 
         if (lstRevisions) {
             lstRevisions.selectList([]); // Unselect everything
@@ -109043,6 +109041,7 @@ module.exports = ext.register("ext/language/language", {
                 oldSelection = _self.editor.selection;
             }, 100);
         });
+        
 
         this.editor.on("change", function(e) {
             e.range = {
@@ -109149,6 +109148,7 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.disabled = false;
+        this.setPath();
     },
 
     disable: function () {
@@ -109157,6 +109157,7 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.disabled = true;
+        marker.addMarkers({data:[]}, this.editor);
     },
 
     destroy: function () {
