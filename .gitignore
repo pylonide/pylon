@@ -33,3 +33,4 @@ plugins-server/cloud9.fs/node_modules/
 node_modules/
 deps/ace/
 plugins-server/fixtures/node_env/hello.js
+npm-debug.log
