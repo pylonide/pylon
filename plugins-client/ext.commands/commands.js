@@ -96,9 +96,6 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             if (command.findEditor)
                 editor = command.findEditor(editor);
             
-            if (!editor)
-                return;
-            
             if (editor && editor.$readOnly && !command.readOnly)
                 return false;
 
