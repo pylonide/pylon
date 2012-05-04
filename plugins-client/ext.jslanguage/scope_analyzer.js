@@ -13,7 +13,9 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
+    
 var baseLanguageHandler = require('ext/language/base_handler');
+var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 require('treehugger/traverse');
 
@@ -31,6 +33,9 @@ var GLOBALS = {
     onmessage                : true,
     postMessage              : true,
     importScripts            : true,
+    "continue"               : true,
+    "return"                 : true,
+    "else"                   : true,
     // Browser
     ArrayBuffer              : true,
     ArrayBufferView          : true,
@@ -352,6 +357,24 @@ Scope.prototype.getVariableNames = function() {
         }
     }
     return names;
+};
+
+var GLOBALS_ARRAY = Object.keys(GLOBALS);
+
+handler.complete = function(doc, fullAst, pos, currentNode, callback) {
+    var line = doc.getLine(pos.row);
+    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+
+    var matches = completeUtil.findCompletions(identifier, GLOBALS_ARRAY);
+    callback(matches.map(function(m) {
+        return {
+          name        : m,
+          replaceText : m,
+          icon        : null,
+          meta        : "EcmaScript",
+          priority    : 3
+        };
+    }));
 };
 
 handler.analyze = function(doc, ast, callback) {

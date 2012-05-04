@@ -94,7 +94,7 @@
             }
             
             .code_complete_bar span.meta {
-                color: #777;
+                color: #999;
                 margin-left: 6px;
             }
         ]]></a:style>

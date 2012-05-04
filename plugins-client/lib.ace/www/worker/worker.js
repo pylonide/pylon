@@ -9869,8 +9869,10 @@ exports.set_logger = function(logger) {
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define('ext/jslanguage/scope_analyzer', ['require', 'exports', 'module' , 'ext/language/base_handler', 'treehugger/traverse'], function(require, exports, module) {
+define('ext/jslanguage/scope_analyzer', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ext/codecomplete/complete_util', 'treehugger/traverse'], function(require, exports, module) {
+    
 var baseLanguageHandler = require('ext/language/base_handler');
+var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 require('treehugger/traverse');
 
@@ -9888,6 +9890,9 @@ var GLOBALS = {
     onmessage                : true,
     postMessage              : true,
     importScripts            : true,
+    "continue"               : true,
+    "return"                 : true,
+    "else"                   : true,
     // Browser
     ArrayBuffer              : true,
     ArrayBufferView          : true,
@@ -10209,6 +10214,24 @@ Scope.prototype.getVariableNames = function() {
         }
     }
     return names;
+};
+
+var GLOBALS_ARRAY = Object.keys(GLOBALS);
+
+handler.complete = function(doc, fullAst, pos, currentNode, callback) {
+    var line = doc.getLine(pos.row);
+    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+
+    var matches = completeUtil.findCompletions(identifier, GLOBALS_ARRAY);
+    callback(matches.map(function(m) {
+        return {
+          name        : m,
+          replaceText : m,
+          icon        : null,
+          meta        : "EcmaScript/W3C",
+          priority    : 3
+        };
+    }));
 };
 
 handler.analyze = function(doc, ast, callback) {
