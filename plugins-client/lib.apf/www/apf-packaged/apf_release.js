@@ -10312,7 +10312,15 @@ apf.getWindowHeight = function(){
 // Only add setZeroTimeout to the window object, and hide everything
 // else in a closure.
 apf.setZeroTimeout = !window.postMessage
-  ? function() { $setTimeout.apply(null, arguments); }
+  ? (function() {
+        function setZeroTimeout() {
+            return $setTimeout.apply(null, arguments);
+        }
+        setZeroTimeout.clearTimeout = function() {
+             return clearTimeout.apply(null, arguments);
+        };
+        return setZeroTimeout;
+    })()
   : (function() {
         var timeouts = [];
         var messageName = "zero-timeout-message";
