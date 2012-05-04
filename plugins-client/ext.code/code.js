@@ -704,21 +704,28 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
-                checked : "[{require('core/settings').model}::editors/code/@wrapmode]",
+                checked : "[{tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
                 isAvailable : function(editor){
                     return editor && editor.ceEditor;
                 }
             }), 500000),
 
             menus.addItemByPath("View/Wrap To Viewport", new apf.item({
-                wrapmode : "[{require('core/settings').model}::editors/code/@wrapmode]",
+                id : "mnuWrapView",
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
                 "onprop.wrapmode" : function(e){
                     this.setAttribute("disabled", !apf.isTrue(e.value))
                 },
                 isAvailable : function(editor){
-                    return editor && editor.ceEditor;
+                    if (!editor || !editor.ceEditor)
+                        return false;
+                        
+                    var page = tabEditors.getPage();
+                    if (page.$model) 
+                        return apf.isTrue(page.$model.queryValue("@wrapmode"));
+                    
+                    return false;
                 }
             }), 600000)
         );
