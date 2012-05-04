@@ -52,74 +52,65 @@ module.exports = function(filelist, keyword, cache) {
         if ((j = name.lastIndexOf(keyword)) > -1) {
             cache.push(name);
             
-            if (klen > 2) {
-                value = 0;
-                
-                // We prioritize ones that have the name in the filename
-                if (j > (q = name.lastIndexOf("/"))) {
-                    k = name.lastIndexOf("/" + keyword);
-    
-                    if (k > -1) {
-                        // We give first prio to full filename matches
-                        if (name.length == klen + 1 + k)
-                            value += 1000;
-                        
-                        // Then to match of name prior to extension
-                        else if (name.lastIndexOf(".") == k + klen + 1)
-                            value += 201;
-                        
-                        // Then to matches from the start of the filename
-                        else if (k == q)
-                            value += 200;
-                        
-                        // Then anywhere in the filename
-                        else
-                            value += 100;
-                    }
+            value = 0;
+            
+            // We prioritize ones that have the name in the filename
+            if (j > (q = name.lastIndexOf("/"))) {
+                k = name.lastIndexOf("/" + keyword);
+
+                if (k > -1) {
+                    // We give first prio to full filename matches
+                    if (name.length == klen + 1 + k)
+                        value += 1000;
                     
-                    // The shorter the path depth, the higher prio we give
-                    value += 200 - (name.split("/").length * 10);
+                    // Then to match of name prior to extension
+                    else if (name.lastIndexOf(".") == k + klen + 1)
+                        value += 201;
+                    
+                    // Then to matches from the start of the filename
+                    else if (k == q)
+                        value += 200;
+                    
+                    // Then anywhere in the filename
+                    else
+                        value += 100;
                 }
-                // Then the rest
-                else
-                    value += 50;
-            
-                //Check extension
-                s = name.lastIndexOf(".");
-                if (s > -1)
-                    value -= fileTypes[name.substr(s+1)] || 20;
-                else
-                    value -= 20;
-            
-                res.push({
-                    toString : toS,
-                    value : 2000000 - value,
-                    //name  : value + ", " + name
-                    name  : name
-                })
+                
+                // The shorter the path depth, the higher prio we give
+                value += 200 - (name.split("/").length * 10);
             }
-            else {
-                res.push(name);
-            }
+            // Then the rest
+            else
+                value += 50;
+        
+            //Check extension
+            s = name.lastIndexOf(".");
+            if (s > -1)
+                value -= fileTypes[name.substr(s+1)] || 20;
+            else
+                value -= 20;
+        
+            res.push({
+                toString : toS,
+                value : 2000000 - value,
+                //name  : value + ", " + name
+                name  : name
+            })
         }
     }
 
-    if (klen > 2 && res.length < 10000)
+    if (!res.length)
+        return [];
+        
+    if (klen > 1 && res.length < 10000)
         res.sort();
+    
+    var type = "name";
+    res = res.join("\n").split("\n");
     
     console.log(new Date() - dt);
     
-    var type = "name";
-
-    var start = "<d:href>";
-    var end   = "</d:href>";
-    var glue  = end + start;
-    var results = res.length 
-        ? start + res.join(glue) + end
-        : "";
-    
-    return "<d:multistatus  xmlns:d='DAV:'><d:response>"
-        + results + "</d:response></d:multistatus>";
+    return res;
 }
 
 });
