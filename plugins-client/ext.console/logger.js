@@ -15,10 +15,16 @@ var RE_relwsp = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d
 var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
 var RE_COLOR = /\u001b\[([\d;]+)?m/g;
 
+var jump = function(path, row, column) {
+    row = parseInt(row.slice(1), 10);
+    column = column ? parseInt(column.slice(1), 10) : 0;
+    editors.showFile(path, row, column);
+};
+
 // Remove as many elements in the console output area so that between
 // the existing buffer and the stream coming in we have the right
 // amount of lines according to MAX_LIMIT.
-var balanceBuffer = function(elem) {
+/*var balanceBuffer = function(elem) {
     var len = elem.childNodes.length;
     if (len <= MAX_LINES)
         return;
@@ -28,11 +34,6 @@ var balanceBuffer = function(elem) {
         elem.removeChild(elem.firstChild);
 };
 
-var jump = function(path, row, column) {
-    row = parseInt(row.slice(1), 10);
-    column = column ? parseInt(column.slice(1), 10) : 0;
-    editors.showFile(path, row, column);
-};
 
 // Maximum amount of buffer history
 var bufferInterval = {};
@@ -40,7 +41,7 @@ var setBufferInterval = function(el, id) {
     bufferInterval[id] = setInterval(function() {
         balanceBuffer(el);
     }, 1000);
-};
+};*/
 
 var strRepeat = function(s, t) { return new Array(t + 1).join(s); };
 var escRegExp = function(s) { return s.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1'); };
@@ -161,8 +162,8 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
         eventsAttached = true;
     }
 
-    if (!bufferInterval[outputId])
-        setBufferInterval(parentEl, outputId);
+    //if (!bufferInterval[outputId])
+    //    setBufferInterval(parentEl, outputId);
 
     // Interval console output so the browser doesn't crash from high-volume
     // buffers
@@ -188,6 +189,11 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     childBuffer[outputId].appendChild(fragment);
 };
 
+module.exports.killBufferInterval = function(outputId) {
+    if (childBufferInterval[outputId])
+        clearInterval(childBufferInterval[outputId]);
+};
+
 var messages = {
     divider: "<span class='cli_divider'></span>",
     prompt: "<span style='color:#86c2f6'>__MSG__</span>",
@@ -204,10 +210,10 @@ module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
 
     var out = getOutputElement(useOutput);
     var parentEl = out.element;
-    var outputId = out.id;
+    //var outputId = out.id;
 
-    if (!bufferInterval[outputId])
-        setBufferInterval(parentEl, outputId);
+    //if (!bufferInterval[outputId])
+    //    setBufferInterval(parentEl, outputId);
 
     var containerOutput = ['<div'];
     if (tracerId)

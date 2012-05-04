@@ -57,7 +57,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
                 return callback(err);
 
             self.processes[child.pid] = child;
-            callback(null, child.pid);
+            callback(null, child.pid, child);
         });
     };
 

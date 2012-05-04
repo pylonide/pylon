@@ -1,0 +1,17 @@
+{
+    "name": "cloud9.ide.run-npm-module",
+    "version": "0.0.1",
+
+    "main": "./run-npm-module.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-node",
+            "ide.ext.state",
+            "eventbus"
+        ]
+    }
+}

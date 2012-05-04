@@ -79,12 +79,20 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    getLogStreamOutObject : function(tracer_id, idIsPid) {
+    getLogStreamOutObject : function(tracer_id, idIsPid, originalInput) {
         if (idIsPid)
             tracer_id = this.pidToTracerMap[tracer_id];
         var id = "section" + tracer_id;
+        var $ext = document.getElementById("console_" + id);
+
+        // Create the output block
+        if (!$ext && typeof originalInput !== "undefined") {
+            this.createOutputBlock(this.getPrompt(originalInput), null, tracer_id);
+            $ext = document.getElementById("console_" + id);
+        }
+
         return {
-            $ext : document.getElementById("console_" + id),
+            $ext : $ext,
             id : id
         };
     },
@@ -143,9 +151,8 @@ module.exports = ext.register("ext/console/console", {
     },
 
     commandTextHandler: function(e) {
-        var code = e.keyCode;
-        if (this.keyEvents[code])
-            this.keyEvents[code](e.currentTarget);
+        if (this.keyEvents[e.keyCode])
+            this.keyEvents[e.keyCode](e.currentTarget);
     },
 
     keyupHandler: function(e) {
@@ -158,21 +165,35 @@ module.exports = ext.register("ext/console/console", {
             return this.commandTextHandler(e);
     },
 
-    createOutputBlock: function(line, useOutput) {
-        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner', this.command_id_tracer,
+    createOutputBlock: function(line, useOutput, tracerIdFromServer) {
+        var command_id_tracer = tracerIdFromServer || this.command_id_tracer;
+        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner', command_id_tracer,
             '" onclick="return require(\'ext/console/console\').handleOutputBlockClick(event)"></div>']
             .join("");
 
-        var outputId = "console_section" + this.command_id_tracer;
+        var outputId = "console_section" + command_id_tracer;
         logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>', useOutput, outputId);
 
         var outputEl = document.getElementById(outputId);
         apf.setStyleClass(outputEl, "loading");
 
-        return this.command_id_tracer;
+        return command_id_tracer;
     },
 
     evalInputCommand: function(line) {
+        if (txtConsolePrompt.visible) {
+            var outputBlockEl = document.getElementById("console_section" + (this.command_id_tracer - 1));
+            if (outputBlockEl)
+                outputBlockEl.lastChild.innerHTML += line;
+                
+            var data = {
+                command: "npm-module-stdin",
+                line: line
+            };
+            ide.send(data);
+            return;
+        }
+
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
         if (!argv || argv.length === 0) // no commmand line input
@@ -241,7 +262,8 @@ module.exports = ext.register("ext/console/console", {
                 }
                 else {
                     data.extra = {
-                        command_id : this.command_id_tracer
+                        command_id : this.command_id_tracer,
+                        original_line : data.line
                     };
 
                     ide.send(data);
@@ -261,7 +283,9 @@ module.exports = ext.register("ext/console/console", {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
+
         if (spinnerElement) {
+            logger.killBufferInterval(id);
             var pNode = spinnerElement.parentNode;
             if (pNode.className.indexOf("quitting") !== -1) {
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
@@ -269,16 +293,17 @@ module.exports = ext.register("ext/console/console", {
                     this.getLogStreamOutObject(id), ide);
             }
 
-            Firmin.animate(spinnerElement, {
-                opacity : 0,
-                delay : 0.2 },
-            0.3, function() {
-                spinnerElement.setAttribute("style", "");
-                apf.setStyleClass(spinnerElement.parentNode, "loaded", ["loading"]);
+            setTimeout(function() {
+                spinnerElement = document.getElementById("spinner" + id);
+                spinnerElement.style.opacity = 0;
                 setTimeout(function() {
+                    spinnerElement = document.getElementById("spinner" + id);
+                    pNode = spinnerElement.parentNode;
+                    apf.setStyleClass(pNode, "loaded", ["loading"]);
+                    spinnerElement.setAttribute("style", "");
                     spinnerElement.style.opacity = "1";
-                }, 100);
-            });
+                }, 300);
+            }, 200);
         }
     },
 
@@ -287,9 +312,17 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         var message = e.message;
+        //console.log(message.type, message);
         var extra = message.extra;
         if (!extra && message.body)
             extra = message.body.extra;
+
+        if (extra) {
+            // If true, this client is receiving data about a command that did
+            // not originate from it
+            if (extra.command_id >= this.command_id_tracer)
+                this.command_id_tracer = extra.command_id + 1;
+        }
 
         switch(message.type) {
             case "node-start":
@@ -319,6 +352,16 @@ module.exports = ext.register("ext/console/console", {
             case "node-exit":
                 this.markProcessAsCompleted(message.pid, true);
                 return;
+            case "npm-module-start":
+                var stdin_prompt = extra.original_line.split(" ")[0];
+                txtConsolePrompt.setValue("$ " + stdin_prompt);
+                txtConsolePrompt.show();
+                break;
+            case "npm-module-data":
+                break;
+            case "npm-module-exit":
+                txtConsolePrompt.hide();
+                break;
             case "kill":
                 if (message.err) {
                     logger.logNodeStream(message.err, null,
@@ -326,56 +369,58 @@ module.exports = ext.register("ext/console/console", {
                 }
                 break;
             default:
-                if (message.type.match(/-start$/)) {
-                    var command_id = extra.command_id;
-
-                    this.tracerToPidMap[command_id] = message.pid;
-                    this.pidToTracerMap[message.pid] = command_id;
-
-                    var containerEl = this.getLogStreamOutObject(command_id).$ext;
-                    containerEl.setAttribute("rel", command_id);
-                    apf.setStyleClass(containerEl, "has_pid");
-                    return;
-                }
-
-                if (message.type.match(/-data$/)) {
-                    var type = "tracer";
-                    var id = extra.command_id;
-                    if (!command_id) {
-                        type = "pid";
-                        id = message.pid;
-                    }
-
-                    logger.logNodeStream(message.data, message.stream,
-                        this.getLogStreamOutObject(id, type === "pid"), ide);
-                    return;
-                }
-
-                if (message.type.match(/-exit$/)) {
-                    if (extra.command_id)
-                        this.markProcessAsCompleted(extra.command_id);
-                    else
-                        this.markProcessAsCompleted(message.pid, true);
-                    return;
-                }
                 break;
         }
 
-        // If we get to this point and `extra` is available, it's a process that
-        // sends all its stdout _after_ it has quit. Thus, we complete it here
-        if (extra)
-            this.markProcessAsCompleted(extra.command_id);
+        if (message.type.match(/-start$/)) {
+            var command_id = extra.command_id;
+
+            this.tracerToPidMap[command_id] = message.pid;
+            this.pidToTracerMap[message.pid] = command_id;
+
+            var containerEl = this.getLogStreamOutObject(command_id, null, extra.original_line).$ext;
+            containerEl.setAttribute("rel", command_id);
+            apf.setStyleClass(containerEl, "has_pid");
+            return;
+        }
+
+        if (message.type.match(/-data$/)) {
+            var type = "tracer";
+            var id = extra.command_id;
+            if (!command_id) {
+                type = "pid";
+                id = message.pid;
+            }
+
+            logger.logNodeStream(message.data, message.stream,
+                this.getLogStreamOutObject(id, type === "pid"), ide);
+            return;
+        }
+
+        if (message.type.match(/-exit$/)) {
+            if (extra.command_id)
+                this.markProcessAsCompleted(extra.command_id);
+            else
+                this.markProcessAsCompleted(message.pid, true);
+            return;
+        }
 
         if (message.type !== "result")
             return;
 
         var outputElDetails;
         if (extra)
-            outputElDetails = this.getLogStreamOutObject(extra.command_id);
+            outputElDetails = this.getLogStreamOutObject(extra.command_id, null, extra.original_line);
+
         if (this.onMessageMethods[message.subtype])
             this.onMessageMethods[message.subtype].call(this, message, outputElDetails);
         else
             this.onMessageMethods.__default__.call(this, message, outputElDetails);
+
+        // If we get to this point and `extra` is available, it's a process that
+        // sends all its stdout _after_ it has quit. Thus, we complete it here
+        if (extra)
+            this.markProcessAsCompleted(extra.command_id);
 
         ide.dispatchEvent("consoleresult." + message.subtype, {
             data: message.body
@@ -666,11 +711,10 @@ module.exports = ext.register("ext/console/console", {
 
         var height = parseInt(pNode.getAttribute("rel"), 10);
         apf.setStyleClass(pNode, null, ["collapsed"]);
-        Firmin.animate(pNode, {
-            height : height + "px"
-        }, 0.2, function() {
+        pNode.style.height = height + "px";
+        setTimeout(function() {
             apf.layout.forceResize(tabConsole.$ext);
-        });
+        }, 200);
     },
 
     /**
@@ -682,11 +726,10 @@ module.exports = ext.register("ext/console/console", {
         pNode.style.height = startingHeight + "px";
         pNode.setAttribute("rel", startingHeight);
         apf.setStyleClass(pNode, "collapsed");
-        Firmin.animate(pNode, {
-            height : "14px"
-        }, 0.2, function() {
+        pNode.style.height = "14px";
+        setTimeout(function() {
             apf.layout.forceResize(tabConsole.$ext);
-        });
+        }, 200);
 
         pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');
     },

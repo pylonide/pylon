@@ -9520,39 +9520,6 @@
             line-height: 18px;
         }
 
-        .console_text {
-            font-family : menlo,courier new,fixed,swiss,sans-serif;
-            background: none;
-            font-size : 12px;
-            margin : 3px 0 0 0;
-            padding : 7px 0 3px 0;
-            color : #eee;
-            overflow : hidden;
-        }
-
-        .console_text .item{
-            /*border-bottom : 1px solid #3F3F3F;*/
-            padding : 2px 10px;
-        }
-
-        .console_text .red {
-            color: #c93a40;
-        }
-
-        .console_text .blue,
-        .console_text .item a:link,
-        .console_text .item a:hover,
-        .console_text .item a:active {
-            color: #86c2f6;
-        }
-        .console_text .gray,
-        .console_text .item a:visited {
-            color: #909090;
-        }
-        .console_text .white {
-            color: #eeeeee;
-        }
-
         .apf_console{
             border : 1px solid #c3c3c3;
             border-width : 0 1px 0 0;

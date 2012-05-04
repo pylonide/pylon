@@ -1,4 +1,4 @@
-var util = require("./util");
+var util  = require("./util");
 
 var Workspace = module.exports = function(ide) {
     this.ide = ide;
@@ -26,6 +26,7 @@ var Workspace = module.exports = function(ide) {
     };
 
     this.execHook = function(hook, user /* varargs */) {
+        var self = this;
         var args = Array.prototype.slice.call(arguments, 1);
         var hook = hook.toLowerCase().trim();
 
@@ -41,17 +42,21 @@ var Workspace = module.exports = function(ide) {
             }
         }
 
-        // if a message is sent with the requireshandling flag
-        // then the client wants to be notified via an error that there was
-        // no plugin suitable of handling this command
+        // If a message is sent with the requireshandling flag then the client
+        // wants to be notified via an error that there was no plugin found to
+        // handle this command
         var message = args.length > 1 && args[1];
         if (message && message.requireshandling === true) {
-            this.send({
-                type: "result",
-                subtype: "info",
-                body: "Command '" + message.command + "' was not recognized",
-                extra: message.extra
-            }, message);
+            this.plugins["npm-runtime"].searchAndRunModuleHook(message, function(err, found) {
+                if (err || !found) {
+                    self.send({
+                        type: "result",
+                        subtype: "info",
+                        body: err || "Command '" + message.command + "' was not recognized",
+                        extra: message.extra
+                    }, message);
+                }
+            });
         }
     };
 
