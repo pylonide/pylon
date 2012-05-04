@@ -82,7 +82,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             if (Array.isArray(command)) {
                 for (var i = command.length; i--; ) {
                     var cmd = command[i];
-                    if (!cmd.isAvailable || cmd.isAvailable(editor))
+                    if (!cmd.isAvailable || cmd.isAvailable(editor, e))
                         break;
                     else
                         cmd = null;
