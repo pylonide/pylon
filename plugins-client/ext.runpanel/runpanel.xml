@@ -104,7 +104,7 @@
                       <a:label width="100" skin="black_label">Runtime</a:label>
                       <a:dropdown id="ddRunnerSelector"
                           model     = "mdlRunnerSelector"
-                          skin      = "black_dropdown"
+                          skin      = "light_dropdown"
                           flex      = "1"
                           disabled  = "{!lstRunCfg.selected}"
                           value     = "[{lstRunCfg.selected}::@value]"
