@@ -22,8 +22,7 @@ var fileTypes = {
 };
 
 /**
- * @todo There is much more sorting we can do. This function is now fast
- *       enough to apply weighed searching. 
+ * Search through a list of filenames.
  */
 module.exports = function(filelist, keyword, cache) {
     var klen = keyword.length;
