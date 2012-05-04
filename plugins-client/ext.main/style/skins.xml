@@ -2706,6 +2706,78 @@
         </a:main>
     </a:presentation>
 </a:checkbox>
+<a:checkbox skin="grouped_checkbox">
+    <a:style><![CDATA[
+        .grouped_checkbox_holder {
+            background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
+            border: 1px solid #010910;
+            border-radius: 2px;
+            box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset;
+            height: 27px;
+            padding: 0;
+        }
+        .grouped_checkbox_holder .cbcontainer {
+            padding: 0;
+        }
+
+        .grouped_checkbox_holder .cbcontainer {
+            background: url(images/c9-repeat-x.png) no-repeat 1px -474px, url(images/c9-repeat-x.png) no-repeat 100% -508px;
+            display: inline-block;
+            height: 25px !important;
+            width: 28px;
+        }
+        .grouped_checkbox_holder >div:first-child .cbcontainer {
+            background: url(images/c9-repeat-x.png) no-repeat 100% -508px;
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+        .grouped_checkbox_holder >div:last-child .cbcontainer {
+            background: url(images/c9-repeat-x.png) no-repeat 1px -474px;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+        .grouped_checkbox_holder .cbcontainerOver {
+            background: none;
+            box-shadow: 1px 0 0 0 #010910 inset, -1px 0 0 0 #010910 inset, 0 0 3px 2px #1a1a1a inset;
+        }
+        .grouped_checkbox_holder .cbcontainer .checkbox {
+            background: url(images/c9-repeat-x.png) no-repeat 50% 0;
+            border: 0;
+            height: 25px;
+            left: 0;
+            top: 0;
+            width: 100%;
+
+        }
+
+        .grouped_checkbox_holder .chkRegEx .checkbox { background-position: 50% -540px; }
+        .grouped_checkbox_holder .chkRegEx.cbcontainerChecked .checkbox { background-position: 50% -565px; }
+        .grouped_checkbox_holder .chkMatchCase .checkbox { background-position: 50% -590px; }
+        .grouped_checkbox_holder .chkMatchCase.cbcontainerChecked .checkbox { background-position: 50% -615px; }
+        .grouped_checkbox_holder .chkWholeWords .checkbox { background-position: 50% -640px; }
+        .grouped_checkbox_holder .chkWholeWords.cbcontainerChecked .checkbox { background-position: 50% -665px; }
+        .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
+        .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
+        .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -840px; }
+        .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background-position: 50% -865px; }
+        .grouped_checkbox_holder .chkSearchSelection .checkbox { background-position: 50% -740px; }
+        .grouped_checkbox_holder .chkSearchSelection.cbcontainerChecked .checkbox { background-position: 50% -765px; }
+        .grouped_checkbox_holder .cbcontainer span {
+            display: none;
+        }
+
+
+
+    ]]></a:style>
+    <a:presentation>
+        <a:main label="span/text()" minheight="18" minwidth="18">
+            <div class='xxx'>
+                <div class='checkbox'> </div>
+                <span class='label'>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
 <a:checkbox name="checkbox-menu">
     <a:style><![CDATA[
         .cbmcontainer {
@@ -4418,17 +4490,15 @@
             margin              : 0 0 0 0;
             display             : none;
             background-color    : #1c1c1c;
-            border              : 1px solid rgba(255, 255, 255, 0.1);
-            padding             : 0 0 0 0;
+            border              : 1px solid #00040A;
+            padding             : 0 3px 0;
 
             -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
 
-            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
-            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
-            background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
-            background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
+            background: #494949;
+            margin-top: 2px;
         }
 
         .c9-optionList .c9-dd-item {
@@ -4436,7 +4506,7 @@
             padding:3px 6px 0 6px;
             position:relative;
             overflow:hidden;
-            font-family   : Tahoma, Arial;
+            font-family   : Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : white;
@@ -4451,6 +4521,83 @@
     <a:presentation>
         <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
             <div class="black_dropdown">
+                <div class="label">-</div>
+                <div class="button"> </div>
+            </div>
+        </a:main>
+        <a:container contents=".">
+            <div class="c9-optionList">
+            </div>
+        </a:container>
+        <a:item
+          class       = "."
+          caption     = "text()"
+          select      = "."
+          inherit     = "true">
+            <div class="c9-dd-item">-</div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="empty">-</div>
+        </a:empty>
+    </a:presentation>
+</a:dropdown>
+<a:dropdown name="light_dropdown">
+    <a:style><![CDATA[
+        .light_dropdown {
+            background-color: rgba(255,255,255,.65);
+            background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            border: 1px solid rgba(128, 128, 128, .55);
+            border-radius: 5px;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 0 0 rgba(0,0,0,.07) inset;
+            height: 23px !important;
+            position: relative;
+        }
+        .light_dropdown .label {
+            color: #4d4d4d;
+            height: 23px;
+            line-height: 21px;
+            padding: 0 0 0 10px;
+            text-shadow: 0 1px 0 rgba(247,247,247,1);
+        }
+        .light_dropdown .button {
+            background: url(images/c9-no-repeat.png) no-repeat -80px -390px;
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.55), 0 1px 0 0 #fff inset;
+            border-radius: 0 5px 5px 0;
+            height: 21px;
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            width: 15px;
+        }
+        .light_dropdownOver {
+            background-color: rgba(229,229,229,.5);
+        }
+        .light_dropdownDown {
+            background-color: rgba(255,255,255,.1);
+            background-image: -webkit-linear-gradient(top, rgba(0,0,0,.11), transparent);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 3px 0 rgba(0,0,0,.22) inset;
+            border-color: rgba(128, 128, 128, .85);;
+        }
+        .light_dropdownDown .button {
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.55);
+        }
+        .light_dropdownDisabled {
+            border-color: rgba(128, 128, 128, .32);
+            background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.02), transparent);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,1) inset;
+        }
+        .light_dropdownDisabled .label {
+            color: #c5c5c5;
+        }
+        .light_dropdownDisabled .button {
+            background-position: -105px -390px;
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.3), 0 1px 0 0 rgba(255,255,255,.6) inset;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
+            <div class="light_dropdown">
                 <div class="label">-</div>
                 <div class="button"> </div>
             </div>
@@ -4770,13 +4917,32 @@
         }
 
         .run-panel-info {
-        	background: #323332;
-			border-top: 1px solid #111;
+        	background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
+            background-position:  0 -894px;
 			padding: 10px;
         }
         .run-panel-info .black_label {
-        	color: #95b287;
+        	color: #919191;
+            text-shadow: 0 1px 0 white;
         }
+        .run-panel-info .btextbox {
+            background: rgba(255,255,255,.8);
+            border: 1px solid rgba(128,128,128,.55);
+            box-shadow: 0 1px 0 0 rgba(0,0,0,.15) inset, 0 1px 0 0 rgba(255,255,255,.7);
+        }
+        .run-panel-info .btextbox input {
+            color: #4d4d4d;
+        }
+        .run-panel-info .btextboxDisabled {
+            background: rgba(255,255,255,.6);
+            border: 1px solid rgba(128,128,128,.32);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7);
+        }
+        .run-panel-info .btextboxDisabled input {
+            color: #bbb;
+            text-shadow: 0 1px 0 white;
+        }
+
         .run-panel-info .hbox {
         	padding-bottom: 5px !important;
         }
