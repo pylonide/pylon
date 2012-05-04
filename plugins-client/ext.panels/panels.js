@@ -220,6 +220,7 @@ module.exports = ext.register("ext/panels/panels", {
         var width = settings.model.queryValue("auto/panels/panel[@path='" 
             + panelExt.path + "']/@width") || panelExt.defaultWidth;
         
+        colLeft.setAttribute("minwidth", panelExt.panel.minwidth);
         if (noAnim || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             panelExt.panel.show();
             colLeft.setWidth(width);
