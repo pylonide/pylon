@@ -39,7 +39,7 @@ var Ide = module.exports = function(options) {
         socketIoTransports: options.socketIoTransports,
         davPrefix: options.davPrefix,
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
-        debug: options.debug === true,
+        debug: (options.debug === true)?true:false,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId,
         plugins: options.plugins.length > 0 ? options.plugins : (options.real ? [ "build/packed" ] : []),
