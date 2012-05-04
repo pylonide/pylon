@@ -9886,6 +9886,8 @@ var GLOBALS = {
     self                     : true,
     Infinity                 : true,
     onmessage                : true,
+    postMessage              : true,
+    importScripts            : true,
     // Browser
     ArrayBuffer              : true,
     ArrayBufferView          : true,
@@ -10679,12 +10681,10 @@ exports.addParentPointers = function(node) {
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define('ext/jslanguage/narcissus_jshint', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ace/worker/jshint', 'ace/narcissus/parser'], function(require, exports, module) {
+define('ext/jslanguage/narcissus_jshint', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ace/worker/jshint'], function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
-var parser = require("ace/narcissus/parser");
-
 var handler = module.exports = Object.create(baseLanguageHandler);
 
 var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./];
@@ -10702,28 +10702,6 @@ handler.analyze = function(doc, ast, callback) {
     value = value.replace(/^(#!.*\n)/, "//$1");
 
     var markers = [];
-    try {
-        parser.parse(value);
-    }
-    catch (e) {
-        var chunks = e.message.split(":");
-        var message = chunks.pop().trim();
-        var numString = chunks.pop();
-        if(numString) {
-            var lineNumber = parseInt(numString.trim(), 10) - 1;
-            markers = [{
-                pos: {
-                    sl: lineNumber,
-                    el: lineNumber
-                },
-                message: message,
-                type: "error",
-                level: "error"
-            }];
-            return callback(markers);
-        }
-    }
-    finally {}
     if (this.isFeatureEnabled("jshint")) {
         lint(value, {
             undef: false,
@@ -10736,6 +10714,9 @@ handler.analyze = function(doc, ast, callback) {
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
+            var type = "warning"
+            if(warning.reason.indexOf("Expected") !== -1 && warning.reason.indexOf("instead saw") !== -1) // Parse error!
+                type = "error";
             for (var i = 0; i < disabledJSHintWarnings.length; i++)
                 if(disabledJSHintWarnings[i].test(warning.reason))
                     return;
@@ -10744,8 +10725,8 @@ handler.analyze = function(doc, ast, callback) {
                     sl: warning.line-1,
                     sc: warning.column-1
                 },
-                type: "warning",
-                level: "warning",
+                type: type,
+                level: type,
                 message: warning.reason
             });
         });

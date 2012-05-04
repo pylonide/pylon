@@ -25,7 +25,6 @@ var keyhandler = require("ext/language/keyhandler");
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
 
-
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
@@ -39,7 +38,6 @@ module.exports = ext.register("ext/language/language", {
     enabled : true,
 
     defaultKeyHandler: null,
-    enableContinuousCompletion: false,
 
     hook : function() {
         var _self = this;
@@ -84,13 +82,14 @@ module.exports = ext.register("ext/language/language", {
                 ["jshint", "true"],
                 ["instanceHighlight", "true"],
                 ["undeclaredVars", "true"],
-                ["unusedFunctionArgs", "true"]
+                ["unusedFunctionArgs", "true"],
+                ["continuousComplete", "false"]
             ]);
         });
 
         settings.addSettings("Language Support", markupSettings);
     },
-
+    
     init : function() {
         var _self = this;
         var worker = this.worker;
@@ -104,11 +103,6 @@ module.exports = ext.register("ext/language/language", {
         this.editor.selection.on("changeCursor", this.$onCursorChange);
         var oldSelection = this.editor.selection;
         this.setPath();
-
-        if(this.enableContinuousCompletion) {
-            var defaultOnTextInput = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
-            this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, defaultOnTextInput);
-        }
 
         ceEditor.addEventListener("loadmode", function(e) {
             if (e.name === "ace/mode/javascript") {
@@ -150,6 +144,21 @@ module.exports = ext.register("ext/language/language", {
         
     },
 
+    setContinuousCompletion: function(enabled) {
+        if(enabled) {
+            if(!this.defaultKeyHandler) {
+                this.defaultKeyHandler = this.editor.keyBinding.onTextInput;
+                this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, this.defaultKeyHandler.bind(this.editor.keyBinding));
+            }
+        }
+        else {
+            if(this.defaultKeyHandler) {
+                this.editor.keyBinding.onTextInput = this.defaultKeyHandler;
+                this.defaultKeyHandler = null;
+            }
+        }
+    },
+    
     updateSettings: function() {
         // Currently no code editor active
         if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
@@ -174,6 +183,7 @@ module.exports = ext.register("ext/language/language", {
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
         this.worker.emit("cursormove", {data: cursorPos});
+        this.setContinuousCompletion(settings.model.queryValue("language/@continuousComplete") == "true");
         this.setPath();
     },
 

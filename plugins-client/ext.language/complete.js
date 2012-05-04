@@ -305,6 +305,7 @@ module.exports = {
         setTimeout(function() {
             worker.emit("complete", {data: editor.getCursorPosition()});
         });
+        var _self = this;
         if(forceBox)
             this.hideTimer = setTimeout(function() {
                 // Completion takes or crashed

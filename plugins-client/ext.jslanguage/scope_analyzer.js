@@ -29,6 +29,8 @@ var GLOBALS = {
     self                     : true,
     Infinity                 : true,
     onmessage                : true,
+    postMessage              : true,
+    importScripts            : true,
     // Browser
     ArrayBuffer              : true,
     ArrayBufferView          : true,

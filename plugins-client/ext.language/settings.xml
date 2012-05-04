@@ -1,12 +1,14 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:checkbox class="underlined" label="Enable Hints and Warnings"
-        value="[language/@jshint]" onclick="require('ext/language/language').setJSHint()" skin="checkbox_grey" position="1000"/>
+        value="[language/@jshint]" skin="checkbox_grey" position="1000"/>
     <a:checkbox class="underlined" label="Highlight Variable Instances"
-        value="[language/@instanceHighlight]" onclick="require('ext/language/language').setInstanceHighlight()" skin="checkbox_grey" position="2000"/>
+        value="[language/@instanceHighlight]" skin="checkbox_grey" position="2000"/>
     <a:checkbox class="underlined" label="Mark Undeclared Variables"
-        value="[language/@undeclaredVars]" onclick="require('ext/language/language').setUndeclaredVars()" skin="checkbox_grey" position="3000"/>
+        value="[language/@undeclaredVars]" skin="checkbox_grey" position="3000"/>
     <a:checkbox class="underlined" label="Mark Unused Function Arguments"
-        value="[language/@unusedFunctionArgs]" onclick="require('ext/language/language').setUnusedFunctionArgs()" skin="checkbox_grey" position="4000"/>
+        value="[language/@unusedFunctionArgs]" skin="checkbox_grey" position="4000"/>
+    <a:checkbox class="underlined" label="Complete as you type"
+        value="[language/@continuousComplete]" skin="checkbox_grey" position="4000"/>
     <a:hbox edge="5 5 2 5" align="center">
         <a:label flex="1">Warning level:</a:label>
         <a:dropdown default="info" value="[{require('ext/settings/settings').model}::language/@warnLevel]" width="80" height="21">
