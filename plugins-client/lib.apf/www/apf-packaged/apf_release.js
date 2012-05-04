@@ -4787,6 +4787,9 @@ apf.popup = {
             if (apf.isChildOf(this.cache[uId].content, htmlNode, true))
                 return;
             
+            if (!this.cache[uId].options)
+                return;
+            
             uId = this.cache[uId].options.allowTogether;
         }
         
