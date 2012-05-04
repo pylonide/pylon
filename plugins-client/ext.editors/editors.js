@@ -268,7 +268,7 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
-            _self.$resize();
+            _self.$resize(tab.$ext);
         });
 
         return vbox;
@@ -358,15 +358,15 @@ module.exports = ext.register("ext/editors/editors", {
                 this.buttons.add.setHeight(10);
             }
             
-            this.$resize(preview);
+            this.$resize(ext, preview);
         }
     },
     
-    $resize : function(preview){
+    $resize : function(ext, preview){
         if (this.previewing || this.animating)
             return;
         
-        var ph, ext = tabEditors.parentNode.$ext; 
+        var ph; 
         var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
         var d = apf.getDiff(ext);
         
