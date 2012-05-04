@@ -119,8 +119,8 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
 //                e.returnValue = false;
 //                e.preventDefault();
                 apf.queue.empty();
-                return true;
             }
+            return retvalue !== false;
         },
         
         addCommand : function(command){
