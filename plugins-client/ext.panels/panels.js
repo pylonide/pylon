@@ -261,7 +261,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         //Quick Fix
         if (apf.isGecko)
-            apf.layout.forceResize(ide.vbMain.$ext);
+            apf.layout.forceResize(vbMain.$ext);
         
         ide.dispatchEvent("hidepanel." + this.currentPanel.path);
         
