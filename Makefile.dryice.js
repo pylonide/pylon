@@ -3,7 +3,7 @@
 var fs = require("fs");
 var copy = require('dryice').copy;
 
-var ACE_HOME = __dirname + "/support/ace"
+var ACE_HOME = __dirname + "/node_modules/ace"
 
 function main(args) {
     var target;
@@ -27,7 +27,7 @@ function main(args) {
         roots: [
             ACE_HOME + "/lib",
             "/tmp/c9_worker_build",
-            __dirname + "/support/treehugger/lib"
+            __dirname + "/node_modules/treehugger/lib"
         ],
         textPluginPattern: /^ace\/requirejs\/text!/
     };

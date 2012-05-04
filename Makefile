@@ -60,4 +60,4 @@ worker2:
 	ln -s `pwd`/plugins-client/ext.codecomplete /tmp/c9_worker_build/ext/codecomplete
 	ln -s `pwd`/plugins-client/ext.jslanguage /tmp/c9_worker_build/ext/jslanguage
 	./Makefile.dryice.js worker
-	cp support/ace/build/src/worker* plugins-client/cloud9.core/www/js/worker
+	cp node_modules/ace/build/src/worker* plugins-client/cloud9.core/www/js/worker

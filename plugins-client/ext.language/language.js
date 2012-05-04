@@ -16,7 +16,6 @@ var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
-var liveInspect = require('ext/language/liveinspect');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
@@ -26,7 +25,6 @@ var keyhandler = require("ext/language/keyhandler");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
-var commands = require("ext/commands/commands");
 
 
 module.exports = ext.register("ext/language/language", {
@@ -50,11 +48,14 @@ module.exports = ext.register("ext/language/language", {
         var deferred = lang.deferredCall(function() {
             _self.setPath();
         });
+        console.log("Hook");
 
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function(){
             var worker = _self.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "worker.js", "ext/language/worker", "LanguageWorker");
             complete.setWorker(worker);
+            
+            console.log("extload");
 
             //ide.addEventListener("init.ext/code/code", function(){
             ide.addEventListener("afteropenfile", function(event){
@@ -92,10 +93,11 @@ module.exports = ext.register("ext/language/language", {
             ]);
         });
 
-        settings.addSettings("Language Support", markupSettings );
+        settings.addSettings("Language Support", markupSettings);
     },
 
     init : function() {
+        console.log("Init");
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
@@ -113,6 +115,15 @@ module.exports = ext.register("ext/language/language", {
             var defaultOnTextInput = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
             this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, defaultOnTextInput);
         }
+        
+        ceEditor.addEventListener("loadmode", function(e) {
+            if (e.name === "ace/mode/javascript") {
+                console.log("Disabling ACE worker");
+                e.mode.createWorker = function() {
+                    return null;
+                };
+            }
+        });
         
         this.updateSettings();
     
@@ -140,40 +151,33 @@ module.exports = ext.register("ext/language/language", {
             worker.emit("inspect", { data: { row: e.row, col: e.col } });
         });
         
-        extSettings.model.addEventListener("update", this.updateSettings.bind(this));
+        settings.model.addEventListener("update", this.updateSettings.bind(this));
         
         this.editor.addEventListener("mousedown", this.onEditorClick.bind(this));
         
-        this.editor.addEventListener("loadmode", function(e) {
-            if (e.name === "ace/mode/javascript") {
-                e.mode.createWorker = function() {
-                    return null;
-                };
-            }
-        });
     },
     
     updateSettings: function() {
         // Currently no code editor active
         if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
             return;
-        if(extSettings.model.queryValue("language/@jshint") != "false")
+        if(settings.model.queryValue("language/@jshint") != "false")
             this.worker.call("enableFeature", ["jshint"]);
         else
             this.worker.call("disableFeature", ["jshint"]);
-        if(extSettings.model.queryValue("language/@instanceHighlight") != "false")
+        if(settings.model.queryValue("language/@instanceHighlight") != "false")
             this.worker.call("enableFeature", ["instanceHighlight"]);
         else
             this.worker.call("disableFeature", ["instanceHighlight"]);
-        if(extSettings.model.queryValue("language/@unusedFunctionArgs") != "false")
+        if(settings.model.queryValue("language/@unusedFunctionArgs") != "false")
             this.worker.call("enableFeature", ["unusedFunctionArgs"]);
         else
             this.worker.call("disableFeature", ["unusedFunctionArgs"]);
-        if(extSettings.model.queryValue("language/@undeclaredVars") != "false")
+        if(settings.model.queryValue("language/@undeclaredVars") != "false")
             this.worker.call("enableFeature", ["undeclaredVars"]);
         else
             this.worker.call("disableFeature", ["undeclaredVars"]);
-        this.worker.call("setWarningLevel", [extSettings.model.queryValue("language/@warnLevel") || "info"]);
+        this.worker.call("setWarningLevel", [settings.model.queryValue("language/@warnLevel") || "info"]);
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
         this.worker.emit("cursormove", {data: cursorPos});
