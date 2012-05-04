@@ -25,7 +25,7 @@ var fileTypes = {
  * @todo There is much more sorting we can do. This function is now fast
  *       enough to apply weighed searching. 
  */
-module.exports = function(nodes, keyword, cache) {
+module.exports = function(filelist, keyword, cache) {
     var klen = keyword.length;
     
     /**
@@ -50,8 +50,8 @@ module.exports = function(nodes, keyword, cache) {
     };
      
     var name, res = [], value, ext;
-    for (var i = 0, l = nodes.length, s, j, k, q, p; i < l; i++) {
-        name = nodes[i];
+    for (var i = 0, l = filelist.length, s, j, k, q, p; i < l; i++) {
+        name = filelist[i];
         
         // We only add items that have the keyword in it's path
         if ((j = name.lastIndexOf(keyword)) > -1) {
