@@ -4640,7 +4640,6 @@
             border-bottom: 1px solid #fafafa;
             border-left: 1px solid #fafafa;
             border-right: 1px solid #fafafa;
-            width:  134px;
             height: 15px;
             margin: 0;
             padding : 2px 21px 2px 0;
