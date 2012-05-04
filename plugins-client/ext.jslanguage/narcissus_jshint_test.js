@@ -1,7 +1,6 @@
 if (typeof process !== "undefined") {
-    require("../../../support/paths");
-    require.paths.unshift(__dirname + "/../..");
-    require.paths.unshift(__dirname + "/../../../support/treehugger/lib");
+    require("amd-loader");
+    require("../../test/setup_paths");
 }
 
 define(function(require, exports, module) {
