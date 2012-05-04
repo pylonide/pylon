@@ -48,15 +48,12 @@ module.exports = ext.register("ext/language/language", {
         var deferred = lang.deferredCall(function() {
             _self.setPath();
         });
-        console.log("Hook");
 
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function(){
             var worker = _self.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "worker.js", "ext/language/worker", "LanguageWorker");
             complete.setWorker(worker);
             
-            console.log("extload");
-
             //ide.addEventListener("init.ext/code/code", function(){
             ide.addEventListener("afteropenfile", function(event){
                 if (!event.node)
@@ -97,7 +94,6 @@ module.exports = ext.register("ext/language/language", {
     },
 
     init : function() {
-        console.log("Init");
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
@@ -118,7 +114,6 @@ module.exports = ext.register("ext/language/language", {
         
         ceEditor.addEventListener("loadmode", function(e) {
             if (e.name === "ace/mode/javascript") {
-                console.log("Disabling ACE worker");
                 e.mode.createWorker = function() {
                     return null;
                 };
