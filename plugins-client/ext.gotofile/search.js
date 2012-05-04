@@ -58,7 +58,6 @@ module.exports = function(filelist, keyword, cache) {
                 // We prioritize ones that have the name in the filename
                 if (j > (q = name.lastIndexOf("/"))) {
                     k = name.lastIndexOf("/" + keyword);
-                    p = name.lastIndexOf(".");
     
                     if (k > -1) {
                         // We give first prio to full filename matches
@@ -66,7 +65,7 @@ module.exports = function(filelist, keyword, cache) {
                             value += 1000;
                         
                         // Then to match of name prior to extension
-                        else if (p == k + klen + 1)
+                        else if (name.lastIndexOf(".") == k + klen + 1)
                             value += 201;
                         
                         // Then to matches from the start of the filename
