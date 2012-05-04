@@ -1750,9 +1750,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 })
             ]
         });
-        
+
         apf.document.documentElement.appendChild(menu);
-        
+
         menu.show();
         menu.hide();
 
@@ -1873,9 +1873,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 tab.removeAttribute("activepage");
                 tab.setAttribute("buttons", "close"); //@todo bug in scale that doesnt resize
                 tab.removeAttribute("anchors");
-                
+
                 apf.document.documentElement.appendChild(tab);
-                
+
                 tab.setWidth(this.parentNode.$ext.offsetWidth - 6);
                 tab.setHeight(this.parentNode.$ext.offsetHeight - 6);
 
@@ -2164,12 +2164,16 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         + tmp.backgroundImage + '") '
                         + tmp.defaultState.x + 'px '
                         + tmp.defaultState.y + 'px no-repeat';
+                    if (tmp.className)
+                        apf.setStyleClass(span[2], tmp.className);
 
                     if (tmp = options.secondary) {
                         span[1].style.background = 'url("'
                             + tmp.backgroundImage + '") '
                             + tmp.defaultState.x + 'px '
                             + tmp.defaultState.y + 'px no-repeat'
+                        if (tmp.className)
+                            apf.setStyleClass(span[1], tmp.className);
                     }
 
                     if (tmp = options.tertiary) {
@@ -2179,6 +2183,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                             + tmp.defaultState.x + 'px '
                             + tmp.defaultState.y + 'px no-repeat';
                         span[0].style.border = "1px solid #c7c7c7";
+                        if (tmp.className)
+                            apf.setStyleClass(span[0], tmp.className);
                     }
                 }
             };
