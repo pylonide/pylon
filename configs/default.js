@@ -27,7 +27,7 @@ var config = {
         master: {
             title: "Cloud9",
             plugins: [{
-                packagePath: "./cloud9.connect",
+                packagePath: "connect-architect/connect",
                 port: port,
                 host: host
             }, {
@@ -40,12 +40,12 @@ var config = {
             },
             "./cloud9.alive",
             "./cloud9.debug",
- 
+
             // Client libraries
-            "./../plugins-client/cloud9.core", 
-            "./../plugins-client/lib.ace", 
-            "./../plugins-client/lib.apf", 
-            "./../plugins-client/lib.treehugger", 
+            "./../plugins-client/cloud9.core",
+            "./../plugins-client/lib.ace",
+            "./../plugins-client/lib.apf",
+            "./../plugins-client/lib.treehugger",
             "./../plugins-client/lib.v8debug",
             "./../plugins-client/lib.requirejs",
 
@@ -121,7 +121,7 @@ var config = {
                     "ext/nodeunit/nodeunit",
                     "ext/zen/zen",
                     "ext/codecomplete/codecomplete",
-                    "ext/vim/vim", 
+                    "ext/vim/vim",
                     "ext/guidedtour/guidedtour",
                     "ext/quickstart/quickstart",
                     "ext/jslanguage/jslanguage",
@@ -144,11 +144,11 @@ var config = {
             },
             "./cloud9.socket",
             {
-                packagePath: "./cloud9.session",
+                packagePath: "connect-architect/connect.session",
                 key: "cloud9.sid." + port,
                 secret: "1234"
             }, {
-                packagePath: "./cloud9.session.file",
+                packagePath: "connect-architect/connect.session.file",
                 sessionsPath: __dirname + "/../.architect/sessions"
             },
             "./cloud9.permissions",
@@ -163,7 +163,7 @@ var config = {
             "./cloud9.run.node-debug",
             "./cloud9.run.npm",
             "./cloud9.run.npmnode",
-            "./cloud9.log",
+            "architect/plugins/architect.log",
             "./cloud9.ide.auth",
             "./cloud9.ide.blame",
             "./cloud9.ide.git",
