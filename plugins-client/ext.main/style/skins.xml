@@ -1969,10 +1969,6 @@
             background-repeat   : no-repeat;
             top: -32px;
         }
-        
-        .header-btnDisabled {
-            opacity : 0.3;
-        }
 
         .panel-settings {
         	background-position: 0px -270px;
@@ -1983,34 +1979,42 @@
         	background-position: -30px -270px;
         }
         .c9-header-plus {
-        	background-position: 0px -293px;
+        	background-position: 0px -294px;
         	right:31px;
         	top: 0;
         }
-        .c9-header-plus:hover {
-        	background-position: -30px -293px;
+        .c9-header-plus.header-btnOver {
+        	background-position: -30px -294px;
+        }
+        .c9-header-plus.header-btnDisabled {
+            background-position: -60px -294px;
         }
         .c9-header-minus {
-        	background-position: 0px -321px;
-        	right: 1px;
-        	top: 0;
+            background-position: 0px -320px;
+            right: 1px;
+            top: 0;
         }
-        .c9-header-minus:hover {
-        	background-position: -30px -321px;
+        .c9-header-minus.header-btnOver {
+            background-position: -30px -320px;
         }
-
+        .c9-header-minus.header-btnDisabled {
+            background-position: -60px -320px;   
+        }
+        .header-btnOver {
+            background-color: rgba(255,255,255,.3);
+        }
+        .c9-header-plus.header-btnDown {
+            background-color: rgba(0,0,0,.05);
+        }
         .c9-header-divider:before {
-        	background: url(images/c9-no-repeat.png) no-repeat -100px -293px;
-        	content: "";
-        	display: block;
-        	height: 26px;
-        	left: 0;
-        	position: absolute;
-        	top: 0;
-        	width: 2px;
-        }
-        .c9-header-divider:hover {
-        	background-color: rgba(255,255,255,.3);
+            background: url(images/c9-no-repeat.png) no-repeat -100px -293px;
+            content: "";
+            display: block;
+            height: 26px;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 2px;
         }
     ]]></a:style>
 
@@ -4920,7 +4924,7 @@
         .run-panel-info {
         	background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
             background-position:  0 -894px;
-			padding: 10px;
+			padding: 10px 10px 4px 10px;
         }
         .run-panel-info .black_label {
         	color: #919191;
