@@ -611,15 +611,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         // so this operation is visible
         ide.dispatchEvent("exitfullscreen");
 
-        this.revealfile(page.$doc.getNode());
+        this.revealInTree(page.$doc.getNode());
     },
 
-    revealfile : function(docNode) {
+    revealInTree : function(docNode) {
         panels.activate(require("ext/tree/tree"));
         
         var parts, file, pathList, str, xpath;
+        var type = docNode.tagName || "file";
         var path = docNode.getAttribute('path');
-        var node = trFiles.queryNode('//file[@path="' + path + '"]');
+        var node = trFiles.queryNode('//' + type + '[@path="' + path + '"]');
 
         if (node) {
             trFiles.expandAndSelect(node);
@@ -640,7 +641,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             xpath = pathList[pathList.length - 1];
 
             trFiles.expandList(pathList, function() {
-                trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
+                trFiles.select(trFiles.queryNode(xpath + '/' + type + '[@name="' + file + '"]'));
                 trFiles.focus();
                 scrollToFile();
             });
@@ -662,7 +663,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         apf.xmldb.setAttribute(docNode, "lookup", "1");
 
         trFiles.expandList(pathList, function() {
-            trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
+            trFiles.select(trFiles.queryNode(xpath + '/' + type + '[@name="' + file + '"]'));
             trFiles.focus();
             scrollToFile();
 
