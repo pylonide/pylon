@@ -1,0 +1,14 @@
+{
+    "name": "ext.quickstart",
+    "version": "0.0.1",
+    "main": "quickstart-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.quickstart"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

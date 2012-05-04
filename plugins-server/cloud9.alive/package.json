@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.alive",
+    "version": "0.0.1",
+    "main": "alive.js",
+    "private": true,
+
+    "dependencies": {
+    },
+
+    "plugin": {
+        "consumes": [
+            "hub",
+            "connect"
+        ]
+    }
+}

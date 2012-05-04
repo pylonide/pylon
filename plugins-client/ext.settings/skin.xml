@@ -1,0 +1,89 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:bar name="bar-preferences">
+        <a:style><![CDATA[
+            .bar-preferences {
+                position         : relative;
+                overflow-y       : hidden;
+                overflow-x       : hidden;
+                /*background-image : url(images/panelbg.png);*/
+                color            : #202020;
+                font-family      : Tahoma, Arial;
+                font-size        : 12px;
+                text-shadow : rgba(255, 255, 255, 0.8) 0px 1px 0px;
+            }
+            
+            .bar-preferences .header {
+                background-color : rgba(0,0,0,.05);
+                background-image : -webkit-linear-gradient(bottom,rgba(0,0,0,.05), transparent);
+                height           : 29px;
+                line-height      : 30px;
+                padding          : 0 0 0 10px;
+                cursor           : default;
+                position         : relative;
+                overflow         : visible;
+                font-family      : Arial;
+                font-size        : 11.3px;
+                color            : #3b3b3b;
+                margin           : 5px 4px 10px 4px;
+                text-transform   : uppercase;
+                text-shadow      : 0 1px 0 rgba(255,255,255,.35);
+                
+                border-radius: 3px;
+                
+                -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
+                   -moz-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
+                        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
+            }
+            
+            .bar-preferences .header SPAN {
+                display: none;
+            }
+            
+            .bar-preferences .cbcontainer {
+                margin : 0px 0 0 5px;
+                padding-left: 28px;
+            }
+
+            .bar-preferences .cbcontainer .checkbox {
+                left: 8px;
+            }
+            
+            .bar-preferences .first {
+                margin-top : 10px;
+            }
+            
+            .bar-preferences .underlined,
+            .bar-preferences .underlined2 {
+                margin        : 5px 5px 0 5px;
+                padding-bottom : 6px;
+                
+            }
+
+            .bar-preferences .underlined:not(:last-child),
+            .bar-preferences .underlined2:not(:last-child) {
+                border-bottom : 1px solid #b9b9b9;
+                
+                -webkit-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
+                   -moz-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
+                        box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
+            }
+
+            .bar-preferences .underlined:last-child {
+                margin-bottom: 10px;
+            }
+            
+            .bar-preferences .underlined2 {
+                margin: 1px 0 0 5px;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main container=".">
+                <div class="bar-preferences">
+                    
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:bar>
+</a:skin>

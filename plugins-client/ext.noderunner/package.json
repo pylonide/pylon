@@ -1,0 +1,14 @@
+{
+    "name": "ext.noderunner",
+    "version": "0.0.1",
+    "main": "noderunner-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.noderunner"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

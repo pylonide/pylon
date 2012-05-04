@@ -1,0 +1,14 @@
+{
+    "name": "ext.ftp",
+    "version": "0.0.1",
+    "main": "ftp-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.ftp"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

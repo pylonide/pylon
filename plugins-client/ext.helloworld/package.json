@@ -1,0 +1,7 @@
+{
+    "name": "ext.helloworld",
+    "version": "0.0.1",
+    "main": "helloworld.js",
+    "private": true,
+    "bundled": true
+}

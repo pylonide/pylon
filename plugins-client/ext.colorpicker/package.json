@@ -1,0 +1,14 @@
+{
+    "name": "ext.colorpicker",
+    "version": "0.0.1",
+    "main": "colorpicker-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.colorpicker"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

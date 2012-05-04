@@ -1,9 +1,0 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    
-    <a:bar id="barHtmlMode" visible="false">
-        <a:divider skin="c9-divider" />
-        <!--a:button skin="c9-toolbarbutton" id="btnHtmlRun">run on server...</a:button-->
-        <a:button skin="c9-toolbarbutton" icon="preview.png" class="preview" id="btnHtmlOpen" tooltip="Preview in browser">Preview</a:button>
-    </a:bar>
-   
-</a:application>

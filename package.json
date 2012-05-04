@@ -1,20 +1,61 @@
 {
     "name": "cloud9",
     "description": "Cloud9 IDE",
-    "version": "0.6",
+    "version": "0.7.0",
     "homepage" : "http://github.com/ajaxorg/cloud9",
-    "engines": {"node": ">= 0.4.0"},
+    "engines": {"node": ">= 0.6.15"},
     "author": "Ajax.org B.V. <info@ajax.org>",
-    "main": "bin/cloud9",
+    "help": {
+        "web": "https://github.com/ajaxorg/cloud9/blob/master/README.md",
+        "cli": "./scripts/help.js"
+    },
+
+    "pm": "sm",
+    "dependencies": {
+        
+        "socket.io": "0.9.x",
+        "socket.io-client": "0.9.x",
+        "connect": "1.8.x",
+        
+        "sourcemint-loader-js": "0.x",
+        "sourcemint-platform-nodejs": "0.x",
+        "http-error": "~0.0.1",
+        "simple-template": "~0.0.1",
+        
+        "optimist": "~0.3.1",
+        
+        "mappings": "0.1.x",
+        "amd-loader": "~0.0.4"
+    },
+    
+    "devDependencies": {
+        "nodeunit": "~0.7.4",
+        "sinon": "~1.3.4",
+        "rimraf": "~2.0.1"
+    },
+
+    "mappings": {
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/fcb620ca070c72f5bf97911ac4b2b9745ba42f4f"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/43e543f7e4db81127441dedc32b29c0c67813e3d"],
+        "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
+        "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/00f2fb3ba522de1fac0765ee8e62de468be53816"],
+        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"],
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/b830cc5961190d8442ff7ac3c0c566924a7df195"]
+    },
+
     "repository" : {
         "type" : "git",
          "url" : "git://github.com/ajaxorg/cloud9.git"
     },
-    "bin" : {
-        "cloud9" : "./bin/cloud9-npm.js"
-    },
     "licenses": [{
         "type": "GPLv3",
-        "url": "http://www.gnu.org/licenses/gpl-3.0.txt"}
-    ]
+        "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
+    }],
+
+    "scripts": {
+        "start": "sh ./bin/cloud9.sh",
+        "postinstall": "sh ./postinstall.sh"
+    }
 }

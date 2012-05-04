@@ -1,0 +1,124 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:window id="winRunPanel" 
+      title    = "Run &amp; Debug" 
+      model    = "{lstRunCfg.selected}"
+      buttons  = "close" 
+      skin     = "fm-window"
+      flex     = "1" 
+      optimize = "true"
+      modal    = "false">
+        <a:bar skin="c9-header-bar" height="26" class="c9-header-divider">
+            <a:hbox id="barTestTools">
+                <a:button id="btnAddRunConf"
+                  class  = "c9-header-plus c9-header-divider"
+                  onclick  = "require('ext/runpanel/runpanel').addConfig()"
+                  skin     = "header-btn" />
+                <a:button 
+                  class  = "c9-header-minus c9-header-divider"
+                  skin     = "header-btn"
+                  onclick  = "lstRunCfg.remove(lstRunCfg.selected)"
+                  disabled = "{!lstRunCfg.selected || !![{lstRunCfg.selected}::@curfile]}"/>
+                  
+                <!--a:divider skin="c9-divider-double" /-->
+                
+                <!--a:button
+                  id       = "btnRun"
+                  icon     = "{itmDebug.checked ? 'bug.png' : 'run.png'}"
+                  caption  = "{itmDebug.checked ? 'debug' : 'run'}"
+                  onclick  = "require('ext/runpanel/runpanel').run(itmDebug.checked)"
+                  visible  = "{!stProcessRunning.active &amp;&amp; 1}"
+                  skin     = "c9-toolbarbutton"
+                  submenu  = "mnuRunCfg" />
+                <a:button
+                  icon     = "stop.png"
+                  caption  = "stop"
+                  skin     = "c9-toolbarbutton"
+                  onclick  = "require('ext/runpanel/runpanel').stop()"
+                  visible  = "{stProcessRunning.active &amp;&amp; 1}" /-->
+            </a:hbox>
+        </a:bar>
+        
+        <a:button
+          skin="header-btn"
+          class="panel-settings"
+          submenu="mnuDebugSettings"
+          flex="1" />
+        
+        <a:menu id="mnuDebugSettings">
+            <a:item
+              type    = "check"
+              checked = "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
+              caption = "Run in debug mode" />
+            <a:item
+              type    = "check"
+              onclick = "require('ext/runpanel/runpanel').checkAutoHide()"
+              checked = "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
+              caption = "Auto show/hide debug tools" />
+        </a:menu>
+      
+        <a:vbox anchors="0 0 0 0">
+            <a:list id="lstRunCfg" 
+              model   = "{require('ext/runpanel/runpanel').model}"
+              border  = "0"
+              each    = "[config]"
+              caption = "[@name]"
+              flex    = "1"
+              skin    = "tree"
+              class   = "openfile rundebug"
+              autoselect    = "true"
+              empty-message = "no run configurations"
+              onafterchoose = "
+                require('ext/runpanel/runpanel').run();
+              ">
+                <a:css match="[@curfile]" value="curfile" />
+            </a:list>
+              
+            <a:bar skin="basic" class="run-panel-info">
+                <a:vbox>
+                  <a:hbox>
+                    <a:label width="100" skin="black_label" >Name</a:label>
+                    <a:textbox id="txtRunCfgName" 
+                      skin = "black_textbox"
+                      flex="1"
+                      realtime="true"
+                      value="[@name]"
+                      disabled="{!lstRunCfg.selected || [{lstRunCfg.selected}::@curfile]}"/>
+                  </a:hbox>
+                  <a:hbox>
+                    <a:label width="100" skin="black_label">File Path</a:label>
+                    <a:textbox skin = "black_textbox" flex="1" value="[@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
+                    <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
+                    
+                    <!--a:divider span="2" skin="c9-divider-hor" /-->
+                    <a:model id="mdlRunnerSelector">
+                        <data>
+                            <element caption="Default" value="default" />
+                            <element caption="Auto" value="auto" />
+                            <element caption="Node.js 0.6.x" value="0.6.x" />
+                            <element caption="Node.js 0.4.x" value="0.4.x" />
+                        </data>
+                    </a:model>
+                  </a:hbox>
+                    <a:hbox>
+                      <a:label width="100" skin="black_label">Runtime</a:label>
+                      <a:dropdown id="ddRunnerSelector"
+                          model     = "mdlRunnerSelector"
+                          skin      = "black_dropdown"
+                          flex      = "1"
+                          disabled  = "{!lstRunCfg.selected}"
+                          value     = "[{lstRunCfg.selected}::@value]"
+                          default   = "default"
+                          each      = "[element]"
+                          caption   = "[@caption]"
+                          eachvalue = "[@value]" />
+                    </a:hbox>
+                    <a:hbox>
+                      <a:label width="100" skin="black_label">Cmd Line Args</a:label>
+                      <a:textbox skin = "black_textbox" flex="1" value="[@args]" disabled="{!!!lstRunCfg.selected}"/>
+                    </a:hbox>
+                </a:vbox>
+            </a:bar>
+        </a:vbox>
+    </a:window>
+</a:application>

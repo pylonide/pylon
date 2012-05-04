@@ -1,0 +1,14 @@
+{
+    "name": "ext.nodeunit",
+    "version": "0.0.1",
+    "main": "nodeunit-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.nodeunit"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

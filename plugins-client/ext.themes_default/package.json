@@ -1,0 +1,14 @@
+{
+    "name": "ext.themes_default",
+    "version": "0.0.1",
+    "main": "themes_default-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.themes_default"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

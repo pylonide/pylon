@@ -1,0 +1,306 @@
+HTML {
+    overflow : hidden;
+    background : #e8e8e8;
+}
+BODY {
+    background-color : #fefefe;
+    font-family      : Arial, Helvetica, sans-serif;
+    color            : #222222;
+    margin           : 0;
+    padding          : 0 ;
+    font-size        : 12px;
+}
+
+.noscript{
+    display: none;
+}
+.strong{
+    font-weight : bold;
+}
+
+.cut{
+    opacity : 0.5;
+}
+
+#logo {
+    background: url(images/logo.png) no-repeat 0 0;
+    width: 186px;
+    height: 26px;
+    display: block;
+    text-indent: -800em;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.headerMenuBar {
+    padding-right: 190px;
+}
+.alertMsg {
+    font-size   : 14px;
+    color       : #333333;
+    font-family : Arial, Helvetica, sans-serif;
+    line-height : 16px;
+}
+
+#loadscreen{
+    background : white;
+    padding : 10px;
+    position : absolute;
+    left : 0;
+    top : 0; 
+    right : 0;
+    bottom : 0;
+    z-index : 100;
+    color : #666;
+}
+.bk-window-cover.loader {
+    bottom:0;
+    left:0;
+    position:absolute;
+    right:0;
+    top:0;
+    z-index:9999999;
+}
+.loaderContent {
+    width: 350px;
+    margin: 10% auto 0;
+}
+.loaderContent .loaderTitle {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ced4d6;
+    text-shadow: 0px 2px 2px #000000;
+    text-align: center;
+}
+.loaderContent .loaderBg {
+    background: url(images/loader-bg.png) no-repeat 0 0;
+    width: 314px;
+    height: 27px;
+    margin-top: 15px;
+    padding: 14px 18px 0;
+}
+.loaderContent .loaderIndicator {
+    background-image: linear-gradient(bottom, rgb(243,132,6) 0%, rgb(255,165,54) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(243,132,6) 0%, rgb(255,165,54) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(243,132,6) 0%, rgb(255,165,54) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(243,132,6) 0%, rgb(255,165,54) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(243,132,6) 0%, rgb(255,165,54) 100%);
+    border-top: 1px solid #ffbc6d;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    
+    -webkit-box-shadow: 0px 3px 5px 0px #000000;
+    -moz-box-shadow: 0px 3px 5px 0px #000000;
+    box-shadow: 0px 3px 5px 0px #000000; 
+    
+    height: 11px;
+    
+    min-width: 4%;
+    margin: 0 auto;
+    width: 4%;
+}
+
+.draganddrop {
+    position: absolute;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    background-color: rgba(255, 255, 255, 0);
+    color: #000;
+    text-align: center;
+    -webkit-transition: background-color 0.25s ease-out;
+    -moz-transition: background-color 0.25s ease-out;
+    -ms-transition: background-color 0.25s ease-out;
+    -o-transition: background-color 0.25s ease-out;
+    transition: background-color 0.25s ease-out;
+}
+
+.draganddrop.over {
+    visibility: visible;
+    background-color: rgba(255, 255, 255, .5);
+}
+
+.draganddrop > span {
+    padding: 16px 8px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+    position: relative;
+    top: 150px;
+    -webkit-transition: background-color 0.25s ease-out;
+    -moz-transition: background-color 0.25s ease-out;
+    -ms-transition: background-color 0.25s ease-out;
+    -o-transition: background-color 0.25s ease-out;
+    transition: background-color 0.25s ease-out;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+
+.draganddrop.over > span {
+    background-color: rgba(0, 0, 0, .75);
+}
+
+.relative {
+    position: relative;
+}
+
+.consoleInputBox {
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #1d1d1d),color-stop(1, #292929));
+    background: -moz-linear-gradient(center bottom,#1d1d1d 0%,#292929 100%);
+    padding : 1px;
+    margin: 0;
+    overflow: hidden;
+    border-top: 1px solid #1f1f1f;
+    /*border-bottom: 1px solid #b2b2b2;*/
+    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+    position: relative;
+    z-index: 999;
+}
+
+.dockcol{
+/*    border-left : 1px solid #333;*/
+/*    -moz-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;
+    -webkit-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;*/
+    
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
+    background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+}
+
+.dockcol .expand-panel-bg {
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
+    background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: -3px;
+    top: 0;
+    /*border-bottom: 1px solid black;*/
+}
+.dockcol .ace_scroller {
+    -moz-border-radius    : 0;
+    -webkit-border-radius : 0;
+    border-radius         : 0;
+}
+.dockcol .basic {
+    
+}
+.dockcol .basic .expand-panel-bg {
+    background-image: linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+    background-image: -o-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+    background-image: -moz-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+    background-image: -webkit-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+    background-image: -ms-linear-gradient(bottom, rgb(50,51,54) 0%, rgb(68,69,72) 100%);
+    right: -3px
+}
+.dockcol .basic .hbox {
+    
+}
+
+.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.ace_content { z-index: 0 }
+/**
+ * SERVICE SIGNIN BUTTONS
+ */
+ 
+.signin_options {
+    margin: 15px 16px 0;
+    text-align: right;
+}
+
+.github-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_github.png) no-repeat 0 0;
+
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.github-signin.btn-over {
+    background-position:0 -24px;
+}
+
+.bitbucket-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_bitbucket.png) no-repeat 0 0;
+
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.bitbucket-signin.btn-over {
+    background-position:0 -24px;
+}
+.facebook-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_facebook.png) no-repeat 0 0;
+    
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.facebook-signin.btn-over {
+    background-position:0 -24px;
+}
+
+.google-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_google.png) no-repeat 0 0;
+    
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.google-signin.btn-over {
+    background-position:0 -24px;
+}
+
+.twitter-signin {
+    width: 26px;
+    height: 24px;
+    background:url(images/signin_twitter.png) no-repeat 0 0;
+    
+    display: inline-block;
+    float: right;
+    height: 24px;
+    margin-left: 6px;
+    margin-top: -5px;
+    width: 26px;
+}
+
+.twitter-signin.btn-over {
+    background-position:0 -24px;
+}

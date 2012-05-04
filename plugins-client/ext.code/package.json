@@ -1,0 +1,14 @@
+{
+    "name": "ext.code",
+    "version": "0.0.1",
+    "main": "code-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.code"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "ext.debugger",
+    "version": "0.0.1",
+    "main": "debugger-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.debugger"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

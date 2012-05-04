@@ -1,0 +1,14 @@
+{
+    "name": "ext.formatjson",
+    "version": "0.0.1",
+    "main": "formatjson-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.formatjson"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "ext.autosave",
+    "version": "0.0.1",
+    "main": "autosave-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.autosave"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

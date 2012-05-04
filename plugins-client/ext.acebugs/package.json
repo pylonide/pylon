@@ -1,0 +1,14 @@
+{
+    "name": "ext.acebugs",
+    "version": "0.0.1",
+    "main": "acebugs-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.acebugs"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "ext.dockpanel",
+    "version": "0.0.1",
+    "main": "dockpanel-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.dockpanel"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

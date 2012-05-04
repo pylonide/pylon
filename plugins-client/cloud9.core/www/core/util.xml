@@ -1,0 +1,82 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winAlert"
+      title     = ""
+      icon      = ""
+      skin      = "bk-window2"
+      class     = "relative"
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "512">
+        <a:vbox width="100%">
+            <a:hbox edge="15 10 25 10" padding="10">
+                <div class="alertWarn" margin="0 10 0 10"/>
+                <a:vbox flex="1" padding="5">
+                    <h3 id="winAlertHeader"></h3>
+                    <div id="winAlertMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
+                </a:vbox>
+            </a:hbox>
+<!--            <a:divider skin="hordivider" />-->
+            <a:hbox edge="6 10 10" pack="end">
+                <a:button id="winAlertButton" default="3" onclick="winAlert.hide();" skin="btn-default-css3">OK</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+    
+    <a:window
+      id        = "winConfirm"
+      title     = "Confirm"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "512"
+      skin      = "bk-window2"
+      class     = "relative">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3 id="winConfirmHeader"></h3>
+            <div id="winConfirmMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
+        </a:vbox>
+    
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnConfirmCancel" onclick="winConfirm.hide()" skin="btn-default-css3">Cancel</a:button>
+            <a:button id="btnConfirmOk" default="3" skin="btn-default-css3" class="btn-green" onclick="winConfirm.hide()">Ok</a:button>
+        </a:hbox>
+    </a:window>
+    
+    <a:window
+      id        = "winQuestion"
+      title     = "Question"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "512"
+      skin      = "bk-window2"
+      onkeydown = "
+        if(event.keyCode == 89) {
+            btnQuestionYes.dispatchEvent('click', {htmlEvent: {}});
+        }
+        if(event.keyCode == 78) {
+            btnQuestionNo.dispatchEvent('click', {htmlEvent: {}});
+        }
+      "
+      class     = "relative">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3 id="winQuestionHeader"></h3>
+            <div id="winQuestionMsg" class="alertMsg">An unexpected error occurred. Please refresh your browser window.</div>
+        </a:vbox>
+    
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnQuestionYesToAll" skin="btn-default-css3" class="btn-green" visible="false">Yes to all</a:button>
+            <a:button id="btnQuestionNoToAll" skin="btn-default-css3" class="btn-red" visible="false">No to all</a:button>
+            <a:filler/>
+            <a:button id="btnQuestionYes" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
+            <a:button id="btnQuestionNo" skin="btn-default-css3" class="btn-red">No</a:button>
+        </a:hbox>
+    </a:window>
+</a:application>

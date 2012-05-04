@@ -1,0 +1,14 @@
+{
+    "name": "ext.quickwatch",
+    "version": "0.0.1",
+    "main": "quickwatch-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.quickwatch"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

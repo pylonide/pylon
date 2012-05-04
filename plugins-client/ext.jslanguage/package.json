@@ -1,0 +1,14 @@
+{
+    "name": "ext.jslanguage",
+    "version": "0.0.1",
+    "main": "jslanguage-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.jslanguage"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

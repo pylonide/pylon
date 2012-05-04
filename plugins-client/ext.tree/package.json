@@ -1,0 +1,14 @@
+{
+    "name": "ext.tree",
+    "version": "0.0.1",
+    "main": "tree-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.tree"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

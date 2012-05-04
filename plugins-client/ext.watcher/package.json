@@ -1,0 +1,14 @@
+{
+    "name": "ext.watcher",
+    "version": "0.0.1",
+    "main": "watcher-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.watcher"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

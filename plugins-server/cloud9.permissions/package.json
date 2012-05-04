@@ -1,0 +1,14 @@
+{
+    "name": "cloud9.permissions",
+    "version": "0.0.1",
+    "main": "permissions-ext.js",
+    "private": true,
+
+    "plugin": {
+        "provides": ["workspace-permissions"],
+        "consumes": [
+            "connect",
+            "session"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "ext.searchreplace",
+    "version": "0.0.1",
+    "main": "searchreplace-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.searchreplace"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

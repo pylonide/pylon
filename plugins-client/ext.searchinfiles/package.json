@@ -1,0 +1,14 @@
+{
+    "name": "ext.searchinfiles",
+    "version": "0.0.1",
+    "main": "searchinfiles-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.searchinfiles"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

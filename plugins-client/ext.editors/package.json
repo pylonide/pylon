@@ -1,0 +1,15 @@
+{
+    "name": "ext.editors",
+    "version": "0.0.1",
+    "main": "editors-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.editors"
+        ],
+        "consumes": [
+            "client-plugins",
+            "ext.newresource"
+        ]
+    }
+}

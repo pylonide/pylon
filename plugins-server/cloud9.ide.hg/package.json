@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.ide.hg",
+    "version": "0.0.1",
+
+    "main": "./hg.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-shell",
+            "eventbus"
+        ]
+    }
+}

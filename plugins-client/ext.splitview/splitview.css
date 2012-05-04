@@ -1,0 +1,12 @@
+.editor_tab .btnsesssioncontainer div.curbtn.splitview_active .tab_middle {
+    color: #368419;
+    text-shadow: rgba(255, 255, 255, .71) 0px 1px 0px;
+}
+
+.editor_tab .btnsesssioncontainer div.curbtn.splitview_inactive .tab_middle {
+    
+}
+
+.editor_tab .btnsesssioncontainer div.curbtn.splitview_nplus1 .tab_left {
+    background-position: 0 -234px;
+}

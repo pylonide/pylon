@@ -1,0 +1,14 @@
+{
+    "name": "ext.codetools",
+    "version": "0.0.1",
+    "main": "codetools-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.codetools"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

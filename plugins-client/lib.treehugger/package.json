@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.treehugger",
+    "version": "0.0.1",
+    "main": "treehugger-lib.js",
+    "private": true,
+
+    "dependencies": {
+        "treehugger": "0.0.x"
+    },
+
+    "plugin": {
+        "provides": ["client.treehugger"],
+        "consumes": ["static"]
+    }
+}

@@ -1,0 +1,342 @@
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:list name="revisions-list">
+        <a:style><![CDATA[
+            /* ------------------------------------------------------------------------------------------
+             * Revision Bar
+             * --------------------------------------------------------------------------------------- */
+                .revisionsBar {
+                    border-left: 1px solid #e8e8e8;
+                }
+                .revisionsHolder {
+                    background: #f8f8f8;
+                    background: -webkit-linear-gradient(0, #efefef 1px, #f5f5f5 10px);
+                    background:    -moz-linear-gradient(0, #efefef 1px, #f5f5f5 10px);
+                    background:         linear-gradient(0, #efefef 1px, #f5f5f5 10px);
+                    border-left: 1px solid #fff;
+                }
+
+                .revisions-list{
+                    overflow: hidden;
+                    position: relative;
+                }
+            /* ------------------------------------------------------------------------------------------
+             * Header
+             * --------------------------------------------------------------------------------------- */
+                .revisionsBar .topbar {
+                    background: #e8e8e8;
+                    border-left: 1px solid transparent;
+                    box-shadow: 0 -1px 0 0 rgba(255,255,255,0.5) inset, 3px 1px 11px -3px rgba(0,0,0,0.3);
+                    border-bottom : 1px solid rgba(0,0,0,0.1);
+                    margin-bottom : -1px;
+                    z-index : 1000;
+                    position : relative;
+                }
+                .revisionsBar .topbar span {
+                    color: #8B8B8B;
+                    cursor: default;
+                    font-family: "Helvetica Neue", Arial;
+                    font-size: 12px;
+                    line-height: 17px;
+                    overflow: hidden;
+                    text-indent: 11px;
+                    text-transform: uppercase;
+                    text-shadow: 0 1px 0 white;
+                }
+                .revisionsBar .topbar .btn {
+                    cursor: pointer;
+                    position: absolute;
+                    right: 5px;
+                    top: 0;
+                }
+                .revisionsBar .topbar .btn .left,
+                .revisionsBar .topbar .btn .right {
+                    display: none
+                }
+                .revisionsBar .topbar .btn .lbl {
+                    background: url(images/close-btn.png) no-repeat 0 0;
+                    padding: 0;
+                    width: 14px;
+                }
+                .revisionsBar .topbar .btn:hover .lbl {
+                    background-position: -14px 0;
+                }
+                .revisionsBar .topbar .btn:active .lbl {
+                    background-position: -28px 0;
+                }
+            /* ------------------------------------------------------------------------------------------
+             * Revision
+             * --------------------------------------------------------------------------------------- */
+                .revisions-list .revision {
+                    border-bottom: 1px solid #ced5dd;
+                    color: #404040;
+                    cursor: pointer;
+                    display: block;
+                    font-family: Helvetica, "Helvetica-neue", Arial, Tahoma;
+                    font-size: 12px;
+                    padding: 14px 0;
+                    position: relative;
+                }
+                .revisions-list .revision:first-child {
+                    border-top: 1px solid #ced5dd;
+                }
+                .revisions-list .revision.hover {
+                    background: #f1f1f1;
+                    box-shadow: 0 1px 0 0 #F8F8F8 inset,
+                                0 -1px 0 0 #F8F8F8 inset;
+                }
+                .revisions-list .revision.selected {
+                    background: #107BC9;
+                    background: -webkit-linear-gradient(top, #1f88d4, #006ebd) !important;
+                    background:    -moz-linear-gradient(top, #1f88d4, #006ebd) !important;
+                    background:         linear-gradient(top, #1f88d4, #006ebd) !important;
+                    border-top-color: #1875B8;
+                    box-shadow: 0 1px 0 #41A7F1 inset,
+                                0 -1px 0 0 #1875B8 !important;
+                    color: #fff;
+                    text-shadow: 0 1px 0 #0067b0;
+                }
+
+                .revision .revision-icon {
+                    float: left;
+                    text-align: right;
+                    width: 21px;
+                }
+                .revision.selected .revision-icon .rev-usersave,
+                .revision.selected .revision-icon .rev-autosave {
+                    color: white;
+                    opacity: 0.85;
+                }
+                .revision .revision-icon .rev-usersave {
+                    font-family: Helvetica, Arial, sans-serif;
+                    font-size: 12px;
+                    font-weight: bold;
+                    color: #37a0e3;
+                }
+
+                .revision .revision-icon .rev-autosave {
+                    font-family: Helvetica, Arial, sans-serif;
+                    font-size: 12px;
+                    font-weight: bold;
+                    color: #AEAEAE;
+                }
+
+                .revision .revision-icon .rev-restoration {
+                    display: inline-block;
+                    width: 15px;
+                    height: 15px;
+                    background: url(images/rev-green-arrow-small.png) no-repeat 0 0%;
+                    overflow: hidden;
+                    text-align: left;
+                    text-indent: -999px;
+                }
+                .revision.selected .revision-icon .rev-restoration {
+                    background-position: 0 100%;
+                }
+                .compactView .revision .rev-usersave,
+                .compactView .revision .rev-autosave {
+                    display: none;
+                }
+                .revision .revision-info {
+                    overflow: hidden;
+                    padding-left: 11px;
+                }
+                .revision .revision-title {
+                }
+                .revision .contributors {
+                    font-size: 8pt;
+                    font-style: normal;
+                    font-weight: normal;
+                    line-height: 130%;
+                    list-style: none;
+                    margin: 6px 0 0;
+                    padding: 0;
+                    color: #8d8d8d;
+                }
+                .revision.selected .contributors {
+                    color: #fff;
+                }
+                .revision .contributors span {
+                    display: inline-block;
+                    height: 11px;
+                    line-height: 11px;
+                }
+                .revision .contributors .coloredSquare {
+                    background-image: url(images/contributor.png);
+                    box-shadow: 0 1px 0 0 rgba(255,255,255,.24);
+                    overflow: hidden;
+                    text-indent: -9999px;
+                    width: 11px;
+                }
+                .revision .btnRecover {
+                    height: 26px;
+                    position: absolute;
+                    right: 10px;
+                    top: 5px;
+                    width: 29px;
+                }
+                .revision .revision-info button {
+                    background-color: #ededee;
+                    display: none;
+                    position: absolute;
+                    top: 50%;
+                    margin-top: -13px;
+                    right: 11px;
+                    width: 28px;
+                    height: 27px;
+                    background: url(images/rev-green-arrow.png) no-repeat 50% 0;
+                    border: 0;
+                    cursor: pointer;
+                }
+
+
+                @-webkit-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+                @-moz-keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+                @keyframes loadingDots { 0%, 19.99%, 100% { background-position: 0 0 } 20%, 39.99% { background-position: -30px 0 } 40%, 59.99% { background-position: -60px 0 } 60%,79.99% { background-position: -90px 0 } 80%, 99.99% { background-position: -120px 0 } }
+
+                .revision .revision-info button[disabled] {
+                    background: url(images/loading.png) no-repeat;
+                    -webkit-animation: loadingDots .7s linear 0s infinite normal;
+                       -moz-animation: loadingDots .7s linear 0s infinite normal;
+                            animation: loadingDots .7s linear 0s infinite normal;
+                }
+
+                .revision.selected .revision-info button,
+                .revision.hover .revision-info button {
+                    display: block;
+                }
+                .revision.selected .revision-info button {
+                    background-position: 50% -30px;
+                }
+
+                .revision:only-child .revision-info button {
+                    display: none;
+                }
+
+            /* ------------------------------------------------------------------------------------------
+             * Show Details
+             * --------------------------------------------------------------------------------------- */
+                 .show-details {
+                    border-top: 1px solid rgba(0,0,0,0.1);
+                    box-shadow: 0 1px 0 0 #fff inset, 0px -2px 13px -6px rgba(0,0,0,0.3);
+                    padding-bottom: 3px;
+                    margin-top : -1px;
+                    z-index : 1000;
+                    position : relative;
+                 }
+                 .show-details .subbar {
+                    background: none;
+                 }
+                 .show-details .checkbox {
+                    left: 1px;
+                 }
+            /* ------------------------------------------------------------------------------------------
+             * Other
+             * --------------------------------------------------------------------------------------- */
+                 .revisions-listFocus>.indicate>SPAN>U{
+                    border: 1px dotted #BBB;/*#25a8e7;*/
+                    color : black;
+                    padding: 1px 3px 1px 1px;
+                }
+
+                .revisions-list>.selected>SPAN>U{
+                    background-color: #f0f0f0;
+                    color: black;
+                }
+                .revisions-listFocus>.selected>SPAN>U {
+                    color: white;
+                    background-color: #25a8e7;
+                }
+
+                .revisions-list .empty, .revisions-list .offline, .revisions-list .loading{
+                    text-align: center;
+                    padding: 8px 0 0 5px;
+                    color: #aaa;
+                    font-weight : normal;
+                }
+
+                .revisions-list.emptyLeft .empty {
+                    text-align: left;
+                }
+
+                .spiRevisionPreview, spiRevisionLoading {
+                    position: absolute;
+                    top: 5px;
+                    right: 0;
+                    background-image: url(images/revisions-spinner-active.gif);
+                }
+
+                .ace_dark .revision_hl_delete {
+                    position: absolute;
+                    background: rgb(118, 54, 54);
+                }
+
+                .revision_hl_delete {
+                    position: absolute;
+                    background: rgb(243, 207, 207);
+                }
+
+                /*
+                 * Uncomment the following for strikethrough on deleted text
+                 * .revision_hl_delete_strike {
+                 *     position: absolute;
+                 *     border-bottom: solid 1px black;
+                 *     padding: 0;
+                 *     margin: 0;
+                 *     margin: -.6em 0 0 0;
+                 * }
+                 */
+
+                .ace_dark .revision_hl_insert {
+                    position: absolute;
+                    background: rgb(73, 102, 73);
+                }
+
+                .revision_hl_insert {
+                    position: absolute;
+                    background: rgb(168, 232, 166);
+                }
+                
+	        .c9-revisionsInfo {
+				width: 428px;
+				height: 230px;
+	            position: absolute;
+	            top: 39px;
+	            left: 354px;
+	            z-index: 50000;
+	            min-width: 0px;
+	            min-height: 0px;
+	            max-width: 9998px;
+	            max-height: 9992px;
+	            display: none;
+	            opacity: 1;
+	            padding: 7px;
+	            color: white;
+	            line-height: 13px;
+	        }
+	        
+	        .revisionsInfoDesc {
+	        	color: white;
+	        	background: transparent;
+	        	line-height: 16px;
+	        }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container=".">
+                <div class="revisions-list">
+                </div>
+            </a:main>
+            <a:item class="." caption="." icon="." select=".">
+                <div class="revision"></div>
+            </a:item>
+            <a:dragindicator>
+                <div class="revision draglist"></div>
+            </a:dragindicator>
+            <a:loading>
+                <div class="loading">Loading...</div>
+            </a:loading>
+            <a:empty caption=".">
+                <div class="message">-</div>
+            </a:empty>
+        </a:presentation>
+    </a:list>
+</a:skin>

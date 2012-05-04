@@ -1,0 +1,14 @@
+{
+    "name": "ext.recentfiles",
+    "version": "0.0.1",
+    "main": "recentfiles-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.recentfiles"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "ext.closeconfirmation",
+    "version": "0.0.1",
+    "main": "closeconfirmation-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.closeconfirmation"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

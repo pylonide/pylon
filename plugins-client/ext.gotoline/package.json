@@ -1,0 +1,14 @@
+{
+    "name": "ext.gotoline",
+    "version": "0.0.1",
+    "main": "gotoline-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.gotoline"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

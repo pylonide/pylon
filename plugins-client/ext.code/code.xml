@@ -1,0 +1,84 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:codeeditor id="ceEditor"
+      flex              = "1"
+      anchors           = "6 0 0 0"
+      theme             = "[{require('core/settings').model}::editors/code/@theme]"
+      overwrite         = "[{require('core/settings').model}::editors/code/@overwrite]"
+      folding           = "[{require('core/settings').model}::editors/code/@folding]"
+      behaviors         = "[{require('core/settings').model}::editors/code/@behaviors]"
+      selectstyle       = "[{require('core/settings').model}::editors/code/@selectstyle]"
+      activeline        = "[{require('core/settings').model}::editors/code/@activeline]"
+      gutterline        = "[{require('core/settings').model}::editors/code/@gutterline]"
+      showinvisibles    = "[{require('core/settings').model}::editors/code/@showinvisibles]"
+      showprintmargin   = "[{require('core/settings').model}::editors/code/@showprintmargin]"
+      printmargincolumn = "[{require('core/settings').model}::editors/code/@printmargincolumn]"
+      softtabs          = "[{require('core/settings').model}::editors/code/@softtabs]"
+      tabsize           = "[{require('core/settings').model}::editors/code/@tabsize]"
+      scrollspeed       = "[{require('core/settings').model}::editors/code/@scrollspeed]"
+      newlinemode       = "[{require('core/settings').model}::editors/code/@newlinemode]"
+      animatedscroll    = "[{require('core/settings').model}::editors/code/@animatedscroll]"
+      fontsize          = "[{require('core/settings').model}::editors/code/@fontsize]"
+      wrapmode          = "[{require('core/settings').model}::editors/code/@wrapmode]"
+      wrapmodeViewport  = "[{require('core/settings').model}::editors/code/@wrapmodeViewport]"
+      wraplimitmin      = "40"
+      wraplimitmax      = "80"
+      gutter            = "[{require('core/settings').model}::editors/code/@gutter]"
+      highlightselectedword = "[{require('core/settings').model}::editors/code/@highlightselectedword]"
+      autohidehorscrollbar  = "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]"
+      fadefoldwidgets   = "[{require('core/settings').model}::editors/code/@fadefoldwidgets]"
+
+      contextmenu       = "mnuCtxEditor"
+      globalcommands    = "true"
+      debugger          = "{this.syntax == 'javascript' ? dbg : null}"
+      readonly          = "{[@loading] || cloud9config.readonly || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
+    />
+
+    <a:menu id="mnuCtxEditor" render="runtime">
+        <a:item command="undo">Undo</a:item>
+        <a:item command="redo">Redo</a:item>
+        <a:divider />
+        <a:item command="cut">Cut</a:item>
+        <a:item command="copy">Copy</a:item>
+        <a:item command="paste">Paste</a:item>
+        <a:divider />
+        <a:item 
+          visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"
+          onclick="
+            require('ext/quickwatch/quickwatch').toggleDialog(1, true);
+          ">Quick Watch</a:item>
+        <a:divider visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}" />
+        <a:item command="selectall">Select All</a:item>
+    </a:menu>
+
+    <a:menu id="mnuSyntax">
+        <a:item type="radio" value="auto">Auto-Select</a:item>
+        <a:item type="radio" value="text/plain">Plain Text</a:item>
+        <a:divider />
+        <a:item type="radio" value="text/x-csharp">C#</a:item>
+        <a:item type="radio" value="text/x-c">C/C++</a:item>
+        <a:item type="radio" value="text/x-script.clojure">Clojure</a:item>
+        <a:item type="radio" value="text/x-script.coffeescript">CoffeeScript</a:item>
+        <a:item type="radio" value="text/x-coldfusion">Coldfusion</a:item>
+        <a:item type="radio" value="text/css">CSS</a:item>
+        <a:item type="radio" value="text/x-groovy">Groovy</a:item>
+        <a:item type="radio" value="text/x-java-source">Java</a:item>
+        <a:item type="radio" value="application/javascript">JavaScript</a:item>
+        <a:item type="radio" value="application/x-latex">Latex</a:item>
+        <a:item type="radio" value="application/x-sh">Shell Script</a:item>
+        <a:item type="radio" value="text/x-lua">Lua</a:item>
+        <a:item type="radio" value="text/x-markdown">Markdown</a:item>
+        <a:item type="radio" value="text/x-script.ocaml">OCaml</a:item>
+        <a:item type="radio" value="application/x-httpd-php">PHP</a:item>
+        <a:item type="radio" value="text/x-script.perl">Perl</a:item>
+        <a:item type="radio" value="text/x-script.powershell">Powershell</a:item>
+        <a:item type="radio" value="text/x-script.python">Python</a:item>
+        <a:item type="radio" value="text/x-script.ruby">Ruby</a:item>
+        <a:item type="radio" value="text/x-scala">Scala</a:item>
+        <a:item type="radio" value="text/x-scss">SCSS</a:item>
+        <a:item type="radio" value="text/x-sql">SQL</a:item>
+        <a:item type="radio" value="text/x-web-textile">Textile</a:item>
+        <a:item type="radio" value="text/html">(X)HTML</a:item>
+        <a:item type="radio" value="application/xml">XML</a:item>
+>>>>>>> 9423a6f57ad85cb2c40d03eb764434c60406a0ae
+    </a:menu>
+</a:application>

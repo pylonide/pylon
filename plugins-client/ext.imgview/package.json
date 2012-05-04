@@ -1,0 +1,14 @@
+{
+    "name": "ext.imgview",
+    "version": "0.0.1",
+    "main": "imgview-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.imgview"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

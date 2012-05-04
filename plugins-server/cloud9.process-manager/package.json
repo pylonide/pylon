@@ -1,0 +1,19 @@
+{
+    "name": "c9.process-manager",
+    "version": "0.0.1",
+
+    "main": "./process-manager-ext.js",
+
+    "dependencies": {
+        "asyncjs": "~0.0.5"
+    },
+
+    "plugin": {
+        "provides": [
+            "process-manager"
+        ],
+        "consumes": [
+            "eventbus"
+        ]
+    }
+}

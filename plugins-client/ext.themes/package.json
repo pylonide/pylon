@@ -1,0 +1,14 @@
+{
+    "name": "ext.themes",
+    "version": "0.0.1",
+    "main": "themes-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.themes"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

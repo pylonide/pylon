@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.ide.shell",
+    "version": "0.0.1",
+
+    "main": "./shell.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-shell"
+        ]
+    }
+}

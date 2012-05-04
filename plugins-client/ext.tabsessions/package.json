@@ -1,0 +1,14 @@
+{
+    "name": "ext.tabsessions",
+    "version": "0.0.1",
+    "main": "tabsessions-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.tabsessions"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

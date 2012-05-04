@@ -1,0 +1,14 @@
+{
+    "name": "ext.vim",
+    "version": "0.0.1",
+    "main": "vim-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.vim"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "ext.offline",
+    "version": "0.0.1",
+    "main": "offline-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.offline"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

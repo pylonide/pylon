@@ -1,0 +1,14 @@
+{
+    "name": "ext.save",
+    "version": "0.0.1",
+    "main": "save-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.save"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

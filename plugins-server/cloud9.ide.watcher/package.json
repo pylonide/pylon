@@ -1,0 +1,13 @@
+{
+    "name": "cloud9.ide.watcher",
+    "version": "0.0.1",
+
+    "main": "./watcher.js",
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "dav"
+        ]
+    }
+}

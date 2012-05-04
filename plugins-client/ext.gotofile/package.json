@@ -1,0 +1,14 @@
+{
+    "name": "ext.gotofile",
+    "version": "0.0.1",
+    "main": "gotofile-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.gotofile"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "ext.help",
+    "version": "0.0.1",
+    "main": "help-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.help"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

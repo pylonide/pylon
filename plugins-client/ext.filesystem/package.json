@@ -1,0 +1,14 @@
+{
+    "name": "ext.filesystem",
+    "version": "0.0.1",
+    "main": "filesystem-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.filesystem"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

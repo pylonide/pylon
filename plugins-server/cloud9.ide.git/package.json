@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.ide.git",
+    "version": "0.0.1",
+
+    "main": "./git.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-shell",
+            "eventbus"
+        ]
+    }
+}

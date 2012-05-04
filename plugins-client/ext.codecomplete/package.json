@@ -1,0 +1,14 @@
+{
+    "name": "ext.codecomplete",
+    "version": "0.0.1",
+    "main": "codecomplete-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.codecomplete"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

@@ -1,0 +1,58 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window id="winQuickWatch"
+      title     = "Quickwatch" 
+      buttons   = "close" 
+      modal     = "false" 
+      center    = "true"
+      width     = "500"
+      skin      = "bk-window"
+      class     = "nofooter"
+      height    = "350"
+      resizable = "true"
+      kbclose   = "true">
+        <a:vbox anchors="0 0 0 0">
+            <a:textbox id="txtCurObject" 
+                skin      = "tbempty" 
+                margin    = "5" 
+                realtime  = "true"
+                disabled  = "{!stDebugProcessRunning.active || stRunning.active}"
+                initial-message = "Enter an expression"
+                focusselect     = "true" 
+                onclear   = "
+                    dgWatch.clear();
+                "/>
+            
+            <a:datagrid id="dgWatch"
+              flex       = "1"
+              border     = "1 0 0 0"
+              options    = "size|move"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
+              prerender  = "false"
+              caching    = "false"
+              disabled   = "{!stDebugProcessRunning.active || stRunning.active}"
+              empty-message   = "Type a javascript expression and press enter."
+              loading-message = "Calculating..."
+              onafterselect   = "
+                if (this.selected)
+                    txtCurObject.setValue(require('ext/debugger/inspector').calcName(this.selected, true));
+              "
+              onbeforechange  = "
+                return require('ext/debugger/inspector').checkChange(event.args[0]);
+              ">
+                <a:model>
+                    <vars />
+                </a:model>
+                <a:actions />
+                <a:each match="[item|globals]" sort="[@name]">
+                    <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
+                    <a:expanded match="[node()[@expand]]" />
+                    <a:column caption="Property" value="{[@name] || 'Globals'}" width="120" icon="debugger/genericvariable_obj.gif" tree="true" />
+                    <a:column caption="Value" value="{apf.escapeXML([@value])}" width="100%" />
+                    <a:column caption="Type" value="[@type]" width="80"/>
+                </a:each>
+                <a:change set="{require('ext/debugger/inspector').applyChange(xmlNode);}" />
+            </a:datagrid>
+        </a:vbox>
+    </a:window>
+</a:application>

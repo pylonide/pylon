@@ -1,0 +1,14 @@
+{
+    "name": "ext.gitblame",
+    "version": "0.0.1",
+    "main": "gitblame-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.gitblame"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

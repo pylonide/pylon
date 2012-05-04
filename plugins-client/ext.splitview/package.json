@@ -1,0 +1,14 @@
+{
+    "name": "ext.splitview",
+    "version": "0.0.1",
+    "main": "splitview-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.splitview"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

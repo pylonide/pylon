@@ -1,0 +1,14 @@
+{
+    "name": "ext.beautify",
+    "version": "0.0.1",
+    "main": "beautify-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.beautify"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

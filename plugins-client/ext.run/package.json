@@ -1,0 +1,14 @@
+{
+    "name": "ext.run",
+    "version": "0.0.1",
+    "main": "run-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.run"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

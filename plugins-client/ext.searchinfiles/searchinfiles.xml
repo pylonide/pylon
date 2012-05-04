@@ -1,0 +1,90 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window id="winSearchInFiles"
+      onhide  = "require('ext/searchinfiles/searchinfiles').onHide()"
+      title   = "Search in Files"
+      buttons = "close"
+      skin    = "bk-window"
+      class   = "relative"
+      modal   = "false"
+      center  = "true"
+      width   = "450"
+      realtime = "true"
+      kbclose = "true">
+        <a:vbox edge="10" padding="5">
+            <a:hbox>
+                <a:label width="95">Containing Text</a:label>
+                <a:textarea id="txtSFFind" flex="1" focusselect="true" cols="70" />
+            </a:hbox>
+            <a:hbox align="center">
+                <a:label width="95">File Extensions</a:label>
+                <a:textbox id="ddSFPatterns" flex="1" focusselect="true" initial-message="*.*"/>
+            </a:hbox>
+            <a:hbox id="barReplace" align="center">
+                <a:label width="95">Replace With</a:label>
+                <a:textbox id="txtSFReplace" flex="1" />
+            </a:hbox>
+            <a:hbox edge="10 0 5">
+                <a:fieldset flex="1" caption="Options" margin="0 0 1">
+                    <a:checkbox id="chkSFMatchCase"
+                      checked = "false"
+                      skin    = "checkbox_grey"
+                      margin  = "0 0 2"
+                      label   = "Match Case" />
+                    <!--a:checkbox id="chkSFWholeWords" label="Whole Words" /-->
+                    <a:checkbox id="chkSFRegEx"
+                      skin  = "checkbox_grey"
+                      label = "Regular Expressions" />
+                </a:fieldset>
+                <a:fieldset flex="1" caption="Scope" margin="0 0 1 5">
+                    <a:radiobutton
+                      group  = "grpSFScope"
+                      skin   = "radio_grey"
+                      value  = "projects"
+                      margin = "0 0 2"
+                      label  = "Project" />
+                    <a:radiobutton id="rbSFSelection"
+                      group  = "grpSFScope"
+                      skin   = "radio_grey"
+                      value  = "selection"
+                      label  = "Selection"
+                      selected = "true" />
+                </a:fieldset>
+            </a:hbox>
+        </a:vbox>
+        <a:hbox padding="10" pack="end" edge="6 10 10">
+            <a:button id="btnSFReplaceAll" skin="btn-default-css3">Replace All</a:button>
+            <a:button id="btnSFFind" default="2" class="btn-green" skin="btn-default-css3">Find All</a:button>
+            <a:button onclick="winSearchInFiles.hide()" skin="btn-default-css3">Close</a:button>
+        </a:hbox>
+    </a:window>
+
+    <!-- Added prerender here to speed up the loading. The query already has the data we need, we don't need to
+    render the results one by one (as we do, for example, with the Project Files tree -->
+    <a:hbox id="trSFHbox" anchors="0 0 0 0" visible="false" render="runtime">
+        <a:tree id        = "trSFResult"
+          skinset         = "searchinfiles"
+          border          = "0"
+          visible         = "false"
+          prerender       = "false"
+          each            = "[d:querydetail|d:maxreached|d:response|d:excerpt]"
+          loading-message = "Searching..."
+          style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
+          autoselect      = "false"
+          reselectable    = "true"
+          class           = "console_text">
+            <a:model />
+            <a:caption match="[d:querydetail]">[@count] {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in [@filecount] {[@filecount] == 1 ? "file" : "files"}{[@replacement].length &gt; 0 ? ", replaced as '" + apf.htmlentities([@replacement]) + "'" : ""} [@options]</a:caption>
+            <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
+            <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
+            <a:css match="[d:response]" value="term_ansi5Color" />
+            <a:caption match="[d:excerpt]"><div class="linenumber term_ansi6Color">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
+        </a:tree>
+        <a:scrollbar
+          id        = "sbSFResult"
+          for       = "trSFResult"
+          margin    = "0"
+          skin      = "console_scrollbar"
+          style     = "position:absolute;top:0;bottom:0;right:0;"
+          width     = "17" />
+    </a:hbox>
+</a:application>

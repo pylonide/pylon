@@ -1,0 +1,16 @@
+{
+    "name": "cloud9.ide.npm",
+    "version": "0.0.1",
+
+    "main": "./npm.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-npm",
+            "eventbus"
+        ]
+    }
+}

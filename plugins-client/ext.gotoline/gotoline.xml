@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:bar id="winGotoLine"
+      skinset = "gotoline"
+      visible = "false"
+      width   = "60"
+      height  = "90"
+      left    = "-100"
+      top     = "-100"
+      zindex  = "100000">
+        <a:vbox anchors="0 0 0 0" padding="0" edge="5">
+            <a:textbox id="txtLineNr"
+              focusselect="true" />
+            <a:list id="lstLineNumber"
+              model   = "{tabEditors.getPage(tabEditors.activepagenr).$model}"
+              flex    = "1"
+              caption = "[@nr]"
+              each    = "[gotoline/line]"
+              autoselect    = "false"
+              multiselect   = "false"
+              empty-message = "empty" />
+        </a:vbox>
+    </a:bar>
+</a:application>

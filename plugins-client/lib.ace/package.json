@@ -1,0 +1,14 @@
+{
+    "name": "cloud9.client.ace",
+    "version": "0.0.1",
+    "main": "ace-lib.js",
+    "private": true,
+
+    "dependencies": {
+    },
+
+    "plugin": {
+        "provides": ["client.ace"],
+        "consumes": ["static"]
+    }
+}

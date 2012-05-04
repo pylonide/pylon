@@ -1,0 +1,14 @@
+{
+    "name": "ext.stripws",
+    "version": "0.0.1",
+    "main": "stripws-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.stripws"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

@@ -1,0 +1,87 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:button name="zenbutton">
+        <a:style><![CDATA[
+            .zenbutton {
+                height             : 23px;
+                overflow           : hidden;
+                cursor             : default;
+                position           : absolute;
+                -moz-user-select   : none;
+                -khtml-user-select : none;
+                user-select        : none;
+                line-height        : 17px;
+                opacity : 0.01;
+                z-index: 2;
+                top: 10px;
+                right: 10px;
+            }
+            
+            .zenbutton.full {
+                background : url(images/zen-buttons.png) -1px -28px no-repeat;
+            }
+
+            .zenbutton.full.zenbuttonOver {
+                background : url(images/zen-buttons.png) -28px -28px no-repeat;
+            }
+
+            .zenbutton.notfull {
+                background : url(images/zen-buttons.png) -1px -1px no-repeat;
+            }
+
+            .zenbutton.notfull.zenbuttonOver {
+                background : url(images/zen-buttons.png) -28px -1px no-repeat;
+            }
+            
+            #animateZen {
+                z-index: 90014;
+                position: absolute;
+                -webkit-box-shadow: 0px 0px 25px #000;
+                -moz-box-shadow: 0px 0px 25px #000;
+                overflow: hidden;
+            }
+            
+            #animateZenPosition {
+                position: absolute;
+            }
+            
+            #zenHandleRight, #zenHandleLeft {
+                position: absolute;
+                z-index: 90014;
+                width: 5px;
+                background: transparent;
+                cursor: ew-resize;
+                opacity: 0;
+            }
+            
+            #zenHandleLeft {
+                background-image: linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+                background-image: -o-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+                background-image: -moz-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+                background-image: -webkit-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+                background-image: -ms-linear-gradient(right , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+            }
+            
+            #zenHandleRight {
+                background-image: linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+                background-image: -o-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+                background-image: -moz-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+                background-image: -webkit-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+                background-image: -ms-linear-gradient(left , rgb(153,153,153) 0%, rgb(204,204,204) 50%);
+            }
+            
+            .vbZen {
+                opacity: 0;
+                z-index: 90013;
+                background: url(images/zenbg.png);
+                padding: 0 80px;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main background="." minwidth="20">
+                <div class="zenbutton">
+                 </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+</a:skin>

@@ -1,0 +1,14 @@
+{
+    "name": "ext.undo",
+    "version": "0.0.1",
+    "main": "undo-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.undo"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

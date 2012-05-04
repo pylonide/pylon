@@ -1,0 +1,3 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox position="9000" class="underlined" label="Vim Mode" value="[editors/code/@vimmode]" skin="checkbox_grey" onclick="require('ext/vim/vim').toggle()" />
+</a:application>

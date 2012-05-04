@@ -1,0 +1,14 @@
+{
+    "name": "ext.openfiles",
+    "version": "0.0.1",
+    "main": "openfiles-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.openfiles"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

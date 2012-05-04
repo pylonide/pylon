@@ -1,0 +1,14 @@
+{
+    "name": "ext.statusbar",
+    "version": "0.0.1",
+    "main": "statusbar-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.statusbar"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

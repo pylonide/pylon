@@ -1,0 +1,14 @@
+{
+    "name": "ext.testpanel",
+    "version": "0.0.1",
+    "main": "testpanel-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.testpanel"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

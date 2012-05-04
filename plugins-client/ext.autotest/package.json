@@ -1,0 +1,14 @@
+{
+    "name": "ext.autotest",
+    "version": "0.0.1",
+    "main": "autotest-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.autotest"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

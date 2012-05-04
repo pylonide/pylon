@@ -1,0 +1,14 @@
+{
+    "name": "ext.newresource",
+    "version": "0.0.1",
+    "main": "newresource-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.newresource"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

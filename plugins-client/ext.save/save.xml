@@ -1,0 +1,155 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winCloseConfirm"
+      title     = "Save this file?"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      width     = "512"
+      skin      = "bk-window2"
+      draggable = "true"
+      class     = "relative"
+      onkeydown = "
+        if(event.keyCode == 89) {
+            btnSaveYes.dispatchEvent('click', {htmlEvent: {}});
+        }
+        if(event.keyCode == 78) {
+            btnSaveNo.dispatchEvent('click', {htmlEvent: {}});
+        }
+      ">
+        <a:vbox id="fileDesc" padding="10" edge="15 20 25 20">
+            
+        </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnYesAll" caption="Yes to all" skin="btn-default-css3" />
+            <a:button id="btnNoAll" caption="No to all" skin="btn-default-css3"/>
+            <a:filler />
+            <a:button id="btnSaveYes" default="3" class="btn-green" caption="Yes" skin="btn-default-css3"/>
+            <a:button id="btnSaveNo" class="btn-red" caption="No" skin="btn-default-css3"/>
+            <a:button id="btnSaveCancel" skin="btn-default-css3">Cancel</a:button>
+        </a:hbox>
+    </a:window>
+
+    <a:script><![CDATA[
+        function chooseSaveAsFolder(folder) {
+            var fooPath = folder.getAttribute("path");
+            if (folder.getAttribute("type") != "folder" && folder.tagName != "folder") {
+                var fooPath = fooPath.split("/");
+                txtSaveAs.setValue(fooPath.pop());
+                fooPath = fooPath.join("/");
+            }
+            lblPath.setProperty('caption', fooPath + '/');
+        }
+    ]]></a:script>
+
+    <a:window
+      id        = "winSaveAs"
+      center    = "true"
+      height    = "395"
+      icon      = ""
+      buttons   = "close"
+      skin      = "bk-window"
+      kbclose   = "true"
+      resizable = "true"
+      title     = "Save As"
+      onshow    = "require('ext/save/save').expandTree();"
+      width     = "480"
+      draggable = "true">
+        <a:vbox
+          anchors   = "10 10 0 10"
+          padding   = "5">
+            <a:hbox
+              align     = "center"
+              padding   = "5">
+                <a:label flex="1" class="lbl_saveas">Save as:</a:label>
+                <a:textbox
+                  id           = "txtSaveAs"
+                  flex         = "7"
+                  focusselect  = "true"
+                  onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(lblPath.getProperty('caption') + this.getValue())" />
+            </a:hbox>
+            <a:label id="lblPath" class="lbl_filepath" />
+
+            <div class="dgLikeContaier">
+                <div class="heading">Project folder</div>
+                <a:hbox
+                  anchors  = "20 0 0 0"
+                  overflow = "hidden">
+                    <a:tree
+                      id            = "trSaveAs"
+                      class         = "trDgLike"
+                      flex          = "1"
+                      scrollbar     = "sbShared 2 2 2"
+                      model         = "{require('ext/filesystem/filesystem').model}"
+                      contextmenu   = "mnuCtxTree"
+                      onafterselect = "chooseSaveAsFolder(this.selected)"
+                      onafterchoose = "chooseSaveAsFolder(this.selected)">
+                        <a:each match="[folder|file]">
+                           <a:insert
+                             match = "[folder]"
+                             get   = "{location.host &amp;&amp; davProject.readdir([@path])}" />
+                           <a:caption match="[@name]" />
+                           <a:icon
+                             match = "[folder]"
+                             value = "folder.png" />
+                           <a:icon
+                             match = "[file]"
+                             value = "{require('core/util').getFileIcon(%[.])}" />
+                           <a:css match="[file]" value="file_item"></a:css>
+                        </a:each>
+                        <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                        <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+                        <a:rename set="{alert('boe'); davProject.rename([@name], [@path])}"/>
+                        <a:copy match="[file|folder]" set="{davProject.copy([@path], [../@path])}"/>
+                        <a:move set="{davProject.move([@path], [../@path])}"/>
+                        <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+
+                        <a:drag match="[folder|file]" />
+                        <a:drop match="[folder|file]" target="[folder]"
+                            action="tree-append" copy="{event.ctrlKey}" />
+                    </a:tree>
+                </a:hbox>
+            </div>
+            <a:hbox padding="15" align="center">
+                <a:button
+                  width    = "104"
+                  icon     = "folder_new.png"
+                  class    = "btnIconOnly smallCaption newFolder"
+                  onclick  = "require('ext/filesystem/filesystem').createFolder('New Folder', trSaveAs)"
+                  tooltip  = "Create folder">
+                    Create folder
+                </a:button>
+                <a:filler />
+                <a:checkbox
+                  skin    = "checkbox_grey"
+                  checked = "true"
+                  width   = "120"
+                  margin  = "4 0 0"
+                  onafterchange="
+                    if(this.checked)
+                        trSaveAs.$ext.className = trSaveAs.$ext.className.replace(/hidefiles/, '');
+                    else
+                        apf.setStyleClass(trSaveAs.$ext, 'hidefiles');
+                  ">Show files in tree</a:checkbox>
+            </a:hbox>
+            <a:hbox
+              edge    = "23 0 10"
+              pack    = "end"
+              padding = "8">
+                <a:button
+                  skin    = "btn-default-css3"
+                  onclick = "winSaveAs.hide()">
+                    Cancel
+                </a:button>
+                <a:button
+                  class    = "btn-green"
+                  default  = "2"
+                  skin     = "btn-default-css3"
+                  onclick  = "require('ext/save/save').confirmSaveAs()">
+                    Save
+                </a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>

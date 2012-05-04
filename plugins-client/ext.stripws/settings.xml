@@ -1,0 +1,3 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox class="underlined" label="On Save, Strip Whitespace" value="[editors/code/@stripws]" skin="checkbox_grey" position="3000" />
+</a:application>

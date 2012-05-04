@@ -1,0 +1,16 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:button id="btnZenFullscreen"
+      visible = "true"
+      width   = "26"
+      height  = "26"
+      top     = "13"
+      right   = "11"
+      class = "notfull"
+      skinset = "zen"
+      skin = "zenbutton"
+      onclick = "require('ext/zen/zen').toggleFullscreenZen(event)"
+      onmouseover = "require('ext/zen/zen').fadeZenButtonIn()"
+      onmouseout = "require('ext/zen/zen').fadeZenButtonOut()"
+     />
+
+</a:application>

@@ -1,0 +1,12 @@
+{
+    "name": "cloud9.ide.gittools",
+    "version": "0.0.1",
+
+    "main": "./gittools.js",
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}

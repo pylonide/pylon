@@ -1,0 +1,14 @@
+{
+    "name": "ext.tabbehaviors",
+    "version": "0.0.1",
+    "main": "tabbehaviors-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.tabbehaviors"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

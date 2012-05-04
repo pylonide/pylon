@@ -1,0 +1,67 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winSaveSessionAs"
+      center    = "true"
+      height    = "300"
+      icon      = ""
+      skin      = "bk-window"
+      buttons   = "close"
+      kbclose   = "true"
+      resizable = "true"
+      title     = "Save Session As"
+      width     = "300"
+      onshow    = "txtSaveSessionAs.clear()">
+        <a:vbox
+          anchors   = "10 10 0 10"
+          padding   = "5">
+            <a:hbox
+              align     = "center"
+              padding   = "5">
+                <a:label width="83" class="lbl_saveas">Session name:</a:label>
+                <a:textbox
+                  id           = "txtSaveSessionAs"
+                  flex         = "1"
+                  focusselect  = "true"/>
+            </a:hbox>
+            <div class="dgLikeContaier" style="height: 160px;">
+                <div class="heading">Saved sessions</div>
+                <a:hbox
+                  anchors  = "20 0 0 0"
+                  overflow = "hidden">
+                    <a:list
+                      id            = "lstSaveSessionAs"
+                      class         = "noscrollbar trDgLike emptyLeft"
+                      scrollbar     = "sbShared 2 2 2"
+                      style         = "border: none; overflow: hidden"
+                      flex          = "1"
+                      model         = "{require('ext/settings/settings').model}"
+                      onclick = "txtSaveSessionAs.setValue(this.selected.getAttribute('name'))"
+                      onafterchoose = "require('ext/tabsessions/tabsessions').saveSession(this.selected.getAttribute('name'))"
+                      empty-message = "No sessions">
+                        <a:each match="[auto/sessions/session]">
+                           <a:caption match="[@name]" />
+                           <a:icon
+                             value = "page_white_text.png" />
+                        </a:each>
+                    </a:list>
+                </a:hbox>
+            </div>
+
+            <a:hbox
+              edge    = "30 0 0"
+              pack    = "end"
+              padding = "5">
+                <a:button skin = "btn-default-css3"
+                  onclick = "winSaveSessionAs.hide()">
+                    Cancel
+                </a:button>
+                <a:button
+                  class="btn-green" skin="btn-default-css3"
+                  default  = "2"
+                  onclick  = "require('ext/tabsessions/tabsessions').saveSession(txtSaveSessionAs.getValue())">
+                    Save
+                </a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>

@@ -1,3 +1,0 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:checkbox class="underlined" label="Vim mode" value="[editors/code/@vimmode]" skin="checkbox_grey"/>
-</a:application>

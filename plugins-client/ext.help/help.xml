@@ -1,0 +1,36 @@
+<a:application xmlns:a="http://ajax.org/2005/aml"> 
+    <a:window
+      id        = "aboutDialog"
+      icon      = ""
+      kbclose   = "true"
+      center    = "true"
+      width     = "512"
+      skinset   = "help-skin"
+      buttons   = "close"
+      skin      = "win-help-about"
+      class     = "aboutDialogBox">
+        <div class="aboutImage">
+            <div id="c9Version"><?lm
+                Version {cloud9config.version}
+            ?></div>
+             <!-- <div class="c9Legal">
+            <p><a href="http://www.bettercallsaul.com/">Click here for legal notices.</p>
+            </div> -->
+            <div class="c9StaffHeader">
+                <p>Cloud9 IDE is brought to you by:</p>
+            </div>
+            <div class="c9Staff">
+                <p>
+                    Ruben Daniels, Rik Arends, David van Ballegooijen, Zef Hemel, Chrissy Welsh, 
+                    Lieke Arends, Esther Visser, Sergi Mansilla, Daniela Gavidia, Mike de Boer,
+                    Fabian Jakobs, Matt Pardee, Bert Belder, Ben Noordhuis, Tim Caswell, Jos Uijterwaal,
+                    Linh Nguyen, Giannis Panagiotou, Mostafa Eweda, Jan Jongboom, Garen Torikian, 
+                    Vlad Zinculescu, Detmar ter Huurne, Pippa
+                </p>
+            </div>
+            <div class="c9Copyright">
+                <p>&#169; 2010 — 2012 Cloud9 IDE Inc. All rights reserved</p>
+            </div>
+        </div>
+    </a:window>
+</a:application>

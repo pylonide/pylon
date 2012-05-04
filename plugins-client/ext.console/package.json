@@ -1,0 +1,14 @@
+{
+    "name": "ext.console",
+    "version": "0.0.1",
+    "main": "console-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.console"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}
