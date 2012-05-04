@@ -4,67 +4,80 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+ 
 
 define(function(require, exports, module) {
+var BkTreeNode = require("./bktree");
+
+this.bkTree = null;
+this.suffix = null;
 
 /**
  * @todo There is much more sorting we can do. This function is now fast
  *       enough to apply weighed searching. 
  */
 module.exports = function(nodes, keyword, cache) {
-    var klen = keyword.length;
-    
-    var name, res = [], first = [], second = [], third = [];
-    for (var i = 0, l = nodes.length, j, k, q; i < l; i++) {
-        name = nodes[i];
+    if (!this.bkTree) {        
+        var bkTree = new BkTreeNode("server.js");
         
-        // We only add items that have the keyword in it's path
-        if ((j = name.lastIndexOf(keyword)) > -1) {
+        for (var ix = 0; ix < nodes.length; ix++) {
+            var path = nodes[ix].toLowerCase();
+            var parts = path.split(/[\/]/);
             
-            cache.push(name);
+            var item = {
+                path: path,
+                parents: parts.slice(0, parts.length -1)
+            };
             
-            // We prioritize ones that have the name in the filename
-            if (klen > 1 && j > (q = name.lastIndexOf("/"))) {
-                k = name.lastIndexOf("/" + keyword);
-
-                if (k > -1) {
-                    // We give first prio to full filename matches
-                    if (name.length == klen + 1 + k) {
-                        first.push(name);
-                        continue;
-                    }
-                    
-                    // Then to matches from the start of the filename
-                    else if (k == q) {
-                        second.push(name);
-                        continue;
-                    }
-                    
-                    // Then anywhere in the filename
-                    else {
-                        third.push(name);
-                        continue;
-                    }
+            parts.forEach(function (part) {
+                bkTree.Add(part, item);
+                
+                var dot = part.indexOf(".");
+                if (dot > -1) {
+                    bkTree.Add(part.substr(0, dot), item);
                 }
-            }
-            
-            // Then the rest
-            res.push(name);
+            });
         }
+        
+        this.bkTree = bkTree;
     }
-
-    var start = "<d:href>";
-    var end   = "</d:href>";
-    var glue  = end + start;
-    var results = cache.length 
-        ? (first.length ? start + first.join(glue) + end : "")
-          + (second.length ? start + second.join(glue) + end : "")
-          + (third.length ? start + third.join(glue) + end : "")
-          + (res.length ? start + res.join(glue) + end : "")
-        : "";
+    
+    var diff = 1;
+    
+    // when searching, we can divide it by spaces or slashes
+    var keywords = keyword.split(/[\/\s]/);
+    var poss = {};
+    
+    for (var k = 0; k < keywords.length; k++) {
+        poss[keywords[k]] = this.bkTree.Query(keywords[k], diff);
+    }
+    
+    
+    // iterate over the last possibilities
+    var res = (poss && poss[keywords[keywords.length -1]].filter(function (possibility) {
+        var path = possibility.path;
+        
+        var doesntMatch = false;
+        for (var p = 0; p < keywords.length - 1; p++) {
+            if (!poss[keywords[p]].some(function (parent) {
+                return path.indexOf(parent.path) === 0;
+            })) {
+                doesntMatch = true;
+                break;
+            }
+        }
+        
+        return !doesntMatch;
+    })) || [];
+    
+    var results = [];
+    // do some sorting
+    for (var rix = 0; rix < res.length; rix++) {
+        results.push( "<d:href>" + res[rix].path + "</d:href>");
+    }
     
     return "<d:multistatus  xmlns:d='DAV:'><d:response>"
-        + results + "</d:response></d:multistatus>";
+        + results.join("") + "</d:response></d:multistatus>";
 }
 
 });
