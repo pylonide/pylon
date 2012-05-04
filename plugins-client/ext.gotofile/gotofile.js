@@ -152,6 +152,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.toggleDialog(-1, true);
         });
         
+        this.updateDatagrid();
+        
         this.nodes.push(winGoToFile);
     },
     
@@ -178,38 +180,41 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
             _self.arrayCache = array;
             
-            if (self.winGoToFile && winGoToFile.visible && _self.lastSearch) {
-                var search = _self.lastSearch;
-                
-                _self.lastSearch = null; //invalidate cache
-                
-                var sel = [];
-                dgGoToFile.getSelection().forEach(function(node){
-                    var i = node.firstChild.nodeValue;
-                    sel.push(_self.arraySearchResults[i]);
-                })
-                
-                var state = {
-                    sel : sel, //store previous selection
-                    caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
-                    scrollTop : dgGoToFile.$viewport.getScrollTop()
-                };
-                
-                _self.model.load(data);
-                _self.filter(search, state.sel.length);
-                
-                if (state.sel.length && state.sel.length < 100) {
-                    var list = [], sel = state.sel;
-                    for (var i = 0, l = sel.length; i < l; i++) {
-                        list.push(dgGoToFile.queryNode("//d:href[text()='" 
-                            + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+            if (self.winGoToFile && _self.lastSearch) {
+                winGoToFile.addEventListener("prop.visible", function(){
+                    var search = _self.lastSearch;
+                    _self.lastSearch = null; //invalidate cache
+                    
+                    var sel = [];
+                    dgGoToFile.getSelection().forEach(function(node){
+                        var i = node.firstChild.nodeValue;
+                        sel.push(_self.arraySearchResults[i]);
+                    })
+                    
+                    var state = {
+                        sel : sel, //store previous selection
+                        caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
+                        scrollTop : dgGoToFile.$viewport.getScrollTop()
+                    };
+
+                    _self.model.load(data);
+                    _self.filter(search, state.sel.length);
+                    
+                    if (state.sel.length && state.sel.length < 100) {
+                        var list = [], sel = state.sel;
+                        for (var i = 0, l = sel.length; i < l; i++) {
+                            list.push(dgGoToFile.queryNode("//d:href[text()='" 
+                                + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+                        }
+                        dgGoToFile.selectList(list);
+                        if (state.caret)
+                            dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
+                                + _self.arraySearchResults.indexOf(state.caret) + "']"));
+                        dgGoToFile.$viewport.setScrollTop(state.scrollTop);
                     }
-                    dgGoToFile.selectList(list);
-                    if (state.caret)
-                        dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
-                            + _self.arraySearchResults.indexOf(state.caret) + "']"));
-                    dgGoToFile.$viewport.setScrollTop(state.scrollTop);
-                }
+                    
+                    winGoToFile.removeEventListener("prop.visible", arguments.callee);
+                });
             }
             else {
                 _self.arraySearchResults = array;
@@ -284,6 +289,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         }
         else {
             dgGoToFile.$removeClearMessage();
+            dgGoToFile.load(this.model.data);
             
             vp.length = this.arraySearchResults.length;
             var limit = Math.ceil(vp.getHeight() / vp.$getItemHeight() + 2);
@@ -292,8 +298,6 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             else if (vp.length > limit && vp.limit != 11)
                 vp.resize(Math.min(vp.length, 11));
             vp.change(0, vp.limit, true);
-            
-            dgGoToFile.load(this.model.data);
         }
         
         if (!vp.length) {
