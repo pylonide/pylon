@@ -1,0 +1,143 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:list name="list-uploadactivity">
+        <a:style><![CDATA[
+            .list-uploadactivity {
+                position      : relative;
+                overflow      : hidden;
+                left: 0;
+                right: 0;
+            }
+            
+            .list-uploadactivity>DIV.uploadactivity-items {
+                height: 100px;
+                max-height: 100px;
+                overflow      : hidden;
+            }
+            
+            .list-uploadactivity .item {
+                height      : 20px;
+                padding     : 0 5px 2px 5px;
+                position    : relative;
+                cursor      : default;
+                border-bottom:1px solid transparent;
+            }
+
+            .list-uploadactivity .item .icon {
+                position    : absolute;
+                width       : 16px;
+                height      : 16px;
+                top         : 2px;
+                left        : 12px;
+                background-position:0 0;
+            }
+
+            .list-uploadactivity .item .uploadactivity-caption,
+            .list-uploadactivity .item .uploadactivity-progress {
+                display     : block;
+                height      : 18px;
+                padding     : 3px 0 0 0;
+                margin      : 0 0 0 5px;
+                font-family : Arial;
+                font-size   : 11px;
+                font-weight : normal;
+                color       : #303030;
+                text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
+                cursor      : default;
+            }
+            
+            .list-uploadactivity .item .uploadactivity-caption {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                padding-right: 30px;
+            }
+            .list-uploadactivity .item .uploadactivity-caption.bold {
+                font-weight: bold;
+            }
+            
+            .list-uploadactivity .item .uploadactivity-progress {
+                color       : #179439;
+                display: block;
+                position: absolute;
+                right: 5px;
+                top: 1px;
+            }
+            
+            .list-uploadactivity .item.hover {
+                border-bottom:1px solid #d3d3d3;
+                background : #fefefe no-repeat 0 50%;
+                background : -webkit-gradient(linear, left top, left bottom, from(#fefefe), color-stop(1, #1f2f2f2));
+                background : -moz-linear-gradient(center bottom, #fefefe 100%, #f2f2f2 100%) repeat scroll 0 0 transparent;
+                cursor     : pointer;
+            }
+            
+            .list-uploadactivity .item.hover .uploadactivity-caption {
+                text-shadow : none;
+            }
+            
+            .list-uploadactivity .item.selected {
+                cursor:default;
+            }
+            
+            .list-uploadactivity .item .uploadactivity-delete {
+                width       : 13px;
+                height      : 14px;
+                position    : absolute;
+                top         : 4px;
+                right       : 12px;
+                background  : url(images/delete_btn.png) no-repeat 0 0;
+                cursor      : default;
+                display     : none;
+            }
+
+            .list-uploadactivity .item.hover .uploadactivity-delete {
+                display: block;
+            }
+            
+            .list-uploadactivity .item.hover .uploadactivity-delete:hover {
+                background-position: 0 -14px;
+            }
+            
+            .list-uploadactivity .message.empty {
+                padding:0 10px;
+                font-family : Arial;
+                font-size   : 11px;
+                color       : #404040;
+                text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+            .list-uploadactivity .item .uploadactivity-caption {
+                height  : 17px;
+                padding : 4px 30px 0 0;
+            }
+            
+            
+        ]]></a:style>
+
+        <a:presentation>
+            <a:main container=".">
+                <div class="list-uploadactivity">
+                    <div class="uploadactivity-items"></div>
+                </div>
+            </a:main>
+            <a:item
+                class   = "."
+                caption = "."
+                icon    = "div"
+                select  = ".">
+                <div class="item"> </div>
+            </a:item>
+            <a:dragindicator>
+                <div class='draglist'><span><u>-</u></span></div>
+            </a:dragindicator>
+            <a:loading>
+                <div class="loading">Loading...</div>
+            </a:loading>
+            <a:empty caption=".">
+                <div class="message">-</div>
+            </a:empty>
+        </a:presentation>
+    </a:list>
+</a:skin>

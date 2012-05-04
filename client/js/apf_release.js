@@ -4605,8 +4605,8 @@ this.$needsLogin=value?true:false;};this.register=function(node){this.$services[
 this.$needsLogin=true;};this.unregister=function(node){var prop;delete this.$services[node.name];
 if(!(prop in this.$services)){this.$needsLogin=false;}};this.addEventListener("DOMNodeInsertedIntoDocument",function(e){this.inited=true;
 if(this.parentNode&&this.parentNode.$setAuth){this.parentNode.$setAuth(this);this.$hasHost=true;
-}if(this.autostart&&!this.$hasHost){var _self=this;apf.addEventListener("load",function(){_self.authRequired();
-apf.removeEventListener("load",arguments.callee);});}});this.addEventListener("authrequired",function(){if(self[this.window]){this.win=self[this.window];
+}if(this.autostart&&!this.$hasHost){var _self=this;apf.addEventListener("load",function(){apf.addEventListener("login",function(){_self.authRequired();
+apf.removeEventListener("load",arguments.callee);});});}});this.addEventListener("authrequired",function(){if(self[this.window]){this.win=self[this.window];
 if(this.win){this.win.show();return false;}}if(self[this["authreq-state"]]){this.state=self[this["authreq-state"]];
 if(this.state){this.state.activate();return false;}}});this.addEventListener("beforelogin",function(){if(self[this["waiting-state"]]){this.state=self[this["waiting-state"]];
 if(this.state){this.state.activate();}}});var knownHttpAuthErrors={401:1,403:1};

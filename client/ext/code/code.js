@@ -362,7 +362,8 @@ module.exports = ext.register("ext/code/code", {
         });
 
         tabEditors.addEventListener("afterswitch", function(e) {
-            ceEditor.afterOpenFile(ceEditor.getSession());
+            if (e.nextPage && e.nextPage.$editor && e.nextPage.$editor.ceEditor)
+                ceEditor.afterOpenFile(ceEditor.getSession());
         });
     },
 
@@ -460,6 +461,14 @@ module.exports = ext.register("ext/code/code", {
             // plugins that change keybindings have already changed them (i.e.
             // the vim plugin), we fire an event so these plugins can react to it.
             ide.dispatchEvent("code.ext:defaultbindingsrestored", {});
+        });
+        
+        ide.addEventListener("afteroffline", function(){
+            menuSyntaxHighlight.disable();
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            menuSyntaxHighlight.enable();
         });
     },
 

@@ -119,12 +119,38 @@
             background:url(images/offline.png) no-repeat 0 0;
             top:23px;
             right:-30px;
-            display:none;
+            display: none;
             z-index: 100000;
         }
 
         .c9-menu-bar.offline .c9-mbar-logo .c9-mbar-bcont .c9-offline {
             display:block;
+        }
+
+        .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo {
+            width: 151px;
+            height: 63px;
+            position: absolute;
+            top: 39px;
+            right: -156px;
+            z-index: 50000;
+            min-width: 0px;
+            min-height: 0px;
+            max-width: 9998px;
+            max-height: 9992px;
+            display: none;
+            opacity: 1;
+            padding: 7px;
+            color: #BDBDBD;
+            padding-top: 24px;
+            line-height: 13px;
+            padding-left: 8px;
+        }
+
+        .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo .offlineInfoWarn{
+            position: relative;
+            top: -6px;
+            color: #91c478;
         }
 
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-mbar-cont {
@@ -156,7 +182,8 @@
                         <div class="c9-mbar-cont"> </div>
                         <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
                         <div class="c9-mbar-round"></div>
-                        <div class="c9-offline"></div>
+                        <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"></div>
+                        <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk mnuSbPrefs upward moveleft menu-bkFocus">Keep working without internet. When you're back, Cloud9 will synch your files for you!<p class="offlineInfoWarn">Some features are disabled.</p></div>
                     </div>
                 </div>
             </div>
@@ -1850,6 +1877,10 @@
             -o-user-select: none;
             user-select: none;
         }
+        
+        .header-btnDisabled {
+            opacity : 0.3;
+        }
 
         .header-btnOver {
             background-position : 0 -15px;
@@ -1999,6 +2030,10 @@
         .mnubtnOver,
         .mnubtnDown {
             background : url(images/radiobutton_over.png) no-repeat 0 0;
+        }
+        
+        .mnubtnDisabled .icon, .mnubtnDisabled SPAN{
+            opacity : 0.3
         }
 
         .mnubtn .icon {
@@ -2251,7 +2286,7 @@
             text-shadow   : #626267 0px 1px 0px;
             color: #38383d;
         }
-
+        
         .btn-default-css3 .caption {
             border-top: 1px solid #93939B;
             padding: 3px 18px 4px;
@@ -6009,7 +6044,11 @@
             left: 0;
             z-index: 0;
         }
-
+        
+        .bk-window.dark-bg .bg-bk-content {
+            background:url(images/modalbg-dark.png) repeat 0 0;
+        }
+        
         .bk-window.nofooter .bg-bk-content {
             bottom: 0;
         }
@@ -8052,6 +8091,10 @@
     .editor_tab .btnsesssioncontainer .curbtn.btnclose strong:active {
         background-position : -28px 0;
     }
+    
+    .editor_tab.offline .btnsesssioncontainer .btnclose strong{
+        display : none;
+    }
 
     .editor_tab .editor_bg {
         top : 32px;
@@ -9745,6 +9788,10 @@
             border-bottom:1px solid transparent;
             /*width:100%;*/
         }
+        
+        .filemgr-treeDisabled .item-fix{
+            opacity : 0.3;
+        }
 
         .filemgr-tree .item-fix .item {
             height:18px;
@@ -9758,13 +9805,15 @@
         }
 
         .filemgr-dragtree .item .caption,
-        .filemgr-tree .item-fix.dragAppend .item {
+        .filemgr-tree .item-fix.dragAppend .item,
+        .filemgr-tree .item-fix.dragAppendUpload .item {
             color: white;
             margin-right: 5px;
         }
 
         .filemgr-dragtree .item .caption,
-        .filemgr-tree .item-fix.dragAppend .label-content {
+        .filemgr-tree .item-fix.dragAppend .label-content,
+        .filemgr-tree .item-fix.dragAppendUpload .label-content {
             -webkit-border-radius: 10px;
             -moz-border-radius: 10px;
             border-radius: 10px;
@@ -9773,7 +9822,12 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#2890e5), color-stop(1, #1f82d2));
             background : -moz-linear-gradient(center bottom, #1f82d2 0%, #2890e5 100%) repeat scroll 0 0 transparent;
         }
-
+        
+        .filemgr-tree .item-fix.dragAppendUpload .label-content > LABEL {
+            background: url(images/tree_upload_icon.png) no-repeat 0 0 !important;
+            background-position: 3 0;
+        }
+        
         .filemgr-tree .item-fix.dragDenied {
 
         }
@@ -9792,7 +9846,10 @@
         }
 
         .filemgr-dragtree,
+        .filemgr-tree .item-fix.dragAppend .item LABEL .caption,
+        .filemgr-tree .item-fix.dragAppendUpload .item LABEL .caption,
         .filemgr-treeFocus .item-fix.selected .item LABEL .caption,
+        .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption,
         .filemgr-treeFocus .item-fix.dragAppend .item LABEL .caption {
             color:white;
         }
@@ -9848,6 +9905,11 @@
             white-space: nowrap;
         }
 
+        .filemgr-tree .fileupload .item LABEL .caption {
+            color: #a6a6a6;
+            text-shadow : #ffffff 0px 1px 0px;
+        }
+        
         .filemgr-tree .loading .item {
             background : url(images/file-tree-load-spinner.gif) no-repeat 16px 1px;
         }

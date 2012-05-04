@@ -103,7 +103,7 @@ module.exports = ext.register("ext/save/save", {
             onclick  : this.quicksave.bind(this)
         })));
 
-        var saveItem, saveAsItem;
+        var saveItem, saveAsItem, itmRevertToSaved;
         this.nodes.push(
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
 
@@ -131,7 +131,7 @@ module.exports = ext.register("ext/save/save", {
 
             ide.mnuFile.insertBefore(new apf.divider(), ide.mnuFile.firstChild),
 
-            ide.mnuFile.insertBefore(new apf.item({
+            itmRevertToSaved = ide.mnuFile.insertBefore(new apf.item({
                 caption : "Revert to Saved",
                 onclick : function(){
                     _self.reverttosaved();
@@ -142,6 +142,16 @@ module.exports = ext.register("ext/save/save", {
 
         this.hotitems.quicksave = [saveItem];
         this.hotitems.saveas = [saveAsItem];
+        
+        ide.addEventListener("afteroffline", function(){
+            itmRevertToSaved.disable();
+            saveAsItem.disable();
+        });
+        
+        ide.addEventListener("afteronline", function(){
+            itmRevertToSaved.enable();
+            saveAsItem.enable();
+        });
     },
 
     init : function(amlNode){
@@ -321,13 +331,14 @@ module.exports = ext.register("ext/save/save", {
         return false;
     },
 
-    _saveAsNoUI: function(page, path, newPath) {
+    _saveAsNoUI: function(page, path, newPath, isReplace) {
         if (!page || !path)
             return;
 
         newPath = newPath || path;
 
         var file = page.$model.data;
+        var oldFile = file;
         var saving = parseInt(file.getAttribute("saving"), 10);
 
         if (saving) {
@@ -350,12 +361,14 @@ module.exports = ext.register("ext/save/save", {
             var doc = page.$doc;
 
             if (path !== newPath || parseInt(node.getAttribute("newfile") || 0, 10) === 1) {
-                model.load(node);
-                file = model.data;
-                fs.beforeRename(file, null, newPath, false);
+                file = apf.getCleanCopy(node)
+                fs.beforeRename(file, null, newPath, false, isReplace);
                 doc.setNode(file);
+                model.load(file);
+                tabEditors.set(tabEditors.getPage());
             }
 
+            apf.xmldb.removeAttribute(oldFile, "saving");
             apf.xmldb.removeAttribute(file, "saving");
 
             if (self.saveBuffer[path]) {
@@ -445,7 +458,7 @@ module.exports = ext.register("ext/save/save", {
         var file = page.$model.data;
         var path = file.getAttribute("path");
         var newPath = lblPath.getProperty("caption") + txtSaveAs.getValue();
-
+        var isReplace = false;
         // check if we're already saving!
         var saving = parseInt(file.getAttribute("saving"), 10);
         if (saving) {
@@ -459,22 +472,29 @@ module.exports = ext.register("ext/save/save", {
         var doSave = function() {
             winConfirm.hide();
             winSaveAs.hide();
-            self._saveAsNoUI(page, path, newPath);
+            self._saveAsNoUI(page, path, newPath, isReplace);
+            if (btnConfirmOk.caption == "Yes")
+                btnConfirmOk.setCaption("Ok");
         };
-
+        
+        var doCancel = function() {
+            if (btnConfirmOk.caption == "Yes")
+                btnConfirmOk.setCaption("Ok");
+        };
         if (path !== newPath || parseInt(file.getAttribute("newfile") || 0, 10) === 1) {
             fs.exists(newPath, function (exists) {
                 if (exists) {
                     var name = newPath.match(/\/([^/]*)$/)[1];
                     var folder = newPath.match(/\/([^/]*)\/[^/]*$/)[1];
-
+                    isReplace = true;
                     util.confirm(
-                        "Are you sure?",
+                        "A file with this name already exists",
                         "\"" + name + "\" already exists, do you want to replace it?",
-                        "A file or folder with the same name already exists in the folder "
-                        + folder + ". "
-                        + "Replacing it will overwrite it's current contents.",
-                        doSave);
+                        "A file with the same name already exists at this location." +
+                        "Selecting Yes will overwrite the existing document.",
+                        doSave,
+                        doCancel);
+                    btnConfirmOk.setCaption("Yes");
                 }
                 else {
                     doSave();

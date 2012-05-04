@@ -1,0 +1,53 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winLog"
+      title     = "Communications Log"
+      icon      = ""
+      center    = "true"
+      resizable = "true"
+      buttons   = "max|close"
+      modal     = "false"
+      skin      = "bk-window"
+      width     = "660"
+      height    = "400"
+      kbclose   = "true"
+      draggable = "true">
+        <a:hbox anchors="0 0 0 0" edge="0 0 11 0" splitters="true">
+            <a:datagrid id = "dgLog"
+              flex       = "3"
+              model      = "{require('ext/log/log').model}"
+              class      = "noscrollbar"
+              scrollbar  = "sbShared 20 2 2"
+              each       = "[event]"
+              empty-message = "Empty log">
+                <a:column width="15%" value="[@time]" caption="Time" />
+                <a:column width="15%" value="[@type]" caption="Type" />
+                <a:column width="30%" value="[@url]" caption="Url" />
+                <a:column width="20%" value="[text()]" caption="Request" />
+                <a:column width="20%" value="[@response]" caption="Response" />
+            </a:datagrid>
+
+            <a:text model="{dgLog.selected}" flex="2" style="padding:0 10px 0 10px">
+                <h3>Request</h3>
+                <pre style='word-wrap: break-word;'>{
+                    try {
+                        apf.escapeXML(JSON.stringify(JSON.parse([text()]), null, 4))
+                    }
+                    catch (e) {
+                        [text()]
+                    }
+                }</pre>
+
+                <h3>Response</h3>
+                <pre style='word-wrap: break-word;'>{
+                    try {
+                        apf.escapeXML(JSON.stringify(JSON.parse([@response]), null, 4))
+                    }
+                    catch (e) {
+                        [@response]
+                    }
+                }</pre>
+            </a:text>
+        </a:hbox>
+    </a:window>
+</a:application>

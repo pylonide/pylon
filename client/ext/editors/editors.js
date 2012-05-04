@@ -573,6 +573,14 @@ module.exports = ext.register("ext/editors/editors", {
             if (page)
                 tabEditors.remove(page);
         });
+        
+        ide.addEventListener("afteroffline", function(e){
+            tabEditors.$setStyleClass(tabEditors.$ext, "offline");
+        });
+        
+        ide.addEventListener("afteronline", function(e){
+            tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
+        });
 
         var vbox  = colMiddle;
         this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));

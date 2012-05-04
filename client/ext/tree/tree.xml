@@ -15,58 +15,65 @@
       modal    = "false"
       buttons  = "close"
       optimize = "true">
-        <a:button
-          top="-22"
-          skin="header-btn"
-          right="5"
-          icon="panel_settings.png"
-          submenu="mnuFilesSettings"/>
-        <a:button
+        <a:button id="btnTreeRefresh"
           top="-22"
           skin="header-btn"
           right="29"
           icon="panel_refresh.png"
           visible = "{trFiles.visible}"
-          onclick="require('ext/tree/tree').refresh()" />
+          onclick="require('ext/tree/tree').refresh()" 
+          tooltip="Refresh Project Tree" />
+        <a:button
+          top="-22"
+          skin="header-btn"
+          right="5"
+          icon="panel_settings.png"
+          submenu="mnuFilesSettings"
+          tooltip="Settings" />
         <!--a:button skin="header-btn" icon="order.png" top="-22" right="7"></a:button-->
 
         <a:menu id="mnuFilesSettings">
 
         </a:menu>
 
-        <a:tree id="trFiles" border="0" simpledata="true"
-          contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
-          onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
-          onbeforemove="this.disable();" autoselect="false"
-          flex="1" anchors="0 0 0 0" scrollbar="sbShared 2 2 2"
-          canrename="{!require('core/ide').readonly}" disableremove="{require('core/ide').readonly}"
-        >
-            <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
-                <a:insert match="[folder]" get="" id="trFilesInsertRule" />
-                <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
-                <a:icon match="[folder|project]" value="folder.png" />
-                <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
-            </a:each>
-
-            <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
-            <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-            <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
-            <a:move set="{require('ext/tree/tree').moveFile([@path], createPath([@path], [../@path]))}"/>
-            <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
-            <a:copy match="[file|folder]" set="{
-                davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
-            }" undo="{
-                alert('TODO!!');
-            }"/>
-
-            <a:drag match="[folder|file]" />
-            <a:drop match="[folder|file]" target="[folder]"
-                action="tree-append" copy="{event.ctrlKey}" />
-            <a:drop match="[folder|file]" target="[file]"
-                action="insert-before" copy="{event.ctrlKey}" />
-        </a:tree>
-
-        <a:menu id="mnuCtxTree" disabled="{!stServerConnected.active || require('core/ide').readonly}">
+        <a:vbox id="vboxTreeContainer" anchors="0 0 0 0">
+            <a:tree id="trFiles" border="0" simpledata="true"
+              contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
+              onbeforeremove="return require('core/util').removeInteractive(this)" disabled="{{!stServerConnected.active}}"
+              onbeforemove="this.disable();" autoselect="false"
+              flex="1" scrollbar="sbShared 2 2 2"
+              canrename="{!require('core/ide').readonly}" disableremove="{require('core/ide').readonly}"
+            >
+                <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">
+                    <a:insert match="[folder]" get="{davProject.readdir([@path])}" />
+                    <a:caption match="[@name]" value="{([../@changed] == 1 ? '*' : '') + [.]}" />
+                    <a:icon match="[folder|project]" value="folder.png" />
+                    <a:selectable match="[folder|file[not(@type='fileupload')]]" />
+                    <a:icon match="[file[@type='fileupload']]" value="file-tree-load-spinner.gif" />
+                    <a:css match="[file[@type='fileupload']]" value="fileupload" />
+                    <a:icon match="[file]" value="{require('core/util').getFileIcon(%[.])}" />
+                </a:each>
+    
+                <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
+                <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
+                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
+                <a:move set="{require('ext/tree/tree').moveFile([@path], createPath([@path], [../@path]))}"/>
+                <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
+                <a:copy match="[file|folder]" set="{
+                    davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
+                }" undo="{
+                    alert('TODO!!');
+                }"/>
+    
+                <a:drag match="[folder|file]" />
+                <a:drop match="[folder|file]" target="[folder]"
+                    action="tree-append" copy="{event.ctrlKey}" />
+                <a:drop match="[folder|file]" target="[file]"
+                    action="insert-before" copy="{event.ctrlKey}" />    
+            </a:tree>
+        </a:vbox>
+        
+        <a:menu id="mnuCtxTree" disabled="{{!stServerConnected.active || require('core/ide').readonly}}">
             <a:item match="[file]" class="strong"  onclick="
                 require('core/ide').dispatchEvent('openfile', {doc: require('core/ide').createDocument(apf.activeElement.selected)})
             ">Edit</a:item>
@@ -98,7 +105,7 @@
                 apf.clipboard.pasteSelection(apf.activeElement);
             ">Paste</a:item>
             <a:divider />
-            <a:item match="[file|folder|project]" onclick="
+            <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" onclick="
                 require('ext/filesystem/filesystem').createFile();
             ">New File</a:item>
             <a:item match="[file|folder|project]" onclick="

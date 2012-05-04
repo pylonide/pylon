@@ -78,13 +78,18 @@ module.exports = {
     },
 
     $loadsettings : function(cb){
-        cb({model : require("core/settings").model});
+        try {
+            cb({model : require('core/settings').model});
+        }
+        catch(e){
+            console.error(e.message);
+        }
     },
 
     /**
      * Initializes the settings. The settings can come from different sources:
      * - Template (used for when no settings have been stored previously)
-     * - Parsed into the index file (by the backend - apf.IdeSettings)
+     * - Parsed into the index file (by the backend - cloud9config.settings)
      * - LocalStorage (saved for use when starting in offline mode only)
      */
     init : function(){
@@ -99,11 +104,11 @@ module.exports = {
         else if (localStorage[sIdent])
             xml = localStorage[sIdent];
         // Load from template
-        else if (!apf.IdeSettings || apf.IdeSettings == "defaults")
+        else if (!cloud9config.settings || cloud9config.settings == "defaults")
             xml = template
         // Load from parsed settings in the index file
-        else if (apf.IdeSettings)
-            xml = apf.IdeSettings;
+        else if (cloud9config.settings)
+            xml = cloud9config.settings;
 
         if (!xml) {
             ide.addEventListener("socketMessage", function(e){

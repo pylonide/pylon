@@ -92,6 +92,7 @@ module.exports = ext.register("ext/console/console", {
     hidden : true,
     nodes : [],
     minHeight : 150,
+    maxHeight: window.innerHeight - 70,
 
     autoOpen : true,
     excludeParent : true,
@@ -437,6 +438,7 @@ module.exports = ext.register("ext/console/console", {
         winDbgConsole.setAttribute('anchors', '0 0 0 0');
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');
+        winDbgConsole.$ext.style.maxHeight = "10000px";
         winDbgConsole.$ext.style.zIndex = 900000;
 
         settings.model.setQueryValue("auto/console/@maximized", true);
@@ -450,7 +452,10 @@ module.exports = ext.register("ext/console/console", {
 
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.removeAttribute('anchors');
-        winDbgConsole.setAttribute('height', this.height);
+        this.maxHeight = window.innerHeight - 70;
+        winDbgConsole.$ext.style.maxHeight =  this.maxHeight + "px";
+        
+        winDbgConsole.setAttribute('height', this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height);
         winDbgConsole.$ext.style.zIndex = this.lastZIndex;
 
         settings.model.setQueryValue("auto/console/@maximized", false);
@@ -473,11 +478,15 @@ module.exports = ext.register("ext/console/console", {
         var cfg;
         if (shouldShow) {
             cfg = {
-                height: this.height,
+                height: this.maxHeight && this.height > this.maxHeight ? this.maxHeight : this.height,
                 dbgVisibleMethod: "show",
                 chkExpandedMethod: "check",
-                animFrom: this.height*0.95,
-                animTo: this.height > this.minHeight ? this.height : this.minHeight,
+                animFrom: this.height * 0.95,
+                animTo: this.height > this.minHeight 
+                            ? (this.maxHeight && this.height > this.maxHeight 
+                                ? this.maxHeight 
+                                : this.height) 
+                            : this.minHeight,
                 animTween: "easeOutQuint"
             };
 
@@ -489,24 +498,30 @@ module.exports = ext.register("ext/console/console", {
                 height: 34,
                 dbgVisibleMethod: "hide",
                 chkExpandedMethod: "uncheck",
-                animFrom: this.height > this.minHeight ? this.height : this.minHeight,
+                animFrom: this.height > this.minHeight 
+                            ? (this.maxHeight && this.height > this.maxHeight 
+                                ? this.maxHeight 
+                                : this.height) 
+                            : this.minHeight,
                 animTo: 65,
                 animTween: "easeInOutCubic"
             };
-
             if (winDbgConsole.parentNode != mainRow)
                 this.restore();
 
             apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
+            winDbgConsole.$ext.style.maxHeight = "10000px";
         }
 
         var finish = function() {
             if (!shouldShow)
                 tabConsole.hide();
-            else
+            else {
                 winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
-
+                this.maxHeight = window.innerHeight - 70;
+                winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
+            }
             winDbgConsole.height = cfg.height + 1;
             winDbgConsole.setAttribute("height", cfg.height);
             winDbgConsole.previousSibling[cfg.dbgVisibleMethod]();

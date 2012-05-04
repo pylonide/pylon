@@ -1,0 +1,152 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    
+    <a:window id="winUploadFiles"
+      onshow  = "require('ext/uploadfiles/uploadfiles').onShow()"
+      onclose = "require('ext/uploadfiles/uploadfiles').onClose()"
+      title   = "Upload Files"
+      buttons = "close"
+      skin    = "bk-window"
+      class   = "relative dark-bg"
+      modal   = "false"
+      render  = "runtime"
+      center  = "true"
+      width   = "354"
+      kbclose = "true">
+        <a:vbox edge="10" padding="0" align="center">
+            <div id="uploadDropArea" class="uploadDropArea"></div>
+            <a:hbox id="hboxUploadNoFolders" class="uploadSelectButtons" padding="10" height="60" pack="center" align="center">
+                <div class="uploadOrText"></div>
+                <a:button skin="btn-default-css3" disabled="true">Select files to upload</a:button>
+            </a:hbox>
+            <a:hbox id="hboxUploadWithFolders" class="uploadSelectButtons" padding="5" height="60" pack="center" align="center" visible="false">
+                <div class="uploadOrSelectText"></div>
+                <a:button id="fileUploadSelectBtn" skin="btn-default-css3" disabled="true">files</a:button>
+                <div class="uploadOrText"></div>
+                <a:button skin="btn-default-css3" disabled="true">a complete folder</a:button>
+            </a:hbox>
+            <div class="txtUploadTargetFolder" margin="0 0 10">Upload folder: <span id="uplTargetFolder"></span></div>
+        </a:vbox>
+        <input id="fileUploadSelect" class="uploadWithFolders" type="file" multiple="multiple" />
+        <input id="folderUploadSelect" type="file" webkitdirectory="" directory="" />
+        
+        <a:hbox padding="10" pack="end" edge="6 10 10">
+            <a:button onclick="winUploadFiles.hide()" skin="btn-default-css3">Close</a:button>
+        </a:hbox>
+    </a:window>
+    
+    <a:model id="mdlUploadActivity">
+        <data />
+    </a:model>
+    
+    <a:vbox id="boxUploadActivity" visible="false">
+        <div class="uploadactivity-header" height="30">Upload Activity</div>
+        <a:list id="lstUploadActivity"
+            skin = "list-uploadactivity"
+            skinset = "uploadfiles"
+            model = "mdlUploadActivity"
+            height="160"
+            scrollbar = "sbShared 32 2 2"
+        >
+            <a:each match="[file]">
+                <a:caption><?lm
+                    if ([@progress]) {
+                        <div class="uploadactivity-caption bold">[@name]</div>
+                        <div class="uploadactivity-progress">[@progress]%</div>
+                    }
+                    else {
+                        <div class="uploadactivity-caption">[@name]</div>
+                        <div class="uploadactivity-delete" onclick="require('ext/uploadfiles/uploadfiles').removeFromQueue('{[@filepath]}')"></div>
+                    }
+                ?></a:caption>
+            </a:each>
+        </a:list>
+    </a:vbox>
+    
+    <a:window
+      id        = "winUploadFileExists"
+      title     = "File already exists"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "512"
+      skin      = "bk-window"
+      class     = "relative"
+      modal     = "false">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3>File already exists</h3>
+            <div id="uploadFileExistsMsg" class="alertMsg">Do you want to overwrite this file?</div>
+        </a:vbox>
+    
+        <a:hbox edge="6 10 10" pack="end" padding="8">
+            <a:button id="btnUploadOverwriteAll" 
+                skin="btn-default-css3" 
+                class="btn-green" 
+                onclick="
+                    winUploadFileExists.hide();
+                    require('ext/uploadfiles/uploadfiles').overwriteAll()
+                " 
+                visible="false">Overwrite all</a:button>
+            <a:button id="btnUploadSkipAll" 
+                skin="btn-default-css3" 
+                class="btn-red" 
+                onclick="
+                    winUploadFileExists.hide();
+                    require('ext/uploadfiles/uploadfiles').skipAll()
+                "
+                visible="false">Skip all</a:button>
+            <a:filler/>
+            <a:button id="btnUploadOverwrite" 
+                default="3" 
+                skin="btn-default-css3" 
+                class="btn-green" 
+                onclick="
+                    winUploadFileExists.hide();
+                    require('ext/uploadfiles/uploadfiles').overwrite()
+                ">Overwrite</a:button>
+            <a:button id="btnUploadSkip" 
+                skin="btn-default-css3" 
+                class="btn-red" 
+                onclick="
+                    winUploadFileExists.hide();
+                    require('ext/uploadfiles/uploadfiles').skip()
+                ">Skip</a:button>
+        </a:hbox>
+    </a:window>
+    
+    <a:window
+      id        = "winNoFolderSupport"
+      title     = "Browser limitations"
+      icon      = ""
+      skin      = "bk-window"
+      class     = "relative"
+      modal     = "false"
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "true"
+      buttons   = "close"
+      width     = "512">
+        <a:vbox width="100%">
+            <a:hbox edge="15 10 25 10" padding="10">
+                <div class="alertWarn" margin="0 10 0 10"/>
+                <a:vbox flex="1" padding="5">
+                    <h3>Folder Drag and Drop is currently not supported by any browser.</h3>
+                    <div class="alertMsg">Chrome-users can use our upload dialog to upload folders.</div>
+                </a:vbox>
+            </a:hbox>
+<!--            <a:divider skin="hordivider" />-->
+            <a:hbox edge="6 10 10" pack="end" padding="8">
+                <a:button id="btnNoFolderSupportOpenDialog" 
+                  onclick="
+                    winNoFolderSupport.hide();
+                    if (!winUploadFiles.visible) 
+                        winUploadFiles.show();
+                  " 
+                  skin="btn-default-css3"
+                  class="btn-green">Open Upload Dialog</a:button>
+                <a:button id="btnNoFolderSupportClose" onclick="winNoFolderSupport.hide();" skin="btn-default-css3">Close</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:window>
+</a:application>

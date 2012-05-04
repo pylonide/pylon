@@ -56,6 +56,7 @@ module.exports = ext.register("ext/tree/tree", {
     animControl      : {},
     nodes            : [],
     model            : null,
+    offline          : false,
 
     "default"        : true,
 
@@ -83,7 +84,7 @@ module.exports = ext.register("ext/tree/tree", {
             if (_self.loadedSettings > 0 && _self.inited)
                 _self.onReady();
         });
-
+        
         ide.addEventListener("loadsettings", function(e){
             var model = e.model;
             (davProject.realWebdav || davProject).setAttribute("showhidden",
@@ -210,7 +211,7 @@ module.exports = ext.register("ext/tree/tree", {
         // this.loadProjectTree() the tree itself doesn't try to duplicate
         // our actions
         else {
-            trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+            self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
             trFiles.expandAll();
         }
     },
@@ -223,6 +224,15 @@ module.exports = ext.register("ext/tree/tree", {
         this.nodes.push(winFilesViewer);
 
         colLeft.appendChild(winFilesViewer);
+        
+        ide.addEventListener("afteroffline", function(){
+            trFiles.selectable = false;
+            //_self.button.enable();
+        })
+        
+        ide.addEventListener("afteronline", function(){
+            trFiles.selectable = true;
+        })
 
         // This adds a "Show Hidden Files" item to the settings dropdown
         // from the Project Files header
@@ -567,7 +577,7 @@ module.exports = ext.register("ext/tree/tree", {
 
             // Now set the "get" attribute of the <a:insert> rule so the tree
             // knows to ask webdav for expanded folders' contents automatically
-            trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
+            self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
 
             settings.save();
 
@@ -593,7 +603,7 @@ module.exports = ext.register("ext/tree/tree", {
         // Make sure the "get" attribute is empty so the file tree doesn't
         // think it's the one loading up all the data when loadProjectTree
         // expands folders
-        trFilesInsertRule.setAttribute("get", "");
+        self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "");
 
         ide.dispatchEvent("track_action", { type: "reloadtree" });
 
