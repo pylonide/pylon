@@ -16,7 +16,6 @@ var CommandManager = require("ace/commands/command_manager").CommandManager;
 var markupSettings = require("text!ext/commands/settings.xml");
 
 var commandManager = new CommandManager(apf.isMac ? "mac" : "win");
-var exec           = commandManager.exec;
 var addCommand     = commandManager.addCommand;
 var removeCommand  = commandManager.removeCommand;
 
@@ -68,6 +67,12 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         },
         
         exec : function(command, editor, args, e){
+            if (typeof command === 'string')
+                command = this.commands[command];
+            
+            if (!command)
+                return false;
+        
             if (!editor || editor.fake) {
                 //@todo focus handling for splitview
                 var page = self.tabEditors && tabEditors.$activepage;
@@ -88,7 +93,29 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             } else if (command.isAvailable && !command.isAvailable(editor))
                 return; //Disable commands for other contexts
 
-            if (exec.apply(this, [command, editor, args]) !== false && e) {
+            if (command.findEditor)
+                editor = command.findEditor(editor);
+            
+            if (!editor)
+                return;
+            
+            if (editor && editor.$readOnly && !command.readOnly)
+                return false;
+
+            var execEvent = {
+                editor: editor,
+                command: command,
+                args: args
+            };
+            
+            if (cloud9config.debug) {
+                var retvalue = this._emit("exec", execEvent);
+            } else try {
+                var retvalue = this._emit("exec", execEvent);
+            } catch (e) {}
+            
+
+            if (retvalue !== false && e) {
 //                e.returnValue = false;
 //                e.preventDefault();
                 apf.queue.empty();

@@ -111,7 +111,7 @@ var enableVim = function enableVim() {
 
 var disableVim = function() {
     var editor = ceEditor.$editor;
-	editor && editor.setKeyboardHandler(null);
+	editor && editor.keyBinding.removeKeyboardHandler(vimHandler);
     ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
 };
 

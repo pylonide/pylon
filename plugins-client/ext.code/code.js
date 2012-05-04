@@ -391,43 +391,36 @@ module.exports = ext.register("ext/code/code", {
     hook: function() {
         var _self = this;
 
-        var isAvailable = function(editor) {
-            if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
-                return false;
+        var fnWrap = function(command){
+            command.readOnly = command.readOnly || false;
+            command.focusContext = true;
 
-            if (this.wrappedCommand && this.wrappedCommand.isAvailable)
-                return this.wrappedCommand.isAvailable(editor);
+            var isAvailable = command.isAvailable;
+            command.isAvailable = function(editor){
+                if (!apf.activeElement || apf.activeElement.localName != "codeeditor")
+                    return false;
 
-            return true;
-        }
-
-        var exec = function(editor, args) {
-            if (editor && editor.ceEditor) {
-                editor = editor.ceEditor.$editor;
-                editor.commands.exec(this.name, editor, args);
+                return isAvailable ? isAvailable(editor) : true;
             }
-        }
-            
-        var fnWrap = function(command) {
-			if (command)
-				return {
-					name: command.name,
-					readOnly: command.readOnly || false,
-					focusContext: true,
-					isAvailable: isAvailable,
-					wrappedCommand: command,
-					exec: exec
-				}
+
+            command.findEditor = function(editor) {
+                if (editor && editor.ceEditor)
+                    return editor.ceEditor.$editor;
+                return editor;
+            }
         }
 
         if (!defaultCommands.wrapped) {
-            commands.addCommands(defaultCommands.map(fnWrap));
+            defaultCommands.each(fnWrap, defaultCommands);
             defaultCommands.wrapped = true;
         }
         if (!MultiSelectCommands.wrapped) {
-            commands.addCommands(MultiSelectCommands.map(fnWrap));
+            MultiSelectCommands.each(fnWrap, MultiSelectCommands);
             MultiSelectCommands.wrapped = true;
         }
+
+        commands.addCommands(defaultCommands, true);
+        commands.addCommands(MultiSelectCommands, true);
 
         //Settings Support
         ide.addEventListener("settings.load", function(e) {
@@ -785,6 +778,9 @@ module.exports = ext.register("ext/code/code", {
 
         this.ceEditor = this.amlEditor = ceEditor;
         this.amlEditor.show();
+
+        this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
+        this.amlEditor.$editor.commands = commands;
 
         // preload common language modes
         var noop = function() {};
