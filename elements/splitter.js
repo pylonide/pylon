@@ -240,11 +240,14 @@ apf.splitter = function(struct, tagName){
                 else {
                     if (_self.$previous) {
                         var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
-                        var min = _self.$scale ? 0 : posPrev[d1] || 0;
+                        var min = _self.$scale 
+                            ? 0 
+                            : (posPrev[d1] || 0) + (parseInt(_self.$previous.minwidth) || 0);
                     }
                     if (_self.$next) {
                         var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
-                        var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
+                        var max = posNext[d1] + _self.$next.$ext[offsetSize] 
+                            - this[offsetSize] - (parseInt(_self.$next.minwidth) || 0);
                     }
                 }
                 

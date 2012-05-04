@@ -828,7 +828,8 @@ apf.vbox = function(struct, tagName){
         
         if (!apf.window.vManager.check(this, this.$uniqueId, this.$resize))
             return;
-this.$noResize = true;
+        
+        this.$noResize = true;
         this.$lastSize = [this.$int.offsetWidth, this.$int.offsetHeight];
 
         //this.$ext.style.border = "1px solid " + (["red", "green", "blue", "orange", "pink", "yellow"])[Math.round(Math.random() * 5)];
