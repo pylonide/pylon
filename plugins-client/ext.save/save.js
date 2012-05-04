@@ -420,7 +420,7 @@ module.exports = ext.register("ext/save/save", {
                 var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
                                     .replace(new RegExp("\/" + file.getAttribute("name")), "")
                                     .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                    //.replace(/\/node\(\)\[@name="workspace"\]/, "")
+                                    .replace(/\/node\(\)\[@name="workspace"\]/, "")
                                     .replace(/\//, "") || "node()";
                 if (xpath) {
                     var oNode  = trFiles.queryNode(xpath);
