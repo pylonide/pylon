@@ -10,7 +10,6 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
-var noderunner = require("ext/noderunner/noderunner");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
 var complete = require('ext/language/complete');
@@ -31,14 +30,14 @@ module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors, noderunner, code],
+    deps    : [editors, code],
     nodes   : [],
     alone   : true,
     markup  : markup,
     skin    : skin,
     worker  : null,
     enabled : true,
-    
+
     defaultKeyHandler: null,
     enableContinuousCompletion: false,
 
@@ -53,8 +52,7 @@ module.exports = ext.register("ext/language/language", {
         ide.addEventListener("extload", function(){
             var worker = _self.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "worker.js", "ext/language/worker", "LanguageWorker");
             complete.setWorker(worker);
-            
-            //ide.addEventListener("init.ext/code/code", function(){
+
             ide.addEventListener("afteropenfile", function(event){
                 if (!event.node)
                     return;
@@ -106,12 +104,12 @@ module.exports = ext.register("ext/language/language", {
         this.editor.selection.on("changeCursor", this.$onCursorChange);
         var oldSelection = this.editor.selection;
         this.setPath();
-        
+
         if(this.enableContinuousCompletion) {
             var defaultOnTextInput = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
             this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, defaultOnTextInput);
         }
-        
+
         ceEditor.addEventListener("loadmode", function(e) {
             if (e.name === "ace/mode/javascript") {
                 e.mode.createWorker = function() {
@@ -145,13 +143,13 @@ module.exports = ext.register("ext/language/language", {
         ide.addEventListener("liveinspect", function (e) {
             worker.emit("inspect", { data: { row: e.row, col: e.col } });
         });
-        
+
         settings.model.addEventListener("update", this.updateSettings.bind(this));
         
         this.editor.addEventListener("mousedown", this.onEditorClick.bind(this));
         
     },
-    
+
     updateSettings: function() {
         // Currently no code editor active
         if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
@@ -178,7 +176,7 @@ module.exports = ext.register("ext/language/language", {
         this.worker.emit("cursormove", {data: cursorPos});
         this.setPath();
     },
-    
+
     setPath: function() {
         // Currently no code editor active
         if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
