@@ -4,12 +4,10 @@ require("asyncjs");
 XMLParser = require('libxml/lib/libxml');
 
 require("apf");
-require("node-o3-xml");
-require("node-o3-xml-v4");
+require("libxml/lib/libxml");
 
 var Util   = require("util"),
-    Fs    = require("fs"),
-    Path  = require("path");
+    Fs    = require("fs");
 
 boot();
 
@@ -30,15 +28,14 @@ function boot() {
     var argv = process.argv;
 
     var project = (argv.length == 3) ? argv[2] : "apf_release.apr";
-    Util.puts("using file: " + __dirname + "/projects/" + project);
+    console.log("using file: " + __dirname + "/projects/" + project);
 
-    if (!Path.existsSync(project)) {
+    if (!Fs.existsSync(project)) {
         project = __dirname + "/projects/" + project;
-        if (!Path.existsSync(project)) {
+        if (!Fs.existsSync(project)) {
             console.log("ERROR: unable to find project file");
             return process.exit(1);
         }
     }
     apf.ProcParser.parse(Fs.readFileSync(project, "utf8"));
-    setTimeout(function(){process.exit();}, 1000); // we want to remove this, but the process is hanging. investigate with bert and ben
 }
