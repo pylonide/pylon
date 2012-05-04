@@ -318,11 +318,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         
         if (nodes.length == 0)
             return false;
-            
+        
+        var _self = this;
         this.toggleDialog(-1, noanim, function(){
             for (var i = 0; i < nodes.length; i++) {
                 var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
-                    + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
+                    + _self.arraySearchResults[nodes[i].firstChild.nodeValue].replace(/^[\/]+/, "");
                 editors.showFile(path);
                 ide.dispatchEvent("track_action", {type: "fileopen"});
             }
