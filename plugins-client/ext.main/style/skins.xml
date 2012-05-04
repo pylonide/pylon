@@ -7333,6 +7333,68 @@
             border-left:0;
             background:url(images/btn-arrow2.png) no-repeat 0 6px;
          }
+
+
+        .btnRun .main,
+        .btnRun .main:after,
+        .btnRun .arrow {
+            background: url(images/c9-no-repeat.png) no-repeat;
+            border: 0 none;
+            border-radius: 0;
+            box-shadow: none;
+            height: 23px;
+        }
+        .btnRun .main { 
+            background-position: 0px -424px; 
+            margin-right: 3px;
+            overflow: visible;
+        }
+        .btnRun .main:after {
+            background-position: -197px -424px; 
+            content: "";
+            display: block;
+            left: 100%;
+            position: absolute;
+            top: 0;
+            width: 3px;
+        }
+        .btnRun .main .c9-label {
+            border-right: 0 none;
+            padding-left: 23px !important;
+        }
+        .btnRun .main .c9-icon {
+            left: 3px;
+            top: 3px;
+        }
+        .btnRun:hover .main { 
+            background-position: 0px -457px; 
+        }
+        .btnRun:hover .main:after {
+            background-position: -197px -457px; 
+        }
+        .btnRun .c9-dropdown-btnDown.main { 
+            background-position: 0px -490px; 
+        }
+        .btnRun .c9-dropdown-btnDown.main:after { 
+            background-position: -197px -490px; 
+        }
+
+        .btnRun .arrow { 
+            background-position: -200px -424px; 
+            width: 16px; 
+        }
+        .btnRun:hover .arrow { 
+            background-position: -200px -457px; 
+        }
+        .btnRun .c9-dropdown-btnDown.arrow { 
+            background-position: -200px -490px; 
+        }
+        .btnRun .arrow .c9-arrow {
+            display: none;
+        }
+
+
+
     ]]></a:style>
     <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
         .c9-dropdown-btn .c9-label {
