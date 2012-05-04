@@ -3,7 +3,7 @@
 # packages apf
 apf:
 	cd node_modules/packager; sm update; node package.js projects/apf_cloud9.apr
-	cd node_modules/packager; cat build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../plugins-client/lib.apf/www/apf-packaged/apf_release.js
+	cd node_modules/packager; cat build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*//g' > ../../plugins-client/lib.apf/www/apf-packaged/apf_release.js
 
 # package debug version of apf
 apfdebug:
