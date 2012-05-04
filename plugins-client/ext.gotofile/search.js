@@ -32,14 +32,11 @@ module.exports = function(filelist, keyword, cache) {
      * full filename with extension             1000
      * start of filename                         200
      * part of filename                          100
+     * depth of path (or length to optimize)     200 - 10 * count("/")
      * full part of path                          50
      * start of part of path                      40
      * part of part of path                       20
-     * extension weight
-     * - known extension for code.js               0
-     * - image                                   -10
-     * - other                                   -20
-     * depth of path (or length to optimize)     200 - 10 * char (or part)
+     * extension weight                           -1 * lut[ext]
      */
     
     var dt = new Date();
