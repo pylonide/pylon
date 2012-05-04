@@ -35,8 +35,6 @@ module.exports = function(filelist, keyword, cache) {
      * part of filename                          100
      * depth of path (or length to optimize)     200 - 10 * count("/")
      * full part of path                          50
-     * start of part of path                      40
-     * part of part of path                       20
      * extension weight                           -1 * lut[ext]
      */
     
