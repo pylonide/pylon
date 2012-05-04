@@ -7337,7 +7337,7 @@
 
         .btnRun .main,
         .btnRun .main:after,
-        .btnRun .arrow {
+        .btnRun .arrow{
             background: url(images/c9-no-repeat.png) no-repeat;
             border: 0 none;
             border-radius: 0;
@@ -7366,10 +7366,10 @@
             left: 3px;
             top: 3px;
         }
-        .btnRun:hover .main { 
+        .btnRun .main.c9-dropdown-btnOver { 
             background-position: 0px -457px; 
         }
-        .btnRun:hover .main:after {
+        .btnRun .main.c9-dropdown-btnOver:after {
             background-position: -197px -457px; 
         }
         .btnRun .c9-dropdown-btnDown.main { 
@@ -7383,7 +7383,7 @@
             background-position: -200px -424px; 
             width: 16px; 
         }
-        .btnRun:hover .arrow { 
+        .btnRun .arrow.c9-dropdown-btnOver { 
             background-position: -200px -457px; 
         }
         .btnRun .c9-dropdown-btnDown.arrow { 
@@ -7391,6 +7391,55 @@
         }
         .btnRun .arrow .c9-arrow {
             display: none;
+        }
+
+
+        .btnStop.c9-toolbarbutton,
+        .btnStop.c9-toolbarbutton .c9-label,
+        .btnStop.c9-toolbarbutton .c9-label:after {
+            border: 0 none;
+            border-radius: 0;
+            box-shadow: none;
+            height: 23px;
+            padding: 0;
+        }
+        .btnStop.c9-toolbarbutton {
+            background: none !important;
+        }
+        .btnStop.c9-toolbarbutton .c9-icon {
+            z-index: 100;
+        }
+        .btnStop.c9-toolbarbutton .c9-label,
+        .btnStop.c9-toolbarbutton .c9-label:after {
+            background: url(images/c9-no-repeat.png) no-repeat;
+        }
+        .btnStop.c9-toolbarbutton .c9-label {
+            background-position: 0px 100px; /* nothing */
+            line-height: 23px;
+            margin-right: 4px;
+            overflow: visible;
+            padding-left: 22px;
+        }
+        .btnStop.c9-toolbarbutton .c9-label:after {
+            background-position: 0px 100px; /* nothing */
+            content: "";
+            display: block;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            width: 4px;
+        }
+        .btnStop.c9-toolbarbuttonOver .c9-label {
+            background-position: 0px -457px; 
+        }
+        .btnStop.c9-toolbarbuttonOver .c9-label:after {
+            background-position: -236px -457px; 
+        }
+        .btnStop.c9-toolbarbuttonDown .c9-label {
+            background-position: 0px -490px; 
+        }
+        .btnStop.c9-toolbarbuttonDown .c9-label:after {
+            background-position: -236px -490px; 
         }
 
 
