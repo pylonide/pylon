@@ -5,7 +5,9 @@ section below to grok the changes.
 
 # Cloud9 IDE
 
-Cloud9 is an open source IDE started by [ajax.org], built on top of [Node.JS].
+Cloud9 is an open source IDE started by [ajax.org], built on top of [Node.JS]. This version runs
+locally; for the hosted service offering multiple workspaces, app deployment and other
+features, see [c9.io](http://c9.io).
 
 This Integrated Development Environment balances the power of traditional desktop IDEs with
 the simplicity and elegance of editors like TextMate and Sublime. Best of all, the Cloud9
