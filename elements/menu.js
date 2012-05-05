@@ -136,7 +136,8 @@ apf.menu = function(struct, tagName){
                         apf.menu.lastFocus = null;
                 }
                 //We're being hidden because window looses focus
-                else if (!apf.window.hasFocus()) {
+                //#ifdef __WITH_WINDOW_FOCUS
+                /*else if (!apf.window.hasFocus()) {
                     if (lastFocus.$blur)
                         lastFocus.$blur();
                     this.$blur();
@@ -146,7 +147,8 @@ apf.menu = function(struct, tagName){
                         lastFocus.$focusParent.$lastFocussed = lastFocus;
 
                     apf.menu.lastFocus = null;
-                }
+                }*/
+                //#endif
                 //We're just being hidden
                 else if (this.$hideTree) {
                     if (!this.$hideTree)
