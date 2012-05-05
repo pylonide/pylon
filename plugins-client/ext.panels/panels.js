@@ -18,7 +18,6 @@ module.exports = ext.register("ext/panels/panels", {
     dev    : "Ajax.org",
     alone  : true,
     type   : ext.GENERAL, 
-    minWidth: 110,
     nodes : [],
     panels : {},
     
@@ -80,6 +79,8 @@ module.exports = ext.register("ext/panels/panels", {
         if (self.navbar)
             navbar.$ext.style.zIndex = 10000;
         
+        colLeft.setAttribute("minwidth", 0);
+        
         if (toWin) {
             var toWinExt = toWin.$altExt || toWin.$ext;
             
@@ -97,8 +98,8 @@ module.exports = ext.register("ext/panels/panels", {
             var winExt = win.$altExt || win.$ext;
             var diff  = apf.getDiff(winExt);
             var zIndex = winExt.style.zIndex;
-            if(width < this.minWidth)
-                width = this.minWidth;
+            if (width < win.minwidth)
+                width = win.minwidth;
             
             winExt.style.position = "absolute";
             winExt.style.zIndex = 1000;
@@ -116,7 +117,6 @@ module.exports = ext.register("ext/panels/panels", {
                 );
             }
             else {
-                colLeft.$ext.style.minWidth = 0;
                 tweens.push(
                     {oHtml: winExt, type: "left", from: left, to: left - width},
                     {oHtml: colLeft.$ext, type: "width", from: width, to: 0}
@@ -173,7 +173,8 @@ module.exports = ext.register("ext/panels/panels", {
                     toWinExt.style.height =
                     toWinExt.style.width = "";
                     apf.setOpacity(toWinExt, 1);
-                    colLeft.$ext.style.minWidth = _self.minWidth + "px";
+                    
+                    colLeft.setAttribute("minwidth", toWin.minwidth);
                 }
                 if (win) {
                     winExt.style.zIndex = zIndex;
@@ -220,10 +221,10 @@ module.exports = ext.register("ext/panels/panels", {
         var width = settings.model.queryValue("auto/panels/panel[@path='" 
             + panelExt.path + "']/@width") || panelExt.defaultWidth;
         
-        colLeft.setAttribute("minwidth", panelExt.panel.minwidth);
         if (noAnim || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             panelExt.panel.show();
             colLeft.setWidth(width);
+            colLeft.setAttribute("minwidth", panelExt.panel.minwidth);
         }
         else if (!noAnim)
             this.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
