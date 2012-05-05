@@ -358,8 +358,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var stateChange = isReplace != undefined && this.$lastState != isReplace;
 
         if (!force && !winSearchReplace.visible || force > 0 || stateChange) {
-            if (winSearchReplace.visible && !stateChange)
+            if (winSearchReplace.visible && !stateChange) {
+                txtFind.focus();
+                txtFind.select();
                 return;
+            }
             
             if (stateChange && isReplace)
                 this.setupDialog(isReplace);
@@ -382,26 +385,20 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             winSearchReplace.$ext.height = 0;
 
             //Animate
-            apf.tween.single(winSearchReplace, {
-                type     : "height",
-                anim     : apf.tween.easeOutCubic,
-                from     : winSearchReplace.visible ? winSearchReplace.getHeight() : 0,
-                to       : isReplace ? 67 : 35,
-                steps    : 5,
-                interval : apf.isWebkit ? 0 : 5,
-                control  : (this.control = {}),
-                oneach : function(){
-                    document.body.scrollTop = 0;
-                },
-                onfinish : function() {
-                    if (stateChange && !isReplace)
-                        _self.setupDialog(isReplace);
-                    
-                    divSearchCount.$ext.style.visibility = "";
-                    _self.updateCounter();
-                    
-                    apf.layout.forceResize();
-                }
+            setTimeout(function(){
+                document.body.scrollTop = 0;
+            });
+            Firmin.animate(winSearchReplace.$ext, {
+                height: (isReplace ? 67 : 35) + "px",
+                timingFunction: "cubic-bezier(.30, .08, 0, 1)"
+            }, 0.3, function() {
+                if (stateChange && !isReplace)
+                    _self.setupDialog(isReplace);
+                
+                divSearchCount.$ext.style.visibility = "";
+                _self.updateCounter();
+                
+                apf.layout.forceResize();
             });
             
             winSearchReplace.show();
