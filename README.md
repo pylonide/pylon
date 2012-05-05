@@ -18,7 +18,7 @@ editor](http://ace.ajax.org) which supports syntax highlighting for over 30 lang
 Cloud9 is built with JavaScript/HTML5 on the client and Node.JS on the server, making
 it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would
 benefit, issue a pull request on this repo and we'll take a look. If you have any
-questions, meet us in #clou9ide on irc.freenode.net or ask us on Twitter [@Cloud9IDE](http://twitter.com/#!/Cloud9IDE).
+questions, meet us in #cloud9ide on irc.freenode.net or ask us on Twitter [@Cloud9IDE](http://twitter.com/#!/Cloud9IDE).
 
 Happy Coding!
 
