@@ -12,14 +12,13 @@
       optimize = "true">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:hbox id="barTestTools" class="testPanelControls">
-                <!-- <a:button
+                <a:button
                   id       = "btnNewTestType"
                   caption  = "New"
                   onclick  = ""
-                  skin     = "c9-toolbarbutton"
+                  skin     = "c9-toolbarbutton-light"
                   class    = "with-arrow"
                   submenu  = "mnuTestNew" />
-                -->
                 <a:menu id="mnuTestNew">
                     
                 </a:menu>
@@ -34,16 +33,12 @@
                 <a:button id="btnTestStop"
                   icon     = "stop.png"
                   caption  = "Stop Tests"
-                  skin     = "c9-toolbarbutton"
+                  skin     = "c9-toolbarbutton-light"
                   onclick  = "require('ext/testpanel/testpanel').stop()"
                   visible  = "{!btnTestRun.visible}"
                   disabled = "{!stTestRun.active || stTestRun.stopping}" />
             </a:hbox>
         </a:bar>
-        <a:button id="btnAddRunConf"
-            class  = "c9-header-plus c9-header-divider"
-            onclick  = ""
-            skin     = "header-btn" />
         <a:button
           skin="header-btn"
           class="panel-settings"
