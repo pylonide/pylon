@@ -55,7 +55,6 @@
     }],
 
     "scripts": {
-        "start": "sh ./bin/cloud9.sh",
-        "postinstall": "sh ./postinstall.sh"
+        "start": "sh ./bin/cloud9.sh"
     }
 }
