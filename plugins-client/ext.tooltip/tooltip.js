@@ -100,7 +100,6 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             if (!options.tooltip)
                 options.tooltip = tooltip.create(options, _self);
 
-            options.tooltip.style.display = "block";
             
             var pos;
             if (options.getPosition)
@@ -113,12 +112,17 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             options.tooltip.style.left = pos[0] + "px";
             options.tooltip.style.top = pos[1] + "px";
             
+            options.tooltip.style.display = "block";
+            
             options.tooltip.innerHTML = options.message;
             
             if (options.animate !== false) {
                 apf.tween.single(options.tooltip, 
                     {type: "fade", from: 0, to : 1, steps: 10, interval: 0, 
                      control: options.control = {}});
+            }
+            else {
+                apf.setOpacity(options.tooltip, 1);
             }
         }, options.timeout);
     },
@@ -137,16 +141,16 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             if (options.control)
                 options.control.stop();
 
-            if (options.animate !== false) {
+//            if (options.animate !== false) {
                 apf.tween.single(options.tooltip, {
                      type: "fade", from: 1, to : 0, steps: 10, interval: 0,
                      control: options.control = {}, 
                      onfinish: function(){ options.tooltip.style.display = "none";}
                 });
-            }
-            else {
-                options.tooltip.style.display = "none";
-            }
+//            }
+//            else {
+//                options.tooltip.style.display = "none";
+//            }
         }, 200);
     },
     

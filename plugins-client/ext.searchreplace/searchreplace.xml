@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:label id="tooltipSearchReplace" visible="false" style="background:black;padding:3px;color:white;" />
-    <a:bar id="winSearchReplace" skin="basic" skinset="searchreplace" zindex="1000">
+    <a:bar id="winSearchReplace" skin="basic" skinset="searchreplace" zindex="1000" minheight="0" visible="false">
         <div id="divSearchCount"><span class="searchIter" id="spanSearchIter">0</span><span class="searchTotal" id="spanSearchTotal">0</span></div>
         <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
           skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" 
@@ -31,7 +31,7 @@
                 </a:hbox>
                 <a:textbox id="txtFind" flex="1" initial-message="Find" focusselect="true" class="searchTxt"/>
             </a:hbox>
-            <a:hbox id="hboxReplace" padding="5" align="start">
+            <a:hbox id="hboxReplace" padding="5" align="start" render="runtime">
                 <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
                     <a:checkbox id="chkPreserveCase" class="chkPreserveCase" checked="false" label="Preserve Case" skin="grouped_checkbox" width="28" />
                 </a:hbox>

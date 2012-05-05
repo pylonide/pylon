@@ -47,8 +47,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     hook : function(){
         var _self = this;
         
-        this.markupInsertionPoint = mainRow;
-
         commands.addCommand({
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
@@ -152,6 +150,20 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return isAvailable.apply(this, arguments);
         }
         
+        commands.addCommand({
+            name: "hidesearchreplace",
+            bindKey: {mac: "ESC", win: "ESC"},
+            isAvailable : function(editor){
+                return winSearchReplace.visible;
+            },
+            exec: function(env, args, request) {
+                _self.toggleDialog(-1);
+                
+                if (txtFind.getValue())
+                    _self.saveHistory(txtFind.getValue());
+            }
+        });
+        
         apf.importCssString(_self.css);
         
         //This needs to go into the onfinish of the anim
@@ -159,9 +171,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 //                editors.currentEditor.amlEditor.focus();
         
         ide.addEventListener("init.ext/console/console", function(e){
-            winSearchReplace.parentNode.insertBefore(
-                winSearchReplace, winDbgConsole);
+            mainRow.insertBefore(winSearchReplace, winDbgConsole);
         });
+        if (winSearchReplace.parentNode != mainRow)
+            mainRow.insertBefore(winSearchReplace, self.winDbgConsole || null);
         
         //txtFind.$ext.cols = txtFind.cols;
         
@@ -218,12 +231,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         });
         
         //@todo make this a setting
-//        txtFind.addEventListener("blur", function(e){
-//            
-//            if (self.winSearchReplace && winSearchReplace.visible
-//              && !apf.isChildOf(winSearchReplace, e.toElement))
-//                _self.toggleDialog(-1);
-//        });
+        winSearchReplace.addEventListener("blur", function(e){
+            if (winSearchReplace.visible 
+              && !apf.isChildOf(winSearchReplace, e.toElement))
+                _self.toggleDialog(-1);
+        });
         
         var tt = document.body.appendChild(tooltipSearchReplace.$ext);
         tt.style.position = "absolute";
@@ -241,7 +253,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     var pos = apf.getAbsolutePosition(winSearchReplace.$ext);
                     var left = pos[0] + cb.getLeft();
                     var top = pos[1];
-                    return [left, top - tt.offsetHeight];
+                    return [left, top - 19];
                 }
             });
         });
@@ -334,18 +346,23 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         oTotal.innerHTML = "of " + ranges.length;
     },
     
-    toggleDialog: function(force, isReplace) {
+    toggleDialog: function(force, isReplace, noanim) {
+        var _self = this;
+        
         ext.initExtension(this);
 
         var editor = editors.currentEditor;
         if (!editor || !editor.amlEditor)
             return;
 
-        if (!force && !winSearchReplace.visible || force > 0 || this.$lastState != isReplace) {
-            if (winSearchReplace.visible && this.$lastState == isReplace)
+        var stateChange = isReplace != undefined && this.$lastState != isReplace;
+
+        if (!force && !winSearchReplace.visible || force > 0 || stateChange) {
+            if (winSearchReplace.visible && !stateChange)
                 return;
             
-            this.setupDialog(isReplace);
+            if (stateChange && isReplace)
+                this.setupDialog(isReplace);
 
             this.position = -1;
 
@@ -360,13 +377,61 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             if (value)
                 txtFind.setValue(value);
 
+            winSearchReplace.$ext.style.overflow = "hidden";
+            winSearchReplace.$ext.scrollTop = 0;
+            winSearchReplace.$ext.height = 0;
+
+            //Animate
+            apf.tween.single(winSearchReplace, {
+                type     : "height",
+                anim     : apf.tween.easeOutCubic,
+                from     : winSearchReplace.visible ? winSearchReplace.getHeight() : 0,
+                to       : isReplace ? 67 : 35,
+                steps    : 5,
+                interval : apf.isWebkit ? 0 : 5,
+                control  : (this.control = {}),
+                oneach : function(){
+                    document.body.scrollTop = 0;
+                },
+                onfinish : function() {
+                    if (stateChange && !isReplace)
+                        _self.setupDialog(isReplace);
+                    
+                    divSearchCount.$ext.style.visibility = "";
+                    _self.updateCounter();
+                    
+                    apf.layout.forceResize();
+                }
+            });
+            
             winSearchReplace.show();
             txtFind.focus();
             txtFind.select();
         }
         else if (winSearchReplace.visible) {
             divSearchCount.$ext.style.visibility = "hidden";
-            winSearchReplace.hide();
+            
+            winSearchReplace.visible = false;
+
+            txtFind.focus();
+            txtFind.select();
+
+            //Animate
+            apf.tween.single(winSearchReplace, {
+                type     : "height",
+                anim     : apf.tween.NORMAL,
+                from     : winSearchReplace.getHeight(),
+                to       : 0,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {}),
+                onfinish : function(){
+                    winSearchReplace.visible = true;
+                    winSearchReplace.hide();
+
+                    editor.ceEditor.focus();
+                }
+            });
         }
 
         return false;
@@ -394,10 +459,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.position = 0;
         
         var sbox = hboxFind.childNodes[2];
-        var rbox = hboxReplace.childNodes[1];
 
         if (isReplace) {
             hboxReplace.show();
+            var rbox = hboxReplace.childNodes[1];
             rbox.appendChild(chkHighlightMatches);
             sbox.hide();
         }
