@@ -7720,9 +7720,13 @@
         }
 
         .testpanel .fm-content .testPanelControls {
-            right: 14px;
+            right: 4px;
             position: relative;
             top: 1px;
+        }
+        .testPanelControls .c9-toolbarbutton-light,
+        .testPanelControls .light-dropdown {
+            margin-right: 10px !important;
         }
         .light-dropdown .c9-dropdown-btn {
             height: 19px;
