@@ -1,26 +1,35 @@
+**UPDATE for May 2012**: If you cloned Cloud9 prior to May 2012, we have upgraded the
+architecture of the codebase. This makes it simpler to maintain Cloud9, but
+it affects the way you pull updates and hack on subcomponents. See the _Installation and Usage_
+section below to grok the changes.
+
 # Cloud9 IDE
 
-The Cloud9 IDE is an open source project started by [ajax.org], built on top of
-[Node.JS].
+Cloud9 is an open source IDE started by [ajax.org], built on top of [Node.JS].
 
-This Integrated Development Environment aims to bring all great features from
-other existing IDE's and source code editors like Eclipse, Netbeans, Textmate,
-and many others together, bundled as plugins.
-Cloud9's main focus is on Javascript development, it is able to set a new
-standard for client and server development integration.
+This Integrated Development Environment balances the power of traditional desktop IDEs with
+the simplicity and elegance of editors like TextMate and Sublime. Best of all, the Cloud9
+interface runs entirely in the browser.
 
-And if you find that functionality is missing? Just write a plugin and patch it
-yourself!
+Cloud9's primary focus is on world-class Javascript support, offering language
+analysis, code completion and in-browser Node.JS running and debugging. It uses the [ACE
+editor](http://ace.ajax.org) which supports syntax highlighting for over 30 languages.
 
-Written in Javascript, for Javascripters.
+Cloud9 is built with JavaScript/HTML5 on the client and Node.JS on the server, making
+it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would
+benefit, issue a pull request on this repo and we'll take a look. If you have any
+questions, meet us in #clou9ide on irc.freenode.net or ask us on Twitter [@Cloud9IDE](http://twitter.com/#!/Cloud9IDE).
+
+Happy Coding!
 
 ## Features
 
-  * High performance text editor with bundled syntax highlighting support for JS, HTML, CSS and mixed modes.
-  * Integrated debugger for [Node.JS] applications which can be started, paused and stopped from within the IDE
+  * High performance ACE text editor with bundled syntax highlighting support for JS, HTML, CSS and mixed modes.
+  * Integrated debugger for [Node.JS] applications with views of the call stack, variables, live code execution and live inspector
+  * Advanced Javascript language analysis marking unused variables, globals, syntax errors and allowing for variable rename
   * Local filesystem is exposed through [WebDAV](http://en.wikipedia.org/wiki/WebDAV) to the IDE, which makes it possible to connect to remote workspaces as well
-  * Highly extensible through the plugin system
-  * Bundled plugins: browser, clipboard, code (editor), console, debugger, docs, editors, filesystem, html, keybindings, newresource, noderunner, panels, refactor, richtext, save, searchreplace, settings, tree, undo
+  * Highly extensible through both client-side and server-side plugins
+  * Sophisticated process management on the server with evented messaging
 
 ## Browser Support
 
