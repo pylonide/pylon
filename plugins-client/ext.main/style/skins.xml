@@ -335,7 +335,7 @@
 
         .black-menu-bar .toggle-black-menu-bar {
         	background: url(images/c9-no-repeat.png) no-repeat 0 -383px;
-            box-shadow: none !important;
+            box-shadow: none;
         	cursor: pointer;
         	height: 27px;
         	position: absolute;
@@ -344,20 +344,43 @@
         	width: 5px;
         }
         .black-menu-bar.closed .toggle-black-menu-bar {
-        	background-position: 0px -383px;
+            background-position: 0px -383px;
             right : 1px;
         }
         .black-menu-bar.closed .toggle-black-menu-bar:hover {
-        	background-position: -8px -383px;
+            background-position: -8px -383px;
         }
         .black-menu-bar .toggle-black-menu-bar {
-        	background-position: -18px -383px;
+            background-position: -18px -383px;
         }
         .black-menu-bar .toggle-black-menu-bar:hover {
-        	background-position: -26px -383px;
+            background-position: -26px -383px;
         }
         .black-menu-bar .toggle-black-menu-bar .icon{
             display : none;
+        }
+        
+
+        .black-menu-bar.closed.minimized,
+        .black-menu-bar.closed.minimized .toggle-black-menu-bar {
+            border-bottom-right-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+        .black-menu-bar.closed.minimized {
+            padding-right: 9px !important;
+            border-right: 1px solid rgba(31,31,31,.8);
+            box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.05) inset, 1px 0 1px 0 rgba(255,255,255,.05) 
+        }   
+        .black-menu-bar.closed.minimized .toggle-black-menu-bar {
+            background-image: url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+            background-position: -38px -383px, 0 -1030px;
+            background-repeat: no-repeat, repeat-x;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.03) inset;
+            right: 0px;
+            width: 9px;
+        }
+        .black-menu-bar.closed.minimized .toggle-black-menu-bar:hover {
+            background-position: -48px -383px, 0 -1030px;
         }
      ]]></a:style>
 
@@ -8734,6 +8757,9 @@
     /* ------------------------------------------------------------------------------------------
      * minimized tabs
      * --------------------------------------------------------------------------------------- */
+    .editor_tab.hidetabs {
+        box-shadow: -3px 0 0 0 #2B2B2B;
+    }
     .editor_tab.hidetabs .tab_middle *,
     .editor_tab.hidetabs .btnclose .tab_middle > strong {
     	display: none;
