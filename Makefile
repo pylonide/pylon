@@ -24,17 +24,15 @@ apfdebug:
 
 # packages core
 core:
-	mkdir -p build/
-	node r.js -o build/core.build.js
+	node build/r.js -o build/core.build.js
 
 # generates packed template
 helper: 
-	mkdir -p build/
 	node build/packed_helper.js
 
 # packages ext
 ext: 
-	node r.js -o build/app.build.js
+	node build/r.js -o build/app.build.js
 	echo "module = {exports: undefined};" | cat - plugins-client/lib.packed/www/packed.js > temp_file && mv temp_file plugins-client/lib.packed/www/packed.js
 
 # calls dryice on worker & packages it
@@ -42,7 +40,7 @@ worker:
 	mkdir -p client/js/worker
 	./Makefile.dryice.js worker
 	cp support/ace/build/src/worker* client/js/worker/
-	node r.js -o name=./client/js/worker/worker.js out=./client/js/worker.js baseUrl=.
+	node build/r.js -o name=./client/js/worker/worker.js out=./client/js/worker.js baseUrl=.
 
 # copies built ace modes
 mode:

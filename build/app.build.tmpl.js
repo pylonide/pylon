@@ -4,42 +4,27 @@
 	optimize: "none",
 	baseUrl: "../",
 	paths: {
+		"text" : "build/text", // plugin for pulling in text! files
 		"core" : "empty:",
-		"ext" : "empty:",
+		"ext/commands" : "plugins-client/ext.commands",
+		"ext/uploadfiles" : "plugins-client/ext.uploadfiles",
 		"apf" : "empty:",
 		"treehugger" : "empty:",
+		"debug": "empty:",
+		"apf/elements": "plugins-client/lib.apf/www/apf/elements",
 		"%m"
 	},
-	include: ["build/src/core.packed", "%s"], 
+	include: ["build/src/core.packed", 
+	"apf/elements/codeeditor", 
+	"apf/elements/debugger", 
+	"apf/elements/debughost",
+	"ext/commands/commands",
+	"ext/uploadfiles/uploadfiles",
+	"%s"], 
 	out: "../plugins-client/lib.packed/www/packed.js",
 	inlineText: true,
 	findNestedDependencies: true,
 	optimizeAllPluginResources: false,
 	useStrict: true,
-	wrap: true/*,
-	onBuildRead: function (moduleName, path, contents) {
-		var defineRegExp = new RegExp(/plugins-client\/ext.(\w+)/g);
-		var textRegExp = new RegExp(/text!ext\/(\w+)\//g);
-
-		var match;
-
-		console.log(contents)
-		if ( (match = contents.match(defineRegExp) ) ) {
-			for (var m in match) {
-				console.error(match[m]);
-				var name = "ext/" + match[m].split("/")[1];
-				contents = contents.replace(match[m], path);
-			}
-		}
-
-		if ( (match = contents.match(textRegExp) ) ) {
-			for (var m in match) {
-				var name = match[m].split("/")[1];
-		        var path = "text!plugins-client/ext." + name + "/";
-		        contents = contents.replace(match[m], path);
-		    }
-		}
-
-		return contents;
-	}*/
+	wrap: true
 })

@@ -1,24 +1,26 @@
 var fs = require('fs');
 
-//var extensions = require("../configs/default.js").containers.master.plugins;
-//var clientPlugins = [ ];
+var extensions = require("../configs/default.js").containers.master.plugins;
+var clientPlugins = [ ];
+var clientMappings = [ ];
 
 //console.log(extensions);
-/*
+
 for (var i in extensions) {
     if (extensions[i].packagePath && extensions[i].packagePath.indexOf("cloud9.core") >= 0) {
-        //console.log(extensions[i].clientPlugins);
         for (var p in extensions[i].clientPlugins) {
-        	var name = extensions[i].clientPlugins[p].split("/");
-        	var ext = "plugins-client/ext." + name[1] + "/" + name[1];
-        	clientPlugins.push(ext);
-        }
-        clientPlugins = "'" + clientPlugins.join("',\n\t'") + "'";
-        break;
-    }
-}*/
+        	var name = extensions[i].clientPlugins[p].split("/")[1];
+        	var dir = "plugins-client/ext." + name;
+            var mapping = "ext/" + name;
 
-var clientPlugins = [];
+            clientMappings.push(mapping + "': '" + dir);
+        	clientPlugins.push(mapping + "/" + name);
+        }
+        break; // stop looking for cloud9.core
+    }
+}
+
+/*var clientPlugins = [];
 var clientMappings = [];
 var clientDirs = fs.readdirSync(__dirname + "/../plugins-client");
 var defineRegExp = new RegExp(/plugins-client\/ext.(\w+)/g);
@@ -49,7 +51,7 @@ for (var i = 0; i < clientDirs.length; i++) {
         console.error("Missing " + process.cwd() + "/" + path + ".js");
         console.error(e);
     }
-}
+}*/
 
 
 clientPlugins = "'" + clientPlugins.join("',\n\t'") + "'";
