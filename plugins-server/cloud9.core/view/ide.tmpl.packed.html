@@ -16,6 +16,7 @@
         <script type="text/javascript">
         //<![CDATA[
 
+            var baseUrl = window.location.host;
             window.cloud9config = {
                 startdate: new Date(),
                 davPrefix: <%davPrefix%>,
@@ -27,10 +28,10 @@
                 readonly: <%readonly%>,
                 projectName: <%projectName%>,
                 version: <%version%>,
-                staticUrl: <%staticUrl%>,
-                settings: <%settingsXml%>,
+                staticUrl: "[%staticUrl%]",
                 socketIoUrl: <%socketIoUrl%>,
                 socketIoTransports: <%socketIoTransports%>,
+                hosted: [%hosted%],
                 settings: <%settingsXml%>
             };
             
@@ -40,14 +41,14 @@
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
 
-            var config = <%requirejsConfig%>;
+       
+            //var config = <%requirejsConfig%>;
 
-            require(config, function() {
-                    var list = <%plugins%>;
+            //require(config, function() {
 
-                    require(list, function(ide, ext, util) {
+                    require(["[%staticUrl%]/packed.js"], function(ide, ext, util) {
                         var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
-                        
+             
                         var aceConfig = require("ace/config");
 
                         aceConfig.set("packaged", true);
@@ -56,7 +57,7 @@
                         aceConfig.set("themePath", "/static/js/theme");
 
                         // Load extensions
-                        ide.dispatchEvent("extload", {modules: list});
+                        //ide.dispatchEvent("extload", {modules: list});
                         
                         cloud9config.totalTime = new Date() - cloud9config.startdate;
                         console.log("Total Load Time " 
@@ -68,7 +69,7 @@
                     });
 
                     preloaderImgs();
-            });
+           // });
 
             function preloaderImgs() {
                 var preloadImgs = [

@@ -7,11 +7,9 @@ var configName = process.argv[2] || "default";
 
 // when command line arguments are passed into this, we ignore them
 // when loading the config file.
-/*if (configName.indexOf("-") === 0) {
+if (configName.indexOf("-") === 0) {
     configName = "default";
-}*/
-
-configName = "packed";
+}
 
 var configPath = path.resolve(__dirname, "./configs/", configName);
 

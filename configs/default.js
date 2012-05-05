@@ -18,7 +18,7 @@ var fsUrl = "/workspace";
 
 var port = argv.p || process.env.PORT || 3131;
 
-module.exports = {
+var config = {
     name: "Cloud9",
     tmpdir: __dirname + "/../.architect",
     basePath: __dirname + "/../plugins-server",
@@ -39,14 +39,15 @@ module.exports = {
             },
             "./cloud9.alive",
             "./cloud9.debug",
-
-            // Client libraries
-            "./../plugins-client/cloud9.core",
-            "./../plugins-client/lib.ace",
-            "./../plugins-client/lib.apf",
-            "./../plugins-client/lib.treehugger",
+ 
+            // Client libraries filled out below
+            "./../plugins-client/cloud9.core", 
+            "./../plugins-client/lib.ace", 
+            "./../plugins-client/lib.apf", 
+            "./../plugins-client/lib.treehugger", 
             "./../plugins-client/lib.v8debug",
             "./../plugins-client/lib.requirejs",
+            "./../plugins-client/lib.packed",
 
             // server plugins
             {
@@ -148,6 +149,7 @@ module.exports = {
             "./cloud9.permissions",
             {
                 packagePath: "./cloud9.client-plugins",
+                //packagePath: argv.r ? "./cloud9.client-plugins-packed" : "./cloud9.client-plugins",
                 plugins: clientExtensions
             },
             "./cloud9.eventbus",
@@ -177,3 +179,13 @@ module.exports = {
         }
     }
 };
+
+/*
+if (argv.r === undefined) {
+    config.containers.master.plugins.push("./../plugins-client/cloud9.core", "./../plugins-client/lib.ace", "./../plugins-client/lib.apf", "./../plugins-client/lib.treehugger", "./../plugins-client/lib.v8debug");
+}
+else {
+    config.containers.master.plugins.push("./../plugins-client/cloud9.core-packed");
+}*/
+
+module.exports = config;

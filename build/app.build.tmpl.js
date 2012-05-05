@@ -4,29 +4,42 @@
 	optimize: "none",
 	baseUrl: "../",
 	paths: {
-	"core" : "empty:",
-	"ext" : "empty:",
-	"apf" : "empty:",
-	"treehugger" : "empty:"
+		"core" : "empty:",
+		"ext" : "empty:",
+		"apf" : "empty:",
+		"treehugger" : "empty:",
+		"%m"
 	},
 	include: ["build/src/core.packed", "%s"], 
-	out: "../plugins-client/ext.packed/packed.js",
+	out: "../plugins-client/lib.packed/www/packed.js",
 	inlineText: true,
 	findNestedDependencies: true,
 	optimizeAllPluginResources: false,
 	useStrict: true,
-	wrap: true,
+	wrap: true/*,
 	onBuildRead: function (moduleName, path, contents) {
+		var defineRegExp = new RegExp(/plugins-client\/ext.(\w+)/g);
 		var textRegExp = new RegExp(/text!ext\/(\w+)\//g);
+
 		var match;
+
+		console.log(contents)
+		if ( (match = contents.match(defineRegExp) ) ) {
+			for (var m in match) {
+				console.error(match[m]);
+				var name = "ext/" + match[m].split("/")[1];
+				contents = contents.replace(match[m], path);
+			}
+		}
+
 		if ( (match = contents.match(textRegExp) ) ) {
-		        for (var m in match) {
-		                var name = match[m].split("/")[1];
-		                var path = "text!plugins-client/ext." + name + "/";
-		                contents = contents.replace(match[m], path);
-		        }
+			for (var m in match) {
+				var name = match[m].split("/")[1];
+		        var path = "text!plugins-client/ext." + name + "/";
+		        contents = contents.replace(match[m], path);
+		    }
 		}
 
 		return contents;
-	}
+	}*/
 })
