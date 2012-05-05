@@ -664,6 +664,9 @@ module.exports = ext.register("ext/console/console", {
         if (typeof e !== "undefined" && e.target.className.indexOf("prompt_spinner") !== -1)
             return;
 
+        var txt = apf.findHost(pNode);
+        txt.$scrolldown = false;
+
         var height = parseInt(pNode.getAttribute("rel"), 10);
         apf.setStyleClass(pNode, null, ["collapsed"]);
         Firmin.animate(pNode, {
@@ -686,6 +689,11 @@ module.exports = ext.register("ext/console/console", {
             height : "14px"
         }, 0.2, function() {
             apf.layout.forceResize(tabConsole.$ext);
+            
+            var txt = apf.findHost(pNode);
+            var scroll = txt.$scrollArea;
+            txt.$scrolldown = scroll.scrollTop >= scroll.scrollHeight
+                - scroll.offsetHeight + apf.getVerBorders(scroll);
         });
 
         pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');
