@@ -1,55 +1,44 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window id="winSearchReplace"
-      onhide  = "require('ext/searchreplace/searchreplace').onHide()"
-      title   = "Search &amp; Replace" 
-      buttons = "close" 
-      modal   = "false" 
-      center  = "true" 
-      skin    = "bk-window"
-      class   = "relative"
-      width   = "800" 
-      kbclose = "true">
-        <a:bar skinset="searchreplace">
-            <div id="divSearchCount"><span class="searchIter" id="spanSearchIter">0</span><span class="searchTotal" id="spanSearchTotal">0</span></div>
-            <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
-              skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" 
-              icon="arrow_left_search.png"
-              right="40"
-              top="2"
-              zindex="100"/>
-            <a:button onclick="require('ext/searchreplace/searchreplace').findnext(1)" 
-              skin="btnquicksearchnav" class="btnquicksearchnavRight" 
-              icon="arrow_right_search.png" 
-              right="10"
-              top="2"
-              zindex="100"/>
-            <a:vbox class="find-and-replace" padding="5" edge="5">
-                <a:hbox id="hboxFind" padding="5">
-                    <a:hbox class="grouped_checkbox_holder">
-                        <a:checkbox id="chkRegEx" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
-                        <a:checkbox id="chkMatchCase" class="chkMatchCase" checked="false" label="Match Case" skin="grouped_checkbox" width="28" />
-                        <a:checkbox id="chkWholeWords" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
-                    </a:hbox>
-                    <a:hbox class="grouped_checkbox_holder">
-                        <a:checkbox id="chkSearchBackwards" class="chkSearchBackwards" label="Search Backwards" skin="grouped_checkbox" width="28" />
-                        <a:checkbox id="chkWrapAround" class="chkWrapAround" checked="true" label="Wrap Around" skin="grouped_checkbox" width="28" />
-                        <a:checkbox id="chkSearchSelection" class="chkSearchSelection" label="Search Selection" skin="grouped_checkbox" width="28" />
-                    </a:hbox>
-                    <a:checkbox id="chkHighlightMatches" class="chkHighlightMatches" label="Search Selection" skin="grouped_checkbox" width="28" />
-                    <a:textbox id="txtReplace" flex="1" initial-message="Find" focusselect="true" class="searchTxt"/>
+    <a:bar id="winSearchReplace" skin="basic" class="searchreplacecontainer" skinset="searchreplace">
+        <div id="divSearchCount"><span class="searchIter" id="spanSearchIter">0</span><span class="searchTotal" id="spanSearchTotal">0</span></div>
+        <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
+          skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" 
+          icon="arrow_left_search.png"
+          right="40"
+          top="2"
+          zindex="100"/>
+        <a:button onclick="require('ext/searchreplace/searchreplace').findnext(1)" 
+          skin="btnquicksearchnav" class="btnquicksearchnavRight" 
+          icon="arrow_right_search.png" 
+          right="10"
+          top="2"
+          zindex="100"/>
+        <a:vbox class="find-and-replace" padding="5" edge="5">
+            <a:hbox id="hboxFind" padding="5">
+                <a:hbox class="grouped_checkbox_holder">
+                    <a:checkbox id="chkRegEx" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkMatchCase" class="chkMatchCase" checked="false" label="Match Case" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkWholeWords" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-                <a:hbox id="hboxReplace" padding="5">
-                    <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
-                    
-                    </a:hbox>
-                    <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
-                    
-                    </a:hbox>
-                    <a:textbox id="txtFind" flex="1" initial-message="Replace With" focusselect="true" class="searchTxt"/>
-                    <a:button skin="blackbutton" command="replace">Replace</a:button>
-                    <a:button skin="blackbutton" command="replaceall">Replace All</a:button>
+                <a:hbox class="grouped_checkbox_holder">
+                    <a:checkbox id="chkSearchBackwards" class="chkSearchBackwards" label="Search Backwards" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkWrapAround" class="chkWrapAround" checked="true" label="Wrap Around" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkSearchSelection" class="chkSearchSelection" label="Search Selection" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-            </a:vbox>
-        </a:bar>
-    </a:window>
+                <a:checkbox id="chkHighlightMatches" class="chkHighlightMatches" label="Search Selection" skin="grouped_checkbox" width="28" />
+                <a:textbox id="txtFind" flex="1" initial-message="Find" focusselect="true" class="searchTxt"/>
+            </a:hbox>
+            <a:hbox id="hboxReplace" padding="5">
+                <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
+                
+                </a:hbox>
+                <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
+                
+                </a:hbox>
+                <a:textbox id="txtReplace" flex="1" initial-message="Replace With" focusselect="true" class="searchTxt"/>
+                <a:button skin="blackbutton" command="replace">Replace</a:button>
+                <a:button skin="blackbutton" command="replaceall">Replace All</a:button>
+            </a:hbox>
+        </a:vbox>
+    </a:bar>
 </a:application>

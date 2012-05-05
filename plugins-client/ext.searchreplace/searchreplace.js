@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var Util = require("core/util");
 var menus = require("ext/menus/menus");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -18,6 +19,10 @@ var markup = require("text!ext/searchreplace/searchreplace.xml");
 var commands = require("ext/commands/commands");
 
 var oIter, oTotal;
+
+//N.B. the problem is with many occurences, so a single character search breaks it.
+var MAX_LINES = 20000; // alter live search if lines > 20k--performance bug
+var MAX_LINES_SOFT = 8000; // single character search prohibited
 
 module.exports = ext.register("ext/searchreplace/searchreplace", {
     name    : "Searchreplace",
@@ -49,7 +54,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
-                _self.toggleDialog(true, true);
+                _self.toggleDialog(1, true);
             }
         });
 
@@ -61,7 +66,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
-                _self.toggleDialog(true, true);
+                _self.toggleDialog(1, true);
             }
         });
 
@@ -102,7 +107,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
-                _self.toggleDialog(false);
+                _self.toggleDialog(1, false);
             }
         });
 
@@ -151,7 +156,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 editors.currentEditor.amlEditor.focus();
         }
         
-        txtFind.$ext.cols = txtFind.cols;
+        //txtFind.$ext.cols = txtFind.cols;
         
         txtFind.addEventListener("clear", function() {
             _self.execSearch(false, false, true);
@@ -299,14 +304,19 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         oTotal.innerHTML = "of " + ranges.length;
     },
     
-    toggleDialog: function(isReplace, forceShow) {
+    toggleDialog: function(force, isReplace) {
         ext.initExtension(this);
 
         var editor = editors.currentEditor;
         if (!editor || !editor.amlEditor)
             return;
 
-        if (!winSearchReplace.visible || forceShow || this.$lastState != isReplace) {
+        editor.amlEditor.parentNode.appendChild(winSearchReplace);
+
+        if (!force && !winSearchReplace.visible || force > 0 || this.$lastState != isReplace) {
+            if (winSearchReplace.visible && this.$lastState == isReplace)
+                return;
+            
             this.setupDialog(isReplace);
 
             this.position = -1;
@@ -326,7 +336,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             txtFind.focus();
             txtFind.select();
         }
-        else {
+        else if (winSearchReplace.visible) {
             divSearchCount.$ext.style.visibility = "hidden";
             winSearchReplace.hide();
         }
@@ -341,11 +351,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     search: function() {
-        return this.setEditor().toggleDialog(false, true);
+        return this.setEditor().toggleDialog(1, false);
     },
 
     searchreplace: function() {
-        return this.setEditor().toggleDialog(true, true);
+        return this.setEditor().toggleDialog(1, true);
     },
 
     setupDialog: function(isReplace) {
@@ -416,7 +426,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         if (!ace)
             return;
 
-        var searchTxt = txtQuickSearch.getValue();
+        var searchTxt = txtFind.getValue();
 
         if (searchTxt.length < 2 && ace.getSession().getDocument().getLength() > MAX_LINES_SOFT)
             return;
@@ -490,7 +500,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     find: function() {
-        this.toggleDialog();
+        this.toggleDialog(1);
         return false;
     },
 
