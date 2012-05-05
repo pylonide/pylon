@@ -17,6 +17,7 @@ var css = require("text!ext/searchreplace/searchreplace.css");
 var skin = require("text!ext/searchreplace/skin.xml");
 var markup = require("text!ext/searchreplace/searchreplace.xml");
 var commands = require("ext/commands/commands");
+var tooltip = require("ext/tooltip/tooltip");
 
 var oIter, oTotal;
 
@@ -223,6 +224,27 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 //              && !apf.isChildOf(winSearchReplace, e.toElement))
 //                _self.toggleDialog(-1);
 //        });
+        
+        var tt = document.body.appendChild(tooltipSearchReplace.$ext);
+        tt.style.position = "absolute";
+        tt.style.zIndex = 100000;
+        
+        var cbs = winSearchReplace.getElementsByTagNameNS(apf.ns.aml, "checkbox");
+        cbs.forEach(function(cb){
+            tooltip.add(cb.$ext, {
+                message : cb.label,
+                width : "auto",
+                timeout : 0,
+                tooltip : tt,
+                animate : false,
+                getPosition : function(){
+                    var pos = apf.getAbsolutePosition(winSearchReplace.$ext);
+                    var left = pos[0] + cb.getLeft();
+                    var top = pos[1];
+                    return [left, top - tt.offsetHeight];
+                }
+            });
+        });
     },
     
     navigateList : function(type){
