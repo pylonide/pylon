@@ -52948,12 +52948,18 @@ apf.item  = function(struct, tagName){
         
         value = (typeof value == "string" ? value.trim() : value);
         
+        var checked;
         if (this.$values) {
-            this.checked = (typeof value != "undefined" && value !== null
+            checked = (typeof value != "undefined" && value !== null
                 && value.toString() == this.$values[0].toString());
         }
         else {
-            this.checked = apf.isTrue(value);
+            checked = apf.isTrue(value);
+        }
+        
+        if (checked != this.checked) {
+            this.checked = checked;
+            this.$propHandlers.checked.call(this, checked);
         }
     };
     
