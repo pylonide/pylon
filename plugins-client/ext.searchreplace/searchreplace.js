@@ -68,7 +68,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
-                _self.toggleDialog(1, true);
+                _self.replaceAll();//toggleDialog(1, true);
             }
         });
 
@@ -559,8 +559,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
-            return;
-        if (!barSingleReplace.visible)
             return;
         var options = this.getOptions();
         options.needle = txtFind.getValue();

@@ -38,8 +38,8 @@
                 
                 </a:hbox>
                 <a:textbox id="txtReplace" flex="1" initial-message="Replace With" focusselect="true" class="searchTxt"/>
-                <a:button skin="blackbutton" command="replace">Replace</a:button>
-                <a:button skin="blackbutton" command="replaceall">Replace All</a:button>
+                <a:button skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replace()">Replace</a:button>
+                <a:button skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replaceAll()" >Replace All</a:button>
             </a:hbox>
         </a:vbox>
     </a:bar>

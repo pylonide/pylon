@@ -30,5 +30,5 @@
 }
 
 .tb_textbox.searchTxt .sbtb_middle input {
-    width: 255px;
+    width: 100%;
 }
