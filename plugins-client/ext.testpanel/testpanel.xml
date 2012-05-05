@@ -8,6 +8,7 @@
       title    = "Test Panel" 
       modal    = "false" 
       buttons  = "close" 
+      minwidth = "193"
       optimize = "true">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:hbox id="barTestTools">

@@ -49,7 +49,7 @@ module.exports = function setup(options, imports, register) {
             socketIoUrl: socketUrl.replace(/^\//, ""),
             socketIoTransports: options.socketIoTransports,
             baseUrl: baseUrl,
-            debug: false,
+            debug: (options.debug === true)?true:false,
             staticUrl: staticPrefix,
             workspaceId: workspaceId,
             name: options.name || workspaceId,

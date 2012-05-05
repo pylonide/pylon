@@ -57,6 +57,7 @@ var config = {
                 unixId: null
             }, {
                 packagePath: "./cloud9.core",
+                debug: false,
                 fsUrl: fsUrl,
                 hosted: false,
                 socketIoTransports: [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],

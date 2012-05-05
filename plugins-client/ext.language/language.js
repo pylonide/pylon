@@ -10,13 +10,11 @@ var ext = require("core/ext");
 var ide = require("core/ide");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
-var noderunner = require("ext/noderunner/noderunner");
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
-var liveInspect = require('ext/language/liveinspect');
 
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
@@ -25,13 +23,12 @@ var lang = require("ace/lib/lang");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
-var commands = require("ext/commands/commands");
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
-    deps    : [editors, noderunner, code],
+    deps    : [editors, code],
     nodes   : [],
     alone   : true,
     markup  : markup,
@@ -78,7 +75,7 @@ module.exports = ext.register("ext/language/language", {
                 callback({worker: worker});
             });
         }, true);
-        
+
         ide.addEventListener("settings.load", function(){
             settings.setDefaults("language", [
                 ["jshint", "true"],
@@ -95,7 +92,7 @@ module.exports = ext.register("ext/language/language", {
         var _self = this;
         var worker = this.worker;
         apf.importCssString(css);
-        
+
         if (!editors.currentEditor || !editors.currentEditor.amlEditor)
             return;
 

@@ -79,7 +79,7 @@ FileStore.prototype.get = function(sid, fn){
                   try {
                       sess = JSON.parse(data);
                   } catch(e) {
-                      console.warn("Error '" + e + "' reading session: " + sid);
+                      console.warn("Error '" + e + "' reading session: " + sid, data);
                       self.destroy(sid, fn);
                       return;
                   }
