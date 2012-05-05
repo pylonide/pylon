@@ -13,7 +13,6 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
-var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
 var markup = require("text!ext/statusbar/statusbar.xml");
 var skin = require("text!ext/statusbar/skin.xml");
