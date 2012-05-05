@@ -392,6 +392,9 @@ module.exports = ext.register("ext/console/console", {
 
     hook: function() {
         var _self = this;
+        
+        // Append the console window at the bottom below the tab
+        this.markupInsertionPoint = mainRow;
 
         commands.addCommand({
             name: "help",
@@ -537,8 +540,6 @@ module.exports = ext.register("ext/console/console", {
 
         apf.importCssString(this.css);
 
-        // Append the console window at the bottom below the tab
-        mainRow.appendChild(winDbgConsole);
         winDbgConsole.previousSibling.hide();
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));

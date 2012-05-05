@@ -29,14 +29,6 @@
     padding: 0 5px 0 2px;
 }
 
-.searchreplacecontainer{
-    bottom : 0;
-    left : 0;
-    right : 0;
-    position : absolute;
-    z-index : 11000;
-}
-
 .tb_textbox.searchTxt .sbtb_middle input {
     width: 255px;
 }

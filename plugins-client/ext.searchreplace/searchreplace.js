@@ -45,6 +45,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
     hook : function(){
         var _self = this;
+        
+        this.markupInsertionPoint = mainRow;
 
         commands.addCommand({
             name: "replace",
@@ -151,10 +153,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         
         apf.importCssString(_self.css);
         
-        winSearchReplace.onclose = function() {
-            if (editors.currentEditor && editors.currentEditor.amlEditor)
-                editors.currentEditor.amlEditor.focus();
-        }
+        //This needs to go into the onfinish of the anim
+//            if (editors.currentEditor && editors.currentEditor.amlEditor)
+//                editors.currentEditor.amlEditor.focus();
+        
+        ide.addEventListener("init.ext/console/console", function(e){
+            winSearchReplace.parentNode.insertBefore(
+                winSearchReplace, winDbgConsole);
+        });
         
         //txtFind.$ext.cols = txtFind.cols;
         
@@ -310,8 +316,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var editor = editors.currentEditor;
         if (!editor || !editor.amlEditor)
             return;
-
-        editor.amlEditor.parentNode.appendChild(winSearchReplace);
 
         if (!force && !winSearchReplace.visible || force > 0 || this.$lastState != isReplace) {
             if (winSearchReplace.visible && this.$lastState == isReplace)
@@ -477,7 +481,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             this.saveHistory(searchTxt);
 
         if (close) {
-            winQuickSearch.hide();
+            winSearchReplace.hide();
             editors.currentEditor.amlEditor.focus();
         }
 
