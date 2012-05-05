@@ -45,129 +45,15 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
     hook : function(){
         var _self = this;
         
-        commands.commands["findnext"].hint = "search for the next occurrence of the search query your entered last";
-        commands.commands["findnext"].msg = "Navigating to next match.";
-        commands.commands["findprevious"].hint = "search for the previous occurrence of the search query your entered last";
-        commands.commands["findprevious"].msg = "Navigating to previous match.";
         
-        commands.addCommand({
-            name: "find",
-            hint: "open the quicksearch dialog to quickly search for a phrase",
-            bindKey: {mac: "Command-F", win: "Ctrl-F"},
-            isAvailable : function(editor){
-                return editor && editor.ceEditor;
-            },
-            exec: function(env, args, request) {
-                _self.toggleDialog(1);
-            }
-        });
-
-        ide.addEventListener("minimap.visibility", function(e) {
-            if (e.visibility === "shown")
-                _self.offsetWidth = _self.defaultOffset + e.width;
-            else
-                _self.offsetWidth = _self.defaultOffset;
-
-            _self.updateBarPosition();
-        });
-        
-        this.nodes.push(
-            menus.addItemByPath("Find/~", new apf.divider(), 1000),
-
-            menus.addItemByPath("Find/Quick Find", new apf.item({
-                command : "find"
-            }), 1100)
-        );
     },
 
     init : function(){
         var _self = this;
         
-        var isAvailable = commands.commands["findnext"].isAvailable;
         
-        commands.commands["findnext"].isAvailable =
-        commands.commands["findprevious"].isAvailable = function(editor){
-            if (apf.activeElement == txtQuickSearch)
-                return true;
-            
-            return isAvailable.apply(this, arguments);
-        }
 
-        txtQuickSearch.addEventListener("clear", function() {
-            _self.execSearch(false, false, true);
-        })
-
-        txtQuickSearch.addEventListener("keydown", function(e) {
-            switch (e.keyCode){
-                case 13: //ENTER
-                    _self.execSearch(false, !!e.shiftKey, null, true);
-                    return false;
-                case 27: //ESCAPE
-                    _self.toggleDialog(-1);
-
-                    if (txtQuickSearch.getValue())
-                        _self.saveHistory(txtQuickSearch.getValue());
-
-                    if (e.htmlEvent)
-                        apf.stopEvent(e.htmlEvent);
-                    else if (e.stop)
-                        e.stop();
-                    return false;
-                case 38: //UP
-                    _self.navigateList("prev");
-                    break;
-                case 40: //DOWN
-                    _self.navigateList("next");
-                    break;
-                case 36: //HOME
-                    if (!e.ctrlKey)
-                        return;
-                    _self.navigateList("first");
-                    break;
-                case 35: //END
-                    if (!e.ctrlKey)
-                        return;
-                    _self.navigateList("last");
-                    break;
-            }
-
-            var ace = _self.$getAce();
-            if (ace.getSession().getDocument().getLength() > MAX_LINES)
-                return;
-
-            if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
-                clearTimeout(this.$timer);
-                this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
-                    _self.execSearch(false, false, e.keyCode == 8);
-                }, 20);
-            }
-
-            return;
-        });
-
-        winQuickSearch.addEventListener("blur", function(e){
-            if (winQuickSearch.visible && !apf.isChildOf(winQuickSearch, e.toElement))
-                _self.toggleDialog(-1);
-        });
-
-        txtQuickSearch.addEventListener("blur", function(e){
-            if (self.winQuickSearch && winQuickSearch.visible
-              && !apf.isChildOf(winQuickSearch, e.toElement))
-                _self.toggleDialog(-1);
-        });
-
-        ide.addEventListener("closepopup", function(e){
-            if (e.element != _self)
-                _self.toggleDialog(-1, true);
-        });
-
-        var editor = editors.currentEditor;
-        if (editor && editor.ceEditor)
-            editor.ceEditor.parentNode.appendChild(winQuickSearch);
-
-        setTimeout(function() {
-            _self.updateBarPosition();
-        });
+        
     },
 
     updateBarPosition : function() {

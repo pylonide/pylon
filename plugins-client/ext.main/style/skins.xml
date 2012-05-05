@@ -2778,20 +2778,12 @@
 </a:checkbox>
 <a:checkbox skin="grouped_checkbox">
     <a:style><![CDATA[
-        .find-and-replace {
-            background: url(images/c9-noise-with-background.png);
-            box-shadow: 0 -1px 0 0 black, 0 1px 0 0 rgba(255,255,255,.2) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
-            padding: 7px;
-        }
-
         .grouped_checkbox_holder {
             background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
             border: 1px solid #010910;
             border-radius: 2px;
             box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset;
-            float: left;
             height: 25px;
-            margin-right: 5px;
             padding: 0;
         }
         .grouped_checkbox_holder .cbcontainer {
@@ -2831,7 +2823,6 @@
             left: 0;
             top: 0;
             width: 100%;
-
         }
 
         .grouped_checkbox_holder .chkRegEx .checkbox { background-position: 50% -540px; }
@@ -2849,13 +2840,10 @@
         .grouped_checkbox_holder .cbcontainer span {
             display: none;
         }
-
-
-
     ]]></a:style>
     <a:presentation>
         <a:main label="span/text()" minheight="18" minwidth="18">
-            <div class='xxx'>
+            <div class='grouped_checkbox_holder'>
                 <div class='checkbox'> </div>
                 <span class='label'>-</span>
             </div>

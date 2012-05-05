@@ -83,7 +83,6 @@ module.exports = {
                     "ext/searchinfiles/searchinfiles",
                     "ext/searchreplace/searchreplace",
                     "ext/quickwatch/quickwatch",
-                    "ext/quicksearch/quicksearch",
                     "ext/gotoline/gotoline",
                     "ext/preview/preview",
                     "ext/log/log",
