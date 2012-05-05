@@ -215,12 +215,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
             return;
         });
-
-        txtFind.addEventListener("blur", function(e){
-            if (self.winSearchReplace && winSearchReplace.visible
-              && !apf.isChildOf(winSearchReplace, e.toElement))
-                _self.toggleDialog(-1);
-        });
+        
+        //@todo make this a setting
+//        txtFind.addEventListener("blur", function(e){
+//            
+//            if (self.winSearchReplace && winSearchReplace.visible
+//              && !apf.isChildOf(winSearchReplace, e.toElement))
+//                _self.toggleDialog(-1);
+//        });
     },
     
     navigateList : function(type){
@@ -363,11 +365,26 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     setupDialog: function(isReplace) {
+        if (this.$lastState == isReplace)
+            return;
+        
         this.$lastState = isReplace;
         this.position = 0;
+        
+        var sbox = hboxFind.childNodes[2];
+        var rbox = hboxReplace.childNodes[1];
 
-        // hide all 'replace' features
-        hboxReplace.setProperty("visible", isReplace);
+        if (isReplace) {
+            hboxReplace.show();
+            rbox.appendChild(chkHighlightMatches);
+            sbox.hide();
+        }
+        else {
+            hboxReplace.hide();
+            sbox.appendChild(chkHighlightMatches);
+            sbox.show();
+        }
+        
         return this;
     },
 
