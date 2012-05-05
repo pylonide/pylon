@@ -60,7 +60,7 @@ apf.clipboard.cutSelection = function(amlNode){
     this.copied = false;
 };
 apf.clipboard.pasteSelection = function(amlNode, selected){
-    var nodes = this.get();
+    var copied, nodes = this.get();
     if (!nodes) return;
 
     if (!selected)
@@ -72,7 +72,9 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
             return false;
         var action = candrop[1] && candrop[1].action 
           || (amlNode.$isTreeArch ? "tree-append" : "list-append");
-        amlNode.$dragDrop(selected, this.store, candrop && candrop[1], action, 
+         
+        copied = nodes.slice(0);
+        amlNode.$dragDrop(selected, copied, candrop && candrop[1], action, 
             null, null, null, true)
         
         //amlNode.copy(nodes, selected, undefined, !this.copied);
@@ -84,8 +86,9 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
             }
         }
         else {
+            copied = [];
             for (var i = 0, l = nodes.length; i < l; i++) {
-                apf.xmldb.appendChild(selected, nodes[i]);
+                copied[i] = apf.xmldb.appendChild(selected, nodes[i]);
             }
         }
     }
@@ -95,7 +98,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
         apf.clipboard.clear();
     }
     
-    amlNode.selectList(nodes);
+    amlNode.selectList(copied || nodes);
 };
 //#endif
 
