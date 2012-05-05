@@ -55,7 +55,7 @@
             <a:divider />
             <a:item type="check" checked="true" onclick="
                 require('ext/testpanel/testpanel').toggleSubmodules(this.value);
-            ">Show Submodules</a:item>
+            ">Show Libraries</a:item>
             <a:item type="check" checked="true" onclick="
                 require('ext/testpanel/testpanel').toggleExpandTests(this.value);
             ">Auto Expand Tests</a:item>
