@@ -5,13 +5,13 @@
         <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
           skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" 
           icon="arrow_left_search.png"
-          right="27"
+          right="29"
           top="7"
           zindex="100"/>
         <a:button onclick="require('ext/searchreplace/searchreplace').findnext(1)" 
           skin="btnquicksearchnav" class="btnquicksearchnavRight" 
           icon="arrow_right_search.png" 
-          right="6"
+          right="7"
           top="7"
           zindex="100"/>
         <a:vbox class="find-and-replace" padding="1" edge="5" model="{require('core/settings').model}">

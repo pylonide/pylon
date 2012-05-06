@@ -2805,7 +2805,7 @@
             background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
             border: 1px solid #010910;
             border-radius: 3px;
-            box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset;
+            box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset;
             height: 27px;
             padding: 0;
         }
@@ -2833,13 +2833,15 @@
         .grouped_checkbox_holder .cbcontainerDown,
         .grouped_checkbox_holder .cbcontainerChecked {
             background: none;
-            box-shadow: 1px 0 0 0 #010910 inset, -1px 0 0 0 #010910 inset, 0 0 3px 2px #1a1a1a inset;
+            box-shadow: -1px 0 0 0 #010910, -1px 0 0 0 #010910 inset, 0 0 3px 2px #1a1a1a inset;
         }
         .grouped_checkbox_holder .cbcontainerDown:first-child,
-        .grouped_checkbox_holder .cbcontainerDown:last-child,
-        .grouped_checkbox_holder .cbcontainerChecked:first-child,
-        .grouped_checkbox_holder .cbcontainerChecked:last-child {
+        .grouped_checkbox_holder .cbcontainerChecked:first-child {
             box-shadow: 0 0 3px 2px #1a1a1a inset;
+        }
+        .grouped_checkbox_holder .cbcontainerDown:last-child,
+        .grouped_checkbox_holder .cbcontainerChecked:last-child {
+            box-shadow: -1px 0 0 0 #010910, 0 0 3px 2px #1a1a1a inset;
         }
         .grouped_checkbox_holder .cbcontainer .checkbox {
             background: url(images/c9-repeat-x.png) no-repeat 50% 0;
@@ -8693,6 +8695,7 @@
     }
     .editor_tab .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -132px;
+        height: 14px;
     	z-index: 10000000;
     }
 
@@ -11380,11 +11383,17 @@
                 background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
                 border: 1px solid #010910;
                 border-radius: 3px;
-                box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset;
+                box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset;
                 color: #C0DABE;
                 height: 27px;
                 line-height: 27px;
-                padding: 0 10px;
+                padding: 0 11px;
+            }
+            .blackbuttonOver {
+                box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset, 0 0 0 1000px rgba(131,145,129,.08) inset;
+            }
+            .blackbuttonDown {
+                box-shadow: 0 0 3px 2px #1a1a1a inset;
             }
         ]]></a:style>
         <a:presentation>
@@ -11393,5 +11402,4 @@
             </a:main>
         </a:presentation>
     </a:button>
-
 </a:skin>
