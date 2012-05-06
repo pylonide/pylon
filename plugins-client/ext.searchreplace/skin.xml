@@ -54,13 +54,13 @@
                 background-image: url(images/c9-find-and-replace.png), url(images/c9-noise-with-background.png);
                 background-position: 100% 1px, 0 0;
                 background-repeat: no-repeat, repeat;
-                box-shadow: 0 1px 0 0 rgba(255,255,255,.2) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
+                box-shadow: 0 1px 0 0 rgba(255,255,255,.1) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
                 border-top: 1px solid #000;
-                padding: 7px;
+                padding: 7px 10px 9px;
             }
         
             .btnquicksearchnav {
-                height             : 22px;
+                height             : 25px;
                 cursor             : pointer;
                 position           : relative;
                 -moz-user-select   : none;
@@ -105,7 +105,7 @@
                 height:17px;
                 line-height:0;
                 position:absolute;
-                right: -1px;
+                right: -2px;
                 top:4px;
                 width:0;
                 display: none;
