@@ -241,8 +241,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         //txtReplace.addEventListener("blur", blur);
         
         var tt = document.body.appendChild(tooltipSearchReplace.$ext);
-        tt.style.position = "absolute";
-        tt.style.zIndex = 100000;
         
         chkRegEx.addEventListener("prop.value", function(e){
             if (apf.isTrue(e.value)) {
@@ -304,11 +302,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
         if (lines[next]) {
             txtFind.setValue(lines[next].getAttribute("key"));
-            txtFind.select();
-            this.position = next;
             
             if (chkRegEx.checked)
                 this.updateInputRegExp();
+
+            txtFind.select();
+            this.position = next;
         }
     },
 
@@ -616,10 +615,15 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 tooltipSearchReplace.$ext.innerHTML 
                     = e.message.replace(": /" + searchTxt + "/", "");
                 apf.setOpacity(tooltipSearchReplace.$ext, 1);
+                
+                var pos = apf.getAbsolutePosition(winSearchReplace.$ext);
                 tooltipSearchReplace.$ext.style.left = txtFind.getLeft() + "px";
+                tooltipSearchReplace.$ext.style.top = (pos[1] - 19) + "px";
+
                 this.tooltipTimer = setTimeout(function(){
                     tooltipSearchReplace.$ext.style.display = "block";
                 }, 200);
+                
                 return;
             }
             clearTimeout(this.tooltipTimer);
@@ -643,6 +647,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
     
     updateInputRegExp : function(){
+        if (!txtFind.getValue())
+            return;
+        
         // Find cursor position
         var selection = window.getSelection();
         var n = selection.anchorNode.parentNode; 
