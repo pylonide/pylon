@@ -21,15 +21,15 @@
                     <a:checkbox id="chkMatchCase" value="[editors/code/search/@matchcase]" class="chkMatchCase" checked="false" label="Match Case" skin="grouped_checkbox" width="28" />
                     <a:checkbox id="chkWholeWords" value="[editors/code/search/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-                <a:textbox id="ddSFPatterns" flex="1" skin="searchbox" initial-message="path-where-to-searh-in" focusselect="true" />
+                <a:textbox id="txtSFFind" flex="1" skin="searchbox" initial-message="path-where-to-searh-in" focusselect="true" />
+            </a:hbox>
+            <a:hbox id="hboxWhere" padding="5" align="start" render="runtime" height="27">
+                <a:textbox id="ddSFPatterns" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" class="searchTxt tb_console" skin="searchbox"/>
             </a:hbox>
             <a:hbox id="hboxReplace" padding="5" align="start" render="runtime" height="27">
                 <a:textbox id="txtSFReplace" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" class="searchTxt tb_console" skin="searchbox"/>
-            </a:hbox>
-            <a:hbox id="hboxReplace" padding="5" align="start" render="runtime" height="27">
-                <a:textbox id="txtSFReplace" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" class="searchTxt tb_console" skin="searchbox"/>
-                <a:button margin="0 -2 0 0" skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replace()">Replace</a:button>
-                <a:button skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replaceAll()" >Replace All</a:button>
+                <a:button id="btnSFFind" default="2" margin="0 -2 0 0" skin="blackbutton" onclick="">Find All</a:button>
+                <a:button id="btnSFReplaceAll" skin="blackbutton" onclick="" >Replace All</a:button>
             </a:hbox>
         </a:vbox>
     </a:bar>
