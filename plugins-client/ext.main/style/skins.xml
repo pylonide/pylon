@@ -8695,6 +8695,7 @@
     }
     .editor_tab .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -132px;
+        height: 14px;
     	z-index: 10000000;
     }
 
