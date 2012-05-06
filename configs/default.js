@@ -64,7 +64,7 @@ var config = {
                 bundledPlugins: [
                     "helloworld"
                 ],
-                real: argv.r,
+                real: false,
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",
@@ -149,7 +149,6 @@ var config = {
             "./cloud9.permissions",
             {
                 packagePath: "./cloud9.client-plugins",
-                //packagePath: argv.r ? "./cloud9.client-plugins-packed" : "./cloud9.client-plugins",
                 plugins: clientExtensions
             },
             "./cloud9.eventbus",
@@ -179,13 +178,5 @@ var config = {
         }
     }
 };
-
-/*
-if (argv.r === undefined) {
-    config.containers.master.plugins.push("./../plugins-client/cloud9.core", "./../plugins-client/lib.ace", "./../plugins-client/lib.apf", "./../plugins-client/lib.treehugger", "./../plugins-client/lib.v8debug");
-}
-else {
-    config.containers.master.plugins.push("./../plugins-client/cloud9.core-packed");
-}*/
 
 module.exports = config;

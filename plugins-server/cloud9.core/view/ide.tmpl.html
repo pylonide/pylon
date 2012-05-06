@@ -62,7 +62,7 @@
                     var aceConfig = require("ace/config");
 
                     aceConfig.set("packaged", true);
-                    aceConfig.set("workerPath", "/static/ace/worker");
+                    aceConfig.set("workerPath", "[%staticUrl%]/ace/worker");
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
                     
