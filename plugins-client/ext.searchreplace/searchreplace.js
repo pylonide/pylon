@@ -200,20 +200,20 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     return false;
                 case 38: //UP
                     _self.navigateList("prev");
-                    break;
+                    return false;
                 case 40: //DOWN
                     _self.navigateList("next");
-                    break;
+                    return false;
                 case 36: //HOME
                     if (!e.ctrlKey)
                         return;
                     _self.navigateList("first");
-                    break;
+                    return false;
                 case 35: //END
                     if (!e.ctrlKey)
                         return;
                     _self.navigateList("last");
-                    break;
+                    return false;
             }
 
             var ace = _self.$getAce();
@@ -270,8 +270,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var lines = model.queryNodes("search/word");
 
         var next;
-        if (type == "prev")
+        if (type == "prev") {
+            if (this.position <= 0) {
+                txtFind.setValue("");
+                this.position = -1;
+                return;
+            }
             next = Math.max(0, this.position - 1);
+        }
         else if (type == "next")
             next = Math.min(lines.length - 1, this.position + 1);
         else if (type == "last")
@@ -380,9 +386,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             var range = sel.getRange();
             var value = doc.getTextRange(range);
 
-            if (!value && editor.amlEditor)
-                value = editor.amlEditor.getLastSearchOptions().needle;
-
             if (value)
                 txtFind.setValue(value);
 
@@ -463,7 +466,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return;
         
         this.$lastState = isReplace;
-        this.position = 0;
         
         var sbox = hboxFind.childNodes[2];
 
@@ -607,8 +609,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         ace.find(searchTxt, options);
         this.currentRange = ace.selection.getRange();
 
-        if (save)
+        if (save) {
             this.saveHistory(searchTxt);
+            this.position = 0;
+        }
 
         if (close) {
             winSearchReplace.hide();
