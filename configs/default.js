@@ -40,7 +40,7 @@ var config = {
             "./cloud9.alive",
             "./cloud9.debug",
  
-            // Client libraries filled out below
+            // Client libraries
             "./../plugins-client/cloud9.core", 
             "./../plugins-client/lib.ace", 
             "./../plugins-client/lib.apf", 
