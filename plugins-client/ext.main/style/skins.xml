@@ -2812,6 +2812,7 @@
         .grouped_checkbox_holder .cbcontainer {
             background: url(images/c9-repeat-x.png) no-repeat 0px -474px, /* light */
                         url(images/c9-repeat-x.png) no-repeat 100% -507px; /* dark */
+            cursor: pointer;
             display: inline-block;
             height: 25px !important;
             padding: 0;
@@ -11402,4 +11403,31 @@
             </a:main>
         </a:presentation>
     </a:button>
+    <a:label name="tooltipLabel">
+        <a:style><![CDATA[
+            .tooltipLabel {
+                background-color: #4E4F51;
+                background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,.04), rgba(255,255,255,0));
+                background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,.04), rgba(255,255,255,0));
+                background-image:         linear-gradient(bottom, rgba(255,255,255,.04), rgba(255,255,255,0));
+                border: 1px solid #000;
+                border-bottom-width: 0;
+                border-radius: 3px 3px 0 0;
+                box-shadow: 0 1px 0 0 rgba(255,255,255,.2) inset;
+                color: #000;
+                font-size: 10px;
+                height: 14px;
+                line-height: 14px;
+                padding: 0 3px;
+                position: absolute;
+                text-shadow: 0 1px 0 rgba(237,237,237,.14);
+                z-index: 100000;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption=".">
+                <div class="tooltipLabel"> </div>
+            </a:main>
+        </a:presentation>
+    </a:label>
 </a:skin>
