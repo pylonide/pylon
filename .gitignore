@@ -29,6 +29,7 @@ plugins/cloud9.client.treehugger/node_modules/
 plugins/cloud9.client.v8debug/node_modules/
 plugins/cloud9.static/node_modules/
 plugins-server/cloud9.fs/node_modules/
+plugins-client/lib.packed/www/
 node_modules/
 deps/ace/
 plugins-server/fixtures/node_env/hello.js

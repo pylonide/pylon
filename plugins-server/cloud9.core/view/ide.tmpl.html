@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" skipParse=[%real%]>
     <head profile="http://www.w3.org/2005/10/profile">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>[%projectName%] - Cloud9</title>
@@ -16,7 +16,6 @@
         <script type="text/javascript">
         //<![CDATA[
 
-            var baseUrl = window.location.host;
             window.cloud9config = {
                 startdate: new Date(),
                 davPrefix: <%davPrefix%>,
@@ -32,7 +31,8 @@
                 socketIoUrl: <%socketIoUrl%>,
                 socketIoTransports: <%socketIoTransports%>,
                 hosted: [%hosted%],
-                settings: <%settingsXml%>
+                settings: <%settingsXml%>,
+                real: <%real%> ? true : false
             };
 
             // prevent console messages from crashing our app!
@@ -41,24 +41,39 @@
                 window.console = {log:K,debug:K,dir:K,trace:K,error:K,warn:K,profileStart:K,profileEnd:K};
             }
 
-            var RELEASE = "release";
-            var DEBUG   = "debug";
-            var FILES   = "files";
+            if (!cloud9config.real) {
+                var RELEASE = "release";
+                var DEBUG   = "debug";
+                var FILES   = "files";
 
-            var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
+                var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
 
-            var apfLoc = "[%staticUrl%]/apf-packaged/apf_" + VERSION + ".js";
-
+                var apfLoc = "[%staticUrl%]/apf-packaged/apf_" + VERSION + ".js";
+            }
+            else {
+               var apfLoc = "";
+            }
+            
             var config = <%requirejsConfig%>; 
+
             require(config, [apfLoc], function(){
-                var list = ["core/ide", "core/ext", "core/util", 
+                if (!cloud9config.real) {
+                    var list = ["core/ide", "core/ext", "core/util", 
                     "core/settings", "ext/main/main", "ext/editors/editors",
                     "ace/editor"];
-
-                //loader.animateLoader(20);
+                }
+                else {
+                    var list = ["[%staticUrl%]/packed.js"];
+                }
+                
                 require(list, function(ide, ext, util){
-                    var plugins = <%plugins%>;
-
+                    if (!cloud9config.real) {
+                        var plugins = <%plugins%>;
+                    }
+                    else {
+                        var ide = require("core/ide"), ext = require("core/ext"), util = require("core/util");
+                    }
+                    
                     var aceConfig = require("ace/config");
 
                     aceConfig.set("packaged", true);
@@ -66,23 +81,33 @@
                     aceConfig.set("modePath", "[%staticUrl%]/ace/mode");
                     aceConfig.set("themePath", "[%staticUrl%]/ace/theme");
                     
-                    apf.addEventListener("load", function(){
-                        //Load extensions
-                        require(plugins, function(){
-                            ide.dispatchEvent("extload", {modules: plugins});
-
-                            cloud9config.totalTime = new Date() - cloud9config.startdate;
-                            console.log("Total Load Time " 
-                                + (cloud9config.totalTime) + "ms");
-
-                            ide.addEventListener("$event.extload", function(cb){
-                                cb();
+                    //Load extensions
+                    if (!cloud9config.real) {
+                        apf.addEventListener("load", function(){
+                            require(plugins, function() {
+                                loadAndBegin(plugins);
                             });
                         });
-                    });
+                    }
+                    else {
+                        loadAndBegin(list);
+                    }
                 });
                 preloaderImgs();
             });
+
+            function loadAndBegin(plugins) {
+                ide.dispatchEvent("extload", {modules: plugins});
+
+                cloud9config.totalTime = new Date() - cloud9config.startdate;
+                console.log("Total Load Time " 
+                    + (cloud9config.totalTime) + "ms");
+
+                ide.addEventListener("$event.extload", function(cb){
+                    cb();
+                });
+            }
+
             function preloaderImgs() {
                 var preloadImgs = [
                     "[%staticUrl%]/ext/main/style/images/bg-overlay.png",

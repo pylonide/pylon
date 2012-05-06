@@ -87,7 +87,7 @@ util.inherits(Ide, EventEmitter);
     this.$serveIndex = function(req, res, next) {
         var _self = this;
 
-        var indexFile =  _self.options.real === true ? "ide.tmpl.packed.html" : "ide.tmpl.html";
+        var indexFile = "ide.tmpl.html";
 
         fs.readFile(Path.join(__dirname, "/view/", indexFile), "utf8", function(err, index) {
             if (err)
@@ -135,7 +135,8 @@ util.inherits(Ide, EventEmitter);
                 scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version,
-                hosted: _self.options.hosted.toString()
+                hosted: _self.options.hosted.toString(),
+                real: _self.options.real
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");

@@ -27,39 +27,26 @@ ext:
 
 # calls dryice on worker & packages it
 worker:
-	mkdir -p client/js/worker
-	./Makefile.dryice.js worker
-	cp support/ace/build/src/worker* client/js/worker/
-	node build/r.js -o name=./client/js/worker/worker.js out=./client/js/worker.js baseUrl=.
-
-# copies built ace modes
-mode:
-	mkdir -p client/js/mode
-	cp `find support/ace/build/src | grep -E "mode-[a-zA-Z_]+.js"`  client/js/mode
-
-# copies built ace themes
-theme:
-	mkdir -p client/js/theme
-	cp `find support/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` client/js/theme
-
-package: apf ext worker mode theme
-
-test:
-	$(MAKE) -C test
-
-
-
-package:
-	node support/packager/package.js apf_cloud9.apr
-	#git add client/js/apf_release.js
-	#git commit -m "new apf_release.js"
-
-worker2:
-	mkdir -p plugins-client/cloud9.core/www/js/worker
+	mkdir -p plugins-client/lib.ace/www/worker
 	rm -rf /tmp/c9_worker_build
 	mkdir -p /tmp/c9_worker_build/ext
 	ln -s `pwd`/plugins-client/ext.language /tmp/c9_worker_build/ext/language
 	ln -s `pwd`/plugins-client/ext.codecomplete /tmp/c9_worker_build/ext/codecomplete
 	ln -s `pwd`/plugins-client/ext.jslanguage /tmp/c9_worker_build/ext/jslanguage
 	./Makefile.dryice.js worker
-	cp support/ace/build/src/worker* plugins-client/cloud9.core/www/js/worker
+	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
+
+# copies built ace modes
+mode:
+	mkdir -p plugins-client/lib.ace/www/mode
+	cp `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_]+.js"`  plugins-client/lib.ace/www/mode
+
+# copies built ace themes
+theme:
+	mkdir -p plugins-client/lib.ace/www/theme
+	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` plugins-client/lib.ace/www/theme
+
+package: apf ext worker mode theme core
+
+test:
+	$(MAKE) -C test
