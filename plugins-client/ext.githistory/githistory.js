@@ -98,7 +98,7 @@ module.exports = ext.register("ext/githistory/githistory", {
         });
 
         this.nodes.push(
-            ide.mnuEditors.appendChild(new apf.item({
+            ide.mnuEdit.appendChild(new apf.item({
                 caption : "Compare File History",
                 onclick : function(){
                     _self.enterRevisionMode();
