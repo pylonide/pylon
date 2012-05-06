@@ -7,73 +7,23 @@
  
 
 define(function(require, exports, module) {
-var BkTreeNode = require("./bktree");
+var Searcher = require("./filelist");
 
-this.bkTree = null;
-this.suffix = null;
+this.nodeCache = null;
 
-/**
- * @todo There is much more sorting we can do. This function is now fast
- *       enough to apply weighed searching. 
- */
 module.exports = function(nodes, keyword, cache) {
-    if (!this.bkTree) {        
-        var bkTree = new BkTreeNode("server.js");
-        
-        for (var ix = 0; ix < nodes.length; ix++) {
-            var path = nodes[ix].toLowerCase();
-            var parts = path.split(/[\/]/);
-            
-            var item = {
-                path: path,
-                parents: parts.slice(0, parts.length -1)
-            };
-            
-            parts.forEach(function (part) {
-                bkTree.Add(part, item);
-                
-                var dot = part.indexOf(".");
-                if (dot > -1) {
-                    bkTree.Add(part.substr(0, dot), item);
-                }
-            });
-        }
-        
-        this.bkTree = bkTree;
-    }
+    this.nodeCache = (nodes.length && nodes) || this.nodeCache;
     
-    var diff = 1;
+    var start = new Date();
     
-    // when searching, we can divide it by spaces or slashes
-    var keywords = keyword.split(/[\/\s]/);
-    var poss = {};
+    var s = new Searcher.exports(this.nodeCache);
+    var res = (s.findMatchingFiles(keyword));
     
-    for (var k = 0; k < keywords.length; k++) {
-        poss[keywords[k]] = this.bkTree.Query(keywords[k], diff);
-    }
-    
-    
-    // iterate over the last possibilities
-    var res = (poss && poss[keywords[keywords.length -1]].filter(function (possibility) {
-        var path = possibility.path;
-        
-        var doesntMatch = false;
-        for (var p = 0; p < keywords.length - 1; p++) {
-            if (!poss[keywords[p]].some(function (parent) {
-                return path.indexOf(parent.path) === 0;
-            })) {
-                doesntMatch = true;
-                break;
-            }
-        }
-        
-        return !doesntMatch;
-    })) || [];
+    //console.log("took", new Date() - start, "matches", res.length);
     
     var results = [];
-    // do some sorting
     for (var rix = 0; rix < res.length; rix++) {
-        results.push( "<d:href>" + res[rix].path + "</d:href>");
+        results.push( "<d:href>" + res[rix] + "</d:href>");
     }
     
     return "<d:multistatus  xmlns:d='DAV:'><d:response>"
