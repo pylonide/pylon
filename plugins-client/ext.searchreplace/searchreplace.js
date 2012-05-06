@@ -231,7 +231,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         });
         
         var blur = function(e){
-            if (!hboxReplace.visible && winSearchReplace.visible 
+            if (self.hboxReplace && !hboxReplace.visible 
+              && self.winSearchReplace && winSearchReplace.visible 
               && !apf.isChildOf(winSearchReplace, e.toElement))
                 _self.toggleDialog(-1, null, true);
         }
@@ -242,6 +243,15 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var tt = document.body.appendChild(tooltipSearchReplace.$ext);
         tt.style.position = "absolute";
         tt.style.zIndex = 100000;
+        
+        chkRegEx.addEventListener("prop.value", function(e){
+            if (apf.isTrue(e.value)) {
+                if (txtFind.getValue())
+                    _self.updateInputRegExp();
+            }
+            else
+                txtFind.$input.innerHTML = txtFind.getValue();
+        });
         
         var cbs = winSearchReplace.getElementsByTagNameNS(apf.ns.aml, "checkbox");
         cbs.forEach(function(cb){
@@ -267,7 +277,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return;
 
         var model = settings.model;
-        var lines = model.queryNodes("search/word");
+        var lines = model.queryNode("search").childNodes;
+        
+        var value = txtFind.getValue();
+        if (value && (this.position == -1 || lines[this.position] 
+          && lines[this.position].getAttribute("key") != value)) {
+            this.saveHistory(value);
+            this.position = 0;
+        }
 
         var next;
         if (type == "prev") {
@@ -289,6 +306,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             txtFind.setValue(lines[next].getAttribute("key"));
             txtFind.select();
             this.position = next;
+            
+            if (chkRegEx.checked)
+                this.updateInputRegExp();
         }
     },
 
@@ -627,7 +647,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var selection = window.getSelection();
         var n = selection.anchorNode.parentNode; 
         var pos = selection.anchorOffset; 
-        if (n != txtFind.$input) {
+        if (apf.isChildOf(txtFind.$input, n)) {
             while (n.previousSibling) {
                 n = n.previousSibling;
                 pos += (n.nodeType == 1 ? n.innerText : n.nodeValue).length;
@@ -675,7 +695,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
     
     regColor : {
-        "text" : "background:white;color:black",
+        "text" : "color:black",
         "collection" : "background:#ffc080;color:black",
         "escaped" : "color:#cb7824",
         "subescaped" : "background:#00c066;color:orange",
@@ -814,7 +834,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             res.push(out[i][0]);
         }
         
-        return "<span>" + res.join("") + "</span>".replace(/<span><\/span>g/, "");
+        return ("<span>" + res.join("") + "</span>").replace(/<span><\/span>/g, "");
     },
 
     saveHistory : function(searchTxt){
@@ -829,6 +849,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             var keyEl = apf.getXml("<word />");
             keyEl.setAttribute("key", searchTxt);
             apf.xmldb.appendChild(search, keyEl, search.firstChild);
+            while (search.childNodes.length > 100)
+                search.removeChild(search.lastChild);
         }
     },
 
