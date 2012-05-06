@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var Util = require("core/util");
+var settings = require("core/settings");
 var menus = require("ext/menus/menus");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -188,6 +189,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         txtFind.addEventListener("keydown", function(e) {
             switch (e.keyCode){
                 case 13: //ENTER
+                    if (e.altKey || e.shiftKey || e.ctrlKey)
+                        return;
                     _self.execSearch(false, !!e.shiftKey, null, true);
                     return false;
                 case 27: //ESCAPE
@@ -199,9 +202,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                         e.stop();
                     return false;
                 case 38: //UP
+                    if (!_self.hasCursorOnFirstLine())
+                        return;
                     _self.navigateList("prev");
                     return false;
                 case 40: //DOWN
+                    if (!_self.hasCursorOnLastLine())
+                        return;
                     _self.navigateList("next");
                     return false;
                 case 36: //HOME
@@ -269,17 +276,52 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         });
     },
     
-    navigateList : function(type){
-        var settings = require("ext/settings/settings");
-        if (!settings)
-            return;
+    hasCursorOnFirstLine : function(){
+        var selection = window.getSelection();
+        if (selection.anchorNode.nodeType == 1)
+            return true;
+        
+        var n = selection.anchorNode.parentNode;
+        if (selection.anchorNode.nodeValue.substr(0, selection.anchorOffset).indexOf("\n") > -1)
+            return false;
 
+        if (apf.isChildOf(txtFind.$input, n)) {
+            while (n.previousSibling) {
+                n = n.previousSibling;
+                if ((n.nodeType == 1 ? n.innerText : n.nodeValue).indexOf("\n") > -1)   
+                    return false;
+            };
+        }
+        
+        return true;
+    },
+    
+    hasCursorOnLastLine : function(){
+        var selection = window.getSelection();
+        if (selection.anchorNode.nodeType == 1)
+            return true;
+        
+        var n = selection.anchorNode.parentNode;
+        if (selection.anchorNode.nodeValue.substr(selection.anchorOffset).indexOf("\n") > -1)
+            return false;
+
+        if (apf.isChildOf(txtFind.$input, n)) {
+            while (n.nextSibling) {
+                n = n.nextSibling;
+                if ((n.nodeType == 1 ? n.innerText : n.nodeValue).indexOf("\n") > -1)   
+                    return false;
+            };
+        }
+        
+        return true;
+    },
+    
+    navigateList : function(type){
         var model = settings.model;
-        var lines = model.queryNode("search").childNodes;
+        var lines = JSON.parse(model.queryValue("search/text()") || "[]");
         
         var value = txtFind.getValue();
-        if (value && (this.position == -1 || lines[this.position] 
-          && lines[this.position].getAttribute("key") != value)) {
+        if (value && (this.position == -1 || lines[this.position] != value)) {
             this.saveHistory(value);
             this.position = 0;
         }
@@ -300,8 +342,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         else if (type == "first")
             next = 0;
 
-        if (lines[next]) {
-            txtFind.setValue(lines[next].getAttribute("key"));
+        if (lines[next] && next != this.position) {
+            txtFind.setValue(lines[next]);
             
             if (chkRegEx.checked)
                 this.updateInputRegExp();
@@ -405,8 +447,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             var range = sel.getRange();
             var value = doc.getTextRange(range);
 
-            if (value)
+            if (value) {
                 txtFind.setValue(value);
+                
+                if (chkRegEx.checked)
+                    this.updateInputRegExp();
+            }
 
             winSearchReplace.$ext.style.overflow = "hidden";
             winSearchReplace.$ext.scrollTop = 0;
@@ -423,6 +469,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     _self.setupDialog(isReplace);
                 
                 winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                winSearchReplace.$ext.style.height = "";
                 
                 divSearchCount.$ext.style.visibility = "";
                 _self.updateCounter();
@@ -849,15 +896,22 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         if (!settings.model)
             return;
 
-        var history = settings.model;
-        var search = apf.createNodeFromXpath(history.data, "search");
-
-        if (!search.firstChild || search.firstChild.getAttribute("key") != searchTxt) {
-            var keyEl = apf.getXml("<word />");
-            keyEl.setAttribute("key", searchTxt);
-            apf.xmldb.appendChild(search, keyEl, search.firstChild);
-            while (search.childNodes.length > 100)
-                search.removeChild(search.lastChild);
+        var model = settings.model;
+        var words = model.queryNodes("search/word");
+        
+        //Cleanup of old format
+        var search = words[0] && words[0].parentNode;
+        for (var i = words.length - 1; i >= 0; i--) {
+            search.removeChild(words[i]);
+        }
+        
+        try {
+            var json = JSON.parse(model.queryValue("search/text()"));
+        } catch(e) { json = [] }
+        
+        if (json[0] != searchTxt) {
+            json.unshift(searchTxt);
+            model.setQueryValue("search/text()", JSON.stringify(json));
         }
     },
 

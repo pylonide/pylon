@@ -11,17 +11,17 @@
         <a:button onclick="require('ext/searchreplace/searchreplace').findnext(1)" 
           skin="btnquicksearchnav" class="btnquicksearchnavRight" 
           icon="arrow_right_search.png" 
-          right="5"
+          right="6"
           top="7"
           zindex="100"/>
-        <a:vbox class="find-and-replace" padding="5" edge="5" model="{require('core/settings').model}">
-             <a:hbox id="hboxFind" padding="5" align="start" margin="0 0 -4 0">
+        <a:vbox class="find-and-replace" padding="1" edge="5" model="{require('core/settings').model}">
+             <a:hbox id="hboxFind" padding="5" align="start">
                 <a:hbox class="grouped_checkbox_holder" align="start">
                     <a:checkbox id="chkRegEx" value="[editors/code/search/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
                     <a:checkbox id="chkMatchCase" value="[editors/code/search/@matchcase]" class="chkMatchCase" checked="false" label="Match Case" skin="grouped_checkbox" width="28" />
                     <a:checkbox id="chkWholeWords" value="[editors/code/search/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-                <a:hbox class="grouped_checkbox_holder" align="start" margin="0 2 0 0">
+                <a:hbox class="grouped_checkbox_holder" align="start">
                     <a:checkbox id="chkSearchBackwards" value="[editors/code/search/@backwards]" class="chkSearchBackwards" label="Search Backwards" skin="grouped_checkbox" width="28" />
                     <a:checkbox id="chkWrapAround" value="[editors/code/search/@wraparound]" class="chkWrapAround" checked="true" label="Wrap Around" skin="grouped_checkbox" width="28" />
                     <a:checkbox id="chkSearchSelection" class="chkSearchSelection" label="Search Selection" skin="grouped_checkbox" width="28" />
@@ -35,10 +35,10 @@
                 <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
                     <a:checkbox id="chkPreserveCase" value="[editors/code/search/@preservecase]" class="chkPreserveCase" checked="false" label="Preserve Case" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-                <a:hbox class="grouped_checkbox_holder" margin="0 58 0 0">
+                <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
                 
                 </a:hbox>
-                <a:textbox id="txtReplace" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" class="searchTxt tb_console"/>
+                <a:textbox id="txtReplace" skin="searchbox" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" />
                 <a:button margin="0 -2 0 0" skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replace()">Replace</a:button>
                 <a:button skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replaceAll()" >Replace All</a:button>
             </a:hbox>

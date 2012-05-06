@@ -314,20 +314,20 @@
         	background-position: 0px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnOver {
-        	background-position: -40px -346px;
+        	background-position: -39px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnDown {
-            background-position: -80px -346px;
+            background-position: -78px -346px;
 
         }
         .black-menu-bar .c9-logo {
-            background-position: -120px -346px;
+            background-position: -117px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnOver {
-        	background-position: -160px -346px;
+        	background-position: -156px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnDown {
-            background-position: -200px -346px;
+            background-position: -195px -346px;
         }
         .black-menu-bar .c9-logo .icon{
             display : none;
@@ -373,14 +373,14 @@
         }   
         .black-menu-bar.closed.minimized .toggle-black-menu-bar {
             background-image: url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-            background-position: -38px -383px, 0 -1090px;
+            background-position: -38px -383px, 0 -1030px;
             background-repeat: no-repeat, repeat-x;
             box-shadow: 0 1px 0 0 rgba(255,255,255,.03) inset;
             right: 0px;
             width: 9px;
         }
         .black-menu-bar.closed.minimized .toggle-black-menu-bar:hover {
-            background-position: -48px -383px, 0 -1090px;
+            background-position: -48px -383px, 0 -1030px;
         }
      ]]></a:style>
 
@@ -2861,8 +2861,8 @@
         .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
         .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
         
-        .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -890px; }
-        .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background-position: 50% -915px; }
+        .grouped_checkbox_holder .chkWrapAround .checkbox { background: none; }
+        .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background: none; }
         
         .grouped_checkbox_holder .chkSearchSelection .checkbox { background-position: 50% -840px; }
         .grouped_checkbox_holder .chkSearchSelection.cbcontainerChecked .checkbox { background-position: 50% -865px; }
@@ -5021,7 +5021,7 @@
 
         .run-panel-info {
         	background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
-            background-position:  0 -954px;
+            background-position:  0 -894px;
             border-right: 1px solid whitebg;
 			padding: 10px 10px 4px 10px;
         }
@@ -10221,28 +10221,6 @@
             background: -moz-linear-gradient(center bottom,rgb(235,235,235) 0%,rgb(255,255,255) 40%);
             cursor : default;
         }
-
-        .searchTxt.tb_console {
-            margin: 0;
-        }
-        .searchTxt.tb_console .sbtb_middle {
-            background-color: #F2F2F2;
-            border-radius: 3px;
-            box-shadow: inset 0 2px 3px 0 rgba(0,0,0,.3);
-            height: 25px;
-            padding: 0 4px 0 7px;
-        }
-
-        .searchTxt.tb_console .sbtb_middle input {
-            height: 19px;
-            line-height: 19px;
-            position: relative;
-            text-shadow: 0 1px 0 #FFFFFF;
-            top: 3px;
-        }
-        .searchTxt.tb_textboxInitial .sbtb_middle input {
-            color: #BABABA !important;
-        }
     ]]></a:style>
 
     <a:presentation>
@@ -11404,16 +11382,9 @@
                 border-radius: 3px;
                 box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset;
                 color: #C0DABE;
-                cursor: pointer;
                 height: 27px;
                 line-height: 27px;
-                padding: 0 11px;
-            }
-            .blackbuttonOver {
-                box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset, 0 0 0 1000px rgba(131,145,129,.08) inset;
-            }
-            .blackbuttonDown {
-                box-shadow: 0 0 3px 2px #1a1a1a inset;
+                padding: 0 10px;
             }
         ]]></a:style>
         <a:presentation>
