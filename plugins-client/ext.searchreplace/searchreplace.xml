@@ -14,7 +14,7 @@
           right="7"
           top="7"
           zindex="100"/>
-        <a:vbox class="find-and-replace" padding="1" edge="5" model="{require('core/settings').model}">
+        <a:vbox class="find-and-replace" padding="5" edge="5" model="{require('core/settings').model}">
              <a:hbox id="hboxFind" padding="5" align="start">
                 <a:hbox class="grouped_checkbox_holder" align="start">
                     <a:checkbox id="chkRegEx" value="[editors/code/search/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />

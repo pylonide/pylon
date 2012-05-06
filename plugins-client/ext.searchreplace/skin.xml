@@ -33,7 +33,7 @@
             
             .searchbox.tb_console .sbtb_middle .input {
                 height: auto;
-                line-height: 19px;
+                /*line-height: 19px;*/
                 position: relative;
             }
             .searchTxt.tb_textboxInitial .sbtb_middle .input {

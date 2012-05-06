@@ -435,6 +435,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 return;
             }
             
+            winSearchReplace.$ext.style.overflow = "hidden";
+            winSearchReplace.$ext.style.height 
+                = winSearchReplace.$ext.offsetHeight + "px";
+            
             if (stateChange && isReplace)
                 this.setupDialog(isReplace);
 
@@ -454,13 +458,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     this.updateInputRegExp();
             }
 
-            winSearchReplace.$ext.style.overflow = "hidden";
+            winSearchReplace.show();
+            txtFind.focus();
+            txtFind.select();
+            
             winSearchReplace.$ext.scrollTop = 0;
+            document.body.scrollTop = 0;
             
             //Animate
-            setTimeout(function(){
-                document.body.scrollTop = 0;
-            });
             Firmin.animate(winSearchReplace.$ext, {
                 height: (isReplace ? 70 : 38) + "px",
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)"
@@ -478,11 +483,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     apf.layout.forceResize();
                 }, 50);
             });
-            
-            winSearchReplace.show();
-            document.body.scrollTop = 0;
-            txtFind.focus();
-            txtFind.select();
         }
         else if (winSearchReplace.visible) {
             divSearchCount.$ext.style.visibility = "hidden";
@@ -491,9 +491,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 _self.saveHistory(txtFind.getValue());
             
             winSearchReplace.visible = false;
-
-            txtFind.focus();
-            txtFind.select();
+            
+            winSearchReplace.$ext.style.height 
+                = winSearchReplace.$ext.offsetHeight + "px";
 
             //Animate
             Firmin.animate(winSearchReplace.$ext, {
@@ -507,6 +507,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
                 if (!noselect)
                     editor.ceEditor.focus();
+                
+                setTimeout(function(){
+                    apf.layout.forceResize();
+                }, 50);
             });
         }
 
