@@ -35,7 +35,7 @@
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/59ef99cf0b4675a0ad71847230cc5e2d6e0768c0"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/217271b8676f9b2ad0a4740415e1c64704a2fa6c"],
         "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/5c0f7d27b5438f0b844a9d846b83b3baed6e5a3d"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],

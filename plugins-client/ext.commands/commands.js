@@ -90,7 +90,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 if (!cmd)
                     return;
                 command = cmd;
-            } else if (command.isAvailable && !command.isAvailable(editor))
+            } else if (command.isAvailable && !command.isAvailable(editor, e))
                 return; //Disable commands for other contexts
 
             if (command.findEditor)
