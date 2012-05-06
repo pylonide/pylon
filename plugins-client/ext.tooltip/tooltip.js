@@ -26,6 +26,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
         div.className = "menu-bk downward menu-bkFocus c9-tooltip";
         div.style.width = (options.width || "250px");
         div.style.position = "absolute";
+        div.innerHTML = "<div></div>";
         
         var arrow = div.appendChild(document.createElement("div"));
         arrow.className = "arrow revisionsInfoArrow";
@@ -100,6 +101,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             if (!options.tooltip)
                 options.tooltip = tooltip.create(options, _self);
 
+            options.tooltip.style.display = "block";
             
             var pos;
             if (options.getPosition)
@@ -112,9 +114,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             options.tooltip.style.left = pos[0] + "px";
             options.tooltip.style.top = pos[1] + "px";
             
-            options.tooltip.style.display = "block";
-            
-            options.tooltip.innerHTML = options.message;
+            (options.tooltip.firstElementChild || options.tooltip).innerHTML = options.message;
             
             if (options.animate !== false) {
                 apf.tween.single(options.tooltip, 

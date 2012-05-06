@@ -1,6 +1,6 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:checkbox position="1000" class="underlined" label="Auto-pair Quotes, Brackets, etc." value="[editors/code/@behaviors]" skin="checkbox_grey" />
-    <a:checkbox position="2000" class="underlined" label="Code Folding" value="[editors/code/@folding]" skin="checkbox_grey" />
+    <a:checkbox position="2000" class="underlined" label="Code  Folding" value="[editors/code/@folding]" skin="checkbox_grey" />
     <a:checkbox position="3000" class="underlined" label="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" skin="checkbox_grey" />
     <a:checkbox position="4000" class="underlined" label="Highlight Active Line" value="[editors/code/@activeline]" skin="checkbox_grey" />
     <a:checkbox position="4000" class="underlined" label="Highlight Gutter Line" value="[editors/code/@gutterline]" skin="checkbox_grey" />

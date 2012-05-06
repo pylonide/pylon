@@ -14,26 +14,26 @@
           right="6"
           top="7"
           zindex="100"/>
-        <a:vbox class="find-and-replace" padding="5" edge="5">
-            <a:hbox id="hboxFind" padding="5" align="start" margin="0 0 -4 0">
+        <a:vbox class="find-and-replace" padding="5" edge="5" model="{require('core/settings').model}">
+             <a:hbox id="hboxFind" padding="5" align="start" margin="0 0 -4 0">
                 <a:hbox class="grouped_checkbox_holder" align="start">
-                    <a:checkbox id="chkRegEx" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
-                    <a:checkbox id="chkMatchCase" class="chkMatchCase" checked="false" label="Match Case" skin="grouped_checkbox" width="28" />
-                    <a:checkbox id="chkWholeWords" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkRegEx" value="[editors/code/search/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkMatchCase" value="[editors/code/search/@matchcase]" class="chkMatchCase" checked="false" label="Match Case" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkWholeWords" value="[editors/code/search/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
                 </a:hbox>
                 <a:hbox class="grouped_checkbox_holder" align="start">
-                    <a:checkbox id="chkSearchBackwards" class="chkSearchBackwards" label="Search Backwards" skin="grouped_checkbox" width="28" />
-                    <a:checkbox id="chkWrapAround" class="chkWrapAround" checked="true" label="Wrap Around" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkSearchBackwards" value="[editors/code/search/@backwards]" class="chkSearchBackwards" label="Search Backwards" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkWrapAround" value="[editors/code/search/@wraparound]" class="chkWrapAround" checked="true" label="Wrap Around" skin="grouped_checkbox" width="28" />
                     <a:checkbox id="chkSearchSelection" class="chkSearchSelection" label="Search Selection" skin="grouped_checkbox" width="28" />
                 </a:hbox>
                 <a:hbox class="grouped_checkbox_holder" align="start">
-                    <a:checkbox id="chkHighlightMatches" class="chkHighlightMatches" label="Search Selection" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkHighlightMatches" value="[editors/code/search/@highlightmatches]" class="chkHighlightMatches" label="Highlight Matches" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-                <a:textbox id="txtFind" flex="1" initial-message="Find" focusselect="true" class="searchTxt tb_console"/>
+                <a:textbox id="txtFind" flex="1" skin="searchbox" initial-message="Find" focusselect="true" />
             </a:hbox>
-            <a:hbox id="hboxReplace" padding="5" align="start" render="runtime">
+            <a:hbox id="hboxReplace" padding="5" align="start" render="runtime" height="27">
                 <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
-                    <a:checkbox id="chkPreserveCase" class="chkPreserveCase" checked="false" label="Preserve Case" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkPreserveCase" value="[editors/code/search/@preservecase]" class="chkPreserveCase" checked="false" label="Preserve Case" skin="grouped_checkbox" width="28" />
                 </a:hbox>
                 <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
                 

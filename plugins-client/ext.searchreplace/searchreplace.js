@@ -136,6 +136,18 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 command : "replaceall"
             }), 800)
         );
+        
+        ide.addEventListener("settings.load", function(e){
+            e.ext.setDefaults("editors/code/search", [
+                ["regex", "false"],
+                ["matchcase", "false"],
+                ["wholeword", "false"],
+                ["backwards", "false"],
+                ["wraparound", "true"],
+                ["highlightmatches", "true"],
+                ["preservecase", "false"]
+            ]);
+        });
     },
 
     init : function(amlNode){
@@ -158,25 +170,16 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             },
             exec: function(env, args, request) {
                 _self.toggleDialog(-1);
-                
-                if (txtFind.getValue())
-                    _self.saveHistory(txtFind.getValue());
             }
         });
         
         apf.importCssString(_self.css);
-        
-        //This needs to go into the onfinish of the anim
-//            if (editors.currentEditor && editors.currentEditor.amlEditor)
-//                editors.currentEditor.amlEditor.focus();
         
         ide.addEventListener("init.ext/console/console", function(e){
             mainRow.insertBefore(winSearchReplace, winDbgConsole);
         });
         if (winSearchReplace.parentNode != mainRow)
             mainRow.insertBefore(winSearchReplace, self.winDbgConsole || null);
-        
-        //txtFind.$ext.cols = txtFind.cols;
         
         txtFind.addEventListener("clear", function() {
             _self.execSearch(false, false, true);
@@ -189,9 +192,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     return false;
                 case 27: //ESCAPE
                     _self.toggleDialog(-1);
-
-                    if (txtFind.getValue())
-                        _self.saveHistory(txtFind.getValue());
 
                     if (e.htmlEvent)
                         apf.stopEvent(e.htmlEvent);
@@ -358,6 +358,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return;
 
         var stateChange = isReplace != undefined && this.$lastState != isReplace;
+        
+        tooltipSearchReplace.$ext.style.display = "none";
 
         if (!force && !winSearchReplace.visible || force > 0 || stateChange) {
             if (winSearchReplace.visible && !stateChange) {
@@ -368,6 +370,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             
             if (stateChange && isReplace)
                 this.setupDialog(isReplace);
+
+            chkSearchSelection.uncheck();
 
             this.position = -1;
 
@@ -384,13 +388,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
             winSearchReplace.$ext.style.overflow = "hidden";
             winSearchReplace.$ext.scrollTop = 0;
-
+            
             //Animate
             setTimeout(function(){
                 document.body.scrollTop = 0;
             });
             Firmin.animate(winSearchReplace.$ext, {
-                height: (isReplace ? 74 : 38) + "px",
+                height: (isReplace ? 70 : 38) + "px",
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)"
             }, 0.2, function() {
                 if (stateChange && !isReplace)
@@ -407,11 +411,15 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             });
             
             winSearchReplace.show();
+            document.body.scrollTop = 0;
             txtFind.focus();
             txtFind.select();
         }
         else if (winSearchReplace.visible) {
             divSearchCount.$ext.style.visibility = "hidden";
+            
+            if (txtFind.getValue())
+                _self.saveHistory(txtFind.getValue());
             
             winSearchReplace.visible = false;
 
@@ -425,6 +433,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             }, 0.2, function(){
                 winSearchReplace.visible = true;
                 winSearchReplace.hide();
+                
+                winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
                 if (!noselect)
                     editor.ceEditor.focus();
@@ -574,6 +584,25 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 }
             }
         }
+        
+        if (options.regExp) {
+            this.updateInputRegExp();
+            
+            try {
+                new RegExp(searchTxt);
+            } catch(e) {
+                tooltipSearchReplace.$ext.innerHTML 
+                    = e.message.replace(": /" + searchTxt + "/", "");
+                apf.setOpacity(tooltipSearchReplace.$ext, 1);
+                tooltipSearchReplace.$ext.style.left = txtFind.getLeft() + "px";
+                this.tooltipTimer = setTimeout(function(){
+                    tooltipSearchReplace.$ext.style.display = "block";
+                }, 200);
+                return;
+            }
+            clearTimeout(this.tooltipTimer);
+            tooltipSearchReplace.$ext.style.display = "none";
+        }
 
         ace.find(searchTxt, options);
         this.currentRange = ace.selection.getRange();
@@ -587,6 +616,201 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         }
 
         this.updateCounter(backwards);
+    },
+    
+    updateInputRegExp : function(){
+        // Find cursor position
+        var selection = window.getSelection();
+        var n = selection.anchorNode.parentNode; 
+        var pos = selection.anchorOffset; 
+        if (n != txtFind.$input) {
+            while (n.previousSibling) {
+                n = n.previousSibling;
+                pos += (n.nodeType == 1 ? n.innerText : n.nodeValue).length;
+            };
+        }
+        
+        var value = txtFind.getValue();
+        
+        // Set value
+        txtFind.$input.innerHTML = this.parseRegExp(value);
+        
+        // Set cursor position to previous location
+        var el, idx, v;
+        n = txtFind.$input.firstChild;
+        while (n) {
+            v = n.nodeType == 1 ? n.innerText : n.nodeValue;
+            if (pos - v.length <= 0) {
+                el = n;
+                idx = pos;
+                break;
+            }
+            else {
+                pos -= v.length;
+                n = n.nextSibling;
+            }
+        };
+        
+        if (el.nodeType == 1)
+            el = el.firstChild;
+        
+        var range = document.createRange();
+        range.setStart(el, idx);
+        range.setEnd(el, idx);
+        
+        selection.removeAllRanges();
+        selection.addRange(range);
+    },
+    
+    regexp : {
+        alone : {"^":1, "$":1, ".":1},
+        before : {"+":1, "*":1, "?":1},
+        replace : /^\\[sSwWbBnrd]/,
+        searches : /^\((?:\?\:|\?\!|\?|\?\=|\?\<\=)/,
+        range : /^\{\s*\d+(\s*\,\s*\d+\s*)?\}/
+    },
+    
+    regColor : {
+        "text" : "background:white;color:black",
+        "collection" : "background:#ffc080;color:black",
+        "escaped" : "color:#cb7824",
+        "subescaped" : "background:#00c066;color:orange",
+        "sub" : "background:#00c000;color white",
+        "replace" : "background:#80c0ff;color:black",
+        "range" : "background:#80c0ff;color:black",
+        "modifier" : "background:#80c0ff;color:black",
+    },
+    
+    parseRegExp : function(value){
+        
+        //Calculate RegExp Colors
+        var re = this.regexp;
+        var out   = [];
+        var l, t, c, sub = 0, collection = 0;
+        
+        while (value.length) {
+            if ((c = value.charAt(0)) == "\\") {
+                // \\ detection
+                if (t = value.match(/^\\\\+/g)) {
+                    var odd = ((l = t[0].length) % 2);
+                    out.push([value.substr(0, l - odd), 
+                        sub > 0 ? "subescaped" : "escaped"]);
+                    value = value.substr(l - odd);
+                    
+                    continue;
+                }
+                
+                // Replacement symbols
+                if (t = value.match(re.replace)) {
+                    out.push([t, "replace"]);
+                    value = value.substr(2);
+                    
+                    continue;
+                }
+                
+                // Escaped symbols
+                out.push([value.substr(0, 2), "escaped"]);
+                value = value.substr(2);
+                
+                continue;
+            }
+            
+            // Start Sub Matches
+            if (c == "(") {
+                sub++;
+                t = value.match(re.searches);
+                if (t) {
+                    out.push([value.substr(0, t[0].length), "sub"]);
+                    value = value.substr(t[0].length);
+                    
+                    continue;
+                }
+                
+                out.push(["(", "sub"]);
+                value = value.substr(1);
+                
+                continue;
+            }
+            
+            // End Sub Matches
+            if (c == ")") {
+                sub--;
+                out.push([")", "sub"]);
+                value = value.substr(1);
+                
+                continue;
+            }
+            
+            // Collections
+            if (c == "[") {
+                collection = 1;
+                
+                var ct, temp = ["["];
+                for (var i = 1, l = value.length; i < l; i++) {
+                    ct = value.charAt(i);
+                    temp.push(ct);
+                    if (ct == "[")
+                        collection++;
+                    else if (ct == "]")
+                        collection--;
+                        
+                    if (!collection)
+                        break;
+                }
+                
+                out.push([temp.join(""), "collection"]);
+                value = value.substr(temp.length);
+                
+                continue;
+            }
+            
+            // Ranges
+            if (c == "{") {
+                var ct = value.match(re.range);
+                if (ct) {
+                    out.push([ct[0], "range"]);
+                    value = value.substr(ct[0].length);
+                }
+                else {
+                    out.push(["{", "range"]);
+                    value = value.substr(1);
+                }
+                
+                continue;
+            }
+            
+            if (re.before[c]) {
+                var style = (out[out.length - 1] || {})[1] || "modifier";
+                if (style == "text") style == "replace";
+                out.push([c, style]);
+                value = value.substr(1);
+                
+                continue;
+            }
+            
+            if (re.alone[c]) {
+                out.push([c, "replace"]);
+                value = value.substr(1);
+                
+                continue;
+            }
+            
+            // Just Text
+            out.push([c, sub > 0 ? "sub" : "text"]);
+            value = value.substr(1)
+        }
+        
+        // Process out
+        var last = "text", res = [], color = this.regColor;
+        for (var i = 0; i < out.length; i++) {
+            if (out[i][1] != last) {
+                last = out[i][1];
+                res.push("</span><span style='" + color[last] + "'>");
+            }
+            res.push(out[i][0]);
+        }
+        
+        return "<span>" + res.join("") + "</span>".replace(/<span><\/span>g/, "");
     },
 
     saveHistory : function(searchTxt){
