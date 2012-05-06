@@ -60,10 +60,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
 
     init : function(amlNode){
         ide.addEventListener("init.ext/console/console", function(e){
-            mainRow.insertBefore(winSearchInFiles, winDbgConsole);
-        });
-        if (winSearchInFiles.parentNode != mainRow)
-            mainRow.insertBefore(winSearchInFiles, self.winDbgConsole || null);
+            mainRow.insertBefore(winSearchInFiles, winDbgConsole);
+        });
+        if (winSearchInFiles.parentNode != mainRow)
+            mainRow.insertBefore(winSearchInFiles, self.winDbgConsole || null);
 
         this.txtFind         = txtSFFind;
         this.btnFind         = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
