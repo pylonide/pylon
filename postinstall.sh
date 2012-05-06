@@ -1,4 +1,5 @@
-cd node_modules/ace; make clean build
+cd node_modules/ace; make clean build; cd ../..
+cd node_modules/packager && rm -rf node_modules && sm install && cd ../..
 
 make apf
 

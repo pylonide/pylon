@@ -18,7 +18,7 @@
       newlinemode       = "[{require('core/settings').model}::editors/code/@newlinemode]"
       animatedscroll    = "[{require('core/settings').model}::editors/code/@animatedscroll]"
       fontsize          = "[{require('core/settings').model}::editors/code/@fontsize]"
-      wrapmode          = "[{require('core/settings').model}::editors/code/@wrapmode]"
+      wrapmode          = "[@wrapmode]"
       wrapmodeViewport  = "[{require('core/settings').model}::editors/code/@wrapmodeViewport]"
       wraplimitmin      = "40"
       wraplimitmax      = "80"

@@ -27,6 +27,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 panels.deactivate(null, true);
             else if (panels.lastPanel)
                 panels.activate(panels.lastPanel);
+            else
+                navbar.childNodes[1].dispatchEvent("mousedown")
         }
 
         this.nodes.push(

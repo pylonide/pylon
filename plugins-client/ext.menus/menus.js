@@ -161,7 +161,7 @@ module.exports = ext.register("ext/menus/menus", {
     $insertByIndex : function(parent, item, index) {
         item.$position = index;
         
-        var beforeNode, diff = 1000000, nodes = parent.childNodes;
+        var beforeNode, diff = 100000000, nodes = parent.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
             var d = nodes[i].$position - index;
             if (d > 0 && d < diff) {
@@ -297,6 +297,7 @@ module.exports = ext.register("ext/menus/menus", {
         }
         
         //index...
+//        if (name.indexOf("Tools/B") > -1) debugger;
         if (typeof index == "number")
             this.$insertByIndex(parent, item, index);
         else

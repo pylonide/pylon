@@ -9,7 +9,7 @@ define(function(require, exports, module) {
     var Document = require("core/document");
     var util = require("core/util");
 
-    var ide = new apf.Class().$init();
+    ide = new apf.Class().$init(); //Global on purpose!!!!
 
     ide.createDocument = function(node, value){
         return new Document(node, value);
