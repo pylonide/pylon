@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:label id="tooltipSearchReplace" visible="false" style="background:black;padding:3px;color:white;position:absolute;z-index:100000;" />
+    <a:label id="tooltipSearchReplace" skin="tooltipLabel" visible="false" />
     <a:bar id="winSearchReplace" skin="basic" skinset="searchreplace" zindex="1000" minheight="0" visible="false" height="0">
         <div id="divSearchCount"><span class="searchIter" id="spanSearchIter">0</span><span class="searchTotal" id="spanSearchTotal">0</span></div>
         <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
