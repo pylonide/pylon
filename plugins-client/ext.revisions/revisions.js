@@ -143,7 +143,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                 onclick='require(\"ext/revisions/revisions\").toggle();' \
                 class='revisionsInfoLink'>the Revision History pane</a>. \
                 Rollback to a previous state, or make comparisons.",
-            width : "250px"
+            width : "250px",
+            hideonclick : true
         });
 
         // Declaration of event listeners

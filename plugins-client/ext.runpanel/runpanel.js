@@ -131,7 +131,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             Want your language supported? Tweet us \
             <a href='http://twitter.com/Cloud9IDE' target='_blank'>@Cloud9IDE</a>!",
             width : "203px",
-            timeout : 1000
+            timeout : 1000,
+            hideonclick : true
         });
         
         var c = 0;

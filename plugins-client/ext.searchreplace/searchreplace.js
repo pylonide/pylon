@@ -230,12 +230,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return;
         });
         
-        //@todo make this a setting
-        winSearchReplace.addEventListener("blur", function(e){
-            if (winSearchReplace.visible 
+        var blur = function(e){
+            if (!hboxReplace.visible && winSearchReplace.visible 
               && !apf.isChildOf(winSearchReplace, e.toElement))
-                _self.toggleDialog(-1);
-        });
+                _self.toggleDialog(-1, null, true);
+        }
+        winSearchReplace.addEventListener("blur", blur);
+        txtFind.addEventListener("blur", blur);
+        //txtReplace.addEventListener("blur", blur);
         
         var tt = document.body.appendChild(tooltipSearchReplace.$ext);
         tt.style.position = "absolute";
@@ -346,7 +348,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         oTotal.innerHTML = "of " + ranges.length;
     },
     
-    toggleDialog: function(force, isReplace, noanim) {
+    toggleDialog: function(force, isReplace, noselect) {
         var _self = this;
         
         ext.initExtension(this);
@@ -382,23 +384,26 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
             winSearchReplace.$ext.style.overflow = "hidden";
             winSearchReplace.$ext.scrollTop = 0;
-            winSearchReplace.$ext.height = 0;
 
             //Animate
             setTimeout(function(){
                 document.body.scrollTop = 0;
             });
             Firmin.animate(winSearchReplace.$ext, {
-                height: (isReplace ? 67 : 35) + "px",
-                timingFunction: "cubic-bezier(.30, .08, 0, 1)"
-            }, 0.3, function() {
+                height: (isReplace ? 74 : 38) + "px",
+                timingFunction: "cubic-bezier(.10, .10, .25, .90)"
+            }, 0.2, function() {
                 if (stateChange && !isReplace)
                     _self.setupDialog(isReplace);
+                
+                winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 
                 divSearchCount.$ext.style.visibility = "";
                 _self.updateCounter();
                 
-                apf.layout.forceResize();
+                setTimeout(function(){
+                    apf.layout.forceResize();
+                }, 50);
             });
             
             winSearchReplace.show();
@@ -414,20 +419,15 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             txtFind.select();
 
             //Animate
-            apf.tween.single(winSearchReplace, {
-                type     : "height",
-                anim     : apf.tween.NORMAL,
-                from     : winSearchReplace.getHeight(),
-                to       : 0,
-                steps    : 8,
-                interval : 10,
-                control  : (this.control = {}),
-                onfinish : function(){
-                    winSearchReplace.visible = true;
-                    winSearchReplace.hide();
+            Firmin.animate(winSearchReplace.$ext, {
+                height: "0px",
+                timingFunction: "ease-in-out"
+            }, 0.2, function(){
+                winSearchReplace.visible = true;
+                winSearchReplace.hide();
 
+                if (!noselect)
                     editor.ceEditor.focus();
-                }
             });
         }
 

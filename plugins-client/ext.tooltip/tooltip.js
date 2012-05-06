@@ -159,7 +159,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
         var options = this.$c9tooltipOptions;
         
         clearTimeout(options.timer);
-        if (options.tooltip) {
+        if (options.tooltip && options.hideonclick) {
             if (options.control)
                 options.control.stop();
             
