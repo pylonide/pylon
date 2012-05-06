@@ -372,7 +372,18 @@ apf.textbox  = function(struct, tagName){
      * @return {String}
      */
     this.getValue = function(){
-        var v = this.isHTMLBox ? this.$input.innerHTML : this.$input.value;
+        var v;
+        
+        if (this.isHTMLBox) { 
+            //Chrome has a bug, innerText is cleared when display property is changed
+            v = this.$input.innerHTML
+                .replace(/<br\/?\>/g, "\n")
+                .replace(/<[^>]*>/g, "");
+            if (v == "\n") v = "";
+        }
+        else 
+            v = this.$input.value;
+            
         return v == this["initial-message"] ? "" : v.replace(/\r/g, "");
     };
     
@@ -382,10 +393,7 @@ apf.textbox  = function(struct, tagName){
      * Selects the text in this element.
      */
     this.select   = function(){ 
-        try {
-            this.$input.select(); 
-        }
-        catch(e){}
+        this.$input.select(); 
     };
 
     /**
@@ -507,7 +515,8 @@ apf.textbox  = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
 
-        if (this["initial-message"] && this.$input.value == this["initial-message"]) {
+        var value = this.getValue();
+        if (this["initial-message"] && !value) {
             this.$propHandlers["value"].call(this, "", null, null, true);
             apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
         }
@@ -552,7 +561,8 @@ apf.textbox  = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus", "capsLock"]);
 
-        if (this["initial-message"] && this.$input.value == "") {
+        var value = this.getValue();
+        if (this["initial-message"] && !value) {
             this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
@@ -751,12 +761,26 @@ apf.textbox  = function(struct, tagName){
 
             this.$input.unselectable    = "Off";
             this.$input.contentEditable = true;
-            this.$input.style.width     = "1px";
+            //this.$input.style.width     = "1px";
 
             this.$input.select = function(){
-                var r = document.selection.createRange();
-                r.moveToElementText(this);
-                r.select();
+                if (apf.hasMsRangeObject) {
+                    var r = document.selection.createRange();
+                    r.moveToElementText(this);
+                    r.select();
+                }
+                else if (_self.isHTMLBox) {
+                    var r = document.createRange();
+                    r.setStart(_self.$input.firstChild || _self.$input, 0);
+                    var lastChild = _self.$input.lastChild || _self.$input;
+                    r.setEnd(lastChild, lastChild.nodeType == 1
+                        ? lastChild.childNodes.length
+                        : lastChild.nodeValue.length);
+                    
+                    var s = window.getSelection();
+                    s.removeAllRanges();
+                    s.addRange(r);
+                }
             }
         };
 
