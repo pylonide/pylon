@@ -2805,7 +2805,7 @@
             background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
             border: 1px solid #010910;
             border-radius: 3px;
-            box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset;
+            box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset;
             height: 27px;
             padding: 0;
         }
@@ -2833,13 +2833,15 @@
         .grouped_checkbox_holder .cbcontainerDown,
         .grouped_checkbox_holder .cbcontainerChecked {
             background: none;
-            box-shadow: 1px 0 0 0 #010910 inset, -1px 0 0 0 #010910 inset, 0 0 3px 2px #1a1a1a inset;
+            box-shadow: -1px 0 0 0 #010910, -1px 0 0 0 #010910 inset, 0 0 3px 2px #1a1a1a inset;
         }
         .grouped_checkbox_holder .cbcontainerDown:first-child,
-        .grouped_checkbox_holder .cbcontainerDown:last-child,
-        .grouped_checkbox_holder .cbcontainerChecked:first-child,
-        .grouped_checkbox_holder .cbcontainerChecked:last-child {
+        .grouped_checkbox_holder .cbcontainerChecked:first-child {
             box-shadow: 0 0 3px 2px #1a1a1a inset;
+        }
+        .grouped_checkbox_holder .cbcontainerDown:last-child,
+        .grouped_checkbox_holder .cbcontainerChecked:last-child {
+            box-shadow: -1px 0 0 0 #010910, 0 0 3px 2px #1a1a1a inset;
         }
         .grouped_checkbox_holder .cbcontainer .checkbox {
             background: url(images/c9-repeat-x.png) no-repeat 50% 0;
@@ -10230,7 +10232,7 @@
             border-radius: 3px;
             box-shadow: inset 0 2px 3px 0 rgba(0,0,0,.3);
             height: 25px;
-            padding: 0 4px 0 7px;
+            padding: 0 114px 0 7px;
         }
 
         .searchTxt.tb_console .sbtb_middle input {
@@ -10243,6 +10245,19 @@
         .searchTxt.tb_textboxInitial .sbtb_middle input {
             color: #BABABA !important;
         }
+
+        .searchTxt .btnclose {
+            position: absolute;
+            top: 7px;
+            width: 14px;
+            height: 14px;
+            background: url(images/btnclose.gif) no-repeat 0 0;
+            display: none;
+            cursor: pointer;
+        }
+        .searchTxt .btnclose:hover {
+            background-position: 0 -14px;
+        }   
     ]]></a:style>
 
     <a:presentation>
@@ -11402,7 +11417,7 @@
                 background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
                 border: 1px solid #010910;
                 border-radius: 3px;
-                box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset;
+                box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset;
                 color: #C0DABE;
                 cursor: pointer;
                 height: 27px;
@@ -11410,7 +11425,7 @@
                 padding: 0 11px;
             }
             .blackbuttonOver {
-                box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset, 0 0 0 1000px rgba(131,145,129,.08) inset;
+                box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset, 0 0 0 1000px rgba(131,145,129,.08) inset;
             }
             .blackbuttonDown {
                 box-shadow: 0 0 3px 2px #1a1a1a inset;
@@ -11422,5 +11437,4 @@
             </a:main>
         </a:presentation>
     </a:button>
-
 </a:skin>
