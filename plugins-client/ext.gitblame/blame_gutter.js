@@ -19,14 +19,14 @@ dom.importCssString("\
     height: 100%;\
     cursor: w-resize;\
     position: absolute;\
-    border-left: 1px solid black;\
+    border-right: 1px solid black;\
 }\
 .ace_resizer_v:hover {\
-    border-left-color: darkblue;\
+    border-right-color: darkblue;\
 }\
 .ace_closeButton {\
     top: -5px;\
-    left: -6px;\
+    left: -3px;\
     width: 11px;\
     height: 11px;\
     cursor: pointer;\
@@ -49,7 +49,9 @@ dom.importCssString("\
     box-sizing: border-box;\
     -moz-box-sizing: border-box;\
     overflow: hidden !important;\
-}\.ace_blame-cell.selected{\
+    padding: 0 8px;\
+}\
+.ace_blame-cell.selected{\
     background: rgba(255, 237, 0, 0.31);\
 }\
 ", "blameGutter");
