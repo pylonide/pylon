@@ -139,7 +139,15 @@ var config = {
                     //"ext/acebugs/acebugs"
                 ]
             }, {
-                packagePath: "./cloud9.fs",
+                packagePath: "vfs-architect/local",
+                uid: process.getuid(),
+                gid: process.getgid(),
+                umask: 0750,
+                root: projectDir + "/",
+                skipSearchCheck: false,
+                httpRoot: "http://localhost:" + port + fsUrl
+            }, {
+                packagePath: "./cloud9.fs.vfs",
                 urlPrefix: fsUrl
             },
             "./cloud9.socket",

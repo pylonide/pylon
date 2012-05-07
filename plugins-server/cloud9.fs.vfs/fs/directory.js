@@ -13,10 +13,9 @@ var jsDAV_Directory   = require("jsDAV/lib/DAV/directory").jsDAV_Directory;
 var jsDAV_iCollection = require("jsDAV/lib/DAV/iCollection").jsDAV_iCollection;
 var jsDAV_iQuota      = require("jsDAV/lib/DAV/iQuota").jsDAV_iQuota;
 
-var Fs                = require("fs");
 var Path              = require("path");
 var Exc               = require("jsDAV/lib/DAV/exceptions");
-var Util              = require("jsDAV/lib/DAV/util");
+var Stream            = require('stream').Stream;
 
 function jsDAV_FS_Directory(vfs, path) {
     this.vfs = vfs;
@@ -38,70 +37,90 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
      * @param {Function} cbfscreatefile
      * @return void
      */
-    this.createFileStream = function(handler, name, enc, cbfscreatefile) {
+    this.createFileStream = function(handler, name, enc, callback) {
         // is it a chunked upload?
         var size = handler.httpRequest.headers["x-file-size"];
         if (size) {
             if (!handler.httpRequest.headers["x-file-name"])
                 handler.httpRequest.headers["x-file-name"] = name;
-            this.writeFileChunk(handler, enc, cbfscreatefile);
+            this.writeFileChunk(handler, enc, callback);
         }
         else {
             var newPath = this.path + "/" + name;
-            var stream = Fs.createWriteStream(newPath, {
-                encoding: enc
+            this.vfs.mkfile(newPath, {}, function(err, meta) {
+                if (err)
+                    return callback(err);
+
+                handler.getRequestBody(enc, meta.stream, callback);
             });
-            handler.getRequestBody(enc, stream, cbfscreatefile);
         }
     };
 
-    this.writeFileChunk = function(handler, type, cbfswritechunk) {
+    this.writeFileChunk = function(handler, type, callback) {
         var size = handler.httpRequest.headers["x-file-size"];
         if (!size)
-            return cbfswritechunk("Invalid chunked file upload, the X-File-Size header is required.");
+            return callback("Invalid chunked file upload, the X-File-Size header is required.");
+
         var self = this;
         var filename = handler.httpRequest.headers["x-file-name"];
         var path = this.path + "/" + filename;
+
         var track = handler.server.chunkedUploads[path];
-        if (!track) {
-            track = handler.server.chunkedUploads[path] = {
-                path: handler.server.tmpDir + "/" + Util.uuid(),
-                filename: filename,
-                timeout: null
-            };
+        if (track) {
+            upload(track);
         }
-        clearTimeout(track.timeout);
-        path = track.path;
-        // if it takes more than ten minutes for the next chunk to
-        // arrive, remove the temp file and consider this a failed upload.
-        track.timeout = setTimeout(function() {
-            delete handler.server.chunkedUploads[path];
-            Fs.unlink(path, function() {});
-        }, 600000); //10 minutes timeout
+        else {
+            this.vfs.mkfile(path, {}, function(err, meta) {
+                if (err) return callback(err);
 
-        var stream = Fs.createWriteStream(path, {
-            encoding: type,
-            flags: "a"
-        });
+                track = handler.server.chunkedUploads[path] = {
+                    stream: meta.stream,
+                    timeout: null,
+                    length: 0
+                };
 
-        stream.on("close", function() {
-            Fs.stat(path, function(err, stat) {
-                if (err)
-                    return;
-
-                if (stat.size === parseInt(size, 10)) {
-                    delete handler.server.chunkedUploads[path];
-                    Util.move(path, self.path + "/" + filename, true, function(err) {
-                        if (err)
-                            return;
-                        handler.dispatchEvent("afterBind", handler.httpRequest.url,
-                            self.path + "/" + filename);
-                    });
-                }
+                upload(track);
             });
-        })
+            return;
+        }
 
-        handler.getRequestBody(type, stream, cbfswritechunk);
+        function upload(track) {
+            clearTimeout(track.timeout);
+            // if it takes more than ten minutes for the next chunk to
+            // arrive, remove the temp file and consider this a failed upload.
+            track.timeout = setTimeout(function() {
+                delete handler.server.chunkedUploads[path];
+                track.stream.emit("error", "Upload timed out");
+                track.stream.end();
+            }, 600000); //10 minutes timeout
+
+            var stream = new Stream();
+            stream.writable = true;
+
+            stream.write = function(data) {
+                track.length += data.length;
+                track.stream.write(data);
+            }
+
+            stream.on("error", function(err) {
+                track.stream.emit("error", err);
+            });
+
+            stream.end = function(data) {
+                if (data)
+                    track.length += data.length;
+
+                if (track.length == parseInt(size, 10)) {
+                    delete handler.server.chunkedUploads[path];
+                    track.stream.end(data);
+                    handler.dispatchEvent("afterBind", handler.httpRequest.url, self.path + "/" + filename);
+                }
+
+                this.emit("close");
+            };
+
+            handler.getRequestBody(type, stream, callback);
+        }
     };
 
     /**
@@ -110,9 +129,9 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
      * @param string name
      * @return void
      */
-    this.createDirectory = function(name, cbfscreatedir) {
+    this.createDirectory = function(name, callback) {
         var newPath = this.path + "/" + name;
-        Fs.mkdir(newPath, "0755", cbfscreatedir);
+        this.vfs.mkdir(newPath, {}, callback);
     };
 
     /**
@@ -126,13 +145,13 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
         var self = this;
         var path = Path.join(this.path, name);
 
-        this.vfs.stat(path, {}, function(err, meta) {
+        this.vfs.stat(path, {}, function(err, stat) {
             if (err)
                 return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found"));
 
-            callback(null, meta.stat.mime == "inode/directory"
-                ? new jsDAV_FS_Directory(self.vfs, path)
-                : new jsDAV_FS_File(self.vfs, path)
+            callback(null, stat.mime == "inode/directory"
+                ? new jsDAV_FS_Directory(self.vfs, path, stat)
+                : new jsDAV_FS_File(self.vfs, path, stat)
             );
         });
     };

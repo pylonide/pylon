@@ -10,7 +10,6 @@
 var jsDAV_FS_Node   = require("./node").jsDAV_FS_Node;
 var jsDAV_iFile     = require("jsDAV/lib/DAV/iFile").jsDAV_iFile;
 
-var Fs              = require("fs");
 var Exc             = require("jsDAV/lib/DAV/exceptions");
 var Util            = require("jsDAV/lib/DAV/util");
 
@@ -95,13 +94,13 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
 
     this._stat = function(callback) {
         var self = this;
-        return this.vfs.stat(this.path, {}, function(err, meta) {
-            if (err || !meta || !meta.stat) {
+        return this.vfs.stat(this.path, {}, function(err, stat) {
+            if (err || !stat) {
                 return callback(new Exc.jsDAV_Exception_FileNotFound("File at location "
                     + self.path + " not found"));
             }
-            self.$stat = meta;
-            callback(null, meta);
+            self.$stat = stat;
+            callback(null, stat);
         });
     };
 
@@ -111,11 +110,11 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
      * @return int
      */
     this.getSize = function(callback) {
-        this._stat(function(err, meta) {
+        this._stat(function(err, stat) {
             if (err)
                 return callback(err);
 
-            callback(null, meta.stat.size);
+            callback(null, stat.size);
         });
     };
 
@@ -128,11 +127,11 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
      * @return mixed
      */
     this.getETag = function(callback) {
-        this._stat(function(err, meta) {
+        this._stat(function(err, stat) {
             if (err)
                 return callback(err);
 
-            callback(null, meta.etag);
+            callback(null, stat.etag);
         });
     };
 
@@ -143,11 +142,11 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
      * @return mixed
      */
     this.getContentType = function(callback) {
-        this._stat(function(err, meta) {
+        this._stat(function(err, stat) {
             if (err)
                 return callback(err);
 
-            callback(null, meta.stat.mime);
+            callback(null, stat.mime);
         });
     };
 }).call(jsDAV_FS_File.prototype = new jsDAV_FS_Node());

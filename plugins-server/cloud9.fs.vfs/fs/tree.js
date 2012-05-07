@@ -11,9 +11,7 @@ var jsDAV_Tree         = require("jsDAV/lib/DAV/tree").jsDAV_Tree;
 var jsDAV_FS_Directory = require("./directory").jsDAV_FS_Directory;
 var jsDAV_FS_File      = require("./file").jsDAV_FS_File;
 
-var Fs                 = require("fs");
 var Async              = require("asyncjs");
-var Util               = require("jsDAV/lib/DAV/util");
 var Exc                = require("jsDAV/lib/DAV//exceptions");
 
 /**
@@ -42,11 +40,11 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
     this.getNodeForPath = function(path, callback) {
         var self = this;
 
-        this.vfs.stat(path, {}, function(err, meta) {
+        this.vfs.stat(path, {}, function(err, stat) {
             if (err)
                 return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found 1"));
 
-            callback(null, meta.stat.mime == "inode/directory"
+            callback(null, stat.mime == "inode/directory"
                 ? new jsDAV_FS_Directory(self.vfs, path)
                 : new jsDAV_FS_File(self.vfs, path)
             );
@@ -63,25 +61,17 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
      * @param string destination
      * @return void
      */
-    this.copy = function(source, destination, cbfscopy) {
-        //this.realCopy(source, destination, cbfscopy);
-    };
+    this.copy = function(source, destination, callback) {
+        var self = this;
+        this.vfs.stat(source, {}, function(err, stat) {
+            if (err)
+                return callback(err);
 
-    /**
-     * Used by self::copy
-     *
-     * @param string source
-     * @param string destination
-     * @return void
-     */
-    this.realCopy = function(source, destination, cbfsrcopy) {
-        Fs.stat(source, function(err, stat) {
-            if (!Util.empty(err))
-                return cbfsrcopy(err);
-            if (stat.isFile())
-                Async.copyfile(source, destination, true, cbfsrcopy);
+            if (stat.mime === "inode/directory")
+                self.vfs.copy(destination, {from: source}, callback);
             else
-                Async.copytree(source, destination, cbfsrcopy);
+                // TODO vfs
+                Async.copytree(source, destination, callback);
         });
     };
 
@@ -94,7 +84,8 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
      * @param string destination
      * @return void
      */
-    this.move = function(source, destination, cbfsmove) {
-        //Fs.rename(source, destination, cbfsmove);
+    this.move = function(source, destination, callback) {
+        this.vfs.rename(destination, {from: source}, callback);
     };
+
 }).call(jsDAV_Tree_Filesystem.prototype = new jsDAV_Tree());
