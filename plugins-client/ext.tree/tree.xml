@@ -14,6 +14,7 @@
       title    = "Project Files"
       modal    = "false"
       buttons  = "close"
+      minwidth = "130"
       optimize = "true">
         <a:button
           skin="header-btn"
@@ -32,7 +33,7 @@
             <a:tree id="trFiles" canrename="true" border="0" simpledata="true"
               contextmenu="mnuCtxTree" multiselect="true" reselectable="true"
               onbeforeremove="return require('core/util').removeInteractive(this)"
-              onbeforemove="this.disable();" autoselect="false"
+              onbeforemove="this.disable();" 
               flex="1" scrollbar="sbShared 2 2 2"
             >
                 <a:each match="[project|file|folder]" sort="[@name]" sort-method="filesort">

@@ -211,6 +211,7 @@
          * --------------------------------------------------------------------------------------- */
          .c9-menu-bar.minimized .c9-mbar-cont,
          .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize {
+            background-color: #262626;
             background-image: url("images/c9-repeat-x.png");
             background-repeat: no-repeat;
             background-position: 50% -13px;
@@ -226,7 +227,7 @@
          }
 
          .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize {
-         	top: 1px;
+            top: 1px;
          }
     ]]></a:style>
 
@@ -1968,10 +1969,6 @@
             background-repeat   : no-repeat;
             top: -32px;
         }
-        
-        .header-btnDisabled {
-            opacity : 0.3;
-        }
 
         .panel-settings {
         	background-position: 0px -270px;
@@ -1982,34 +1979,42 @@
         	background-position: -30px -270px;
         }
         .c9-header-plus {
-        	background-position: 0px -293px;
+        	background-position: 0px -294px;
         	right:31px;
         	top: 0;
         }
-        .c9-header-plus:hover {
-        	background-position: -30px -293px;
+        .c9-header-plus.header-btnOver {
+        	background-position: -30px -294px;
+        }
+        .c9-header-plus.header-btnDisabled {
+            background-position: -60px -294px;
         }
         .c9-header-minus {
-        	background-position: 0px -321px;
-        	right: 1px;
-        	top: 0;
+            background-position: 0px -320px;
+            right: 1px;
+            top: 0;
         }
-        .c9-header-minus:hover {
-        	background-position: -30px -321px;
+        .c9-header-minus.header-btnOver {
+            background-position: -30px -320px;
         }
-
+        .c9-header-minus.header-btnDisabled {
+            background-position: -60px -320px;   
+        }
+        .header-btnOver {
+            background-color: rgba(255,255,255,.3);
+        }
+        .c9-header-plus.header-btnDown {
+            background-color: rgba(0,0,0,.05);
+        }
         .c9-header-divider:before {
-        	background: url(images/c9-no-repeat.png) no-repeat -100px -293px;
-        	content: "";
-        	display: block;
-        	height: 26px;
-        	left: 0;
-        	position: absolute;
-        	top: 0;
-        	width: 2px;
-        }
-        .c9-header-divider:hover {
-        	background-color: rgba(255,255,255,.3);
+            background: url(images/c9-no-repeat.png) no-repeat -100px -293px;
+            content: "";
+            display: block;
+            height: 26px;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 2px;
         }
     ]]></a:style>
 
@@ -2702,6 +2707,78 @@
             <div class='cbcontainer'>
                 <div class='checkbox'> </div>
                 <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
+<a:checkbox skin="grouped_checkbox">
+    <a:style><![CDATA[
+        .grouped_checkbox_holder {
+            background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
+            border: 1px solid #010910;
+            border-radius: 2px;
+            box-shadow: 0 0 0 1px rgba(236, 245, 255, .2) inset;
+            height: 27px;
+            padding: 0;
+        }
+        .grouped_checkbox_holder .cbcontainer {
+            padding: 0;
+        }
+
+        .grouped_checkbox_holder .cbcontainer {
+            background: url(images/c9-repeat-x.png) no-repeat 1px -474px, url(images/c9-repeat-x.png) no-repeat 100% -508px;
+            display: inline-block;
+            height: 25px !important;
+            width: 28px;
+        }
+        .grouped_checkbox_holder >div:first-child .cbcontainer {
+            background: url(images/c9-repeat-x.png) no-repeat 100% -508px;
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+        .grouped_checkbox_holder >div:last-child .cbcontainer {
+            background: url(images/c9-repeat-x.png) no-repeat 1px -474px;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+        .grouped_checkbox_holder .cbcontainerOver {
+            background: none;
+            box-shadow: 1px 0 0 0 #010910 inset, -1px 0 0 0 #010910 inset, 0 0 3px 2px #1a1a1a inset;
+        }
+        .grouped_checkbox_holder .cbcontainer .checkbox {
+            background: url(images/c9-repeat-x.png) no-repeat 50% 0;
+            border: 0;
+            height: 25px;
+            left: 0;
+            top: 0;
+            width: 100%;
+
+        }
+
+        .grouped_checkbox_holder .chkRegEx .checkbox { background-position: 50% -540px; }
+        .grouped_checkbox_holder .chkRegEx.cbcontainerChecked .checkbox { background-position: 50% -565px; }
+        .grouped_checkbox_holder .chkMatchCase .checkbox { background-position: 50% -590px; }
+        .grouped_checkbox_holder .chkMatchCase.cbcontainerChecked .checkbox { background-position: 50% -615px; }
+        .grouped_checkbox_holder .chkWholeWords .checkbox { background-position: 50% -640px; }
+        .grouped_checkbox_holder .chkWholeWords.cbcontainerChecked .checkbox { background-position: 50% -665px; }
+        .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
+        .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
+        .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -840px; }
+        .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background-position: 50% -865px; }
+        .grouped_checkbox_holder .chkSearchSelection .checkbox { background-position: 50% -740px; }
+        .grouped_checkbox_holder .chkSearchSelection.cbcontainerChecked .checkbox { background-position: 50% -765px; }
+        .grouped_checkbox_holder .cbcontainer span {
+            display: none;
+        }
+
+
+
+    ]]></a:style>
+    <a:presentation>
+        <a:main label="span/text()" minheight="18" minwidth="18">
+            <div class='xxx'>
+                <div class='checkbox'> </div>
+                <span class='label'>-</span>
             </div>
         </a:main>
     </a:presentation>
@@ -4418,17 +4495,15 @@
             margin              : 0 0 0 0;
             display             : none;
             background-color    : #1c1c1c;
-            border              : 1px solid rgba(255, 255, 255, 0.1);
-            padding             : 0 0 0 0;
+            border              : 1px solid #00040A;
+            padding             : 0 3px 0;
 
             -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
 
-            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
-            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
-            background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
-            background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
+            background: #494949;
+            margin-top: 2px;
         }
 
         .c9-optionList .c9-dd-item {
@@ -4436,7 +4511,7 @@
             padding:3px 6px 0 6px;
             position:relative;
             overflow:hidden;
-            font-family   : Tahoma, Arial;
+            font-family   : Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : white;
@@ -4451,6 +4526,83 @@
     <a:presentation>
         <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
             <div class="black_dropdown">
+                <div class="label">-</div>
+                <div class="button"> </div>
+            </div>
+        </a:main>
+        <a:container contents=".">
+            <div class="c9-optionList">
+            </div>
+        </a:container>
+        <a:item
+          class       = "."
+          caption     = "text()"
+          select      = "."
+          inherit     = "true">
+            <div class="c9-dd-item">-</div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="empty">-</div>
+        </a:empty>
+    </a:presentation>
+</a:dropdown>
+<a:dropdown name="light_dropdown">
+    <a:style><![CDATA[
+        .light_dropdown {
+            background-color: rgba(255,255,255,.65);
+            background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            border: 1px solid rgba(128, 128, 128, .55);
+            border-radius: 5px;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 0 0 rgba(0,0,0,.07) inset;
+            height: 23px !important;
+            position: relative;
+        }
+        .light_dropdown .label {
+            color: #4d4d4d;
+            height: 23px;
+            line-height: 21px;
+            padding: 0 0 0 10px;
+            text-shadow: 0 1px 0 rgba(247,247,247,1);
+        }
+        .light_dropdown .button {
+            background: url(images/c9-no-repeat.png) no-repeat -80px -390px;
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.55), 0 1px 0 0 #fff inset;
+            border-radius: 0 5px 5px 0;
+            height: 21px;
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            width: 15px;
+        }
+        .light_dropdownOver {
+            background-color: rgba(229,229,229,.5);
+        }
+        .light_dropdownDown {
+            background-color: rgba(255,255,255,.1);
+            background-image: -webkit-linear-gradient(top, rgba(0,0,0,.11), transparent);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 3px 0 rgba(0,0,0,.22) inset;
+            border-color: rgba(128, 128, 128, .85);;
+        }
+        .light_dropdownDown .button {
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.55);
+        }
+        .light_dropdownDisabled {
+            border-color: rgba(128, 128, 128, .32);
+            background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.02), transparent);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,1) inset;
+        }
+        .light_dropdownDisabled .label {
+            color: #c5c5c5;
+        }
+        .light_dropdownDisabled .button {
+            background-position: -105px -390px;
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.3), 0 1px 0 0 rgba(255,255,255,.6) inset;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
+            <div class="light_dropdown">
                 <div class="label">-</div>
                 <div class="button"> </div>
             </div>
@@ -4488,7 +4640,6 @@
             border-bottom: 1px solid #fafafa;
             border-left: 1px solid #fafafa;
             border-right: 1px solid #fafafa;
-            width:  134px;
             height: 15px;
             margin: 0;
             padding : 2px 21px 2px 0;
@@ -4770,13 +4921,33 @@
         }
 
         .run-panel-info {
-        	background: #323332;
-			border-top: 1px solid #111;
-			padding: 10px;
+        	background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
+            background-position:  0 -894px;
+            border-right: 1px solid white;
+			padding: 10px 10px 4px 10px;
         }
         .run-panel-info .black_label {
-        	color: #95b287;
+        	color: #919191;
+            text-shadow: 0 1px 0 white;
         }
+        .run-panel-info .btextbox {
+            background: rgba(255,255,255,.8);
+            border: 1px solid rgba(128,128,128,.55);
+            box-shadow: 0 1px 0 0 rgba(0,0,0,.15) inset, 0 1px 0 0 rgba(255,255,255,.7);
+        }
+        .run-panel-info .btextbox input {
+            color: #4d4d4d;
+        }
+        .run-panel-info .btextboxDisabled {
+            background: rgba(255,255,255,.6);
+            border: 1px solid rgba(128,128,128,.32);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7);
+        }
+        .run-panel-info .btextboxDisabled input {
+            color: #bbb;
+            text-shadow: 0 1px 0 white;
+        }
+
         .run-panel-info .hbox {
         	padding-bottom: 5px !important;
         }
@@ -7340,6 +7511,117 @@
             border-left:0;
             background:url(images/btn-arrow2.png) no-repeat 0 6px;
          }
+
+
+        .btnRun .main,
+        .btnRun .main:after,
+        .btnRun .arrow{
+            background: url(images/c9-no-repeat.png) no-repeat;
+            border: 0 none;
+            border-radius: 0;
+            box-shadow: none;
+            height: 23px;
+        }
+        .btnRun .main { 
+            background-position: 0px -424px; 
+            margin-right: 3px;
+            overflow: visible;
+        }
+        .btnRun .main:after {
+            background-position: -197px -424px; 
+            content: "";
+            display: block;
+            left: 100%;
+            position: absolute;
+            top: 0;
+            width: 3px;
+        }
+        .btnRun .main .c9-label {
+            border-right: 0 none;
+            padding-left: 23px !important;
+        }
+        .btnRun .main .c9-icon {
+            left: 3px;
+            top: 3px;
+        }
+        .btnRun .main.c9-dropdown-btnOver { 
+            background-position: 0px -457px; 
+        }
+        .btnRun .main.c9-dropdown-btnOver:after {
+            background-position: -197px -457px; 
+        }
+        .btnRun .c9-dropdown-btnDown.main { 
+            background-position: 0px -490px; 
+        }
+        .btnRun .c9-dropdown-btnDown.main:after { 
+            background-position: -197px -490px; 
+        }
+
+        .btnRun .arrow { 
+            background-position: -200px -424px; 
+            width: 16px; 
+        }
+        .btnRun .arrow.c9-dropdown-btnOver { 
+            background-position: -200px -457px; 
+        }
+        .btnRun .c9-dropdown-btnDown.arrow { 
+            background-position: -200px -490px; 
+        }
+        .btnRun .arrow .c9-arrow {
+            display: none;
+        }
+
+
+        .btnStop.c9-toolbarbutton,
+        .btnStop.c9-toolbarbutton .c9-label,
+        .btnStop.c9-toolbarbutton .c9-label:after {
+            border: 0 none;
+            border-radius: 0;
+            box-shadow: none;
+            height: 23px;
+            padding: 0;
+        }
+        .btnStop.c9-toolbarbutton {
+            background: none !important;
+        }
+        .btnStop.c9-toolbarbutton .c9-icon {
+            z-index: 100;
+        }
+        .btnStop.c9-toolbarbutton .c9-label,
+        .btnStop.c9-toolbarbutton .c9-label:after {
+            background: url(images/c9-no-repeat.png) no-repeat;
+        }
+        .btnStop.c9-toolbarbutton .c9-label {
+            background-position: 0px 100px; /* nothing */
+            line-height: 23px;
+            margin-right: 4px;
+            overflow: visible;
+            padding-left: 22px;
+        }
+        .btnStop.c9-toolbarbutton .c9-label:after {
+            background-position: 0px 100px; /* nothing */
+            content: "";
+            display: block;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            width: 4px;
+        }
+        .btnStop.c9-toolbarbuttonOver .c9-label {
+            background-position: 0px -457px; 
+        }
+        .btnStop.c9-toolbarbuttonOver .c9-label:after {
+            background-position: -236px -457px; 
+        }
+        .btnStop.c9-toolbarbuttonDown .c9-label {
+            background-position: 0px -490px; 
+        }
+        .btnStop.c9-toolbarbuttonDown .c9-label:after {
+            background-position: -236px -490px; 
+        }
+
+
+
     ]]></a:style>
     <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
         .c9-dropdown-btn .c9-label {
@@ -8558,7 +8840,8 @@
     .editor_tab .editor_bg {
         height : 100%;
         position : absolute;
-        margin: 0 auto;
+        top : 25%;
+        margin: -100px auto 0 auto;
         background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
         /*border-bottom: 1px solid #8c8c8c;
         border-left: 1px solid #8c8c8c;
