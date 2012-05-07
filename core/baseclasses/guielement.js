@@ -119,7 +119,6 @@ apf.GuiElement = function(){
     this.$booleanProperties["disable-keyboard"] = true;
     //#endif
     this.$booleanProperties["visible"]          = true;
-    this.$booleanProperties["focussable"]       = true;
     
     //#ifdef __WITH_INTERACTIVE
     this.$supportedProperties.push("draggable", "resizable");
@@ -386,11 +385,6 @@ apf.GuiElement = function(){
             this.$ext.setAttribute("uniqueId", this.$uniqueId);
         // #endif
 
-        //#ifdef __WITH_FOCUS
-        if (this.$focussable && typeof this.focussable == "undefined")
-            apf.GuiElement.propHandlers.focussable.call(this);
-        //#endif
-        
         this.$drawn = true;
     }, true);
     
@@ -430,6 +424,11 @@ apf.GuiElement = function(){
         
         if (this.$loadAml)
             this.$loadAml(this.$aml); //@todo replace by event
+        
+        //#ifdef __WITH_FOCUS
+        if (this.$focussable && typeof this.focussable == "undefined")
+            apf.GuiElement.propHandlers.focussable.call(this, true);
+        //#endif
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", f);
@@ -554,15 +553,32 @@ apf.GuiElement.propHandlers = {
     "focussable": function(value){
         this.focussable = typeof value == "undefined" || value;
 
+        if (value == "container") {
+            this.$isWindowContainer = true;
+            this.focussable = true;
+        }
+        else
+            this.focussable = apf.isTrue(value);
+
         if (!this.hasFeature(apf.__FOCUSSABLE__)) //@todo should this be on the prototype
             this.implement(apf.Focussable);
 
         if (this.focussable) {
             apf.window.$addFocus(this, this.tabindex);
+            
+            if (value == "container")
+                this.$tabList.remove(this);
         }
         else {
             apf.window.$removeFocus(this);
         }
+    },
+    
+    "tabindex": function(value){
+        if (!this.hasFeature(apf.__FOCUSSABLE__)) 
+            return;
+        
+        this.setTabIndex(parseInt(value) || null);
     },
     //#endif
 

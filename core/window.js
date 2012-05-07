@@ -346,6 +346,8 @@ apf.window = function(){
 
         if (list[tabindex])
             list.insertIndex(amlNode, tabindex);
+        else if (tabindex || parseInt(tabindex) === 0)
+            list[tabindex] = amlNode;
         else
             list.push(amlNode);
     };
