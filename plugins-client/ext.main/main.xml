@@ -5,8 +5,6 @@
       allow-select              = "false"
       allow-blur                = "false"
       initdelay                 = "false"
-      loaderAnimIndicator       = "animatedLoader"
-      loaderWidth               = "300"
       autoHideLoading           = "false"
       storage                   = "cookie"
       baseurl                   = "{apf.host ? apf.host : ''}"
@@ -45,8 +43,8 @@
         </a:bar>
         
         <a:hbox flex="1" padding="0">
-            <a:vbox id="mainRow" padding="0" flex="1" splitters="true">
-                <a:hbox id="hboxTabBar" padding="0" edge="0" height="27" align="start" nosplitter="true">
+            <a:vbox id="mainRow" padding="0" flex="1">
+                <a:hbox id="hboxTabBar" padding="0" edge="0" height="27" align="start">
                     <a:hbox id="barButtonContainer" flex="1" align="start" />
                 </a:hbox>
                 <a:hbox id="hboxMain" padding="0" edge="0" flex="1">

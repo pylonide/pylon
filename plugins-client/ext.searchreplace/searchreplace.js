@@ -181,10 +181,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         apf.importCssString(_self.css);
         
         ide.addEventListener("init.ext/console/console", function(e){
-            mainRow.insertBefore(winSearchReplace, winDbgConsole);
+            mainRow.insertBefore(winSearchReplace, e.ext.splitter);
         });
-        if (winSearchReplace.parentNode != mainRow)
-            mainRow.insertBefore(winSearchReplace, self.winDbgConsole || null);
+        if (winSearchReplace.parentNode != mainRow) {
+            mainRow.insertBefore(winSearchReplace, 
+                self.winDbgConsole && winDbgConsole.previousSibling || null);
+        }
         
         txtFind.addEventListener("clear", function() {
             _self.execFind();
