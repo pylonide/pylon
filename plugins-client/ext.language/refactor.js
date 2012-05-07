@@ -74,7 +74,7 @@ module.exports = {
         // Temporarily disable these markers, to prevent weird slow-updating events whilst typing
         marker.disableMarkerType('occurrence_main');
         marker.disableMarkerType('occurrence_other');
-        var ace = editors.currentEditor.amlEditor;
+        var ace = editors.currentEditor.amlEditor.$editor;
         var cursor = ace.getCursorPosition();
         var mainPos = data.pos;
         var p = new PlaceHolder(ace.session, data.length, mainPos, data.others, "language_rename_main", "language_rename_other");
