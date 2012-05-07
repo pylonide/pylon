@@ -2868,8 +2868,8 @@
         .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
         .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
         
-        .grouped_checkbox_holder .chkWrapAround .checkbox { background: none; }
-        .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background: none; }
+        .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -890px; }
+        .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background-position: 50% -915px; }
         
         .grouped_checkbox_holder .chkSearchSelection .checkbox { background-position: 50% -840px; }
         .grouped_checkbox_holder .chkSearchSelection.cbcontainerChecked .checkbox { background-position: 50% -865px; }

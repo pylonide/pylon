@@ -34,8 +34,6 @@
                     <a:divider skin="c9-divider-double" />
                 </a:hbox>
                 <a:filler />
-                <a:hbox id="saveBar" edge="0 0 0 0" padding="3" align="center"> </a:hbox>
-                <a:filler />
                 <a:hbox id="barExtras" edge="0 0 0 0" padding="3" align="center">
                     <a:divider skin="c9-divider" visible="false" />
                 </a:hbox>

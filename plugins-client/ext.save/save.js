@@ -144,7 +144,7 @@ module.exports = ext.register("ext/save/save", {
         });
 
         this.nodes.push(
-            menus.$insertByIndex(saveBar, new apf.button({
+            menus.$insertByIndex(barTools, new apf.button({
                 id       : "btnSave",
                 icon     : "save.png",
                 caption  : "Save",
