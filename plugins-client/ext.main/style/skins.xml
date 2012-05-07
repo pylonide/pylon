@@ -11519,6 +11519,7 @@
             .searchTxt .btnclose {
                 position: absolute;
                 top: 7px;
+                right: 8px;
                 width: 14px;
                 height: 14px;
                 background: url(images/btnclose.gif) no-repeat 0 0;
