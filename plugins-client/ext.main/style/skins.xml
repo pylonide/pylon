@@ -373,7 +373,7 @@
         }   
         .black-menu-bar.closed.minimized .toggle-black-menu-bar {
             background-image: url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-            background-position: -38px -383px, 0 -1030px;
+            background-position: -38px -383px, 0 -1090px;
             background-repeat: no-repeat, repeat-x;
             box-shadow: 0 1px 0 0 rgba(255,255,255,.03) inset;
             right: 0px;
@@ -446,19 +446,23 @@
             border-right     : 1px solid #333;
             background       : url(images/dock_cloud9_bg.gif);
         }
-
-        .docksection{
-            /*border : 1px solid #fff;*/
-            border-bottom: 1px solid #040404;
-            -moz-box-shadow    : 0 1px 0 #404042;
-            -webkit-box-shadow : 0 1px 0 #404042;
-            box-shadow: 0 1px 0 #404042;
-            margin-bottom: 1px;
-        }
-
         .docksection {
             background       : url(images/debug-panel_bg.png) 0 0;
+            margin-bottom: 2px;
+            position: relative;
         }
+
+        .docksection:after {
+            background: url(images/c9-no-repeat.png) no-repeat -204px 0;
+            content: "";
+            display: block;
+            height: 2px;
+            left: -1px;
+            position: absolute;
+            top: 100%;
+            width: 36px;
+        }
+
 
         .docksection div:nth-child(2) {
             padding-top: 0;
@@ -4655,7 +4659,7 @@
             background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
             border: 1px solid rgba(128, 128, 128, .55);
             border-radius: 5px;
-            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 0 0 rgba(0,0,0,.07) inset;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 0 0 rgba(255,255,255,.5) inset;
             height: 23px !important;
             position: relative;
         }
@@ -5024,8 +5028,8 @@
 
         .run-panel-info {
         	background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
-            background-position:  0 -894px;
-            border-right: 1px solid whitebg;
+            background-position:  0 -954px;
+            border-right: 1px solid white;
 			padding: 10px 10px 4px 10px;
         }
         .run-panel-info .black_label {
@@ -5374,7 +5378,7 @@
             text-shadow : none;
         }
         .menu>div.menu_item.disabled>span{
-            /*display : none;*/
+            opacity: 0.2;
         }
 
         .menu>div.menu_item>u{
@@ -5395,6 +5399,9 @@
             background-image: url(images/check.gif);
             background-repeat: no-repeat;
             background-position: 0 -16px;
+        }
+        .menu>div.menu_item.disabled>u{
+            opacity: 0.2;
         }
     ]]></a:style>
     <a:presentation>
@@ -8696,7 +8703,6 @@
     }
     .editor_tab .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -132px;
-        height: 14px;
     	z-index: 10000000;
     }
 
@@ -9164,6 +9170,8 @@
         background-color    : #303030;
         color               : #cecece;
         -webkit-transition: background-color .1s linear;
+           -moz-transition: background-color .1s linear;
+                transition: background-color .1s linear;
     }
 
     .editor_tab .session_btn .tab_middle:before {
