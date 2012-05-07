@@ -20056,7 +20056,6 @@ apf.GuiElement = function(){
     this.$booleanProperties["disable-keyboard"] = true;
     
     this.$booleanProperties["visible"]          = true;
-    this.$booleanProperties["focussable"]       = true;
     
     
     this.$supportedProperties.push("draggable", "resizable");
@@ -20316,11 +20315,6 @@ apf.GuiElement = function(){
 
         
 
-        
-        if (this.$focussable && typeof this.focussable == "undefined")
-            apf.GuiElement.propHandlers.focussable.call(this);
-        
-        
         this.$drawn = true;
     }, true);
     
@@ -20360,6 +20354,11 @@ apf.GuiElement = function(){
         
         if (this.$loadAml)
             this.$loadAml(this.$aml); //@todo replace by event
+        
+        
+        if (this.$focussable && typeof this.focussable == "undefined")
+            apf.GuiElement.propHandlers.focussable.call(this, true);
+        
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", f);
@@ -20468,15 +20467,32 @@ apf.GuiElement.propHandlers = {
     "focussable": function(value){
         this.focussable = typeof value == "undefined" || value;
 
+        if (value == "container") {
+            this.$isWindowContainer = true;
+            this.focussable = true;
+        }
+        else
+            this.focussable = apf.isTrue(value);
+
         if (!this.hasFeature(apf.__FOCUSSABLE__)) //@todo should this be on the prototype
             this.implement(apf.Focussable);
 
         if (this.focussable) {
             apf.window.$addFocus(this, this.tabindex);
+            
+            if (value == "container")
+                this.$tabList.remove(this);
         }
         else {
             apf.window.$removeFocus(this);
         }
+    },
+    
+    "tabindex": function(value){
+        if (!this.hasFeature(apf.__FOCUSSABLE__)) 
+            return;
+        
+        this.setTabIndex(parseInt(value) || null);
     },
     
 
@@ -36893,6 +36909,8 @@ apf.window = function(){
 
         if (list[tabindex])
             list.insertIndex(amlNode, tabindex);
+        else if (tabindex || parseInt(tabindex) === 0)
+            list[tabindex] = amlNode;
         else
             list.push(amlNode);
     };
