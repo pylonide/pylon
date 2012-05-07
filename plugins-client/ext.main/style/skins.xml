@@ -5374,7 +5374,7 @@
             text-shadow : none;
         }
         .menu>div.menu_item.disabled>span{
-            /*display : none;*/
+            opacity: 0.2;
         }
 
         .menu>div.menu_item>u{
@@ -5395,6 +5395,9 @@
             background-image: url(images/check.gif);
             background-repeat: no-repeat;
             background-position: 0 -16px;
+        }
+        .menu>div.menu_item.disabled>u{
+            opacity: 0.2;
         }
     ]]></a:style>
     <a:presentation>
