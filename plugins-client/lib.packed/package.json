@@ -1,0 +1,17 @@
+{
+    "name": "lib.packed",
+    "version": "0.0.1",
+    "main": "packed-plugin.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "client.apf",
+            "client.ace",
+            "client.treehugger",
+            "client.v8debug"
+        ],
+        "consumes": [
+            "static"
+        ]
+    }
+}
