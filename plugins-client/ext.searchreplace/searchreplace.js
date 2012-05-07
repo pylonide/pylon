@@ -196,8 +196,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 return false;
             }
             
-            if (_self.findKeyboardHandler(e, "search", this) === false)
+            if (_self.findKeyboardHandler(e, "search", this) === false) {
+                apf.layout.forceResize();
                 return false;
+            }
 
             var ace = _self.$getAce();
             if (ace.getSession().getDocument().getLength() > MAX_LINES)
@@ -207,6 +209,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 clearTimeout(this.$timer);
                 this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
                     _self.execFind();
+                    apf.layout.forceResize();
                 }, 20);
             }
 
@@ -220,8 +223,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     return false;
                 }
                 
-                if (_self.findKeyboardHandler(e, "replace", this) === false)
+                if (_self.findKeyboardHandler(e, "replace", this) === false) {
+                    apf.layout.forceResize();
                     return false;
+                }
             });
         });
         
@@ -335,6 +340,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         if (!editor || !editor.amlEditor)
             return;
 
+        var wasVisible  = winSearchReplace.visible;
         var stateChange = isReplace != undefined && this.$lastState != isReplace;
         
         tooltipSearchReplace.$ext.style.display = "none";
@@ -357,23 +363,25 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             winSearchReplace.$ext.style.height 
                 = winSearchReplace.$ext.offsetHeight + "px";
             
-            if (stateChange && isReplace)
+            if (stateChange && isReplace || !wasVisible)
                 this.setupDialog(isReplace);
 
             chkSearchSelection.uncheck();
 
             this.position = -1;
 
-            var sel   = editor.getSelection();
-            var doc   = editor.getDocument();
-            var range = sel.getRange();
-            var value = doc.getTextRange(range);
-
-            if (value) {
-                txtFind.setValue(value);
-                
-                if (chkRegEx.checked)
-                    this.updateInputRegExp(txtFind);
+            if (!wasVisible) {
+                var sel   = editor.getSelection();
+                var doc   = editor.getDocument();
+                var range = sel.getRange();
+                var value = doc.getTextRange(range);
+    
+                if (value) {
+                    txtFind.setValue(value);
+                    
+                    if (chkRegEx.checked)
+                        this.updateInputRegExp(txtFind);
+                }
             }
 
             winSearchReplace.show();
@@ -382,13 +390,17 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             
             winSearchReplace.$ext.scrollTop = 0;
             document.body.scrollTop = 0;
-            
+
             //Animate
+            var toHeight = winSearchReplace.$ext.scrollHeight;
+            if (stateChange && !isReplace && wasVisible)
+                toHeight -= hboxReplace.$ext.scrollHeight;
+            
             Firmin.animate(winSearchReplace.$ext, {
-                height: (isReplace ? 70 : 38) + "px",
+                height: toHeight + "px", //(isReplace ? 70 : 38)
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)"
             }, 0.2, function() {
-                if (stateChange && !isReplace)
+                if (stateChange && !isReplace && wasVisible)
                     _self.setupDialog(isReplace);
                 
                 winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
