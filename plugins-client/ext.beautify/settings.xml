@@ -4,7 +4,7 @@
     <a:checkbox class="underlined" label="JSLint Strict Whitespace" value="[beautify/jsbeautify/@jslinthappy]" skin="checkbox_grey" position="3000"/>
     <a:hbox edge="5 5 2 12" align="center" position="4000">
         <a:label flex="1">Braces</a:label>
-        <a:dropdown value="[{require('core/settings').model}::beautify/jsbeautify/@braces]" width="185" height="21">
+        <a:dropdown value="[{require('core/settings').model}::beautify/jsbeautify/@braces]" width="185" height="21" skin="light_dropdown">
             <a:item value="collapse">Braces with control statement</a:item>
             <a:item value="expand">Braces on own line</a:item>
             <a:item value="end-expand">End braces on own line</a:item>

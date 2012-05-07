@@ -4655,7 +4655,7 @@
             background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
             border: 1px solid rgba(128, 128, 128, .55);
             border-radius: 5px;
-            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 0 0 rgba(0,0,0,.07) inset;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 0 0 rgba(255,255,255,.5) inset;
             height: 23px !important;
             position: relative;
         }
@@ -9167,6 +9167,8 @@
         background-color    : #303030;
         color               : #cecece;
         -webkit-transition: background-color .1s linear;
+           -moz-transition: background-color .1s linear;
+                transition: background-color .1s linear;
     }
 
     .editor_tab .session_btn .tab_middle:before {
