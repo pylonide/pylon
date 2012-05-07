@@ -8,15 +8,11 @@
 define(function(require, exports, module) {
 
 var settings = require("core/settings");
+var prefix   = "search/"
 
 module.exports = {
-    findKeyboardHandler : function(e){
+    findKeyboardHandler : function(e, listName, txtFind){
         switch (e.keyCode){
-            case 13: //ENTER
-                if (e.altKey || e.ctrlKey)
-                    return;
-                this.execSearch(false, !!e.shiftKey, true, true);
-                return false;
             case 27: //ESCAPE
                 this.toggleDialog(-1);
 
@@ -28,22 +24,22 @@ module.exports = {
             case 38: //UP
                 if (!this.hasCursorOnFirstLine())
                     return;
-                this.navigateList("prev");
+                this.navigateList("prev", listName, txtFind);
                 return false;
             case 40: //DOWN
                 if (!this.hasCursorOnLastLine())
                     return;
-                this.navigateList("next");
+                this.navigateList("next", listName, txtFind);
                 return false;
             case 36: //HOME
                 if (!e.ctrlKey)
                     return;
-                this.navigateList("first");
+                this.navigateList("first", listName, txtFind);
                 return false;
             case 35: //END
                 if (!e.ctrlKey)
                     return;
-                this.navigateList("last");
+                this.navigateList("last", listName, txtFind);
                 return false;
         }
     },
@@ -88,13 +84,13 @@ module.exports = {
         return true;
     },
     
-    navigateList : function(type){
+    navigateList : function(type, listName, txtFind){
         var model = settings.model;
-        var lines = JSON.parse(model.queryValue("search/text()") || "[]");
+        var lines = JSON.parse(model.queryValue(prefix + listName + "/text()") || "[]");
         
         var value = txtFind.getValue();
         if (value && (this.position == -1 || lines[this.position] != value)) {
-            lines = this.saveHistory(value);
+            lines = this.saveHistory(value, listName);
             this.position = 0;
         }
 
@@ -125,13 +121,13 @@ module.exports = {
         }
     },
     
-    saveHistory : function(searchTxt){
-        var settings = require("ext/settings/settings");
+    saveHistory : function(searchTxt, listName){
+        var settings = require("core/settings");
         if (!settings.model)
             return;
 
         var model = settings.model;
-        var words = model.queryNodes("search/word");
+        var words = model.queryNodes(prefix + listName + "/word");
         
         //Cleanup of old format
         var search = words[0] && words[0].parentNode;
@@ -140,18 +136,43 @@ module.exports = {
         }
         
         try {
-            var json = JSON.parse(model.queryValue("search/text()"));
+            var json = JSON.parse(model.queryValue(prefix + listName + "/text()"));
         } catch(e) { json = [] }
         
         if (json[0] != searchTxt) {
             json.unshift(searchTxt);
-            model.setQueryValue("search/text()", JSON.stringify(json));
+            model.setQueryValue(prefix + listName + "/text()", JSON.stringify(json));
         }
         
         return json;
     },
     
-    updateInputRegExp : function(){
+    evaluateRegExp : function(txtFind, tooltip, win){
+        this.updateInputRegExp(txtFind);
+        
+        var searchTxt = txtFind.getValue();
+        try {
+            new RegExp(searchTxt);
+        } catch(e) {
+            tooltip.$ext.innerHTML 
+                = e.message.replace(": /" + searchTxt + "/", "");
+            apf.setOpacity(tooltip.$ext, 1);
+            
+            var pos = apf.getAbsolutePosition(win.$ext);
+            tooltip.$ext.style.left = txtFind.getLeft() + "px";
+            tooltip.$ext.style.top = (pos[1] - 16) + "px";
+
+            this.tooltipTimer = setTimeout(function(){
+                tooltip.$ext.style.display = "block";
+            }, 200);
+            
+            return false;
+        }
+        clearTimeout(this.tooltipTimer);
+        tooltip.$ext.style.display = "none"; 
+    },
+    
+    updateInputRegExp : function(txtFind){
         if (!txtFind.getValue())
             return;
         

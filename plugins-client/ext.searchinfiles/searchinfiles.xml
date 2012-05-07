@@ -1,36 +1,66 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:label id="tooltipSearchInFIles" skin="tooltipLabel" visible="false" />
+    <a:label id="tooltipSearchInFiles" skin="tooltipLabel" visible="false" />
     <a:bar id="winSearchInFiles" skin="basic" skinset="searchreplace" zindex="1000" minheight="0" visible="false" height="0">
-        <div id="divSearchCount"><span class="searchIter" id="spanSearchIter">0</span><span class="searchTotal" id="spanSearchTotal">0</span></div>
-        <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
-          skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" 
-          icon="arrow_left_search.png"
-          right="29"
-          top="7"
-          zindex="100"/>
-        <a:button onclick="require('ext/searchreplace/searchreplace').findnext(1)" 
-          skin="btnquicksearchnav" class="btnquicksearchnavRight" 
-          icon="arrow_right_search.png" 
-          right="7"
-          top="7"
-          zindex="100"/>
         <a:vbox class="find-and-replace" padding="5" edge="5" model="{require('core/settings').model}">
-             <a:hbox id="hboxFind" padding="5" align="start" margin="0 0 -4 0">
+             <a:hbox padding="5" align="start">
                 <a:hbox class="grouped_checkbox_holder" align="start">
-                    <a:checkbox id="chkRegEx" value="[editors/code/search/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
-                    <a:checkbox id="chkMatchCase" value="[editors/code/search/@matchcase]" class="chkMatchCase" checked="false" label="Match Case" skin="grouped_checkbox" width="28" />
-                    <a:checkbox id="chkWholeWords" value="[editors/code/search/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkSFRegEx" value="[editors/code/filesearch/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkSFMatchCase" value="[editors/code/filesearch/@matchcase]" class="chkMatchCase" label="Match Case" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkSFWholeWords" value="[editors/code/filesearch/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-                <a:textbox id="txtSFFind" flex="1" skin="searchbox" initial-message="path-where-to-searh-in" focusselect="true" />
+                <a:textbox id="txtSFFind" flex="1" skin="searchbox" initial-message="Find in Files" focusselect="true" />
+                <a:button id="btnSFFind" default="2" skin="blackbutton" width="80"
+                  onclick="require('ext/searchinfiles/searchinfiles').execFind()">Find</a:button>
             </a:hbox>
-            <a:hbox id="hboxWhere" padding="5" align="start" render="runtime" height="27">
-                <a:textbox id="ddSFPatterns" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" class="searchTxt tb_console" skin="searchbox"/>
+            <a:hbox padding="5" align="start" height="27" edge="0 85 0 91">
+                <a:textbox id="txtSFPatterns" skin="searchbox" flex="1" initial-message="*.*" focusselect="true"/>
+                <a:radiobutton margin="3 0 0 0"
+                  group  = "grpSFScope"
+                  skin   = "radio_grey"
+                  value  = "projects"
+                  label  = "Project" />
+                <a:radiobutton id="rbSFSelection" margin="3 0 0 0"
+                  group  = "grpSFScope"
+                  skin   = "radio_grey"
+                  value  = "selection"
+                  label  = "Selection"
+                  selected = "true" />
             </a:hbox>
-            <a:hbox id="hboxReplace" padding="5" align="start" render="runtime" height="27">
-                <a:textbox id="txtSFReplace" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" class="searchTxt tb_console" skin="searchbox"/>
-                <a:button id="btnSFFind" default="2" margin="0 -2 0 0" skin="blackbutton" onclick="">Find All</a:button>
-                <a:button id="btnSFReplaceAll" skin="blackbutton" onclick="" >Replace All</a:button>
+            <a:hbox id="test" padding="5" align="start" edge="0 0 0 91">
+                <a:textbox id="txtSFReplace" skin="searchbox" flex="1" initial-message="Replace With" focusselect="true"/>
+                <a:button id="btnSFReplaceAll" skin="blackbutton" width="80"
+                  onclick="require('ext/searchinfiles/searchinfiles').replace()">Replace</a:button>
             </a:hbox>
         </a:vbox>
     </a:bar>
+    
+    <!-- Added prerender here to speed up the loading. The query already has the data we need, we don't need to
+    render the results one by one (as we do, for example, with the Project Files tree -->
+    <a:hbox id="trSFHbox" anchors="0 0 0 0" visible="false" render="runtime">
+        <a:tree id        = "trSFResult"
+          skinset         = "searchinfiles"
+          border          = "0"
+          visible         = "false"
+          prerender       = "false"
+          each            = "[d:querydetail|d:maxreached|d:response|d:excerpt]"
+          loading-message = "Searching..."
+          style           = "position:absolute;top:0;left:0;bottom:0;right:17px;"
+          autoselect      = "false"
+          reselectable    = "true"
+          class           = "console_text">
+            <a:model />
+            <a:caption match="[d:querydetail]">[@count] {apf.htmlentities([@count]) == 1 ? "match" : "matches"} for '{apf.htmlentities([@query])}' in [@filecount] {[@filecount] == 1 ? "file" : "files"}{[@replacement].length &gt; 0 ? ", replaced as '" + apf.htmlentities([@replacement]) + "'" : ""} [@options]</a:caption>
+            <a:caption match="[d:maxreached]">Your search yielded too many results. The first hits are listed below:</a:caption>
+            <a:caption match="[d:response]">[@path] (#[d:excerpt])</a:caption>
+            <a:css match="[d:response]" value="term_ansi5Color" />
+            <a:caption match="[d:excerpt]"><div class="linenumber term_ansi6Color">[@line]</div><pre class="excerpt">{apf.htmlentities([text()])}</pre></a:caption>
+        </a:tree>
+        <a:scrollbar
+          id        = "sbSFResult"
+          for       = "trSFResult"
+          margin    = "0"
+          skin      = "console_scrollbar"
+          style     = "position:absolute;top:0;bottom:0;right:0;"
+          width     = "17" />
+    </a:hbox>
 </a:application>
