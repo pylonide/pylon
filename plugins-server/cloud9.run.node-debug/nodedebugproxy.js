@@ -6,16 +6,16 @@
 "use strict";
 
 var util = require("util");
-var NodeSocket = require("v8debug").NodeSocket;
+var VfsSocket = require("./vfs_socket");
 var StandaloneV8DebuggerService = require("v8debug").StandaloneV8DebuggerService;
 
-var DebugProxy = module.exports = function(port) {
+var DebugProxy = module.exports = function(vfs, port) {
     process.EventEmitter.call(this);
     var _self = this;
 
     this.connected = false;
 
-    var socket = new NodeSocket("localhost", port);
+    var socket = new VfsSocket(vfs, port);
     socket.on("end", function(errorInfo) {
         _self.connected = false;
         _self.emit("end", errorInfo);

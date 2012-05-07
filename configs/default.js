@@ -147,7 +147,7 @@ var config = {
                 skipSearchCheck: false,
                 httpRoot: "http://localhost:" + port + fsUrl
             }, {
-                packagePath: "./cloud9.fs.vfs",
+                packagePath: "./cloud9.fs",
                 urlPrefix: fsUrl
             },
             "./cloud9.socket",

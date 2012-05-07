@@ -157,6 +157,7 @@ util.inherits(ShellPlugin, Plugin);
             extra: message.extra
         }, function(code, out, err) {
             self.processCount -= 1;
+
             self.sendResult(0, message.command, {
                 code    : code,
                 argv    : message.argv,

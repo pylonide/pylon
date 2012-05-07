@@ -4,7 +4,7 @@ var utils = require("connect").utils;
 var error = require("http-error");
 
 var jsDAV = require("jsDAV");
-var DavPermission = require("./dav/permission");
+var jsDAV_Tree_Filesystem = require("./fs/tree").jsDAV_Tree_Filesystem;
 var DavFilewatch = require("./dav/filewatch");
 
 module.exports = function setup(options, imports, register) {
@@ -28,7 +28,6 @@ module.exports = function setup(options, imports, register) {
         var mountDir = path.normalize(projectDir);
 
         var davOptions = {
-            node: mountDir,
             path: mountDir,
             mount: options.urlPrefix,
             plugins: options.davPlugins,
@@ -36,10 +35,11 @@ module.exports = function setup(options, imports, register) {
             standalone: false
         };
 
+        davOptions.tree = new jsDAV_Tree_Filesystem(imports.vfs, mountDir);
+
         var filewatch = new DavFilewatch();
 
         var davServer = jsDAV.mount(davOptions);
-        davServer.plugins["permission"] = DavPermission;
         davServer.plugins["filewatch"] = filewatch.getPlugin();
 
         imports.connect.useAuth(function(req, res, next) {
