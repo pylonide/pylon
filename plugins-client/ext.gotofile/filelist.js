@@ -48,7 +48,7 @@ define(function(require, module, exports) {
                     continue;
                 }
                 
-                matches.push(f);
+                matches.push(this.fileList[i]);
             }
             
             return matches;
