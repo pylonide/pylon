@@ -1,18 +1,20 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
     <a:label id="tooltipSearchReplace" skin="tooltipLabel" visible="false" />
-    <a:bar id="winSearchReplace" skin="basic" skinset="searchreplace" zindex="1000" minheight="0" visible="false" height="0">
+    <a:bar id="winSearchReplace" skin="basic" skinset="searchreplace" focussable="container" zindex="1000" minheight="0" visible="false" height="0">
         <div id="divSearchCount"><span class="searchIter" id="spanSearchIter">0</span><span class="searchTotal" id="spanSearchTotal">0</span></div>
         <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
           skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" 
           icon="arrow_left_search.png"
           right="29"
           top="7"
+          focussable = "false"
           zindex="100"/>
         <a:button onclick="require('ext/searchreplace/searchreplace').findnext(1)" 
           skin="btnquicksearchnav" class="btnquicksearchnavRight" 
           icon="arrow_right_search.png" 
           right="7"
           top="7"
+          focussable = "false"
           zindex="100"/>
         <a:vbox class="find-and-replace" padding="5" edge="5" model="{require('core/settings').model}">
              <a:hbox id="hboxFind" padding="5" align="start">
@@ -29,7 +31,7 @@
                 <a:hbox class="grouped_checkbox_holder" align="start">
                     <a:checkbox id="chkHighlightMatches" value="[editors/code/search/@highlightmatches]" class="chkHighlightMatches" label="Highlight Matches" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-                <a:textbox id="txtFind" flex="1" skin="searchbox" initial-message="Find" focusselect="true" class="buttonsright" />
+                <a:textbox id="txtFind" tabindex="1000" flex="1" skin="searchbox" initial-message="Find" focusselect="true" class="buttonsright" />
             </a:hbox>
             <a:hbox id="hboxReplace" padding="5" align="start" render="runtime">
                 <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
@@ -38,9 +40,9 @@
                 <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
                 
                 </a:hbox>
-                <a:textbox id="txtReplace" skin="searchbox" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" />
-                <a:button margin="0 -2 0 0" skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replace()">Replace</a:button>
-                <a:button skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replaceAll()" >Replace All</a:button>
+                <a:textbox id="txtReplace" tabindex="1001" skin="searchbox" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" />
+                <a:button margin="0 -2 0 0" focussable="false" skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replace()">Replace</a:button>
+                <a:button skin="blackbutton" tabindex="1002" onclick="require('ext/searchreplace/searchreplace').replaceAll()" >Replace All</a:button>
             </a:hbox>
         </a:vbox>
     </a:bar>
