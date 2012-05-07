@@ -178,7 +178,10 @@ module.exports = {
         
         // Find cursor position
         var selection = window.getSelection();
-        var n = selection.anchorNode.parentNode; 
+        var a = selection.anchorNode;
+        if (!a) return;
+        
+        var n = a.parentNode; 
         var pos = selection.anchorOffset; 
         if (apf.isChildOf(txtFind.$input, n)) {
             while (n.previousSibling) {
