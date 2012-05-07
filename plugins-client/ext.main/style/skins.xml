@@ -373,7 +373,7 @@
         }   
         .black-menu-bar.closed.minimized .toggle-black-menu-bar {
             background-image: url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-            background-position: -38px -383px, 0 -1030px;
+            background-position: -38px -383px, 0 -1090px;
             background-repeat: no-repeat, repeat-x;
             box-shadow: 0 1px 0 0 rgba(255,255,255,.03) inset;
             right: 0px;
@@ -5024,8 +5024,8 @@
 
         .run-panel-info {
         	background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
-            background-position:  0 -894px;
-            border-right: 1px solid whitebg;
+            background-position:  0 -954px;
+            border-right: 1px solid white;
 			padding: 10px 10px 4px 10px;
         }
         .run-panel-info .black_label {
