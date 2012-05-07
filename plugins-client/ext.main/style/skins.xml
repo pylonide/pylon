@@ -2812,7 +2812,7 @@
         .grouped_checkbox_holder .cbcontainer {
             background: url(images/c9-repeat-x.png) no-repeat 0px -474px, /* light */
                         url(images/c9-repeat-x.png) no-repeat 100% -507px; /* dark */
-            cursor: pointer;
+            cursor: default;
             display: inline-block;
             height: 25px !important;
             padding: 0;
@@ -11403,6 +11403,7 @@
             </a:main>
         </a:presentation>
     </a:button>
+    
     <a:label name="tooltipLabel">
         <a:style><![CDATA[
             .tooltipLabel {
@@ -11414,13 +11415,13 @@
                 border-bottom-width: 0;
                 border-radius: 3px 3px 0 0;
                 box-shadow: 0 1px 0 0 rgba(255,255,255,.2) inset;
-                color: #000;
+                color: #eee;
                 font-size: 10px;
                 height: 14px;
                 line-height: 14px;
-                padding: 0 3px;
+                padding: 1px 4px 0px 4px;
                 position: absolute;
-                text-shadow: 0 1px 0 rgba(237,237,237,.14);
+                text-shadow: 0 1px 0 rgba(0,0,0,.14);
                 z-index: 100000;
             }
         ]]></a:style>

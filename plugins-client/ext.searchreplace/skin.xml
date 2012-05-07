@@ -52,7 +52,7 @@
             
             .searchbox .sbtb_middle{
                 height : auto !important;
-                padding : 5px 114px 2px 7px;
+                padding : 4px 114px 3px 7px;
                 box-shadow: inset 0 2px 3px 0 rgba(0,0,0,.3);
             }
             

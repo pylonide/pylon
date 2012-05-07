@@ -9,8 +9,6 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var Util = require("core/util");
-var settings = require("core/settings");
 var menus = require("ext/menus/menus");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -19,6 +17,7 @@ var skin = require("text!ext/searchreplace/skin.xml");
 var markup = require("text!ext/searchreplace/searchreplace.xml");
 var commands = require("ext/commands/commands");
 var tooltip = require("ext/tooltip/tooltip");
+var libsearch = require("ext/searchreplace/libsearch");
 
 var oIter, oTotal;
 
@@ -26,7 +25,7 @@ var oIter, oTotal;
 var MAX_LINES = 20000; // alter live search if lines > 20k--performance bug
 var MAX_LINES_SOFT = 8000; // single character search prohibited
 
-module.exports = ext.register("ext/searchreplace/searchreplace", {
+module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     name    : "Searchreplace",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -183,45 +182,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             mainRow.insertBefore(winSearchReplace, self.winDbgConsole || null);
         
         txtFind.addEventListener("clear", function() {
-            _self.execSearch(false, false, true);
+            _self.execSearch();
         })
 
         txtFind.addEventListener("keydown", function(e) {
-            switch (e.keyCode){
-                case 13: //ENTER
-                    if (e.altKey || e.shiftKey || e.ctrlKey)
-                        return;
-                    _self.execSearch(false, !!e.shiftKey, null, true);
-                    return false;
-                case 27: //ESCAPE
-                    _self.toggleDialog(-1);
-
-                    if (e.htmlEvent)
-                        apf.stopEvent(e.htmlEvent);
-                    else if (e.stop)
-                        e.stop();
-                    return false;
-                case 38: //UP
-                    if (!_self.hasCursorOnFirstLine())
-                        return;
-                    _self.navigateList("prev");
-                    return false;
-                case 40: //DOWN
-                    if (!_self.hasCursorOnLastLine())
-                        return;
-                    _self.navigateList("next");
-                    return false;
-                case 36: //HOME
-                    if (!e.ctrlKey)
-                        return;
-                    _self.navigateList("first");
-                    return false;
-                case 35: //END
-                    if (!e.ctrlKey)
-                        return;
-                    _self.navigateList("last");
-                    return false;
-            }
+            if (_self.findKeyboardHandler(e) === false)
+                return false;
 
             var ace = _self.$getAce();
             if (ace.getSession().getDocument().getLength() > MAX_LINES)
@@ -230,7 +196,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
                 clearTimeout(this.$timer);
                 this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
-                    _self.execSearch(false, false, e.keyCode == 8);
+                    _self.execSearch();
                 }, 20);
             }
 
@@ -270,89 +236,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                     var pos = apf.getAbsolutePosition(winSearchReplace.$ext);
                     var left = pos[0] + cb.getLeft();
                     var top = pos[1];
-                    return [left, top - 19];
+                    return [left, top - 16];
                 }
             });
         });
     },
     
-    hasCursorOnFirstLine : function(){
-        var selection = window.getSelection();
-        if (selection.anchorNode.nodeType == 1)
-            return true;
-        
-        var n = selection.anchorNode.parentNode;
-        if (selection.anchorNode.nodeValue.substr(0, selection.anchorOffset).indexOf("\n") > -1)
-            return false;
-
-        if (apf.isChildOf(txtFind.$input, n)) {
-            while (n.previousSibling) {
-                n = n.previousSibling;
-                if ((n.nodeType == 1 ? n.innerText : n.nodeValue).indexOf("\n") > -1)   
-                    return false;
-            };
-        }
-        
-        return true;
-    },
-    
-    hasCursorOnLastLine : function(){
-        var selection = window.getSelection();
-        if (selection.anchorNode.nodeType == 1)
-            return true;
-        
-        var n = selection.anchorNode.parentNode;
-        if (selection.anchorNode.nodeValue.substr(selection.anchorOffset).indexOf("\n") > -1)
-            return false;
-
-        if (apf.isChildOf(txtFind.$input, n)) {
-            while (n.nextSibling) {
-                n = n.nextSibling;
-                if ((n.nodeType == 1 ? n.innerText : n.nodeValue).indexOf("\n") > -1)   
-                    return false;
-            };
-        }
-        
-        return true;
-    },
-    
-    navigateList : function(type){
-        var model = settings.model;
-        var lines = JSON.parse(model.queryValue("search/text()") || "[]");
-        
-        var value = txtFind.getValue();
-        if (value && (this.position == -1 || lines[this.position] != value)) {
-            this.saveHistory(value);
-            this.position = 0;
-        }
-
-        var next;
-        if (type == "prev") {
-            if (this.position <= 0) {
-                txtFind.setValue("");
-                this.position = -1;
-                return;
-            }
-            next = Math.max(0, this.position - 1);
-        }
-        else if (type == "next")
-            next = Math.min(lines.length - 1, this.position + 1);
-        else if (type == "last")
-            next = Math.max(lines.length - 1, 0);
-        else if (type == "first")
-            next = 0;
-
-        if (lines[next] && next != this.position) {
-            txtFind.setValue(lines[next]);
-            
-            if (chkRegEx.checked)
-                this.updateInputRegExp();
-
-            txtFind.select();
-            this.position = next;
-        }
-    },
-
     updateCounter: function(backwards) {
         var ace = this.$getAce();
         var width;
@@ -608,7 +497,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         this.updateCounter();
     },
     
-    execSearch: function(close, backwards, wasDelete, save) {
+    execSearch: function(close, reverseBackwards, findNext, save) {
         var ace = this.$getAce();
         if (!ace)
             return;
@@ -623,40 +512,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
         var options = this.getOptions();
         
-        if (typeof backwards == "boolean")
-            options.backwards = !!backwards;
+        if (reverseBackwards)
+            options.backwards = !options.backwards;
 
         if (this.$crtSearch != searchTxt)
             this.$crtSearch = searchTxt;
 
-        var highlightTxt = ace.session.getTextRange(ace.selection.getRange());
-
-        // super ace bug ! if you're already highlighting some text, another find executes
-        // from the end of the cursor, not the start of your current highlight. thus,
-        // if the text is "copyright" and you execute a search for "c", followed immediately by
-        // "co", you'll never find the "co"--a search for "c" followed by a search for "o"
-        // DOES work, but doesn't highlight the content, so it's kind of lame.
-        // Let's just reset the cursor in the doc whilst waiting for an Ace fix, hm?
-
-        if (highlightTxt !== "") {
-            // we have a selection, that is the start of the current needle, but selection !== needle
-            if (!wasDelete) {
-                var highlightTxtReStart = new RegExp("^" + Util.escapeRegExp(highlightTxt), "i");
-
-                                                                            // if we're going backwards, reset the cursor anyway
-                if (searchTxt.match(highlightTxtReStart) && (options.backwards || searchTxt.toLowerCase() != highlightTxt.toLowerCase())) {
-                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - highlightTxt.length);
-                }
-            }
-            else { // we've deleted a letter, so stay on the same highlighted term
-                var searchTxtReStart = new RegExp("^" + Util.escapeRegExp(searchTxt), "i");
-
-                if (highlightTxt.match(searchTxtReStart) && searchTxt.toLowerCase() != highlightTxt.toLowerCase()) {
-                    ace.selection.moveCursorTo(ace.selection.getRange().start.row, ace.selection.getRange().end.column - searchTxt.length - 1);
-                }
-            }
-        }
-        
         if (options.regExp) {
             this.updateInputRegExp();
             
@@ -669,7 +530,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 
                 var pos = apf.getAbsolutePosition(winSearchReplace.$ext);
                 tooltipSearchReplace.$ext.style.left = txtFind.getLeft() + "px";
-                tooltipSearchReplace.$ext.style.top = (pos[1] - 19) + "px";
+                tooltipSearchReplace.$ext.style.top = (pos[1] - 16) + "px";
 
                 this.tooltipTimer = setTimeout(function(){
                     tooltipSearchReplace.$ext.style.display = "block";
@@ -680,10 +541,43 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             clearTimeout(this.tooltipTimer);
             tooltipSearchReplace.$ext.style.display = "none";
         }
+        
+        var range = ace.selection.getRange();
+        
+        if (options.backwards) {
+            var range = ace.selection.getRange();
+            
+            ace.selection.moveCursorTo(
+                range.start.row, 
+                range.start.column);
+            
+            var opt = apf.extend({}, options);
+            opt.backwards = false;
+            ace.find(searchTxt, opt);
+            var newRange = ace.selection.getRange();
 
-        ace.find(searchTxt, options);
+            var foundAtRange = newRange.start.row == range.start.row 
+              && newRange.start.column == range.start.column
+              && (options.regex || newRange.end.row != range.end.row 
+              || newRange.end.column != range.end.column);
+
+            if (!foundAtRange || findNext) {
+                ace.selection.moveCursorTo(
+                  range.start.row, 
+                  range.start.column);
+                  
+                ace.find(searchTxt, options);
+            }
+        }
+        else {
+            if (!findNext)
+                ace.selection.moveCursorTo(range.start.row, range.start.column);
+    
+            ace.find(searchTxt, options);
+        }
+        
         this.currentRange = ace.selection.getRange();
-
+        
         if (save) {
             this.saveHistory(searchTxt);
             this.position = 0;
@@ -694,231 +588,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             editors.currentEditor.amlEditor.focus();
         }
 
-        this.updateCounter(backwards);
+        this.updateCounter(options.backwards);
     },
     
-    updateInputRegExp : function(){
-        if (!txtFind.getValue())
-            return;
-        
-        // Find cursor position
-        var selection = window.getSelection();
-        var n = selection.anchorNode.parentNode; 
-        var pos = selection.anchorOffset; 
-        if (apf.isChildOf(txtFind.$input, n)) {
-            while (n.previousSibling) {
-                n = n.previousSibling;
-                pos += (n.nodeType == 1 ? n.innerText : n.nodeValue).length;
-            };
-        }
-        
-        var value = txtFind.getValue();
-        
-        // Set value
-        txtFind.$input.innerHTML = this.parseRegExp(value);
-        
-        // Set cursor position to previous location
-        var el, idx, v;
-        n = txtFind.$input.firstChild;
-        while (n) {
-            v = n.nodeType == 1 ? n.innerText : n.nodeValue;
-            if (pos - v.length <= 0) {
-                el = n;
-                idx = pos;
-                break;
-            }
-            else {
-                pos -= v.length;
-                n = n.nextSibling;
-            }
-        };
-        
-        if (el.nodeType == 1)
-            el = el.firstChild;
-        
-        var range = document.createRange();
-        range.setStart(el, idx);
-        range.setEnd(el, idx);
-        
-        selection.removeAllRanges();
-        selection.addRange(range);
-    },
-    
-    regexp : {
-        alone : {"^":1, "$":1, ".":1},
-        before : {"+":1, "*":1, "?":1},
-        replace : /^\\[sSwWbBnrd]/,
-        searches : /^\((?:\?\:|\?\!|\?|\?\=|\?\<\=)/,
-        range : /^\{\s*\d+(\s*\,\s*\d+\s*)?\}/
-    },
-    
-    regColor : {
-        "text" : "color:black",
-        "collection" : "background:#ffc080;color:black",
-        "escaped" : "color:#cb7824",
-        "subescaped" : "background:#00c066;color:orange",
-        "sub" : "background:#00c000;color white",
-        "replace" : "background:#80c0ff;color:black",
-        "range" : "background:#80c0ff;color:black",
-        "modifier" : "background:#80c0ff;color:black",
-    },
-    
-    parseRegExp : function(value){
-        
-        //Calculate RegExp Colors
-        var re = this.regexp;
-        var out   = [];
-        var l, t, c, sub = 0, collection = 0;
-        
-        while (value.length) {
-            if ((c = value.charAt(0)) == "\\") {
-                // \\ detection
-                if (t = value.match(/^\\\\+/g)) {
-                    var odd = ((l = t[0].length) % 2);
-                    out.push([value.substr(0, l - odd), 
-                        sub > 0 ? "subescaped" : "escaped"]);
-                    value = value.substr(l - odd);
-                    
-                    continue;
-                }
-                
-                // Replacement symbols
-                if (t = value.match(re.replace)) {
-                    out.push([t, "replace"]);
-                    value = value.substr(2);
-                    
-                    continue;
-                }
-                
-                // Escaped symbols
-                out.push([value.substr(0, 2), "escaped"]);
-                value = value.substr(2);
-                
-                continue;
-            }
-            
-            // Start Sub Matches
-            if (c == "(") {
-                sub++;
-                t = value.match(re.searches);
-                if (t) {
-                    out.push([value.substr(0, t[0].length), "sub"]);
-                    value = value.substr(t[0].length);
-                    
-                    continue;
-                }
-                
-                out.push(["(", "sub"]);
-                value = value.substr(1);
-                
-                continue;
-            }
-            
-            // End Sub Matches
-            if (c == ")") {
-                sub--;
-                out.push([")", "sub"]);
-                value = value.substr(1);
-                
-                continue;
-            }
-            
-            // Collections
-            if (c == "[") {
-                collection = 1;
-                
-                var ct, temp = ["["];
-                for (var i = 1, l = value.length; i < l; i++) {
-                    ct = value.charAt(i);
-                    temp.push(ct);
-                    if (ct == "[")
-                        collection++;
-                    else if (ct == "]")
-                        collection--;
-                        
-                    if (!collection)
-                        break;
-                }
-                
-                out.push([temp.join(""), "collection"]);
-                value = value.substr(temp.length);
-                
-                continue;
-            }
-            
-            // Ranges
-            if (c == "{") {
-                var ct = value.match(re.range);
-                if (ct) {
-                    out.push([ct[0], "range"]);
-                    value = value.substr(ct[0].length);
-                }
-                else {
-                    out.push(["{", "range"]);
-                    value = value.substr(1);
-                }
-                
-                continue;
-            }
-            
-            if (re.before[c]) {
-                var style = (out[out.length - 1] || {})[1] || "modifier";
-                if (style == "text") style == "replace";
-                out.push([c, style]);
-                value = value.substr(1);
-                
-                continue;
-            }
-            
-            if (re.alone[c]) {
-                out.push([c, "replace"]);
-                value = value.substr(1);
-                
-                continue;
-            }
-            
-            // Just Text
-            out.push([c, sub > 0 ? "sub" : "text"]);
-            value = value.substr(1)
-        }
-        
-        // Process out
-        var last = "text", res = [], color = this.regColor;
-        for (var i = 0; i < out.length; i++) {
-            if (out[i][1] != last) {
-                last = out[i][1];
-                res.push("</span><span style='" + color[last] + "'>");
-            }
-            res.push(out[i][0]);
-        }
-        
-        return ("<span>" + res.join("") + "</span>").replace(/<span><\/span>/g, "");
-    },
-
-    saveHistory : function(searchTxt){
-        var settings = require("ext/settings/settings");
-        if (!settings.model)
-            return;
-
-        var model = settings.model;
-        var words = model.queryNodes("search/word");
-        
-        //Cleanup of old format
-        var search = words[0] && words[0].parentNode;
-        for (var i = words.length - 1; i >= 0; i--) {
-            search.removeChild(words[i]);
-        }
-        
-        try {
-            var json = JSON.parse(model.queryValue("search/text()"));
-        } catch(e) { json = [] }
-        
-        if (json[0] != searchTxt) {
-            json.unshift(searchTxt);
-            model.setQueryValue("search/text()", JSON.stringify(json));
-        }
-    },
-
     find: function() {
         this.toggleDialog(1);
         return false;
@@ -1016,6 +688,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         });
         this.nodes = [];
     }
-});
+}, libsearch));
 
 });
