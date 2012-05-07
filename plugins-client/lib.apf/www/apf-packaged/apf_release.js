@@ -2086,7 +2086,7 @@ apf.Class.prototype = new (function(){
         }
         
         //Optimized event calling
-        if (arr = this.$eventsStack[eventName]) {
+        if (arr = this.$eventsStack[eventName] && isChanged) {
             /*for (i = 0, l = arr.length; i < l; i++) {
                 if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
                     prop     : prop, 
@@ -20334,10 +20334,8 @@ apf.GuiElement = function(){
         if (this.$ext) {
             var hasPres = (this.hasFeature(apf.__PRESENTATION__)) || false;
             var type        = this.$isLeechingSkin ? this.localName : "main";
-            if (this.minwidth == undefined)
-                this.minwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 0);
-            if (this.minheight == undefined)
-                this.minheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 0);
+            this.minwidth   = Math.max(this.minwidth || 0, apf.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 0));
+            this.minheight  = Math.max(this.minheight || 0, apf.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 0));
             if (this.maxwidth == undefined)
                 this.maxwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxwidth")), 10000);
             if (this.maxheight == undefined)
@@ -37466,6 +37464,7 @@ apf.window = function(){
             keyCode  : e.keyCode,
             ctrlKey  : e.ctrlKey,
             shiftKey : e.shiftKey,
+            metaKey  : e.metaKey,
             altKey   : e.altkey,
             htmlEvent: e,
             bubbles  : true //@todo is this much slower?
@@ -37534,6 +37533,7 @@ apf.window = function(){
                 button    : e.button, 
                 ctrlKey   : e.ctrlKey, 
                 shiftKey  : e.shiftKey, 
+                metaKey   : e.metaKey,
                 altKey    : e.altKey,
                 bubbles   : true,
                 htmlEvent : e
@@ -51481,7 +51481,8 @@ apf.vbox = function(struct, tagName){
         
         var node, nodes = this.childNodes, elms = [];
         for (var i = 0, l = nodes.length; i < l; i++) {
-            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded && node.visible !== false)
+            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE 
+              && node.$ext && node.visible !== false)
                 elms.push(node);
         }
         
@@ -64244,11 +64245,16 @@ apf.textbox  = function(struct, tagName){
         var v;
         
         if (this.isHTMLBox) { 
-            //Chrome has a bug, innerText is cleared when display property is changed
-            v = this.$input.innerHTML
-                .replace(/<br\/?\>/g, "\n")
-                .replace(/<[^>]*>/g, "");
-            if (v == "\n") v = "";
+            if (this.$input.innerText)
+                v = this.$input.innerText;
+            else {
+                //Chrome has a bug, innerText is cleared when display property is changed
+                v = apf.html_entity_decode(this.$input.innerHTML
+                    .replace(/<br\/?\>/g, "\n")
+                    .replace(/<[^>]*>/g, ""));
+            }
+            if (v.charAt(v.length - 1) == "\n")
+                v = v.substr(0, v.length - 1); //Remove the trailing new line
         }
         else 
             v = this.$input.value;
