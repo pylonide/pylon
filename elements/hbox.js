@@ -98,7 +98,8 @@ apf.vbox = function(struct, tagName){
         
         var node, nodes = this.childNodes, elms = [];
         for (var i = 0, l = nodes.length; i < l; i++) {
-            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded && node.visible !== false)
+            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE 
+              && node.$ext && node.visible !== false)
                 elms.push(node);
         }
         

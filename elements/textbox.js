@@ -375,11 +375,16 @@ apf.textbox  = function(struct, tagName){
         var v;
         
         if (this.isHTMLBox) { 
-            //Chrome has a bug, innerText is cleared when display property is changed
-            v = this.$input.innerHTML
-                .replace(/<br\/?\>/g, "\n")
-                .replace(/<[^>]*>/g, "");
-            if (v == "\n") v = "";
+            if (this.$input.innerText)
+                v = this.$input.innerText;
+            else {
+                //Chrome has a bug, innerText is cleared when display property is changed
+                v = apf.html_entity_decode(this.$input.innerHTML
+                    .replace(/<br\/?\>/g, "\n")
+                    .replace(/<[^>]*>/g, ""));
+            }
+            if (v.charAt(v.length - 1) == "\n")
+                v = v.substr(0, v.length - 1); //Remove the trailing new line
         }
         else 
             v = this.$input.value;

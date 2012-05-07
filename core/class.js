@@ -791,7 +791,7 @@ apf.Class.prototype = new (function(){
         }
         
         //Optimized event calling
-        if (arr = this.$eventsStack[eventName]) {
+        if (arr = this.$eventsStack[eventName] && isChanged) {
             /*for (i = 0, l = arr.length; i < l; i++) {
                 if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
                     prop     : prop, 
