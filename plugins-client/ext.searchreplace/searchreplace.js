@@ -292,7 +292,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         setTimeout(function() {
             if (oIter.parentNode && txtFind && txtFind.$button) {
                 width = oIter.parentNode.offsetWidth || 0;
-                txtFind.$button.style.right = width + "px";
+                txtFind.$button.style.right = width + 45 + "px";
             }
         });
 
