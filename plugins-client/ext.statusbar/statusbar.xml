@@ -42,8 +42,9 @@
       render = "runtime">
       <a:item type="check" caption="Show Invisibles" checked="[{require('core/settings').model}::editors/code/@showinvisibles]" />
       <a:item type="check" caption="Code Folding" checked="[{require('core/settings').model}::editors/code/@folding]" />
-      <a:item type="check" caption="Full Line Selection" checked="[{require('core/settings').model}::editors/code/@selectstyle]" values="line|text" />
+      <a:item type="check" caption="Full Line Selection" value="[{require('core/settings').model}::editors/code/@selectstyle]" values="line|text" />
       <a:item type="check" caption="Highlight Active Line" checked="[{require('core/settings').model}::editors/code/@activeline]" />
+      <a:item type="check" caption="Highlight Gutter Line" checked="[{require('core/settings').model}::editors/code/@gutterline]" />
       <a:item type="check" caption="Show Gutter" checked="[{require('core/settings').model}::editors/code/@gutter]" />
       <a:item type="check" caption="Highlight Selected Word" checked="[{require('core/settings').model}::editors/code/@highlightselectedword]" />
       <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[{require('core/settings').model}::editors/code/@behaviors]" />

@@ -46,7 +46,19 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 _self.toggleDialog(true, true);
             }
         });
-        
+
+        commands.addCommand({
+            name: "replaceall",
+            bindKey : {mac: "", win: ""},
+            hint: "search for a string inside the active document and replace all",
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
+            exec: function(env, args, request) {
+                _self.toggleDialog(true, true);
+            }
+        });
+
         commands.addCommand({
             name: "replacenext",
             isAvailable : function(editor){
@@ -313,13 +325,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         var options = this.getOptions();
         options.needle = this.txtFind.getValue();
         
-        var cursor = this.$editor.getCursorPosition();
-        var line = cursor.row;
-        
         this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
-        
-        this.$editor.gotoLine(line); // replaceAll jumps you elsewhere; go back to where you were
-        
+
         this.updateCounter();
         ide.dispatchEvent("track_action", {type: "replace"});
     },

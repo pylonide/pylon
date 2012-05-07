@@ -109,11 +109,13 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     
         var altKey;
         apf.addListener(document, "keydown", function(e){
-            altKey = (e || event).altKey;
+            if ((e || event).keyCode == 18)
+                altKey = true;
         });
         
         apf.addListener(document, "keyup", function(e){
-            altKey = (e || event).altKey ? false : altKey;
+            if ((e || event).keyCode == 18)
+                altKey = false;
         });
     
         dgTestProject.addEventListener("afterchoose", function(e){

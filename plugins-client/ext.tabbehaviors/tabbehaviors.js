@@ -315,8 +315,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 }
             }
             
-            if (list)
+            if (list) {
+                list.remove(null);
                 _self.accessList = list;
+            }
         });
     },
     

@@ -19,7 +19,7 @@ var ext = require("core/ext");
  * optimization.
  */
 module.exports = ext.register("ext/filelist/filelist", {
-    name  : "HTML Editor",
+    name  : "File List",
     dev   : "Ajax.org",
     type  : ext.GENERAL,
     alone : true,
