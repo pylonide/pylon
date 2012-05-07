@@ -1097,6 +1097,7 @@ apf.window = function(){
             keyCode  : e.keyCode,
             ctrlKey  : e.ctrlKey,
             shiftKey : e.shiftKey,
+            metaKey  : e.metaKey,
             altKey   : e.altkey,
             htmlEvent: e,
             bubbles  : true //@todo is this much slower?
@@ -1165,6 +1166,7 @@ apf.window = function(){
                 button    : e.button, 
                 ctrlKey   : e.ctrlKey, 
                 shiftKey  : e.shiftKey, 
+                metaKey   : e.metaKey,
                 altKey    : e.altKey,
                 bubbles   : true,
                 htmlEvent : e
