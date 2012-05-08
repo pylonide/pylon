@@ -14,6 +14,7 @@ apfdebug:
 
 # packages core
 core:
+	mkdir -p build/src
 	node build/r.js -o build/core.build.js
 
 # generates packed template
@@ -46,7 +47,10 @@ theme:
 	mkdir -p plugins-client/lib.ace/www/theme
 	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` plugins-client/lib.ace/www/theme
 
-package: apf ext worker mode theme core
+gzip:
+	gzip plugins-client/lib.packed/www/packed.js
+
+package: apf core worker mode theme ext
 
 test:
 	$(MAKE) -C test
