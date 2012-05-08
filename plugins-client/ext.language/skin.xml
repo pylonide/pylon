@@ -94,7 +94,9 @@
             }
             
             .code_complete_bar span.meta {
+                position: absolute;
                 color: #999;
+                right: 10px;
                 margin-left: 6px;
             }
         ]]></a:style>
