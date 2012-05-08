@@ -372,7 +372,7 @@ handler.complete = function(doc, fullAst, pos, currentNode, callback) {
           replaceText : m,
           icon        : null,
           meta        : "EcmaScript",
-          priority    : 3
+          priority    : 0
         };
     }));
 };

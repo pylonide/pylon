@@ -10229,7 +10229,7 @@ handler.complete = function(doc, fullAst, pos, currentNode, callback) {
           replaceText : m,
           icon        : null,
           meta        : "EcmaScript",
-          priority    : 3
+          priority    : 0
         };
     }));
 };
@@ -10734,6 +10734,7 @@ handler.analyze = function(doc, ast, callback) {
             browser: true,
             node: true
         });
+        
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
