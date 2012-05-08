@@ -77,6 +77,7 @@ module.exports = function setup(options, imports, register) {
                 getSocketUrl: function() {
                     return socketUrl;
                 },
+                canShutdown: ide.canShutdown.bind(ide),
                 initUserAndProceed: initUserAndProceed
             }
         });
