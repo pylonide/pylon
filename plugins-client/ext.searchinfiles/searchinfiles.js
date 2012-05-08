@@ -258,7 +258,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 var range = sel.getRange();
                 var value = doc.getTextRange(range);
     
-                if (value) {
+                if (value) {p
                     txtFind.setValue(value);
                     
                     if (chkRegEx.checked)
@@ -435,35 +435,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             var array = data.replace(/^\./gm, "").split("\n");
             
             var metaInfo = array.shift().split(":");
-            var countInfo = array.pop().split(":");
-            
-            var start = '\n' + '<d:querydetail query="' + metaInfo[0] + '" replacement="' + metaInfo[1] + '" options="' + metaInfo[2] + '" ';
-            start += 'count="' + countInfo[0] + '" filecount="' + countInfo[1] + '" />';
-            
-            var l = array.length; 
-            var i = 0;
-            var parts, lastFile, content = "";
-            
-            for (; i < l; ++i) {
-                parts = array[i].split(":");
-                
-                file = parts.shift();
-                
-                if (file !== lastFile) {
-                    if (lastFile)
-                        content += '</d:response>';
-                    content += '<d:response path="' + file + '">';
-                    lastFile = file;
-                }
-                content += '<d:excerpt line="' + parts.shift() + '">' +
-                    Util.escapeXml(parts.shift()) + '</d:excerpt>';
-            }
-            
-            if (content.length > 0)
-                content += "</d:response>";
-                
-            data = apf.getXml("<d:multistatus xmlns:d='DAV:'>"
-                + start + content + "</d:multistatus>");
+            var countInfo = array.shift().split(":");
 
             if (state !== apf.SUCCESS || countInfo[0] === undefined || countInfo[0] == 0) {
                 trSFResult.setAttribute("empty-message", 
@@ -473,8 +445,36 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             else
                 _self.$panel.setAttribute("caption", 
                     _self.pageTitle + " (" + countInfo[0] + ")");
-
-            _self.$model.load(data);
+                    
+            var message = countInfo[0];
+            
+            if (countInfo[0] > 1)
+                message += " matches ";
+            else
+                message += " match ";
+            
+            message += "for '" + metaInfo[0] + "' in " + countInfo[1];
+            
+            if (countInfo[1] > 1)
+                message += " files";
+            else
+                message += " file";  
+            
+            if (metaInfo[1].length > 0)
+                message += ", replaced as '" + metaInfo[1];
+                
+            message += " " + metaInfo[2];
+            
+            var node = apf.getXml("<file />");
+            node.setAttribute("name", "Search Results");
+            node.setAttribute("path", "/workspace/search_results.js");
+            node.setAttribute("changed", "0");
+            node.setAttribute("newfile", "0");
+                    
+            var doc = ide.createDocument(node);
+            doc.cachedValue = message + "\n" + data.split("\n").slice(2).join("\n");
+                        
+            ide.dispatchEvent("openfile", {doc: doc, node: node});
         });
         
         this.saveHistory(options.query, "searchfiles");
