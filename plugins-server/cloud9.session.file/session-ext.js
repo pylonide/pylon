@@ -70,7 +70,7 @@ FileStore.prototype.get = function(sid, fn){
   var self = this;
   path.exists(self.basePath + "/" + sid, function(exists) {
       if (exists) {
-          fs.readFile(self.basePath + "/" + sid, function(err, data) {
+          fs.readFile(self.basePath + "/" + sid, "utf8", function(err, data) {
               if (err) {
                   fn && fn(err);
               }

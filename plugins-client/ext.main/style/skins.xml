@@ -240,7 +240,7 @@
                         
                         <div class="c9-mbar-round">
                             <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
-                            <div class="c9-activity"> </div>
+                            <div id="saveStatus" class="c9-activity"> </div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
                             <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
                         </div>
@@ -314,20 +314,20 @@
         	background-position: 0px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnOver {
-        	background-position: -39px -346px;
+        	background-position: -40px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnDown {
-            background-position: -78px -346px;
+            background-position: -80px -346px;
 
         }
         .black-menu-bar .c9-logo {
-            background-position: -117px -346px;
+            background-position: -120px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnOver {
-        	background-position: -156px -346px;
+        	background-position: -160px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnDown {
-            background-position: -195px -346px;
+            background-position: -200px -346px;
         }
         .black-menu-bar .c9-logo .icon{
             display : none;
@@ -1007,8 +1007,9 @@
                 background-color   : #1f7224;
                 filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#24872b', endColorstr='#1e6c22');
                 -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#24872b', endColorstr='#1e6c22')";
-                background : -webkit-gradient(linear, left top, left bottom, from(#24872b), color-stop(1, #1e6c22));
-                background :-moz-linear-gradient(center bottom, #1e6c22 0%, #24872b 80%) repeat scroll 0 0 transparent;
+                background : -webkit-linear-gradient(center bottom, #1e6c22 0%, #24872b 80%) repeat scroll 0 0 transparent;
+                background :    -moz-linear-gradient(center bottom, #1e6c22 0%, #24872b 80%) repeat scroll 0 0 transparent;
+                background :         linear-gradient(center bottom, #1e6c22 0%, #24872b 80%) repeat scroll 0 0 transparent;
 
                 border             : 1px solid #000101;
 
@@ -1227,6 +1228,7 @@
         .dockButtonDown .dockButton-footer {
             -webkit-border-top-left-radius : 5px;
             -moz-border-radius-topleft     : 5px;
+            border-radius-top-left     : 5px;
         }
 
         .dockButtonDown.btn-runcommands {
@@ -1238,6 +1240,7 @@
             height                : 32px;
             -webkit-border-radius : 3px;
             -moz-border-radius    : 3px;
+            border-radius         : 3px;
             margin                : 0px 1px 2px 4px;
             /*background-image: -webkit-gradient(
                linear,
@@ -1272,7 +1275,8 @@
 
         .dockButton .dock_icon_image {
             -webkit-border-radius : 3px;
-            -moz-border-radius    : 3px;
+               -moz-border-radius : 3px;
+                    border-radius : 3px;
             display               : inline-block;
             position              : absolute;
             top                   : 3px;
@@ -1290,7 +1294,8 @@
 
         .dockButton .dock_icon_image.dii_secondary {
             -webkit-border-radius : 5px;
-            -moz-border-radius    : 5px;
+               -moz-border-radius : 5px;
+                    border-radius : 5px;
         }
 
         .dockButton.debug1 .icon {
@@ -1811,6 +1816,19 @@
         .c9-toolbarbuttonDisabled .c9-label {
             color       : #606060;
             text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
+        }
+
+        .c9-toolbarbutton.saving {
+            background: orange;
+        }
+        .c9-toolbarbutton.saved {
+            background: green;
+        }
+        .c9-toolbarbutton.default {
+            background: lightgreen;
+        }
+        .c9-toolbarbutton.disabled {
+            background: grey;
         }
     ]]></a:style>
 
@@ -4657,6 +4675,8 @@
         .light_dropdown {
             background-color: rgba(255,255,255,.65);
             background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            background-image:         linear-gradient(bottom, rgba(0,0,0,.08), transparent);
             border: 1px solid rgba(128, 128, 128, .55);
             border-radius: 5px;
             box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 0 0 rgba(255,255,255,.5) inset;
@@ -4686,6 +4706,8 @@
         .light_dropdownDown {
             background-color: rgba(255,255,255,.1);
             background-image: -webkit-linear-gradient(top, rgba(0,0,0,.11), transparent);
+            background-image:    -moz-linear-gradient(top, rgba(0,0,0,.11), transparent);
+            background-image:         linear-gradient(top, rgba(0,0,0,.11), transparent);
             box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 3px 0 rgba(0,0,0,.22) inset;
             border-color: rgba(128, 128, 128, .85);;
         }
@@ -4695,6 +4717,8 @@
         .light_dropdownDisabled {
             border-color: rgba(128, 128, 128, .32);
             background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.02), transparent);
+            background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,.02), transparent);
+            background-image:         linear-gradient(bottom, rgba(0,0,0,.02), transparent);
             box-shadow: 0 1px 0 0 rgba(255,255,255,1) inset;
         }
         .light_dropdownDisabled .label {
@@ -4703,6 +4727,39 @@
         .light_dropdownDisabled .button {
             background-position: -105px -390px;
             box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.3), 0 1px 0 0 rgba(255,255,255,.6) inset;
+        }
+
+        .light_dropdown_options {
+            box-sizing: border-box;
+            display: none;
+            padding: 2px 14px 0 3px;
+        }
+        .light_dropdown_options.upward {
+            margin-top: -12px;
+        }
+        .light_dropdown_options .list {
+            background: #494949;
+            border: 1px solid #000208;
+            padding: 3px 0;
+        }
+        .light_dropdown_options .list .c9-dd-item {
+            color: #f1f1f1;
+            cursor: default;
+            font-size: 11px;
+            font-family: Tahoma, Arial;
+            height: 13px;
+            line-height: 14px;
+            overflow: hidden;
+            padding: 3px 5px 5px;
+            text-overflow: ellipsis-word;
+            white-space: nowrap;
+        }
+        .light_dropdown_options .list .c9-dd-item.hover {
+            background-color: #262626;
+            color: #F5B53C;
+        }
+        .light_dropdown_options .list .c9-dd-item.selected {
+            color: #F5B53C;
         }
     ]]></a:style>
 
@@ -4713,8 +4770,9 @@
                 <div class="button"> </div>
             </div>
         </a:main>
-        <a:container contents=".">
-            <div class="c9-optionList">
+        <a:container contents="div[1]">
+            <div class="light_dropdown_options">
+                <div class="list"> </div>
             </div>
         </a:container>
         <a:item
@@ -8794,7 +8852,8 @@
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
-    	height: 5px;
+    	border-bottom: 2px solid transparent;
+        height: 5px;
     	overflow: hidden;
         top : 4px;
     }
@@ -9132,6 +9191,14 @@
         text-indent: 0;
     }*/
 ]]></a:style>
+<a:style condition="apf.isGecko">
+    .editor_tab.hidetabs .session_btn:not(.curbtn) {
+        top: 6px;
+    }
+    .editor_tab.hidetabs .curbtn {
+        top: 5px;
+    }
+</a:style>
 <a:style condition="apf.isWebkit">
 	/* ------------------------------------------------------------------------------------------
      * Tab shape
@@ -9220,7 +9287,9 @@
 <a:presentation>
     <a:main pages="." buttons="div[1]">
         <div class="editor_tab">
-            <div class="btnsesssioncontainer"> </div>
+            <div class="btnsesssioncontainer">
+
+            </div>
             <div class="editor_bg">
                 <div class="editor_bg_message-top">
                     Invite people to this project by sharing the URL with them.
@@ -11447,6 +11516,10 @@
             
             .find-and-replace .rb_grey span{
                 color : #eee;
+            }
+
+            .find-and-replace .rb_black span {
+                color: #dedede;
             }
         ]]></a:style>
         <a:presentation>
