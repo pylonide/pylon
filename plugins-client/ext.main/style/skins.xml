@@ -4710,6 +4710,39 @@
             background-position: -105px -390px;
             box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.3), 0 1px 0 0 rgba(255,255,255,.6) inset;
         }
+
+        .light_dropdown_options {
+            box-sizing: border-box;
+            display: none;
+            padding: 2px 14px 0 3px;
+        }
+        .light_dropdown_options.upward {
+            margin-top: -12px;
+        }
+        .light_dropdown_options .list {
+            background: #494949;
+            border: 1px solid #000208;
+            padding: 3px 0;
+        }
+        .light_dropdown_options .list .c9-dd-item {
+            color: #f1f1f1;
+            cursor: default;
+            font-size: 11px;
+            font-family: Tahoma, Arial;
+            height: 13px;
+            line-height: 14px;
+            overflow: hidden;
+            padding: 3px 5px 5px;
+            text-overflow: ellipsis-word;
+            white-space: nowrap;
+        }
+        .light_dropdown_options .list .c9-dd-item.hover {
+            background-color: #262626;
+            color: #F5B53C;
+        }
+        .light_dropdown_options .list .c9-dd-item.selected {
+            color: #F5B53C;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -4719,8 +4752,9 @@
                 <div class="button"> </div>
             </div>
         </a:main>
-        <a:container contents=".">
-            <div class="c9-optionList">
+        <a:container contents="div[1]">
+            <div class="light_dropdown_options">
+                <div class="list"> </div>
             </div>
         </a:container>
         <a:item
