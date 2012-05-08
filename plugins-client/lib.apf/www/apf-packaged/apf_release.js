@@ -40145,7 +40145,7 @@ apf.lm = new (function(){
 
         // centralized code fragments used in parser/generator
         cf_block_o     = "(function(){var _o=[],_l=0;\n",
-        cf_block_c     = ";return _l==1?_o[0]:_o.join('');})()",
+        cf_block_c     = ";return _l==1?_o[0]:_o.join('');}).call(this)",
         cf_async_o     = "_async(_n,_c,_a,_w,_f,this,",
         cf_async_m     = "',_a[++_a.i]||[",
         cf_obj_output  = "_r=",
