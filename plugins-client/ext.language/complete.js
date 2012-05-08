@@ -255,10 +255,6 @@ module.exports = {
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
                 if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
-                else {
-                    this.closeCompletionBox();
-                    return;
-                }
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx - this.scrollIdx > 4) {
                     this.scrollIdx++;
@@ -271,8 +267,6 @@ module.exports = {
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
                 if(this.selectedIdx > 0) 
                     this.selectedIdx--;
-                else
-                    this.closeCompletionBox();
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx < this.matches.length - 4 && this.scrollIdx > 0) {
                     this.scrollIdx = this.selectedIdx - 4;
