@@ -54,7 +54,7 @@
                 <a:copy match="[file|folder]" set="{
                     davProject.copy([@path], createPath([@newname] || [@path], [../@path]))
                 }" undo="{
-                    alert('TODO!!');
+                    
                 }"/>
     
                 <a:drag match="[folder|file]" />
