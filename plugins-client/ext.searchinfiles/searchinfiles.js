@@ -331,7 +331,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             casesensitive: chkSFMatchCase.checked ? "1" : "0",
             regexp: chkSFRegEx.checked ? "1" : "0",
             replaceAll: _self.replaceAll ? "true" : "false",
-            replacement: txtSFReplace.value
+            replacement: txtSFReplace.value,
+            wholeword: chkSFWholeWords.checked
         };
     },
     
@@ -429,33 +430,47 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         davProject.report(path, "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
 
-            var matches = data.getElementsByTagNameNS("DAV:", "excerpt").length;
-            var queryDetails = data.getElementsByTagNameNS("DAV:", "querydetail");
+            var array = data.replace(/^\./gm, "").split("\n");
             
-            if (queryDetails.length === 1) {
-                queryDetails[0].setAttribute("count", ""+matches);
-                queryDetails[0].setAttribute("filecount", 
-                    "" + data.getElementsByTagNameNS("DAV:", "response").length);
+            var metaInfo = array.shift().split(":");
+            var countInfo = array.pop().split(":");
+            
+            var start = '\n' + '<d:querydetail query="' + metaInfo[0] + '" replacement="' + metaInfo[1] + '" options="' + metaInfo[2] + '" ';
+            start += 'count="' + countInfo[0] + '" filecount="' + countInfo[1] + '" />';
+            
+            var l = array.length; 
+            var i = 0;
+            var parts, lastFile, content = "";
+            
+            for (; i < l; ++i) {
+                parts = array[i].split(":");
+                
+                file = parts.shift();
+                
+                if (file !== lastFile) {
+                    if (lastFile)
+                        content += '</d:response>';
+                    content += '<d:response path="' + file + '">';
+                    lastFile = file;
+                }
+                content += '<d:excerpt line="' + parts.shift() + '">' +
+                    Util.escapeXml(parts.shift()) + '</d:excerpt>';
             }
             
-            if (state !== apf.SUCCESS || !matches) {
-                var optionsDesc = [];
-                if (Util.isTrue(options.casesensitive))
-                    optionsDesc.push("case sensitive");
-                if (Util.isTrue(options.regexp))
-                    optionsDesc.push("regexp");
-
-                optionsDesc = optionsDesc.length > 0
-                    ? "(" + optionsDesc.join(", ") + ")"
-                    : "";
+            if (content.length > 0)
+                content += "</d:response>";
                 
+            data = apf.getXml("<d:multistatus xmlns:d='DAV:'>"
+                + start + content + "</d:multistatus>");
+
+            if (state !== apf.SUCCESS || countInfo[0] === undefined || countInfo[0] == 0) {
                 trSFResult.setAttribute("empty-message", 
-                    "No matches for '" + query + "' " + optionsDesc);
+                    "No matches for '" + metaInfo[0] + "' " + metaInfo[2]);
                 return;
             }
             else
                 _self.$panel.setAttribute("caption", 
-                    _self.pageTitle + " (" + matches + ")");
+                    _self.pageTitle + " (" + countInfo[0] + ")");
 
             _self.$model.load(data);
         });
