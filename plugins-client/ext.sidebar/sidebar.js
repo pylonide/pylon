@@ -27,6 +27,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 panels.deactivate(null, true);
             else if (panels.lastPanel)
                 panels.activate(panels.lastPanel);
+            else
+                navbar.childNodes[1].dispatchEvent("mousedown")
         }
 
         this.nodes.push(
@@ -52,15 +54,15 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         var timer;
         navbar.$ext.addEventListener("mouseover", function(e){
             if (!_self.animating 
-              && navbar.getWidth() >= navbar.$int.scrollWidth
-              && apf.isChildOf(navbar.$ext, e.fromElement, true))
+              && navbar.getWidth() >= navbar.$int.scrollWidth)
+              //&& apf.isChildOf(navbar.$ext, e.fromElement, true))
                 return;
             
             clearTimeout(timer);
             if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
                 timer = setTimeout(function(){
                     _self.animateToFullWidth();
-                }, 300);
+                }, 150);
             }
         });
         

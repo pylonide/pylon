@@ -103,9 +103,9 @@ util.inherits(WatcherPlugin, Plugin);
 
                             async.readdir(path)
                                 .stat()
-                                .filter(function(file) {
-                                    return file.name.charAt(0) != '.'
-                                })
+//                                .filter(function(file) {
+//                                    return file.name.charAt(0) != '.'
+//                                })
                                 .each(function(file) {
                                     files[file.name] = {
                                         type : file.stat.isDirectory() ? "folder" : "file",

@@ -30,6 +30,12 @@ var markup = require("text!ext/revisions/revisions.xml");
 var skin = require("text!ext/revisions/skin.xml");
 var cssString = require("text!ext/revisions/style.css");
 
+var beautify = require("ext/beautify/beautify");
+var quicksearch = require("ext/quicksearch/quicksearch");
+var statusbar = require("ext/statusbar/statusbar");
+var stripws = require("ext/stripws/stripws");
+var language = require("ext/language/language");
+
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 5000;
@@ -185,25 +191,22 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$initWorker();
     },
 
-    setSaveButtonCaption: function(caption) {
+    setSaveButtonCaption: function(caption, page) {
         if (caption) {
             return btnSave.setCaption(caption);
         }
 
-        if (!tabEditors.activepage) {
-            btnSave.setCaption("");
+        var page = page || tabEditors.getPage();
+        if (page) {
+            var hasChanged = Util.pageHasChanged(tabEditors.getPage());
+            if (Util.isAutoSaveEnabled() && hasChanged) {
+                return btnSave.setCaption("Saving...");
+            }
+            else if (!hasChanged) {
+                return btnSave.setCaption("All changes saved");
+            }
         }
-
-        var hasChanged = Util.pageHasChanged(tabEditors.getPage());
-        if (Util.isAutoSaveEnabled() && hasChanged) {
-            btnSave.setCaption("Saving...");
-        }
-        else if (!hasChanged) {
-            btnSave.setCaption("All changes saved");
-        }
-        else {
-            btnSave.setCaption("");
-        }
+        btnSave.setCaption("");
     },
 
     init: function() {
@@ -415,7 +418,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
-        this.setSaveButtonCaption();
+        this.setSaveButtonCaption(null, e.page);
 
         var self = this;
         setTimeout(function() {
@@ -778,7 +781,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
             return index;
         };
-        
+
         var self = this;
         var pages = tabEditors.getPages();
         var page = pages.filter(function(_page) {
@@ -1138,7 +1141,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             editor.setSession(newSession);
             doc = newSession.doc;
         }
-
+        
+        editor.setReadOnly(true);
         editor.selection.clearSelection();
 
         // Look for the node that references the revision we are loading and
@@ -1364,6 +1368,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                 visibility: "shown",
                 width: BAR_WIDTH
             });
+
+            beautify.disable();
+            quicksearch.offsetWidth = quicksearch.defaultOffset + BAR_WIDTH;
+            quicksearch.updateBarPosition();
+            statusbar.offsetWidth = BAR_WIDTH;
+            statusbar.setPosition();
+            stripws.disable();
+            language.disable();
         }
 
         var model = page.$mdlRevisions;
@@ -1387,6 +1399,14 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPage().$showRevisions = false;
         this.panel.hide();
         ide.dispatchEvent("revisions.visibility", { visibility: "hidden" });
+
+        beautify.enable();
+        quicksearch.offsetWidth = quicksearch.defaultOffset;
+        quicksearch.updateBarPosition();
+        statusbar.offsetWidth = 0;
+        statusbar.setPosition();
+        stripws.enable();
+        language.enable();
 
         if (lstRevisions) {
             lstRevisions.selectList([]); // Unselect everything

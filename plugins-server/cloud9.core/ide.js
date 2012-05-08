@@ -23,30 +23,32 @@ var Ide = module.exports = function(options) {
     assert(options.workspaceDir, "option 'workspaceDir' is required");
     assert(options.requirejsConfig, "option 'requirejsConfig' is required");
     assert(options.socketIoUrl, "option 'socketIoUrl' is required");
+    assert(options.socketIoTransports, "option 'socketIoTransports' is required");
     assert.equal(options.workspaceDir.charAt(0), "/", "option 'workspaceDir' must be an absolute path");
 
     var staticUrl = options.staticUrl || "/static";
 
     this.workspaceDir = options.workspaceDir;
-    
+
+
     options.plugins = options.plugins || [];
-    
     this.options = {
         workspaceDir: this.workspaceDir,
         mountDir: options.mountDir || this.workspaceDir,
         socketIoUrl: options.socketIoUrl,
+        socketIoTransports: options.socketIoTransports,
         davPrefix: options.davPrefix,
         davPlugins: options.davPlugins || exports.DEFAULT_DAVPLUGINS,
-        debug: options.debug === true,
+        debug: (options.debug === true) ? true : false,
         staticUrl: staticUrl,
         workspaceId: options.workspaceId,
-        plugins: options.plugins.length > 0 ? options.plugins : (options.real ? [ "build/packed" ] : []),
+        plugins: options.plugins,
         bundledPlugins: options.bundledPlugins || [],
         requirejsConfig: options.requirejsConfig,
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
-        real: options.real,
+        real: (options.real === true) ? true : false,
         hosted: !!options.hosted
     };
 
@@ -84,8 +86,9 @@ util.inherits(Ide, EventEmitter);
 
     this.$serveIndex = function(req, res, next) {
         var _self = this;
-        var indexFile =  _self.options.real === true ? "ide.tmpl.packed.html" : "ide.tmpl.html";
-        
+
+        var indexFile = "ide.tmpl.html";
+
         fs.readFile(Path.join(__dirname, "/view/", indexFile), "utf8", function(err, index) {
             if (err)
                 return next(err);
@@ -121,6 +124,7 @@ util.inherits(Ide, EventEmitter);
                 debug: _self.options.debug,
                 staticUrl: staticUrl,
                 socketIoUrl: _self.options.socketIoUrl,
+                socketIoTransports: _self.options.socketIoTransports,
                 sessionId: req.sessionID, // set by connect
                 workspaceId: _self.options.workspaceId,
                 plugins: Object.keys(plugins),
@@ -131,7 +135,8 @@ util.inherits(Ide, EventEmitter);
                 scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version,
-                hosted: _self.options.hosted.toString()
+                hosted: _self.options.hosted.toString(),
+                real: _self.options.real
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");

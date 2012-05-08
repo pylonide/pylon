@@ -40,6 +40,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     hook : function(){
         var _self = this;
         
+        this.markupInsertionPoint = colLeft;
+        
         panels.register(this, {
             position : 3000,
             caption: "Run & Debug",
@@ -75,6 +77,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 "id" : "mnuRunCfg",
                 "onprop.visible" : function(e){
                     if (e.value) {
+                        if (!this.populated) {
+                            _self.$populateMenu();
+                            this.populated = true;
+                        }
+                        
                         if (!self.tabEditors 
                           || tabEditors.length == 0
                           || _self.excludedTypes[tabEditors.getPage().id.split(".").pop()])
@@ -115,6 +122,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             this.model = new apf.model().load("<configurations />")
         );
         
+        btnRun.$ext.className = "btnRun";
+        btnStop.$ext.className = "btnStop";
+
         tooltip.add( btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications.\
             For more help, check out our guided tour in the Help menu.\
@@ -151,31 +161,23 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@autohide]"
         }), c += 100);
         
-        this.model.addEventListener("afterload", function(e) {
-            _self.$populateMenu();
-        });
-
-        ide.addEventListener("settings.load", function(){
-            settings.setDefaults("auto/node-version", [
-                ["version", "auto"]
-            ]);
-        });
-
         settings.addSettings("General", markupSettings);
         
         ide.addEventListener("settings.load", function(e){
+            settings.setDefaults("auto/node-version", [
+                ["version", "auto"]
+            ]);
+            
+            settings.setDefaults("general", [
+                ["saveallbeforerun", "false"]
+            ]);
+            
+            settings.setDefaults("auto/configurations", [
+                ["debug", "true"],
+                ["autohide", "true"]
+            ]);
+
             var runConfigs = e.model.queryNode("auto/configurations");
-            if (!runConfigs) {
-                runConfigs = apf.createNodeFromXpath(e.model.data, "auto/configurations");
-                apf.xmldb.setAttribute(runConfigs, "debug", "true");
-
-                e.model.setQueryValue("general/@saveallbeforerun", false);
-            }
-            if (!e.model.queryNode("auto/configurations/@debug"))
-                e.model.setQueryValue("auto/configurations/@debug", true);
-            if (!e.model.queryNode("auto/configurations/@autohide"))
-                e.model.setQueryValue("auto/configurations/@autohide", true);
-
             if (!runConfigs.selectSingleNode("config[@curfile]")) {
                 var setLast = false;
                 if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
@@ -285,8 +287,6 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         apf.importCssString(cssString);
         
         this.panel = winRunPanel;
-
-        colLeft.appendChild(winRunPanel);
         this.nodes.push(winRunPanel);
         
         lstRunCfg.addEventListener("click", function(e){
@@ -298,7 +298,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         lstRunCfg.addEventListener("afterremove", function(e){
             _self.mnuRunCfg.childNodes.each(function(item){
-                if (item.getAttribute("node") == e.args[0].xmlNode)
+                if (_self.mnuRunCfg.populated && item.node == e.args[0].xmlNode)
                     item.destroy(true, true);
             });
         });
@@ -393,6 +393,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     $addMenuItem : function(cfg, divider){
         var _self = this;
+        
+        if (this.mnuRunCfg.populated)
+            return;
 
         if (!divider)
             divider = this.mnuRunCfg.getElementsByTagNameNS("", "divider")[0];

@@ -18,7 +18,7 @@ BODY {
     font-weight : bold;
 }
 
-.cut{
+.cut .item{
     opacity : 0.5;
 }
 
