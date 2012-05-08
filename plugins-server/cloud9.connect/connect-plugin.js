@@ -29,7 +29,7 @@ module.exports = function startup(options, imports, register) {
     api.useSetup(connect.bodyParser());
 
     api.addRoute = server.addRoute;
-    api.use = api.useMain;
+    api.use = api.useStart;
     
     api.on = server.on;
     api.emit = server.emit;
