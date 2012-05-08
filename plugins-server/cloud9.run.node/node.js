@@ -25,7 +25,6 @@ var exports = module.exports = function setup(options, imports, register) {
 exports.factory = function(uid, ide) {
     return function(args, eventEmitter, eventName) {
         var cwd = args.cwd || ide.workspaceDir;
-        
         return new Runner(uid, args.file, args.args, cwd, args.env, args.extra, eventEmitter, eventName);
     };
 };

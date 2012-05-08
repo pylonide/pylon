@@ -90,20 +90,28 @@ module.exports = ext.register("ext/console/console", {
         for (var spi in serverProcs) {
             var proc = serverProcs[spi];
 
-            var useOutputTab = proc.type === "node" ? true : false;
-
-            var command_id = this.createOutputBlock('Running "' + proc.type + '" process', useOutputTab, spi);
-
-            var original_line = null;
+            var original_line;
+            var command_id;
             if (proc.extra) {
                 command_id = proc.extra.command_id;
                 original_line = proc.extra.original_line;
+                this.createOutputBlock(this.getPrompt(original_line), false, command_id);
+
+                // @TODO When we update how NPM modules are run, be sure to
+                // update the process type here
+                if (proc.type === "node") {
+                    txtConsolePrompt.setValue("$ " + original_line.split(" ")[0]);
+                    txtConsolePrompt.show();
+                }
+            }
+            else {
+                command_id = this.createNodeProcessLog(spi);
             }
 
             this.tracerToPidMap[command_id] = spi;
             this.pidToTracerMap[spi] = command_id;
 
-            var containerEl = this.getLogStreamOutObject(command_id, null, original_line).$ext;
+            var containerEl = document.getElementById("console_section" + command_id);
             containerEl.setAttribute("rel", command_id);
             apf.setStyleClass(containerEl, "has_pid");
 
@@ -342,6 +350,28 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
+    createNodeProcessLog : function(message_pid) {
+        var command_id = this.createOutputBlock("Running Node Process", true);
+        this.tracerToPidMap[command_id] = message_pid;
+        this.pidToTracerMap[message_pid] = command_id;
+
+        var containerEl = this.getLogStreamOutObject(command_id).$ext;
+        containerEl.setAttribute("rel", command_id);
+        apf.setStyleClass(containerEl, "has_pid");
+
+        if (window.cloud9config.hosted) {
+            var url = location.protocol + "//" +
+                ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
+                "." + location.host;
+            logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
+                "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
+                null, this.getLogStreamOutObject(message_pid, true), ide);
+        }
+
+        this.command_id_tracer++;
+        return command_id;
+    },
+
     onMessage: function(e) {
         if (!e.message.type)
             return;
@@ -361,24 +391,7 @@ module.exports = ext.register("ext/console/console", {
 
         switch(message.type) {
             case "node-start":
-                var command_id = this.createOutputBlock("Running Node Process", true);
-                this.tracerToPidMap[command_id] = message.pid;
-                this.pidToTracerMap[message.pid] = command_id;
-
-                var containerEl = this.getLogStreamOutObject(command_id).$ext;
-                containerEl.setAttribute("rel", command_id);
-                apf.setStyleClass(containerEl, "has_pid");
-
-                if (window.cloud9config.hosted) {
-                    var url = location.protocol + "//" +
-                        ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
-                        "." + location.host;
-                    logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
-                        "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
-                        null, this.getLogStreamOutObject(message.pid, true), ide);
-                }
-
-                this.command_id_tracer++;
+                this.createNodeProcessLog(message.pid);
                 return;
             case "node-data":
                 logger.logNodeStream(message.data, message.stream,

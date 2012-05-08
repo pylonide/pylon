@@ -100,7 +100,10 @@ util.inherits(NpmRuntimePlugin, Plugin);
             if (!found)
                 return cb(null, found);
 
-            self.$run(filePath, message.args || [], message.env || {},  message.version, message, null);
+            if (message.argv.length)
+                message.argv.shift();
+
+            self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
         });
     };
 
