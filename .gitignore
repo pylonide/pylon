@@ -5,12 +5,11 @@ common/packager
 common/apf
 client/icons/Thumbs.db
 client/common
-client/build
+build/src
 .settings.xml
 .project
 .settings
 /demo
-/client/build
 .settings.xml.old
 .DS_Store
 /nbproject
@@ -30,6 +29,8 @@ plugins/cloud9.client.treehugger/node_modules/
 plugins/cloud9.client.v8debug/node_modules/
 plugins/cloud9.static/node_modules/
 plugins-server/cloud9.fs/node_modules/
+plugins-client/lib.packed/www/
 node_modules/
 deps/ace/
 plugins-server/fixtures/node_env/hello.js
+npm-debug.log

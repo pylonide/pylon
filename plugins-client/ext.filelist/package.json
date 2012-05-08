@@ -1,11 +1,11 @@
 {
-    "name": "ext.html",
+    "name": "ext.filelist",
     "version": "0.0.1",
-    "main": "html-ext.js",
+    "main": "filelist-ext.js",
     "private": true,
     "plugin": {
         "provides": [
-            "ext.html"
+            "ext.filelist"
         ],
         "consumes": [
             "client-plugins"

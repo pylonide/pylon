@@ -9,7 +9,7 @@ define(function(require, exports, module) {
     var Document = require("core/document");
     var util = require("core/util");
 
-    var ide = new apf.Class().$init();
+    ide = new apf.Class().$init(); //Global on purpose!!!!
 
     ide.createDocument = function(node, value){
         return new Document(node, value);
@@ -76,7 +76,7 @@ define(function(require, exports, module) {
         // fire up the socket connection:
         var options = {
             "remember transport": false,
-            transports:  [/*"websocket", */"htmlfile", "xhr-multipart", "xhr-polling"],
+            transports: window.cloud9config.socketIoTransports,
             reconnect: false,
             resource: window.cloud9config.socketIoUrl,
             "connect timeout": 500,

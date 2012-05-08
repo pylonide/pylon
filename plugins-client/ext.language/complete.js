@@ -65,6 +65,7 @@ module.exports = {
     hook: function(ext, worker) {
         var _self = this;
         worker.on("complete", function(event) {
+            if(ext.disabled) return;
             _self.onComplete(event);
         });
         
@@ -83,9 +84,12 @@ module.exports = {
                 return apf.activeElement.localName == "codeeditor";
             },
             exec: function(editor) {
+                if(ext.disabled) return;
                 _self.invoke();
             }
         });
+        
+        this.ext = ext;
     },
     
     showCompletionBox: function(matches, prefix) {
@@ -115,7 +119,7 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, this.matches.length * (this.cursorConfig.lineHeight+1));
+        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, (this.matches.length || 1) * (this.cursorConfig.lineHeight + 1));
         var cursorLayer = ace.renderer.$cursorLayer;
         var cursorLocation = cursorLayer.getPixelPosition(true);
         var distanceFromBottom = ace.container.offsetHeight - cursorLocation.top;

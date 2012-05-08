@@ -47,8 +47,9 @@ module.exports = function setup(options, imports, register) {
             davPrefix: baseUrl + "/workspace",
             projectName: options.projectName || "",
             socketIoUrl: socketUrl.replace(/^\//, ""),
+            socketIoTransports: options.socketIoTransports,
             baseUrl: baseUrl,
-            debug: false,
+            debug: (options.debug === true) ? true : false,
             staticUrl: staticPrefix,
             workspaceId: workspaceId,
             name: options.name || workspaceId,
@@ -59,7 +60,8 @@ module.exports = function setup(options, imports, register) {
             },
             plugins: options.clientPlugins || [],
             bundledPlugins: options.bundledPlugins || [],
-            hosted: options.hosted
+            hosted: options.hosted,
+            real: (options.real === true) ? true : false
         });
 
         register(null, {

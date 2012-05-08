@@ -393,13 +393,6 @@ module.exports = ext.register("ext/console/console", {
     hook: function() {
         var _self = this;
 
-        //@todo this should be done via commands instead
-        // Listen for new extension registrations to add to the hints
-        ide.addEventListener("ext.register", function(e){
-            if (e.ext.commands)
-                apf.extend(commands.commands, e.ext.commands);
-        });
-
         commands.addCommand({
             name: "help",
             hint: "show general help information and a list of available commands",
@@ -461,21 +454,53 @@ module.exports = ext.register("ext/console/console", {
                 checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]"
             }), 800)
         );
-
-        menus.addItemByPath("Tools/~", new apf.divider(), 30000),
-        menus.addItemByPath("Tools/Git/", null, 40000),
-        menus.addItemByPath("Tools/Git/Push", new apf.item({}), 1000),
-        menus.addItemByPath("Tools/Git/Pull", new apf.item({}), 2000),
-        menus.addItemByPath("Tools/Git/Stash", new apf.item({}), 3000),
-        menus.addItemByPath("Tools/Git/Commit", new apf.item({}), 4000),
-        menus.addItemByPath("Tools/Git/Checkout", new apf.item({}), 5000),
-
-        // should probably do HG, too...
-
-        menus.addItemByPath("Tools/~", new apf.divider(), 50000),
-        menus.addItemByPath("Tools/NPM/", null, 60000),
-        menus.addItemByPath("Tools/NPM/Install", new apf.item({}), 1000),
-        menus.addItemByPath("Tools/NPM/Uninstall", new apf.item({}), 2000)
+        
+        menus.addItemByPath("Tools/~", new apf.divider(), 30000);
+        
+        var cmd = {
+            "Git" : [
+                ["Status", "git status"],
+                ["Push", "git push"],
+                ["Pull", "git pull"],
+                ["Stash", "git stash"],
+                ["Commit", "git commit -m ", null, null, true],
+                ["Checkout", "git checkout ", null, null, true]
+            ],
+            "Hg" : [
+                ["Sum", "hg sum"],
+                ["Push", "hg push"],
+                ["Pull", "hg pull"],
+                ["Status", "hg status"],
+                ["Commit", "hg commit -m ", null, null, true],
+                ["Parents", "hg parents ", null, null, true]
+            ],
+            "Npm" : [
+                ["Install", "npm install"],
+                ["Uninstall", "npm uninstall", null, null, true]
+            ]
+        };
+        
+        var idx = 40000;
+        Object.keys(cmd).forEach(function(c) {
+            menus.addItemByPath("Tools/" + c + "/", null, idx += 1000);
+            var list = cmd[c];
+            
+            var idx2 = 0;
+            list.forEach(function(def) {
+                menus.addItemByPath("Tools/" + c + "/" + def[0], 
+                    new apf.item({
+                        onclick : function(){
+                            _self.showInput();
+                            txtConsoleInput.setValue(def[1]);
+                            if (!def[4]) {
+                                _self.keyEvents[KEY_CR](txtConsoleInput);
+                                txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight;
+                            }
+                            txtConsoleInput.focus();
+                        }
+                    }), idx2 += 100);
+            });
+        });
 
         ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
@@ -671,6 +696,9 @@ module.exports = ext.register("ext/console/console", {
         if (typeof e !== "undefined" && e.target.className.indexOf("prompt_spinner") !== -1)
             return;
 
+        var txt = apf.findHost(pNode);
+        txt.$scrolldown = false;
+
         var height = parseInt(pNode.getAttribute("rel"), 10);
         apf.setStyleClass(pNode, null, ["collapsed"]);
         Firmin.animate(pNode, {
@@ -693,6 +721,11 @@ module.exports = ext.register("ext/console/console", {
             height : "14px"
         }, 0.2, function() {
             apf.layout.forceResize(tabConsole.$ext);
+            
+            var txt = apf.findHost(pNode);
+            var scroll = txt.$scrollArea;
+            txt.$scrolldown = scroll.scrollTop >= scroll.scrollHeight
+                - scroll.offsetHeight + apf.getVerBorders(scroll);
         });
 
         pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');

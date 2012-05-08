@@ -1,10 +1,14 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:state id="stTestRun" />
+    <a:menu id="mnuRunSettings" />
+
     <a:window id="winTestPanel" 
       flex     = "1" 
       skin     = "fm-window" 
       title    = "Test Panel" 
       modal    = "false" 
       buttons  = "close" 
+      minwidth = "193"
       optimize = "true">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
             <a:hbox id="barTestTools">
@@ -98,7 +102,7 @@
                         if ([@status] === '0')
                             <span style='color:red'>\[[@status-message]\]</span>
                         else if ([@status] == '1')
-                            <span style='color:green'>\[PASS{[@status-message] &amp;&amp; " [@status-message]"}\]</span>
+                            <span style='color:green'>\[PASS{[@status-message] and " [@status-message]"}\]</span>
                         else if ([@status] == '-1')
                             <span>\[{[@status-message].uCaseFirst()}\]</span>
                         else
@@ -125,7 +129,7 @@
                 <a:item match="[file]" onclick="dgTestProject.remove()">Remove</a:item>
                 <a:divider />
                 <a:item match="[file]" onclick="
-                    require('ext/tabbehaviors/tabbehaviors').revealfile(dgTestProject.selected);
+                    require('ext/tabbehaviors/tabbehaviors').revealInTree(dgTestProject.selected);
                 ">Show in File Tree</a:item>
             </a:menu>
         </a:vbox>

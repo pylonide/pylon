@@ -1,0 +1,12 @@
+{
+    "name": "lib.packed",
+    "version": "0.0.1",
+    "main": "packed-plugin.js",
+    "private": true,
+    "plugin": {
+        "provides": [ ],
+        "consumes": [
+            "static"
+        ]
+    }
+}

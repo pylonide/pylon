@@ -186,6 +186,12 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     }
 
     childBuffer[outputId].appendChild(fragment);
+    
+    //@todo this implementation is hacking the apf abstraction
+    //      so we have to trigger the scrollbar update ourselves
+    setTimeout(function(){
+        tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update()
+    }, 1000);
 };
 
 var messages = {
@@ -217,6 +223,12 @@ module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
             type, "'>", (pre || ""), msg, (post || ""), "</div>");
 
     parentEl.innerHTML += containerOutput.join("");
+    
+    //@todo this implementation is hacking the apf abstraction
+    //      so we have to trigger the scrollbar update ourselves
+    setTimeout(function(){
+        tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update()
+    }, 1000);
 };
 
 });

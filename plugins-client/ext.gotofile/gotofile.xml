@@ -29,29 +29,15 @@
               viewport        = "virtual"
               multiselect     = "true"
               loading-message = "Loading file list. One moment please..."
-              empty-message   = "No files found that match '{txtGoToFile.value}'"
-              onafterload     = "
-                var vp = this.getViewport();
-                if (vp.length &lt; 100) {
-                    var sh = vp.getScrollHeight();
-                    if (sh / vp.length == 1000)
-                        return setTimeout(arguments.callee.bind(this));
-                    
-                    var ht = Math.min(350, sh);
-                    if (ht != this.height)
-                        this.setAttribute('height', ht);
-                }
-                else if (this.height != 350) {
-                    this.setAttribute('height', 350);
-                }
-              ">
+              empty-message   = "No files found that match '{txtGoToFile.value}'">
                 <a:each match="[d:response/d:href]" />
                 <a:caption><?lm
                     var re = new RegExp("({txtGoToFile.value})", 'i');
+                    var value = require('ext/gotofile/gotofile').arraySearchResults[[text()]] || "";
                     <span>{
-                        (apf.getFilename([text()]) || "").replace(re, <strong>$1</strong>);
+                        (apf.getFilename(value) || "").replace(re, <strong>$1</strong>);
                     }</span>
-                    [text()].replace(re, <strong>$1</strong>);
+                    value.replace(re, <strong>$1</strong>);
                 ?></a:caption>
             </a:list>
         </a:vbox>
