@@ -129,7 +129,7 @@
                 <a:item match="[file]" onclick="dgTestProject.remove()">Remove</a:item>
                 <a:divider />
                 <a:item match="[file]" onclick="
-                    require('ext/tabbehaviors/tabbehaviors').revealfile(dgTestProject.selected);
+                    require('ext/tabbehaviors/tabbehaviors').revealInTree(dgTestProject.selected);
                 ">Show in File Tree</a:item>
             </a:menu>
         </a:vbox>
