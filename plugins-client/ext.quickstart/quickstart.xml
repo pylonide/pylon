@@ -39,7 +39,7 @@
                   skin    = "btn-default-css3" 
                   class   = "btn-green btnclosetour" 
                   onclick = "require('ext/quickstart/quickstart').closeStart();">
-                    Just the editor, please
+                    Got it, thanks!
                 </a:button>              
             </div>
         </a:hbox>

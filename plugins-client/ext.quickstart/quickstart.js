@@ -32,6 +32,8 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     },
     nodes : [],
 
+    lastMinZindex: 9016,
+
     init : function(amlNode){
         jsonQuickStart = {
             identifiers: [
@@ -63,7 +65,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
 
         this.overlay = document.createElement("div");
         this.overlay.setAttribute("style",
-            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.3;background:#000;");
+            "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.6;background:#000;");
         document.body.appendChild(this.overlay);
     },
 
@@ -92,6 +94,8 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             _self.overlay.style.display = "block";
             _self.arrangeQSImages();
             quickStartDialog.show();
+            _self.lastMinZindex > quickStartDialog.zindex && (_self.lastMinZindex = quickStartDialog.zindex);
+            _self.overlay.style.zIndex = _self.lastMinZindex - 1;          
         })
     },
 
@@ -133,12 +137,13 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             this.setPositions(position, divToId, imgDiv);
 
             imgDiv.show();
+            this.lastMinZindex > imgDiv.zindex && (this.lastMinZindex = imgDiv.zindex);
         }
     },
 
     setPositions : function(position, posArray, div) {
         if (position == "top") {
-             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 100);
+             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 140);
              div.setAttribute("left", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
         else if (position == "right"){
