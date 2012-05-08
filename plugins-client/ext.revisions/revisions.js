@@ -193,19 +193,21 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     setSaveButtonCaption: function(caption, page) {
-        if (caption) {
+        if (!self.btnSave)
+            return;
+        
+        if (caption)
             return btnSave.setCaption(caption);
-        }
 
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(tabEditors.getPage());
             if (Util.isAutoSaveEnabled() && hasChanged) {
-                apf.setStyleClass(btnSave, "saving",["saved"]);
+                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
                 return btnSave.setCaption("Saving...");
             }
             else if (!hasChanged) {
-                apf.setStyleClass(btnSave, "saved",["saving"]);
+                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
                 return btnSave.setCaption("All changes saved");
             }
         }
