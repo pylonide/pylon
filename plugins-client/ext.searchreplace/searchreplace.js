@@ -198,13 +198,25 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 return false;
             }
             
+            var ace = _self.$getAce();
+            var isTooLong = ace.getSession().getDocument().getLength() > MAX_LINES;
+            
             if (_self.findKeyboardHandler(e, "search", this) === false) {
                 apf.layout.forceResize();
+                if (!isTooLong)
+                    _self.updateCounter(null, true);
                 return false;
             }
+            
+            if (chkRegEx.checked
+              && _self.evaluateRegExp(txtFind, tooltipSearchReplace, 
+              winSearchReplace, e.htmlEvent) === false) {
+                if (!isTooLong)
+                    _self.updateCounter(null, true);
+                return;
+            }
 
-            var ace = _self.$getAce();
-            if (ace.getSession().getDocument().getLength() > MAX_LINES)
+            if (isTooLong)
                 return;
 
             if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
@@ -231,7 +243,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 }
             });
             
-            _self.addTooltipsToCheckboxes(this);
+            _self.decorateCheckboxes(this);
         });
         
         var blur = function(e){
@@ -252,15 +264,21 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     _self.updateInputRegExp(txtFind);
             }
             else
-                txtFind.$input.innerHTML = txtFind.getValue();
+                _self.removeInputRegExp(txtFind);
         });
         
-        this.addTooltipsToCheckboxes(hboxFind);
+        this.decorateCheckboxes(hboxFind);
     },
     
-    addTooltipsToCheckboxes : function(parent){
+    decorateCheckboxes : function(parent){
+        var _self = this;
+        
         var cbs = parent.getElementsByTagNameNS(apf.ns.aml, "checkbox");
+        
         cbs.forEach(function(cb){
+            cb.addEventListener("click", function(){
+                _self.updateCounter(null, true);
+            });
             tooltip.add(cb.$ext, {
                 message : cb.label,
                 width : "auto",
@@ -277,7 +295,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
     },
     
-    updateCounter: function(backwards) {
+    updateCounter: function(backwards, updateOptions) {
         var ace = this.$getAce();
         var width;
 
@@ -302,6 +320,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             }
         });
 
+        if (updateOptions) {
+            var options = this.getOptions();
+            options.needle = txtFind.getValue();
+            ace.$search.set(options);
+        }
+            
         var ranges = ace.$search.findAll(ace.getSession());
         if (!ranges || !ranges.length || !txtFind.getValue()) {
             oIter.innerHTML = "0";
@@ -386,6 +410,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     
                 if (value) {
                     txtFind.setValue(value);
+                    
+                    delete txtFind.$undo;
+                    delete txtFind.$redo;
                     
                     if (chkRegEx.checked)
                         this.updateInputRegExp(txtFind);
