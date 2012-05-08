@@ -11448,6 +11448,10 @@
             .find-and-replace .rb_grey span{
                 color : #eee;
             }
+
+            .find-and-replace .rb_black span {
+                color: #dedede;
+            }
         ]]></a:style>
         <a:presentation>
             <a:main caption=".">
