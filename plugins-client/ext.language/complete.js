@@ -180,6 +180,12 @@ module.exports = {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? "cc_complete_option_selected" : "cc_complete_option";
             var html = "";
+            matchEl.addEventListener("mouseover", function() {
+                _self.matchEls[_self.selectedIdx].className = "cc_complete_option";
+                _self.selectedIdx = idx;
+                _self.matchEls[_self.selectedIdx].className = "cc_complete_option_selected";
+            });
+            
             if(match.icon)
                 html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
             html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
