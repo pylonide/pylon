@@ -268,7 +268,7 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
-            _self.$resize(tab.$ext);
+            _self.$resize(tabEditors.parentNode.$ext);
         });
 
         return vbox;

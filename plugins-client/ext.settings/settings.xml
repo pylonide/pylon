@@ -4,6 +4,7 @@
       class     = "unselectable"
       title     = "Preferences"
       flex      = "1"
+      minwidth  = "240"
       modal     = "false"
       model     = "{require('ext/settings/settings').model}"
       optimize  = "true">

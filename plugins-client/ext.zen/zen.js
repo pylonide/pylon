@@ -332,104 +332,57 @@ module.exports = ext.register("ext/zen/zen", {
         var afHeight = window.innerHeight + "px";
 
         // Do fancy animation
-        if (this.checkBrowserCssTransforms()) {
-            this.matchAnimationWindowPosition();
-            this.setAceThemeBackground();
+        this.matchAnimationWindowPosition();
+        this.setAceThemeBackground();
 
-            editors.disableTabResizeEvent();
-            this.placeTabIntoAnimationWindow();
+        editors.disableTabResizeEvent();
+        this.placeTabIntoAnimationWindow();
 
-            Firmin.animate(this.animateZen, {
-                height: afHeight,
-                left: leftOffset,
-                top: "0",
-                width: afWidth + "px",
-                timingFunction: "ease-in-out"
-            }, slow ? 3.7 : 0.7, 
-            function() {
-                _self.isFocused = true;
+        Firmin.animate(this.animateZen, {
+            height: afHeight,
+            left: leftOffset,
+            top: "0",
+            width: afWidth + "px",
+            timingFunction: "ease-in-out"
+        }, slow ? 3.7 : 0.7, 
+        function() {
+            _self.isFocused = true;
 
-                // Frustratingly, Firmin does not remove the csstransform attributes
-                // after the animation is complete, so we must do it ourselves
-                var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
-                _self.animateZen.setAttribute("style", astyles);
-
-                apf.layout.forceResize();
-
-                Firmin.animate(_self.zenHandleLeft, {
-                    opacity : 1.0,
-                    timingFunction: "ease-in-out"
-                }, 0.7).animate({
-                    opacity : 0.0
-                }, 0.5);
-
-                Firmin.animate(_self.zenHandleRight, {
-                    opacity : 1.0,
-                    timingFunction: "ease-in-out"
-                }, 0.7).animate({
-                    opacity : 0.0
-                }, 0.5);
-
-                setTimeout(function() {
-                    if (activeElement && activeElement.$focus 
-                      && activeElement.getHeight())
-                        activeElement.$focus();
-                }, 100);
-            });
-
-            vbZen.show();
-            Firmin.animate(vbZen.$ext, {
-                opacity: "1"
-            }, slow ? 3.5 : 0.5);
-        }
-
-        else {
-            this.isFocused = true;
-            vbZen.show();
-            vbZen.$ext.style.opacity = "1";
-
-            editors.disableTabResizeEvent();
-            this.placeTabIntoAnimationWindow();
-            this.animateZen.style.display = "block";
-
+            // Frustratingly, Firmin does not remove the csstransform attributes
+            // after the animation is complete, so we must do it ourselves
             var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
-            this.animateZen.setAttribute("style", astyles);
+            _self.animateZen.setAttribute("style", astyles);
 
-            _self.zenHandleLeft.style.opacity = "1.0";
-            _self.zenHandleRight.style.opacity = "1.0";
-
-            setTimeout(function() {
-                apf.tween.single(_self.zenHandleLeft, {
-                    type     : "opacity",
-                    anim     : apf.tween.easeInOutCubic,
-                    from     : 1.0,
-                    to       : 0.0,
-                    steps    : 8,
-                    interval : 20,
-                    control  : (this.control = {}),
-                    onfinish : function(){
-                    }
-                });
-                apf.tween.single(_self.zenHandleRight, {
-                    type     : "opacity",
-                    anim     : apf.tween.easeInOutCubic,
-                    from     : 1.0,
-                    to       : 0.0,
-                    steps    : 8,
-                    interval : 20,
-                    control  : (this.control = {}),
-                    onfinish : function(){
-                    }
-                });
-            }, 700);
             apf.layout.forceResize();
+            
+            this.zenHandleLeft.style.display = "block";
+            this.zenHandleRight.style.display = "block";
+
+            Firmin.animate(_self.zenHandleLeft, {
+                opacity : 1.0,
+                timingFunction: "ease-in-out"
+            }, 0.7).animate({
+                opacity : 0.0
+            }, 0.5);
+
+            Firmin.animate(_self.zenHandleRight, {
+                opacity : 1.0,
+                timingFunction: "ease-in-out"
+            }, 0.7).animate({
+                opacity : 0.0
+            }, 0.5);
 
             setTimeout(function() {
-                if (activeElement && activeElement.$focus
+                if (activeElement && activeElement.$focus 
                   && activeElement.getHeight())
                     activeElement.$focus();
             }, 100);
-        }
+        });
+
+        vbZen.show();
+        Firmin.animate(vbZen.$ext, {
+            opacity: "1"
+        }, slow ? 3.5 : 0.5);
     },
 
     /**
@@ -452,76 +405,54 @@ module.exports = ext.register("ext/zen/zen", {
         
         this.mnuItem.uncheck();
 
-        this.zenHandleLeft.style.opacity = "0.0";
-        this.zenHandleRight.style.opacity = "0.0";
+        this.zenHandleLeft.style.display = "none";
+        this.zenHandleRight.style.display = "none";
 
         tabEditors.parentNode.$ext.style.width = "100%";
 
-        if (this.checkBrowserCssTransforms()) {
-            // Get the destination values
-            editors.setTabResizeValues(this.animateZenPosition);
-            var left = this.animateZenPosition.style.left;
-            var top = this.animateZenPosition.style.top;
-            var width = this.animateZenPosition.style.width;
-            var height = this.animateZenPosition.style.height;
+        // Get the destination values
+        editors.setTabResizeValues(this.animateZenPosition);
+        var left = this.animateZenPosition.style.left;
+        var top = this.animateZenPosition.style.top;
+        var width = this.animateZenPosition.style.width;
+        var height = this.animateZenPosition.style.height;
 
-            // Set the width to its actual width instead of "85%"
-            var afWidth = apf.getHtmlInnerWidth(this.animateZen);
-            this.animateZen.style.width = afWidth + "px";
-            var afHeight = apf.getHtmlInnerHeight(this.animateZen);
-            this.animateZen.style.height = afHeight + "px";
+        // Set the width to its actual width instead of "85%"
+        var afWidth = apf.getHtmlInnerWidth(this.animateZen);
+        this.animateZen.style.width = afWidth + "px";
+        var afHeight = apf.getHtmlInnerHeight(this.animateZen);
+        this.animateZen.style.height = afHeight + "px";
 
-            Firmin.animate(this.animateZen, {
-                height: height,
-                width: width,
-                left: left,
-                top: top,
-                timingFunction: "ease-in-out"
-            }, slow ? 3.7 : 0.7, function() {
-                _self.animateZen.style.display = "none";
-                // Reset values
-                _self.resetTabEditorsParentStyles();
-
-                apf.document.documentElement.appendChild(tabEditors.parentNode);
-
-                editors.enableTabResizeEvent();
-                apf.layout.forceResize(tabEditors.parentNode.$ext);
-
-                tabEditors.parentNode.$ext.style.position = "absolute";
-
-                setTimeout(function() {
-                    if (activeElement && activeElement.getHeight()
-                      && fromExitEvent === false)
-                        activeElement.$focus();
-                }, 100);
-            });
-
-            Firmin.animate(vbZen.$ext, {
-                opacity: "0"
-            }, slow ? 3.5 : 0.5, function() {
-                vbZen.hide();
-            });
-        }
-        else {
-            this.resetTabEditorsParentStyles();
+        Firmin.animate(this.animateZen, {
+            height: height,
+            width: width,
+            left: left,
+            top: top,
+            timingFunction: "ease-in-out"
+        }, slow ? 3.7 : 0.7, function() {
+            _self.animateZen.style.display = "none";
+            // Reset values
+            _self.resetTabEditorsParentStyles();
 
             apf.document.documentElement.appendChild(tabEditors.parentNode);
 
             editors.enableTabResizeEvent();
-            this.animateZen.style.display = "none";
-            vbZen.$ext.style.opacity = "0";
-            vbZen.hide();
+            apf.layout.forceResize(tabEditors.parentNode.$ext);
 
             tabEditors.parentNode.$ext.style.position = "absolute";
 
-            apf.layout.forceResize();
             setTimeout(function() {
                 if (activeElement && activeElement.getHeight()
                   && fromExitEvent === false)
                     activeElement.$focus();
             }, 100);
-        }
+        });
 
+        Firmin.animate(vbZen.$ext, {
+            opacity: "0"
+        }, slow ? 3.5 : 0.5, function() {
+            vbZen.hide();
+        });
     },
 
     /**
