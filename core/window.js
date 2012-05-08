@@ -684,12 +684,16 @@ apf.window = function(){
 
             amlNode = list[next];
         }
-        while (!amlNode
-            || amlNode.disabled > 0
+        while (amlNode && (
+               amlNode.disabled > 0
             || amlNode == apf.window.activeElement
             || (switchWindows ? !amlNode.visible : amlNode.$ext && !amlNode.$ext.offsetHeight)
             || amlNode.focussable === false
-            || switchWindows && !amlNode.$tabList.length);
+            || switchWindows && !amlNode.$tabList.length
+        ));
+        
+        if (!amlNode)
+            return;
 
         if (fParent == apf.window && amlNode.$isWindowContainer != -2) {
             this.$focusLast(amlNode, {mouse:true}, switchWindows);
