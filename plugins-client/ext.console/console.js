@@ -204,7 +204,7 @@ module.exports = ext.register("ext/console/console", {
                 argv: argv,
                 line: line,
                 cwd: this.getCwd(),
-                requireshandling: true,
+                requireshandling: !commands.commands[cmd],
                 tracer_id: this.command_id_tracer
             };
 
@@ -397,7 +397,7 @@ module.exports = ext.register("ext/console/console", {
             name: "help",
             hint: "show general help information and a list of available commands",
             exec: function () {
-                _self.help();
+                _self.help(_self.command_id_tracer);
             }
         });
 
