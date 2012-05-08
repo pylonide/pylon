@@ -189,6 +189,18 @@ util.inherits(ShellPlugin, Plugin);
         });
     };
 
+    this["command-ps"] = function(message) {
+        var self = this;
+        this.pm.ps(function(err, procs) {
+            self.sendResult(0, message.command, {
+                argv    : message.argv,
+                err     : null,
+                out     : procs,
+                extra   : message.extra
+            });
+        });
+    };
+
     this["command-kill"] = function(message) {
         var procExists = this.pm.kill(message.pid);
 

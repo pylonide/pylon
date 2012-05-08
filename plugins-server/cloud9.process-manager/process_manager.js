@@ -119,10 +119,13 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
             var child = this.processes[pid];
 
             // process has exited
-            if (!child.pid)
+            if (!child.pid) {
                 delete this.processes[pid];
-            else
+            }
+            else {
                 list[pid] = child.describe();
+                list[pid].extra = child.extra;
+            }
         }
 
         return list;

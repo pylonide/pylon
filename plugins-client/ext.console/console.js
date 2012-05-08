@@ -70,12 +70,47 @@ module.exports = ext.register("ext/console/console", {
             logger.logNodeStream(message.body, null, outputElDetails, ide);
         },
 
+        ps: function(message, outputElDetails) {
+            if (message.body.extra.sentatinit)
+                this.recreateLogStreamBlocks(message.body.out);
+
+            logger.logNodeStream("", null, outputElDetails, ide);
+        },
+
         __default__: function(message, outputElDetails) {
             var res = message.body;
             if (res) {
                 res.out && logger.logNodeStream(res.out, null, outputElDetails, ide);
                 res.err && logger.logNodeStream(res.err, null, outputElDetails, ide);
             }
+        }
+    },
+
+    recreateLogStreamBlocks : function(serverProcs) {
+        for (var spi in serverProcs) {
+            var proc = serverProcs[spi];
+
+            var useOutputTab = proc.type === "node" ? true : false;
+
+            var command_id = this.createOutputBlock('Running "' + proc.type + '" process', useOutputTab, spi);
+
+            var original_line = null;
+            if (proc.extra) {
+                command_id = proc.extra.command_id;
+                original_line = proc.extra.original_line;
+            }
+
+            this.tracerToPidMap[command_id] = spi;
+            this.pidToTracerMap[spi] = command_id;
+
+            var containerEl = this.getLogStreamOutObject(command_id, null, original_line).$ext;
+            containerEl.setAttribute("rel", command_id);
+            apf.setStyleClass(containerEl, "has_pid");
+
+            if (!proc.extra)
+                this.command_id_tracer++;
+            else
+                this.command_id_tracer = Math.max(this.command_id_tracer, command_id);
         }
     },
 
@@ -312,7 +347,7 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         var message = e.message;
-        //console.log(message.type, message);
+        console.log(message.type, message);
         var extra = message.extra;
         if (!extra && message.body)
             extra = message.body.extra;
@@ -658,6 +693,24 @@ module.exports = ext.register("ext/console/console", {
         // @TODO Defunct
         apf.setStyleClass(txtConsole.$ext, "feedback");
         apf.setStyleClass(txtOutput.$ext, "feedback");
+
+        this.getRunningServerProcesses();
+    },
+
+    getRunningServerProcesses : function() {
+        var data = {
+            command: "ps",
+            argv: null,
+            line: "ps",
+            cwd: this.getCwd(),
+            requireshandling: true,
+            tracer_id: this.command_id_tracer,
+            extra : {
+                sentatinit: true
+            }
+        };
+
+        ide.send(data);
     },
 
     /**
