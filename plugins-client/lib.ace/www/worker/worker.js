@@ -5382,7 +5382,6 @@ function asyncParForEach(array, fn, callback) {
         var ast, currentNode;
         var _self = this;
         
-        
         asyncForEach(this.handlers, function(handler, next) {
             if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
                 _self.parse(function(hAst) {
@@ -5397,7 +5396,6 @@ function asyncParForEach(array, fn, callback) {
                 next();
         }, function() {
             var matches = [];
-            
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
@@ -7977,7 +7975,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     if(line[pos.column-1] === '.') // No snippet completion after "."
-        return;
+        return callback([]);
 
     var snippets = snippetCache[this.language];
     

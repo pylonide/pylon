@@ -447,7 +447,6 @@ function asyncParForEach(array, fn, callback) {
         var ast, currentNode;
         var _self = this;
         
-        
         asyncForEach(this.handlers, function(handler, next) {
             if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
                 _self.parse(function(hAst) {
@@ -462,7 +461,6 @@ function asyncParForEach(array, fn, callback) {
                 next();
         }, function() {
             var matches = [];
-            
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.complete(_self.doc, ast, pos, currentNode, function(completions) {

@@ -226,6 +226,11 @@ module.exports = {
         else if(keyCode === 9 && e.shiftKey) // Shift-Tab
             keyCode = 38; // Down
         
+        if(e.metaKey || e.ctrlKey || e.altKey) {
+            this.closeCompletionBox();
+            return;
+        }
+        
         var keyBinding = editors.currentEditor.amlEditor.$editor.keyBinding;
 
         switch(keyCode) {
