@@ -37,7 +37,6 @@ var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
 
 var BAR_WIDTH = 200;
-var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 5000;
 
 var isInfoActive = false;
@@ -166,11 +165,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
 
         this.defaultUser = { email: null };
-
-        // This is the main interval. Whatever it happens, every `INTERVAL`
-        // milliseconds, the plugin will attempt to save every file that is
-        // open and dirty.
-        this.saveInterval = setInterval(this.doAutoSave.bind(this), INTERVAL);
 
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
@@ -1141,7 +1135,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             editor.setSession(newSession);
             doc = newSession.doc;
         }
-        
+
         editor.setReadOnly(true);
         editor.selection.clearSelection();
 
@@ -1172,13 +1166,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
         ceEditor.$editor.setReadOnly(false);
         ceEditor.show();
-    },
-
-    doAutoSave: function() {
-        if (typeof tabEditors === "undefined" || !Util.isAutoSaveEnabled())
-            return;
-
-        tabEditors.getPages().forEach(this.save, this);
     },
 
     /**
@@ -1221,8 +1208,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
         }
 
-        var docPath = Util.getDocPath(page);
-        var contributors = this.$getEditingUsers(docPath);
+        var path = Util.getDocPath(page);
+        var contributors = this.$getEditingUsers(path);
         if (contributors.length === 0 && this.defaultUser.email) {
             contributors.push(this.defaultUser.email);
         }
@@ -1230,7 +1217,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var data = {
             command: "revisions",
             subCommand: "saveRevisionFromMsg",
-            path: docPath,
+            path: path,
             silentsave: !!silentsave,
             restoring: restoring,
             contributors: contributors
@@ -1251,7 +1238,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return;
             }
             else {
-                var revObj = this.$getRevisionObject(docPath);
+                var revObj = this.$getRevisionObject(path);
                 data.revisions = revObj.allRevisions;
                 // To not have to extract and sort timestamps from allRevisions
                 data.timestamps = revObj.allTimestamps;
@@ -1261,7 +1248,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         ide.send(data);
-        this.$resetEditingUsers(docPath);
+        this.$resetEditingUsers(path);
     },
 
     /**
@@ -1357,7 +1344,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         ext.initExtension(this);
-
         settings.model.setQueryValue("general/@revisionsvisible", true);
 
         if (!this.panel.visible) {
@@ -1532,10 +1518,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         menus.remove("File/~", 1000);
 
         commands.removeCommandByName("revisionpanel");
-
-        if (this.saveInterval) {
-            clearInterval(this.saveInterval);
-        }
 
         this.disableEventListeners();
 
