@@ -32,7 +32,7 @@ module.exports = ext.register("ext/html/html", {
                 caption : "Preview",
                 disabled : true,
                 onclick : function(){
-                    var file = _self.page.$model.data;
+                    var file = tabEditors.getPage().$model.data;
                     window.open(location.protocol + "//" 
                         + location.host + file.getAttribute("path"), "_blank");
                 }

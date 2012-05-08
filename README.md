@@ -5,22 +5,17 @@ section below to grok the changes.
 
 # Cloud9 IDE
 
-Cloud9 is an open source IDE started by [ajax.org], built on top of [Node.JS]. This version runs
-locally; for the hosted service offering multiple workspaces, app deployment and other
-features, see [c9.io](http://c9.io).
+Cloud9 is an open source IDE built with [Node.JS] on the back-end and JavaScript/HTML5 on the client.
+It is very actively maintained by about 15 developers in both Amsterdam and San Francisco and is one
+component of the hosted service at [c9.io](http://c9.io). The version available here runs on your local system.
 
-This Integrated Development Environment balances the power of traditional desktop IDEs with
-the simplicity and elegance of editors like TextMate and Sublime. Best of all, the Cloud9
-interface runs entirely in the browser.
+Cloud9 balances the power of traditional desktop IDEs with the simplicity and elegance of editors
+like TextMate and Sublime.
 
-Cloud9's primary focus is on world-class Javascript support, offering language
-analysis, code completion and in-browser Node.JS running and debugging. It uses the [ACE
-editor](http://ace.ajax.org) which supports syntax highlighting for over 30 languages.
-
-Cloud9 is built with JavaScript/HTML5 on the client and Node.JS on the server, making
-it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would
-benefit, issue a pull request on this repo and we'll take a look. If you have any
-questions, meet us in #cloud9ide on irc.freenode.net or ask us on Twitter [@Cloud9IDE](http://twitter.com/#!/Cloud9IDE).
+Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE today.
+Fork it, hack it, and if you think others would benefit, issue a pull request on this repo
+and we'll take a look. If you have any questions, meet us in #cloud9ide on irc.freenode.net
+or ask us on Twitter [@Cloud9IDE](http://twitter.com/#!/Cloud9IDE).
 
 Happy Coding!
 
