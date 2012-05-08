@@ -1819,16 +1819,16 @@
         }
 
         .c9-toolbarbutton.saving {
-            background: orange;
+            
         }
         .c9-toolbarbutton.saved {
-            background: green;
+            
         }
         .c9-toolbarbutton.default {
-            background: lightgreen;
+            
         }
         .c9-toolbarbutton.disabled {
-            background: grey;
+            
         }
     ]]></a:style>
 
