@@ -64,7 +64,8 @@ var ModesCaption = {
     "SQL" : "text/x-sql",
     "Textile" : "text/x-web-textile",
     "HTML" : "text/html",
-    "XML" : "application/xml"
+    "XML" : "application/xml",
+    "XQuery" : "text/x-xquery"
 }
 
 var SupportedModes = {
@@ -102,7 +103,8 @@ var SupportedModes = {
     "text/x-script.powershell": "powershell",
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
-    "text/x-sql": "sql"
+    "text/x-sql": "sql",
+    "text/x-xquery": "xquery"
 };
 
 var contentTypes = {
@@ -171,7 +173,9 @@ var contentTypes = {
     "sql": "text/x-sql",
 
     "sh": "application/x-sh",
-    "bash": "application/x-sh"
+    "bash": "application/x-sh",
+    
+    "xq": "text/x-xquery"
 };
 
 module.exports = ext.register("ext/code/code", {

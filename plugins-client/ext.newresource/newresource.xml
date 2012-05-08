@@ -77,6 +77,11 @@ if (typeof module !== "undefined" && module === require.main) {
 </html>
 ]]></item>
             <item value="xml" icon="page_white_code_red.png" caption="XML file"><![CDATA[]]></item>
+            <item value="xq" icon="page_white_code.png" caption="XQuery file"><![CDATA[xquery version "1.0";
+let $message := "Hello World!"
+return <results>
+  <message>{$message}</message>
+</results>]]></item>
             <item value="css" icon="css.png" caption="CSS file"><![CDATA[]]></item>
             <item value="scss" icon="css.png" caption="SCSS file"><![CDATA[]]></item>
             <item value="svg" icon="page_white_picture.png" caption="SVG file"><![CDATA[]]></item>
