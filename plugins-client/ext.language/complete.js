@@ -180,11 +180,6 @@ module.exports = {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? "cc_complete_option_selected" : "cc_complete_option";
             var html = "";
-            matchEl.addEventListener("mouseover", function() {
-                _self.matchEls[_self.selectedIdx].className = "cc_complete_option";
-                _self.selectedIdx = idx;
-                _self.matchEls[_self.selectedIdx].className = "cc_complete_option_selected";
-            });
             
             if(match.icon)
                 html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
@@ -194,10 +189,15 @@ module.exports = {
             }
             html += '</span>';
             matchEl.innerHTML = html;
+            matchEl.addEventListener("mouseover", function() {
+                _self.matchEls[_self.selectedIdx].className = "cc_complete_option";
+                _self.selectedIdx = idx;
+                _self.matchEls[_self.selectedIdx].className = "cc_complete_option_selected";
+            });
             matchEl.addEventListener("click", function() {
-                var editor = editors.currentEditor.amlEditor.$editor;
-                replaceText(editor, _self.prefix, match.replaceText);
-                editor.focus();
+                var amlEditor = editors.currentEditor.amlEditor;
+                replaceText(amlEditor.$editor, _self.prefix, match.replaceText);
+                amlEditor.focus();
             });
             matchEl.style.height = cursorConfig.lineHeight + "px";
             _self.completionElement.appendChild(matchEl);
@@ -273,6 +273,10 @@ module.exports = {
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
                 if(this.selectedIdx > 0) 
                     this.selectedIdx--;
+                else {
+                    this.closeCompletionBox();
+                    return;
+                }
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx < this.matches.length - 4 && this.scrollIdx > 0) {
                     this.scrollIdx = this.selectedIdx - 4;
