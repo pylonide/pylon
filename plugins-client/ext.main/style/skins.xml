@@ -1818,18 +1818,6 @@
             text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
         }
 
-        .c9-toolbarbutton.saving {
-            
-        }
-        .c9-toolbarbutton.saved {
-            
-        }
-        .c9-toolbarbutton.default {
-            
-        }
-        .c9-toolbarbutton.disabled {
-            
-        }
     ]]></a:style>
 
     <a:presentation>
@@ -1839,6 +1827,123 @@
           icon       = "div[1]">
             <div class="c9-toolbarbutton">
                 <div class="c9-icon"></div>
+                <div class="c9-label">-</div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:button name="c9-toolbarbutton-glossy">
+    <a:style><![CDATA[
+        .c9-toolbarbutton-glossy,
+        .c9-toolbarbutton-glossy .c9-label,
+        .c9-toolbarbutton-glossy .c9-label:after {
+            color: #D6D6D6;
+            cursor: default;
+            height: 23px;
+            position: relative;
+        }
+        .c9-toolbarbutton-glossy {
+            background: none !important;
+        }
+        .c9-toolbarbutton-glossy .c9-icon {
+            z-index: 100;
+        }
+        .c9-toolbarbutton-glossy .c9-label,
+        .c9-toolbarbutton-glossy .c9-label:after {
+            background: url(images/c9-no-repeat.png) no-repeat;
+        }
+        .c9-toolbarbutton-glossy .c9-icon {
+            display: none;
+        }.c9-toolbarbutton-glossy .c9-label {
+            background-position: 0px 100px; /* nothing */
+            line-height: 23px;
+            margin-right: 4px;
+            overflow: visible;
+            padding: 0 3px 0 7px;
+        }
+        .c9-toolbarbutton-glossy .c9-label:after {
+            background-position: 0px 100px; /* nothing */
+            content: "";
+            display: block;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            width: 4px;
+        }
+        .c9-toolbarbutton-glossyOver .c9-label {
+            background-position: 0px -457px; 
+        }
+        .c9-toolbarbutton-glossyOver .c9-label:after {
+            background-position: -476px -457px; 
+        }
+        .c9-toolbarbutton-glossyDown .c9-label {
+            background-position: 0px -490px; 
+        }
+        .c9-toolbarbutton-glossyDown .c9-label:after {
+            background-position: -476px -490px; 
+        }
+
+        .c9-toolbarbutton-glossyIcon .c9-icon {
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            display: block;
+            height: 19px;
+            left: 2px;
+            position: absolute;
+            top: 2px;
+            width: 23px;
+        }
+        .c9-toolbarbutton-glossyIcon .c9-label {
+            padding: 0 0 0 22px;
+        }
+
+        .btnSave .c9-icon {
+            background-image: none !important;
+            border: 1px solid #1C1C1C;
+            border-radius: 50%;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.2) inset;
+            height: 4px;
+            left: 4px;
+            top: 9px;
+            width: 4px;
+        }
+        .btnSave .c9-label {
+            padding-left: 14px;
+        }
+        .c9-toolbarbutton-glossy.initial .c9-icon {
+            display: none;
+        }
+        
+        @-webkit-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
+           @-moz-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
+               @-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
+
+        .c9-toolbarbutton-glossy.saving .c9-icon {
+            background-color: #FF8400;
+            -webkit-animation: saving .4s linear 0 infinite;
+               -moz-animation: saving .4s linear 0 infinite;
+                    animation: saving .4s linear 0 infinite;
+        }
+        .c9-toolbarbutton-glossy.saved .c9-icon {
+            background-color: #60CC00;
+        }
+        .c9-toolbarbutton-glossy.default .c9-icon {
+            background-color: #E50000;
+        }
+        .c9-toolbarbutton-glossy.disabled .c9-icon {
+            background-color: white;
+            opacity: .2;
+        }
+        
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "div[2]/text()"
+          background = "."
+          icon       = "div[1]">
+            <div class="c9-toolbarbutton-glossy">
+                <div class="c9-icon"> </div>
                 <div class="c9-label">-</div>
             </div>
         </a:main>
@@ -7695,7 +7800,7 @@
             overflow: visible;
         }
         .btnRun .main:after {
-            background-position: -197px -424px; 
+            background-position: -397px -424px; 
             content: "";
             display: block;
             left: 100%;
@@ -7715,78 +7820,28 @@
             background-position: 0px -457px; 
         }
         .btnRun .main.c9-dropdown-btnOver:after {
-            background-position: -197px -457px; 
+            background-position: -397px -457px; 
         }
         .btnRun .c9-dropdown-btnDown.main { 
             background-position: 0px -490px; 
         }
         .btnRun .c9-dropdown-btnDown.main:after { 
-            background-position: -197px -490px; 
+            background-position: -397px -490px; 
         }
 
         .btnRun .arrow { 
-            background-position: -200px -424px; 
+            background-position: -400px -424px; 
             width: 16px; 
         }
         .btnRun .arrow.c9-dropdown-btnOver { 
-            background-position: -200px -457px; 
+            background-position: -400px -457px; 
         }
         .btnRun .c9-dropdown-btnDown.arrow { 
-            background-position: -200px -490px; 
+            background-position: -400px -490px; 
         }
         .btnRun .arrow .c9-arrow {
             display: none;
         }
-
-
-        .btnStop.c9-toolbarbutton,
-        .btnStop.c9-toolbarbutton .c9-label,
-        .btnStop.c9-toolbarbutton .c9-label:after {
-            border: 0 none;
-            border-radius: 0;
-            box-shadow: none;
-            height: 23px;
-            padding: 0;
-        }
-        .btnStop.c9-toolbarbutton {
-            background: none !important;
-        }
-        .btnStop.c9-toolbarbutton .c9-icon {
-            z-index: 100;
-        }
-        .btnStop.c9-toolbarbutton .c9-label,
-        .btnStop.c9-toolbarbutton .c9-label:after {
-            background: url(images/c9-no-repeat.png) no-repeat;
-        }
-        .btnStop.c9-toolbarbutton .c9-label {
-            background-position: 0px 100px; /* nothing */
-            line-height: 23px;
-            margin-right: 4px;
-            overflow: visible;
-            padding-left: 22px;
-        }
-        .btnStop.c9-toolbarbutton .c9-label:after {
-            background-position: 0px 100px; /* nothing */
-            content: "";
-            display: block;
-            position: absolute;
-            left: 100%;
-            top: 0;
-            width: 4px;
-        }
-        .btnStop.c9-toolbarbuttonOver .c9-label {
-            background-position: 0px -457px; 
-        }
-        .btnStop.c9-toolbarbuttonOver .c9-label:after {
-            background-position: -236px -457px; 
-        }
-        .btnStop.c9-toolbarbuttonDown .c9-label {
-            background-position: 0px -490px; 
-        }
-        .btnStop.c9-toolbarbuttonDown .c9-label:after {
-            background-position: -236px -490px; 
-        }
-
         
         .testpanel .fm-content .c9-header-plus {
             top: -31px;

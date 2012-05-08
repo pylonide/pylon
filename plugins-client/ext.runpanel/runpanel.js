@@ -109,7 +109,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 caption  : "stop",
                 width    : "52",
                 tooltip  : "Stop",
-                skin     : "c9-toolbarbutton",
+                skin     : "c9-toolbarbutton-glossy",
                 command  : "stop",
                 visible  : "{stProcessRunning.active and 1}" ,
                 disabled : "{!!!ide.onLine}"
