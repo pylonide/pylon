@@ -10228,7 +10228,7 @@ handler.complete = function(doc, fullAst, pos, currentNode, callback) {
           name        : m,
           replaceText : m,
           icon        : null,
-          meta        : "EcmaScript/W3C",
+          meta        : "EcmaScript",
           priority    : 3
         };
     }));
@@ -10710,7 +10710,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -10738,8 +10738,11 @@ handler.analyze = function(doc, ast, callback) {
             if (!warning)
                 return;
             var type = "warning"
-            if(warning.reason.indexOf("Expected") !== -1 && warning.reason.indexOf("instead saw") !== -1) // Parse error!
+            var reason = warning.reason;
+            if(reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
                 type = "error";
+            if(reason.indexOf("Missing semicolon") !== -1)
+                type = "info";
             for (var i = 0; i < disabledJSHintWarnings.length; i++)
                 if(disabledJSHintWarnings[i].test(warning.reason))
                     return;
