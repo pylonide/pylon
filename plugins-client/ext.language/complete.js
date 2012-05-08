@@ -125,8 +125,8 @@ module.exports = {
 
         // Monkey patch
         if(!oldCommandKey) {
-            oldCommandKey = ace.keyBinding.onCommandKey;
-            ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
+        oldCommandKey = ace.keyBinding.onCommandKey;
+        ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
             oldOnTextInput = ace.keyBinding.onTextInput;
             ace.keyBinding.onTextInput = this.onTextInput.bind(this);
         }
@@ -137,7 +137,7 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, matches.length * (this.cursorConfig.lineHeight+1));
+        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, (this.matches.length || 1) * (this.cursorConfig.lineHeight + 1));
         var cursorLayer = ace.renderer.$cursorLayer;
         
         setTimeout(function() {
@@ -165,7 +165,7 @@ module.exports = {
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
         
         if(oldCommandKey) {
-            ace.keyBinding.onCommandKey = oldCommandKey;
+        ace.keyBinding.onCommandKey = oldCommandKey;
             ace.keyBinding.onTextInput = oldOnTextInput;
         }
         oldCommandKey = oldOnTextInput = null;
@@ -198,7 +198,7 @@ module.exports = {
             _self.matchEls.push(matchEl);
         });
     },
-    
+
     onTextInput : function(text, pasted) {
         var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
         oldOnTextInput.apply(keyBinding, arguments);
@@ -287,7 +287,7 @@ module.exports = {
     setWorker: function(worker) {
         this.worker = worker;
     },
-    
+
     deferredInvoke: function() {
         deferredInvoke.cancel().schedule(200);
     },
@@ -318,7 +318,7 @@ module.exports = {
         var pos = editor.getCursorPosition();
         var line = editor.getSession().getLine(pos.row);
         var identifier = retrievePreceedingIdentifier(line, pos.column);
-        
+    
         editor.removeEventListener("change", this.$onChange);
         clearTimeout(this.hideTimer);
     

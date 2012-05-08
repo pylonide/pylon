@@ -23,6 +23,7 @@
         "simple-template": "~0.0.1",
         
         "optimist": "~0.3.1",
+        "dryice": "0.4.2",
         
         "mappings": "0.1.x",
         "amd-loader": "~0.0.4",
