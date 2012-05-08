@@ -81,13 +81,6 @@ module.exports = ext.register("ext/stripws/stripws", {
                 self.stripws();
             }
         });
-
-        ide.addEventListener("revisions.visibility", function(e) {
-            if (e.visibility === "shown")
-                self.disable();
-            else
-                self.enable();
-        });
         
         ide.addEventListener("settings.load", function(){
             settings.setDefaults("editors/code", [

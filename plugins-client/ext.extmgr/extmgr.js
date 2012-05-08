@@ -27,25 +27,11 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     
     hook : function(){
         var _self = this;
-        var reloadDgExt = true;
         
         menus.addItemByPath("Tools/~", new apf.divider(), 1000000);
         menus.addItemByPath("Tools/Extension Manager...", new apf.item({
             onclick : function(){
-                ext.initExtension(_self);
-                winExt.show();
-
-                // Hackity hackathon
-                // @TODO the problem is apparently that APF does not
-                // like to show the datagrid records when two datagrids are
-                // bound to the same model && that one of the xpath selectors
-                // used to filter the model, has no results
-                setTimeout(function() {
-                    if (reloadDgExt) {
-                        dgExt.reload();
-                        reloadDgExt = false;
-                    }
-                });
+                _self.show();
             }
         }), 2000000);
         
@@ -83,6 +69,22 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 eNode.appendChild(copy);
             }
         });
+        
+        // Hackity hackathon
+        // @TODO the problem is apparently that APF does not
+        // like to show the datagrid records when two datagrids are
+        // bound to the same model && that one of the xpath selectors
+        // used to filter the model, has no results
+        // @todo I believe this is only with the debug version of apf
+        setTimeout(function() {
+            dgExt.reload();
+        });
+
+        var nodes = ext.model.queryNodes("plugin");
+        for (var i = 0; i < nodes.length; i++) {
+            apf.xmldb.setAttribute(nodes[i], "total", 
+                parseInt(nodes[i].getAttribute("hook")) + parseInt(nodes[i].getAttribute("init") || 0));
+        }
     },
 
     loadExtension : function(path) {
@@ -145,6 +147,11 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             else
                 btnDefaultExtEnable.setAttribute("caption", "Enable");
         }
+    },
+    
+    show : function(){
+        ext.initExtension(this);
+        winExt.show();
     },
 
     enable : function(){

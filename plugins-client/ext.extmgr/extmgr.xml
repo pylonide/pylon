@@ -8,7 +8,7 @@
       buttons   = "close"
       modal     = "false"
       skin      = "bk-window"
-      width     = "660"
+      width     = "750"
       height    = "400"
       kbclose   = "true"
       draggable = "true">
@@ -36,11 +36,13 @@
                           onafterselect = "require('ext/extmgr/extmgr').updateEnableBtnState()"
                           eachvalue  = "[@path]"
                           empty-message = "No user extensions">
-                            <a:column width="25%" value="[@name]" caption="Name" />
+                            <a:column width="20%" value="[@name]" caption="Name" />
                             <a:column width="30%" value="[@path]" caption="Path" />
-                            <a:column width="10%" value="[@type]" caption="Type" />
-                            <a:column width="15%" value="[@dev]" caption="Developer" />
-                            <a:column width="10%" value="[@time]ms" caption="Time" align="right" /> 
+                            <a:column width="8%" value="[@type]" caption="Type" /> 
+                            <a:column width="8%" value="[@dev]" caption="Developer" /> 
+                            <a:column width="8%" value="[@hook]ms" caption="Hook" align="right" data-type="number" /> 
+                            <a:column width="8%" value="{[@init] ? [@init] + 'ms' : ''}" caption="Init" align="right" data-type="number" /> 
+                            <a:column width="8%" value="[@total]ms" caption="Total" align="right" data-type="number" /> 
                             <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" />
                         </a:datagrid>
                         
@@ -57,11 +59,13 @@
                           each       = "[plugin[@userext='0']]"
                           onafterselect = "require('ext/extmgr/extmgr').updateEnableBtnState()"
                           eachvalue  = "[@path]">
-                            <a:column width="25%" value="[@name]" caption="Name" /> 
+                            <a:column width="20%" value="[@name]" caption="Name" /> 
                             <a:column width="30%" value="[@path]" caption="Path" /> 
-                            <a:column width="10%" value="[@type]" caption="Type" /> 
-                            <a:column width="15%" value="[@dev]" caption="Developer" /> 
-                            <a:column width="10%" value="[@time]ms" caption="Time" align="right" /> 
+                            <a:column width="8%" value="[@type]" caption="Type" /> 
+                            <a:column width="8%" value="[@dev]" caption="Developer" /> 
+                            <a:column width="8%" value="[@hook]ms" caption="Hook" align="right" data-type="number" /> 
+                            <a:column width="8%" value="{[@init] ? [@init] + 'ms' : ''}" caption="Init" align="right" data-type="number" /> 
+                            <a:column width="8%" value="[@total]ms" caption="Total" align="right" data-type="number" /> 
                             <a:column width="11%" value="{[@enabled] == 1 ? 'Enabled' : 'Disabled'}" caption="Enabled" /> 
                         </a:datagrid>
                     </a:vbox>
@@ -95,6 +99,14 @@
                 />
             </a:hbox>
             <a:hbox edge="11 10 0 0" pack="end" visible="{tabExtMgr.activepage == 1}">
+                <a:label flex="1" style="padding:5px 0 0 20px;color:white"><?lm
+                    var time = 0;
+                    each([{require('core/ext').model}::plugin[@userext='0']]) {
+                        time += parseInt([@hook]);
+                        time += parseInt([@init]) || 0;
+                    }
+                    "Total Plugin Time: {time}ms, Total Load Time: {cloud9config.totalTime}ms";
+                ?></a:label>
                 <a:button
                   id       = "btnDefaultExtEnable"
                   skin     = "btn-default-css3"

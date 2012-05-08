@@ -149,14 +149,16 @@ util.inherits(ShellPlugin, Plugin);
         this.pm.exec("shell", {
             command: message.command,
             args: message.argv.slice(1),
-            cwd: message.cwd || this.workspaceDir
+            cwd: message.cwd || this.workspaceDir,
+            extra: message.extra
         }, function(code, out, err) {
             self.processCount -= 1;
             self.sendResult(0, message.command, {
                 code    : code,
                 argv    : message.argv,
                 err     : err,
-                out     : out
+                out     : out,
+                extra   : message.extra
             });
         });
     };
@@ -180,8 +182,24 @@ util.inherits(ShellPlugin, Plugin);
             if (!stat.isDirectory())
                 return self.sendResult(0, "error", "Not a directory.");
 
-            self.sendResult(0, message.command, {cwd: path});
+            self.sendResult(0, message.command, {
+                cwd: path,
+                extra: message.extra
+            });
         });
+    };
+
+    this["command-kill"] = function(message) {
+        var procExists = this.pm.kill(message.pid);
+
+        if (!procExists) {
+            this.sendResult(0, message.command, {
+                argv  : message.argv,
+                code  : -1,
+                err   : "Process does not exist or already exiting",
+                extra : message.extra
+            });
+        }
     };
 
     this.getListing = function(tail, path, dirmode, callback) {

@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="winDbgConsole" height="30" zindex="10000">
+    <a:bar id="winDbgConsole" height="30" zindex="9000">
         <a:vbox anchors="0 0 0 0">
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime" buttons="">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
@@ -18,9 +18,9 @@
                       onclick = "
                         var console = require('ext/console/console');
                         if (this.value)
-                            console.maximize();
+                            console.maximizeConsoleHeight();
                         else
-                            console.restore();
+                            console.restoreConsoleHeight();
                       "/>
                     <a:divider skin="divider_console"></a:divider>
                     <a:button
@@ -30,23 +30,6 @@
                       margin="1 0 0 1"
                       onclick="require('ext/console/console').hide()"/>
                 </a:hbox>
-                <a:page id="pgOutput" caption="Output" name="output">
-                    <a:text id="txtOutput"
-                      margin     = "3 0 0 0"
-                      anchors    = "0 17 0 0"
-                      flex       = "1"
-                      scrolldown = "true"
-                      focussable = "true"
-                      textselect = "true"
-                      class      = "console_text" />
-                    <a:scrollbar
-                      for    = "txtOutput"
-                      right  = "0"
-                      top    = "0"
-                      bottom = "0"
-                      skin   = "console_scrollbar"
-                      width  = "17" />
-                </a:page>
                 <a:page id="pgConsole" caption="Console" name="console">
                     <a:text id="txtConsole"
                       margin     = "3 0 0 0"
@@ -63,6 +46,23 @@
                       bottom    = "0"
                       skin      = "console_scrollbar"
                       width     = "17" />
+                </a:page>
+                <a:page id="pgOutput" caption="Output" name="output">
+                    <a:text id="txtOutput"
+                      margin     = "3 0 0 0"
+                      anchors    = "0 17 0 0"
+                      flex       = "1"
+                      scrolldown = "true"
+                      focussable = "true"
+                      textselect = "true"
+                      class      = "console_text" />
+                    <a:scrollbar
+                      for    = "txtOutput"
+                      right  = "0"
+                      top    = "0"
+                      bottom = "0"
+                      skin   = "console_scrollbar"
+                      width  = "17" />
                 </a:page>
             </a:tab>
 

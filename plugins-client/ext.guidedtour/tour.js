@@ -9,35 +9,33 @@ this.tour = {
         },
         el: undefined,
         div: "navbar",
-        desc: "This is the project bar. These buttons control the behavior of the IDE, as well as the presentation of your code.",
-        pos: "bottom",
+        desc: "This is the project bar. It controls the behavior of the IDE, as well as the presentation of your code.",
+        pos: "right",
         time: 4
     }, {
         before: function() {
-            require("ext/panels/panels").activate(require("ext/tree/tree"));
-            //require("ext/tree/tree").show();
+            // require("ext/tree/tree").enable();
         },
         el: undefined,
-        div: "navbar.childNodes[1]",
+        div: "navbar.childNodes[0]",
         desc: "This button shows and hides your project files.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            require("ext/panels/panels").activate(require("ext/openfiles/openfiles"));
-            //require("ext/openfiles/openfiles").show();
+            //require("ext/openfiles/openfiles").enable();
         },
         el: undefined,
-        div: "navbar.childNodes[2]",
+        div: "navbar.childNodes[1]",
         desc: "This button shows and hides your open files in a list view.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            require("ext/settings/settings").show();
+            //require("ext/settings/settings").enable();
         },
         el: undefined,
-        div: "navbar.childNodes[navbar.childNodes.length - 2]",
+        div: "navbar.childNodes[navbar.childNodes.length - 1]",
         desc: "You can enable additional features and change the behavior of the editor.",
         pos: "right",
         time: 4
@@ -191,7 +189,7 @@ this.tour = {
             }
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
-        desc: "Whoa! A lot of things just happened. First off, the Console tab opened up to show us that our code is running, and currently being debugged.",
+        desc: "Whoa! A lot of things just happened. First off, the Output tab opened up to show us that our code is running, and currently being debugged.",
         pos: "top",
         time: 4
     }, {
@@ -264,7 +262,7 @@ this.tour = {
             });
         },
         el: "winDeploy",
-        desc: "In this panel you can manage (add/remove) your deploy targets for your application, in different services, like Joyent and Heroku.",
+        desc: "In this panel you can manage(add/remove) your deploy targets for your application, in different services, like Joyent and Heroku.",
         pos: "right",
         notAvailable: !hasDeploy,
         time: 5

@@ -70,7 +70,7 @@ FileStore.prototype.get = function(sid, fn){
   var self = this;
   path.exists(self.basePath + "/" + sid, function(exists) {
       if (exists) {
-          fs.readFile(self.basePath + "/" + sid, function(err, data) {
+          fs.readFile(self.basePath + "/" + sid, "utf8", function(err, data) {
               if (err) {
                   fn && fn(err);
               }
@@ -79,7 +79,7 @@ FileStore.prototype.get = function(sid, fn){
                   try {
                       sess = JSON.parse(data);
                   } catch(e) {
-                      console.warn("Error '" + e + "' reading session: " + sid);
+                      console.warn("Error '" + e + "' reading session: " + sid, data);
                       self.destroy(sid, fn);
                       return;
                   }
@@ -105,19 +105,12 @@ FileStore.prototype.set = function(sid, sess, fn){
   var path = self.basePath + "/" + sid;
   var tmpPath = path + "~" + new Date().getTime();
   fs.writeFile(path, JSON.stringify(sess), function(err) {
-      if (err) {
-          fn && fn(err);
-      }
-      else {
-          fs.rename(tmpPath, path, function(err) {
-              if (err) {
-                  fn && fn(err);
-              }
-              else {
-                  fn && fn();
-              }
-          });
-      }
+      if (err)
+        return fn && fn(err);
+
+      fs.rename(tmpPath, path, function(err) {
+        fn && fn(err);
+      });
   });
 };
 
