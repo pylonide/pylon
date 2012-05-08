@@ -38,6 +38,7 @@ module.exports = ext.register("ext/language/language", {
     enabled : true,
 
     defaultKeyHandler: null,
+    defaultCommandKeyHandler: null,
 
     hook : function() {
         var _self = this;
@@ -148,13 +149,17 @@ module.exports = ext.register("ext/language/language", {
         if(enabled) {
             if(!this.defaultKeyHandler) {
                 this.defaultKeyHandler = this.editor.keyBinding.onTextInput;
+                this.defaultCommandKeyHandler = this.editor.keyBinding.onCommandKey;
                 this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, this.defaultKeyHandler.bind(this.editor.keyBinding));
+                this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.typeAlongComplete, this.defaultCommandKeyHandler.bind(this.editor.keyBinding));
             }
         }
         else {
             if(this.defaultKeyHandler) {
                 this.editor.keyBinding.onTextInput = this.defaultKeyHandler;
+                this.editor.keyBinding.onCommandKey = this.defaultCommandKeyHandler;
                 this.defaultKeyHandler = null;
+                this.defaultCommandKeyHandler = null;
             }
         }
     },

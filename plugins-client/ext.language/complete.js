@@ -125,8 +125,8 @@ module.exports = {
 
         // Monkey patch
         if(!oldCommandKey) {
-        oldCommandKey = ace.keyBinding.onCommandKey;
-        ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
+            oldCommandKey = ace.keyBinding.onCommandKey;
+            ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
             oldOnTextInput = ace.keyBinding.onTextInput;
             ace.keyBinding.onTextInput = this.onTextInput.bind(this);
         }

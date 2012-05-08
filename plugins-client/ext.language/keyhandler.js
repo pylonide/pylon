@@ -17,16 +17,22 @@ function composeHandlers(mainHandler, fallbackHandler) {
     };
 }
 
-/*function typeAlongComplete(e) {
+function typeAlongComplete(e) {
     if(e.metaKey || e.altKey || e.ctrlKey)
         return false;
     if(editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
-    var ch = String.fromCharCode(e.keyIdentifier ? parseInt(e.keyIdentifier.replace("U+", ""), 16) : e.keyCode);
-    console.log(e);
-    handleChar(ch);
+    if(e.keyCode === 8) {
+        var ext = require("ext/language/complete");
+        var editor = editors.currentEditor.amlEditor.$editor;
+        var pos = editor.getCursorPosition();
+        var line = editor.session.getDocument().getLine(pos.row);
+        if(!preceededByIdentifier(line, pos.column))
+            return false;
+        ext.deferredInvoke();
+    }
     return false;
-}*/
+}
 
 function typeAlongCompleteTextInput(text, pasted) {
     if(editors.currentEditor.amlEditor.syntax !== "javascript")
@@ -91,6 +97,7 @@ function preceededByIdentifier(line, column, postfix) {
 }
 
 exports.typeAlongCompleteTextInput = typeAlongCompleteTextInput;
+exports.typeAlongComplete = typeAlongComplete;
 exports.composeHandlers = composeHandlers;
 exports.inCompletableCodeContext = inCompletableCodeContext;
 exports.preceededByIdentifier = preceededByIdentifier;
