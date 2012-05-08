@@ -17,12 +17,12 @@
                 <a:textbox id="txtSFPatterns" tabindex="1001" skin="searchbox" flex="1" initial-message="*.*" focusselect="true"/>
                 <a:radiobutton margin="3 0 0 0"
                   group  = "grpSFScope"
-                  skin   = "radio_grey"
+                  skin   = "radio_black"
                   value  = "projects"
                   label  = "Project" />
                 <a:radiobutton id="rbSFSelection" margin="3 0 0 0"
                   group  = "grpSFScope"
-                  skin   = "radio_grey"
+                  skin   = "radio_black"
                   value  = "selection"
                   label  = "Selection"
                   selected = "true" />

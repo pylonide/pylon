@@ -156,7 +156,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     _self.updateInputRegExp(txtSFFind);
             }
             else
-                txtSFFind.$input.innerHTML = txtSFFind.getValue();
+                _self.removeInputRegExp(txtFind);
         });
         
         var cbs = winSearchInFiles.getElementsByTagNameNS(apf.ns.aml, "checkbox");
@@ -260,6 +260,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     
                 if (value) {p
                     txtFind.setValue(value);
+                    
+                    delete txtFind.$undo;
+                    delete txtFind.$redo;
                     
                     if (chkRegEx.checked)
                         this.updateInputRegExp(txtSFFind);

@@ -201,9 +201,11 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (page) {
             var hasChanged = Util.pageHasChanged(tabEditors.getPage());
             if (Util.isAutoSaveEnabled() && hasChanged) {
+                apf.setStyleClass(btnSave, "saving",["saved"]);
                 return btnSave.setCaption("Saving...");
             }
             else if (!hasChanged) {
+                apf.setStyleClass(btnSave, "saved",["saving"]);
                 return btnSave.setCaption("All changes saved");
             }
         }
