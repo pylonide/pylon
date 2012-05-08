@@ -184,9 +184,6 @@ module.exports = {
     },
     
     updateInputRegExp : function(txtFind, e){
-        if (!txtFind.getValue())
-            return;
-        
         // Find cursor position
         var selection = window.getSelection();
         var a = selection.anchorNode;
