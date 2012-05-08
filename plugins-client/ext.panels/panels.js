@@ -52,6 +52,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         ide.addEventListener("init." + panelExt.path, function(e){
             panelExt.panel.setAttribute("draggable", "false");
+            panelExt.panel.$ext.style.zIndex = 100;
         });
         
         ide.addEventListener("settings.load", function(){

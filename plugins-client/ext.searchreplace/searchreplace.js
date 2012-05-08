@@ -181,10 +181,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         apf.importCssString(_self.css);
         
         ide.addEventListener("init.ext/console/console", function(e){
-            mainRow.insertBefore(winSearchReplace, winDbgConsole);
+            mainRow.insertBefore(winSearchReplace, e.ext.splitter);
         });
-        if (winSearchReplace.parentNode != mainRow)
-            mainRow.insertBefore(winSearchReplace, self.winDbgConsole || null);
+        if (winSearchReplace.parentNode != mainRow) {
+            mainRow.insertBefore(winSearchReplace, 
+                self.winDbgConsole && winDbgConsole.previousSibling || null);
+        }
         
         txtFind.addEventListener("clear", function() {
             _self.execFind();
@@ -228,6 +230,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     return false;
                 }
             });
+            
+            _self.addTooltipsToCheckboxes(this);
         });
         
         var blur = function(e){
@@ -240,7 +244,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         winSearchReplace.addEventListener("blur", blur);
         txtFind.addEventListener("blur", blur);
         
-        var tt = document.body.appendChild(tooltipSearchReplace.$ext);
+        document.body.appendChild(tooltipSearchReplace.$ext);
         
         chkRegEx.addEventListener("prop.value", function(e){
             if (apf.isTrue(e.value)) {
@@ -251,13 +255,17 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 txtFind.$input.innerHTML = txtFind.getValue();
         });
         
-        var cbs = winSearchReplace.getElementsByTagNameNS(apf.ns.aml, "checkbox");
+        this.addTooltipsToCheckboxes(hboxFind);
+    },
+    
+    addTooltipsToCheckboxes : function(parent){
+        var cbs = parent.getElementsByTagNameNS(apf.ns.aml, "checkbox");
         cbs.forEach(function(cb){
             tooltip.add(cb.$ext, {
                 message : cb.label,
                 width : "auto",
                 timeout : 0,
-                tooltip : tt,
+                tooltip : tooltipSearchReplace.$ext,
                 animate : false,
                 getPosition : function(){
                     var pos = apf.getAbsolutePosition(winSearchReplace.$ext);
@@ -290,7 +298,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         setTimeout(function() {
             if (oIter.parentNode && txtFind && txtFind.$button) {
                 width = oIter.parentNode.offsetWidth || 0;
-                txtFind.$button.style.right = width + "px";
+                txtFind.$button.style.right = width + 45 + "px";
             }
         });
 

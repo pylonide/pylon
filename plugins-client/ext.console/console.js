@@ -540,7 +540,10 @@ module.exports = ext.register("ext/console/console", {
 
         apf.importCssString(this.css);
 
-        winDbgConsole.previousSibling.hide();
+        this.splitter = mainRow.insertBefore(new apf.splitter({
+            scale : "bottom",
+            visible : false
+        }), winDbgConsole);
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
@@ -584,12 +587,12 @@ module.exports = ext.register("ext/console/console", {
             });
         });
 
-        winDbgConsole.previousSibling.addEventListener("dragdrop", function(e){
+        this.splitter.addEventListener("dragdrop", function(e){
             settings.model.setQueryValue("auto/console/@height",
                 _self.height = winDbgConsole.height)
         });
 
-        this.nodes.push(winDbgConsole);
+        this.nodes.push(winDbgConsole, this.splitter);
 
         this.keyEvents[KEY_UP] = function(input) {
             var newVal = _self.cliInputHistory.getPrev() || "";
@@ -818,6 +821,8 @@ module.exports = ext.register("ext/console/console", {
     hide: function(immediate) { this._show(false, immediate); },
 
     _show: function(shouldShow, immediate) {
+        var _self = this;
+        
         if (this.hidden != shouldShow)
             return;
 
@@ -835,13 +840,13 @@ module.exports = ext.register("ext/console/console", {
                 }
                 else {
                     winDbgConsole.$ext.style.minHeight = _self.minHeight + "px";
-                    this.maxHeight = window.innerHeight - 70;
+                    _self.maxHeight = window.innerHeight - 70;
                     winDbgConsole.$ext.style.maxHeight = this.maxHeight + "px";
                 }
 
                 winDbgConsole.height = height + 1;
                 winDbgConsole.setAttribute("height", height);
-                winDbgConsole.previousSibling[shouldShow ? "show" : "hide"]();
+                _self.splitter[shouldShow ? "show" : "hide"]();
                 winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
                 _self.animating = false;
@@ -852,7 +857,6 @@ module.exports = ext.register("ext/console/console", {
             }, 100);
         };
 
-        var _self = this;
         var height;
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (shouldShow) {
