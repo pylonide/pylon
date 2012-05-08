@@ -122,8 +122,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             this.model = new apf.model().load("<configurations />")
         );
         
-        btnRun.$ext.className = "btnRun";
-        btnStop.$ext.className = "btnStop";
+        apf.setStyleClass(btnRun.$ext, "btnRun");
+        apf.setStyleClass(btnStop.$ext, "btnStop");
 
         tooltip.add( btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications.\
