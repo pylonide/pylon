@@ -314,20 +314,20 @@
         	background-position: 0px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnOver {
-        	background-position: -39px -346px;
+        	background-position: -40px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnDown {
-            background-position: -78px -346px;
+            background-position: -80px -346px;
 
         }
         .black-menu-bar .c9-logo {
-            background-position: -117px -346px;
+            background-position: -120px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnOver {
-        	background-position: -156px -346px;
+        	background-position: -160px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnDown {
-            background-position: -195px -346px;
+            background-position: -200px -346px;
         }
         .black-menu-bar .c9-logo .icon{
             display : none;
