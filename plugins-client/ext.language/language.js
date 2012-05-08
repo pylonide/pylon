@@ -164,6 +164,10 @@ module.exports = ext.register("ext/language/language", {
         }
     },
     
+    isContinuousCompletionEnabled: function() {
+        return !!this.defaultKeyHandler;
+    },
+    
     updateSettings: function() {
         // Currently no code editor active
         if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())

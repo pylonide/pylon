@@ -71,6 +71,7 @@ module.exports = {
     },
     
     enableVariableRefactor: function(data) {
+        var _self = this;
         // Temporarily disable these markers, to prevent weird slow-updating events whilst typing
         marker.disableMarkerType('occurrence_main');
         marker.disableMarkerType('occurrence_other');
@@ -83,8 +84,13 @@ module.exports = {
             ace.moveCursorTo(mainPos.row, mainPos.column);
         }
         p.showOtherMarkers();
+        var continuousCompletionWasEnabled = this.ext.isContinuousCompletionEnabled;
+        if(continuousCompletionWasEnabled)
+            this.ext.setContinuousCompletion(false);
         p.on("cursorLeave", function() {
             p.detach();
+            if(continuousCompletionWasEnabled)
+                _self.ext.setContinuousCompletion(true);
             marker.enableMarkerType('occurrence_main');
             marker.enableMarkerType('occurrence_other');
         });
