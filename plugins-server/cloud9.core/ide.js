@@ -259,6 +259,8 @@ util.inherits(Ide, EventEmitter);
     };
 
     this.dispose = function(callback) {
+        this.emit("destroy");
+        
         this.workspace.dispose(callback);
     };
 }).call(Ide.prototype);
