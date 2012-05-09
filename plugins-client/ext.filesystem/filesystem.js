@@ -387,7 +387,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
-                sender: "filesystem"
+                sender: "filesystem",
+                extra: e.data.extra
             });
             return false;
         }

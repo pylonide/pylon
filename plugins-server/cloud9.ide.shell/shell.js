@@ -107,13 +107,17 @@ util.inherits(ShellPlugin, Plugin);
 
         Fs.stat(path, function(err, stat) {
             if (err) {
-                return self.sendResult(0, "error",
-                    err.toString().replace("Error: ENOENT, ", ""));
+                return self.sendResult(0, "error", {
+                    errmsg: "Problem opening file; it does not exist or something else failed. More info: " +
+                        err.toString().replace("Error: ENOENT, ", ""),
+                    extra: message.extra
+                });
             }
             self.sendResult(0, "internal-isfile", {
                 cwd: path,
                 isfile: (stat && !stat.isDirectory()),
-                sender: message.sender || "shell"
+                sender: message.sender || "shell",
+                extra: message.extra
             });
         });
     };
@@ -175,12 +179,19 @@ util.inherits(ShellPlugin, Plugin);
 
         Fs.stat(path, function(err, stat) {
             if (err) {
-                return self.sendResult(0, "error",
-                    err.toString().replace("Error: ENOENT, ", ""));
+                return self.sendResult(0, "error", {
+                    errmsg: "Problem changing directory; it does not exist or something else failed. More info: " +
+                        err.toString().replace("Error: ENOENT, ", ""),
+                    extra: message.extra
+                });
             }
 
-            if (!stat.isDirectory())
-                return self.sendResult(0, "error", "Not a directory.");
+            if (!stat.isDirectory()) {
+                return self.sendResult(0, "error", {
+                    errmsg: "Not a directory.",
+                    extra: message.extra
+                });
+            }
 
             self.sendResult(0, message.command, {
                 cwd: path,

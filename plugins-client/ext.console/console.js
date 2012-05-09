@@ -63,7 +63,7 @@ module.exports = ext.register("ext/console/console", {
         },
 
         error: function(message, outputElDetails) {
-            logger.logNodeStream(message.body, null, outputElDetails, ide);
+            logger.logNodeStream(message.body.errmsg, null, outputElDetails, ide);
         },
 
         info: function (message, outputElDetails) {
@@ -216,9 +216,8 @@ module.exports = ext.register("ext/console/console", {
             .join("");
 
         var outputId = "console_section" + command_id_tracer;
-        var loggerOutput = logger.log(line, "prompt", spinnerBtn,
-            '<div class="prompt_spacer"></div>', useOutput, outputId);
-        //logger.logNodeStream(loggerOutput, null, useOutput, ide);
+        logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>',
+            useOutput, outputId);
 
         var outputEl = document.getElementById(outputId);
         apf.setStyleClass(outputEl, "loading");
@@ -272,7 +271,10 @@ module.exports = ext.register("ext/console/console", {
                 line: line,
                 cwd: this.getCwd(),
                 requireshandling: true,
-                tracer_id: this.command_id_tracer
+                tracer_id: this.command_id_tracer,
+                extra : {
+                    command_id : this.command_id_tracer
+                }
             };
 
             if (cmd.trim() === "npm")
@@ -321,6 +323,7 @@ module.exports = ext.register("ext/console/console", {
             }
         }
 
+        this.markProcessAsCompleted(data.tracer_id);
         this.command_id_tracer++;
         return true;
     },
@@ -470,8 +473,14 @@ module.exports = ext.register("ext/console/console", {
 
         // If we get to this point and `extra` is available, it's a process that
         // sends all its stdout _after_ it has quit. Thus, we complete it here
-        if (extra)
+        if (extra) {
+            if (message.subtype === "internal-isfile") {
+                var fileOutputMsg = message.body.isfile ? "File opened" : "File not found";
+                logger.logNodeStream(fileOutputMsg, null,
+                    this.getLogStreamOutObject(extra.command_id), ide);
+            }
             this.markProcessAsCompleted(extra.command_id);
+        }
 
         ide.dispatchEvent("consoleresult." + message.subtype, {
             data: message.body
