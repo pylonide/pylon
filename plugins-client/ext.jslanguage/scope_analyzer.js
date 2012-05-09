@@ -29,7 +29,7 @@ var GLOBALS = {
     "this"                   : true,
     "arguments"              : true,
     self                     : true,
-    Infinity                 : true,
+    "Infinity"               : true,
     onmessage                : true,
     postMessage              : true,
     importScripts            : true,
