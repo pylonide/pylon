@@ -73,8 +73,6 @@ module.exports = ext.register("ext/console/console", {
         ps: function(message, outputElDetails) {
             if (message.body.extra.sentatinit)
                 this.recreateLogStreamBlocks(message.body.out);
-
-            logger.logNodeStream("", null, outputElDetails, ide);
         },
 
         __default__: function(message, outputElDetails) {
@@ -86,8 +84,11 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    recreateLogStreamBlocks : function(serverProcs) {
+    recreateLogStreamBlocks: function(serverProcs) {
         for (var spi in serverProcs) {
+            if (this.pidToTracerMap[spi])
+                continue;
+
             var proc = serverProcs[spi];
 
             var original_line;
@@ -122,7 +123,7 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    getLogStreamOutObject : function(tracer_id, idIsPid, originalInput) {
+    getLogStreamOutObject: function(tracer_id, idIsPid, originalInput) {
         if (idIsPid)
             tracer_id = this.pidToTracerMap[tracer_id];
         var id = "section" + tracer_id;
@@ -215,7 +216,9 @@ module.exports = ext.register("ext/console/console", {
             .join("");
 
         var outputId = "console_section" + command_id_tracer;
-        logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>', useOutput, outputId);
+        var loggerOutput = logger.log(line, "prompt", spinnerBtn,
+            '<div class="prompt_spacer"></div>', useOutput, outputId);
+        //logger.logNodeStream(loggerOutput, null, useOutput, ide);
 
         var outputEl = document.getElementById(outputId);
         apf.setStyleClass(outputEl, "loading");
@@ -486,6 +489,8 @@ module.exports = ext.register("ext/console/console", {
     hook: function() {
         var _self = this;
 
+        ide.addEventListener("socketMessage", this.onMessage.bind(this));
+
         commands.addCommand({
             name: "help",
             hint: "show general help information and a list of available commands",
@@ -602,16 +607,18 @@ module.exports = ext.register("ext/console/console", {
         mainRow.appendChild(winDbgConsole);
         winDbgConsole.previousSibling.hide();
 
-        ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
             var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
             if (!editors)
                 editors = require("ext/editors/editors");
-            if (data.isfile)
+            if (data.isfile) {
                 editors.showFile(path);
-            else
-                logger.log("'" + path + "' is not a file.");
+            }
+            else {
+                // @TODO Update
+                //logger.log("'" + path + "' is not a file.");
+            }
         });
 
         txtConsoleInput.addEventListener("keyup", this.keyupHandler.bind(this));
@@ -707,6 +714,8 @@ module.exports = ext.register("ext/console/console", {
         apf.setStyleClass(txtConsole.$ext, "feedback");
         apf.setStyleClass(txtOutput.$ext, "feedback");
 
+        logger.appendConsoleFragmentsAfterInit();
+        
         this.getRunningServerProcesses();
     },
 
