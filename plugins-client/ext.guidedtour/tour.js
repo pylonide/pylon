@@ -10,7 +10,7 @@ this.tour = {
         el: undefined,
         div: "navbar",
         desc: "This is the project bar. It controls the behavior of the IDE, as well as the presentation of your code.",
-        pos: "right",
+        pos: "bottom",
         time: 4
     }, {
         before: function() {
@@ -76,12 +76,12 @@ this.tour = {
                 save = require("ext/save/save");
             var page = tabEditors.getPage();
             var file = page.$model.data;
-            save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-quideTour.js");
+            save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-guidedTour.js");
             require("ext/tree/tree").refresh();
         },
         el: undefined,
         div: "ceEditor",
-        desc: "We've just typed up a quick code example and saved it as \"helloWorld-quideTour.js.\" We'll work with this file, then delete it when we're done.",
+        desc: "We've just typed up a quick code example and saved it as \"helloWorld-guidedTour.js.\" We'll work with this file, then delete it when we're done.",
         pos: "left",
         time: 5
     }, {
@@ -270,22 +270,22 @@ this.tour = {
         before: function() {
             require('ext/runpanel/runpanel').stop();
             
-            if(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']")) {
+            if(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-guidedTour.js']")) {
                 require("ext/console/console").commandTextHandler({
                     keyCode: 13,
                     currentTarget: txtConsoleInput
                 });
-                txtConsoleInput.setValue("rm helloWorld-quideTour.js");
+                txtConsoleInput.setValue("rm helloWorld-guidedTour.js");
             }
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
-        desc: "As expected, there's been a new file added to git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-quideTour.js'.",
+        desc: "As expected, there's been a new file added to git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-guidedTour.js'.",
         pos: "top",
         time: 4
     }, {
         before: function() {
             panels.activate(require("ext/tree/tree"));
-            var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
+            var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-guidedTour.js']");
             if(demoFile && !deletedFile) {
                 deletedFile = true;
                 tabEditors.remove(tabEditors.getPage());
