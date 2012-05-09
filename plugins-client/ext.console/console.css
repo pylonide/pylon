@@ -76,6 +76,7 @@
 .console_text.feedback .output_section.collapsed:hover,
 .console_text.feedback .output_section.collapsed.quit_proc:hover {
     background: #38393a;
+    cursor: default;
 }
 
 /** Deprecated **/
