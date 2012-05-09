@@ -28,7 +28,7 @@ module.exports = ext.register("ext/ftp/ftp", {
 
     hook: function(){
         ext.initExtension(this);
-
+        
         // hack to hide the dock panel!!
         if (window.dockPanelRight)
             dockPanelRight.setAttribute("visible", false);
@@ -40,19 +40,28 @@ module.exports = ext.register("ext/ftp/ftp", {
         apf.importCssString(this.css || "");
 
         if (!this.$panel) {
-            tabConsole.remove("console"); // remove Console tab
-            tabConsole.remove("output"); // remove Output tab
-            btnConsoleClear.hide();
-            txtConsoleInput.hide();
-
-            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.appendChild(ftpConsoleHbox);
-            tabConsole.set(this.$panel);
+            ide.addEventListener("init.ext/console/console", function(){ 
+                // remove the console and output panels and add a super FTP panel
+                // to the console
+                
+                tabConsole.remove("console"); // remove Console tab
+                tabConsole.remove("output"); // remove Output tab
+                btnConsoleClear.hide();
+                txtConsoleInput.hide();
+    
+                this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+                this.$panel.appendChild(ftpConsoleHbox);
+                tabConsole.set(this.$panel);
+            });
         }
     },
 
     log: function(msg, type, code) {
-        if (!tabConsole.visible)
+        if (typeof tabConsole === "undefined") {
+            return;
+        }
+        
+        if (typeof tabConsole !== "undefined" && tabConsole.visible)
             ideConsole.enable();
 
         // Converts HTML special characters to their entity equivalents.
