@@ -14,6 +14,7 @@ var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var markup = require("text!ext/gotofile/gotofile.xml");
 var search = require('ext/gotofile/search');
+var filelist = require("ext/filelist/filelist");
 
 module.exports = ext.register("ext/gotofile/gotofile", {
     name    : "Go To File",
@@ -26,6 +27,8 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
     dirty   : true,
     nodes   : [],
+    
+    arraySearchResults : [],
 
     hook : function(){
         var _self = this;
@@ -100,9 +103,9 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         txtGoToFile.addEventListener("afterchange", function(e){
             _self.filter(txtGoToFile.value);
             
-            if (_self.dirty && txtGoToFile.value.length > 0 && _self.modelCache.data) {
+            if (_self.dirty && txtGoToFile.value.length > 0 && _self.model.data) {
                 _self.dirty = false;
-                _self.updateFileCache();
+                _self.updateFileCache(true);
             }
         });
         
@@ -149,71 +152,77 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.toggleDialog(-1, true);
         });
         
+        this.updateDatagrid();
+        
         this.nodes.push(winGoToFile);
     },
     
-    updateFileCache : function(){
+    updateFileCache : function(isDirty){
         var _self = this;
 
-        //@todo create an allfiles plugin that plugins like gotofile can depend on
-        davProject.report(ide.davPrefix, 'filelist', {
-            showHiddenFiles: "1" //apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"));
-          }, 
-          function(data, state, extra){
-            if (state == apf.ERROR) {
-                if (data && data.indexOf("jsDAV_Exception_FileNotFound") > -1) {
-                    return;
-                }
-
-                //@todo
+        filelist.getFileList(isDirty, function(data, state){
+            if (state != apf.SUCCESS)
                 return;
-            }
-            if (state == apf.TIMEOUT)
-                return; //@todo
 
-            /**
-             * Putting this in a worker won't help
-             * An alternative solution would be to do this in parts of 10ms
-             */
             var array = data.replace(/^\./gm, "").split("\n");
             array.pop(); //remove trailing empty element;
             
             var start = "<d:href>";
             var end   = "</d:href>";
             var glue  = end + start;
+            
+            var c = array.length; 
+            var arrN = []; 
+            while(c--) { arrN.unshift(c); }
+            
             data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
-                + start + array.join(glue) + end + "</d:response></d:multistatus>");
+                + start + arrN.join(glue) + end + "</d:response></d:multistatus>");
 
             _self.arrayCache = array;
-            _self.modelCache.load(data);
             
-            if (self.winGoToFile && winGoToFile.visible && _self.lastSearch) {
-                var search = _self.lastSearch;
-                
-                _self.lastSearch = null; //invalidate cache
-                var state = {
-                    sel : dgGoToFile.getSelection(), //store previous selection
-                    caret : dgGoToFile.caret,
-                    scrollTop : dgGoToFile.$viewport.getScrollTop()
-                };
-                
-                _self.filter(search, state.sel.length);
-                
-                if (state.sel.length && state.sel.length < 100) {
-                    var list = [], sel = state.sel;
-                    for (var i = 0, l = sel.length; i < l; i++) {
-                        list.push(dgGoToFile.queryNode("//d:href[text()='" 
-                            + sel[i].firstChild.nodeValue + "']"));
+            if (self.winGoToFile && _self.lastSearch) {
+                winGoToFile.addEventListener("prop.visible", function(){
+                    var search = _self.lastSearch;
+                    _self.lastSearch = null; //invalidate cache
+                    
+                    var sel = [];
+                    dgGoToFile.getSelection().forEach(function(node){
+                        var i = node.firstChild.nodeValue;
+                        sel.push(_self.arraySearchResults[i]);
+                    })
+                    
+                    var state = {
+                        sel : sel, //store previous selection
+                        caret : dgGoToFile.caret && _self.arraySearchResults[dgGoToFile.caret.firstChild.nodeValue],
+                        scrollTop : dgGoToFile.$viewport.getScrollTop()
+                    };
+
+                    _self.model.load(data);
+                    _self.filter(search, state.sel.length);
+                    
+                    if (state.sel.length && state.sel.length < 100) {
+                        var list = [], sel = state.sel;
+                        for (var i = 0, l = sel.length; i < l; i++) {
+                            list.push(dgGoToFile.queryNode("//d:href[text()='" 
+                                + _self.arraySearchResults.indexOf(sel[i]) + "']"));
+                        }
+                        dgGoToFile.selectList(list);
+                        if (state.caret)
+                            dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
+                                + _self.arraySearchResults.indexOf(state.caret) + "']"));
+                        dgGoToFile.$viewport.setScrollTop(state.scrollTop);
                     }
-                    dgGoToFile.selectList(list);
-                    if (state.caret)
-                        dgGoToFile.setCaret(dgGoToFile.queryNode("//d:href[text()='" 
-                            + state.caret.firstChild.nodeValue + "']"));
-                    dgGoToFile.$viewport.setScrollTop(state.scrollTop);
-                }
+                    
+                    winGoToFile.removeEventListener("prop.visible", arguments.callee);
+                });
             }
-            else
-                _self.model.load(_self.modelCache.data);
+            else {
+                _self.arraySearchResults = array;
+                _self.model.load(data);
+                
+                if (self.dgGoToFile)
+                    _self.updateDatagrid();
+            }
         });
     },
     
@@ -222,15 +231,13 @@ module.exports = ext.register("ext/gotofile/gotofile", {
      * 
      */
     filter : function(keyword, nosel){
-        var data;
-        
-        if (!this.modelCache.data) {
+        if (!this.model.data) {
             this.lastSearch = keyword;
             return;
         }
         
         if (!keyword)
-            data = this.modelCache.data.cloneNode(true);
+            this.arraySearchResults = this.arrayCache;
         else {
             var nodes;
     
@@ -240,15 +247,15 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             else
                 nodes = this.arrayCache;
                 
-            var cache = [], xml = search(nodes, keyword, cache);
-            data = apf.getXml(xml);
-    
+            var cache = []
+            
+            this.arraySearchResults = search(nodes, keyword, cache);
             this.arrayCacheLastSearch = cache;
         }
         
         this.lastSearch = keyword;
         
-        this.model.load(data);
+        this.updateDatagrid();
         
         // See if there are open files that match the search results
         // and the first if in the displayed results
@@ -274,16 +281,56 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             dgGoToFile.select(selNode);
     },
     
+    updateDatagrid : function(){
+        var vp = dgGoToFile.$viewport;
+        
+        if (!this.arraySearchResults.length) {
+            dgGoToFile.clear("empty");
+        }
+        else {
+            dgGoToFile.$removeClearMessage();
+            dgGoToFile.load(this.model.data);
+            
+            vp.length = this.arraySearchResults.length;
+            var limit = Math.ceil(vp.getHeight() / vp.$getItemHeight() + 2);
+            if (limit > vp.length)
+                vp.resize(vp.length);
+            else if (vp.length > limit && vp.limit != 11)
+                vp.resize(Math.min(vp.length, 11));
+            vp.change(0, vp.limit, true);
+            
+            if (!dgGoToFile.selected)
+                dgGoToFile.select(dgGoToFile.getFirstTraverseNode())
+        }
+        
+        if (!vp.length) {
+            dgGoToFile.setAttribute('height', 18);
+        }
+        else if (vp.length < 100) {
+            var sh = vp.getScrollHeight();
+            if (sh / vp.length == 1000)
+                return setTimeout(arguments.callee.bind(dgGoToFile));
+            
+            var ht = Math.min(350, sh);
+            if (ht != dgGoToFile.height)
+                dgGoToFile.setAttribute('height', ht);
+        }
+        else if (dgGoToFile.height != 350) {
+            dgGoToFile.setAttribute('height', 350);
+        }
+    },
+    
     openFile: function(noanim){
         var nodes = dgGoToFile.getSelection();
         
         if (nodes.length == 0)
             return false;
-            
+        
+        var _self = this;
         this.toggleDialog(-1, noanim, function(){
             for (var i = 0; i < nodes.length; i++) {
                 var path = ide.davPrefix.replace(/[\/]+$/, "") + "/" 
-                    + apf.getTextNode(nodes[i]).nodeValue.replace(/^[\/]+/, "");
+                    + _self.arraySearchResults[nodes[i].firstChild.nodeValue].replace(/^[\/]+/, "");
                 editors.showFile(path);
                 ide.dispatchEvent("track_action", {type: "fileopen"});
             }
@@ -336,7 +383,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             
             txtGoToFile.select();
             txtGoToFile.focus();
-            this.dirty = true;
+            this.dirty = true; //@todo this can be optimized by only marking as dirty on certain events
             
             // If we had a filter and new content, lets refilter
             if (this.lastSearch) {

@@ -293,9 +293,9 @@ module.exports = ext.register("ext/code/code", {
         else {
             doc.isInited = doc.hasValue();
             doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
-            doc.acesession = new EditSession(doc.acedoc);
             var syntax = _self.getSyntax(doc.getNode());
-            doc.acesession.setMode(ceEditor.getMode(syntax));
+            var mode = ceEditor.getMode(syntax);
+            doc.acesession = new EditSession(doc.acedoc, mode);
             doc.acesession.syntax = syntax;
             doc.acedoc = doc.acesession.getDocument();
             doc.acesession.c9doc = doc;
@@ -326,10 +326,7 @@ module.exports = ext.register("ext/code/code", {
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
             });
 
-            if (doc.value)
-                ceEditor.setProperty("value", doc.acesession);
-            else
-                ceEditor.setProperty("value", "");
+            ceEditor.setProperty("value", doc.acesession || "");
 
             doc.addEventListener("retrievevalue", function(e) {
                 if (this.editor != _self)
@@ -405,12 +402,11 @@ module.exports = ext.register("ext/code/code", {
 
                 return isAvailable ? isAvailable(editor) : true;
             }
-            var exec = command.exec;
-            command.exec = function(editor, args){
-                if (editor && editor.ceEditor)
-                    editor = editor.ceEditor.$editor;
 
-                exec.call(this, editor, args);
+            command.findEditor = function(editor) {
+                if (editor && editor.ceEditor)
+                    return editor.ceEditor.$editor;
+                return editor;
             }
         }
 
@@ -708,21 +704,25 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
-                checked : "[{require('core/settings').model}::editors/code/@wrapmode]",
+                checked : "[{tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
                 isAvailable : function(editor){
                     return editor && editor.ceEditor;
                 }
             }), 500000),
 
             menus.addItemByPath("View/Wrap To Viewport", new apf.item({
-                wrapmode : "[{require('core/settings').model}::editors/code/@wrapmode]",
+                id : "mnuWrapView",
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
-                "onprop.wrapmode" : function(e){
-                    this.setAttribute("disabled", !apf.isTrue(e.value))
-                },
                 isAvailable : function(editor){
-                    return editor && editor.ceEditor;
+                    if (!editor || !editor.ceEditor)
+                        return false;
+                        
+                    var page = tabEditors.getPage();
+                    if (page.$model) 
+                        return apf.isTrue(page.$model.queryValue("@wrapmode"));
+                    
+                    return false;
                 }
             }), 600000)
         );
@@ -792,12 +792,6 @@ module.exports = ext.register("ext/code/code", {
         ceEditor.getMode("html", noop);
         ceEditor.getMode("css", noop);
 
-        var menuShowInvisibles = new apf.item({
-            type    : "check",
-            caption : "Show Invisibles",
-            checked : "[{require('core/settings').model}::editors/code/@showinvisibles]"
-        });
-
         ide.addEventListener("reload", function(e) {
             var doc = e.doc;
             doc.state = doc.$page.$editor.getState
@@ -819,11 +813,6 @@ module.exports = ext.register("ext/code/code", {
             }
 
             apf.xmldb.setAttribute(doc.getNode(), "changed", "0");
-        });
-
-        ide.addEventListener("init.ext/statusbar/statusbar", function (e) {
-            // add preferences to the statusbar plugin
-            e.ext.addPrefsItem(menuShowInvisibles.cloneNode(true), 0);
         });
 
         ide.addEventListener("updatefile", function(e){

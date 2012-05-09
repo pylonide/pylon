@@ -27,6 +27,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 panels.deactivate(null, true);
             else if (panels.lastPanel)
                 panels.activate(panels.lastPanel);
+            else
+                navbar.childNodes[1].dispatchEvent("mousedown")
         }
 
         this.nodes.push(
@@ -52,15 +54,15 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         var timer;
         navbar.$ext.addEventListener("mouseover", function(e){
             if (!_self.animating 
-              && navbar.getWidth() >= navbar.$int.scrollWidth
-              && apf.isChildOf(navbar.$ext, e.fromElement, true))
+              && navbar.getWidth() >= navbar.$int.scrollWidth)
+              //&& apf.isChildOf(navbar.$ext, e.fromElement, true))
                 return;
             
             clearTimeout(timer);
             if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
                 timer = setTimeout(function(){
                     _self.animateToFullWidth();
-                }, 300);
+                }, 150);
             }
         });
         
@@ -106,7 +108,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             e.options.onfinish = function(){
                 if (lastTween.to == 0)
                     apf.setStyleClass(navbar.$ext, "closed");
-                else
+                else 
                     apf.setStyleClass(navbar.$ext, "", ["closed"]);
                 
                 panels.lastPanel.button.$setState("Out", {});
@@ -149,6 +151,12 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         ide.addEventListener("tabs.visible", function(e){
             navbar.setAttribute("minwidth", 
                 !e.value ? 0 : 45);
+
+            if (e.value) {
+                apf.setStyleClass(navbar.$ext, "", ["minimized"]);
+            } else {
+                apf.setStyleClass(navbar.$ext, "minimized");
+            }
         })
     },
     
@@ -162,7 +170,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         apf.tween.single(navbar.$ext, {
             type: "width",
             from: navbar.getWidth(),
-            to: navbar.$int.scrollWidth + 6,
+            to: navbar.$int.scrollWidth + (editors.showTabs? 6 : 9),
             steps : 10,
             interval : apf.isChrome ? 0 : 5,
             control : this.animateControl = {},

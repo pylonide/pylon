@@ -8,7 +8,7 @@ module.exports = function setup(options, imports, register) {
             ext: "/ext"
         }
     }]);
-
+    
     register(null, {
         "client.cloud9": {}
     });

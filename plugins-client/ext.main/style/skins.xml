@@ -110,7 +110,7 @@
         .c9-menu-bar .c9-mbar-logo .c9-mbar-bcont .c9-offlineInfo {
             width: 158px;
             height: auto;
-            line-height : 17px;
+            line-height : 15px;
             position: absolute;
             top: 42px;
             right: 3px;
@@ -136,7 +136,14 @@
             padding: 0 74px 0 22px;
             margin: 0;
             height: 25px;
-            background-color: #232323;
+            
+            background: -moz-linear-gradient(top,  #292929, #242424); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#292929), color-stop(100%,#242424)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #292929,#242424); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #292929,#242424); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #292929,#242424); /* IE10+ */
+            background: linear-gradient(top,  #292929,#242424); /* W3C */
+            
             box-shadow: 0 1px 0 0 #353535 inset;
             border-bottom: 1px solid #000;
             border-top: 1px solid #000;
@@ -204,6 +211,7 @@
          * --------------------------------------------------------------------------------------- */
          .c9-menu-bar.minimized .c9-mbar-cont,
          .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize {
+            background-color: #262626;
             background-image: url("images/c9-repeat-x.png");
             background-repeat: no-repeat;
             background-position: 50% -13px;
@@ -219,7 +227,7 @@
          }
 
          .c9-menu-bar.minimized .c9-mbar-bcont .c9-mbar-minimize {
-         	top: 1px;
+            top: 1px;
          }
     ]]></a:style>
 
@@ -232,7 +240,7 @@
                         
                         <div class="c9-mbar-round">
                             <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
-                            <div class="c9-activity"> </div>
+                            <div id="saveStatus" class="c9-activity"> </div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
                             <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
                         </div>
@@ -305,21 +313,21 @@
         .black-menu-bar.closed .c9-logo {
         	background-position: 0px -346px;
         }
-        .black-menu-bar.closed .c9-logo.mnubtn:hover {
-        	background-position: -39px -346px;
+        .black-menu-bar.closed .c9-logo.mnubtnOver {
+        	background-position: -40px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnDown {
-            background-position: -78px -346px;
+            background-position: -80px -346px;
 
         }
         .black-menu-bar .c9-logo {
-            background-position: -117px -346px;
+            background-position: -120px -346px;
         }
-        .black-menu-bar .c9-logo.mnubtn:hover {
-        	background-position: -156px -346px;
+        .black-menu-bar .c9-logo.mnubtnOver {
+        	background-position: -160px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnDown {
-            background-position: -195px -346px;
+            background-position: -200px -346px;
         }
         .black-menu-bar .c9-logo .icon{
             display : none;
@@ -327,7 +335,7 @@
 
         .black-menu-bar .toggle-black-menu-bar {
         	background: url(images/c9-no-repeat.png) no-repeat 0 -383px;
-            box-shadow: none !important;
+            box-shadow: none;
         	cursor: pointer;
         	height: 27px;
         	position: absolute;
@@ -336,20 +344,43 @@
         	width: 5px;
         }
         .black-menu-bar.closed .toggle-black-menu-bar {
-        	background-position: 0px -383px;
+            background-position: 0px -383px;
             right : 1px;
         }
         .black-menu-bar.closed .toggle-black-menu-bar:hover {
-        	background-position: -8px -383px;
+            background-position: -8px -383px;
         }
         .black-menu-bar .toggle-black-menu-bar {
-        	background-position: -18px -383px;
+            background-position: -18px -383px;
         }
         .black-menu-bar .toggle-black-menu-bar:hover {
-        	background-position: -26px -383px;
+            background-position: -26px -383px;
         }
         .black-menu-bar .toggle-black-menu-bar .icon{
             display : none;
+        }
+        
+
+        .black-menu-bar.closed.minimized,
+        .black-menu-bar.closed.minimized .toggle-black-menu-bar {
+            border-bottom-right-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+        .black-menu-bar.closed.minimized {
+            padding-right: 9px !important;
+            border-right: 1px solid rgba(31,31,31,.8);
+            box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.05) inset, 1px 0 1px 0 rgba(255,255,255,.05) 
+        }   
+        .black-menu-bar.closed.minimized .toggle-black-menu-bar {
+            background-image: url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
+            background-position: -38px -383px, 0 -1090px;
+            background-repeat: no-repeat, repeat-x;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.03) inset;
+            right: 0px;
+            width: 9px;
+        }
+        .black-menu-bar.closed.minimized .toggle-black-menu-bar:hover {
+            background-position: -48px -383px, 0 -1030px;
         }
      ]]></a:style>
 
@@ -415,19 +446,23 @@
             border-right     : 1px solid #333;
             background       : url(images/dock_cloud9_bg.gif);
         }
-
-        .docksection{
-            /*border : 1px solid #fff;*/
-            border-bottom: 1px solid #040404;
-            -moz-box-shadow    : 0 1px 0 #404042;
-            -webkit-box-shadow : 0 1px 0 #404042;
-            box-shadow: 0 1px 0 #404042;
-            margin-bottom: 1px;
-        }
-
         .docksection {
             background       : url(images/debug-panel_bg.png) 0 0;
+            margin-bottom: 2px;
+            position: relative;
         }
+
+        .docksection:after {
+            background: url(images/c9-no-repeat.png) no-repeat -204px 0;
+            content: "";
+            display: block;
+            height: 2px;
+            left: -1px;
+            position: absolute;
+            top: 100%;
+            width: 36px;
+        }
+
 
         .docksection div:nth-child(2) {
             padding-top: 0;
@@ -972,8 +1007,9 @@
                 background-color   : #1f7224;
                 filter     : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#24872b', endColorstr='#1e6c22');
                 -ms-filter : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#24872b', endColorstr='#1e6c22')";
-                background : -webkit-gradient(linear, left top, left bottom, from(#24872b), color-stop(1, #1e6c22));
-                background :-moz-linear-gradient(center bottom, #1e6c22 0%, #24872b 80%) repeat scroll 0 0 transparent;
+                background : -webkit-linear-gradient(center bottom, #1e6c22 0%, #24872b 80%) repeat scroll 0 0 transparent;
+                background :    -moz-linear-gradient(center bottom, #1e6c22 0%, #24872b 80%) repeat scroll 0 0 transparent;
+                background :         linear-gradient(center bottom, #1e6c22 0%, #24872b 80%) repeat scroll 0 0 transparent;
 
                 border             : 1px solid #000101;
 
@@ -1192,6 +1228,7 @@
         .dockButtonDown .dockButton-footer {
             -webkit-border-top-left-radius : 5px;
             -moz-border-radius-topleft     : 5px;
+            border-radius-top-left     : 5px;
         }
 
         .dockButtonDown.btn-runcommands {
@@ -1203,6 +1240,7 @@
             height                : 32px;
             -webkit-border-radius : 3px;
             -moz-border-radius    : 3px;
+            border-radius         : 3px;
             margin                : 0px 1px 2px 4px;
             /*background-image: -webkit-gradient(
                linear,
@@ -1237,7 +1275,8 @@
 
         .dockButton .dock_icon_image {
             -webkit-border-radius : 3px;
-            -moz-border-radius    : 3px;
+               -moz-border-radius : 3px;
+                    border-radius : 3px;
             display               : inline-block;
             position              : absolute;
             top                   : 3px;
@@ -1255,7 +1294,8 @@
 
         .dockButton .dock_icon_image.dii_secondary {
             -webkit-border-radius : 5px;
-            -moz-border-radius    : 5px;
+               -moz-border-radius : 5px;
+                    border-radius : 5px;
         }
 
         .dockButton.debug1 .icon {
@@ -1527,11 +1567,6 @@
                          0 1px 0 0 rgba(255,255,255,.15) inset;
             z-index : 100000000;
         }
-        
-        .c9-menu-btnDown .c9-label{
-            color: #212121;
-            text-shadow : 0 1px 0 #5b5d63;
-        }
 
         /* Why are we using an extra div here??? */
         .c9-menu-btnDown .c9-fix {
@@ -1586,6 +1621,71 @@
     </a:presentation>
 </a:button>
 
+<a:button name="c9-toolbarbutton-light">
+    <a:style><![CDATA[
+        .c9-toolbarbutton-light {
+            border-radius: 2px;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        .c9-toolbarbutton-lightOver {
+            height: 19px;
+        }
+        .c9-toolbarbutton-lightOver,
+        .c9-toolbarbutton-lightDown {
+            background-color: rgba(255,255,255,.65);
+            background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            background-image:         linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            border-color: rgba(128,128,128,.55);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7) inset;
+            cursor: pointer;
+        }
+
+        .c9-toolbarbutton-lightDown {
+            background-color: rgba(233,233,233,.555);
+            box-shadow: 0 1px 0 0 rgba(0,0,0,.15) inset;
+        }
+        .c9-toolbarbutton-light .c9-label {
+            color: #4D4D4D;
+            height: 19px !important;
+            line-height: 21px;
+            margin-top: 0 !important;
+            padding: 0 5px 0 5px;
+            text-shadow: 0 1px 0 #FFFFFF;
+        }
+        .c9-toolbarbutton-lightIcon .c9-label {
+            padding-left: 25px;
+        }
+        .c9-toolbarbutton-lightIcon .c9-icon {
+            display: block;
+            position: absolute;
+            width:23px;
+            height:19px;
+            top:0px;
+            left:2px;
+        }
+        .c9-toolbarbutton-lightDisabled .c9-label {
+            color: #c5c5c6;
+        }
+        .c9-toolbarbutton-lightDisabled .c9-icon {
+            opacity: 0.3;
+            background-position : 0 -38px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "div[2]/text()"
+          background = "."
+          icon       = "div[1]">
+            <div class="c9-toolbarbutton-light">
+                <div class="c9-icon"></div>
+                <div class="c9-label">-</div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
 <a:button name="c9-toolbarbutton">
     <a:style><![CDATA[
         .c9-toolbarbutton {
@@ -1717,6 +1817,7 @@
             color       : #606060;
             text-shadow : rgba(0, 0, 0, 1) 0px 1px 0px;
         }
+
     ]]></a:style>
 
     <a:presentation>
@@ -1726,6 +1827,123 @@
           icon       = "div[1]">
             <div class="c9-toolbarbutton">
                 <div class="c9-icon"></div>
+                <div class="c9-label">-</div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:button name="c9-toolbarbutton-glossy">
+    <a:style><![CDATA[
+        .c9-toolbarbutton-glossy,
+        .c9-toolbarbutton-glossy .c9-label,
+        .c9-toolbarbutton-glossy .c9-label:after {
+            color: #D6D6D6;
+            cursor: default;
+            height: 23px;
+            position: relative;
+        }
+        .c9-toolbarbutton-glossy {
+            background: none !important;
+        }
+        .c9-toolbarbutton-glossy .c9-icon {
+            z-index: 100;
+        }
+        .c9-toolbarbutton-glossy .c9-label,
+        .c9-toolbarbutton-glossy .c9-label:after {
+            background: url(images/c9-no-repeat.png) no-repeat;
+        }
+        .c9-toolbarbutton-glossy .c9-icon {
+            display: none;
+        }.c9-toolbarbutton-glossy .c9-label {
+            background-position: 0px 100px; /* nothing */
+            line-height: 23px;
+            margin-right: 4px;
+            overflow: visible;
+            padding: 0 3px 0 7px;
+        }
+        .c9-toolbarbutton-glossy .c9-label:after {
+            background-position: 0px 100px; /* nothing */
+            content: "";
+            display: block;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            width: 4px;
+        }
+        .c9-toolbarbutton-glossyOver .c9-label {
+            background-position: 0px -457px; 
+        }
+        .c9-toolbarbutton-glossyOver .c9-label:after {
+            background-position: -476px -457px; 
+        }
+        .c9-toolbarbutton-glossyDown .c9-label {
+            background-position: 0px -490px; 
+        }
+        .c9-toolbarbutton-glossyDown .c9-label:after {
+            background-position: -476px -490px; 
+        }
+
+        .c9-toolbarbutton-glossyIcon .c9-icon {
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            display: block;
+            height: 19px;
+            left: 2px;
+            position: absolute;
+            top: 2px;
+            width: 23px;
+        }
+        .c9-toolbarbutton-glossyIcon .c9-label {
+            padding: 0 0 0 22px;
+        }
+
+        .btnSave .c9-icon {
+            background-image: none !important;
+            border: 1px solid #1C1C1C;
+            border-radius: 50%;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.2) inset;
+            height: 4px;
+            left: 4px;
+            top: 9px;
+            width: 4px;
+        }
+        .btnSave .c9-label {
+            padding-left: 14px;
+        }
+        .c9-toolbarbutton-glossy.initial .c9-icon {
+            display: none;
+        }
+        
+        @-webkit-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
+           @-moz-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
+               @-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
+
+        .c9-toolbarbutton-glossy.saving .c9-icon {
+            background-color: #FF8400;
+            -webkit-animation: saving .4s linear 0 infinite;
+               -moz-animation: saving .4s linear 0 infinite;
+                    animation: saving .4s linear 0 infinite;
+        }
+        .c9-toolbarbutton-glossy.saved .c9-icon {
+            background-color: #60CC00;
+        }
+        .c9-toolbarbutton-glossy.default .c9-icon {
+            background-color: #E50000;
+        }
+        .c9-toolbarbutton-glossy.disabled .c9-icon {
+            background-color: white;
+            opacity: .2;
+        }
+        
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          caption      = "div[2]/text()"
+          background = "."
+          icon       = "div[1]">
+            <div class="c9-toolbarbutton-glossy">
+                <div class="c9-icon"> </div>
                 <div class="c9-label">-</div>
             </div>
         </a:main>
@@ -1966,10 +2184,6 @@
             background-repeat   : no-repeat;
             top: -32px;
         }
-        
-        .header-btnDisabled {
-            opacity : 0.3;
-        }
 
         .panel-settings {
         	background-position: 0px -270px;
@@ -1980,34 +2194,42 @@
         	background-position: -30px -270px;
         }
         .c9-header-plus {
-        	background-position: 0px -293px;
+        	background-position: 0px -294px;
         	right:31px;
         	top: 0;
         }
-        .c9-header-plus:hover {
-        	background-position: -30px -293px;
+        .c9-header-plus.header-btnOver {
+        	background-position: -30px -294px;
+        }
+        .c9-header-plus.header-btnDisabled {
+            background-position: -60px -294px;
         }
         .c9-header-minus {
-        	background-position: 0px -321px;
-        	right: 1px;
-        	top: 0;
+            background-position: 0px -320px;
+            right: 1px;
+            top: 0;
         }
-        .c9-header-minus:hover {
-        	background-position: -30px -321px;
+        .c9-header-minus.header-btnOver {
+            background-position: -30px -320px;
         }
-
+        .c9-header-minus.header-btnDisabled {
+            background-position: -60px -320px;   
+        }
+        .header-btnOver {
+            background-color: rgba(255,255,255,.3);
+        }
+        .c9-header-plus.header-btnDown {
+            background-color: rgba(0,0,0,.05);
+        }
         .c9-header-divider:before {
-        	background: url(images/c9-no-repeat.png) no-repeat -100px -293px;
-        	content: "";
-        	display: block;
-        	height: 26px;
-        	left: 0;
-        	position: absolute;
-        	top: 0;
-        	width: 2px;
-        }
-        .c9-header-divider:hover {
-        	background-color: rgba(255,255,255,.3);
+            background: url(images/c9-no-repeat.png) no-repeat -100px -293px;
+            content: "";
+            display: block;
+            height: 26px;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 2px;
         }
     ]]></a:style>
 
@@ -2251,7 +2473,7 @@
         }
 
         .mnubtn.deploy .icon {
-            background-image:url(images/deploy.png);
+            background-position: 50% -334px;
         }
 
         .mnubtn.the_store .icon {
@@ -2700,6 +2922,92 @@
             <div class='cbcontainer'>
                 <div class='checkbox'> </div>
                 <span>-</span>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
+<a:checkbox skin="grouped_checkbox">
+    <a:style><![CDATA[
+        .grouped_checkbox_holder {
+            background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
+            border: 1px solid #010910;
+            border-radius: 3px;
+            box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset;
+            height: 27px;
+            padding: 0;
+        }
+        .grouped_checkbox_holder .cbcontainer {
+            background: url(images/c9-repeat-x.png) no-repeat 0px -474px, /* light */
+                        url(images/c9-repeat-x.png) no-repeat 100% -507px; /* dark */
+            cursor: default;
+            display: inline-block;
+            height: 25px !important;
+            padding: 0;
+            width: 28px;
+        }
+        .grouped_checkbox_holder .cbcontainerOver {
+            box-shadow: 0 0 0 1000px rgba(131,145,129,.08) inset;
+        }
+        .grouped_checkbox_holder .cbcontainer:first-child {
+            background: url(images/c9-repeat-x.png) no-repeat 100% -507px;
+            border-top-left-radius: 2px;
+            border-bottom-left-radius: 2px;
+        }
+        .grouped_checkbox_holder .cbcontainer:last-child {
+            background: url(images/c9-repeat-x.png) no-repeat 0px -474px;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+        }
+        .grouped_checkbox_holder .cbcontainerDown,
+        .grouped_checkbox_holder .cbcontainerChecked {
+            background: none;
+            box-shadow: -1px 0 0 0 #010910, -1px 0 0 0 #010910 inset, 0 0 3px 2px #1a1a1a inset;
+        }
+        .grouped_checkbox_holder .cbcontainerDown:first-child,
+        .grouped_checkbox_holder .cbcontainerChecked:first-child {
+            box-shadow: 0 0 3px 2px #1a1a1a inset;
+        }
+        .grouped_checkbox_holder .cbcontainerDown:last-child,
+        .grouped_checkbox_holder .cbcontainerChecked:last-child {
+            box-shadow: -1px 0 0 0 #010910, 0 0 3px 2px #1a1a1a inset;
+        }
+        .grouped_checkbox_holder .cbcontainer .checkbox {
+            background: url(images/c9-repeat-x.png) no-repeat 50% 0;
+            border: 0;
+            height: 25px;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+
+        .grouped_checkbox_holder .chkRegEx .checkbox { background-position: 50% -540px; }
+        .grouped_checkbox_holder .chkRegEx.cbcontainerChecked .checkbox { background-position: 50% -565px; }
+        .grouped_checkbox_holder .chkMatchCase .checkbox { background-position: 50% -590px; }
+        .grouped_checkbox_holder .chkMatchCase.cbcontainerChecked .checkbox { background-position: 50% -615px; }
+        .grouped_checkbox_holder .chkWholeWords .checkbox { background-position: 50% -640px; }
+        .grouped_checkbox_holder .chkWholeWords.cbcontainerChecked .checkbox { background-position: 50% -665px; }
+        .grouped_checkbox_holder .chkPreserveCase .checkbox { background-position: 50% -690px; }
+        .grouped_checkbox_holder .chkPreserveCase.cbcontainerChecked .checkbox { background-position: 50% -715px; }
+        .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
+        .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
+        
+        .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -890px; }
+        .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background-position: 50% -915px; }
+        
+        .grouped_checkbox_holder .chkSearchSelection .checkbox { background-position: 50% -840px; }
+        .grouped_checkbox_holder .chkSearchSelection.cbcontainerChecked .checkbox { background-position: 50% -865px; }
+        .grouped_checkbox_holder .chkHighlightMatches .checkbox { background-position: 50% -740px; }
+        .grouped_checkbox_holder .chkHighlightMatches.cbcontainerChecked .checkbox { background-position: 50% -765px; }
+        
+        .grouped_checkbox_holder .cbcontainer span {
+            display: none;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main label="span/text()" minheight="18" minwidth="18">
+            <div class='grouped_checkbox_holder'>
+                <div class='checkbox'> </div>
+                <span class='label'>-</span>
             </div>
         </a:main>
     </a:presentation>
@@ -4416,17 +4724,15 @@
             margin              : 0 0 0 0;
             display             : none;
             background-color    : #1c1c1c;
-            border              : 1px solid rgba(255, 255, 255, 0.1);
-            padding             : 0 0 0 0;
+            border              : 1px solid #00040A;
+            padding             : 0 3px 0;
 
             -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
 
-            filter             : progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626');
-            -ms-filter         : "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#1c1c1c', endColorstr='#262626')";
-            background         : -webkit-gradient(linear, left top, left bottom, from(#1c1c1c), color-stop(0.9, #262626));
-            background         :-moz-linear-gradient(center bottom, #262626 0%, #1c1c1c 20%) repeat scroll 0 0 transparent;
+            background: #494949;
+            margin-top: 2px;
         }
 
         .c9-optionList .c9-dd-item {
@@ -4434,7 +4740,7 @@
             padding:3px 6px 0 6px;
             position:relative;
             overflow:hidden;
-            font-family   : Tahoma, Arial;
+            font-family   : Arial;
             font-size     : 11px;
             line-height   : 14px;
             color         : white;
@@ -4469,6 +4775,123 @@
         </a:empty>
     </a:presentation>
 </a:dropdown>
+<a:dropdown name="light_dropdown">
+    <a:style><![CDATA[
+        .light_dropdown {
+            background-color: rgba(255,255,255,.65);
+            background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            background-image:         linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            border: 1px solid rgba(128, 128, 128, .55);
+            border-radius: 5px;
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 0 0 rgba(255,255,255,.5) inset;
+            height: 23px !important;
+            position: relative;
+        }
+        .light_dropdown .label {
+            color: #4d4d4d;
+            height: 23px;
+            line-height: 21px;
+            padding: 0 0 0 10px;
+            text-shadow: 0 1px 0 rgba(247,247,247,1);
+        }
+        .light_dropdown .button {
+            background: url(images/c9-no-repeat.png) no-repeat -80px -390px;
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.55), 0 1px 0 0 #fff inset;
+            border-radius: 0 5px 5px 0;
+            height: 21px;
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            width: 15px;
+        }
+        .light_dropdownOver {
+            background-color: rgba(229,229,229,.5);
+        }
+        .light_dropdownDown {
+            background-color: rgba(255,255,255,.1);
+            background-image: -webkit-linear-gradient(top, rgba(0,0,0,.11), transparent);
+            background-image:    -moz-linear-gradient(top, rgba(0,0,0,.11), transparent);
+            background-image:         linear-gradient(top, rgba(0,0,0,.11), transparent);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7), 0 1px 3px 0 rgba(0,0,0,.22) inset;
+            border-color: rgba(128, 128, 128, .85);;
+        }
+        .light_dropdownDown .button {
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.55);
+        }
+        .light_dropdownDisabled {
+            border-color: rgba(128, 128, 128, .32);
+            background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.02), transparent);
+            background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,.02), transparent);
+            background-image:         linear-gradient(bottom, rgba(0,0,0,.02), transparent);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,1) inset;
+        }
+        .light_dropdownDisabled .label {
+            color: #c5c5c5;
+        }
+        .light_dropdownDisabled .button {
+            background-position: -105px -390px;
+            box-shadow: 1px 0 0 0 rgba(255,255,255,.6) inset, -1px 0 0 0 rgba(128,128,128,.3), 0 1px 0 0 rgba(255,255,255,.6) inset;
+        }
+
+        .light_dropdown_options {
+            box-sizing: border-box;
+            display: none;
+            padding: 2px 14px 0 3px;
+        }
+        .light_dropdown_options.upward {
+            margin-top: -12px;
+        }
+        .light_dropdown_options .list {
+            background: #494949;
+            border: 1px solid #000208;
+            padding: 3px 0;
+        }
+        .light_dropdown_options .list .c9-dd-item {
+            color: #f1f1f1;
+            cursor: default;
+            font-size: 11px;
+            font-family: Tahoma, Arial;
+            height: 13px;
+            line-height: 14px;
+            overflow: hidden;
+            padding: 3px 5px 5px;
+            text-overflow: ellipsis-word;
+            white-space: nowrap;
+        }
+        .light_dropdown_options .list .c9-dd-item.hover {
+            background-color: #262626;
+            color: #F5B53C;
+        }
+        .light_dropdown_options .list .c9-dd-item.selected {
+            color: #F5B53C;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="div[1]/text()" button="." width-diff="-1" item-height="21" minheight="23" maxheight="23">
+            <div class="light_dropdown">
+                <div class="label">-</div>
+                <div class="button"> </div>
+            </div>
+        </a:main>
+        <a:container contents="div[1]">
+            <div class="light_dropdown_options">
+                <div class="list"> </div>
+            </div>
+        </a:container>
+        <a:item
+          class       = "."
+          caption     = "text()"
+          select      = "."
+          inherit     = "true">
+            <div class="c9-dd-item">-</div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="empty">-</div>
+        </a:empty>
+    </a:presentation>
+</a:dropdown>
 <a:dropdown name="dropdown">
     <a:style><![CDATA[
         .dropdown{
@@ -4486,7 +4909,6 @@
             border-bottom: 1px solid #fafafa;
             border-left: 1px solid #fafafa;
             border-right: 1px solid #fafafa;
-            width:  134px;
             height: 15px;
             margin: 0;
             padding : 2px 21px 2px 0;
@@ -4768,13 +5190,33 @@
         }
 
         .run-panel-info {
-        	background: #323332;
-			border-top: 1px solid #111;
-			padding: 10px;
+        	background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
+            background-position:  0 -954px;
+            border-right: 1px solid white;
+			padding: 10px 10px 4px 10px;
         }
         .run-panel-info .black_label {
-        	color: #95b287;
+        	color: #919191;
+            text-shadow: 0 1px 0 white;
         }
+        .run-panel-info .btextbox {
+            background: rgba(255,255,255,.8);
+            border: 1px solid rgba(128,128,128,.55);
+            box-shadow: 0 1px 0 0 rgba(0,0,0,.15) inset, 0 1px 0 0 rgba(255,255,255,.7);
+        }
+        .run-panel-info .btextbox input {
+            color: #4d4d4d;
+        }
+        .run-panel-info .btextboxDisabled {
+            background: rgba(255,255,255,.6);
+            border: 1px solid rgba(128,128,128,.32);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7);
+        }
+        .run-panel-info .btextboxDisabled input {
+            color: #bbb;
+            text-shadow: 0 1px 0 white;
+        }
+
         .run-panel-info .hbox {
         	padding-bottom: 5px !important;
         }
@@ -5099,7 +5541,7 @@
             text-shadow : none;
         }
         .menu>div.menu_item.disabled>span{
-            /*display : none;*/
+            opacity: 0.2;
         }
 
         .menu>div.menu_item>u{
@@ -5120,6 +5562,9 @@
             background-image: url(images/check.gif);
             background-repeat: no-repeat;
             background-position: 0 -16px;
+        }
+        .menu>div.menu_item.disabled>u{
+            opacity: 0.2;
         }
     ]]></a:style>
     <a:presentation>
@@ -7338,6 +7783,132 @@
             border-left:0;
             background:url(images/btn-arrow2.png) no-repeat 0 6px;
          }
+
+
+        .btnRun .main,
+        .btnRun .main:after,
+        .btnRun .arrow{
+            background: url(images/c9-no-repeat.png) no-repeat;
+            border: 0 none;
+            border-radius: 0;
+            box-shadow: none;
+            height: 23px;
+        }
+        .btnRun .main { 
+            background-position: 0px -424px; 
+            margin-right: 3px;
+            overflow: visible;
+        }
+        .btnRun .main:after {
+            background-position: -397px -424px; 
+            content: "";
+            display: block;
+            left: 100%;
+            position: absolute;
+            top: 0;
+            width: 3px;
+        }
+        .btnRun .main .c9-label {
+            border-right: 0 none;
+            padding-left: 23px !important;
+        }
+        .btnRun .main .c9-icon {
+            left: 3px;
+            top: 3px;
+        }
+        .btnRun .main.c9-dropdown-btnOver { 
+            background-position: 0px -457px; 
+        }
+        .btnRun .main.c9-dropdown-btnOver:after {
+            background-position: -397px -457px; 
+        }
+        .btnRun .c9-dropdown-btnDown.main { 
+            background-position: 0px -490px; 
+        }
+        .btnRun .c9-dropdown-btnDown.main:after { 
+            background-position: -397px -490px; 
+        }
+
+        .btnRun .arrow { 
+            background-position: -400px -424px; 
+            width: 16px; 
+        }
+        .btnRun .arrow.c9-dropdown-btnOver { 
+            background-position: -400px -457px; 
+        }
+        .btnRun .c9-dropdown-btnDown.arrow { 
+            background-position: -400px -490px; 
+        }
+        .btnRun .arrow .c9-arrow {
+            display: none;
+        }
+        
+        .testpanel .fm-content .c9-header-plus {
+            top: -31px;
+            right: 32px;
+        }
+
+        .testpanel .fm-content .panel-settings {
+            overflow: visible;
+        }
+        .testpanel .fm-content .panel-settings:before {
+            background: url(images/c9-no-repeat.png) no-repeat -100px -293px;
+            content: "";
+            display: block;
+            height: 26px;
+            left: -2px;
+            position: absolute;
+            top: 0;
+            width: 2px;
+        }
+
+        .testpanel .fm-content .testPanelControls {
+            right: 4px;
+            position: relative;
+            top: 1px;
+        }
+        .testPanelControls .c9-toolbarbutton-light,
+        .testPanelControls .light-dropdown {
+            margin-right: 10px !important;
+        }
+        .light-dropdown .c9-dropdown-btn {
+            height: 19px;
+        }
+        .light-dropdown .c9-dropdown-btn.main {
+            border-radius: 2px 0 0 2px;
+        }
+        .light-dropdown .c9-dropdown-btn .c9-label {
+            border-right-color: rgba(76,76,76,.3);
+            color: #4D4D4D;
+            height: 19px !important;
+            line-height: 21px;
+            margin-top: 0 !important;
+            padding: 0 5px !important;
+            text-shadow: 0 1px 0 #FFFFFF;
+        }
+        .light-dropdown .c9-dropdown-btn.arrow {
+            border-radius: 0 2px 2px 0;
+        }
+        .light-dropdown .c9-dropdown-btn .c9-arrow {
+            background-position: 4px 8px;
+            border-left-color: rgba(255,255,255,.75);
+            margin: 0;
+            height: 21px;
+        }
+
+        .light-dropdown .c9-dropdown-btnOver,
+        .light-dropdown .c9-dropdown-btnDown {
+            background-color: rgba(255,255,255,.65);
+            background-image: -webkit-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            background-image:    -moz-linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            background-image:         linear-gradient(bottom, rgba(0,0,0,.08), transparent);
+            border-color: rgba(128,128,128,.55);
+            box-shadow: 0 1px 0 0 rgba(255,255,255,.7) inset;
+        }
+        .light-dropdown .c9-dropdown-btnDown.primary {
+            background-color: rgba(233,233,233,.555);
+            box-shadow: 0 1px 0 0 rgba(0,0,0,.15) inset;
+        }
     ]]></a:style>
     <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
         .c9-dropdown-btn .c9-label {
@@ -8044,7 +8615,7 @@
         font-family : Arial;
         font-size : 12px;
         border-bottom : 1px solid #000;
-        background: rgba(26,26,26,.9) url(images/c9-noise.png);
+        background: rgba(24,24,24,.9) url(images/c9-noise.png);
         width : auto;
 
         -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
@@ -8054,7 +8625,7 @@
         position: relative;
     }
         
-    .editor_tab .btnsesssioncontainer>div {
+    .editor_tab .btnsesssioncontainer > div {
         cursor: default;
         display : inline-block;
         position : relative;
@@ -8071,7 +8642,7 @@
 		margin-right : -20px;
 		margin-top   : 0;
 		height       : 21px;
-		overflow     : hidden;
+		overflow     : visible;
     }
     .editor_tab .tab_middle {
         height   : 18px;
@@ -8155,6 +8726,7 @@
     .editor_tab .curbtn .tab_middle {
         background-color    : #e8e8e8;
         color               : #000;
+        padding-top         : 4px;
         text-shadow         : 0 1px 0 0 rgba(255,255,255,.4);
     }
     .editor_tab .loading_active .sessiontab_saving,
@@ -8258,9 +8830,6 @@
         overflow            : hidden;
         padding             : 4px 0 0 0;
     }
-    .editor_tab .curbtn .tab_middle{
-        padding-top : 5px;
-    }
     .editor_tab .tab_left,
     .editor_tab .tab_right {
         position            : absolute;
@@ -8297,7 +8866,7 @@
     .editor_tab .curbtn {
         color       : #333333;
         cursor      : default;
-        text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
+        text-shadow : rgba(255, 255, 255, .4) 0px 1px 0px;
         z-index     : 10;
     }
 
@@ -8320,6 +8889,9 @@
     /* ------------------------------------------------------------------------------------------
      * minimized tabs
      * --------------------------------------------------------------------------------------- */
+    .editor_tab.hidetabs {
+        box-shadow: -3px 0 0 0 #2B2B2B;
+    }
     .editor_tab.hidetabs .tab_middle *,
     .editor_tab.hidetabs .btnclose .tab_middle > strong {
     	display: none;
@@ -8335,7 +8907,8 @@
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
-    	height: 5px;
+    	border-bottom: 2px solid transparent;
+        height: 5px;
     	overflow: hidden;
         top : 4px;
     }
@@ -8558,7 +9131,8 @@
     .editor_tab .editor_bg {
         height : 100%;
         position : absolute;
-        margin: 0 auto;
+        top : 25%;
+        margin: -100px auto 0 auto;
         background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
         /*border-bottom: 1px solid #8c8c8c;
         border-left: 1px solid #8c8c8c;
@@ -8672,6 +9246,14 @@
         text-indent: 0;
     }*/
 ]]></a:style>
+<a:style condition="apf.isGecko">
+    .editor_tab.hidetabs .session_btn:not(.curbtn) {
+        top: 6px;
+    }
+    .editor_tab.hidetabs .curbtn {
+        top: 5px;
+    }
+</a:style>
 <a:style condition="apf.isWebkit">
 	/* ------------------------------------------------------------------------------------------
      * Tab shape
@@ -8696,7 +9278,10 @@
     .editor_tab .session_btn:not(.curbtn) .tab_middle,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:before,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:after {
-        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.15) inset;
+        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
+    }
+    .editor_tab .session_btn:not(.curbtn) .tab_middle {
+        box-shadow   : 0 0px 0 1px rgba(0,0,0,0.7), 0 -3px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
     }
     .editor_tab .session_btn .tab_middle {
         background-image    : url(images/c9-repeat-x.png);
@@ -8704,19 +9289,21 @@
         background-position : 0 -79px;
     }
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
-        background-color    : #2F2F2F;
+        background-color    : #303030;
         color               : #cecece;
         -webkit-transition: background-color .1s linear;
+           -moz-transition: background-color .1s linear;
+                transition: background-color .1s linear;
     }
 
     .editor_tab .session_btn .tab_middle:before {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : 0 -159px, 0 -79px;
+        background-position : 0 -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
     }
     .editor_tab .session_btn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : -31px -159px, 0 -79px;
+        background-position : -31px -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
     }
     
@@ -8734,15 +9321,16 @@
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -57px;
         background-repeat   : repeat-x;
+        box-shadow          : 0 0px 0 1px rgba(0,0,0,0.7);
         color               : #000;
     }
     .editor_tab .curbtn .tab_middle:before {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : 0px -160px, 0 -57px;
+        background-position : 0px -132px, 0 -57px;
     }
     .editor_tab .curbtn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
-        background-position : -31px -159px, 0 -57px;
+        background-position : -31px -132px, 0 -57px;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -8754,7 +9342,9 @@
 <a:presentation>
     <a:main pages="." buttons="div[1]">
         <div class="editor_tab">
-            <div class="btnsesssioncontainer"> </div>
+            <div class="btnsesssioncontainer">
+
+            </div>
             <div class="editor_bg">
                 <div class="editor_bg_message-top">
                     Invite people to this project by sharing the URL with them.
@@ -9619,7 +10209,6 @@
         .tb_console {
             position : relative;
             height   : 31px;
-            margin-right: 1px !important
         }
 
         .tb_console .sbtb_middle {
@@ -9630,7 +10219,6 @@
             font-size       : 14px;
             height          : 20px;
             line-height     : 18px;
-            margin          : 1px 0 0 2px;
             padding         : 1px 4px 0px 4px;
             outline         : none;
             text-overflow   : ellipsis;
@@ -10921,4 +11509,165 @@
             </a:main>
         </a:presentation>
     </a:img>
+
+    <a:button name="blackbutton">
+        <a:style><![CDATA[
+            .blackbutton {
+                background: #292929 url(images/c9-repeat-x.png) repeat-x 0 -440px;
+                border: 1px solid #010910;
+                border-radius: 3px;
+                box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset;
+                color: #C0DABE;
+                height: 27px;
+                line-height: 27px;
+                padding: 0 11px;
+                text-align : center;
+                cursor : default;
+            }
+            .blackbuttonOver {
+                box-shadow: 0 0 0 1px rgba(236, 245, 255, .14) inset, 0 0 0 1000px rgba(131,145,129,.08) inset;
+            }
+            .blackbuttonDown {
+                box-shadow: 0 0 3px 2px #1a1a1a inset;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="blackbutton"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+    
+    <a:label name="tooltipLabel">
+        <a:style><![CDATA[
+            .tooltipLabel {
+                background-color: #4E4F51;
+                background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,.04), rgba(255,255,255,0));
+                background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,.04), rgba(255,255,255,0));
+                background-image:         linear-gradient(bottom, rgba(255,255,255,.04), rgba(255,255,255,0));
+                border: 1px solid #000;
+                border-bottom-width: 0;
+                border-radius: 3px 3px 0 0;
+                box-shadow: 0 1px 0 0 rgba(255,255,255,.2) inset;
+                color: #eee;
+                font-size: 10px;
+                height: 14px;
+                line-height: 14px;
+                padding: 1px 4px 0px 4px;
+                position: absolute;
+                text-shadow: 0 1px 0 rgba(0,0,0,.14);
+                z-index: 100000;
+            }
+            
+            /* Temporary spot */
+            .find-and-replace {
+                background-image: url(images/c9-find-and-replace.png), url(images/c9-noise-with-background.png);
+                background-position: 100% 1px, 0 0;
+                background-repeat: repeat-y, repeat;
+                box-shadow: 0 1px 0 0 rgba(255,255,255,.1) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
+                border-top: 1px solid #000;
+                padding: 7px;
+            }
+            
+            .find-and-replace .rb_grey span{
+                color : #eee;
+            }
+
+            .find-and-replace .rb_black span {
+                color: #dedede;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption=".">
+                <div class="tooltipLabel"> </div>
+            </a:main>
+        </a:presentation>
+    </a:label>
+    <a:textbox name="searchbox">
+        <a:style><![CDATA[
+            .searchbox .sbtb_middle .input{
+                border           : 0;
+                font-size        : 12px;
+                color            : #333333;
+                font-family      : menlo,courier new,fixed,swiss,sans-serif;
+                outline          : none;
+                background-color : transparent;
+                width: 100%;
+                overflow         : auto;
+                white-space      : pre-wrap;
+                max-height       : 95px;
+                min-height       : 18px;
+            }
+            
+            .searchTxt.tb_console {
+                margin: 0;
+            }
+            .searchTxt.tb_console .sbtb_middle {
+                background-color: #F2F2F2;
+                border-radius: 3px;
+            }
+            
+            .tb_textboxInitial .sbtb_middle .input {
+                color : #777777;
+            }
+    
+            .tb_textboxDisabled .sbtb_middle .input {
+                color : #CCC;
+            }
+            
+            .searchbox.tb_console .sbtb_middle .input {
+                height: auto;
+                /*line-height: 19px;*/
+                position: relative;
+            }
+            .searchTxt.tb_textboxInitial .sbtb_middle .input {
+                color: #BABABA !important;
+                text-shadow: 0 1px 0 #FFFFFF;
+            }
+            
+            .searchbox span, .searchbox font{
+                text-shadow : none;
+                padding : 1px 0 1px 0;
+            }
+            
+            .searchbox{
+                height : auto !important;
+            }
+            
+            .searchbox.tb_console .sbtb_middle{
+                height : auto !important;
+                padding : 4px 7px 3px 7px;
+                box-shadow: inset 0 2px 3px 0 rgba(0,0,0,.3);
+            }
+            
+            .searchbox.tb_console.buttonsright .sbtb_middle{
+                padding-right : 114px;
+            }
+            
+            .searchTxt .btnclose {
+                position: absolute;
+                top: 7px;
+                right: 8px;
+                width: 14px;
+                height: 14px;
+                background: url(images/btnclose.gif) no-repeat 0 0;
+                display: none;
+                cursor: pointer;
+            }
+            .searchTxt .btnclose:hover {
+                background-position: 0 -14px;
+            }   
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main input="div[1]/div" button="div[2]">
+                <div class="tb_textbox searchbox searchTxt tb_console">
+                    <div class="sbtb_middle">
+                        <div class="input"> </div>
+                    </div>
+                    <div class="btnclose"> </div>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:textbox>
 </a:skin>

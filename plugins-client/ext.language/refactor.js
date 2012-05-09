@@ -18,15 +18,18 @@ module.exports = {
     renameVariableItem: null,
     worker: null,
     
-    hook: function(ext, worker) {
+    hook: function(ext, worker123) {
         var _self = this;
-        this.worker = worker;
+        this.worker = worker123;
+        this.ext = ext;
         
-        worker.on("enableRefactorings", function(event) {
+        worker123.on("enableRefactorings", function(event) {
+            if(ext.disabled) return;
             _self.enableRefactorings(event);
         });
         
-        worker.on("variableLocations", function(event) {
+        worker123.on("variableLocations", function(event) {
+            if(ext.disabled) return;
             _self.enableVariableRefactor(event.data);
         });
 
@@ -48,6 +51,7 @@ module.exports = {
                 return editor && editor.ceEditor;
             },
             exec: function(editor) {
+                if(ext.disabled) return;
                 _self.renameVariable();
             }
         });
@@ -67,10 +71,11 @@ module.exports = {
     },
     
     enableVariableRefactor: function(data) {
+        var _self = this;
         // Temporarily disable these markers, to prevent weird slow-updating events whilst typing
         marker.disableMarkerType('occurrence_main');
         marker.disableMarkerType('occurrence_other');
-        var ace = Editors.currentEditor.amlEditor;
+        var ace = editors.currentEditor.amlEditor.$editor;
         var cursor = ace.getCursorPosition();
         var mainPos = data.pos;
         var p = new PlaceHolder(ace.session, data.length, mainPos, data.others, "language_rename_main", "language_rename_other");
@@ -79,14 +84,20 @@ module.exports = {
             ace.moveCursorTo(mainPos.row, mainPos.column);
         }
         p.showOtherMarkers();
+        var continuousCompletionWasEnabled = this.ext.isContinuousCompletionEnabled;
+        if(continuousCompletionWasEnabled)
+            this.ext.setContinuousCompletion(false);
         p.on("cursorLeave", function() {
             p.detach();
+            if(continuousCompletionWasEnabled)
+                _self.ext.setContinuousCompletion(true);
             marker.enableMarkerType('occurrence_main');
             marker.enableMarkerType('occurrence_other');
         });
     },
     
     renameVariable: function() {
+        if(this.ext.disabled) return;
         this.worker.emit("fetchVariablePositions", {data: editors.currentEditor.amlEditor.$editor.getCursorPosition()});
     },
     

@@ -35,7 +35,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
 
         // wait for all child processes to finish
         this.shutDownInterval = setInterval(function() {
-            processCount = Object.keys(self.pm.ps()).length;
+            processCount = Object.keys(self.ps()).length;
 
             if (!processCount)
                 return callback();
@@ -143,9 +143,10 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     this.kill = function(pid) {
         var child = this.processes[pid];
         if (!child || !child.pid)
-            return;
+            return false;
 
         child.kill();
+        return true;
     };
 
 }).call(ProcessManager.prototype);

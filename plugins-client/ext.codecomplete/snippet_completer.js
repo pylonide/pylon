@@ -23,9 +23,11 @@ completer.fetchText = function(path) {
         return false;
 };
 
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    if(line[pos.column-1] === '.') // No snippet completion after "."
+        return callback([]);
 
     var snippets = snippetCache[this.language];
     
@@ -39,7 +41,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
     var allIdentifiers = Object.keys(snippets);
     
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         return {
           name        : m,
           replaceText : snippets[m],
@@ -47,7 +49,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : "snippet",
           priority    : 2
         };
-    });
+    }));
 };
 
 

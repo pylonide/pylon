@@ -11,7 +11,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
-var editors = require("ext/editors/editors");
 
 module.exports = ext.register("ext/themes/themes", {
     name    : "Themes",
@@ -28,23 +27,29 @@ module.exports = ext.register("ext/themes/themes", {
     register : function(themes){
         var _self = this;
         
+        var timer;
+        
         for (var name in themes) {
             menus.addItemByPath("View/Themes/" + name, new apf.item({
                 type    : "radio",
                 value   : themes[name],
-                //group   : this.group
                 
                 onmouseover: function(e) {
-                    //_self.currTheme = settings.model.queryValue("editors/code/@theme");
-                    //settings.model.setQueryValue("editors/code/@theme", this.value);
-                    _self.set(this.value);
-                    _self.saved = false;
+                    var value = this.value;
+                    
+                    clearTimeout(timer);
+                    timer = setTimeout(function(){
+                        _self.set(value, true);
+                    }, 200);
                 },
                 
                 onmouseout: function(e) {
+                    clearTimeout(timer);
+                    
                     if (!_self.saved) {
-                        settings.model.setQueryValue("editors/code/@theme", _self.currTheme);
-                        _self.saved = false;
+                        timer = setTimeout(function(){
+                            _self.set(_self.currTheme);
+                        }, 200);
                     }
                 }
             }));
@@ -53,72 +58,65 @@ module.exports = ext.register("ext/themes/themes", {
         this.themes = themes;
     },
 
-    set : function(path){
+    set : function(path, preview){
         settings.model.setQueryValue("editors/code/@theme", path);
+        
         this.setThemedGUI(path);
         
-        ide.dispatchEvent("theme_change", {theme: path});
-        
-        this.saved = true;
-        ide.dispatchEvent("track_action", {type: "theme change", theme: path});
+        this.saved = !preview;
+        if (!preview)
+            this.currTheme = path;
     },
     
     loaded : {},
     setThemedGUI : function(path){
         var _self = this;
         
-        require(["require", path], function (require, theme) {
-            if (theme.isDark)
-                apf.setStyleClass(document.body, "dark");
-            else
-                apf.setStyleClass(document.body, "", ["dark"]);
+        try{
+            var theme = require(path);
+        }
+        catch(e){
+            return setTimeout(function(){
+                _self.setThemedGUI(path);
+            }, 10);
+        }
+        
+        ide.dispatchEvent("theme.change", {theme: theme, path: path});
+        
+        if (theme.isDark)
+            apf.setStyleClass(document.body, "dark");
+        else
+            apf.setStyleClass(document.body, "", ["dark"]);
+        
+        var cssClass = theme.cssClass;
+        
+        if (_self.lastTheme)
+            apf.setStyleClass(document.body, "", [_self.lastTheme]);
+        
+        apf.setStyleClass(document.body, _self.lastTheme = cssClass);
+        
+        if (_self.loaded[path])
+            return;
             
-            var cssClass = theme.cssClass;
-            
-            if (_self.lastTheme)
-                apf.setStyleClass(document.body, "", [_self.lastTheme]);
-            
-            apf.setStyleClass(document.body, _self.lastTheme = cssClass);
-            
-            if (_self.loaded[path])
-                return;
-                
-            _self.loaded[path] = true;
-            
-            var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
-            var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
-            
-            apf.importStylesheet([
-                ["." + cssClass + " .ace_editor",
-                 "border: 0 !important;"],
-                ["body." + cssClass + " > .vbox, "
-                 + "." + cssClass + " .editor_tab .curbtn .tab_middle, "
-                 + "." + cssClass + " .codeditorHolder, "
-                 + "." + cssClass + " .session_page", 
-                 "color:" + fg + " !important; background-color: " + bg + " !important"],
-                ["." + cssClass + " .ace_corner", 
-                 "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
-                 + bg + " inset !important;"]
-            ], self, _self.stylesheet);
-            
-//            apf.setStyleRule(
-//                "body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
-//                "color", fg + " !important", _self.stylesheet, self);
-//            apf.setStyleRule(
-//                "body > .vbox, .editor_tab .curbtn .tab_middle, .codeditorHolder, .session_page, .ace_gutter", 
-//                "background-color", bg + " !important", _self.stylesheet, self);
-//            
-//            apf.setStyleRule(
-//                ".ace_corner", 
-//                "border-color", bg + " !important", _self.stylesheet, self);
-//            apf.setStyleRule(
-//                ".ace_corner", 
-//                "box-shadow", "4px 4px 0px " + bg + " inset !important;", _self.stylesheet, self);
-//            
-//            apf.setStyleRule(
-//                ".editor_bg", 
-//                "display", "none", _self.stylesheet, self);
-        });
+        _self.loaded[path] = true;
+        
+        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
+        var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
+        
+        apf.importStylesheet([
+            ["." + cssClass + " .ace_editor",
+             "border: 0 !important;"],
+            ["body." + cssClass + " > .vbox, "
+             + "." + cssClass + " .editor_tab .curbtn .tab_middle, "
+             + "." + cssClass + " .codeditorHolder, "
+             + "." + cssClass + " .session_page", 
+             "color:" + fg + " !important; background-color: " + bg + " !important"],
+            ["." + cssClass + " .ace_corner", 
+             "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
+             + bg + " inset !important;"]
+        ], self, _self.stylesheet);
+        
+        ide.dispatchEvent("theme.init", {theme: theme, path: path});
     },
 
     init : function(){
@@ -139,7 +137,9 @@ module.exports = ext.register("ext/themes/themes", {
                 }
             },
             "onitemclick" : function(e){
-                _self.set(e.relatedNode.value);
+                var path = e.relatedNode.value;
+                _self.set(path);
+                ide.dispatchEvent("track_action", {type: "theme change", theme: path});
             }
         }), 350000);
 
@@ -149,7 +149,7 @@ module.exports = ext.register("ext/themes/themes", {
         });
         
         ide.addEventListener("settings.load", function(e){
-            var theme = e.model.queryValue("editors/code/@theme")
+            var theme = _self.currTheme = e.model.queryValue("editors/code/@theme")
                 || _self.defaultTheme;
             
             _self.setThemedGUI(theme);

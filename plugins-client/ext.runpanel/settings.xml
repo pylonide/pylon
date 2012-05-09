@@ -8,9 +8,10 @@
             <!--element caption="Python" value="py" /-->
         </data>
     </a:model>
-    <a:hbox position="4000" edge="0 5 5 0" align="center" class="underlined">
+    <a:hbox position="4000" edge="0 5 5 7" align="center" class="underlined">
         <a:label flex="1">Runtime:</a:label>        
         <a:dropdown
+          skin      = "light_dropdown"
           model     = "mdlRunnerSelector2"
           width="175"  height="21"
           disabled  = "{!lstRunCfg.selected}"

@@ -6,7 +6,6 @@ var error = require("http-error");
 var jsDAV = require("jsDAV");
 var DavPermission = require("./dav/permission");
 var DavFilewatch = require("./dav/filewatch");
-var gnutools = require("gnu-tools");
 
 module.exports = function setup(options, imports, register) {
 
@@ -40,9 +39,6 @@ module.exports = function setup(options, imports, register) {
         var filewatch = new DavFilewatch();
 
         var davServer = jsDAV.mount(davOptions);
-        davServer.plugins["codesearch"].GREP_CMD = gnutools.GREP_CMD;
-        davServer.plugins["filesearch"].FIND_CMD = gnutools.FIND_CMD;
-        davServer.plugins["filelist"].FIND_CMD = gnutools.FIND_CMD;
         davServer.plugins["permission"] = DavPermission;
         davServer.plugins["filewatch"] = filewatch.getPlugin();
 

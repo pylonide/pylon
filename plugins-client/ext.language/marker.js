@@ -8,17 +8,33 @@ define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
 var Anchor = require('ace/anchor').Anchor;
+var tooltip = require('ext/language/tooltip');
 var Editors = require("ext/editors/editors");
 
 module.exports = {
 
     disabledMarkerTypes: {},
 
-    hook: function(language, worker) {
+    hook: function(ext, worker) {
         var _self = this;
+        this.ext = ext;
         worker.on("markers", function(event) {
-            _self.addMarkers(event, language.editor);
+            if(ext.disabled) return;
+            _self.addMarkers(event, ext.editor);
         });
+        worker.on("hint", function(event) {
+            _self.onHint(event);
+        });
+    },
+
+    onHint: function(event) {
+        var message = event.data.message;
+        var pos = event.data.pos;
+        var cursorPos = ceEditor.$editor.getCursorPosition();
+        if(cursorPos.column === pos.column && cursorPos.row === pos.row && message)
+            tooltip.show(cursorPos.row, cursorPos.column, message);
+        else
+            tooltip.hide();
     },
 
     removeMarkers: function(session) {
@@ -46,6 +62,9 @@ module.exports = {
             // Certain annotations can temporarily be disabled
             if (_self.disabledMarkerTypes[anno.type])
                 return;
+            // Multi-line markers are not supported, and typically are a result from a bad error recover, ignore
+            if(anno.pos.el && anno.pos.sl !== anno.pos.el)
+                return;
             // Using anchors here, to automaticaly move markers as text around the marker is updated
             var anchor = new Anchor(mySession.getDocument(), anno.pos.sl, anno.pos.sc || 0);
             mySession.markerAnchors.push(anchor);
@@ -54,7 +73,7 @@ module.exports = {
             var rowDiff = anno.pos.el - anno.pos.sl;
             var gutterAnno = {
                 guttertext: anno.message,
-                type: anno.type === 'error' ? 'error' : 'warning',
+                type: anno.level || "warning",
                 text: anno.message
                 // row will be filled in updateFloat()
             };
@@ -105,6 +124,7 @@ module.exports = {
      * it does so instanteously, rather than with a 500ms delay, thereby avoid ugly box bouncing etc.
      */
     onChange: function(session, event) {
+        if(this.ext.disabled) return;
         var range = event.data.range;
         var isInserting = event.data.action.substring(0, 6) !== "remove";
         var text = event.data.text;

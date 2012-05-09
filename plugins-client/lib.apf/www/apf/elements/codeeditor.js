@@ -55,10 +55,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.documents = [];
     this.$cache    = {};
-
-    //this.setProperty("overwrite", false);
-    this.setProperty("line", 1);
-    this.setProperty("col", 1);
 };
 
 (function() {
@@ -196,9 +192,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         doc.setFoldStyle(_self.folding ? "markbegin" : "manual");
         doc.setNewLineMode(_self.newlinemode);
 
-        _self.$removeDocListeners && _self.$removeDocListeners();
-        _self.$removeDocListeners = _self.$addDocListeners(doc);
-
         _self.$editor.setShowPrintMargin(_self.showprintmargin);
 
         // remove existing markers
@@ -213,23 +206,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.afterOpenFile = function(doc) {
         this.$updateMarker();
         this.$updateBreakpoints(doc);
-    };
-
-    this.$addDocListeners = function(doc) {
-        var _self = this;
-        var onCursorChange = function() {
-            var cursor = doc.getSelection().getCursor();
-            _self.setProperty("line", cursor.row+1);
-            _self.setProperty("col", cursor.column+1);
-        };
-
-        doc.getSelection().addEventListener("changeCursor", onCursorChange);
-
-        onCursorChange();
-
-        return function() {
-            doc.getSelection().removeEventListener("changeCursor", onCursorChange);
-        };
     };
 
     this.$clearMarker = function () {

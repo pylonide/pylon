@@ -1,0 +1,14 @@
+{
+    "name": "ext.preview",
+    "version": "0.0.1",
+    "main": "preview-ext.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.preview"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}
