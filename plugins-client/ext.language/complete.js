@@ -23,7 +23,9 @@ var deferredInvoke = lang.deferredCall(function() {
         module.exports.invoke(true);
     else
         module.exports.closeCompletionBox();
+    isInvokeScheduled = false;
 });
+var isInvokeScheduled = false;
 
 function retrievePreceedingIdentifier(text, pos) {
     var buf = [];
@@ -298,11 +300,14 @@ module.exports = {
     },
 
     deferredInvoke: function() {
-        deferredInvoke.cancel().schedule(200);
+       if (isInvokeScheduled)
+            return;
+        isInvokeScheduled = true;
+        deferredInvoke.schedule(200);
     },
     
     onChange: function() {
-        this.deferredInvoke();
+        setTimeOut(this.deferredInvoke, 0); // fire after change
     },
 
     invoke: function(forceBox) {
