@@ -602,6 +602,11 @@ module.exports = ext.register("ext/console/console", {
                     _self.showOutput();
                 }, 200);
             }
+            else {
+                if (tabConsole.visible) {
+                    _self.showOutput();
+                }
+            }
         });
     },
 
