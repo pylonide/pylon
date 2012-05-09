@@ -72,44 +72,51 @@ module.exports = ext.register("ext/themes/themes", {
     setThemedGUI : function(path){
         var _self = this;
         
-        require(["require", path], function (require, theme) {
-            ide.dispatchEvent("theme.change", {theme: theme, path: path});
+        try{
+            var theme = require(path);
+        }
+        catch(e){
+            return setTimeout(function(){
+                _self.setThemedGUI(path);
+            }, 10);
+        }
+        
+        ide.dispatchEvent("theme.change", {theme: theme, path: path});
+        
+        if (theme.isDark)
+            apf.setStyleClass(document.body, "dark");
+        else
+            apf.setStyleClass(document.body, "", ["dark"]);
+        
+        var cssClass = theme.cssClass;
+        
+        if (_self.lastTheme)
+            apf.setStyleClass(document.body, "", [_self.lastTheme]);
+        
+        apf.setStyleClass(document.body, _self.lastTheme = cssClass);
+        
+        if (_self.loaded[path])
+            return;
             
-            if (theme.isDark)
-                apf.setStyleClass(document.body, "dark");
-            else
-                apf.setStyleClass(document.body, "", ["dark"]);
-            
-            var cssClass = theme.cssClass;
-            
-            if (_self.lastTheme)
-                apf.setStyleClass(document.body, "", [_self.lastTheme]);
-            
-            apf.setStyleClass(document.body, _self.lastTheme = cssClass);
-            
-            if (_self.loaded[path])
-                return;
-                
-            _self.loaded[path] = true;
-            
-            var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
-            var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
-            
-            apf.importStylesheet([
-                ["." + cssClass + " .ace_editor",
-                 "border: 0 !important;"],
-                ["body." + cssClass + " > .vbox, "
-                 + "." + cssClass + " .editor_tab .curbtn .tab_middle, "
-                 + "." + cssClass + " .codeditorHolder, "
-                 + "." + cssClass + " .session_page", 
-                 "color:" + fg + " !important; background-color: " + bg + " !important"],
-                ["." + cssClass + " .ace_corner", 
-                 "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
-                 + bg + " inset !important;"]
-            ], self, _self.stylesheet);
-            
-            ide.dispatchEvent("theme.init", {theme: theme, path: path});
-        });
+        _self.loaded[path] = true;
+        
+        var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
+        var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
+        
+        apf.importStylesheet([
+            ["." + cssClass + " .ace_editor",
+             "border: 0 !important;"],
+            ["body." + cssClass + " > .vbox, "
+             + "." + cssClass + " .editor_tab .curbtn .tab_middle, "
+             + "." + cssClass + " .codeditorHolder, "
+             + "." + cssClass + " .session_page", 
+             "color:" + fg + " !important; background-color: " + bg + " !important"],
+            ["." + cssClass + " .ace_corner", 
+             "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
+             + bg + " inset !important;"]
+        ], self, _self.stylesheet);
+        
+        ide.dispatchEvent("theme.init", {theme: theme, path: path});
     },
 
     init : function(){
