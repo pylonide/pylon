@@ -95,6 +95,11 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
 
     init : function() {
+        
+        btnTestRun.$ext.setAttribute("class", "light-dropdown");
+        btnTestStop.$ext.setAttribute("class", btnTestStop.$ext.getAttribute("class") + " btnTestStop");
+        winTestPanel.$ext.setAttribute("class", winTestPanel.$ext.getAttribute("class") + " testpanel");
+
         var _self  = this;
         
         this.panel = winTestPanel;

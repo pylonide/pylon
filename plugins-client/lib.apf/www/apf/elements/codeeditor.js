@@ -55,10 +55,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.documents = [];
     this.$cache    = {};
-
-    //this.setProperty("overwrite", false);
-    this.setProperty("line", 1);
-    this.setProperty("col", 1);
 };
 
 (function() {
