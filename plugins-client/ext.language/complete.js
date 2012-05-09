@@ -100,7 +100,6 @@ module.exports = {
                 return apf.activeElement.localName == "codeeditor";
             },
             exec: function(editor) {
-                if(ext.disabled) return;
                 _self.invoke();
             }
         });
