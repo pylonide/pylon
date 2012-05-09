@@ -775,9 +775,8 @@ module.exports = ext.register("ext/console/console", {
         if (typeof e !== "undefined" && e.target.className.indexOf("prompt_spinner") !== -1)
             return;
 
-        var height = parseInt(pNode.getAttribute("rel"), 10);
         apf.setStyleClass(pNode, null, ["collapsed"]);
-        pNode.style.height = height + "px";
+        pNode.style.height = (pNode.scrollHeight-20) + "px";
         setTimeout(function() {
             apf.layout.forceResize(tabConsole.$ext);
         }, 200);
@@ -787,10 +786,6 @@ module.exports = ext.register("ext/console/console", {
      * @param DOMElement pNode The container block to be collapsed
      */
     collapseOutputBlock : function(pNode) {
-        // 20 = padding
-        var startingHeight = apf.getHtmlInnerHeight(pNode) - 20;
-        pNode.style.height = startingHeight + "px";
-        pNode.setAttribute("rel", startingHeight);
         apf.setStyleClass(pNode, "collapsed");
         pNode.style.height = "14px";
         setTimeout(function() {
