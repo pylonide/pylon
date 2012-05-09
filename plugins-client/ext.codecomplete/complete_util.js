@@ -38,10 +38,8 @@ function findCompletions(prefix, allIdentifiers) {
     allIdentifiers.sort();
     var startIdx = prefixBinarySearch(allIdentifiers, prefix);
     var matches = [];
-    for (var i = startIdx; i < allIdentifiers.length &&
-                          allIdentifiers[i].indexOf(prefix) === 0; i++) {
+    for (var i = startIdx; i < allIdentifiers.length && allIdentifiers[i].indexOf(prefix) === 0; i++)
         matches.push(allIdentifiers[i]);
-    }
     return matches;
 }
 
