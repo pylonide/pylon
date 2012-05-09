@@ -307,7 +307,7 @@ module.exports = {
     },
     
     onChange: function() {
-        setTimeOut(this.deferredInvoke, 0); // fire after change
+        this.deferredInvoke();
     },
 
     invoke: function(forceBox) {
