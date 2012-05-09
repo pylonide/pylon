@@ -1,17 +1,22 @@
 .uploadactivity-header {
+    width: 100%;
+    background: url(/static/ext/uploadfiles/style/images/list_uploadactivity_header_bg.png) no-repeat 0 0;
+    background-size: 100% 30px;
+}
+
+.uploadactivity-header .header, #uploadactivityNumFiles {
+    height: 30px;
     font-family: Arial;
     font-size: 11px;
     color: #606060;
     text-shadow: #ffffff 0 1px 0;
     line-height: 37px;
     font-weight: bold;
-    text-indent: 10px;
-    height: 30px;
-    width: 100%;
-    background: url(/static/ext/uploadfiles/style/images/list_uploadactivity_header_bg.png) no-repeat 0 0;
-    background-size: 100% 30px;
 }
 
+.uploadactivity-header .header {
+    text-indent: 10px;
+}
 .uploadDropArea {
     height: 95px;
     width: 335px;

@@ -30,8 +30,9 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         label.textContent = "Drop files here to upload";
         dropbox.appendChild(label);
         
-        function decorateNode(holder) {
+        function decorateNode(holder, id) {
             dropbox = holder.dropbox = dropbox.cloneNode(true);
+            dropbox.setAttribute("id", id);
             holder.appendChild(dropbox);
             
             holder.addEventListener("dragenter", dragEnter, false);
@@ -45,7 +46,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         
         ide.addEventListener("init.ext/editors/editors", function(){
             _self.nodes.push(tabEditors.$ext);
-            decorateNode(tabEditors.$ext);
+            decorateNode(tabEditors.$ext, "tabEditorsDropArea");
         });
 
         ide.addEventListener("init.ext/tree/tree", function(){
@@ -64,7 +65,6 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         ide.addEventListener("init.ext/uploadfiles/uploadfiles", function(){
             winUploadFiles.addEventListener("afterrender", function(){
                 _self.nodes.push(uploadDropArea);
-                //decorateNode(uploadDropArea.$ext);
     
                 uploadDropArea.addEventListener("dragenter", dragEnter, false);
                 uploadDropArea.addEventListener("dragleave", dragLeave, false);
