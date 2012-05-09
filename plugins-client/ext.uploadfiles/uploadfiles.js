@@ -386,8 +386,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             " name='" + filename + "'" +
             " path='" + path + "/" + filename + "'" +
         "/>";
-        file.targetFolder = trFiles.getModel().queryNode("//folder");
-        trFiles.add(xmlNode, file.targetFolder);
+        
+        apf.xmldb.appendChild(file.targetFolder, apf.getXml(xmlNode));
+        //trFiles.add(xmlNode, file.targetFolder);
         file.treeNode = trFiles.queryNode("//file[@path='" + path + "/" + filename + "'][@name='" + filename + "']");	
     },
     
