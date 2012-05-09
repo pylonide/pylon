@@ -40167,7 +40167,7 @@ apf.lm = new (function(){
 
         // centralized code fragments used in parser/generator
         cf_block_o     = "(function(){var _o=[],_l=0;\n",
-        cf_block_c     = ";return _l==1?_o[0]:_o.join('');})()",
+        cf_block_c     = ";return _l==1?_o[0]:_o.join('');}).call(this)",
         cf_async_o     = "_async(_n,_c,_a,_w,_f,this,",
         cf_async_m     = "',_a[++_a.i]||[",
         cf_obj_output  = "_r=",
@@ -64667,6 +64667,28 @@ apf.textbox  = function(struct, tagName){
                     s.addRange(r);
                 }
             }
+            
+            this.$input.onpaste = function(){
+                if (apf.hasMsRangeObject)
+                    return;
+                    
+                var sel   = window.getSelection();
+                var range = sel.getRangeAt(0);
+                
+                setTimeout(function(){
+                    var range2 = sel.getRangeAt(0);
+                    range2.setStart(range.startContainer, range.startOffset);
+                    var c = range2.cloneContents();
+                    range2.deleteContents();
+                    
+                    var d = document.body.appendChild(document.createElement("div")); 
+                    d.appendChild(c); 
+                    var p = d.innerText;
+                    d.parentNode.removeChild(d);
+                    
+                    range2.insertNode(document.createTextNode(p));
+                });
+            };
         };
 
         this.$input.deselect = function(){
