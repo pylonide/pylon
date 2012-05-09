@@ -96,7 +96,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{this.checked ? 'debug' : 'run'}",
+                caption  : "{apf.isTrue(this.checked) ? 'debug' : 'run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
@@ -109,7 +109,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 caption  : "stop",
                 width    : "52",
                 tooltip  : "Stop",
-                skin     : "c9-toolbarbutton",
+                skin     : "c9-toolbarbutton-glossy",
                 command  : "stop",
                 visible  : "{stProcessRunning.active and 1}" ,
                 disabled : "{!!!ide.onLine}"
@@ -122,8 +122,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             this.model = new apf.model().load("<configurations />")
         );
         
-        btnRun.$ext.className = "btnRun";
-        btnStop.$ext.className = "btnStop";
+        apf.setStyleClass(btnRun.$ext, "btnRun");
+        apf.setStyleClass(btnStop.$ext, "btnStop");
 
         tooltip.add( btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications.\

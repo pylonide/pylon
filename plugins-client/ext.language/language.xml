@@ -2,7 +2,7 @@
     <a:skin id="language_skin"
       src       = "{require('ext/language/language').skin}"/>
 
-    <a:bar id="barCompleterCont" skinset="language_skin" skin="codecomplete" width="300" visible="false">
+    <a:bar id="barCompleterCont" skinset="language_skin" skin="codecomplete" width="350" visible="false">
         <a:hbox anchors="0 0 0 0">
             <a:text id="txtCompleter" skin="codecomplete_text" flex="1" />
             <a:scrollbar

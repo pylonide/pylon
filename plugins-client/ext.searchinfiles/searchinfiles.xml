@@ -1,63 +1,39 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window id="winSearchInFiles"
-      onhide  = "require('ext/searchinfiles/searchinfiles').onHide()"
-      title   = "Search in Files"
-      buttons = "close"
-      skin    = "bk-window"
-      class   = "relative"
-      modal   = "false"
-      center  = "true"
-      width   = "450"
-      realtime = "true"
-      kbclose = "true">
-        <a:vbox edge="10" padding="5">
-            <a:hbox>
-                <a:label width="95">Containing Text</a:label>
-                <a:textarea id="txtSFFind" flex="1" focusselect="true" cols="70" />
+    <a:label id="tooltipSearchInFiles" skin="tooltipLabel" visible="false" />
+    <a:bar id="winSearchInFiles" skin="basic" skinset="searchreplace" focussable="container" zindex="1000" minheight="0" visible="false" height="0">
+        <a:vbox class="find-and-replace" padding="5" edge="5" model="{require('core/settings').model}">
+             <a:hbox padding="5" align="start">
+                <a:hbox class="grouped_checkbox_holder" align="start">
+                    <a:checkbox id="chkSFRegEx" value="[editors/code/filesearch/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkSFMatchCase" value="[editors/code/filesearch/@matchcase]" class="chkMatchCase" label="Match Case" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkSFWholeWords" value="[editors/code/filesearch/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
+                </a:hbox>
+                <a:textbox id="txtSFFind" tabindex="1000" flex="1" skin="searchbox" initial-message="Find in Files" focusselect="true" />
+                <a:button id="btnSFFind" focussable="false" skin="blackbutton" width="80"
+                  onclick="require('ext/searchinfiles/searchinfiles').execFind()">Find</a:button>
             </a:hbox>
-            <a:hbox align="center">
-                <a:label width="95">File Extensions</a:label>
-                <a:textbox id="ddSFPatterns" flex="1" focusselect="true" initial-message="*.*"/>
+            <a:hbox padding="5" align="start" height="27" edge="0 85 0 91">
+                <a:textbox id="txtSFPatterns" tabindex="1001" skin="searchbox" flex="1" initial-message="*.*" focusselect="true"/>
+                <a:radiobutton margin="3 0 0 0"
+                  group  = "grpSFScope"
+                  skin   = "radio_black"
+                  value  = "projects"
+                  label  = "Project" />
+                <a:radiobutton id="rbSFSelection" margin="3 0 0 0"
+                  group  = "grpSFScope"
+                  skin   = "radio_black"
+                  value  = "selection"
+                  label  = "Selection"
+                  selected = "true" />
             </a:hbox>
-            <a:hbox id="barReplace" align="center">
-                <a:label width="95">Replace With</a:label>
-                <a:textbox id="txtSFReplace" flex="1" />
-            </a:hbox>
-            <a:hbox edge="10 0 5">
-                <a:fieldset flex="1" caption="Options" margin="0 0 1">
-                    <a:checkbox id="chkSFMatchCase"
-                      checked = "false"
-                      skin    = "checkbox_grey"
-                      margin  = "0 0 2"
-                      label   = "Match Case" />
-                    <!--a:checkbox id="chkSFWholeWords" label="Whole Words" /-->
-                    <a:checkbox id="chkSFRegEx"
-                      skin  = "checkbox_grey"
-                      label = "Regular Expressions" />
-                </a:fieldset>
-                <a:fieldset flex="1" caption="Scope" margin="0 0 1 5">
-                    <a:radiobutton
-                      group  = "grpSFScope"
-                      skin   = "radio_grey"
-                      value  = "projects"
-                      margin = "0 0 2"
-                      label  = "Project" />
-                    <a:radiobutton id="rbSFSelection"
-                      group  = "grpSFScope"
-                      skin   = "radio_grey"
-                      value  = "selection"
-                      label  = "Selection"
-                      selected = "true" />
-                </a:fieldset>
+            <a:hbox id="test" padding="5" align="start" edge="0 0 0 91">
+                <a:textbox id="txtSFReplace" tabindex="1002" skin="searchbox" flex="1" initial-message="Replace With" focusselect="true"/>
+                <a:button id="btnSFReplaceAll" focussable="false" skin="blackbutton" width="80"
+                  onclick="require('ext/searchinfiles/searchinfiles').replace()">Replace</a:button>
             </a:hbox>
         </a:vbox>
-        <a:hbox padding="10" pack="end" edge="6 10 10">
-            <a:button id="btnSFReplaceAll" skin="btn-default-css3">Replace All</a:button>
-            <a:button id="btnSFFind" default="2" class="btn-green" skin="btn-default-css3">Find All</a:button>
-            <a:button onclick="winSearchInFiles.hide()" skin="btn-default-css3">Close</a:button>
-        </a:hbox>
-    </a:window>
-
+    </a:bar>
+    
     <!-- Added prerender here to speed up the loading. The query already has the data we need, we don't need to
     render the results one by one (as we do, for example, with the Project Files tree -->
     <a:hbox id="trSFHbox" anchors="0 0 0 0" visible="false" render="runtime">

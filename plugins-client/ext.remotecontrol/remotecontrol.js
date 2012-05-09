@@ -31,7 +31,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                     // If node is found in tree we expand it
                     var node = filesystem.model.queryNode("//file[@path='" + event.message.args.path + "']");
                     if (node) {
-                        tabbehaviors.revealfile(node);
+                        tabbehaviors.revealInTree(node);
                     }
 
                     editors.showFile(event.message.args.path);
@@ -44,7 +44,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                     }
                     
                     // TODO: Directory is not selected in tree.
-                    tabbehaviors.revealfile(node);
+                    tabbehaviors.revealInTree(node);
                 }
             }
         });

@@ -1,64 +1,7 @@
 <?xml version='1.0'?>
 <a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
-    <a:textbox name="searchbox">
-        <a:style><![CDATA[
-            .searchbox .sbtb_middle .input{
-                border           : 0;
-                height           : 17px;
-                font-size        : 12px;
-                color            : #333333;
-                font-family      : menlo,courier new,fixed,swiss,sans-serif;
-                outline          : none;
-                background-color : transparent;
-                width: 100%;
-            }
-            
-            .tb_textboxInitial .sbtb_middle .input {
-                color : #777777;
-            }
-    
-            .tb_textboxDisabled .sbtb_middle .input {
-                color : #CCC;
-            }
-            
-            .searchTxt.tb_console .sbtb_middle .input {
-                height: 19px;
-                line-height: 19px;
-                position: relative;
-                top: 4px;
-            }
-            .searchTxt.tb_textboxInitial .sbtb_middle .input {
-                color: #BABABA !important;
-                text-shadow: 0 1px 0 #FFFFFF;
-            }
-            
-            .searchbox span, .searchbox font{
-                text-shadow : none;
-                padding : 1px 0 1px 0;
-            }
-        ]]></a:style>
-    
-        <a:presentation>
-            <a:main input="div[1]/div">
-                <div class="tb_textbox searchbox searchTxt tb_console">
-                    <div class="sbtb_middle">
-                        <div class="input"> </div>
-                    </div>
-                </div>
-            </a:main>
-        </a:presentation>
-    </a:textbox>
     <a:button name="btnquicksearchnav">
         <a:style><![CDATA[
-            .find-and-replace {
-                background-image: url(images/c9-find-and-replace.png), url(images/c9-noise-with-background.png);
-                background-position: 100% 1px, 0 0;
-                background-repeat: no-repeat, repeat;
-                box-shadow: 0 1px 0 0 rgba(255,255,255,.2) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
-                border-top: 1px solid #000;
-                padding: 7px;
-            }
-        
             .btnquicksearchnav {
                 height             : 22px;
                 cursor             : pointer;

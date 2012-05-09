@@ -58,22 +58,25 @@ function analyzeDocument(path, allCode) {
     }
 }
 
-completer.onDocumentOpen = function(path, doc) {
+completer.onDocumentOpen = function(path, doc, oldPath, callback) {
     if (!analysisCache[path]) {
         analyzeDocument(path, doc.getValue());
     }
+    callback();
 };
     
-completer.onDocumentClose = function(path) {
+completer.onDocumentClose = function(path, callback) {
     removeDocumentFromCache(path);
+    callback();
 };
 
-completer.onUpdate = function(doc) {
+completer.onUpdate = function(doc, callback) {
     removeDocumentFromCache(this.path);
     analyzeDocument(this.path, doc.getValue());
+    callback();
 };
 
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     var identDict = globalWordIndex;
@@ -89,7 +92,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
         return !globalWordFiles[m][currentPath];
     });
 
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         var path = Object.keys(globalWordFiles[m])[0] || "[unknown]";
         var pathParts = path.split("/");
         var foundInFile = pathParts[pathParts.length-1];
@@ -101,7 +104,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : foundInFile,
           priority    : 0
         };
-    });
+    }));
 };
 
 });
