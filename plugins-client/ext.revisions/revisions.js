@@ -132,9 +132,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
 
         btnSave.setAttribute("caption", "");
+        btnSave.setAttribute("margin", "0 20");
         btnSave.removeAttribute("tooltip");
         btnSave.removeAttribute("command");
-        apf.setStyleClass(btnSave.$ext, "initial btnSave");
+        apf.setStyleClass(btnSave.$ext, "btnSave");
 
         tooltip.add(btnSave, {
             message : "Changes to your file are automatically saved.<br />\
@@ -202,12 +203,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (page) {
             var hasChanged = Util.pageHasChanged(tabEditors.getPage());
             if (Util.isAutoSaveEnabled() && hasChanged) {
-                apf.setStyleClass(btnSave.$ext, "saving", ["saved", "initial"]);
-                return btnSave.setCaption("Saving...");
+                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
+                return btnSave.setCaption("Saving");
             }
             else if (!hasChanged) {
-                apf.setStyleClass(btnSave.$ext, "saved", ["saving", "initial"]);
-                return btnSave.setCaption("All changes saved");
+                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
+                return btnSave.setCaption("Changes saved");
             }
         }
         btnSave.setCaption("");
