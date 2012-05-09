@@ -32,7 +32,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     defaultWidth : 270,
     
-    excludedTypes : {"xml":1, "html":1, "css":1, "txt":1, "png": 1, "jpg": 1, "gif": 1},
+    excludedTypes : {"xml":1, "html":1, "css":1, "txt":1, "png": 1, "jpg": 1, "gif": 1, "md": 1},
+    permitedTypes : {"js": 1},
 
     nodes : [],
     model : new apf.model(),
@@ -77,14 +78,13 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 "id" : "mnuRunCfg",
                 "onprop.visible" : function(e){
                     if (e.value) {
-                        if (!this.populated) {
+                        //if (!this.populated) {
                             _self.$populateMenu();
-                            this.populated = true;
-                        }
+                          //  this.populated = true;
+                    //    }
                         
                         if (!self.tabEditors 
-                          || tabEditors.length == 0
-                          || _self.excludedTypes[tabEditors.getPage().id.split(".").pop()])
+                          || (tabEditors.length > 0 && !_self.permitedTypes[tabEditors.getPage().id.split(".").pop()]))
                             _self.mnuRunCfg.firstChild.disable();
                         else
                             _self.mnuRunCfg.firstChild.enable();
@@ -201,6 +201,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
         
         function setActiveFile(page){
+            if(!_self.model.queryNode('config[@curfile]')) {
+                apf.xmldb.appendChild(_self.model.data, apf.getXml('<config curfile="1" last="true"/>'), _self.model.data.firstChild);
+            }
             if (page && page.$model) {
                 var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
                 _self.model.setQueryValue("config[@curfile]/@path", path);
@@ -218,6 +221,19 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
             ide.addEventListener("updatefile", function(e){
                 setActiveFile(tabEditors.getPage());
+            });
+            
+            tabEditors.addEventListener("close", function(e) {
+                if(tabEditors.length > 1)
+                    return;
+                    
+                var page = e.page;
+                if (page && page.$model) {
+                    var path = page.$model.queryValue("@path").replace(ide.davPrefix, "");
+                    var node = _self.model.queryNode('//config[@path="' + path + '" and @curfile="1"]');
+                    if(node)
+                        apf.xmldb.removeNode(node);
+                }
             });
         });
 
@@ -334,6 +350,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             .attr("args", "").node();
 
         var node = this.model.appendXml(cfg);
+        
         this.$addMenuItem(node);
         
         lstRunCfg.select(node);
@@ -362,7 +379,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         }
         
         if (node.getAttribute("curfile")
-          && this.excludedTypes[node.getAttribute("path").split(".").pop()]) {
+          && !this.permitedTypes[node.getAttribute("path").split(".").pop()]) {
             this.showRunConfigs(false);
             return;
         }
@@ -394,9 +411,9 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
     $addMenuItem : function(cfg, divider){
         var _self = this;
-        
-        if (this.mnuRunCfg.populated)
-            return;
+
+//        if (this.mnuRunCfg.populated)
+//            return;
 
         if (!divider)
             divider = this.mnuRunCfg.getElementsByTagNameNS("", "divider")[0];
