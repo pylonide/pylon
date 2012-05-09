@@ -69,6 +69,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.hideMenus();
         madeNewFile = wentToZen = madeDebug = deletedFile = false;
         this.currentStep = -1;
+        require("ext/sidebar/sidebar").animateToFullWidth();
         winTourDesc.setValue(this.tour.initialText);
         winTourGuide.show();
         winTourButtonStart.show();
@@ -258,8 +259,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 _self.currentEl = ceEditor;
             }
             else if (step.div == "ceEditorGutter") {
-                _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[1]/DIV[2]', ceEditor.$ext) 
-            }
+                _self.currentEl = ceEditor.$ext.getElementsByClassName("ace_gutter-layer")[0].getElementsByClassName("ace_gutter-cell ")[1];
+            }                    
             else if (step.div == "expandedDbg") {
                 _self.currentEl = expandedDbg;
             }
@@ -312,14 +313,14 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             
             winTourText.setAttribute("class", step.pos);
         
-            _self.setPositions(step.pos, pos, winTourText);
+            _self.setPositions(step.pos, pos, winTourText, step.extra);
             
             if(step.pos)
                 winTourText.show();
         }, 200);
     },
 
-    setPositions: function(position, posArray, div) {
+    setPositions: function(position, posArray, div, extra) {
         if (position == "top"){
             div.setAttribute("bottom", (window.innerHeight - posArray[1]) + 25);
             div.setAttribute("left", (posArray[0] + (posArray[2] / 2)) - (div.getWidth() / 2));
@@ -330,23 +331,23 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         }
         else if (position == "bottom"){
             div.setAttribute("top", posArray[3] + 50);
-            div.setAttribute("right", (posArray[0] + (posArray[2] / 2)) - (div.getWidth() / 2));
+            div.setAttribute("left", posArray[3]);
         }
         else if (position == "left"){
-            div.setAttribute("right", (window.innerWidth - posArray[0]) + 25);
+            if (extra === undefined)
+                extra = 15;
+                
+            div.setAttribute("right", (window.innerWidth - posArray[0]) + extra); // compensation for new file dialog 
             div.setAttribute("top", (posArray[1] + (posArray[3] / 2)) - (div.getHeight() / 2));
         }
-
+        
         return div;
     },
 
     /**
      * Element methods
      */
-    highlightElement: function(){        
-        //this.currentEl.addEventListener("resize", this.$celResize = function() {
-        //_self.resizeHighlightedEl();
-        //});
+    highlightElement: function(){
         this.resizeHighlightedEl();
         
         var hlZindex = this.hlElement.style.zIndex;

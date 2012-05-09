@@ -5,37 +5,36 @@ this.tour = {
     {
         before: function() {
             
-            //require("ext/panels/panels").activate(require("ext/panels/panels").lastPanel);
         },
         el: undefined,
         div: "navbar",
-        desc: "This is the project bar. It controls the behavior of the IDE, as well as the presentation of your code.",
+        desc: "This is the project bar. These buttons control the behavior of the IDE, as well as the presentation of your code.",
         pos: "bottom",
         time: 4
     }, {
         before: function() {
-            // require("ext/tree/tree").enable();
+            require("ext/panels/panels").activate(require("ext/tree/tree"));
         },
         el: undefined,
-        div: "navbar.childNodes[0]",
+        div: "navbar.childNodes[1]",
         desc: "This button shows and hides your project files.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            //require("ext/openfiles/openfiles").enable();
+            require("ext/panels/panels").activate(require("ext/openfiles/openfiles"));
         },
         el: undefined,
-        div: "navbar.childNodes[1]",
+        div: "navbar.childNodes[2]",
         desc: "This button shows and hides your open files in a list view.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            //require("ext/settings/settings").enable();
+            require("ext/settings/settings").show();
         },
         el: undefined,
-        div: "navbar.childNodes[navbar.childNodes.length - 1]",
+        div: "navbar.childNodes[navbar.childNodes.length - 2]",
         desc: "You can enable additional features and change the behavior of the editor.",
         pos: "right",
         time: 4
@@ -81,9 +80,10 @@ this.tour = {
         },
         el: undefined,
         div: "ceEditor",
-        desc: "We've just typed up a quick code example and saved it as \"helloWorld-guidedTour.js.\" We'll work with this file, then delete it when we're done.",
+        desc: "Here's a quick Node.js example, saved as \"helloWorld-guidedTour.js.\"",
+        extra: -40,
         pos: "left",
-        time: 5
+        time: 4
     }, {
         before: function(){
             if (wentToZen){
@@ -112,7 +112,7 @@ this.tour = {
         },
         el: undefined,
         div: undefined,
-        desc: "If you hover over this corner, you can activate Zen Mode, which is a distraction-free environment. We'll simulate pressing that button now.",
+        desc: "If you hover over this corner, you can activate Zen Mode, which is a distraction-free environment. We'll press that button now.",
         pos: "left",
         time: 5
     }, {
@@ -177,7 +177,7 @@ this.tour = {
             });
         },
         el: "winRunPanel",
-        desc: "Here's where the fun begins! After clicking Debug, then Run Configurations, you'll be able to create or modify a debug configuration. Every configuration needs a name and a file to run, but you can also pass arguments.",
+        desc: "Here's where the fun begins! After clicking Debug, then Run Configurations, you'll be able to create or modify a debug configuration. Every configuration needs a name and a file to run, but you can also pass command-line arguments.",
         pos: "right",
         time: 5
     }, {
@@ -198,7 +198,7 @@ this.tour = {
         el: function(){
             return dockpanel.layout.$getLastBar();;
         },
-        desc: "Next, when you start debugging, you'll instantly get a new debugging toolbar.",
+        desc: "Next, whenever you're debugging code, you get a new debugging toolbar.",
         pos: "left",
         time: 4
     }, {
@@ -251,21 +251,9 @@ this.tour = {
             txtConsoleInput.setValue("git status");
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
-        desc: "We indicated to the debugger that we want to continue. At last, the console.log() message printed out. Now, we're going to simulate typing 'git status' in the command line.",
+        desc: "We indicated to the debugger that we want to continue. At last, the console.log() message about the server running printed out. Now, we're going to simulate typing 'git status' in the command line.",
         pos: "top",
         time: 4
-    }, {
-        before: function(){
-            require(["c9/ext/deploy/deploy"], function(deploy) { 
-                hasDeploy = true;
-                panels.activate(deploy);
-            });
-        },
-        el: "winDeploy",
-        desc: "In this panel you can manage(add/remove) your deploy targets for your application, in different services, like Joyent and Heroku.",
-        pos: "right",
-        notAvailable: !hasDeploy,
-        time: 5
     }, {
         before: function() {
             require('ext/runpanel/runpanel').stop();
@@ -279,7 +267,7 @@ this.tour = {
             }
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
-        desc: "As expected, there's been a new file added to git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-guidedTour.js'.",
+        desc: "As expected, there's our new file being tracked by git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-guidedTour.js'.",
         pos: "top",
         time: 4
     }, {
