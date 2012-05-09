@@ -24,9 +24,9 @@ module.exports = ext.register("ext/tooltip/tooltip", {
     create : function(options, oHtml){
         var div = document.body.appendChild(document.createElement("div"));
         div.className = "menu-bk downward menu-bkFocus c9-tooltip";
-        div.innerHTML = options.message;
         div.style.width = (options.width || "250px");
         div.style.position = "absolute";
+        div.innerHTML = "<div></div>";
         
         var arrow = div.appendChild(document.createElement("div"));
         arrow.className = "arrow revisionsInfoArrow";
@@ -47,7 +47,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
         oHtml.addEventListener("mouseout", this.$mouseout);
         oHtml.addEventListener("mousedown", this.$mousedown);
         
-        if (!options.timeout)
+        if (options.timeout == undefined)
             options.timeout = 500;
         
         oHtml.$c9tooltipOptions = options;
@@ -90,6 +90,8 @@ module.exports = ext.register("ext/tooltip/tooltip", {
         var options = this.$c9tooltipOptions;
         
         clearTimeout(options.timer);
+        if (options.tooltip)
+            clearTimeout(options.tooltip.timer);
         
         var _self = this;
         options.timer = setTimeout(function(){
@@ -101,13 +103,27 @@ module.exports = ext.register("ext/tooltip/tooltip", {
 
             options.tooltip.style.display = "block";
             
-            var pos = apf.getAbsolutePosition(_self);
-            options.tooltip.style.left = (pos[0] - ((options.tooltip.offsetWidth - _self.offsetWidth)/2)) + "px";
-            options.tooltip.style.top = (pos[1]) + "px";
+            var pos;
+            if (options.getPosition)
+                pos = options.getPosition();
+            else {
+                var p = apf.getAbsolutePosition(_self);
+                pos = [(p[0] - ((options.tooltip.offsetWidth - _self.offsetWidth)/2)),
+                       (p[1])];
+            }
+            options.tooltip.style.left = pos[0] + "px";
+            options.tooltip.style.top = pos[1] + "px";
             
-            apf.tween.single(options.tooltip, 
-                {type: "fade", from: 0, to : 1, steps: 10, interval: 0, 
-                 control: options.control = {}});
+            (options.tooltip.firstElementChild || options.tooltip).innerHTML = options.message;
+            
+            if (options.animate !== false) {
+                apf.tween.single(options.tooltip, 
+                    {type: "fade", from: 0, to : 1, steps: 10, interval: 0, 
+                     control: options.control = {}});
+            }
+            else {
+                apf.setOpacity(options.tooltip, 1);
+            }
         }, options.timeout);
     },
     
@@ -121,15 +137,20 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             return;
             
         var _self = this;
-        options.timer = setTimeout(function(){
+        options.timer = options.tooltip.timer = setTimeout(function(){
             if (options.control)
                 options.control.stop();
 
-            apf.tween.single(options.tooltip, {
-                 type: "fade", from: 1, to : 0, steps: 10, interval: 0,
-                 control: options.control = {}, 
-                 onfinish: function(){ options.tooltip.style.display = "none";}
-            });
+//            if (options.animate !== false) {
+                apf.tween.single(options.tooltip, {
+                     type: "fade", from: 1, to : 0, steps: 10, interval: 0,
+                     control: options.control = {}, 
+                     onfinish: function(){ options.tooltip.style.display = "none";}
+                });
+//            }
+//            else {
+//                options.tooltip.style.display = "none";
+//            }
         }, 200);
     },
     
@@ -138,7 +159,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
         var options = this.$c9tooltipOptions;
         
         clearTimeout(options.timer);
-        if (options.tooltip) {
+        if (options.tooltip && options.hideonclick) {
             if (options.control)
                 options.control.stop();
             

@@ -131,11 +131,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
         });
 
-        btnSave.removeAttribute("icon");
         btnSave.setAttribute("caption", "");
         btnSave.removeAttribute("tooltip");
-        btnSave.setAttribute("margin", "0 20 0 20");
         btnSave.removeAttribute("command");
+        apf.setStyleClass(btnSave.$ext, "initial btnSave");
 
         tooltip.add(btnSave, {
             message : "Changes to your file are automatically saved.<br />\
@@ -143,7 +142,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                 onclick='require(\"ext/revisions/revisions\").toggle();' \
                 class='revisionsInfoLink'>the Revision History pane</a>. \
                 Rollback to a previous state, or make comparisons.",
-            width : "250px"
+            width : "250px",
+            hideonclick : true
         });
 
         // Declaration of event listeners
@@ -192,17 +192,21 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     setSaveButtonCaption: function(caption, page) {
-        if (caption) {
+        if (!self.btnSave)
+            return;
+        
+        if (caption)
             return btnSave.setCaption(caption);
-        }
 
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(tabEditors.getPage());
             if (Util.isAutoSaveEnabled() && hasChanged) {
+                apf.setStyleClass(btnSave.$ext, "saving", ["saved", "initial"]);
                 return btnSave.setCaption("Saving...");
             }
             else if (!hasChanged) {
+                apf.setStyleClass(btnSave.$ext, "saved", ["saving", "initial"]);
                 return btnSave.setCaption("All changes saved");
             }
         }

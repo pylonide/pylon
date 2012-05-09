@@ -18,7 +18,7 @@ var fsUrl = "/workspace";
 
 var port = argv.p || process.env.PORT || 3131;
 
-module.exports = {
+var config = {
     name: "Cloud9",
     tmpdir: __dirname + "/../.architect",
     basePath: __dirname + "/../plugins-server",
@@ -39,14 +39,15 @@ module.exports = {
             },
             "./cloud9.alive",
             "./cloud9.debug",
-
+ 
             // Client libraries
-            "./../plugins-client/cloud9.core",
-            "./../plugins-client/lib.ace",
-            "./../plugins-client/lib.apf",
-            "./../plugins-client/lib.treehugger",
+            "./../plugins-client/cloud9.core", 
+            "./../plugins-client/lib.ace", 
+            "./../plugins-client/lib.apf", 
+            "./../plugins-client/lib.treehugger", 
             "./../plugins-client/lib.v8debug",
             "./../plugins-client/lib.requirejs",
+            "./../plugins-client/lib.packed",
 
             // server plugins
             {
@@ -63,6 +64,7 @@ module.exports = {
                 bundledPlugins: [
                     "helloworld"
                 ],
+                real: false,
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",
@@ -83,7 +85,6 @@ module.exports = {
                     "ext/searchinfiles/searchinfiles",
                     "ext/searchreplace/searchreplace",
                     "ext/quickwatch/quickwatch",
-                    "ext/quicksearch/quicksearch",
                     "ext/gotoline/gotoline",
                     "ext/preview/preview",
                     "ext/log/log",
@@ -122,7 +123,6 @@ module.exports = {
                     "ext/quickstart/quickstart",
                     "ext/jslanguage/jslanguage",
                     //"ext/autotest/autotest",
-                    "ext/tabsessions/tabsessions",
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
@@ -177,3 +177,5 @@ module.exports = {
         }
     }
 };
+
+module.exports = config;
