@@ -714,9 +714,6 @@ module.exports = ext.register("ext/code/code", {
                 id : "mnuWrapView",
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]",
-                "onprop.wrapmode" : function(e){
-                    this.setAttribute("disabled", !apf.isTrue(e.value))
-                },
                 isAvailable : function(editor){
                     if (!editor || !editor.ceEditor)
                         return false;

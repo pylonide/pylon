@@ -116,8 +116,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 return false;
             }
             
-            if (_self.findKeyboardHandler(e, "searchfiles", this) === false)
+            if (_self.findKeyboardHandler(e, "searchfiles", this, chkSFRegEx) === false)
                 return false;
+                
+            if (chkSFRegEx.checked
+              && _self.evaluateRegExp(txtSFFind, tooltipSearchInFiles, 
+              winSearchInFiles, e.htmlEvent) === false) {
+                return;
+            }
         });
         txtSFFind.addEventListener("keyup", function(e) {
             if (e.keyCode != 8 && (e.ctrlKey || e.shiftKey || e.metaKey 
@@ -136,7 +142,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 return false;
             }
             
-            if (_self.findKeyboardHandler(e, "replacefiles", this) === false)
+            if (_self.findKeyboardHandler(e, "replacefiles", this, chkSFRegEx) === false)
                 return false;
         });
         
@@ -156,7 +162,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     _self.updateInputRegExp(txtSFFind);
             }
             else
-                _self.removeInputRegExp(txtFind);
+                _self.removeInputRegExp(txtSFFind);
         });
         
         var cbs = winSearchInFiles.getElementsByTagNameNS(apf.ns.aml, "checkbox");

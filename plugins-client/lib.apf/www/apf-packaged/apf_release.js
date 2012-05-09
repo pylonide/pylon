@@ -64667,6 +64667,28 @@ apf.textbox  = function(struct, tagName){
                     s.addRange(r);
                 }
             }
+            
+            this.$input.onpaste = function(){
+                if (apf.hasMsRangeObject)
+                    return;
+                    
+                var sel   = window.getSelection();
+                var range = sel.getRangeAt(0);
+                
+                setTimeout(function(){
+                    var range2 = sel.getRangeAt(0);
+                    range2.setStart(range.startContainer, range.startOffset);
+                    var c = range2.cloneContents();
+                    range2.deleteContents();
+                    
+                    var d = document.body.appendChild(document.createElement("div")); 
+                    d.appendChild(c); 
+                    var p = d.innerText;
+                    d.parentNode.removeChild(d);
+                    
+                    range2.insertNode(document.createTextNode(p));
+                });
+            };
         };
 
         this.$input.deselect = function(){

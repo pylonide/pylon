@@ -11,7 +11,7 @@ var settings = require("core/settings");
 var prefix   = "search/"
 
 module.exports = {
-    findKeyboardHandler : function(e, listName, txtFind){
+    findKeyboardHandler : function(e, listName, txtFind, chkRegEx){
         switch (e.keyCode){
             case 27: //ESCAPE
                 this.toggleDialog(-1);
@@ -22,29 +22,29 @@ module.exports = {
                     e.stop();
                 return false;
             case 38: //UP
-                if (!this.hasCursorOnFirstLine())
+                if (!this.hasCursorOnFirstLine(txtFind))
                     return;
-                this.navigateList("prev", listName, txtFind);
+                this.navigateList("prev", listName, txtFind, chkRegEx);
                 return false;
             case 40: //DOWN
-                if (!this.hasCursorOnLastLine())
+                if (!this.hasCursorOnLastLine(txtFind))
                     return;
-                this.navigateList("next", listName, txtFind);
+                this.navigateList("next", listName, txtFind, chkRegEx);
                 return false;
             case 36: //HOME
                 if (!e.ctrlKey)
                     return;
-                this.navigateList("first", listName, txtFind);
+                this.navigateList("first", listName, txtFind, chkRegEx);
                 return false;
             case 35: //END
                 if (!e.ctrlKey)
                     return;
-                this.navigateList("last", listName, txtFind);
+                this.navigateList("last", listName, txtFind, chkRegEx);
                 return false;
         }
     },
     
-    hasCursorOnFirstLine : function(){
+    hasCursorOnFirstLine : function(txtFind){
         var selection = window.getSelection();
         if (selection.anchorNode.nodeType == 1)
             return true;
@@ -64,7 +64,7 @@ module.exports = {
         return true;
     },
     
-    hasCursorOnLastLine : function(){
+    hasCursorOnLastLine : function(txtFind){
         var selection = window.getSelection();
         if (selection.anchorNode.nodeType == 1)
             return true;
@@ -84,7 +84,7 @@ module.exports = {
         return true;
     },
     
-    navigateList : function(type, listName, txtFind){
+    navigateList : function(type, listName, txtFind, chkRegEx){
         var model = settings.model;
         var lines = JSON.parse(model.queryValue(prefix + listName + "/text()") || "[]");
         
@@ -225,7 +225,7 @@ module.exports = {
                     txtFind.$undo.push(undoItem);
                 }
                 else {
-                    if (!txtFind.$undo.length)
+                    if (txtFind.$undo.length < 2)
                         return;
                     txtFind.$redo.push(txtFind.$undo.pop());
                     var undoItem = txtFind.$undo[txtFind.$undo.length - 1];
