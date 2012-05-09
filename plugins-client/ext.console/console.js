@@ -46,7 +46,7 @@ module.exports = ext.register("ext/console/console", {
     minHeight : 150,
     maxHeight: window.innerHeight - 70,
 
-    collapsedHeight : 30,
+    collapsedHeight : 31,
     $collapsedHeight : 0,
 
     autoOpen : true,
@@ -519,7 +519,7 @@ module.exports = ext.register("ext/console/console", {
                 _self.show(true);
 
             if (apf.isTrue(e.model.queryValue("auto/console/@showinput")))
-                _self.showInput();
+                _self.showInput(null, true);
         });
 
         stProcessRunning.addEventListener("activate", function() {
@@ -776,18 +776,54 @@ module.exports = ext.register("ext/console/console", {
         btnConsoleMax.setValue(false);
     },
 
-    showInput : function(temporary){
+    showInput : function(temporary, immediate){
+        var _self = this;
+        
         if (!this.hiddenInput)
             return;
 
         ext.initExtension(this);
 
         this.$collapsedHeight = this.collapsedHeight;
-        if (this.hidden)
-            winDbgConsole.setAttribute("height", this.collapsedHeight + "px")
-        txtConsoleInput.parentNode.show();
-        apf.layout.forceResize();
-
+        
+        cliBox.show();
+        
+        if (!immediate) {
+            cliBox.$ext.style.height = "0px";
+            cliBox.$ext.scrollTop = 0;
+            setTimeout(function(){
+                cliBox.$ext.scrollTop = 0;
+            });
+    
+            if (_self.hidden) {
+                winDbgConsole.$ext.style.height = "0px";
+                Firmin.animate(winDbgConsole.$ext, {
+                    height: _self.collapsedHeight + "px",
+                    timingFunction: "cubic-bezier(.30, .08, 0, 1)"
+                }, 0.3);
+            }
+    
+            var timer = setInterval(function(){apf.layout.forceResize()}, 10);
+            Firmin.animate(cliBox.$ext, {
+                height: _self.collapsedHeight + "px",
+                timingFunction: "cubic-bezier(.30, .08, 0, 1)"
+            }, 0.3, function(){
+                if (_self.hidden)
+                    winDbgConsole.setAttribute("height", _self.collapsedHeight + "px");
+                
+                winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                cliBox.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                
+                apf.layout.forceResize();
+                clearInterval(timer);
+            });
+        }
+        else {
+            if (_self.hidden)
+                winDbgConsole.setAttribute("height", _self.collapsedHeight + "px");
+            apf.layout.forceResize();
+        }
+        
         if (temporary) {
             var _self = this;
             txtConsoleInput.addEventListener("blur", function(){
@@ -803,15 +839,36 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    hideInput : function(force){
+    hideInput : function(force, immediate){
         if (!force && (!this.inited || this.hiddenInput))
             return;
 
         this.$collapsedHeight = 0;
-        if (this.hidden)
-            winDbgConsole.setAttribute("height", "0")
-        txtConsoleInput.parentNode.hide();
-        apf.layout.forceResize();
+        
+        if (!immediate) {
+            if (this.hidden) {
+                Firmin.animate(winDbgConsole.$ext, {
+                    height: "0px",
+                    timingFunction: "ease-in-out"
+                }, 0.3);
+            }
+            
+            var timer = setInterval(function(){apf.layout.forceResize()}, 10);
+            Firmin.animate(cliBox.$ext, {
+                height: "0px",
+                timingFunction: "ease-in-out"
+            }, 0.3, function(){
+                cliBox.hide();
+                apf.layout.forceResize();
+                clearTimeout(timer);
+            });
+        }
+        else {
+            if (this.hidden)
+                winDbgConsole.setAttribute("height", "0")
+            cliBox.hide();
+            apf.layout.forceResize();
+        }
 
         settings.model.setQueryValue("auto/console/@showinput", false);
         this.hiddenInput = true;
