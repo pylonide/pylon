@@ -79,7 +79,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 )
             });
             
-            ide.addEventListener("init.c9/ext/auth/auth", function(){
+            ide.addEventListener("init.ext/auth/auth", function(){
                 _self.nodes.push(
                     menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
@@ -235,7 +235,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         }
         
         /** Dropped item is a folder */
-        if (e.dataTransfer.files.length == 0) {
+        if (!e.dataTransfer.files.length || !e.dataTransfer.files[0].size) {
             ext.initExtension(this);
             
             winNoFolderSupport.show();
@@ -301,7 +301,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if (!this.totalNumUploads)
             this.totalNumUploads = 0;
         var fileIndex = -1;
-                var filesInQueue = this.uploadInProgress ? mdlUploadActivity.data.childNodes.length : 0;
+        var filesInQueue = this.uploadInProgress ? mdlUploadActivity.data.childNodes.length : 0;
 
         var file;
         for (var i = 0, l = files.length; i < l; i++) {
@@ -316,7 +316,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 
                 // if more then one file is too big there is no need to check any further
                 if (files_too_big.length > 1)
-                    return showFilesTooBigDialog(files_too_big);
+                    return this.showFilesTooBigDialog(files_too_big);
                 
                 this.totalNumUploads++;
                 if (filesInQueue < MAX_VISIBLE_UPLOADS) {
@@ -328,7 +328,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         }
         
         if (files_too_big.length)
-            return showFilesTooBigDialog(files_too_big);
+            return this.showFilesTooBigDialog(files_too_big);
 
         if (!this.uploadInProgress)
             this.uploadNextFile();
@@ -386,7 +386,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             " name='" + filename + "'" +
             " path='" + path + "/" + filename + "'" +
         "/>";
-        
+        file.targetFolder = trFiles.getModel().queryNode("//folder");
         trFiles.add(xmlNode, file.targetFolder);
         file.treeNode = trFiles.queryNode("//file[@path='" + path + "/" + filename + "'][@name='" + filename + "']");	
     },
@@ -454,11 +454,12 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 filepath = filepath.join("/");
             }
             this.uploadInProgress = true;
+            
             if (this.hideUploadActivityTimeout) {
                 clearTimeout(this.hideUploadActivityTimeout);
                 this.hideUploadActivityTimeout = null;
             }
-            
+        
             /** Chrome, Firefox */
             if (apf.hasFileApi) {
                 function checkFileExists(exists) {
@@ -577,7 +578,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.existingOverwriteAll = false;
             _self.existingSkipAll = false;
             (davProject.realWebdav || davProject).setAttribute("showhidden", require('ext/settings/settings').model.queryValue("auto/projecttree/@showhidden"));
-            this.hideUploadActivityTimeout = setTimeout(function() {
+            _self.hideUploadActivityTimeout = setTimeout(function() {
                 mdlUploadActivity.load("<data />");
                 boxUploadActivity.hide();
             }, 5000);
