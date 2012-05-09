@@ -54339,17 +54339,7 @@ apf.menu = function(struct, tagName){
                         apf.menu.lastFocus = null;
                 }
                 //We're being hidden because window looses focus
-                else if (!apf.window.hasFocus()) {
-                    if (lastFocus.$blur)
-                        lastFocus.$blur();
-                    this.$blur();
-
-                    apf.document.activeElement = lastFocus;
-                    if (lastFocus.$focusParent)
-                        lastFocus.$focusParent.$lastFocussed = lastFocus;
-
-                    apf.menu.lastFocus = null;
-                }
+                
                 //We're just being hidden
                 else if (this.$hideTree) {
                     if (!this.$hideTree)
