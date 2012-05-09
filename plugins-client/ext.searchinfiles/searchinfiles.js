@@ -403,12 +403,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (!this.replaceAll)
             options.replacement = ""; 
 
-        //this.$model.clear();
-        //this.$panel.setAttribute("caption", _self.pageTitle);
-        
-      //  trSFResult.setAttribute("empty-message", 
-    //        "Searching for '" + query + "'...");
-
         davProject.report(path, "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
 
@@ -417,34 +411,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             var metaInfo = JSON.parse(array.shift());
             var countInfo = JSON.parse(array.shift());
     
-            if (state !== apf.SUCCESS || countInfo.count === undefined || countInfo.count == 0) {
-           //     trSFResult.setAttribute("empty-message", 
-        //            "No matches for '" + metaInfo[0] + "' " + metaInfo[2]);
-                return;
-            }
-        //    else
-        //        _self.$panel.setAttribute("caption", 
-        //            _self.pageTitle + " (" + countInfo[0] + ")");
-                    
-            var message = countInfo.count;
-            
-            if (countInfo.count > 1)
-                message += " matches ";
-            else
-                message += " match ";
-            
-            message += "for '" + metaInfo.query + "' in " + countInfo.filecount;
-            
-            if (countInfo.count > 1)
-                message += " files";
-            else
-                message += " file";  
-            
-            if (metaInfo.replacement.length > 0)
-                message += ", replaced as '" + metaInfo.replacement + "'";
-                
-            message += " " + metaInfo.optionsDesc;
-            
             var searchFile = ide.davPrefix + "/search_results.c9search";
             
             var node = apf.getXml("<file />");
@@ -455,8 +421,38 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             node.setAttribute("newfile", "0");
                     
             var doc = ide.createDocument(node);
-            doc.cachedValue = message + "\n" + data.split("\n").slice(2).join("\n");
-              
+            
+            if (state !== apf.SUCCESS || countInfo.count === undefined || countInfo.count == 0) {
+                doc.cachedValue = "No matches for '" + metaInfo.query + "' " + metaInfo.optionsDesc);
+                return;
+            }
+            else {
+            //    else
+            //        _self.$panel.setAttribute("caption", 
+            //            _self.pageTitle + " (" + countInfo[0] + ")");
+                        
+                var message = countInfo.count;
+                
+                if (countInfo.count > 1)
+                    message += " matches ";
+                else
+                    message += " match ";
+                
+                message += "for '" + metaInfo.query + "' in " + countInfo.filecount;
+                
+                if (countInfo.count > 1)
+                    message += " files";
+                else
+                    message += " file";  
+                
+                if (metaInfo.replacement.length > 0)
+                    message += ", replaced as '" + metaInfo.replacement + "'";
+                    
+                message += " " + metaInfo.optionsDesc;
+                
+                doc.cachedValue = message + "\n" + data.split("\n").slice(2).join("\n");
+            }
+            
             if (chkSFConsole.checked)
                 ceSFResult.$editor.session.setDocument(doc);
             else
