@@ -23,14 +23,19 @@ var exports = module.exports = function setup(options, imports, register) {
 
 exports.factory = function(uid) {
     return function(args, eventEmitter, eventName) {
-        return new Runner(uid, args.command, args.args, args.cwd, args.env, args.extra, eventEmitter, eventName);
+        return new Runner(uid, args.command, args.args, args.cwd, args.env, args.encoding, args.extra, eventEmitter, eventName);
     };
 };
 
-var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, eventEmitter, eventName) {
+var Runner = exports.Runner = function(uid, command, args, cwd, env, encoding, extra, eventEmitter, eventName) {
     this.uid = uid;
     this.command = command;
     this.args = args || [];
+    this.encoding = encoding || "utf8";
+
+    if (this.encoding === "binary") {
+        this.encoding = null;
+    }
     this.extra = extra;
 
     this.runOptions = {};
@@ -122,7 +127,12 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
 
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
-
+        
+        if (this.encoding) {
+            child.stdout.setEncoding(this.encoding);
+            child.stderr.setEncoding(this.encoding);
+        }
+        
         function emit(msg) {
             // console.log(self.eventName, msg);
             self.eventEmitter.emit(self.eventName, msg);
@@ -134,7 +144,7 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
                     "type": self.name + "-data",
                     "pid": pid,
                     "stream": stream,
-                    "data": data.toString("utf8"),
+                    "data": data,
                     "extra": self.extra
                 });
             };
