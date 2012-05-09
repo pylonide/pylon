@@ -34,6 +34,7 @@ worker:
 	ln -s `pwd`/plugins-client/ext.language /tmp/c9_worker_build/ext/language
 	ln -s `pwd`/plugins-client/ext.codecomplete /tmp/c9_worker_build/ext/codecomplete
 	ln -s `pwd`/plugins-client/ext.jslanguage /tmp/c9_worker_build/ext/jslanguage
+	ln -s `pwd`/plugins-client/ext.jsinfer /tmp/c9_worker_build/ext/jsinfer
 	./Makefile.dryice.js worker
 	cp node_modules/ace/build/src/worker* plugins-client/lib.ace/www/worker
 

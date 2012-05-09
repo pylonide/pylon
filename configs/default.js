@@ -127,7 +127,8 @@ var config = {
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
                     "ext/revisions/revisions",
-                    "ext/language/liveinspect"
+                    "ext/language/liveinspect",
+                    "ext/jsinfer/jsinfer"
                     //"ext/splitview/splitview"
                     //"ext/minimap/minimap"
                     //"ext/acebugs/acebugs"

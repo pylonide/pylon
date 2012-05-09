@@ -187,6 +187,9 @@ define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, ex
             return !x.lastIndex;
         }();
 
+    if (compliantLastIndexIncrement && compliantExecNpcg)
+        return;
+
     //---------------------------------
     //  Overriden native methods
     //---------------------------------
@@ -9884,7 +9887,7 @@ var GLOBALS = {
     "this"                   : true,
     "arguments"              : true,
     self                     : true,
-    Infinity                 : true,
+    "Infinity"               : true,
     onmessage                : true,
     postMessage              : true,
     importScripts            : true,
@@ -15317,5 +15320,1019 @@ define('ext/jslanguage/debugger', ['require', 'exports', 'module' , 'ext/languag
         );
         return result;
     };
+
+});
+var globalRequire = require;
+
+define('ext/jsinfer/complete', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ext/jsinfer/infer', 'ext/jsinfer/values', 'ext/jslanguage/scope_analyzer', 'ext/codecomplete/complete_util', 'treehugger/traverse'], function(require, exports, module) {
+
+var baseLanguageHandler = require('ext/language/base_handler');
+var infer = require('ext/jsinfer/infer');
+var values = require('ext/jsinfer/values');
+var Value = require('ext/jsinfer/values').Value;
+var FunctionValue = require('ext/jsinfer/values').FunctionValue;
+var scopeAnalyzer = require("ext/jslanguage/scope_analyzer");
+var completeUtil = require("ext/codecomplete/complete_util");
+var traverse = require("treehugger/traverse");
+
+var completer = module.exports = Object.create(baseLanguageHandler);
+
+completer.fetchText = function(path) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', "/static/" + path, false);
+    xhr.send();
+    if(xhr.status === 200)
+        return xhr.responseText;
+    else
+        return false;
+};
+
+var builtins = JSON.parse(completer.fetchText("ext/jsinfer/builtin.json")) ;
+    
+completer.handlesLanguage = function(language) {
+    return language === 'javascript';
+};
+
+completer.completionRequiresParsing = function() {
+    return true;
+};
+
+function valueCollToCode(name, coll) {
+    var code;
+    coll.forEach(function(v) {
+        if(code)
+            return;
+        if(v instanceof FunctionValue) {
+            var args = [];
+            var fargs = v.getFargs();
+            var idx = 0;
+            var argColl = v.get("arg"+idx)
+            while(!argColl.isEmpty() || idx < fargs.length) {
+                args.push(fargs[idx] || "arg"+idx);
+                idx++;
+                argColl = v.get("arg"+idx);
+            }
+            code = "function(" + args.join(", ") + ") {\n    ^^\n}";
+        }
+    });
+    return code || name;
+}
+
+function extractArgumentNames(v) {
+    var args = [];
+    var argsCode = [];
+    var idx = 0;
+    var argColl = v.get("arg"+idx);
+    var fargs = v instanceof FunctionValue ? v.getFargs() : [];
+    var inferredArguments = false;
+    while(!argColl.isEmpty()) {
+        var argName = fargs[idx] || "arg" + idx;
+        if(!fargs[idx])
+            inferredArguments = true;
+        args.push(argName);
+        idx++;
+        argColl = v.get("arg"+idx);
+        argsCode.push(valueCollToCode(argName, argColl));
+    }
+    return {
+        argNames: args,
+        argValueCodes: argsCode,
+        inferredNames: inferredArguments
+    };
+}
+
+function valueToMatch(v, name) {
+    if(v instanceof FunctionValue || v.properties._return) {
+        var args = extractArgumentNames(v);
+        return {
+            id           : name,
+            name         : name + "(" + args.argNames.join(", ") + ")",
+            replaceText  : name + (args.argNames.length === 0 ? "()" : "(^^)"),
+            icon         : "method",
+            priority     : 3,
+            inferredNames: args.inferredNames
+        }
+    }
+    else {
+        return {
+            id          : name,
+            name        : name,
+            replaceText : name,
+            icon        : "property",
+            priority    : 3
+        }
+    }
+}
+
+function analyze(doc, ast, callback) {
+    scopeAnalyzer.analyze(doc, ast, function() {
+        Value.enterContext('es5:unnamed');
+        var scope = ast.getAnnotation("scope");
+        values.reset();
+        infer.createRootScope(scope, builtins);
+        Value.leaveContext();
+        Value.enterContext("local:");
+        infer.staticEval(scope, ast);
+        callback();
+    });
+}
+
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
+    if(!currentNode)
+        return callback();
+    var line = doc.getLine(pos.row);
+    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    console.log("Complete: "+currentNode);
+    analyze(doc, fullAst, function() {
+        var completions = {};
+        console.log("After analysis");
+        currentNode.rewrite(
+            'PropAccess(e, x)', function(b) {
+                var allIdentifiers = [];
+                var values = infer.inferValues(b.e);
+                values.forEach(function(v) {
+                    var propNames = v.getPropertyNames();
+                    for (var i = 0; i < propNames.length; i++) {
+                        if(propNames[i] !== b.x.value)
+                            allIdentifiers.push(propNames[i]);
+                    }
+                });
+                var matches = completeUtil.findCompletions(identifier, allIdentifiers);
+                //matches.
+                for (var i = 0; i < matches.length; i++) {
+                    values.forEach(function(v) {
+                        v.get(matches[i]).forEach(function(propVal) {
+                            var match = valueToMatch(propVal, matches[i]);
+                            // Only override completion if argument names were _not_ inferred, or if no better match is known
+                            if(!match.inferredNames || (match.inferredNames && !completions[match.id]))
+                                completions["_"+match.id] = match;
+                        });
+                    });
+                }
+                return this;
+            },
+            // Else, let's assume it's a variable
+            function() {
+                var scope = this.getAnnotation("scope");
+                if(!scope)
+                    return;
+                var variableNames = scope.getVariableNames();
+                if(this.cons === 'Var') {
+                    var varName = this[0].value;
+                    if(variableNames.indexOf(varName) !== -1)
+                        variableNames.splice(variableNames.indexOf(varName), 1);
+                }
+                var matches = completeUtil.findCompletions(identifier, variableNames);
+                for (var i = 0; i < matches.length; i++) {
+                    scope.get(matches[i]).values.forEach(function(propVal) {
+                        var match = valueToMatch(propVal, matches[i]);
+                        completions["_"+match.id] = match;
+                    });
+                }
+            }
+        );
+        // Find completions equal to the current prefix
+        var completionsArray = [];
+        for (var id in completions) {
+            if(!identifier || id !== "_" + identifier) {
+                completionsArray.push(completions[id]);
+            }
+        }
+        console.log(completionsArray.length);
+        callback(completionsArray);
+    });
+};
+
+completer.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
+    if(!currentNode)
+        return callback();
+    if(fullAst.parent === undefined) {
+        traverse.addParentPointers(fullAst);
+        fullAst.parent = null;
+    }
+    var steps = 0;
+    var argIndex = -1;
+    var callNode;
+
+    currentNode.traverseUp(
+        'Call(e, args)', function(b) {
+            // Try to determine at which argument the cursor is located in order
+            // to be able to show a label
+            argIndex = -1;
+            callNode = this;
+            console.log("Showing args for: "+this);
+            for (var i = 0; i < b.args.length; i++) {
+                if(b.args[i].cons === "ERROR") {
+                    argIndex = i;
+                    break;
+                }
+                b.args[i].traverseTopDown(function() {
+                    if(this === currentNode) {
+                        argIndex = i;
+                        return this;
+                    }
+                });
+            }
+            if(steps === 0 && argIndex === -1)
+                argIndex = 0;
+            return this;
+        },
+        function() {
+            steps++;
+            var pos = this.getPos();
+            if(pos && (pos.sl !== cursorPos.row || cursorPos.row !== pos.el))
+                return this;
+        }
+    );
+    
+    if(argIndex !== -1) {
+        analyze(doc, fullAst, function() {
+            var fnVals = infer.inferValues(callNode[0]);
+            var argNames = [];
+            fnVals.forEach(function(fnVal) {
+                var argNameObj = extractArgumentNames(fnVal);
+                if(!argNameObj.inferredNames)
+                    argNames = argNameObj.argNames;
+            });
+            
+            var hintHtml = '';
+            for (var i = 0; i < argNames.length; i++) {
+                if(i === argIndex)
+                    hintHtml += "<b>" + argNames[i] + "</b>";
+                else
+                    hintHtml += argNames[i];
+                if(i < argNames.length - 1)
+                    hintHtml += ", ";
+            }
+            callback({hint: hintHtml});
+        });
+    }
+    else
+        callback();
+};
+
+});
+/**
+ * Module that implements basic value inference. Type inference in Javascript
+ * doesn't make a whole lot of sense because it is so dynamic. Therefore, this
+ * analysis semi-evaluates the Javascript AST and attempts to do simple predictions
+ * of the values an expression, function or variable may contain.
+ */
+
+define('ext/jsinfer/infer', ['require', 'exports', 'module' , 'ext/jsinfer/values', 'ext/jslanguage/scope_analyzer', 'treehugger/traverse'], function(require, exports, module) {
+
+var Value           = require('ext/jsinfer/values').Value;
+var ValueCollection = require('ext/jsinfer/values').ValueCollection;
+var FunctionValue   = require('ext/jsinfer/values').FunctionValue;
+var instantiate     = require('ext/jsinfer/values').instantiate;
+var valueFromJSON   = require('ext/jsinfer/values').fromJSON;
+var lookupValue     = require('ext/jsinfer/values').lookupValue;
+var Scope           = require('ext/jslanguage/scope_analyzer').Scope;
+var Variable        = require('ext/jslanguage/scope_analyzer').Variable;
+require('treehugger/traverse');
+
+Variable.prototype.addValue = function(value) {
+    var values = this.values;
+    for (var i = 0; i < values.length; i++) {
+        if(values[i].guid === value.guid) {
+            return;
+        }
+    }
+    values.push(value);
+};
+
+/**
+ * Hints at what the value of a variable may be 
+ * @param variable name
+ * @param val possible value
+ */
+Scope.prototype.hint = function(name, v) {
+    var variable = this.get(name);
+    if(!variable) {
+        // Not properly declared variable, implicitly declare it in the current scope
+        variable = this.declare(name);
+    }
+    for (var i = 0; i < variable.values.length; i++) {
+        if(variable.values[i].guid === v.guid) {
+            
+            return;
+        }
+    }
+    variable.addValue(v);
+};
+
+Scope.prototype.hintMultiple = function(name, valueColl) {
+    var variable = this.get(name);
+    if(!variable) {
+        // Not properly declared variable, implicitly declare it in the current scope
+        variable = this.declare(name);
+    }
+    valueColl.forEach(function(v) {
+        for (var i = 0; i < variable.values.length; i++) {
+            if(variable.values[i].guid === v.guid) {
+                return;
+            }
+        }
+        variable.addValue(v);
+    });
+};
+
+/**
+ * Static evaluation of a function
+ */
+function evalFunction(scope, node, thisValues) {
+    node.rewrite(
+        'Function(name, fargs, body)', function(b) {
+            var val = new FunctionValue(b.name.value, node);
+            if(b.name.value)
+                scope.hint(b.name.value, val);
+            var proto = new Value("prototype", node);
+            val.hint('prototype', proto);
+            var localScope = this.getAnnotation("localScope");
+            localScope.fn = val;
+            localScope.declare("this");
+            localScope.hint("this", proto);
+            if(thisValues)
+                localScope.hintMultiple("this", thisValues);
+            b.fargs.forEach(function(farg, idx) {
+                var fargName = farg[0].value;
+                var fargVal = new Value(fargName);
+                val.hint("arg"+idx, fargVal);
+                localScope.declare(fargName);
+                localScope.hint(fargName, fargVal);
+            });
+            Value.enterContext(b.name.value || 'fn');
+            staticEval(localScope, b.body);
+            Value.leaveContext();
+        }
+    );
+}
+
+function hintValue(node, asV) {
+    node.rewrite(
+        'Var(x)', function(b) {
+            var scope = this.getAnnotation("scope");
+            scope.hint(b.x.value, asV);
+        },
+        'PropAccess(e, x)', function(b) {
+            var vals = inferValues(b.e);
+            vals.forEach(function(v) {
+                v.hint(b.x.value, asV);
+            });
+        }
+    );
+}
+
+/**
+ * Statically evaluate the AST node, i.e.
+ * - A traversal over the AST picking up only certain statements that
+ *   modify variables, properties etc.
+ */
+function staticEval(scope, node) {
+    node.traverseTopDown(
+        "Function(_, _, _)", function() {
+            evalFunction(scope, this);
+            return this; // Stop traversal
+        },
+        "VarDeclInit(name, e)", function(b) {
+            staticEval(scope, b.e);
+            scope.hintMultiple(b.name.value, inferValues(b.e));
+            return this; // Stop traversal
+        }, 
+        'Assign(PropAccess(e1, prop), e2)', function(b) {
+            staticEval(scope, b.e1);
+            var vs = inferValues(b.e1);
+            if(b.e2.cons === 'Function') {
+                // This is the SomeThing.prototype.myMethod = function() { ... } case
+                // Let's tell eval the function, hinting that "this" is in fact SomeThing.prototype
+                evalFunction(scope, b.e2, vs);
+            }
+            else if(b.e2.cons === 'ObjectInit') {
+                staticEval(scope, this[0]); // PropAccess(e1, prop)
+                var vs2 = inferValues(this[0]);
+                b.e2[0].filter('PropertyInit(_, Function(_, _, _))', function(b) {
+                    evalFunction(scope, this[1], vs2);
+                });
+            }
+            else {
+                staticEval(scope, b.e2);
+            }
+            var vs2 = inferValues(b.e2);
+            vs.values.forEach(function(v) {
+                v.hintMultiple(b.prop.value, vs2);
+            });
+            return this;
+        },
+        "Assign(Var(name), e)", function(b) {
+            staticEval(scope, this[0]);
+            staticEval(scope, b.e);
+            scope.hintMultiple(b.name.value, inferValues(b.e));
+            return this;
+        },
+        "ObjectInit(inits)", function(b) {
+            // When finding an object literal with 
+            var v = new Value("objLit");
+            var vals = new ValueCollection([v]);
+            b.inits.filter(
+                'PropertyInit(prop, Function(_, _, _))', function(b) {
+                    evalFunction(scope, this[1], vals);
+                    v.hintMultiple(b.prop.value, inferValues(this[1]))
+                },
+                'PropertyInit(prop, e)', function(b) {
+                    staticEval(scope, b.e);
+                    v.hintMultiple(b.prop.value, inferValues(b.e))
+                }
+            );
+            return this;
+        },
+        "OpAssign(op, Var(name), e)", function(b) {
+            // TODO: Make this type dependent
+            staticEval(scope, this[1]);
+            staticEval(scope, b.e);
+            scope.hintMultiple(b.name.value, inferValues(b.e));
+            if(b.op.value === '*' || b.op.value === '/' || b.op.value === '%' || b.op.value === '-') {
+                scope.hint(b.name.value, lookupValue('es5:Number/prototype'));
+            } else if(b.op.value === '+') {
+                scope.hint(b.name.value, lookupValue('es5:Number/prototype'));
+                scope.hint(b.name.value, lookupValue('es5:String/prototype'));
+            }
+            return this;
+        },
+        "PropAccess(e, prop)", function(b) {
+            staticEval(scope, b.e);
+            var vs = inferValues(this);
+            if (!vs.isEmpty()) {
+                return; // property is defined
+            }
+            // Apparently there's a property used in the code that
+            // is defined elsewhere (or by some other means)
+            // let's add it to the object
+            vs = inferValues(b.e);
+            vs.forEach(function(v) {
+                v.hint(b.prop.value, new Value(b.prop.value));
+            });
+            return this;
+        },
+        // (function() { ... }).call(Blabla.prototype) pattern
+        'Call(PropAccess(Function(name, fargs, body), "call"), args)',  function(b) {
+            var fnNode = this[0][0]; // Function(name, ...)
+            staticEval(scope, b.args);
+            var objectValues = inferValues(b.args[0]);
+            var funScope = fnNode.getAnnotation("localScope");
+            var fargs = b.fargs;
+            evalFunction(scope, fnNode, objectValues);
+            for (var i = 0; i < b.args.length-1; i++) {
+                inferValues(b.args[i+1]).forEach(function(v) {
+                    if(i < fargs.length)
+                        funScope.hint(fargs[i].value, v);
+                    objectValues.forEach(function(objV) {
+                        objV.hint('arg'+i, v);
+                    });
+                });
+            }
+            return this;
+        },
+        "Call(Var(name), args)", function(b) {
+            // It's called as a function, hint the inferencer!
+            var variable = scope.get(b.name.value);
+            if(!variable) {
+                // Not defined yet!? Declare it now
+                variable = scope.declare(b.name.value);
+                scope.hint(b.name.value, new FunctionValue(b.name.value));
+            } 
+            else {
+                var foundFunction = false;
+                variable.values.forEach(function(v) {
+                    if(v instanceof FunctionValue)
+                        foundFunction = true;
+                });
+                if(!foundFunction)
+                    scope.hint(b.name.value, new FunctionValue(b.name.value));
+            }
+            staticEval(scope, b.args);
+            // Now tell the function value about the argument types that were passed
+            for (var i = 0; i < b.args.length; i++) {
+                inferValues(b.args[i]).forEach(function(v) {
+                    variable.values.forEach(function(fn) {
+                        if (fn instanceof FunctionValue) {
+                            fn.hint('arg'+i, v);
+                        }
+                    });
+                });
+            }
+            // Ensure there's a return value there
+            variable.values.forEach(function(fn) {
+                if (fn instanceof FunctionValue && fn.get("return").isEmpty())
+                    fn.hint('return', new Value("implReturn"));
+            });
+            return this;
+        },
+        "Call(PropAccess(e, prop), args)", function(b) {
+            // property access is called as a function, let's hint that
+            staticEval(scope, b.e);
+            staticEval(scope, b.args);
+            var fnValues = inferValues(this[0]);
+            if(fnValues.isEmpty()) {
+                var vs = inferValues(b.e);
+                vs.forEach(function(v) {
+                    v.hint(b.prop.value, new FunctionValue(b.prop.value));
+                });
+                fnValues = inferValues(this[0]);
+            }
+            // Now tell the function value about the arguments passed
+            fnValues.forEach(function(fn) {
+                if (fn instanceof FunctionValue) {
+                    for (var i = 0; i < b.args.length; i++) {
+                        inferValues(b.args[i]).forEach(function(v) {
+                            fn.hint('arg'+i, v);
+                        });
+                    }
+                    if (fn.get("return").isEmpty())
+                        fn.hint('return', new Value("implReturn"));
+                }    
+            });
+            return this;
+        },
+        "Return(e)", function(b) {
+            staticEval(scope, b.e);
+            scope.fn.hintMultiple('return', inferValues(b.e));
+            return this;
+        },
+        "Var(name)", function(b) {
+            var vs = scope.get(b.name.value);
+            if (!vs) {
+                // Implicitly declare it
+                scope.declare(b.name.value);
+                scope.hint(b.name.value, new Value(b.name.value, this));
+            }
+            return this;
+        },
+        "ForIn(iter, _, _)", function(b) {
+            // Hint that iteration variable will be a string
+            b.iter.rewrite(
+                "Var(x)", function(b) {
+                    scope.hint(b.x.value, lookupValue("es5:String"));
+                },
+                "VarDecls([VarDecl(x)])", function(b) {
+                    scope.hint(b.x.value, lookupValue("es5:String"));
+                }
+            );
+        },
+        "Op(op, e1, e2)", function(b) {
+            staticEval(scope, b.e1);
+            staticEval(scope, b.e2);
+            switch(b.op.value) {
+                case '<':
+                case '<=':
+                case '>':
+                case '>=':
+                    hintValue(b.e1, lookupValue("es5:Number"));
+                    hintValue(b.e1, lookupValue("es5:String"));
+                    hintValue(b.e2, lookupValue("es5:Number"));
+                    hintValue(b.e2, lookupValue("es5:String"));
+                    break;
+            }
+            return this;
+        }
+    );
+    return scope;
+}
+
+/**
+ * Attempts to infer the value, of possible values of expression `e`
+ * @param e AST node repersenting an expression
+ * @return a ValueCollection of possible values
+ */
+function inferValues(e) {
+    var values = new ValueCollection();
+    e.rewrite(
+        "String(_)", function() {
+            values.add(lookupValue("es5:String/prototype"));
+            return this;
+        },
+        "Num(_)", function() {
+            values.add(lookupValue("es5:Number/prototype"));
+            return this;
+        },
+        "Var(\"true\")", function() {
+            values.add(lookupValue("es5:Boolean/prototype"));
+            return this;
+        },
+        "Var(\"false\")", function() {
+            values.add(lookupValue("es5:Boolean/prototype"));
+            return this;
+        },
+        "Array(_)", function() {
+            // TODO Do something with typed arrays
+            values.add(lookupValue("es5:Array/prototype"));
+            return this;
+        },
+        "Var(nm)", function(b) {
+            values.extend(this.getAnnotation("scope").get(b.nm.value).values);
+            return this;
+        },
+        "ObjectInit(inits)", function(b) {
+            var v = instantiate(lookupValue("es5:Object"), undefined, this);
+            b.inits.filter('PropertyInit(prop, e)', function(b) {
+                v.hintMultiple(b.prop.value, inferValues(b.e));
+            });
+            values.add(v);
+            return this;
+        },
+        "New(e, args)", function(b) {
+            var vs = inferValues(b.e);
+            vs.forEach(function(fn) {
+                var value = instantiate(fn);
+                values.add(value);
+            });
+            return this;
+        },
+        "Call(PropAccess(e, method), args)", function(b) {
+            var objectValues = inferValues(b.e);
+            objectValues.forEach(function(objectValue) {
+                var methods = objectValue.get(b.method.value);
+                methods.forEach(function(fn) {
+                    if (fn instanceof FunctionValue) {
+                        values.extend(fn.get('return'));
+                    }
+                });
+            });
+            if(values.isEmpty())
+                values.add(new Value("implRet"));
+            return this;
+        },
+        "Call(e, args)", function(b) {
+            var vs = inferValues(b.e);
+            vs.forEach(function(fn) {
+                if (fn instanceof FunctionValue) {
+                    values.extend(fn.get('return'));
+                }
+            });
+            if(values.isEmpty())
+                values.add(new Value("implRet"));
+            return this;
+        },
+        "PropAccess(e, prop)", function(b) {
+            var vs = inferValues(b.e);
+            vs.forEach(function(val) {
+                values.extend(val.get(b.prop.value));
+            });
+            return this;
+        },
+        "Function(name, fargs, _)", function(b) {
+            values.add(this.getAnnotation("localScope").fn);
+            return this;
+        },
+        'Assign(e1, e2)', function(b) {
+            values = inferValues(b.e2);
+        },
+        'Op(op, e1, e2)', function(b) {
+            // Make this dependent on types of operands
+            switch (b.op.value) {
+                case '*':
+                case '/':
+                case '%':
+                case '-':
+                    values.add(lookupValue('es5:Number/prototype'));
+                    break;
+                case '+':
+                    values.add(lookupValue('es5:String/prototype'));
+                    values.add(lookupValue('es5:Number/prototype'));
+                    break;
+                case '==':
+                case '===':
+                case '!==':
+                case '!=':
+                case '>':
+                case '>=':
+                case '<':
+                case '<=':
+                    values.add(lookupValue('es5:Boolean/prototype'));
+                    break;
+                case '||':
+                case '&&':
+                    values.extend(inferValues(b.e1));
+                    values.extend(inferValues(b.e2));
+                    break;
+                default:
+                    return false
+            }
+            return this;
+        },
+        'PrefixOp(op, e)', function(b) {
+            switch (b.op.value) {
+                case '+':
+                case '-':
+                case '~':
+                    values.add(lookupValue('es5:Number/prototype'));
+                    break;
+                case '!':
+                    values.add(lookupValue('es5:Boolean/prototype'));
+                    break;
+                default:
+                    return false;
+            }
+            return this;
+        }
+    );
+    return values;
+};
+
+function getAllProperties(node) {
+    var properties = {};
+
+    function handleProto(v) {
+        for (var p in v.properties) {
+            if (v.properties.hasOwnProperty(p))
+                properties[p] = true;
+        }
+        v.get('__proto__').forEach(function(v) {
+            handleProto(v);
+        });
+    }
+    inferValues(node).forEach(function(v) {
+        for (var p in v.properties)
+            if (v.properties.hasOwnProperty(p))
+                properties[p] = true;
+        v.get('__proto__').forEach(function(v) {
+            handleProto(v);
+        });
+    });
+    var ar = [];
+    for (var p in properties)
+        if (properties.hasOwnProperty(p))
+            ar.push(p.substring(1));
+    return ar;
+}
+
+function createRootScope(scope, builtinsJSON) {
+    for (var uri in builtinsJSON) {
+        var TypeName = uri.split(':')[1];
+        scope.declare(TypeName);
+        var value = valueFromJSON(builtinsJSON[uri]);
+        scope.hint(TypeName, value);
+    }
+    return scope;
+}
+
+exports.staticEval = staticEval;
+exports.inferValues = inferValues;
+exports.getAllProperties = getAllProperties;
+exports.Scope = Scope;
+exports.createRootScope = createRootScope;
+
+});define('ext/jsinfer/values', ['require', 'exports', 'module' ], function(require, exports, module) {
+
+var valueRegistry = {};
+
+var contextStack = [];
+
+function Value(name, node) {
+    this.init(name, node);
+}
+
+Value.enterContext = function(name) {
+    contextStack.push([name, 0]);
+};
+
+Value.leaveContext = function() {
+    contextStack.pop();
+};
+
+Value.prototype.init = function(name, node) {
+    var guid = '';
+    for (var i = 0; i < contextStack.length; i++) {
+        guid += contextStack[i][0] + '[' + contextStack[i][1] + ']/';
+    }
+    var top = contextStack[contextStack.length-1];
+    if(top) {
+        top[1]++;
+    }
+    if(name) {
+        guid += name;
+    } else {
+        guid = guid.substring(0, guid.length-1);
+    }
+    this.guid = guid;
+    this.properties = {};
+    this.doc = null;
+    if(node) {
+        this.pos = node.getPos();
+    }
+    valueRegistry[guid] = this;
+};
+
+Value.prototype.get = function(name) {
+    var coll = new ValueCollection();
+    if (this.properties['_' + name]) {
+        coll.extend(this.properties['_' + name]);
+    }
+
+    if (name !== '__proto__') {
+        this.get('__proto__').forEach(function(p) {
+            coll.extendPrototype(p.get(name).toArray());
+        });
+    }
+    coll.deref();
+    return coll;
+};
+
+Value.prototype.getPropertyNames = function() {
+    return Object.keys(this.properties).map(function(s) { return s.slice(1); });
+};
+
+Value.prototype.toJSON = function() {
+    var fieldJSON = {};
+    var properties = this.properties;
+    for(var p in properties) {
+        if(properties.hasOwnProperty(p)) {
+            fieldJSON[p] = properties[p].map(function(val) { return val.guid; });
+        }
+    }
+    return {
+        guid: this.guid,
+        doc: this.doc,
+        properties: fieldJSON,
+        pos: this.pos
+    };
+};
+
+Value.prototype.hint = function(name, v) {
+    if(!v)
+        throw Error("Hinting an empty value!");
+    if (!this.properties['_' + name]) {
+        this.properties['_' + name] = [v];
+    }
+    else {
+        var currentValues = this.properties['_' + name];
+        for (var i = 0; i < currentValues.length; i++) {
+            if(currentValues[i].guid === v.guid) {
+                return;
+            }
+        }
+        currentValues.push(v);
+    }
+};
+
+Value.prototype.hintMultiple = function(name, valueColl) {
+    // TODO: Optimize
+    var _self = this;
+    valueColl.forEach(function(v) {
+        _self.hint(name, v);
+    });
+};
+
+function ValueCollection(values, prototypeValues) {
+    this.values = values || [];
+    this.prototypeValues = prototypeValues || [];
+}
+
+ValueCollection.prototype.extend = function(coll) {
+    if(coll instanceof ValueCollection) {
+        for (var i = 0; i < coll.values.length; i++) {
+            this.add(coll.values[i]);
+        }
+        for (var i = 0; i < coll.prototypeValues.length; i++) {
+            this.addFromPrototype(coll.prototypeValues[i]);
+        }
+    } else {
+        for (var i = 0; i < coll.length; i++) {
+            this.add(coll[i]);
+        }
+    }
+};
+
+ValueCollection.prototype.extendPrototype = function(coll) {
+    this.prototypeValues = this.prototypeValues.concat(coll);
+};
+
+ValueCollection.prototype.toArray = function() {
+    return this.values.concat(this.prototypeValues);
+};
+
+ValueCollection.prototype.add = function(value) {
+    if(!value)
+        throw Error("Adding emtpy value!");
+    this.values.push(value);
+};
+
+ValueCollection.prototype.addFromPrototype = function(value) {
+    this.prototypeValues.push(value);
+};
+
+ValueCollection.prototype.forEach = function(fn) {
+    this.values.forEach(fn);
+    this.prototypeValues.forEach(fn);
+};
+
+ValueCollection.prototype.deref = function() {
+    var values = this.values;
+    for (var i = 0; i < values.length; i++)
+        if(typeof values[i] === 'string')
+            values[i] = valueRegistry[values[i]];
+    values = this.prototypeValues;
+    for (var i = 0; i < values.length; i++)
+        if(typeof values[i] === 'string')
+            values[i] = valueRegistry[values[i]];
+}
+
+ValueCollection.prototype.isEmpty = function() {
+    return this.values.length === 0 && this.prototypeValues.length === 0;
+};
+
+function FunctionValue(name, node) {
+    this.init(name, node);
+    this.node = node;
+    if(name || node) {
+        this.hintMultiple('__proto__', lookupValue("es5:Function").get('prototype'));
+    }
+}
+
+FunctionValue.prototype = new Value('<ignore>');
+
+FunctionValue.prototype.getFargs = function() {
+    if(this.fargs)
+        return this.fargs;
+    else if(this.node) {
+        var fargs = [];
+        var fargsNode = this.node[1];
+        for (var i = 0; i < fargsNode.length; i++) {
+            fargs.push(fargsNode[i][0].value);
+        }
+        this.fargs = fargs;
+        return fargs;
+    }
+    else
+        return [];
+};
+
+FunctionValue.prototype.toJSON = function() {
+    var json = Value.prototype.toJSON.call(this);
+    json.fargs = this.getFargs();
+    return json;
+};
+
+function SerializedFunctionValue(name) {
+    this.init(name);
+}
+
+SerializedFunctionValue.prototype = new FunctionValue();
+
+function instantiate(fn, initVal, node) {
+    var value = initVal || new Value(undefined, node);
+    value.hintMultiple('__proto__', fn.get('prototype'));
+    value.hint('constructor', fn);
+    return value;
+}
+
+function lookupValue(guid) {
+    if(!valueRegistry[guid])
+        throw Error("Could not find " + guid);
+    return valueRegistry[guid];
+}
+
+function fromJSON(json) {
+    if(typeof json === "string")
+        return json;
+    
+    var value;
+    if(json.properties._return !== undefined) {
+        value = new SerializedFunctionValue();
+        value.fargs = json.fargs;
+    }
+    else {
+        value = new Value();
+    }
+    
+    var properties = json.properties || {};
+    for(var p in properties) {
+        properties[p].forEach(function(v) {
+            value.hint(p.substr(1), fromJSON(v));
+        });
+    }
+
+    if(json.guid) {
+        valueRegistry[json.guid] = value;
+    }
+    value.guid = json.guid;
+    value.doc = json.doc;
+    value.pos = json.pos;
+    
+    return value;
+}
+    
+exports.Value = Value;
+exports.ValueCollection = ValueCollection;
+exports.FunctionValue = FunctionValue;
+exports.instantiate = instantiate;
+exports.fromJSON = fromJSON;
+exports.lookupValue = lookupValue;
+
+exports.getRegistry = function() { return valueRegistry; };
+
+exports.reset = function() {
+    valueRegistry = {};
+    contextStack = [];
+};
 
 });
