@@ -423,7 +423,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             var doc = ide.createDocument(node);
             
             if (state !== apf.SUCCESS || countInfo.count === undefined || countInfo.count == 0) {
-                doc.cachedValue = "No matches for '" + metaInfo.query + "' " + metaInfo.optionsDesc);
+                doc.cachedValue = "No matches for '" + metaInfo.query + "' " + metaInfo.optionsDesc;
             }
             else {
             //    else
