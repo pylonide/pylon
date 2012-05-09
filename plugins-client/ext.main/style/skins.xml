@@ -1913,7 +1913,7 @@
             height: 4px;
             left: auto;
             right: 4px;
-            top: 8px;
+            top: 9px;
             width: 4px;
         }
         .btnSave .c9-label {
@@ -1928,6 +1928,7 @@
         .c9-toolbarbutton-glossy.saved .c9-label {
             background-position: 0 -523px;
             font-size: 9px;
+            line-height: 24px;
             padding: 0 16px 0 5px;
             text-transform: uppercase;
         }
