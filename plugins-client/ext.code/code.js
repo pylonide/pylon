@@ -11,8 +11,8 @@ require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var menus = require("ext/menus/menus");
 var util = require("core/util");
+var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
@@ -799,28 +799,29 @@ module.exports = ext.register("ext/code/code", {
           
           if (node.getAttribute("customtype") == util.getContentType("c9search")) {
               var editor = _self.amlEditor.$editor;
+              var session = editor.getSession();
               var currRow = editor.getCursorPosition().row;
+              var path = null;
               
               if (editor.getSession().getLine(currRow).length == 0) // no text
                 return;
                 
-              var clickedLine = editor.getSession().getLine(currRow).trim().split(":");
+              var clickedLine = session.getLine(currRow).trim().split(":");
               
-              if (clickedLine.length != 2) // not a line number row
+              if (clickedLine.length < 2) // not a line number: text row
                 return;
-                
-              var path = null;
-              var isFileRe = new RegExp("^[^\s]+$");
-              currRow--;
               
-              while (currRow > 0 && editor.getSession().getLine(currRow).match(isFileRe) != null) {
+              while (currRow > 0 && session.getTokenAt(currRow, 0).type != "string") {
                   currRow--;
               }
               
               path = editor.getSession().getLine(currRow);
               
+              if (path.charAt(path.length - 1) == ":")
+                path = path.substring(0, path.length-1);
+              
               if (path !== undefined && path.length > 0)
-                editors.showFile(ide.davPrefix + "/" + path.substring(0, path.length-1), clickedLine[0], 0, clickedLine[1]); // -1 to remove trailing ":"
+                editors.showFile(ide.davPrefix + "/" + path, clickedLine[0], 0, clickedLine[1]);
           }
         });
         

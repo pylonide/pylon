@@ -16,7 +16,7 @@
                 <a:hbox class="grouped_checkbox_holder" align="start">
                     <a:checkbox id="chkSFConsole" value="[editors/code/filesearch/@console]" class="chkConsole" label="Show in Console" skin="grouped_checkbox" width="28" />
                 </a:hbox>
-                <a:textbox id="txtSFPatterns" tabindex="1001" skin="searchbox" flex="1" initial-message="*.*" focusselect="true" margin="0 0 0 56"/>
+                <a:textbox id="txtSFPatterns" tabindex="1001" skin="searchbox" flex="1" initial-message="Every File" focusselect="true" margin="0 0 0 56"/>
                 <a:radiobutton margin="3 0 0 0"
                   group  = "grpSFScope"
                   skin   = "radio_black"
@@ -40,6 +40,6 @@
     <!-- Added prerender here to speed up the loading. The query already has the data we need, we don't need to
     render the results one by one (as we do, for example, with the Project Files tree -->
     <a:hbox id="trSFHbox" anchors="0 0 0 0" visible="false" render="runtime">
-        <a:codeeditor id="ceSFResult" visible = "false"/>
+        <a:codeeditor id="ceSFResult" visible="false" />
     </a:hbox>
 </a:application>

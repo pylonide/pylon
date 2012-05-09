@@ -22,6 +22,9 @@ var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
 var searchreplace = require("ext/searchreplace/searchreplace");
 
+var searchFilePath = ide.davPrefix + "/search_results.c9search";
+var searchContentType = "c9search";
+
 module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     name     : "Search in files",
     dev      : "Ajax.org",
@@ -350,8 +353,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
     execFind: function() {
         var _self = this;
-
-        
+   
         if (chkSFConsole.checked) {
             // show the console
             ideConsole.show();
@@ -359,12 +361,15 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             if (!this.$panel) {
                 this.$panel = tabConsole.add(this.pageTitle, this.pageID);
                 this.$panel.setAttribute("closebtn", true);
-                
+                     
                 tabConsole.set(_self.pageID);
                 
                 trSFHbox.show();
+                
+                this.$panel.appendChild(ceSFResult);
                 ceSFResult.setProperty("visible", true);
-        
+                ceSFResult.setHeight(200);
+                
                 this.$panel.addEventListener("afterclose", function(){
                     this.removeNode();
                     return false;
@@ -410,13 +415,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             var metaInfo = JSON.parse(array.shift());
             var countInfo = JSON.parse(array.shift());
-    
-            var searchFile = ide.davPrefix + "/search_results.c9search";
             
             var node = apf.getXml("<file />");
             node.setAttribute("name", "Search Results");
-            node.setAttribute("path", searchFile);
-            node.setAttribute("customtype", util.getContentType("c9search"));
+            node.setAttribute("path", searchFilePath);
+            node.setAttribute("customtype", util.getContentType(searchContentType));
             node.setAttribute("changed", "0");
             node.setAttribute("newfile", "0");
                     
@@ -426,10 +429,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 doc.cachedValue = "No matches for '" + metaInfo.query + "' " + metaInfo.optionsDesc;
             }
             else {
-            //    else
-            //        _self.$panel.setAttribute("caption", 
-            //            _self.pageTitle + " (" + countInfo[0] + ")");
-                        
                 var message = countInfo.count;
                 
                 if (countInfo.count > 1)
@@ -452,10 +451,37 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 doc.cachedValue = message + "\n" + data.split("\n").slice(2).join("\n");
             }
             
-            if (chkSFConsole.checked)
-                ceSFResult.$editor.session.setDocument(doc);
-            else
-                ide.dispatchEvent("openfile", {doc: doc, node: node});
+            if (chkSFConsole.checked) {
+                ceSFResult.setProperty("syntax", "c9search");
+                //ceSFResult.setDocument(doc); ceSFResult.setValue("value");
+            }
+            else {
+                var page, p = 0, pages = tabEditors.getPages();
+
+                for (; p < pages.length; p++) {
+                    var node = pages[p].$doc.getNode();
+                    
+                    if (node.getAttribute("customtype") == util.getContentType("c9search")) {
+                        page = pages[p];
+                        break;
+                    }
+                }
+                
+                if (p == pages.length) { // the results are not open, create a new one
+                    ide.dispatchEvent("openfile", {doc: doc, node: node});
+                }
+                else {
+                    var currLength = page.$doc.acedoc.getLength();
+                    
+                    page.$doc.acedoc.insertLines(currLength, ("\n" + doc.cachedValue).split("\n"));
+                    
+                    if (page.$active) // current page is results? then move viewport to the last line
+                        editors.currentEditor.amlEditor.$editor.gotoLine(currLength);
+                    else
+                        editors.showFile(searchFilePath, currLength, 0, options.query);
+                }
+                    
+            }
         });
         
         this.saveHistory(options.query, "searchfiles");
