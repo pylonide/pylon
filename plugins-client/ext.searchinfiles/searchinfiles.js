@@ -441,7 +441,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 message += " file";  
             
             if (metaInfo.replacement.length > 0)
-                message += ", replaced as '" + metaInfo.replacement;
+                message += ", replaced as '" + metaInfo.replacement + "'";
                 
             message += " " + metaInfo.optionsDesc;
             
