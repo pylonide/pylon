@@ -40,12 +40,12 @@ worker:
 # copies built ace modes
 mode:
 	mkdir -p plugins-client/lib.ace/www/mode
-	cp `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_]+.js"`  plugins-client/lib.ace/www/mode
+	cp `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_0-9]+.js"`  plugins-client/lib.ace/www/mode
 
 # copies built ace themes
 theme:
 	mkdir -p plugins-client/lib.ace/www/theme
-	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` plugins-client/lib.ace/www/theme
+	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"` plugins-client/lib.ace/www/theme
 
 gzip:
 	gzip plugins-client/lib.packed/www/packed.js

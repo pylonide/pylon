@@ -9,7 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var Util = require("core/util");
+var util = require("core/util");
 var settings = require("core/settings");
 var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
@@ -67,7 +67,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             e.ext.setDefaults("editors/code/filesearch", [
                 ["regex", "false"],
                 ["matchcase", "false"],
-                ["wholeword", "false"]
+                ["wholeword", "false"],
+                ["console", "false"]
             ]);
         });
         
@@ -156,7 +157,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     _self.updateInputRegExp(txtSFFind);
             }
             else
-                _self.removeInputRegExp(txtFind);
+                _self.removeInputRegExp(txtSFFind);
         });
         
         var cbs = winSearchInFiles.getElementsByTagNameNS(apf.ns.aml, "checkbox");
@@ -350,53 +351,29 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     execFind: function() {
         var _self = this;
 
-        // show the console
-        ideConsole.show();
         
-        if (!this.$panel) {
-            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.setAttribute("closebtn", true);
-            this.$panel.appendChild(trSFHbox);
+        if (chkSFConsole.checked) {
+            // show the console
+            ideConsole.show();
             
-            tabConsole.set(_self.pageID);
-            
-            trSFHbox.show();
-            trSFResult.setProperty("visible", true);
-            this.$model = trSFResult.getModel();
-            
-            // make sure the tab is shown when results come in
-            this.$model.addEventListener("afterload", function() {
+            if (!this.$panel) {
+                this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+                this.$panel.setAttribute("closebtn", true);
+                
                 tabConsole.set(_self.pageID);
-                trSFResult.addEventListener("afterselect", function(e) {
-                    var node = trSFResult.selected,
-                        line = 0, text = "", path;
-
-                    if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
-                        return;
-
-                    if (node.tagName == "d:excerpt") { // clicking on a line excerpt
-                        path = node.parentNode.getAttribute("path");
-                        line = node.getAttribute("line");
-                        text = node.parentNode.getAttribute("query");
-                    }
-                    else { // clicking on filename
-                        path = node.getAttribute("path");
-                        line = apf.queryValue(node, "node()/@line");
-                        text = apf.queryValue(node, "node()/@query");
-                    }
-
-                    editors.showFile(ide.davPrefix + "/" + path, line, 0, text);
+                
+                trSFHbox.show();
+                ceSFResult.setProperty("visible", true);
+        
+                this.$panel.addEventListener("afterclose", function(){
+                    this.removeNode();
+                    return false;
                 });
-            });
-
-            this.$panel.addEventListener("afterclose", function(){
-                this.removeNode();
-                return false;
-            });
-        }
-        else {
-            tabConsole.appendChild(this.$panel);
-            tabConsole.set(this.pageID);
+            }
+            else {
+                tabConsole.appendChild(this.$panel);
+                tabConsole.set(this.pageID);
+            }
         }
         
         //Determine the scope
@@ -426,58 +403,64 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (!this.replaceAll)
             options.replacement = ""; 
 
-        this.$model.clear();
-        this.$panel.setAttribute("caption", _self.pageTitle);
+        //this.$model.clear();
+        //this.$panel.setAttribute("caption", _self.pageTitle);
         
-        trSFResult.setAttribute("empty-message", 
-            "Searching for '" + query + "'...");
+      //  trSFResult.setAttribute("empty-message", 
+    //        "Searching for '" + query + "'...");
 
         davProject.report(path, "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
 
             var array = data.replace(/^\./gm, "").split("\n");
             
-            var metaInfo = array.shift().split(":");
-            var countInfo = array.shift().split(":");
-
-            if (state !== apf.SUCCESS || countInfo[0] === undefined || countInfo[0] == 0) {
-                trSFResult.setAttribute("empty-message", 
-                    "No matches for '" + metaInfo[0] + "' " + metaInfo[2]);
+            var metaInfo = JSON.parse(array.shift());
+            var countInfo = JSON.parse(array.shift());
+    
+            if (state !== apf.SUCCESS || countInfo.count === undefined || countInfo.count == 0) {
+           //     trSFResult.setAttribute("empty-message", 
+        //            "No matches for '" + metaInfo[0] + "' " + metaInfo[2]);
                 return;
             }
-            else
-                _self.$panel.setAttribute("caption", 
-                    _self.pageTitle + " (" + countInfo[0] + ")");
+        //    else
+        //        _self.$panel.setAttribute("caption", 
+        //            _self.pageTitle + " (" + countInfo[0] + ")");
                     
-            var message = countInfo[0];
+            var message = countInfo.count;
             
-            if (countInfo[0] > 1)
+            if (countInfo.count > 1)
                 message += " matches ";
             else
                 message += " match ";
             
-            message += "for '" + metaInfo[0] + "' in " + countInfo[1];
+            message += "for '" + metaInfo.query + "' in " + countInfo.filecount;
             
-            if (countInfo[1] > 1)
+            if (countInfo.count > 1)
                 message += " files";
             else
                 message += " file";  
             
-            if (metaInfo[1].length > 0)
-                message += ", replaced as '" + metaInfo[1];
+            if (metaInfo.replacement.length > 0)
+                message += ", replaced as '" + metaInfo.replacement;
                 
-            message += " " + metaInfo[2];
+            message += " " + metaInfo.optionsDesc;
+            
+            var searchFile = ide.davPrefix + "/search_results.c9search";
             
             var node = apf.getXml("<file />");
             node.setAttribute("name", "Search Results");
-            node.setAttribute("path", "/workspace/search_results.js");
+            node.setAttribute("path", searchFile);
+            node.setAttribute("customtype", util.getContentType("c9search"));
             node.setAttribute("changed", "0");
             node.setAttribute("newfile", "0");
                     
             var doc = ide.createDocument(node);
             doc.cachedValue = message + "\n" + data.split("\n").slice(2).join("\n");
-                        
-            ide.dispatchEvent("openfile", {doc: doc, node: node});
+              
+            if (chkSFConsole.checked)
+                ceSFResult.$editor.session.setDocument(doc);
+            else
+                ide.dispatchEvent("openfile", {doc: doc, node: node});
         });
         
         this.saveHistory(options.query, "searchfiles");

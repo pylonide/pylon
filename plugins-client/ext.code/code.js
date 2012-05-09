@@ -12,6 +12,7 @@ require("apf/elements/codeeditor");
 var ide = require("core/ide");
 var ext = require("core/ext");
 var menus = require("ext/menus/menus");
+var util = require("core/util");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
 var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
@@ -102,10 +103,13 @@ var SupportedModes = {
     "text/x-script.powershell": "powershell",
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
-    "text/x-sql": "sql"
+    "text/x-sql": "sql",
+    "text/x-c9search" : "c9search"
 };
 
 var contentTypes = {
+    "c9search": "text/x-c9search",
+    
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
@@ -789,6 +793,37 @@ module.exports = ext.register("ext/code/code", {
         this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         this.amlEditor.$editor.commands = commands;
 
+        // for search in files
+        this.amlEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
+          var node = tabEditors.getPage().$doc.getNode();
+          
+          if (node.getAttribute("customtype") == util.getContentType("c9search")) {
+              var editor = _self.amlEditor.$editor;
+              var currRow = editor.getCursorPosition().row;
+              
+              if (editor.getSession().getLine(currRow).length == 0) // no text
+                return;
+                
+              var clickedLine = editor.getSession().getLine(currRow).trim().split(":");
+              
+              if (clickedLine.length != 2) // not a line number row
+                return;
+                
+              var path = null;
+              var isFileRe = new RegExp("^[^\s]+$");
+              currRow--;
+              
+              while (currRow > 0 && editor.getSession().getLine(currRow).match(isFileRe) != null) {
+                  currRow--;
+              }
+              
+              path = editor.getSession().getLine(currRow);
+              
+              if (path !== undefined && path.length > 0)
+                editors.showFile(ide.davPrefix + "/" + path.substring(0, path.length-1), clickedLine[0], 0, clickedLine[1]); // -1 to remove trailing ":"
+          }
+        });
+        
         // preload common language modes
         var noop = function() {};
         ceEditor.getMode("javascript", noop);

@@ -2883,9 +2883,9 @@
         .grouped_checkbox_holder .chkWholeWords.cbcontainerChecked .checkbox { background-position: 50% -665px; }
         .grouped_checkbox_holder .chkPreserveCase .checkbox { background-position: 50% -690px; }
         .grouped_checkbox_holder .chkPreserveCase.cbcontainerChecked .checkbox { background-position: 50% -715px; }
-        .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
+        .grouped_checkbox_holder .chkSearchBackwards .checkbox { background: url(images/c9_replace_in_console.png) no-repeat 50% 0; background-position: 50% -790px; }
         .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
-        
+   
         .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -890px; }
         .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background-position: 50% -915px; }
         
@@ -2893,7 +2893,10 @@
         .grouped_checkbox_holder .chkSearchSelection.cbcontainerChecked .checkbox { background-position: 50% -865px; }
         .grouped_checkbox_holder .chkHighlightMatches .checkbox { background-position: 50% -740px; }
         .grouped_checkbox_holder .chkHighlightMatches.cbcontainerChecked .checkbox { background-position: 50% -765px; }
-        
+
+        .grouped_checkbox_holder .chkConsole .checkbox { background-position: 50% -1150px; }
+        .grouped_checkbox_holder .chkConsole.cbcontainerChecked .checkbox { background-position: 50% -1190px; }
+
         .grouped_checkbox_holder .cbcontainer span {
             display: none;
         }
