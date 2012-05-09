@@ -9,24 +9,37 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
-var util = require("core/util");
 var menus = require("ext/menus/menus");
-var code = require("ext/code/code");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
 var css = require("text!ext/searchreplace/searchreplace.css");
+var skin = require("text!ext/searchreplace/skin.xml");
 var markup = require("text!ext/searchreplace/searchreplace.xml");
 var commands = require("ext/commands/commands");
+var tooltip = require("ext/tooltip/tooltip");
+var libsearch = require("ext/searchreplace/libsearch");
+var searchinfiles;
 
 var oIter, oTotal;
 
-module.exports = ext.register("ext/searchreplace/searchreplace", {
+//N.B. the problem is with many occurences, so a single character search breaks it.
+var MAX_LINES = 20000; // alter live search if lines > 20k--performance bug
+var MAX_LINES_SOFT = 8000; // single character search prohibited
+
+module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     name    : "Searchreplace",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     alone   : true,
     css     : css,
     markup  : markup,
+    
+    skin    : {
+        id  : "searchreplace",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/searchreplace/images/",
+        "icon-path" : ide.staticPrefix + "/ext/searchreplace/icons/"
+    },
 
     currentRange: null,
     
@@ -34,7 +47,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
 
     hook : function(){
         var _self = this;
-
+        
         commands.addCommand({
             name: "replace",
             bindKey : {mac: "Option-Command-F", win: "Alt-Shift-F"},
@@ -43,7 +56,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
-                _self.toggleDialog(true, true);
+                _self.toggleDialog(1, true);
             }
         });
 
@@ -55,7 +68,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 return editor && editor.ceEditor;
             },
             exec: function(env, args, request) {
-                _self.toggleDialog(true, true);
+                _self.replaceAll();//toggleDialog(1, true);
             }
         });
 
@@ -80,12 +93,29 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 commands.exec("replace");
             }
         });
+        
+        ide.addEventListener("init.ext/code/code", function(){
+            commands.commands["findnext"].hint = "search for the next occurrence of the search query your entered last";
+            commands.commands["findnext"].msg = "Navigating to next match.";
+            commands.commands["findprevious"].hint = "search for the previous occurrence of the search query your entered last";
+            commands.commands["findprevious"].msg = "Navigating to previous match.";
+        });
+        
+        commands.addCommand({
+            name: "find",
+            hint: "open the quicksearch dialog to quickly search for a phrase",
+            bindKey: {mac: "Command-F", win: "Ctrl-F"},
+            isAvailable : function(editor){
+                return editor && editor.ceEditor;
+            },
+            exec: function(env, args, request) {
+                _self.toggleDialog(1, false);
+            }
+        });
 
         this.nodes.push(
             menus.addItemByPath("Find/Find...", new apf.item({
-                onclick : function() {
-                    _self.toggleDialog(false);
-                }
+                command : "find"
             }), 100),
             menus.addItemByPath("Find/Find Next", new apf.item({
                 command : "findnext"
@@ -107,116 +137,349 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
                 command : "replaceall"
             }), 800)
         );
+        
+        ide.addEventListener("init.ext/searchinfiles/searchinfiles", function(e){
+            searchinfiles = e.ext;
+        });
     },
 
     init : function(amlNode){
         var _self = this;
-        apf.importCssString(_self.css);
         
-        this.txtFind       = txtFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
-        this.txtReplace    = txtReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[1]/a:textbox[1]");
-        //bars
-        this.barSingleReplace    = barSingleReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox[2]");
-        //buttons
-        this.btnReplace    = btnReplace;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[1]");
-        this.btnReplace.onclick = this.replace.bind(this);
-        this.btnReplaceAll = btnReplaceAll;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[2]");
-        this.btnReplaceAll.onclick = this.replaceAll.bind(this);
-        this.btnFind       = btnFind;//winSearchReplace.selectSingleNode("a:vbox/a:hbox/a:button[3]");
-        this.btnFind.onclick = this.findNext.bind(this);
-        winSearchReplace.onclose = function() {
-            if (editors.currentEditor && editors.currentEditor.amlEditor)
-                editors.currentEditor.amlEditor.focus();
+        ide.addEventListener("settings.load", function(e){
+            e.ext.setDefaults("editors/code/search", [
+                ["regex", "false"],
+                ["matchcase", "false"],
+                ["wholeword", "false"],
+                ["backwards", "false"],
+                ["wraparound", "true"],
+                ["highlightmatches", "true"],
+                ["preservecase", "false"]
+            ]);
+        });
+        
+        var isAvailable = commands.commands["findnext"].isAvailable;
+        commands.commands["findnext"].isAvailable =
+        commands.commands["findprevious"].isAvailable = function(editor){
+            if (apf.activeElement == txtFind)
+                return true;
+            
+            return isAvailable.apply(this, arguments);
         }
         
-        this.txtFind.$ext.cols = this.txtFind.cols;
-        
-        this.txtFind.addEventListener("keydown", function(e){
-            switch (e.keyCode){
-//                case 13: //ENTER
-//                    _self.execSearch(false, !!e.shiftKey);
-//                    return false;
-//                case 27: //ESCAPE
-//                    _self.toggleDialog(-1);
-//                    if (e.htmlEvent)
-//                        apf.stopEvent(e.htmlEvent)
-//                    else if (e.stop)
-//                        e.stop();
-//                    return false;
-                case 38: //UP
-                    _self.navigateList("prev");
-                break;
-                case 40: //DOWN
-                    _self.navigateList("next");
-                break;
-                case 36: //HOME
-                    if (!e.ctrlKey) return;
-                    _self.navigateList("first");
-                break;
-                case 35: //END
-                    if (!e.ctrlKey) return;
-                    _self.navigateList("last");
-                break;
+        commands.addCommand({
+            name: "hidesearchreplace",
+            bindKey: {mac: "ESC", win: "ESC"},
+            isAvailable : function(editor){
+                return winSearchReplace.visible;
+            },
+            exec: function(env, args, request) {
+                _self.toggleDialog(-1);
             }
+        });
+        
+        apf.importCssString(_self.css);
+        
+        ide.addEventListener("init.ext/console/console", function(e){
+            mainRow.insertBefore(winSearchReplace, e.ext.splitter);
+        });
+        if (winSearchReplace.parentNode != mainRow) {
+            mainRow.insertBefore(winSearchReplace, 
+                self.winDbgConsole && winDbgConsole.previousSibling || null);
+        }
+        
+        txtFind.addEventListener("clear", function() {
+            _self.execFind();
+        })
+
+        txtFind.addEventListener("keydown", function(e) {
+            if (e.keyCode == 13 && !e.altKey && !e.ctrlKey && !e.metaKey) {
+                _self.execFind(false, !!e.shiftKey, true, true);
+                return false;
+            }
+            
+            var ace = _self.$getAce();
+            var isTooLong = ace.getSession().getDocument().getLength() > MAX_LINES;
+            
+            if (_self.findKeyboardHandler(e, "search", this, chkRegEx) === false) {
+                apf.layout.forceResize();
+                if (!isTooLong)
+                    _self.updateCounter(null, true);
+                return false;
+            }
+            
+            if (chkRegEx.checked
+              && _self.evaluateRegExp(txtFind, tooltipSearchReplace, 
+              winSearchReplace, e.htmlEvent) === false) {
+                if (!isTooLong)
+                    _self.updateCounter(null, true);
+                return;
+            }
+
+            if (isTooLong)
+                return;
+
+            if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
+                clearTimeout(this.$timer);
+                this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
+                    _self.execFind();
+                    apf.layout.forceResize();
+                }, 20);
+            }
+
+            return;
+        });
+        
+        hboxReplace.addEventListener("afterrender", function(){
+            txtReplace.addEventListener("keydown", function(e) {
+                if (e.keyCode == 13 && !e.altKey && !e.ctrlKey && !e.metaKey) {
+                    _self.replace();
+                    return false;
+                }
+                
+                if (_self.findKeyboardHandler(e, "replace", this, chkRegEx) === false) {
+                    apf.layout.forceResize();
+                    return false;
+                }
+            });
+            
+            _self.decorateCheckboxes(this);
+        });
+        
+        var blur = function(e){
+            if (self.hboxReplace && !hboxReplace.visible 
+              && self.winSearchReplace && winSearchReplace.visible 
+              && !apf.isChildOf(winSearchReplace, e.toElement))
+                _self.toggleDialog(-1, null, true);
+        }
+        
+        winSearchReplace.addEventListener("blur", blur);
+        txtFind.addEventListener("blur", blur);
+        
+        document.body.appendChild(tooltipSearchReplace.$ext);
+        
+        chkRegEx.addEventListener("prop.value", function(e){
+            if (apf.isTrue(e.value)) {
+                if (txtFind.getValue())
+                    _self.updateInputRegExp(txtFind);
+            }
+            else
+                _self.removeInputRegExp(txtFind);
+        });
+        
+        this.decorateCheckboxes(hboxFind);
+    },
+    
+    decorateCheckboxes : function(parent){
+        var _self = this;
+        
+        var cbs = parent.getElementsByTagNameNS(apf.ns.aml, "checkbox");
+        
+        cbs.forEach(function(cb){
+            cb.addEventListener("click", function(){
+                _self.updateCounter(null, true);
+            });
+            tooltip.add(cb.$ext, {
+                message : cb.label,
+                width : "auto",
+                timeout : 0,
+                tooltip : tooltipSearchReplace.$ext,
+                animate : false,
+                getPosition : function(){
+                    var pos = apf.getAbsolutePosition(winSearchReplace.$ext);
+                    var left = pos[0] + cb.getLeft();
+                    var top = pos[1];
+                    return [left, top - 16];
+                }
+            });
         });
     },
     
-    navigateList : function(type){
-        var settings = require("ext/settings/settings");
-        if (!settings) return;
-        
-        var model = settings.model;
-        var lines = model.queryNodes("search/word");
-        
-        var next;
-        if (type == "prev")
-            next = Math.max(0, this.position - 1);
-        else if (type == "next")
-            next = Math.min(lines.length - 1, this.position + 1);
-        else if (type == "last")
-            next = Math.max(lines.length - 1, 0);
-        else if (type == "first")
-            next = 0;
+    updateCounter: function(backwards, updateOptions) {
+        var ace = this.$getAce();
+        var width;
 
-        if (lines[next]) {
-            this.txtFind.setValue(lines[next].getAttribute("key"));
-            this.txtFind.select();
-            this.position = next;
+        if (!oIter) {
+            oIter  = document.getElementById("spanSearchIter");
+            oTotal = document.getElementById("spanSearchTotal");
         }
+
+        if (oIter.parentNode) {
+            if (!ace || !winSearchReplace.visible) {
+                oIter.parentNode.style.width = "0px";
+                return;
+            }
+            else
+                oIter.parentNode.style.width = "auto";
+        }
+
+        setTimeout(function() {
+            if (oIter.parentNode && txtFind && txtFind.$button) {
+                width = oIter.parentNode.offsetWidth || 0;
+                txtFind.$button.style.right = width + 45 + "px";
+            }
+        });
+
+        if (updateOptions) {
+            var options = this.getOptions();
+            options.needle = txtFind.getValue();
+            ace.$search.set(options);
+        }
+            
+        var ranges = ace.$search.findAll(ace.getSession());
+        if (!ranges || !ranges.length || !txtFind.getValue()) {
+            oIter.innerHTML = "0";
+            oTotal.innerHTML = "of 0";
+            return;
+        }
+
+        if (backwards) {
+            var newCount = oIter.innerHTML - 1;
+            if (newCount < 1) {
+                newCount = String(ranges.length);
+            }
+            oIter.innerHTML = String(newCount);
+        }
+        else {
+            var crtIdx = -1;
+            var cur = this.currentRange;
+            if (cur) {
+                // sort ranges by position in the current document
+                //ranges.sort(cur.compareRange.bind(cur));
+                var range;
+                var start = cur.start;
+                var end = cur.end;
+                for (var i = 0, l = ranges.length; i < l; ++i) {
+                    range = ranges[i];
+                    if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
+                        crtIdx = i;
+                        break;
+                    }
+                }
+            }
+            oIter.innerHTML = String(++crtIdx);
+        }
+
+        oTotal.innerHTML = "of " + ranges.length;
     },
     
-    toggleDialog: function(isReplace, forceShow) {
+    toggleDialog: function(force, isReplace, noselect, callback) {
+        var _self = this;
+        
         ext.initExtension(this);
 
-        if (!winSearchReplace.visible || forceShow || this.$lastState != isReplace) {
-            this.setupDialog(isReplace);
+        var editor = editors.currentEditor;
+        if (!editor || !editor.amlEditor)
+            return;
 
-            var value;
-            var editor = editors.currentEditor;
-            if (editor) {
-                if (editor.amlEditor)
-                    value = editor.amlEditor.getLastSearchOptions().needle;
+        var wasVisible  = winSearchReplace.visible;
+        var stateChange = isReplace != undefined && this.$lastState != isReplace;
+        
+        tooltipSearchReplace.$ext.style.display = "none";
 
-                if (!value) {
-                    var sel   = editor.getSelection();
-                    var doc   = editor.getDocument();
-                    var range = sel.getRange();
-                    value = doc.getTextRange(range);
-                }
-                
-                if (value)
-                    this.txtFind.setValue(value);
-
-                ide.dispatchEvent("exitfullscreen");
-
-                winSearchReplace.setAttribute("title", isReplace
-                        ? "Search & Replace" : "Search");
-                winSearchReplace.show();
+        if (!force && !winSearchReplace.visible || force > 0 || stateChange) {
+            if (winSearchReplace.visible && !stateChange) {
+                txtFind.focus();
+                txtFind.select();
+                return;
             }
-            this.updateCounter();
+            
+            if (searchinfiles && searchinfiles.inited && winSearchInFiles.visible) {
+                searchinfiles.toggleDialog(-1, null, null, function(){
+                    _self.toggleDialog(force, isReplace, noselect);
+                });
+                return;
+            }
+            
+            winSearchReplace.$ext.style.overflow = "hidden";
+            winSearchReplace.$ext.style.height 
+                = winSearchReplace.$ext.offsetHeight + "px";
+            
+            if (stateChange && isReplace || !wasVisible)
+                this.setupDialog(isReplace);
+
+            chkSearchSelection.uncheck();
+
+            this.position = -1;
+
+            if (!wasVisible) {
+                var sel   = editor.getSelection();
+                var doc   = editor.getDocument();
+                var range = sel.getRange();
+                var value = doc.getTextRange(range);
+    
+                if (value) {
+                    txtFind.setValue(value);
+                    
+                    delete txtFind.$undo;
+                    delete txtFind.$redo;
+                    
+                    if (chkRegEx.checked)
+                        this.updateInputRegExp(txtFind);
+                }
+            }
+
+            winSearchReplace.show();
+            txtFind.focus();
+            txtFind.select();
+            
+            winSearchReplace.$ext.scrollTop = 0;
+            document.body.scrollTop = 0;
+
+            //Animate
+            var toHeight = winSearchReplace.$ext.scrollHeight;
+            if (stateChange && !isReplace && wasVisible)
+                toHeight -= hboxReplace.$ext.scrollHeight;
+            
+            Firmin.animate(winSearchReplace.$ext, {
+                height: toHeight + "px", //(isReplace ? 70 : 38)
+                timingFunction: "cubic-bezier(.10, .10, .25, .90)"
+            }, 0.2, function() {
+                if (stateChange && !isReplace && wasVisible)
+                    _self.setupDialog(isReplace);
+                
+                winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                winSearchReplace.$ext.style.height = "";
+                
+                divSearchCount.$ext.style.visibility = "";
+                _self.updateCounter();
+                
+                setTimeout(function(){
+                    apf.layout.forceResize();
+                }, 50);
+            });
         }
-        else
-            winSearchReplace.hide();
+        else if (winSearchReplace.visible) {
+            divSearchCount.$ext.style.visibility = "hidden";
+            
+            if (txtFind.getValue())
+                _self.saveHistory(txtFind.getValue(), "search");
+            
+            winSearchReplace.visible = false;
+            
+            winSearchReplace.$ext.style.height 
+                = winSearchReplace.$ext.offsetHeight + "px";
+
+            //Animate
+            Firmin.animate(winSearchReplace.$ext, {
+                height: "0px",
+                timingFunction: "ease-in-out"
+            }, 0.2, function(){
+                winSearchReplace.visible = true;
+                winSearchReplace.hide();
+                
+                winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+
+                if (!noselect)
+                    editor.ceEditor.focus();
+                
+                setTimeout(function(){
+                    callback
+                        ? callback()
+                        : apf.layout.forceResize();
+                }, 50);
+            });
+        }
 
         return false;
     },
@@ -228,29 +491,43 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
     },
 
     search: function() {
-        return this.setEditor().toggleDialog(false, true);
+        return this.setEditor().toggleDialog(1, false);
     },
 
     searchreplace: function() {
-        return this.setEditor().toggleDialog(true, true);
+        return this.setEditor().toggleDialog(1, true);
     },
 
     setupDialog: function(isReplace) {
+        if (this.$lastState == isReplace)
+            return;
+        
         this.$lastState = isReplace;
-        this.position = 0;
+        
+        var sbox = hboxFind.childNodes[2];
 
-        // hide all 'replace' features
-        this.barSingleReplace.setProperty("visible", isReplace);
-        this.btnReplace.setProperty("visible", isReplace);
-        this.btnReplaceAll.setProperty("visible", isReplace);
+        if (isReplace) {
+            hboxReplace.show();
+            var rbox = hboxReplace.childNodes[1];
+            rbox.appendChild(chkHighlightMatches);
+            sbox.hide();
+        }
+        else {
+            hboxReplace.hide();
+            sbox.appendChild(chkHighlightMatches);
+            sbox.show();
+        }
+        
         return this;
     },
 
     setEditor: function(editor, selection) {
         if (typeof editors.currentEditor.amlEditor == "undefined")
             return;
+
         this.$editor = editor || editors.currentEditor.amlEditor.$editor;
         this.$selection = selection || this.$editor.getSelection();
+
         return this;
     },
 
@@ -261,7 +538,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             caseSensitive: chkMatchCase.checked,
             wholeWord: chkWholeWords.checked,
             regExp: chkRegEx.checked,
-            scope: chkSearchSelection.checked ? search.Search.SELECTION : search.Search.ALL
+            scope: chkSearchSelection.checked 
+                ? search.Search.SELECTION 
+                : search.Search.ALL
         };
     },
 
@@ -270,7 +549,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             this.setEditor();
         if (!this.$editor)
             return;
-        var txt = this.txtFind.getValue();
+        var txt = txtFind.getValue();
         if (!txt) 
             return;
         var options = this.getOptions();
@@ -296,8 +575,120 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             this.$editor.find(txt, options);
             this.currentRange = this.$editor.selection.getRange();
         }
-        chkSearchSelection.setAttribute("checked", false);
+        //chkSearchSelection.setAttribute("checked", false);
         this.updateCounter();
+    },
+    
+    execFind: function(close, reverseBackwards, findNext, save) {
+        var ace = this.$getAce();
+        if (!ace)
+            return;
+            
+        var searchTxt = txtFind.getValue();
+        if (searchTxt.length < 2 
+          && ace.getSession().getDocument().getLength() > MAX_LINES_SOFT)
+            return;
+
+        //@todo when highlight selection is available, this should change
+        if (!save && chkSearchSelection.checked)
+            return;
+
+        //if (!searchTxt)
+          //  return this.updateCounter();
+
+        var options = this.getOptions();
+        if (reverseBackwards)
+            options.backwards = !options.backwards;
+
+        if (this.$crtSearch != searchTxt)
+            this.$crtSearch = searchTxt;
+
+        if (options.regExp
+          && this.evaluateRegExp(txtFind, tooltipSearchReplace, winSearchReplace) === false)
+            return;
+        
+        var range = ace.selection.getRange();
+        
+        if (options.backwards) {
+            var range = ace.selection.getRange();
+            
+            ace.selection.moveCursorTo(
+                range.start.row, 
+                range.start.column);
+            
+            var opt = apf.extend({}, options);
+            opt.backwards = false;
+            ace.find(searchTxt, opt);
+            var newRange = ace.selection.getRange();
+
+            var foundAtRange = newRange.start.row == range.start.row 
+              && newRange.start.column == range.start.column
+              && (options.regex || newRange.end.row != range.end.row 
+              || newRange.end.column != range.end.column);
+
+            if (!foundAtRange || findNext) {
+                ace.selection.moveCursorTo(
+                  range.start.row, 
+                  range.start.column);
+                  
+                ace.find(searchTxt, options);
+            }
+        }
+        else {
+            if (!findNext)
+                ace.selection.moveCursorTo(range.start.row, range.start.column);
+    
+            ace.find(searchTxt, options);
+        }
+        
+        this.currentRange = ace.selection.getRange();
+        
+        if (save) {
+            this.saveHistory(searchTxt, "search");
+            this.position = 0;
+        }
+
+        if (close) {
+            winSearchReplace.hide();
+            editors.currentEditor.amlEditor.focus();
+        }
+
+        this.updateCounter(options.backwards);
+    },
+    
+    find: function() {
+        this.toggleDialog(1);
+        return false;
+    },
+
+    findnext: function(e) { // apparently, CMD + G executes a search;
+        if (e !== 1) {      // halt that by forcing this method to come from a click
+            return;
+        }
+
+        var ace = this.$getAce();
+        if (!ace)
+            return;
+
+        ace.findNext();
+        this.currentRange = ace.selection.getRange();
+        this.updateCounter();
+        return false;
+    },
+
+    findprevious: function(e) {
+        if (e !== 1) {
+            return;
+        }
+
+        var ace = this.$getAce();
+        if (!ace)
+            return;
+
+        ace.findPrevious();
+        this.currentRange = ace.selection.getRange();
+        this.updateCounter(true);
+        return false;
     },
 
     replace: function() {
@@ -305,12 +696,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             this.setEditor();
         if (!this.$editor)
             return;
-        if (!this.barSingleReplace.visible)
-            return;
         var options = this.getOptions();
-        options.needle = this.txtFind.getValue();
+        options.needle = txtFind.getValue();
         options.scope = search.Search.SELECTION;
-        this.$editor.replace(this.txtReplace.getValue() || "", options);
+        this.$editor.replace(txtReplace.getValue() || "", options);
         //this.$editor.find(this.$crtSearch, options);
         this.findNext();
         ide.dispatchEvent("track_action", {type: "replace"});
@@ -323,65 +712,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
             return;
         this.$crtSearch = null;
         var options = this.getOptions();
-        options.needle = this.txtFind.getValue();
+        options.needle = txtFind.getValue();
         
-        this.$editor.replaceAll(this.txtReplace.getValue() || "", options);
+        this.$editor.replaceAll(txtReplace.getValue() || "", options);
 
         this.updateCounter();
         ide.dispatchEvent("track_action", {type: "replace"});
-    },
-    
-    updateCounter: function() {
-        var ace = this.$getAce();
-        var width, buttonWidth;
-
-        if (!oIter) {
-            oIter  = document.getElementById("spanSearchReplaceIter");
-            oTotal = document.getElementById("spanSearchReplaceTotal");
-        }
-/*
-        if (oIter.parentNode) {
-            if (!ace || !winQuickSearch.visible) {
-                oIter.parentNode.style.width = "0px";
-                return;
-            }
-            else
-                oIter.parentNode.style.width = "auto";
-        }
-
-        setTimeout(function() {
-            if (oIter.parentNode && txtQuickSearch && txtQuickSearch.$button) {
-                width = oIter.parentNode.offsetWidth || 0;
-                txtQuickSearch.$button.style.right = width + "px";
-            }
-        });
-*/
-        var ranges = ace.$search.findAll(ace.getSession());
-        if (!ranges || !ranges.length) {
-            oIter.innerHTML = "0";
-            oTotal.innerHTML = "of 0";
-            return;
-        }
-        var crtIdx = -1;
-        var cur = this.currentRange;
-        if (cur) {
-            // sort ranges by position in the current document
-            //ranges.sort(cur.compareRange.bind(cur));
-            var range;
-            var start = cur.start;
-            var end = cur.end;
-            for (var i = 0, l = ranges.length; i < l; ++i) {
-                range = ranges[i];
-                if (range.isStart(start.row, start.column) && range.isEnd(end.row, end.column)) {
-                    crtIdx = i;
-                    break;
-                }
-            }
-        }
-        
-        
-        oIter.innerHTML = String(++crtIdx);
-        oTotal.innerHTML = "of " + ranges.length;
     },
     
     $getAce: function() {
@@ -417,6 +753,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", {
         });
         this.nodes = [];
     }
-});
+}, libsearch));
 
 });

@@ -61,14 +61,17 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             name: "clearcut",
             bindKey: {mac: "ESC", win: "ESC"},
             isAvailable : function(){
-                return self.trFiles && apf.activeElement == trFiles;
+                return self.trFiles && apf.activeElement == trFiles
+                  && apf.clipboard.store && !apf.clipboard.copied;
             },
             exec: function(){ 
                 var nodes = apf.clipboard.store;
-                if (!nodes) return;
+                if (!nodes) return false;
                 
                 apf.clipboard.$highlightSelection(trFiles, nodes, true);
                 apf.clipboard.clear();
+                
+                return false;
             }
         });
         

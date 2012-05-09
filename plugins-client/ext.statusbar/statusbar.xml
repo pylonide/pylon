@@ -39,38 +39,35 @@
       ref   = "{btnSbPrefs}"
       class = "mnuSbPrefs"
       sticky = "true"
-      render = "runtime">
-      <a:item type="check" caption="Show Invisibles" checked="[{require('core/settings').model}::editors/code/@showinvisibles]" />
-      <a:item type="check" caption="Code Folding" checked="[{require('core/settings').model}::editors/code/@folding]" />
-      <a:item type="check" caption="Full Line Selection" value="[{require('core/settings').model}::editors/code/@selectstyle]" values="line|text" />
-      <a:item type="check" caption="Highlight Active Line" checked="[{require('core/settings').model}::editors/code/@activeline]" />
-      <a:item type="check" caption="Highlight Gutter Line" checked="[{require('core/settings').model}::editors/code/@gutterline]" />
-      <a:item type="check" caption="Show Gutter" checked="[{require('core/settings').model}::editors/code/@gutter]" />
-      <a:item type="check" caption="Highlight Selected Word" checked="[{require('core/settings').model}::editors/code/@highlightselectedword]" />
-      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[{require('core/settings').model}::editors/code/@behaviors]" />
-      <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[{require('core/settings').model}::editors/code/@autohidehorscrollbar]" />
+      render = "runtime"
+      model  = "{require('core/settings').model}">
+      <a:item type="check" caption="Show Invisibles" checked="[editors/code/@showinvisibles]" />
+      <a:item type="check" caption="Code Folding" checked="[editors/code/@folding]" />
+      <a:item type="check" caption="Full Line Selection" value="[editors/code/@selectstyle]" values="line|text" />
+      <a:item type="check" caption="Highlight Active Line" checked="[editors/code/@activeline]" />
+      <a:item type="check" caption="Highlight Gutter Line" checked="[editors/code/@gutterline]" />
+      <a:item type="check" caption="Show Gutter" checked="[editors/code/@gutter]" />
+      <a:item type="check" caption="Highlight Selected Word" checked="[editors/code/@highlightselectedword]" />
+      <a:item type="check" caption="Auto-pair Quotes, Brackets, etc." checked="[editors/code/@behaviors]" />
+      <a:item type="check" caption="Auto-hide Horizontal Scrollbar" checked="[editors/code/@autohidehorscrollbar]" />
+      <a:item type="check" caption="Wrap Lines" checked="[{tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]" id="itmSbWrap" />
+      <a:item type="check" caption="To Viewport" checked="[editors/code/@wrapmodeViewport]" disabled="{!itmSbWrap.checked}" />
       <a:divider />
       <a:hbox edge="0 5 2 23" align="center">
           <a:label flex="1" style="padding: 2px 2px 2px 0">Font Size</a:label>
-          <a:spinner checked="[{require('core/settings').model}::editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" />
+          <a:spinner value="[editors/code/@fontsize]" realtime="true" min="1" max="72" width="50" />
       </a:hbox>
       <a:hbox edge="0 5 2 0" align="center">
-          <a:checkbox label="Show Print Margin" checked="[{require('core/settings').model}::editors/code/@showprintmargin]" flex="1" skin="checkbox-menu" />
-          <a:spinner checked="[{require('core/settings').model}::editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" />
+          <a:checkbox label="Show Print Margin" value="[editors/code/@showprintmargin]" flex="1" skin="checkbox-menu" />
+          <a:spinner value="[editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" />
       </a:hbox>
       <a:hbox edge="0 5 2 0" align="center">
-        <a:checkbox id="wrapMode" label="Wrap Lines" checked="[{require('core/settings').model}::editors/code/@wrapmode]" flex="1" skin="checkbox-menu" />    
-      </a:hbox>
-      <a:hbox edge="0 5 2 0" align="center">
-        <a:checkbox id="wrapModeViewport" margin="0 0 0 22" label="To Viewport" checked="[{require('core/settings').model}::editors/code/@wrapmodeViewport]" flex="1" skin="checkbox-menu" />
-      </a:hbox>
-      <a:hbox edge="0 5 2 0" align="center">
-          <a:checkbox label="Soft Tabs" checked="[{require('core/settings').model}::editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>
-          <a:spinner checked="[{require('core/settings').model}::editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />
+          <a:checkbox label="Soft Tabs" value="[editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>
+          <a:spinner value="[editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />
       </a:hbox>
       <a:hbox edge="0 5 2 23" align="center">
           <a:label flex="1" style="padding: 2px 2px 2px 0">Mouse Scroll Speed</a:label>
-          <a:spinner checked="[{require('core/settings').model}::editors/code/@scrollspeed]" min="1" max="8" width="50" />
+          <a:spinner value="[editors/code/@scrollspeed]" min="1" max="8" width="50" />
       </a:hbox>
     </a:menu>
 </a:application>
