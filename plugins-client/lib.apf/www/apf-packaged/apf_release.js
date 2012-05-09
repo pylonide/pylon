@@ -2086,7 +2086,7 @@ apf.Class.prototype = new (function(){
         }
         
         //Optimized event calling
-        if (arr = this.$eventsStack[eventName]) {
+        if (arr = this.$eventsStack[eventName] && isChanged) {
             /*for (i = 0, l = arr.length; i < l; i++) {
                 if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
                     prop     : prop, 
@@ -20056,7 +20056,6 @@ apf.GuiElement = function(){
     this.$booleanProperties["disable-keyboard"] = true;
     
     this.$booleanProperties["visible"]          = true;
-    this.$booleanProperties["focussable"]       = true;
     
     
     this.$supportedProperties.push("draggable", "resizable");
@@ -20316,11 +20315,6 @@ apf.GuiElement = function(){
 
         
 
-        
-        if (this.$focussable && typeof this.focussable == "undefined")
-            apf.GuiElement.propHandlers.focussable.call(this);
-        
-        
         this.$drawn = true;
     }, true);
     
@@ -20334,10 +20328,8 @@ apf.GuiElement = function(){
         if (this.$ext) {
             var hasPres = (this.hasFeature(apf.__PRESENTATION__)) || false;
             var type        = this.$isLeechingSkin ? this.localName : "main";
-            if (this.minwidth == undefined)
-                this.minwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 0);
-            if (this.minheight == undefined)
-                this.minheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 0);
+            this.minwidth   = Math.max(this.minwidth || 0, apf.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 0));
+            this.minheight  = Math.max(this.minheight || 0, apf.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 0));
             if (this.maxwidth == undefined)
                 this.maxwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxwidth")), 10000);
             if (this.maxheight == undefined)
@@ -20362,6 +20354,11 @@ apf.GuiElement = function(){
         
         if (this.$loadAml)
             this.$loadAml(this.$aml); //@todo replace by event
+        
+        
+        if (this.$focussable && typeof this.focussable == "undefined")
+            apf.GuiElement.propHandlers.focussable.call(this, true);
+        
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", f);
@@ -20470,15 +20467,32 @@ apf.GuiElement.propHandlers = {
     "focussable": function(value){
         this.focussable = typeof value == "undefined" || value;
 
+        if (value == "container") {
+            this.$isWindowContainer = true;
+            this.focussable = true;
+        }
+        else
+            this.focussable = apf.isTrue(value);
+
         if (!this.hasFeature(apf.__FOCUSSABLE__)) //@todo should this be on the prototype
             this.implement(apf.Focussable);
 
         if (this.focussable) {
             apf.window.$addFocus(this, this.tabindex);
+            
+            if (value == "container")
+                this.$tabList.remove(this);
         }
         else {
             apf.window.$removeFocus(this);
         }
+    },
+    
+    "tabindex": function(value){
+        if (!this.hasFeature(apf.__FOCUSSABLE__)) 
+            return;
+        
+        this.setTabIndex(parseInt(value) || null);
     },
     
 
@@ -36895,6 +36909,8 @@ apf.window = function(){
 
         if (list[tabindex])
             list.insertIndex(amlNode, tabindex);
+        else if (tabindex || parseInt(tabindex) === 0)
+            list[tabindex] = amlNode;
         else
             list.push(amlNode);
     };
@@ -37208,12 +37224,16 @@ apf.window = function(){
 
             amlNode = list[next];
         }
-        while (!amlNode
-            || amlNode.disabled > 0
+        while (amlNode && (
+               amlNode.disabled > 0
             || amlNode == apf.window.activeElement
             || (switchWindows ? !amlNode.visible : amlNode.$ext && !amlNode.$ext.offsetHeight)
             || amlNode.focussable === false
-            || switchWindows && !amlNode.$tabList.length);
+            || switchWindows && !amlNode.$tabList.length
+        ));
+        
+        if (!amlNode)
+            return;
 
         if (fParent == apf.window && amlNode.$isWindowContainer != -2) {
             this.$focusLast(amlNode, {mouse:true}, switchWindows);
@@ -37466,6 +37486,7 @@ apf.window = function(){
             keyCode  : e.keyCode,
             ctrlKey  : e.ctrlKey,
             shiftKey : e.shiftKey,
+            metaKey  : e.metaKey,
             altKey   : e.altkey,
             htmlEvent: e,
             bubbles  : true //@todo is this much slower?
@@ -37534,6 +37555,7 @@ apf.window = function(){
                 button    : e.button, 
                 ctrlKey   : e.ctrlKey, 
                 shiftKey  : e.shiftKey, 
+                metaKey   : e.metaKey,
                 altKey    : e.altKey,
                 bubbles   : true,
                 htmlEvent : e
@@ -40145,7 +40167,7 @@ apf.lm = new (function(){
 
         // centralized code fragments used in parser/generator
         cf_block_o     = "(function(){var _o=[],_l=0;\n",
-        cf_block_c     = ";return _l==1?_o[0]:_o.join('');})()",
+        cf_block_c     = ";return _l==1?_o[0]:_o.join('');}).call(this)",
         cf_async_o     = "_async(_n,_c,_a,_w,_f,this,",
         cf_async_m     = "',_a[++_a.i]||[",
         cf_obj_output  = "_r=",
@@ -51481,7 +51503,8 @@ apf.vbox = function(struct, tagName){
         
         var node, nodes = this.childNodes, elms = [];
         for (var i = 0, l = nodes.length; i < l; i++) {
-            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE && node.$amlLoaded && node.visible !== false)
+            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE 
+              && node.$ext && node.visible !== false)
                 elms.push(node);
         }
         
@@ -64241,7 +64264,23 @@ apf.textbox  = function(struct, tagName){
      * @return {String}
      */
     this.getValue = function(){
-        var v = this.isHTMLBox ? this.$input.innerHTML : this.$input.value;
+        var v;
+        
+        if (this.isHTMLBox) { 
+            if (this.$input.innerText)
+                v = this.$input.innerText;
+            else {
+                //Chrome has a bug, innerText is cleared when display property is changed
+                v = apf.html_entity_decode(this.$input.innerHTML
+                    .replace(/<br\/?\>/g, "\n")
+                    .replace(/<[^>]*>/g, ""));
+            }
+            if (v.charAt(v.length - 1) == "\n")
+                v = v.substr(0, v.length - 1); //Remove the trailing new line
+        }
+        else 
+            v = this.$input.value;
+            
         return v == this["initial-message"] ? "" : v.replace(/\r/g, "");
     };
     
@@ -64251,10 +64290,7 @@ apf.textbox  = function(struct, tagName){
      * Selects the text in this element.
      */
     this.select   = function(){ 
-        try {
-            this.$input.select(); 
-        }
-        catch(e){}
+        this.$input.select(); 
     };
 
     /**
@@ -64376,7 +64412,8 @@ apf.textbox  = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
 
-        if (this["initial-message"] && this.$input.value == this["initial-message"]) {
+        var value = this.getValue();
+        if (this["initial-message"] && !value) {
             this.$propHandlers["value"].call(this, "", null, null, true);
             apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
         }
@@ -64421,7 +64458,8 @@ apf.textbox  = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus", "capsLock"]);
 
-        if (this["initial-message"] && this.$input.value == "") {
+        var value = this.getValue();
+        if (this["initial-message"] && !value) {
             this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
             apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
@@ -64577,7 +64615,7 @@ apf.textbox  = function(struct, tagName){
             var keyCode = e.keyCode;
             
             if (_self.$button)
-                _self.$button.style.display = this.value ? "block" : "none";
+                _self.$button.style.display = _self.getValue() ? "block" : "none";
 
             if (_self.realtime) {
                 $setTimeout(function(){
@@ -64608,13 +64646,49 @@ apf.textbox  = function(struct, tagName){
 
             this.$input.unselectable    = "Off";
             this.$input.contentEditable = true;
-            this.$input.style.width     = "1px";
+            //this.$input.style.width     = "1px";
 
             this.$input.select = function(){
-                var r = document.selection.createRange();
-                r.moveToElementText(this);
-                r.select();
+                if (apf.hasMsRangeObject) {
+                    var r = document.selection.createRange();
+                    r.moveToElementText(this);
+                    r.select();
+                }
+                else if (_self.isHTMLBox) {
+                    var r = document.createRange();
+                    r.setStart(_self.$input.firstChild || _self.$input, 0);
+                    var lastChild = _self.$input.lastChild || _self.$input;
+                    r.setEnd(lastChild, lastChild.nodeType == 1
+                        ? lastChild.childNodes.length
+                        : lastChild.nodeValue.length);
+                    
+                    var s = window.getSelection();
+                    s.removeAllRanges();
+                    s.addRange(r);
+                }
             }
+            
+            this.$input.onpaste = function(){
+                if (apf.hasMsRangeObject)
+                    return;
+                    
+                var sel   = window.getSelection();
+                var range = sel.getRangeAt(0);
+                
+                setTimeout(function(){
+                    var range2 = sel.getRangeAt(0);
+                    range2.setStart(range.startContainer, range.startOffset);
+                    var c = range2.cloneContents();
+                    range2.deleteContents();
+                    
+                    var d = document.body.appendChild(document.createElement("div")); 
+                    d.appendChild(c); 
+                    var p = d.innerText;
+                    d.parentNode.removeChild(d);
+                    
+                    range2.insertNode(document.createTextNode(p));
+                });
+            };
         };
 
         this.$input.deselect = function(){

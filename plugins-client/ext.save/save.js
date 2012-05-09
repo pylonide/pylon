@@ -149,7 +149,7 @@ module.exports = ext.register("ext/save/save", {
                 icon     : "save.png",
                 caption  : "Save",
                 tooltip  : "Save",
-                skin     : "c9-toolbarbutton",
+                skin     : "c9-toolbarbutton-glossy",
                 disabled : "{!!!tabEditors.activepage}",
                 command  : "quicksave"
             }), 1000)
