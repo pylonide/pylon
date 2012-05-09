@@ -424,7 +424,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             if (state !== apf.SUCCESS || countInfo.count === undefined || countInfo.count == 0) {
                 doc.cachedValue = "No matches for '" + metaInfo.query + "' " + metaInfo.optionsDesc);
-                return;
             }
             else {
             //    else
