@@ -2,7 +2,7 @@
     
     <a:window id="winUploadFiles"
       onshow  = "require('ext/uploadfiles/uploadfiles').onShow()"
-      onclose = "require('ext/uploadfiles/uploadfiles').onClose()"
+      onhide = "require('ext/uploadfiles/uploadfiles').onClose()"
       title   = "Upload Files"
       buttons = "close"
       skin    = "bk-window"
@@ -43,7 +43,13 @@
             <span class="header">Upload Activity</span>
             <span id="uploadactivityNumFiles"></span>
             <a:filler />
-            <a:checkbox id="cbToggleUploadQueue" skin="uploadactivity-switch" skinset="uploadfiles" value="1" margin="0 5 0 0" />
+            <a:button id="btnCancelUploads" 
+              caption="Cancel" 
+              skin="btn-cancel-upload" 
+              skinset="uploadfiles" 
+              onclick="require('ext/uploadfiles/uploadfiles').cancelAll()"
+            ></a:button>
+            <a:checkbox id="cbToggleUploadQueue" skin="uploadactivity-switch" skinset="uploadfiles" value="1" margin="0 5" />
         </a:hbox>
         <a:list id="lstUploadActivity"
             skin = "list-uploadactivity"

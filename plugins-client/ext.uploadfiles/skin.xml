@@ -7,6 +7,8 @@
                 overflow      : hidden;
                 left: 0;
                 right: 0;
+                background  : url(images/list_uploadactivity_bg.png) no-repeat 0 0;
+                background-size: 100% 100%;
             }
             
             .list-uploadactivity>DIV.uploadactivity-items {
@@ -191,4 +193,35 @@
             </a:main>
         </a:presentation>
     </a:checkbox>
+    
+    <a:button name="btn-cancel-upload">
+        <a:style><![CDATA[
+            .btn-cancel-upload {
+                position            : relative;
+                -moz-user-select    : none;
+                -khtml-user-select  : none;
+                user-select         : none;
+                color               : #a4a4a4;
+                font-size           : 11px;
+                height              : 14px;
+                top                 : 4px;
+            }
+            
+            .btn-cancel-uploadOver {
+                color: #c91212;
+            }
+            
+            .btn-cancel-uploadDown {
+                color: #810707;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main
+              caption    = ".">
+                <div class="btn-cancel-upload">
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
 </a:skin>

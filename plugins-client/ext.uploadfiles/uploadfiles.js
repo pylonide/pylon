@@ -17,10 +17,11 @@ var fs   = require("ext/filesystem/filesystem");
 var menus = require("ext/menus/menus");
 var settings = require('ext/settings/settings');
 
-var MAX_UPLOAD_SIZE_FILE = 52428800;
-var MAX_OPENFILE_SIZE = 2097152;
-var MAX_CONCURRENT_FILES = 100000;
-var MAX_VISIBLE_UPLOADS = 20;
+var MAX_UPLOAD_SIZE_FILE = 52428800; // max size accepted for one file
+var MAX_OPENFILE_SIZE = 2097152; // max size of file that is openen in the editor on drop
+var MAX_CONCURRENT_FILES = 100000; // max files accepted to add to queue
+var MAX_VISIBLE_UPLOADS = 20; // max number of files added to upload activity list
+var MAX_OPEN_FILES_EDITOR = 5; // max number of files that can be opened in the editor
 
 module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     dev         : "Ajax.org",
@@ -119,7 +120,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             
             if (!(_self.checkNumberOfFiles(files)))
                 return false;
-        
+            
             _self.startUpload(files);
         };
         
@@ -225,7 +226,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     /* upload functionality */
     onBeforeDrop: function(e) {
-        if (!(window.File && window.FileReader/* && window.FormData*/)) {
+        if (!(window.File && window.FileReader)) {
             util.alert(
                 "Could not upload file(s)", "An error occurred while dropping this file(s)",
                 "Your browser does not offer support for drag and drop for file uploads. " +
@@ -233,28 +234,38 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             return false;
         }
-        
-        /** Dropped item is a folder */
-        if (!e.dataTransfer.files.length || !e.dataTransfer.files[0].size) {
+        var files = e.dataTransfer.files;
+        // Dropped item is a folder, second condition is for FireFox
+        if (!files.length || !files[0].size) {
             ext.initExtension(this);
             
             winNoFolderSupport.show();
             
+            // only in Chrome display button to upload dialog with select folder 
             if (!apf.isWebkit)
                 btnNoFolderSupportOpenDialog.hide();
             
             return false;
         }
-        var files = e.dataTransfer.files;
+        
         if (!(this.checkNumberOfFiles(files)))
             return false;
-        
-        if (e.dataTransfer.files.length < 1)
+        var filesLength = files.length;
+        if (filesLength < 1)
             return false;
         
-        if (e.currentTarget.id == "tabEditorsDropArea")
-            this.openOnUpload = true;
-            
+        // if dropped on editor open file
+        if (e.currentTarget.id == "tabEditorsDropArea") {
+            if (filesLength <= MAX_OPEN_FILES_EDITOR)
+                this.openOnUpload = true;
+            else {
+                return util.alert(
+                    "Maximum files exceeded", "The number of files dropped in the editor exceeds the limit.",
+                    "Please update your selection to " + MAX_OPEN_FILES_EDITOR + " files to continue."
+                );
+            }
+        }
+        
         this.onDrop(e);
         
         return true;
@@ -263,10 +274,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     onDrop: function(e) {
         ext.initExtension(this);
         
-        var dt = e.dataTransfer;
-        var files = dt.files;
-
-        this.startUpload(files);
+        this.startUpload(e.dataTransfer.files);
     },
 
     startUpload: function(files) {
@@ -288,20 +296,16 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if (winUploadFiles.visible)
             winUploadFiles.hide();
             
-        // show upload activity list
-        boxUploadActivity.show();
-        
         // set hidden files to true to support hidden files and folders
         (davProject.realWebdav || davProject).setAttribute("showhidden", true);
         
-        // loop through all files to create the upload queue and create subfolders
         var files_too_big = [];
         var filename;
         this.uploadIndex = -1;
         if (!this.totalNumUploads)
             this.totalNumUploads = 0;
         var fileIndex = -1;
-        var filesInQueue = this.uploadInProgress ? mdlUploadActivity.data.childNodes.length : 0;
+        var filesInQueue = this.uploadInProgress ? (mdlUploadActivity.data && mdlUploadActivity.data.childNodes.length) : 0;
 
         var file;
         for (var i = 0, l = files.length; i < l; i++) {
@@ -330,8 +334,13 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if (files_too_big.length)
             return this.showFilesTooBigDialog(files_too_big);
 
-        if (!this.uploadInProgress)
+        if (!this.uploadInProgress) {
+            // show upload activity list
+            boxUploadActivity.show();
+            btnCancelUploads.show();
+            
             this.uploadNextFile();
+        }
     },
     
     showFilesTooBigDialog: function(files) {
@@ -578,6 +587,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.uploadInProgress = false;
             _self.existingOverwriteAll = false;
             _self.existingSkipAll = false;
+            btnCancelUploads.hide();
             (davProject.realWebdav || davProject).setAttribute("showhidden", require('ext/settings/settings').model.queryValue("auto/projecttree/@showhidden"));
             _self.hideUploadActivityTimeout = setTimeout(function() {
                 mdlUploadActivity.load("<data />");
@@ -590,8 +600,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     checkNumberOfFiles: function(files) {
         if (files.length > MAX_CONCURRENT_FILES) {
             util.alert(
-                "Could not upload files", "An error occurred while dropping these files",
-                "You can only drop " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
+                "Could not upload files", "An error occurred while uploading these files",
+                "You can only select " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
                 "Please try again with " + MAX_CONCURRENT_FILES + " or fewer files."
             );
             
