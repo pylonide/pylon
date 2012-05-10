@@ -25,34 +25,49 @@ module.exports = ext.register("ext/ftp/ftp", {
     pageID   : "pgFtpConsole",
     css      : css,
     nodes    : [],
+    
+    pageId: "ftpConsoleHbox",
 
     hook: function(){
         ext.initExtension(this);
-
+        
         // hack to hide the dock panel!!
-        if (window.dockPanelRight)
-            dockPanelRight.setAttribute("visible", false);
+//        if (window.dockPanelRight)
+//            dockPanelRight.setAttribute("visible", false);
 
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
     },
 
     init: function(amlNode) {
+        var _self = this;
+        
         apf.importCssString(this.css || "");
-
+        
         if (!this.$panel) {
-            tabConsole.remove("console"); // remove Console tab
-            tabConsole.remove("output"); // remove Output tab
-            btnConsoleClear.hide();
-            txtConsoleInput.hide();
-
-            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.appendChild(ftpConsoleHbox);
-            tabConsole.set(this.$panel);
+            ide.addEventListener("init.ext/console/console", function() { 
+                // remove the console and output panels and add a super FTP panel
+                // to the console
+                var console = window.tabConsole;
+                
+                // append our own panel to the console
+                self.$panel = console.add("FTP Log", _self.pageId);
+                self.$panel.setAttribute("closebtn", false);
+                self.$panel.appendChild(ftpConsoleHbox);
+                
+                // make ourselves the active panel
+                // first show then activate
+                ftpConsoleHbox.show();
+                console.set(_self.pageID);
+                
+                // remove the other tabs, until we refactored them out nicely
+                console.remove("console");
+                console.remove("output");
+            });
         }
     },
 
-    log: function(msg, type, code) {
-        if (!tabConsole.visible)
+    log: function(msg, type) {
+        if (typeof tabConsole !== "undefined" && tabConsole.visible)
             ideConsole.enable();
 
         // Converts HTML special characters to their entity equivalents.
@@ -76,10 +91,15 @@ module.exports = ext.register("ext/ftp/ftp", {
 
     onMessage: function(e) {
         var message = e.message;
-        if (message.type !== "transcript")
+        if (message.type !== "transcript") {
             return;
+        }
+        
+        if (message.body === "noop") {
+            return;
+        }
 
-        this.log(message.body, message.subtype, message.code);
+        this.log(message.body, message.subtype);
     },
 
     enable : function(){
