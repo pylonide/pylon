@@ -23,7 +23,7 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
      * @param {mixed} data
      * @return void
      */
-    this.putStream = function(handler, type, cbfsput) {
+    this.putStream = function(handler, type, callback) {
         var path = this.path;
         // is it a chunked upload?
         var size = handler.httpRequest.headers["x-file-size"];
@@ -32,15 +32,19 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
             if (!handler.httpRequest.headers["x-file-name"])
                 handler.httpRequest.headers["x-file-name"] = parts[1];
             handler.server.tree.getNodeForPath(parts[0], function(err, parent) {
-                if (!Util.empty(err))
-                    return cbfsput(err);
+                if (err)
+                    return callback(err);
 
-                parent.writeFileChunk(handler, type, cbfsput);
+                parent.writeFileChunk(handler, type, callback);
             });
         }
         else {
+
             this.vfs.mkfile(path, {}, function(err, meta) {
-                handler.getRequestBody(type, meta.stream, cbfsput);
+                if (err)
+                    return callback(err);
+
+                handler.getRequestBody(type, meta.stream, callback);
             });
         }
     };

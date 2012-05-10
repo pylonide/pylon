@@ -106,13 +106,10 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
                 track.stream.emit("error", err);
             });
 
-            stream.end = function(data) {
-                if (data)
-                    track.length += data.length;
-
+            stream.end = function() {
                 if (track.length == parseInt(size, 10)) {
                     delete handler.server.chunkedUploads[path];
-                    track.stream.end(data);
+                    track.stream.end();
                     handler.dispatchEvent("afterBind", handler.httpRequest.url, self.path + "/" + filename);
                 }
 
