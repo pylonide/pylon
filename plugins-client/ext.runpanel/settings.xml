@@ -11,9 +11,8 @@
     <a:hbox position="4000" edge="0 5 5 7" align="center" class="underlined">
         <a:label flex="1">Runtime:</a:label>        
         <a:dropdown
-          skin      = "light_dropdown"
           model     = "mdlRunnerSelector2"
-          width="175"  height="21"
+          width="120"  height="21"
           disabled  = "{!lstRunCfg.selected}"
           value     = "[{require('core/settings').model}::auto/node-version/@version]"
           default   = "auto"
