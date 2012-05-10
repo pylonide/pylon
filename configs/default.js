@@ -122,7 +122,7 @@ var config = {
                     "ext/guidedtour/guidedtour",
                     "ext/quickstart/quickstart",
                     "ext/jslanguage/jslanguage",
-                    //"ext/autotest/autotest",
+                    "ext/autotest/autotest",
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
