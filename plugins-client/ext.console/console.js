@@ -327,11 +327,7 @@ module.exports = ext.register("ext/console/console", {
                 break;
             default:
                 if (message.type.match(/-start$/)) {
-                    var command_id = extra && extra.command_id;
-                    
-                    if (!command_id) {
-                        return;
-                    }
+                    var command_id = extra.command_id;
 
                     this.tracerToPidMap[command_id] = message.pid;
                     this.pidToTracerMap[message.pid] = command_id;
@@ -344,8 +340,8 @@ module.exports = ext.register("ext/console/console", {
 
                 if (message.type.match(/-data$/)) {
                     var type = "tracer";
-                    var id = extra && extra.command_id;
-                    if (!id) {
+                    var id = extra.command_id;
+                    if (!command_id) {
                         type = "pid";
                         id = message.pid;
                     }
@@ -356,7 +352,7 @@ module.exports = ext.register("ext/console/console", {
                 }
 
                 if (message.type.match(/-exit$/)) {
-                    if (extra && extra.command_id)
+                    if (extra.command_id)
                         this.markProcessAsCompleted(extra.command_id);
                     else
                         this.markProcessAsCompleted(message.pid, true);
