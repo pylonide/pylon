@@ -71,6 +71,9 @@ util.inherits(ShellPlugin, Plugin);
         if (!this["command-" + message.command])
             return false;
 
+        if (message.runner && message.runner !== "shell")
+            return false;
+
         this["command-" + message.command.toLowerCase()](message);
 
         return true;
