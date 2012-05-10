@@ -6,8 +6,8 @@
  */
 
 var Plugin = require("../cloud9.core/plugin");
-var util   = require("util");
-var fs     = require("fs");
+var util = require("util");
+var fs = require("fs");
 
 var name = "npm-runtime";
 var ProcessManager;
@@ -41,12 +41,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on(this.channel, function(msg) {
-            msg.type = msg.type.replace(/^node-(start|data|exit)$/, "npm-module-$1");
-            var type = msg.type;
-
-            if (type == "npm-module-start" || type == "npm-module-exit") {
-                //self.workspace.getExt("state").publishState();
-            }
+            msg.type = msg.type.replace(/^run-npm-(start|data|exit)$/, "npm-module-$1");
 
             if (msg.type == "npm-module-start")
                 self.processCount += 1;
@@ -62,6 +57,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
         var cmd = (message.command || "").toLowerCase();
         switch(cmd) {
             case "npm-module-stdin":
+                message.line = message.line + "\n";
                 this.child.child.stdin.write(message.line);
                 return true;
         }
@@ -77,7 +73,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
 
-            self.pm.spawn("node", {
+            self.pm.spawn("run-npm", {
                 file: file,
                 args: args,
                 env: env,
@@ -86,6 +82,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
             }, self.channel, function(err, pid, child) {
                 if (err)
                     return self.error(err, 1, message, client);
+
                 self.child = child;
             });
         });

@@ -100,7 +100,7 @@ module.exports = ext.register("ext/console/console", {
 
                 // @TODO When we update how NPM modules are run, be sure to
                 // update the process type here
-                if (proc.type === "node") {
+                if (proc.type === "run-npm") {
                     txtConsolePrompt.setValue("$ " + original_line.split(" ")[0]);
                     txtConsolePrompt.show();
                 }
@@ -315,6 +315,8 @@ module.exports = ext.register("ext/console/console", {
                     };
 
                     ide.send(data);
+                    this.command_id_tracer++;
+                    return true;
                 }
             }
             else {
