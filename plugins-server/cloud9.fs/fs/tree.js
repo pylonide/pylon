@@ -61,15 +61,16 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
      */
     this.copy = function(source, destination, callback) {
         var self = this;
+        // first check if source exists
         this.vfs.stat(source, {}, function(err, stat) {
-            if (err)
+            if (err || stat.err)
                 return callback(err);
 
-            if (stat.mime === "inode/directory")
-                self.vfs.copy(destination, {from: source}, callback);
-            else
-                // TODO vfs
-                Async.copytree(source, destination, callback);
+            // if destination exists try to delete it
+            self.vfs.rmdir(destination, { recursive: true }, function(err) {
+                // ignore error because destination may not exists
+                self.vfs.exec("cp", {args: ["-R", source, destination]}, callback);
+            });
         });
     };
 
