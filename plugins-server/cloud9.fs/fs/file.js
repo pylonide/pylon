@@ -51,26 +51,29 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
      *
      * @return Buffer
      */
-    this.getStream = function(start, end, cbfsfileget) {
+    this.getStream = function(start, end, callback) {
         var options = {};
         if (typeof start == "number" && typeof end == "number")
             options = { start: start, end: end };
 
         this.vfs.readfile(this.path, options, function(err, meta) {
+            if (err)
+                return callback(err);
+
             var stream = meta.stream;
 
             stream.on("data", function(data) {
-                cbfsfileget(null, data);
+                callback(null, data);
             });
 
             stream.on("error", function(err) {
-                cbfsfileget(err);
+                callback(err);
             });
 
             stream.on("end", function() {
                 // Invoking the callback without error and data means that the callee
                 // can continue handling the request.
-                cbfsfileget();
+                callback();
             });
         });
 
