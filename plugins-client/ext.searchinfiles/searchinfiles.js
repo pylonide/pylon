@@ -25,6 +25,11 @@ var searchreplace = require("ext/searchreplace/searchreplace");
 var searchFilePath = ide.davPrefix + "/search_results.c9search";
 var searchContentType = "c9search";
 
+// Ace dependencies
+var EditSession = require("ace/edit_session").EditSession;
+var Document = require("ace/document").Document;
+var ProxyDocument = require("ext/code/proxydocument");
+
 module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     name     : "Search in files",
     dev      : "Ajax.org",
@@ -364,11 +369,34 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                      
                 tabConsole.set(_self.pageID);
                 
-                trSFHbox.show();
+                this.codeEditor = this.$panel.appendChild(new apf.codeeditor({
+                    syntax            : "c9search",
+                    "class"           : "nocorner",
+                    anchors           : "0 0 0 0",
+                    theme             : "ace/theme/monokai",
+                    overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
+                    folding           : "true",
+                    behaviors         : "[{require('core/settings').model}::editors/code/@behaviors]",
+                    selectstyle       : "[{require('core/settings').model}::editors/code/@selectstyle]",
+                    activeline        : "[{require('core/settings').model}::editors/code/@activeline]",
+                    gutterline        : "[{require('core/settings').model}::editors/code/@gutterline]",
+                    showinvisibles    : "[{require('core/settings').model}::editors/code/@showinvisibles]",
+                    showprintmargin   : "false",
+                    softtabs          : "[{require('core/settings').model}::editors/code/@softtabs]",
+                    tabsize           : "[{require('core/settings').model}::editors/code/@tabsize]",
+                    scrollspeed       : "[{require('core/settings').model}::editors/code/@scrollspeed]",
+                    newlinemode       : "[{require('core/settings').model}::editors/code/@newlinemode]",
+                    animatedscroll    : "[{require('core/settings').model}::editors/code/@animatedscroll]",
+                    fontsize          : "[{require('core/settings').model}::editors/code/@fontsize]",
+                    gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
+                    highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
+                    autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
+                    fadefoldwidgets   : "[{require('core/settings').model}::editors/code/@fadefoldwidgets]"
+                }));
                 
-                this.$panel.appendChild(ceSFResult);
-                ceSFResult.setProperty("visible", true);
-                ceSFResult.setHeight(200);
+                this.codeEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
+                    _self.launchFileFromSearch(_self.codeEditor.$editor);
+                });
                 
                 this.$panel.addEventListener("afterclose", function(){
                     this.removeNode();
@@ -452,8 +480,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
             
             if (chkSFConsole.checked) {
-                ceSFResult.setProperty("syntax", "c9search");
-                //ceSFResult.setDocument(doc); ceSFResult.setValue("value");
+                _self.codeEditor.$editor.setSession(new EditSession(new ProxyDocument(new Document(doc.cachedValue)), _self.codeEditor.getSession().getMode()));
             }
             else {
                 var page, p = 0, pages = tabEditors.getPages();
@@ -490,6 +517,32 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
 
+    launchFileFromSearch : function(editor) {
+        var session = editor.getSession();
+        var currRow = editor.getCursorPosition().row;
+        var path = null;
+        
+        if (editor.getSession().getLine(currRow).length == 0) // no text in this row
+            return;
+        
+        var clickedLine = session.getLine(currRow).trim().split(":"); // number:text
+        
+        if (clickedLine.length < 2) // not a line number with text row
+            return;
+        
+        while (currRow > 0 && session.getTokenAt(currRow, 0).type != "string") {
+          currRow--;
+        }
+        
+        path = editor.getSession().getLine(currRow);
+        
+        if (path.charAt(path.length - 1) == ":")
+            path = path.substring(0, path.length-1);
+        
+        if (path !== undefined && path.length > 0)
+            editors.showFile(ide.davPrefix + "/" + path, clickedLine[0], 0, clickedLine[1]);
+    },
+    
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

@@ -3325,7 +3325,15 @@
           z-index : 10001 !important;
         }
         
-        .ace_corner{
+        .nocorner .ace_gutter {
+            opacity: 0.8;
+        }
+        
+        .nocorner .ace_editor {
+            margin-top: 3px;
+        }
+        
+        .ace_corner {
             position : absolute;
             left : 41px;
             top : -5px;
@@ -3339,10 +3347,18 @@
             z-index : 10000;
         }
         
+        .nocorner .ace_corner {
+            opacity : 0;
+        }
+        
         .ace_scroller.horscroll {
             box-shadow: 17px 0px 16px -16px rgba(0,0,0,0.4) inset;
         }
 
+        .nocorner .ace_scroller {
+            background : transparent
+        }
+        
         .ace_editor .ace_printMargin {
           position: absolute;
           height: 100%;

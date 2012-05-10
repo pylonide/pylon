@@ -795,34 +795,12 @@ module.exports = ext.register("ext/code/code", {
 
         // for search in files
         this.amlEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
-          var node = tabEditors.getPage().$doc.getNode();
-          
-          if (node.getAttribute("customtype") == util.getContentType("c9search")) {
-              var editor = _self.amlEditor.$editor;
-              var session = editor.getSession();
-              var currRow = editor.getCursorPosition().row;
-              var path = null;
-              
-              if (editor.getSession().getLine(currRow).length == 0) // no text
-                return;
-                
-              var clickedLine = session.getLine(currRow).trim().split(":");
-              
-              if (clickedLine.length < 2) // not a line number: text row
-                return;
-              
-              while (currRow > 0 && session.getTokenAt(currRow, 0).type != "string") {
-                  currRow--;
-              }
-              
-              path = editor.getSession().getLine(currRow);
-              
-              if (path.charAt(path.length - 1) == ":")
-                path = path.substring(0, path.length-1);
-              
-              if (path !== undefined && path.length > 0)
-                editors.showFile(ide.davPrefix + "/" + path, clickedLine[0], 0, clickedLine[1]);
-          }
+            var node = tabEditors.getPage().$doc.getNode();
+            
+            if (node.getAttribute("customtype") == util.getContentType("c9search")) {
+                require("ext/searchinfiles/searchinfiles").launchFileFromSearch(_self.amlEditor.$editor);
+            }
+            
         });
         
         // preload common language modes
