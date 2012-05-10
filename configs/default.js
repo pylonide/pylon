@@ -140,9 +140,9 @@ var config = {
                     //"ext/acebugs/acebugs"
                 ]
             }, {
-                packagePath: "vfs-architect/local",
-                uid: process.getuid(),
-                gid: process.getgid(),
+                packagePath: "vfs-architect/child",
+                uid: 501,
+                gid: 20,
                 umask: 0750,
                 root: projectDir + "/",
                 skipSearchCheck: false,
