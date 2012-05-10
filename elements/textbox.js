@@ -788,8 +788,11 @@ apf.textbox  = function(struct, tagName){
                 }
             }
             
-            this.$input.onpaste = function(){
+            this.$input.onpaste = function(e){
                 if (apf.hasMsRangeObject)
+                    return;
+                
+                if (e.clipboardData.types.indexOf("text/html") == -1)
                     return;
                     
                 var sel   = window.getSelection();
