@@ -54,13 +54,11 @@ require("util").inherits(Socket, EventEmitter);
     this.connect = function() {
         //console.log("Connecting to: " + this.$port);
         var self = this;
-        this.$vfs.connect(this.$port, {}, function(err, meta) {
+        this.$vfs.connect(this.$port, { encoding: "utf8"}, function(err, meta) {
             if (err)
                 onEnd(err);
 
             self.$stream = meta.stream;
-
-            self.$stream.setEncoding("utf8");
 
             self.$stream.addListener("data", function(data) {
                 self.$onData(data);
