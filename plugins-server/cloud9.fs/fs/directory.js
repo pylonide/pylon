@@ -164,29 +164,22 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
     this.getChildren = function(callback) {
         var self = this;
 
-        this.vfs.readdir(this.path, {}, function(err, meta) {
+        this.vfs.readdir(this.path, { encoding: null }, function(err, meta) {
             if (err)
                 return callback(err);
 
             var stream = meta.stream;
-            var ls = "";
-            stream.on("data", function(data) {
-                ls += data;
+            var nodes = [];
+
+            stream.on("data", function(stat) {
+                var path = Path.join(self.path, stat.name);
+                nodes.push(stat.mime === "inode/directory"
+                    ? new jsDAV_FS_Directory(self.vfs, path)
+                    : new jsDAV_FS_File(self.vfs, path)
+                );
             });
 
             stream.on("end", function() {
-                try {
-                    ls = JSON.parse(ls);
-                } catch(e) {
-                    return callback(e);
-                }
-
-                var nodes = ls.map(function(file) {
-                    var path = Path.join(self.path, file.name);
-                    return file.mime === "inode/directory"
-                        ? new jsDAV_FS_Directory(self.vfs, path)
-                        : new jsDAV_FS_File(self.vfs, path)
-                });
                 callback(null, nodes);
             });
         });
@@ -198,9 +191,7 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
      * @return void
      */
     this["delete"] = function(callback) {
-        this.vfs.unlink
-        callback(new Error("DELETE is not implemented"));
-        //Async.rmtree(this.path, callback);
+        this.vfs.rmdir(this.path, { recursive: true }, callback);
     };
 
     /**
