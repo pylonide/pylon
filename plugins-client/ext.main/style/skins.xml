@@ -3413,29 +3413,72 @@
 
         /*** TM ***/
 
-       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
+
+
+       /* 
+        * Gutter Icons
+       
+              .oooooo.                    .       .                         ooooo                                          
+             d8P'  `Y8b                 .o8     .o8                         `888'                                          
+            888           oooo  oooo  .o888oo .o888oo  .ooooo.  oooo d8b     888   .ooooo.   .ooooo.  ooo. .oo.    .oooo.o 
+            888           `888  `888    888     888   d88' `88b `888""8P     888  d88' `"Y8 d88' `88b `888P"Y88b  d88(  "8 
+            888     ooooo  888   888    888     888   888ooo888  888         888  888       888   888  888   888  `"Y88b.  
+            `88.    .88'   888   888    888 .   888 . 888    .o  888         888  888   .o8 888   888  888   888  o.  )88b 
+             `Y8bood8P'    `V88V"V8P'   "888"   "888" `Y8bod8P' d888b       o888o `Y8bod8P' `Y8bod8P' o888o o888o 8""888P' 
+                                                                                                                           
+        
+        */
+        .ace_gutter-layer .ace_gutter-cell {
+          background-repeat: no-repeat;
+        }
+
+        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
           background-image: url("icons/debugger/brkp_obj.png");
-          background-repeat: no-repeat;
           background-position: 4px center;
-       }
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
+          background-image: url("icons/debugger/brkp_obj_dark.png");
+        }
 
-       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
+        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
           background-image: url("icons/debugger/brkp_obj_current_line.png");
-          background-repeat: no-repeat;
           background-position: 4px center;
-       }
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
+          background-image: url("icons/debugger/brkp_obj_current_line_dark.png");
+        }
 
-       .ace_gutter-layer .ace_gutter-cell.ace_arrow {
+        .ace_gutter-layer .ace_gutter-cell.ace_arrow {
           background-image: url("icons/debugger/current_line.png");
-          background-repeat: no-repeat;
           background-position: 4px center;
-       }
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_arrow {
+          background-image: url("icons/debugger/current_line_dark.png");
+        }
 
-       .ace_gutter-layer .ace_gutter-cell.ace_stack {
+        .ace_gutter-layer .ace_gutter-cell.ace_stack {
           background-image: url("icons/debugger/stack_co.png");
-          background-repeat: no-repeat;
           background-position: 4px center;
-       }
+        }
+
+        .ace_gutter-layer .ace_gutter-cell.ace_error {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px 0;
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_error {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -20px;
+        }
+
+        .ace_gutter-layer .ace_gutter-cell.ace_warning {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -40px;
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_warning {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -60px;
+        }
+
     ]]></a:style>
     <a:presentation>
         <a:main content="." corner="div[1]">
@@ -9185,6 +9228,7 @@
         clear: both;
         left: 0;
         right: 0;
+        opacity: .8;
     }
 
     .editor_tab .editor_bg .editor_bg_content {
