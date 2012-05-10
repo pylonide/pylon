@@ -56,7 +56,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
                     }
                 },
                 {
-                    el : winDbgConsole,
+                    el : self["winDbgConsole"],
                     name : "qsCLI",
                     pos: "top"
                 }
@@ -122,7 +122,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     arrangeQSImages : function() {
         var divToId, position, imgDiv;
         for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
-            if(jsonQuickStart.identifiers[i].visible && !jsonQuickStart.identifiers[i].visible())
+            if((jsonQuickStart.identifiers[i].visible && !jsonQuickStart.identifiers[i].visible()) || !jsonQuickStart.identifiers[i].el)
                 continue;
 
             divToId = require("ext/guidedtour/guidedtour").getElementPosition(jsonQuickStart.identifiers[i].el);
