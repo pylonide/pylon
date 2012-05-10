@@ -201,7 +201,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             var ace = _self.$getAce();
             var isTooLong = ace.getSession().getDocument().getLength() > MAX_LINES;
             
-            if (_self.findKeyboardHandler(e, "search", this) === false) {
+            if (_self.findKeyboardHandler(e, "search", this, chkRegEx) === false) {
                 apf.layout.forceResize();
                 if (!isTooLong)
                     _self.updateCounter(null, true);
@@ -237,7 +237,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     return false;
                 }
                 
-                if (_self.findKeyboardHandler(e, "replace", this) === false) {
+                if (_self.findKeyboardHandler(e, "replace", this, chkRegEx) === false) {
                     apf.layout.forceResize();
                     return false;
                 }

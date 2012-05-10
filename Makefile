@@ -54,3 +54,4 @@ package: apf core worker mode theme ext
 
 test:
 	$(MAKE) -C test
+	cp node_modules/ace/build/src/worker* plugins-client/cloud9.core/www/js/worker

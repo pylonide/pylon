@@ -1,13 +1,12 @@
 if (typeof process !== "undefined") {
-    require("../../../support/paths");
-    require.paths.unshift(__dirname + "/../..");
-    require.paths.unshift(__dirname + "/../../../support/treehugger/lib");
+    require("amd-loader");
+    require("../../test/setup_paths");
 }
 
 define(function(require, exports, module) {
 
-var assert = require("ace/test/assertions");
-var LanguageWorker = require('ext/language/worker').LanguageWorker;
+var assert = require("assert");
+var LanguageWorker = require('../ext.language/worker').LanguageWorker;
 var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
 module.exports = {

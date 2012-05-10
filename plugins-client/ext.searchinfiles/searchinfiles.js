@@ -125,8 +125,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 return false;
             }
             
-            if (_self.findKeyboardHandler(e, "searchfiles", this) === false)
+            if (_self.findKeyboardHandler(e, "searchfiles", this, chkSFRegEx) === false)
                 return false;
+                
+            if (chkSFRegEx.checked
+              && _self.evaluateRegExp(txtSFFind, tooltipSearchInFiles, 
+              winSearchInFiles, e.htmlEvent) === false) {
+                return;
+            }
         });
         txtSFFind.addEventListener("keyup", function(e) {
             if (e.keyCode != 8 && (e.ctrlKey || e.shiftKey || e.metaKey 
@@ -145,7 +151,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 return false;
             }
             
-            if (_self.findKeyboardHandler(e, "replacefiles", this) === false)
+            if (_self.findKeyboardHandler(e, "replacefiles", this, chkSFRegEx) === false)
                 return false;
         });
         
