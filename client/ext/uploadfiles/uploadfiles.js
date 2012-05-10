@@ -44,9 +44,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     
     hook : function(){
         var _self = this;
-        ide.addEventListener("init.ext/ftp/ftp", function(){
-            _self.projectType = "ftp";
-        });
         
         ide.addEventListener("init.ext/tree/tree", function(){
             _self.nodes.push(
@@ -84,27 +81,34 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             );
             
             ide.addEventListener("init.c9/ext/auth/auth", function(){
-                if (_self.projectType != "ftp") {
-                    _self.nodes.push(
-                        ide.mnuFile.appendChild(new apf.item({
-                            caption : "Download Project",
-                            onclick : function(){
-                                window.open("/api/project/download/zip/" + ide.projectName);
-                            }
-                        })),
-                        winFilesViewer.insertBefore(new apf.button({
-                            top: "-22",
-                            skin: "header-btn",
-                            right: "56",
-                            icon: "download-ico.png",
-                            tooltip: "Download Files",
-                            onclick : function(){
-                                window.open("/api/project/download/zip/" + require("core/ide").projectName);
-                            }
-                        }), btnTreeRefresh)
-                    );
-                    btnUploadFiles.setProperty("right", "81");
-                }
+                _self.nodes.push(
+                    ide.mnuFile.appendChild(new apf.item({
+                        id: "mnuDownloadProject",
+                        caption : "Download Project",
+                        onclick : function(){
+                            window.open("/api/project/download/zip/" + ide.projectName);
+                        }
+                    })),
+                    winFilesViewer.insertBefore(new apf.button({
+                        id: "btnDownloadFiles",
+                        top: "-22",
+                        skin: "header-btn",
+                        right: "56",
+                        icon: "download-ico.png",
+                        tooltip: "Download Files",
+                        onclick : function(){
+                            window.open("/api/project/download/zip/" + require("core/ide").projectName);
+                        }
+                    }), btnTreeRefresh)
+                );
+                btnUploadFiles.setProperty("right", "81");
+            });
+            
+            ide.addEventListener("init.ext/ftp/ftp", function(){
+                _self.projectType = "ftp";
+                mnuDownloadProject.removeNode();
+                btnDownloadFiles.removeNode();
+                btnUploadFiles.setProperty("right", "56");
             });
         });
     },
