@@ -6,7 +6,7 @@ module.exports = function startup(options, imports, register) {
     var prefix = options.prefix || "/static";
 
     var staticServer = connect.createServer();
-    imports.connect.useMain(prefix, staticServer)
+    imports.connect.useMain("/static", staticServer)
 
     register(null, {
         "static": {
