@@ -15,6 +15,7 @@ for (var i = 0; i < clientDirs.length; i++) {
 
 var projectDir = (argv.w && path.resolve(process.cwd(), argv.w)) || process.cwd();
 var fsUrl = "/workspace";
+var vfsUrl = "/vfs";
 
 var port = argv.p || process.env.PORT || 3131;
 var host = argv.l || "localhost";
@@ -145,7 +146,16 @@ var config = {
                 umask: 0750,
                 root: projectDir + "/",
                 skipSearchCheck: false,
-                httpRoot: "http://localhost:" + port + fsUrl
+                httpRoot: "http://localhost:" + port + vfsUrl
+
+//                packagePath: "vfs-architect/ssh",
+//                host: "localhost",
+//                nodePath: process.execPath,
+//                root: projectDir + "/",
+//                httpRoot: "http://localhost:" + port + vfsUrl
+            }, {
+                packagePath: "vfs-architect/http-adapter",
+                mount: vfsUrl
             }, {
                 packagePath: "./cloud9.fs",
                 urlPrefix: fsUrl

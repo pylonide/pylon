@@ -1,7 +1,6 @@
 "use strict";
 
 var util = require("util");
-var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
 /**
@@ -11,35 +10,29 @@ var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 var exports = module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
 
-    imports.sandbox.getUnixId(function(err, unixId) {
-        if (err) return register(err);
+    pm.addRunner("npm", exports.factory(imports.vfs));
 
-        pm.addRunner("npm", exports.factory(unixId, imports.sandbox));
-
-        register(null, {
-            "run-npm": {}
-        });
+    register(null, {
+        "run-npm": {}
     });
 };
 
-exports.factory = function(uid, sandbox) {
-    return function(args, eventEmitter, eventName, callback) {
-        var options = {};
-        c9util.extend(options, args);
-        options.uid = uid;
-        options.eventEmitter = eventEmitter;
-        options.eventName = eventName;
-        options.args = args.args;
-        options.command = "npm";
-        
-        options.sandbox = sandbox;
-        
-        return new Runner(options, callback);
+exports.factory = function(vfs) {
+    return function(args, eventEmitter, eventName) {
+        return new Runner(vfs, {
+            args: args.args,
+            cwd: args.cwd,
+            nodeVersion: args.nodeVersion,
+            encoding: args.encoding,
+            extra: args.extra,
+            eventEmitter: eventEmitter,
+            eventName: eventName
+        });
     };
 };
 
-var Runner = exports.Runner = function(options, callback) {
-    ShellRunner.call(this, options, callback);
+var Runner = exports.Runner = function(vfs, options) {
+    ShellRunner.call(this, vfs, options);
 };
 
 util.inherits(Runner, ShellRunner);

@@ -46,7 +46,8 @@
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/09ce2bef1c33add76ed5c52ce477df339101b435"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/c7ee419c6c985d4369d71619b8e97044de3e502e"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"],
-        "vfs":          ["npm", "https://github.com/c9/vfs/tarball/a48785071133a580417c47d253e9e7f21a2ad6c6"]
+        "vfs":          ["npm", "https://github.com/c9/vfs/tarball/298fa542a520e506d78b6bb421aef9db79eb2146"],
+        "vfs-architect":["npm", "https://github.com/c9/vfs-architect/tarball/43df3d62bdf40b1baa2563bf8a054105700204e4"]
     },
 
     "repository" : {

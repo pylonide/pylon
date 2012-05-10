@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-var fs = require("fs");
 var copy = require('dryice').copy;
 
 var ACE_HOME = __dirname + "/node_modules/ace"
