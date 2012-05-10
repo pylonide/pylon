@@ -49,7 +49,7 @@
       height    = "395"
       icon      = ""
       buttons   = "close"
-      skin      = "bk-window"
+      skin      = "bk-window2"
       kbclose   = "true"
       resizable = "true"
       title     = "Save As"
