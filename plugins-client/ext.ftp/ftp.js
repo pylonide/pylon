@@ -40,28 +40,32 @@ module.exports = ext.register("ext/ftp/ftp", {
         apf.importCssString(this.css || "");
 
         if (!this.$panel) {
-            tabConsole.remove("console"); // remove Console tab
-            tabConsole.remove("output"); // remove Output tab
-            btnConsoleClear.hide();
-            txtConsoleInput.hide();
+            ide.addEventListener("init.ext/console/console", function() {
+                tabConsole.remove("console"); // remove Console tab
+                tabConsole.remove("output"); // remove Output tab
+                btnConsoleClear.hide();
+                txtConsoleInput.hide();
 
-            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.appendChild(ftpConsoleHbox);
-            tabConsole.set(this.$panel);
+                this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+                this.$panel.appendChild(ftpConsoleHbox);
+                tabConsole.set(this.$panel);
+            });
         }
     },
 
     log: function(msg, type, code) {
-        if (!tabConsole.visible)
-            ideConsole.enable();
+        ide.addEventListener("init.ext/console/console", function() {
+            if (!tabConsole.visible)
+                ideConsole.enable();
 
-        // Converts HTML special characters to their entity equivalents.
-        msg = apf.htmlentities("" + msg);
+            // Converts HTML special characters to their entity equivalents.
+            msg = apf.htmlentities("" + msg);
 
-        if (type === "response")
-            msg = msg.replace(/\n/gm, "<br>").replace(/\s/gm, "&nbsp;");
+            if (type === "response")
+                msg = msg.replace(/\n/gm, "<br>").replace(/\s/gm, "&nbsp;");
 
-        txtFtpConsole.addValue("<div class='item console_" + type + "'>" + msg + "</div>");
+            txtFtpConsole.addValue("<div class='item console_" + type + "'>" + msg + "</div>");
+        });
     },
 
     write: function(lines) {
@@ -101,5 +105,4 @@ module.exports = ext.register("ext/ftp/ftp", {
         this.nodes = [];
     }
 });
-
 });
