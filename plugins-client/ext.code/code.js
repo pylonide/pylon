@@ -432,6 +432,7 @@ module.exports = ext.register("ext/code/code", {
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
                 ["printmargincolumn", "80"],
+                ["behaviors", ""],
                 ["softtabs", "true"],
                 ["tabsize", "4"],
                 ["scrollspeed", "2"],

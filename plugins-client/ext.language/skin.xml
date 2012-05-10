@@ -12,7 +12,7 @@
                 box-shadow: 0 3px 7px rgba(0,0,0,.4);
             }
             
-            .code_complete_bar {
+            .code_complete_bar.downward {
                 border: 1px solid #b7b7b7;
                 -webkit-border-bottom-right-radius: 5px;
                 border-bottom-right-radius: 5px;
@@ -20,15 +20,30 @@
                 border-bottom-left-radius: 5px;
             }
 
+            .code_complete_bar.upward {
+                border: 1px solid #b7b7b7;
+                margin-top: -2px;
+                -webkit-border-top-right-radius: 5px;
+                border-top-right-radius: 5px;
+                -webkit-border-top-left-radius: 5px;
+                border-top-left-radius: 5px;
+            }
+
             /* Need to do this to get the radius working in Chrome, FF works fine without */
-            .code_complete_bar div.code_complete_text {
+            .code_complete_bar.downward div.code_complete_text {
                 -webkit-border-bottom-left-radius: 5px;
                 border-bottom-left-radius: 5px;
+            }
+
+            .code_complete_bar.upward div.code_complete_text {
+                -webkit-border-top-left-radius: 5px;
+                border-top-left-radius: 5px;
             }
 
             .code_complete_bar > div {
                 -webkit-border-bottom-left-radius: 5px;
                 border-bottom-left-radius: 5px;
+                position: relative;
             }
 
             .cc_complete_option {
@@ -44,19 +59,45 @@
                 background: #b9d0e4;
                 color: #333;
                 padding: 1px 5px;
+                margin: 0;
                 cursor: default;
             }
             
-            .cc_complete_option_selected:last-child, .cc_complete_option:last-child {
+            .code_complete_bar.downward .cc_complete_option_selected:last-child, .code_complete_bar.downward .cc_complete_option:last-child {
                 -webkit-border-bottom-left-radius: 5px;
                 border-bottom-left-radius: 5px;
+                -webkit-border-bottom-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+            }
+
+            .code_complete_bar.upward .cc_complete_option_selected:first-child, .code_complete_bar.upward .cc_complete_option:first-child {
+                -webkit-border-top-left-radius: 5px;
+                border-top-left-radius: 5px;
+                -webkit-border-top-right-radius: 5px;
+                border-top-right-radius: 5px;
+            }
+
+            .code_complete_bar img {
+                position: absolute;
+                left: 3px;
+                width: 8px;
+                height: 8px;
+                margin-top: 0.4em;
+            }
+
+            .code_complete_bar span.main {
+                position: absolute;
+                left: 15px;
+                width: 330px;
+                white-space: nowrap;
+                overflow: hidden;
             }
             
             .code_complete_bar span.meta {
-                color: #555;
-                float: right;
-                padding-left: 5px;
-                padding-right: 7px;
+                position: absolute;
+                color: #999;
+                right: 10px;
+                margin-left: 6px;
             }
         ]]></a:style>
         <a:style condition="{apf.isWebkit}"><![CDATA[
