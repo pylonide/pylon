@@ -7,7 +7,6 @@ var xmlNode = xml.parseFromString(fs.readFileSync(__dirname + "/skins.xml", "utf
 var list = {};
 var nodes = xmlNode.childNodes;
 
-console.log("parsing " + nodes.length);
 for (var i = 0; i < nodes.length; i++) {
     if (nodes[i].nodeType != 1) continue;
     (list[nodes[i].tagName] || (list[nodes[i].tagName] = [])).push(nodes[i].xml);
