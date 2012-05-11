@@ -3366,6 +3366,13 @@
           user-select: none;
           z-index : 10001 !important;
         }
+
+        .ace_gutter .ace_gutter_active_line {
+            background: rgba(0, 0, 0, 0.07);
+        }
+        .dark .ace_gutter .ace_gutter_active_line {
+            background: rgba(255, 255, 255, 0.07);
+        }
         
         .ace_corner{
             position : absolute;
