@@ -37,7 +37,7 @@
  */
 apf.xmldb = new (function(){
     var _self = this;
-    
+
     this.xmlDocTag    = "a_doc";
     this.xmlIdTag     = "a_id";
     this.xmlListenTag = "a_listen";
@@ -49,7 +49,7 @@ apf.xmldb = new (function(){
 
     var cleanRE       = /(?:a_doc|a_id|a_listen|a_loaded)=(?:"|')[^'"]+(?:"|')/g,
         whiteRE       = />[\s\n\r\t]+</g;
-        
+
     /**
      * Clear XML document cache periodically when no model is referencing it
      */
@@ -57,22 +57,24 @@ apf.xmldb = new (function(){
         var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
         for (var i = 0, l = cache.length; i < l; i++) {
             xmlNode = cache[i];
-            
+
             if (!xmlNode || xmlNode.nodeFunc)
                 continue;
-            
+
             docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
             model = apf.nameserver.get("model", docId);
-            
+
             if (!model || model.data != xmlNode) {
                 cache[i] = null;
             }
         }
-    }
-    if (window.setInterval)
-        setInterval(function(){
-            _self.garbageCollect();
-        }, 60000);
+    };
+
+    this.$gcInterval = window.setInterval
+        ? setInterval(function(){
+              _self.garbageCollect();
+          }, 60000)
+        : null;
 
     /**
      * @private
@@ -270,7 +272,7 @@ apf.xmldb = new (function(){
      * @private
      * @todo this is cleanup hell! Listeners should be completely rearchitected
      */
-    
+
     // make sure that "0" is never a listener index
     this.$listeners = [null];
     this.addNodeListener = function(xmlNode, o, uId){
@@ -296,9 +298,9 @@ apf.xmldb = new (function(){
                     var model = apf.all[sUId[3]];
                     if (!model)
                         return;
-                    
+
                     if (model.$propBinds[sUId[1]][sUId[2]]) {
-                        if (!apf.isChildOf(model.data, xmlNode, true)) 
+                        if (!apf.isChildOf(model.data, xmlNode, true))
                             return false;
 
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
@@ -470,7 +472,7 @@ apf.xmldb = new (function(){
             undoObj.name = name;
             undoObj.$filled = true;
         }
-        
+
         //Apply Changes
         if (range) { //@todo apf3.0 range
             undoObj.extra.range = range;
@@ -547,13 +549,13 @@ apf.xmldb = new (function(){
             undoObj.oldNode = oldNode;
             undoObj.xmlNode = newNode;
         }
-        
+
         this.cleanNode(newNode);
-        
+
         var parentNode = oldNode.parentNode;
         if (!parentNode)
             return;
-        
+
         parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);
 
@@ -613,10 +615,10 @@ apf.xmldb = new (function(){
     apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
         if (pNode == xmlNode.parentNode) //Shouldn't this be the same document?
             return apf.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
-        
+
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
-        
+
         // @todo: only do this once! - should store on the undo object
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
             var oldNode = xmlNode;
@@ -643,7 +645,7 @@ apf.xmldb = new (function(){
         }
         else if (xmlNode.parentNode)
             this.removeNode(xmlNode);
-        
+
         if (undoObj && !undoObj.$filled) {
             undoObj.$filled = true;
             this.cleanNode(xmlNode);
@@ -685,7 +687,7 @@ apf.xmldb = new (function(){
 
         //Set new id if the node change document (for safari this should be fixed)
         //@todo I don't get this if...
-        /*if (!apf.isWebkit 
+        /*if (!apf.isWebkit
           && xmlNode.getAttribute(this.xmlIdTag)
           && apf.xmldb.getXmlDocId(xmlNode) != apf.xmldb.getXmlDocId(pNode)) {
             xmlNode.removeAttribute(this.xmlIdTag));
@@ -738,7 +740,7 @@ apf.xmldb = new (function(){
         var p = xmlNode.parentNode;
         if (!p)
             return;
-        
+
         p.removeChild(xmlNode);
         this.applyChanges("redo-remove", xmlNode, null, p);//undoObj
 
@@ -757,7 +759,7 @@ apf.xmldb = new (function(){
         // #ifdef __WITH_RDB
         this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj || {xmlNode: p});
         // #endif
-        
+
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
         for (var rData = [], i = 0; i < xmlNodeList.length; i++) { //This can be optimized by looping nearer to xmlUpdate
             //ActionTracker Support
@@ -917,7 +919,7 @@ apf.xmldb = new (function(){
 
         var myQueue = notifyQueue;
         notifyQueue = {};
-        
+
         apf.setZeroTimeout.clearTimeout(notifyTimer);
         for (var uId in myQueue) {
             if (!uId) continue;
@@ -939,7 +941,7 @@ apf.xmldb = new (function(){
             }
         }
 
-        
+
     }
 
     /**
@@ -1100,6 +1102,9 @@ apf.xmldb = new (function(){
                     Nodes[i].setAttribute(this.xmlListenTag, nListen.join(";"));
             }
         }
+
+        if (window.clearInterval)
+            window.clearInterval(this.$gcInterval);
     };
 
     /**

@@ -21,7 +21,7 @@
 
 //#ifdef __SUPPORT_O3
 
-/** 
+/**
  * Ajax.org Platform for O3
  *
  * @author    Ruben Daniels ruben@javeline.com
@@ -35,7 +35,7 @@ apf = {
     TIMEOUT : 2,
     ERROR   : 3,
     OFFLINE : 4,
-    
+
     //#ifdef __DEBUG
     debug         : true,
     debugType     : "Memory",
@@ -43,7 +43,7 @@ apf = {
     /* #else
     debug         : false,
     #endif */
-    
+
     initialized   : false,
     crypto        : {}, //namespace
     _GET          : {},
@@ -68,7 +68,7 @@ apf = {
         xforms : "http://www.w3.org/2002/xforms",
         ev     : "http://www.w3.org/2001/xml-events"
     },
-    
+
     start : function(strAml){
         this.host     = null;
         this.hostPath = null;
@@ -82,25 +82,25 @@ apf = {
         //if (strAml)
         apf.window.init(strAml || "<a:application xmlns:a='http://ajax.org/2005/aml' />");
     },
-    
+
     importClass : function(ref, strip, win){
         if (!ref)
-            throw new Error(apf.formatErrorString(1018, null, 
-                "importing class", 
+            throw new Error(apf.formatErrorString(1018, null,
+                "importing class",
                 "Could not load reference. Reference is null"));
-    
+
         if (!strip)
             return apf.jsexec(ref.toString());
-        
+
         var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
         q = q.replace(/\}\s*$/, "");
-        
+
         //var q = ref.toString().split("\n");q.shift();q.pop();
         //if(!win.execScript) q.shift();q.pop();
-    
+
         return apf.jsexec(q);
     },
-    
+
     /**
     * This method returns a string representation of the object
     * @return {String}    Returns a string representing the object.
@@ -109,12 +109,12 @@ apf = {
     toString : function(){
         return "[Ajax.org Platform (apf)]";
     },
-    
+
     all : [],
-    
+
     /**
     * This method implements all traits of another class to this object
-    * @param {Function}    classRef    Required Class reference 
+    * @param {Function}    classRef    Required Class reference
     * @method
     */
     implement : function(classRef){
@@ -122,19 +122,19 @@ apf = {
             arg = arguments[i]
             //#ifdef __DEBUG
             if (!arg) {
-                throw new Error(apf.formatErrorString(0, this, 
+                throw new Error(apf.formatErrorString(0, this,
                     "Implementing class",
                     "Could not implement from '" + classRef + "'",
                     this.$aml));
             }
             //#endif
-            
+
             arg.call(this);//classRef
         }
-        
+
         return this;
     },
-    
+
     lookup : function(uniqueId){
         return this.all[uniqueId];
     },
@@ -173,7 +173,7 @@ apf = {
         }
         return dest;
     },
-    
+
     /**
      * The console outputs to the debug screen
      */
@@ -194,57 +194,57 @@ apf = {
             var date = dt.getHours().toPrettyDigit()   + ":"
                      + dt.getMinutes().toPrettyDigit() + ":"
                      + dt.getSeconds().toPrettyDigit() + "." + ms;
-            
+
             util.puts((nodate ? "" : date) + " " + msg + (data ? "Extra information:\n" + data : ""));
         },
         //#endif
-        
+
         debug : function(){
-            
+
         },
-        
+
         time : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write(msg, "time", subtype, data);
             //#endif
         },
-        
+
         log : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.info(msg, subtype, data);
             //#endif
         },
-        
+
         info : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write(msg, "info", subtype, data);
             //#endif
         },
-        
+
         warn : function(msg, subtype, data){
             //#ifdef __DEBUG
             this.write(msg, "warn", subtype, data);
             //#endif
         },
-        
+
         error : function(msg, subtype, data){
             //#ifdef __DEBUG
         	this.write("Error "+ "\033[35m"+msg+"\033[39m", "error",subtype,data);
             //this.write("Error: " + msg + "\nStacktrace:\n" + new Error().stack, "error", subtype, data);
             //#endif
         },
-        
+
         dir : function(obj){
             this.info(apf.vardump(obj, null, true));
         },
-        
+
         teleport: function() {}
     },
 
     namespace : function(name, oNamespace){
         eval("apf." + name + " = oNamespace");
     },
-    
+
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         //#ifdef __DEBUG
         var str = ["---- APF Error ----"];
@@ -254,9 +254,9 @@ apf = {
                 .replace(/xmlns:a="[^"]*"\s*/g, "");
         }
         if (control)
-            str.push("Control: '" 
-                + (control.name 
-                    || (control.$aml ? control.getAttribute("id") : null) 
+            str.push("Control: '"
+                + (control.name
+                    || (control.$aml ? control.getAttribute("id") : null)
                     || "{Anonymous}")
                 + "' [" + control.tagName + "]");
         if (process)
@@ -277,9 +277,9 @@ apf = {
         this.namespaces[namespaceURI] = oNamespace;
         oNamespace.namespaceURI = namespaceURI;
     },
-    
+
     /* Init */
-   
+
     /**
      * Returns the directory portion of a url
      * @param {String} url the url to retrieve from.
@@ -320,10 +320,10 @@ apf = {
         //var fd = fs.child(sourceFile);
         //eval(fd.data, self);
     },
-    
+
     $loader : {
         setGlobalDefaults : function(){
-            
+
         },
         script : function(){
             for (var i = 0; i < arguments.length; i++) {
@@ -336,28 +336,38 @@ apf = {
             return this;
         }
     },
-    
+
     Init : {
         add   : function(func, o){
             func.call(o);
         },
-        
+
         addConditional : function(func, o, strObj){
             return func.call(o);
         },
-        
+
         run : function(strObj){
         }
     },
-    
-    destroy : function(exclude){
-        //Do cleanup
+
+    unload : function(exclude){
+        var node,
+            i = 0,
+            l = this.all.length;
+        for (; i < l; i++) {
+            node = this.all[i];
+            if (node && node != exclude && node.destroy && !node.apf)
+                node.destroy(false);
+        }
+
+        if (apf.xmldb)
+            apf.xmldb.unbind(apf.window);
     }
 };
 
 Function.prototype.toHTMLNode = function(highlight){
     var code, line1, endLine1, line2, res;
-    
+
     TYPE_OBJECT     = "Object";
     TYPE_NUMBER     = "Number";
     TYPE_STRING     = "String";
@@ -368,7 +378,7 @@ Function.prototype.toHTMLNode = function(highlight){
     TYPE_FUNCTION   = "Function";
     TYPE_DOMNODE    = "XMLNode";
     TYPE_APFNODE    = "AMLElement";
-    
+
     STATE_UNDEFINED = "undefined";
     STATE_NULL      = "null";
     STATE_NAN       = "NaN";
@@ -387,26 +397,26 @@ Function.prototype.toHTMLNode = function(highlight){
         if (typeof variable == "number" && !isFinite(variable))
             return STATE_INFINITE;
 
-    
+
         if (typeof variable == "object") {
             if (variable.hasFeature)
                 return TYPE_APFNODE;
             if (variable.tagName || variable.nodeValue)
                 return TYPE_DOMNODE;
         }
-        
+
         if (typeof variable.dataType == "undefined")
             return TYPE_OBJECT;
-        
+
         return variable.dataType;
     }
-    
+
     //anonymous
     code     = this.toString();
     endLine1 = code.indexOf("\n");
     line1    = code.slice(0, endLine1);
     line2    = code.slice(endLine1+1);
-    
+
     res      = /^function(\s+(.*?)\s*|\s*?)\((.*)\)(.*)$/.exec(line1);
     if (res) {
         var name = res[1];
@@ -420,12 +430,12 @@ Function.prototype.toHTMLNode = function(highlight){
             for (var i = 0; i < this.arguments.length; i++) {
                 //if(i != 0 && arr[i]) args += ", ";
                 argName  = (namedArgs[i] || "NOT_NAMED").trim();// args += "<b>" + arr[i] + "</b>";
-                
+
                 args.push("[" + getType(this.arguments[i]) + "] " + argName);
                 //info.push("Value: " + apf.vardump(this.arguments[i], null, false));
             }
         }
-        
+
         return "  " + (name && name.trim() || "anonymous") + " (" + args.join(", ") + ")";
     }
     else {
@@ -438,7 +448,7 @@ $setInterval = setInterval;
 
 apf.stacktrace = function(){
     var list = [], seen = {}, loop, end;
-    
+
     //Opera doesnt support caller... weird...
     //try {
         loop = end = arguments.callee.caller.caller
