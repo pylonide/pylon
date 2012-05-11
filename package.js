@@ -6,8 +6,8 @@ XMLParser = require('libxml/lib/libxml');
 require("apf");
 require("libxml/lib/libxml");
 
-var Util   = require("util"),
-    Fs    = require("fs");
+var Fs = require("fs");
+var Path = require("path");
 
 boot();
 
@@ -24,15 +24,15 @@ function boot() {
     require("./lib/proc/inline");
     require("./lib/proc/docgen");
     //require("proc/vcs");
-    
+
     var argv = process.argv;
 
     var project = (argv.length == 3) ? argv[2] : "apf_release.apr";
     console.log("using file: " + __dirname + "/projects/" + project);
 
-    if (!Fs.existsSync(project)) {
+    if (!Path.existsSync(project)) {
         project = __dirname + "/projects/" + project;
-        if (!Fs.existsSync(project)) {
+        if (!Path.existsSync(project)) {
             console.log("ERROR: unable to find project file");
             return process.exit(1);
         }
