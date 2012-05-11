@@ -552,15 +552,23 @@ module.exports = ext.register("ext/save/save", {
 
     expandTree : function(){
         var _self = this;
-        setTimeout(function(){
+        
+        function expand(){
             var tabPage = tabEditors.getPage(),
                 path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
                 isNew   = tabPage.$model.data.getAttribute('newfile');
-            if(!isNew)
+            if (!isNew)
                 _self.choosePath(path);
             else
                 trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
-        });
+        }
+        
+        if (trSaveAs.getModel()) {
+            expand();
+        }
+        else {
+            trSaveAs.addEventListener("afterload", expand);
+        }
     },
 
     enable : function(){
