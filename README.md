@@ -108,6 +108,14 @@ The sourcemint package manager works alongside NPM so to link in a
 `sm` always works on your program sub-tree other than pulling things in
 from the cache.
 
+To view help info for cloud9 use:
+
+    sm help
+
+To view usage info for `sm` use:
+
+    sm -h
+
 ## Open Source Projects Used
 
 The Cloud9 IDE couldn't be this cool if it weren't for the wildly productive
