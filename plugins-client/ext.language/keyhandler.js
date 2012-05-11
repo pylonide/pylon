@@ -60,12 +60,7 @@ function inputTriggerComplete(text, pasted) {
 }
 
 function isInferAvailable() {
-    try {
-        return true; //!require("ext/jsinfer/jsinfer").disabled;
-    } catch (e) {
-        return false;
-    }
-    //return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
+    return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
 }
 
 function typeAlongCompleteTextInput(text, pasted) {
