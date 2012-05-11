@@ -280,11 +280,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if (node.getAttribute("type") != "folder" && node.tagName != "folder")
             node = node.parentNode;
         
-        this.uploadFiles.push({
-            targetFolder: node,
-            queue: files
-        });
-        
         // hide upload window if visible
         if (winUploadFiles.visible)
             winUploadFiles.hide();
@@ -292,6 +287,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         // set hidden files to true to support hidden files and folders
         (davProject.realWebdav || davProject).setAttribute("showhidden", true);
         
+        var filesToAddToQueue = [];
         var files_too_big = [];
         var filename;
         this.uploadIndex = -1;
@@ -319,7 +315,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 if (filesInQueue < MAX_VISIBLE_UPLOADS) {
                     this.uploadIndex = fileIndex;
                     filesInQueue++;
-                    this.addToQueue(file, node)
+                    filesToAddToQueue.push(file);
                 } 
             }
         }
@@ -327,6 +323,15 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         if (files_too_big.length)
             return this.showFilesTooBigDialog(files_too_big);
 
+        this.uploadFiles.push({
+            targetFolder: node,
+            queue: files
+        });
+        if ((l=filesToAddToQueue.length)) {
+            for (i = 0; i < l; i++) {
+                this.addToQueue(filesToAddToQueue[i], node);
+            }
+        }
         if (!this.uploadInProgress) {
             // show upload activity list
             boxUploadActivity.show();
