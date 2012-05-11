@@ -2227,7 +2227,7 @@
         }
 
         .panel-settings {
-        	background-position: 0px -270px;
+        	background-position: 0px -269px;
         	right: 0;
         }
         .panel-settings:hover,
@@ -6059,7 +6059,13 @@
             }
 
             .fm-window .fm-header .hcontent {
-                background    : url(images/c9-repeat-x.png)  repeat-x 0 -138px;
+                background-color: rgba(220, 220, 220, 0.93);
+                background-image: url(images/c9-repeat-x.png),
+                                  url(images/c9-noise-light-10.png),
+                                  url(images/c9-noise-light-10.png),
+                                  url(images/c9-noise-light-10.png);
+                background-position: 0 -138px, 0 0;
+                background-repeat: repeat-x;
                 position      : relative;
                 overflow      : hidden;
                 height        : 26px;
@@ -6082,11 +6088,10 @@
                 bottom : 0;
                 box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, /* top */
                 			-1px 0 0 0 rgba(255,255,255,.9) inset; /* right */
-                background-color: rgba(220, 220, 220, 0.8);
+                background-color: rgba(220, 220, 220, 0.93);
                 background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
                 					url(images/c9-noise-light-10.png),
                 					url(images/c9-noise-light-10.png),
-                					url(images/c9-noise-light-10.png), 
                 					url(images/c9-noise-light-10.png);
             }
         ]]></a:style>
@@ -8766,7 +8771,8 @@
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .btnclose .tab_middle > strong {
+    .editor_tab .btnclose .tab_middle > strong,
+    .dark .editor_tab .btnclose.curbtn .tab_middle > strong {
         width               : 14px;
         height              : 14px;
         display             : block;
@@ -8789,11 +8795,13 @@
     /* ------------------------------------------------------------------------------------------
      * Unselected tab hover
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .btnclose .tab_middle > strong:hover {
+    .editor_tab .btnclose .tab_middle > strong:hover,
+    .dark .editor_tab .btnclose.curbtn .tab_middle > strong:hover {
         background-position : -14px -14px;
     }
 
-    .editor_tab .btnclose .tab_middle > strong:active {
+    .editor_tab .btnclose .tab_middle > strong:active,
+    .dark .editor_tab .btnclose.curbtn .tab_middle > strong:active {
         background-position : -28px -14px;
     }
 
@@ -8803,12 +8811,15 @@
     /* ------------------------------------------------------------------------------------------
      * Selected tab default state
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .curbtn {;
+    .editor_tab .curbtn {
         cursor      : default;
         height      : 22px;
         text-shadow : 0px 1px 0px rgba(255, 255, 255, .4);
         top         : 1px;
         z-index     : 10;
+    }
+    .dark .editor_tab .curbtn {
+        text-shadow : 0px 1px 0px rgba(0, 0, 0, .4);
     }
     .editor_tab .curbtn .tab_middle {
         background-color    : #e8e8e8;
@@ -9150,6 +9161,14 @@
         background-repeat   : repeat-x;
         top                 : 0;
     }
+
+    .dark .editor_tab .step1 .curbtn .tab_middle:before,
+    .dark .editor_tab .step2 .curbtn .tab_middle:before,
+    .dark .editor_tab .step3 .curbtn .tab_middle:before,
+    .dark .editor_tab .step4 .curbtn .tab_middle:before,
+    .dark .editor_tab .step5 .curbtn .tab_middle:before {
+        background-position : 0 -1126px;
+    }
   
 
     .editor_tab .step5 .session_btn:not(.curbtn) .tab_middle:before 
@@ -9376,6 +9395,12 @@
         background-repeat   : repeat-x;
         background-position : 0 -79px;
     }
+    .dark .editor_tab .session_btn .tab_middle {
+        background-position : 0 -1155px;
+    }
+    .dark .editor_tab .session_btn:not(.curbtn) .tab_middle .sessiontab_title {
+        color: rgba(255,255,255,.5);
+    }
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
         background-color    : #303030;
         color               : #cecece;
@@ -9389,10 +9414,16 @@
         background-position : 0 -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
     }
+    .dark .editor_tab .session_btn .tab_middle:before {
+        background-position : 0 -158px, 0 -1155px;
+    }
     .editor_tab .session_btn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
         background-position : -31px -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
+    }
+    .dark .editor_tab .session_btn .tab_middle:after {
+        background-position : -31px -158px, 0 -1155px;
     }
     
     /* ------------------------------------------------------------------------------------------
@@ -9412,13 +9443,22 @@
         box-shadow          : 0 0px 0 1px rgba(0,0,0,0.7);
         color               : #000;
     }
+    .dark .editor_tab .curbtn .tab_middle {
+        background-position : 0 -1126px;
+    }
     .editor_tab .curbtn .tab_middle:before {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
         background-position : 0px -132px, 0 -57px;
     }
+    .dark .editor_tab .curbtn .tab_middle:before {
+        background-position : 0px -192px, 0 -1126px;
+    }
     .editor_tab .curbtn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
         background-position : -31px -132px, 0 -57px;
+    }
+    .dark .editor_tab .curbtn .tab_middle:after {
+        background-position : -31px -192px, 0 -1126px;
     }
 
     /* ------------------------------------------------------------------------------------------

@@ -18,7 +18,6 @@
       optimize = "true">
         <a:button
           skin="header-btn"
-          right="5"
           class="panel-settings"
           submenu="mnuFilesSettings"/>
           

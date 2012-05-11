@@ -115,6 +115,8 @@ module.exports = ext.register("ext/themes/themes", {
              "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
              + bg + " inset !important;"]
         ], self, _self.stylesheet);
+
+        console.log("bg: "+bg+"; fg:"+fg);
         
         ide.dispatchEvent("theme.init", {theme: theme, path: path});
     },
