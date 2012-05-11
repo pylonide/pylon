@@ -74,7 +74,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 )
             });
             
-            if(ide.infraEnv) {
+            ide.addEventListener("init.ext/auth/auth", function(){
                 _self.nodes.push(
                     menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
@@ -82,8 +82,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         }
                     }), 390)
                 );
-                btnUploadFiles.setProperty("right", "81");
-            }
+            });
         });
     },
     
