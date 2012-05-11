@@ -99,7 +99,7 @@ var Workspace = module.exports = function(ide) {
                 process.nextTick(function() {
                     count -= 1;
                     if (count === 0)
-                        callback();
+                        callback && callback();
                 });
             });
         }

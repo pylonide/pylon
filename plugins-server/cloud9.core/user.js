@@ -63,7 +63,7 @@ User.VISITOR_PERMISSIONS = {
         this.emit("changePermissions", this);
     };
 
-    this.getPermissions = function(permissions) {
+    this.getPermissions = function() {
         return this.permissions;
     };
 

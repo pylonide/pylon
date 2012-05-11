@@ -328,7 +328,7 @@ module.exports = ext.register("ext/console/console", {
             default:
                 if (message.type.match(/-start$/)) {
                     var command_id = extra && extra.command_id;
-                    
+
                     if (!command_id) {
                         return;
                     }
@@ -396,7 +396,7 @@ module.exports = ext.register("ext/console/console", {
 
     hook: function() {
         var _self = this;
-        
+
         // Append the console window at the bottom below the tab
         this.markupInsertionPoint = mainRow;
 
@@ -461,9 +461,9 @@ module.exports = ext.register("ext/console/console", {
                 checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]"
             }), 800)
         );
-        
+
         menus.addItemByPath("Tools/~", new apf.divider(), 30000);
-        
+
         var cmd = {
             "Git" : [
                 ["Status", "git status"],
@@ -486,15 +486,15 @@ module.exports = ext.register("ext/console/console", {
                 ["Uninstall", "npm uninstall", null, null, true]
             ]
         };
-        
+
         var idx = 40000;
         Object.keys(cmd).forEach(function(c) {
             menus.addItemByPath("Tools/" + c + "/", null, idx += 1000);
             var list = cmd[c];
-            
+
             var idx2 = 0;
             list.forEach(function(def) {
-                menus.addItemByPath("Tools/" + c + "/" + def[0], 
+                menus.addItemByPath("Tools/" + c + "/" + def[0],
                     new apf.item({
                         onclick : function(){
                             _self.showInput();
@@ -729,7 +729,7 @@ module.exports = ext.register("ext/console/console", {
             height : "14px"
         }, 0.2, function() {
             apf.layout.forceResize(tabConsole.$ext);
-            
+
             var txt = apf.findHost(pNode);
             var scroll = txt.$scrollArea;
             txt.$scrolldown = scroll.scrollTop >= scroll.scrollHeight
@@ -782,23 +782,23 @@ module.exports = ext.register("ext/console/console", {
 
     showInput : function(temporary, immediate){
         var _self = this;
-        
+
         if (!this.hiddenInput)
             return;
 
         ext.initExtension(this);
 
         this.$collapsedHeight = this.collapsedHeight;
-        
+
         cliBox.show();
-        
+
         if (!immediate) {
             cliBox.$ext.style.height = "0px";
             cliBox.$ext.scrollTop = 0;
             setTimeout(function(){
                 cliBox.$ext.scrollTop = 0;
             });
-    
+
             if (_self.hidden) {
                 winDbgConsole.$ext.style.height = "0px";
                 Firmin.animate(winDbgConsole.$ext, {
@@ -806,7 +806,7 @@ module.exports = ext.register("ext/console/console", {
                     timingFunction: "cubic-bezier(.30, .08, 0, 1)"
                 }, 0.3);
             }
-    
+
             var timer = setInterval(function(){apf.layout.forceResize()}, 10);
             Firmin.animate(cliBox.$ext, {
                 height: _self.collapsedHeight + "px",
@@ -814,10 +814,10 @@ module.exports = ext.register("ext/console/console", {
             }, 0.3, function(){
                 if (_self.hidden)
                     winDbgConsole.setAttribute("height", _self.collapsedHeight + "px");
-                
+
                 winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 cliBox.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                
+
                 apf.layout.forceResize();
                 clearInterval(timer);
             });
@@ -827,7 +827,7 @@ module.exports = ext.register("ext/console/console", {
                 winDbgConsole.setAttribute("height", _self.collapsedHeight + "px");
             apf.layout.forceResize();
         }
-        
+
         if (temporary) {
             var _self = this;
             txtConsoleInput.addEventListener("blur", function(){
@@ -848,7 +848,7 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         this.$collapsedHeight = 0;
-        
+
         if (!immediate) {
             if (this.hidden) {
                 Firmin.animate(winDbgConsole.$ext, {
@@ -856,7 +856,7 @@ module.exports = ext.register("ext/console/console", {
                     timingFunction: "ease-in-out"
                 }, 0.3);
             }
-            
+
             var timer = setInterval(function(){apf.layout.forceResize()}, 10);
             Firmin.animate(cliBox.$ext, {
                 height: "0px",
@@ -883,8 +883,8 @@ module.exports = ext.register("ext/console/console", {
 
     _show: function(shouldShow, immediate) {
         var _self = this;
-        
-        if (this.hidden != shouldShow)
+
+        if (this.hidden != shouldShow || ide.readonly)
             return;
 
         this.hidden = !shouldShow;

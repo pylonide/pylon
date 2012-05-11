@@ -146,6 +146,7 @@ module.exports = ext.register("ext/editors/editors", {
                             id : "plus_tab_button",
                             "class" : "plus_tab_button",
                             skin : "btn_icon_only",
+                            disabled: ide.readonly,
                             onclick : function(){
                                 require("ext/newresource/newresource").newfile();
                             }

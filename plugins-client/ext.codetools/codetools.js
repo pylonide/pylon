@@ -4,7 +4,7 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
- 
+
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
@@ -19,19 +19,19 @@ module.exports = ext.register("ext/codetools/codetools", {
     nodes : [],
 
     init : function(){
-        
+
     },
-    
+
     register : function(plugin){
         if (!ceEditor.$codeToolsAttached)
             this.attachEditorEvents(ceEditor);
     },
-    
+
     attachEditorEvents: function(amlEditor) {
         amlEditor.$codeToolsAttached = true;
-        
+
         var editor = amlEditor.$editor;
-        var prevRow, prevCol, multiClickTimer;
+        var prevRow, prevCol, multiClickTimer, cursorTimer;
 
         editor.addEventListener("mousemove", function(e) {
             var pos = e.getDocumentPosition();
@@ -41,12 +41,14 @@ module.exports = ext.register("ext/codetools/codetools", {
             var evObj = {
                 amlEditor: amlEditor,
                 editor: editor,
+                target: e.domEvent.target || e.domEvent.srcElement,
                 pos: pos,
                 doc: doc
             };
-            
+
             if (prevRow !== row) {
                 prevRow = row;
+                prevCol = col;
                 ide.dispatchEvent("codetools.rowchange", evObj);
                 // a row change is also considered a column change.
                 ide.dispatchEvent("codetools.columnchange", evObj);
@@ -56,12 +58,12 @@ module.exports = ext.register("ext/codetools/codetools", {
                 ide.dispatchEvent("codetools.columnchange", evObj);
             }
         });
-        
+
         editor.addEventListener("click", function(e) {
             clearTimeout(multiClickTimer);
             var pos = e.getDocumentPosition();
             var doc = editor.session.doc;
-            
+
             multiClickTimer = setTimeout(function() {
                 multiClickTimer = null;
                 ide.dispatchEvent("codetools.codeclick", {
@@ -72,7 +74,7 @@ module.exports = ext.register("ext/codetools/codetools", {
                 });
             }, 100);
         });
-        
+
         editor.addEventListener("dblclick", function(e) {
             clearTimeout(multiClickTimer);
             multiClickTimer = null;
@@ -87,27 +89,14 @@ module.exports = ext.register("ext/codetools/codetools", {
                 doc: doc
             });
         });
-        
-        function cursorChange() {
-            var anchor = editor.session.selection.getSelectionAnchor();
 
-            ide.dispatchEvent("codetools.cursorchange", {
-                amlEditor: amlEditor,
-                editor: editor,
-                pos: {
-                    row: anchor.row,
-                    column: anchor.column
-                },
-                doc: editor.session.doc
-            });
-        }
+        function cursorChange(e) {
+            clearTimeout(cursorTimer);
+            cursorTimer = setTimeout(function() {
+                var lead = editor.session.selection.getSelectionLead();
+                var anchor = editor.session.selection.getSelectionAnchor();
 
-        function selectionChange() {
-            var anchor = editor.session.selection.getSelectionAnchor();
-            var lead = editor.session.selection.getSelectionLead();
-
-            if (anchor.row !== lead.row || Math.abs(anchor.column - lead.column) > 1) {
-                ide.dispatchEvent("codetools.selectionchange", {
+                var eventObj = {
                     amlEditor: amlEditor,
                     editor: editor,
                     pos: {
@@ -115,20 +104,29 @@ module.exports = ext.register("ext/codetools/codetools", {
                         end: anchor
                     },
                     doc: editor.session.doc
-                });
-            }
+                };
+
+                ide.dispatchEvent("codetools.cursorchange", eventObj);
+                if (e.type == "changeSelection")
+                    ide.dispatchEvent("codetools.selectionchange", eventObj);
+            });
         }
-        
-        editor.addEventListener("changeSession", function(e) {
+
+        function sessionChange(e) {
             if (e.oldsession) {
                 e.oldsession.removeEventListener("changeCursor", cursorChange);
-                e.oldsession.removeEventListener("changeSelection", selectionChange);
+                e.oldsession.removeEventListener("changeSelection", cursorChange);
             }
             e.session.selection.addEventListener("changeCursor", cursorChange);
-            e.session.selection.addEventListener("changeSelection", selectionChange);
+            e.session.selection.addEventListener("changeSelection", cursorChange);
+        }
+
+        editor.addEventListener("changeSession", sessionChange);
+        sessionChange({
+            session: editor.session
         });
     },
-    
+
     enable : function(){
         this.nodes.each(function(item){
             item.enable();

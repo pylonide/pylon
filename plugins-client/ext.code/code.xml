@@ -30,7 +30,7 @@
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
       debugger          = "{this.syntax == 'javascript' ? dbg : null}"
-      readonly          = "{[@loading] || cloud9config.readonly || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
+      readonly          = "{[@loading] || require('core/ide') || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 
     <a:menu id="mnuCtxEditor" render="runtime">
@@ -41,7 +41,7 @@
         <a:item command="copy">Copy</a:item>
         <a:item command="paste">Paste</a:item>
         <a:divider />
-        <a:item 
+        <a:item
           visible="{stDebugProcessRunning.active &amp;&amp; !stRunning.active}"
           onclick="
             require('ext/quickwatch/quickwatch').toggleDialog(1, true);
