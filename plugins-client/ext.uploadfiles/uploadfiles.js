@@ -19,7 +19,6 @@ var settings = require('ext/settings/settings');
 
 var MAX_UPLOAD_SIZE_FILE = 52428800; // max size accepted for one file
 var MAX_OPENFILE_SIZE = 2097152; // max size of file that is openen in the editor on drop
-var MAX_CONCURRENT_FILES = 100000; // max files accepted to add to queue
 var MAX_VISIBLE_UPLOADS = 20; // max number of files added to upload activity list
 var MAX_OPEN_FILES_EDITOR = 5; // max number of files that can be opened in the editor
 
@@ -117,10 +116,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         
         function handleFileSelect(e){
             var files = e.target.files;
-            
-            if (!(_self.checkNumberOfFiles(files)))
-                return false;
-            
             _self.startUpload(files);
         };
         
@@ -248,8 +243,6 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             return false;
         }
         
-        if (!(this.checkNumberOfFiles(files)))
-            return false;
         var filesLength = files.length;
         if (filesLength < 1)
             return false;
@@ -588,27 +581,12 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.existingOverwriteAll = false;
             _self.existingSkipAll = false;
             btnCancelUploads.hide();
-            (davProject.realWebdav || davProject).setAttribute("showhidden", require('ext/settings/settings').model.queryValue("auto/projecttree/@showhidden"));
+            (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
             _self.hideUploadActivityTimeout = setTimeout(function() {
                 mdlUploadActivity.load("<data />");
                 boxUploadActivity.hide();
             }, 5000);
         }
-    },
-    
-    /** Check the number of dropped files exceeds the limit */
-    checkNumberOfFiles: function(files) {
-        if (files.length > MAX_CONCURRENT_FILES) {
-            util.alert(
-                "Could not upload files", "An error occurred while uploading these files",
-                "You can only select " + MAX_CONCURRENT_FILES + " files to upload at the same time. " + 
-                "Please try again with " + MAX_CONCURRENT_FILES + " or fewer files."
-            );
-            
-            return false;
-        }
-        
-        return true;
     },
     
     skip: function() {
@@ -626,8 +604,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var node = file.targetFolder;
         var path     = node.getAttribute("path");
         var filename = file.name;
-        
-        //apf.xmldb.removeNode(file.treeNode);
+        var treeNode = trFiles.getModel().queryNode("//file[@path='" + path + "/" + filename + "']");
+        apf.xmldb.removeNode(treeNode);
         fs.remove(path + "/" + filename, this.upload);
     },
     
@@ -709,7 +687,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         mdlUploadActivity.clear();
         boxUploadActivity.hide();
         
-        (davProject.realWebdav || davProject).setAttribute("showhidden", require('ext/settings/settings').model.queryValue("auto/projecttree/@showhidden"));
+        (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
         apf.xmldb.removeNode(this.currentFile.treeNode);
     },
     
