@@ -154,8 +154,20 @@ module.exports = ext.register("ext/console/console", {
     },
 
     clear: function() {
-        if (txtConsole)
-            txtConsole.clear();
+        var activePg = tabConsole.getPage();
+        if (activePg.childNodes[0].tagName.indexOf("text") === -1)
+            return;
+
+        var outputHtmlEl = activePg.childNodes[0].$ext;
+        var outputBlocks = outputHtmlEl.getElementsByClassName("output_section");
+        for (var o = 0; o < outputBlocks.length; /* empty */) {
+            if (outputBlocks[0].className.indexOf("loaded") === -1) {
+                o++;
+                continue;
+            }
+
+            outputBlocks[0].parentNode.removeChild(outputBlocks[0]);
+        }
 
         return false;
     },
@@ -216,6 +228,12 @@ module.exports = ext.register("ext/console/console", {
             .join("");
 
         var outputId = "console_section" + command_id_tracer;
+        if (this.inited && (typeof useOutput === "undefined" || (typeof useOutput === "boolean" && !useOutput))) {
+            useOutput = {
+                $ext : tabConsole.getPage().childNodes[0].$ext,
+                id : outputId
+            };
+        }
         logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>',
             useOutput, outputId);
 
@@ -248,9 +266,11 @@ module.exports = ext.register("ext/console/console", {
         argv[0] = argv[0].replace(/["'`]/g, "");
         this.cliInputHistory.push(line);
 
-        this.createOutputBlock(this.getPrompt(line));
+        if (line !== "clear" && line !== "newtab")
+            this.createOutputBlock(this.getPrompt(line));
 
-        tabConsole.set("console");
+        if (tabConsole.activepage === "Output")
+            tabConsole.set("console");
 
         var showConsole = true;
         var cmd = argv[0];
@@ -309,6 +329,9 @@ module.exports = ext.register("ext/console/console", {
                     });
                 }
                 else {
+                    if (txtConsolePrompt.visible) {
+                        return;
+                    }
                     data.extra = {
                         command_id : this.command_id_tracer,
                         original_line : data.line
@@ -385,7 +408,7 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         var message = e.message;
-        console.log(message.type, message);
+        //console.log(message.type, message);
         var extra = message.extra;
         if (!extra && message.body)
             extra = message.body.extra;
@@ -509,7 +532,13 @@ module.exports = ext.register("ext/console/console", {
                 _self.help();
             }
         });
-
+        commands.addCommand({
+            name: "newtab",
+            hint: "add a new tab to the CLI",
+            exec: function () {
+                _self.newtab();
+            }
+        });
         commands.addCommand({
             name: "clear",
             hint: "clear all the messages from the console",
@@ -525,7 +554,6 @@ module.exports = ext.register("ext/console/console", {
                 _self.switchconsole();
             }
         });
-
         commands.addCommand({
             name: "toggleconsole",
             bindKey: {mac: "Ctrl-Esc", win: "F6"},
@@ -536,7 +564,6 @@ module.exports = ext.register("ext/console/console", {
                     _self.hide();
             }
         });
-
         commands.addCommand({
             name: "toggleinputbar",
             exec: function () {
@@ -733,6 +760,29 @@ module.exports = ext.register("ext/console/console", {
         logger.appendConsoleFragmentsAfterInit();
         
         this.getRunningServerProcesses();
+    },
+
+    newtab : function() {
+        var c9shell = tabConsole.add("c9shell");
+        c9shell.setAttribute("closebtn", true);
+        var c9shellText = c9shell.appendChild(new apf.text({
+            margin     : "3 0 0 0",
+            anchors    : "0 17 0 0",
+            flex       : "1",
+            scrolldown : "true",
+            focussable : "true",
+            textselect : "true",
+            "class"    : "console_text"
+        }));
+        c9shell.appendChild(new apf.scrollbar({
+            "for"     : c9shellText,
+            right     : "0",
+            top       : "0",
+            bottom    : "0",
+            skin      : "console_scrollbar",
+            width     : "17"
+        }));
+        tabConsole.set(c9shell);
     },
 
     getRunningServerProcesses : function() {
@@ -1005,4 +1055,3 @@ module.exports = ext.register("ext/console/console", {
     }
 });
 });
-

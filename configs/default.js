@@ -155,7 +155,7 @@ module.exports = {
             "./cloud9.run.node",
             "./cloud9.run.node-debug",
             "./cloud9.run.npm",
-            //"./cloud9.run.npmnode",
+            "./cloud9.run.npmnode",
             "./cloud9.log",
             "./cloud9.ide.auth",
             "./cloud9.ide.blame",
