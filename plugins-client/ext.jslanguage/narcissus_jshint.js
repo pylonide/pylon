@@ -8,11 +8,9 @@ define(function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
-var parser = require("ace/narcissus/parser");
-
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/, /Expected an assignment or function call/];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -22,32 +20,11 @@ handler.analysisRequiresParsing = function() {
     return false;
 };
 
-handler.analyze = function(doc) {
+handler.analyze = function(doc, ast, callback) {
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
 
     var markers = [];
-    try {
-        parser.parse(value);
-    }
-    catch (e) {
-        var chunks = e.message.split(":");
-        var message = chunks.pop().trim();
-        var numString = chunks.pop();
-        if(numString) {
-            var lineNumber = parseInt(numString.trim(), 10) - 1;
-            markers = [{
-                pos: {
-                    sl: lineNumber,
-                    el: lineNumber
-                },
-                message: message,
-                type: "error"
-            }];
-        }
-        return markers;
-    }
-    finally {}
     if (this.isFeatureEnabled("jshint")) {
         lint(value, {
             undef: false,
@@ -57,9 +34,16 @@ handler.analyze = function(doc) {
             browser: true,
             node: true
         });
+        
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
+            var type = "warning"
+            var reason = warning.reason;
+            if(reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
+                type = "error";
+            if(reason.indexOf("Missing semicolon") !== -1)
+                type = "info";
             for (var i = 0; i < disabledJSHintWarnings.length; i++)
                 if(disabledJSHintWarnings[i].test(warning.reason))
                     return;
@@ -68,12 +52,13 @@ handler.analyze = function(doc) {
                     sl: warning.line-1,
                     sc: warning.column-1
                 },
-                type: 'warning',
+                type: type,
+                level: type,
                 message: warning.reason
             });
         });
     }
-    return markers;
+    callback(markers);
 };
     
 });
