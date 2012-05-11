@@ -79,20 +79,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             ]);
         });
         
-      /*  ide.addEventListener("c9searchopen", function(e){
-            _self.searchPage = e.doc.$page;
-            _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
-            _self.tabacedoc = _self.searchPage.$doc.acedoc;
-        });
-
         ide.addEventListener("c9searchclose", function(e){
             _self.searchPage = null;
         });
-
-        tabEditors.addEventListener("reorder", function(e) {
-            _self.searchPage = e.page;
-            _self.tabacedoc = _self.searchPage.$doc.acedoc;
-        });*/
         
         commands.addCommand({
             name: "hidesearchinfiles",
@@ -461,8 +450,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         node.setAttribute("name", "Search Results");
         node.setAttribute("path", searchFilePath);
         node.setAttribute("customtype", util.getContentType(searchContentType));
-        node.setAttribute("changed", "0");
-        node.setAttribute("newfile", "1");
+        node.setAttribute("tooltip", "Search Results");
+        //node.setAttribute("newfile", "1");
         node.setAttribute("saving", "1");
         
         var doc = ide.createDocument(node);
@@ -473,7 +462,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (chkSFConsole.checked) {
             if (_self.consoleacedoc !== undefined && _self.consoleacedoc.$lines !== undefined && _self.consoleacedoc.$lines.length > 0) { // append to tab editor if it exists
                 _self.appendLines(_self.consoleacedoc, messageHeader);
-                _self.codeEditor.$editor.gotoLine(_self.consoleacedoc.getLength());
+                _self.codeEditor.$editor.gotoLine(_self.consoleacedoc.getLength() + 2);
             }
             else {
                 _self.codeEditor.$editor.setSession(new EditSession(new ProxyDocument(new Document(messageHeader)), "ace/mode/c9search"));
@@ -519,7 +508,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             else 
                 _self.appendLines(_self.consoleacedoc, resultingData);
 
-            if (firstStream && !q) { // the end
+            if (firstStream && !q) {
+                if (!chkSFConsole.checked) {
+                    node.setAttribute("saving", "0");
+                    node.setAttribute("changed", "0");
+                }
                 return clearInterval(timer);
             }
         }, 200);
@@ -573,15 +566,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (content.length > 0)
             doc.insertLines(currLength, contentArray);
         
-        if (countJSON !== undefined) {
+        if (countJSON !== undefined)
             doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
-
-            if (!chkSFConsole.checked) {
-                var node = this.searchPage.$doc.getNode();
-                node.setAttribute("saving", "0");
-                node.setAttribute("changed", "0"); 
-            }
-        }
     },
     
     messageHeader : function(path, options) {

@@ -120,7 +120,12 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             
             if (!self.trFiles)
                 return;
-
+                
+            if (node.getAttribute("customtype") == util.getContentType("c9search")) {
+                apf.xmldb.setAttribute(node, "changed", 0);
+                return;
+            }
+            
             var path = (e.path || node.getAttribute("path")).replace(/"/g, "&quot;");
 
             var fNode = model.queryNode('//node()[@path="' + path + '"]');
