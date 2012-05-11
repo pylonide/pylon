@@ -187,6 +187,9 @@ define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, ex
             return !x.lastIndex;
         }();
 
+    if (compliantLastIndexIncrement && compliantExecNpcg)
+        return;
+
     //---------------------------------
     //  Overriden native methods
     //---------------------------------
@@ -9884,7 +9887,7 @@ var GLOBALS = {
     "this"                   : true,
     "arguments"              : true,
     self                     : true,
-    Infinity                 : true,
+    "Infinity"               : true,
     onmessage                : true,
     postMessage              : true,
     importScripts            : true,

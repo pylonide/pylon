@@ -278,6 +278,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         cbs.forEach(function(cb){
             cb.addEventListener("click", function(){
                 _self.updateCounter(null, true);
+                _self.execFind();
             });
             tooltip.add(cb.$ext, {
                 message : cb.label,

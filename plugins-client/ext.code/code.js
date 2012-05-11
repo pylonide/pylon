@@ -795,10 +795,8 @@ module.exports = ext.register("ext/code/code", {
         this.amlEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
             var node = tabEditors.getPage().$doc.getNode();
             
-            if (node.getAttribute("customtype") == util.getContentType("c9search")) {
+            if (node.getAttribute("customtype") == util.getContentType("c9search"))
                 require("ext/searchinfiles/searchinfiles").launchFileFromSearch(_self.amlEditor.$editor);
-            }
-            
         });
         
         // preload common language modes

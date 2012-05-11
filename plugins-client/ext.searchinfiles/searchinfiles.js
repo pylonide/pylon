@@ -79,8 +79,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             ]);
         });
         
-        ide.addEventListener("c9searchopen", function(e){
+      /*  ide.addEventListener("c9searchopen", function(e){
             _self.searchPage = e.doc.$page;
+            _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
+            _self.tabacedoc = _self.searchPage.$doc.acedoc;
         });
 
         ide.addEventListener("c9searchclose", function(e){
@@ -89,7 +91,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
         tabEditors.addEventListener("reorder", function(e) {
             _self.searchPage = e.page;
-        });
+            _self.tabacedoc = _self.searchPage.$doc.acedoc;
+        });*/
         
         commands.addCommand({
             name: "hidesearchinfiles",
@@ -356,13 +359,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var _self = this;
 
         return {
-            query: txtSFFind.value,
-            needle: txtSFFind.value,
-            pattern: txtSFPatterns.value,
+            query: txtSFFind.getValue(),
+            needle: txtSFFind.getValue(),
+            pattern: txtSFPatterns.getValue(),
             casesensitive: chkSFMatchCase.checked ? "1" : "0",
             regexp: chkSFRegEx.checked ? "1" : "0",
             replaceAll: _self.replaceAll ? "true" : "false",
-            replacement: txtSFReplace.value,
+            replacement: txtSFReplace.getValue(),
             wholeword: chkSFWholeWords.checked
         };
     },
@@ -446,7 +449,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         }
 
         var options = this.getOptions();
-        var query = txtSFFind.value;
+        var query = txtSFFind.getValue();
         options.query = query.replace(/\n/g, "\\n");
 
         // even if there's text in the "replace" field, don't send it when not replacing
@@ -458,7 +461,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         node.setAttribute("name", "Search Results");
         node.setAttribute("path", searchFilePath);
         node.setAttribute("customtype", util.getContentType(searchContentType));
-        node.setAttribute("changed", "1");
+        node.setAttribute("changed", "0");
         node.setAttribute("newfile", "1");
         node.setAttribute("saving", "1");
         
@@ -468,48 +471,55 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var messageHeader = this.messageHeader(path, options);
         
         if (chkSFConsole.checked) {
-            if (_self.acedoc !== undefined && _self.acedoc.$lines !== undefined && _self.acedoc.$lines.length > 0) { // append to tab editor if it exists
-                _self.appendLines(_self.codeEditor.$editor, _self.acedoc, messageHeader);
-                _self.codeEditor.$editor.gotoLine(_self.acedoc.getLength());
+            if (_self.consoleacedoc !== undefined && _self.consoleacedoc.$lines !== undefined && _self.consoleacedoc.$lines.length > 0) { // append to tab editor if it exists
+                _self.appendLines(_self.consoleacedoc, messageHeader);
+                _self.codeEditor.$editor.gotoLine(_self.consoleacedoc.getLength());
             }
             else {
                 _self.codeEditor.$editor.setSession(new EditSession(new ProxyDocument(new Document(messageHeader)), "ace/mode/c9search"));
-                _self.acedoc = _self.codeEditor.$editor.session.getDocument().doc; // store a reference to the doc
+                _self.consoleacedoc = _self.codeEditor.$editor.session.getDocument().doc; // store a reference to the doc
+                
+                // set tab editor commands here
+                _self.codeEditor.$editor.commands._defaultHandlers = commands._defaultHandlers;
+                _self.codeEditor.$editor.commands.commands = commands.commands;
+                _self.codeEditor.$editor.commands.commmandKeyBinding = commands.commmandKeyBinding;
+                _self.codeEditor.$editor.getSession().setUndoManager(new apf.actiontracker());
             }
         }
         else {
             if (this.searchPage === null) { // the results are not open, create a new page
                 doc.cachedValue = messageHeader;
                 ide.dispatchEvent("openfile", {doc: doc, node: node});
+                
+                _self.searchPage = tabEditors.getPage();
+                _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
+                _self.tabacedoc = _self.searchPage.$doc.acedoc;
             }
             else {
-                this.appendLines(editors.currentEditor.amlEditor.$editor, _self.searchPage.$doc.acedoc, messageHeader);
-                editors.showFile(searchFilePath);
+                this.appendLines(_self.tabacedoc, messageHeader);
+                tabEditors.set(tabEditors.getPages().indexOf(_self.searchPage) + 1);
                 
-               _self.searchPage = this.searchPage;
-               // this.searchPage.$editor.ceEditor.$editor.gotoLine(this.searchPage.$doc.acedoc.getLength());
+                _self.searcheditor.gotoLine(_self.tabacedoc.getLength() + 2);
             } 
         }
         
         var resultingData = "";
-        
-        var ranOnce = false;
-        var id = davProject.report(path, "codesearch", options, function(data, state, extra) {
-            ranOnce = true;
+        var firstStream = false;
+        var id = davProject.report(path, "codesearch", options, function(data, state, extra) {         
             resultingData = data;
+            firstStream = true;
         });
         
         // Start streaming
-        var timer = setInterval(function(){ 
+        var timer = setInterval(function() {  
             var q = davProject.realWebdav.queue[id];
             
             if (!chkSFConsole.checked)
-                _self.appendLines(editors.currentEditor.amlEditor.$editor, _self.searchPage.$doc.acedoc, resultingData);
+                _self.appendLines(_self.tabacedoc, resultingData);
             else 
-                _self.appendLines(_self.codeEditor.$editor, _self.acedoc, resultingData);
-                
-            if (ranOnce && !q) { // the end
-                _self.replaceAll = false; // reset
+                _self.appendLines(_self.consoleacedoc, resultingData);
+
+            if (firstStream && !q) { // the end
                 return clearInterval(timer);
             }
         }, 200);
@@ -519,7 +529,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
-
+    
     launchFileFromSearch : function(editor) {
         var session = editor.getSession();
         var currRow = editor.getCursorPosition().row;
@@ -546,7 +556,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             editors.showFile(ide.davPrefix + "/" + path, clickedLine[0], 0, clickedLine[1]);
     },
 
-    appendLines : function(editor, doc, content) {
+    appendLines : function(doc, content) {
         var currLength = doc.getLength();
         
         var contentArray = content.split("\n");
@@ -569,7 +579,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             if (!chkSFConsole.checked) {
                 var node = this.searchPage.$doc.getNode();
                 node.setAttribute("saving", "0");
-                node.setAttribute("changed", "0");
+                node.setAttribute("changed", "0"); 
             }
         }
     },
@@ -604,11 +614,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     messageFooter : function(countJSON) {
         var message = "Found " + countJSON.count;
         
-        message += (countJSON.count > 1 || countJSON.count > 0) ? " matches" : " match";
-        
+        message += (countJSON.count > 1 || countJSON.count == 0) ? " matches" : " match";
         message += " in " + countJSON.filecount;
-         
-        message += (countJSON.filecount > 1 || countJSON.filecount > 0) ? " files" : " file";
+        message += (countJSON.filecount > 1 || countJSON.filecount == 0) ? " files" : " file";
             
         return message;
     },

@@ -8,15 +8,15 @@
                     <a:checkbox id="chkSFMatchCase" value="[editors/code/filesearch/@matchcase]" class="chkMatchCase" label="Match Case" skin="grouped_checkbox" width="28" />
                     <a:checkbox id="chkSFWholeWords" value="[editors/code/filesearch/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
                 </a:hbox>
+                <a:hbox class="grouped_checkbox_holder" align="start">
+                    <a:checkbox id="chkSFConsole" value="[editors/code/filesearch/@console]" class="chkConsole" label="Show in Console" skin="grouped_checkbox" width="28" />
+                </a:hbox>
                 <a:textbox id="txtSFFind" tabindex="1000" flex="1" skin="searchbox" initial-message="Find in Files" focusselect="true" />
                 <a:button id="btnSFFind" focussable="false" skin="blackbutton" width="80"
                   onclick="require('ext/searchinfiles/searchinfiles').execFind()">Find</a:button>
             </a:hbox>
-            <a:hbox padding="5" align="start">
-                <a:hbox class="grouped_checkbox_holder" align="start">
-                    <a:checkbox id="chkSFConsole" value="[editors/code/filesearch/@console]" class="chkConsole" label="Show in Console" skin="grouped_checkbox" width="28" />
-                </a:hbox>
-                <a:textbox id="txtSFPatterns" tabindex="1001" skin="searchbox" flex="1" initial-message="*.*" focusselect="true" margin="0 0 0 56"/>
+            <a:hbox padding="5" align="start" height="27" edge="0 0 0 126">
+                <a:textbox id="txtSFPatterns" tabindex="1001" skin="searchbox" flex="1" initial-message="*.*" focusselect="true"/>
                 <a:radiobutton margin="3 0 0 0"
                   group  = "grpSFScope"
                   skin   = "radio_black"
@@ -29,7 +29,7 @@
                   label  = "Selection"
                   selected = "true" />
             </a:hbox>
-            <a:hbox id="test" padding="5" align="start" edge="0 0 0 91">
+            <a:hbox padding="5" align="start" edge="0 0 0 126">
                 <a:textbox id="txtSFReplace" tabindex="1002" skin="searchbox" flex="1" initial-message="Replace With" focusselect="true"/>
                 <a:button id="btnSFReplaceAll" focussable="false" skin="blackbutton" width="80"
                   onclick="require('ext/searchinfiles/searchinfiles').replace()">Replace</a:button>
