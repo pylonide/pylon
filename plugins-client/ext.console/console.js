@@ -787,8 +787,9 @@ module.exports = ext.register("ext/console/console", {
         this.$collapsedHeight = this.collapsedHeight;
         
         cliBox.show();
-        
-        if (!immediate) {
+
+        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        if (!immediate && animOn) {
             cliBox.$ext.style.height = "0px";
             cliBox.$ext.scrollTop = 0;
             setTimeout(function(){
@@ -845,7 +846,8 @@ module.exports = ext.register("ext/console/console", {
 
         this.$collapsedHeight = 0;
         
-        if (!immediate) {
+        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        if (!immediate && animOn) {
             if (this.hidden) {
                 Firmin.animate(winDbgConsole.$ext, {
                     height: "0px",
@@ -859,6 +861,7 @@ module.exports = ext.register("ext/console/console", {
                 timingFunction: "ease-in-out"
             }, 0.3, function(){
                 cliBox.hide();
+                cliBox.$ext.style.height = "";
                 apf.layout.forceResize();
                 clearTimeout(timer);
             });

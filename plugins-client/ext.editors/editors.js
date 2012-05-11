@@ -125,6 +125,8 @@ module.exports = ext.register("ext/editors/editors", {
                     skin    : "editor_tab",
                     style   : "height : 100%",
                     buttons : "close,scale,order",
+                    animate : "[{require('core/settings').model}::general/@animateui]",
+                    anims   : "{apf.isTrue(this.animate) ? 'add|remove|sync' : ''}",
                     overactivetab  : true,
                     onfocus        : function(e){
                         _self.switchfocus(e);
