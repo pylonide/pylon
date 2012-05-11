@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/openfiles/openfiles.xml");
 var commands = require("ext/commands/commands");
@@ -67,6 +68,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             if (!e.doc.$page)
                 return;
             
+            if (node.getAttribute("customtype") == util.getContentType("c9search"))
+                ide.dispatchEvent("c9searchopen", e);
+                
             var pgModel = e.doc.$page.$model;
             pgModel.addEventListener("update", 
               pgModel.$lstOpenFilesListener = function(){
@@ -94,6 +98,9 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             if (!node || !node.parentNode || node.beingRemoved)
                 return;
             
+            if (node.getAttribute("customtype") == util.getContentType("c9search"))
+                ide.dispatchEvent("c9searchclose", e);
+                
             e.page.$model.removeEventListener("update", 
                 e.page.$model.$lstOpenFilesListener);
             

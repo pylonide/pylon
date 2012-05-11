@@ -15,7 +15,6 @@ var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
 var menus = require("ext/menus/menus");
-var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
 var commands = require("ext/commands/commands");
 var tooltip = require("ext/tooltip/tooltip");
@@ -39,14 +38,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     replaceAll : false,
     markup   : markup,
     skin     : {
-        id   : "searchinfiles",
-        data : skin,
-        "media-path" : ide.staticPrefix + "/ext/searchinfiles/images/"
+        id   : "searchinfiles"
     },
     pageTitle: "Search Results",
     pageID   : "pgSFResults",
 
     nodes    : [],
+    
+    searchPage : null,
 
     hook : function(){
         var _self = this;
@@ -76,8 +75,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 ["regex", "false"],
                 ["matchcase", "false"],
                 ["wholeword", "false"],
-                ["console", "false"]
+                ["console", "true"]
             ]);
+        });
+        
+        ide.addEventListener("c9searchopen", function(e){
+            _self.searchPage = e.doc.$page;
+        });
+
+        ide.addEventListener("c9searchclose", function(e){
+            _self.searchPage = null;
+        });
+
+        tabEditors.addEventListener("reorder", function(e) {
+            _self.searchPage = e.page;
         });
         
         commands.addCommand({
@@ -273,7 +284,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 var range = sel.getRange();
                 var value = doc.getTextRange(range);
     
-                if (value) {p
+                if (value) {
                     txtFind.setValue(value);
                     
                     delete txtFind.$undo;
@@ -301,7 +312,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 
                 setTimeout(function(){
                     apf.layout.forceResize();
-                }, 50);
+                }, 200);
             });
         }
         else if (winSearchInFiles.visible) {
@@ -397,7 +408,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
                     highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
                     autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
-                    fadefoldwidgets   : "[{require('core/settings').model}::editors/code/@fadefoldwidgets]"
+                    fadefoldwidgets   : "false"
                 }));
                 
                 this.codeEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
@@ -415,7 +426,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
         }
         
-        //Determine the scope
+        // Determine the scope of the search
         var path;
         if (grpSFScope.value == "projects") {
             path = ide.davPrefix;
@@ -442,80 +453,66 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (!this.replaceAll)
             options.replacement = ""; 
 
-        davProject.report(path, "codesearch", options, function(data, state, extra){
-            _self.replaceAll = false; // reset
-
-            var array = data.replace(/^\./gm, "").split("\n");
-            
-            var metaInfo = JSON.parse(array.shift());
-            var countInfo = JSON.parse(array.shift());
-            
-            var node = apf.getXml("<file />");
-            node.setAttribute("name", "Search Results");
-            node.setAttribute("path", searchFilePath);
-            node.setAttribute("customtype", util.getContentType(searchContentType));
-            node.setAttribute("changed", "0");
-            node.setAttribute("newfile", "0");
-                    
-            var doc = ide.createDocument(node);
-            
-            if (state !== apf.SUCCESS || countInfo.count === undefined || countInfo.count == 0) {
-                doc.cachedValue = "No matches for '" + metaInfo.query + "' " + metaInfo.optionsDesc;
+        // prepare new Ace document to handle search results
+        var node = apf.getXml("<file />");
+        node.setAttribute("name", "Search Results");
+        node.setAttribute("path", searchFilePath);
+        node.setAttribute("customtype", util.getContentType(searchContentType));
+        node.setAttribute("changed", "1");
+        node.setAttribute("newfile", "1");
+        node.setAttribute("saving", "1");
+        
+        var doc = ide.createDocument(node);
+        
+        // arrange beginning message
+        var messageHeader = this.messageHeader(path, options);
+        
+        if (chkSFConsole.checked) {
+            if (_self.acedoc !== undefined && _self.acedoc.$lines !== undefined && _self.acedoc.$lines.length > 0) { // append to tab editor if it exists
+                _self.appendLines(_self.codeEditor.$editor, _self.acedoc, messageHeader);
+                _self.codeEditor.$editor.gotoLine(_self.acedoc.getLength());
             }
             else {
-                var message = countInfo.count;
-                
-                if (countInfo.count > 1)
-                    message += " matches ";
-                else
-                    message += " match ";
-                
-                message += "for '" + metaInfo.query + "' in " + countInfo.filecount;
-                
-                if (countInfo.count > 1)
-                    message += " files";
-                else
-                    message += " file";  
-                
-                if (metaInfo.replacement.length > 0)
-                    message += ", replaced as '" + metaInfo.replacement + "'";
-                    
-                message += " " + metaInfo.optionsDesc;
-                
-                doc.cachedValue = message + "\n" + data.split("\n").slice(2).join("\n");
+                _self.codeEditor.$editor.setSession(new EditSession(new ProxyDocument(new Document(messageHeader)), "ace/mode/c9search"));
+                _self.acedoc = _self.codeEditor.$editor.session.getDocument().doc; // store a reference to the doc
             }
-            
-            if (chkSFConsole.checked) {
-                _self.codeEditor.$editor.setSession(new EditSession(new ProxyDocument(new Document(doc.cachedValue)), _self.codeEditor.getSession().getMode()));
+        }
+        else {
+            if (this.searchPage === null) { // the results are not open, create a new page
+                doc.cachedValue = messageHeader;
+                ide.dispatchEvent("openfile", {doc: doc, node: node});
             }
             else {
-                var page, p = 0, pages = tabEditors.getPages();
-
-                for (; p < pages.length; p++) {
-                    var node = pages[p].$doc.getNode();
-                    
-                    if (node.getAttribute("customtype") == util.getContentType("c9search")) {
-                        page = pages[p];
-                        break;
-                    }
-                }
+                this.appendLines(editors.currentEditor.amlEditor.$editor, _self.searchPage.$doc.acedoc, messageHeader);
+                editors.showFile(searchFilePath);
                 
-                if (p == pages.length) { // the results are not open, create a new one
-                    ide.dispatchEvent("openfile", {doc: doc, node: node});
-                }
-                else {
-                    var currLength = page.$doc.acedoc.getLength();
-                    
-                    page.$doc.acedoc.insertLines(currLength, ("\n" + doc.cachedValue).split("\n"));
-                    
-                    if (page.$active) // current page is results? then move viewport to the last line
-                        editors.currentEditor.amlEditor.$editor.gotoLine(currLength);
-                    else
-                        editors.showFile(searchFilePath, currLength, 0, options.query);
-                }
-                    
-            }
+               _self.searchPage = this.searchPage;
+               // this.searchPage.$editor.ceEditor.$editor.gotoLine(this.searchPage.$doc.acedoc.getLength());
+            } 
+        }
+        
+        var resultingData = "";
+        
+        var ranOnce = false;
+        var id = davProject.report(path, "codesearch", options, function(data, state, extra) {
+            ranOnce = true;
+            resultingData = data;
         });
+        
+        // Start streaming
+        var timer = setInterval(function(){ 
+            var q = davProject.realWebdav.queue[id];
+            
+            if (!chkSFConsole.checked)
+                _self.appendLines(editors.currentEditor.amlEditor.$editor, _self.searchPage.$doc.acedoc, resultingData);
+            else 
+                _self.appendLines(_self.codeEditor.$editor, _self.acedoc, resultingData);
+                
+            if (ranOnce && !q) { // the end
+                _self.replaceAll = false; // reset
+                return clearInterval(timer);
+            }
+        }, 200);
         
         this.saveHistory(options.query, "searchfiles");
         this.position = 0;
@@ -548,6 +545,74 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (path !== undefined && path.length > 0)
             editors.showFile(ide.davPrefix + "/" + path, clickedLine[0], 0, clickedLine[1]);
     },
+
+    appendLines : function(editor, doc, content) {
+        var currLength = doc.getLength();
+        
+        var contentArray = content.split("\n");
+        var contentLength = contentArray.length;
+        
+        if (contentLength > 0 && contentArray[contentLength - 1].indexOf("Results:") == 0) {
+            var count = contentArray.pop();
+            count = count.substring(count.indexOf(" ") + 1);
+            
+            var countJSON = JSON.parse(count);
+            var finalMessage = this.messageFooter(countJSON);
+        }
+        
+        if (content.length > 0)
+            doc.insertLines(currLength, contentArray);
+        
+        if (countJSON !== undefined) {
+            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
+
+            if (!chkSFConsole.checked) {
+                var node = this.searchPage.$doc.getNode();
+                node.setAttribute("saving", "0");
+                node.setAttribute("changed", "0");
+            }
+        }
+    },
+    
+    messageHeader : function(path, options) {
+        var optionsDesc = [];
+        
+        if (options.regexp === true) {
+            optionsDesc.push("regexp");
+        }
+        if (options.casesensitive === true) {
+            optionsDesc.push("case sensitive");
+        }
+        if (options.wholeword === true) {
+            optionsDesc.push("whole word");
+        }
+        
+        if (optionsDesc.length > 0) {
+            optionsDesc = "(" + optionsDesc.join(", ") + ")";
+        }
+        else {
+            optionsDesc = "";
+        }
+        
+        var replacement = "";
+        if (options.replacement.length > 0)
+            replacement = "', replaced as '" + options.replacement ;
+        
+        return "Searching for '" + options.query + replacement + "' in " + path + optionsDesc + "\n";    
+    },
+    
+    messageFooter : function(countJSON) {
+        var message = "Found " + countJSON.count;
+        
+        message += (countJSON.count > 1 || countJSON.count > 0) ? " matches" : " match";
+        
+        message += " in " + countJSON.filecount;
+         
+        message += (countJSON.filecount > 1 || countJSON.filecount > 0) ? " files" : " file";
+            
+        return message;
+    },
+    
     
     enable : function(){
         this.nodes.each(function(item){

@@ -3325,12 +3325,25 @@
           z-index : 10001 !important;
         }
         
+        /* These nocorner classes apply to Search Results tab */
         .nocorner .ace_gutter {
-            opacity: 0.8;
+            opacity: rgba(200, 200, 200, 0.3);
         }
         
-        .nocorner .ace_editor {
+        .nocorner.ace_editor {
             margin-top: 3px;
+        }
+        
+        .nocorner ace_fold-fold-widgets {
+            opacity: 1;
+        }
+        
+        .nocorner .ace_corner {
+            opacity : 0;
+        }
+        
+        .nocorner.ace-monokai .ace_scroller {
+            background: transparent;
         }
         
         .ace_corner {
@@ -3347,16 +3360,8 @@
             z-index : 10000;
         }
         
-        .nocorner .ace_corner {
-            opacity : 0;
-        }
-        
         .ace_scroller.horscroll {
             box-shadow: 17px 0px 16px -16px rgba(0,0,0,0.4) inset;
-        }
-
-        .nocorner .ace_scroller {
-            background : transparent
         }
         
         .ace_editor .ace_printMargin {
