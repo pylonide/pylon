@@ -38,4 +38,5 @@ function boot() {
         }
     }
     apf.ProcParser.parse(Fs.readFileSync(project, "utf8"));
+    apf.unload();
 }
