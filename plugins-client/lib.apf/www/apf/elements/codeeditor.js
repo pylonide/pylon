@@ -179,6 +179,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             });
         }
         _self.syntax = doc.syntax;
+        _self.dispatchEvent("prop.syntax", {
+            value : doc.syntax
+        });
 
         doc.setTabSize(parseInt(_self.tabsize, 10));
         doc.setUseSoftTabs(_self.softtabs);
