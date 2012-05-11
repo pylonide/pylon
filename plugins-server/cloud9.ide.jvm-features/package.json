@@ -1,0 +1,14 @@
+{
+    "name": "jvm-features",
+    "description": "Provides language features for JVM-based languages",
+    "version": "0.0.1",
+
+    "main": "./jvm-features.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide"
+        ]
+    }
+}

@@ -6,7 +6,7 @@
  */
 "use strict";
 
-var Path = require("path"),
+var Path = require("path");
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 var netutil = require("../cloud9.core/netutil");

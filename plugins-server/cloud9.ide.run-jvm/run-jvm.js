@@ -32,7 +32,7 @@ var JVMRuntimePlugin = function(ide, workspace) {
     this.processCount = 0;
 };
 
-sys.inherits(JVMRuntimePlugin, Plugin);
+util.inherits(JVMRuntimePlugin, Plugin);
 
 (function() {
 

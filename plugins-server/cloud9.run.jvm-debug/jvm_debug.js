@@ -3,7 +3,7 @@
 var util = require("util");
 var netutil = require("../cloud9.core/netutil");
 var JvmRunner = require("../cloud9.run.jvm/jvm").Runner;
-var JavaDebugProxy = require("./javadebugproxy"),
+var JavaDebugProxy = require("./javadebugproxy");
 
 var JAVA_DEBUG_PORT = 6000;
 
