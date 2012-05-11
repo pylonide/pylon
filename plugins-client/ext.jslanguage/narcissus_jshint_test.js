@@ -37,6 +37,19 @@ module.exports = {
         var worker = new LanguageWorker(emitter);
         worker.register("ext/jslanguage/narcissus_jshint");
         worker.switchFile("test.js", "javascript", "console.log(1);\nhello()");
+    },
+    
+    "test JSHint output filtering" : function(next) {
+        var emitter = Object.create(EventEmitter);
+        emitter.emit = emitter._dispatchEvent;
+        emitter.on("markers", function(markers) {
+            console.log(markers);
+            assert.equal(markers.length, 0);
+            next();
+        });
+        var worker = new LanguageWorker(emitter);
+        worker.register("ext/jslanguage/narcissus_jshint");
+        worker.switchFile("no-errors.js", "javascript", "var foo = function() {};\nfoo && foo();");
     }
 };
 
