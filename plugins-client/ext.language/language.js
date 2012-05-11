@@ -154,6 +154,10 @@ module.exports = ext.register("ext/language/language", {
         return isContinuousCompletionEnabled;
     },
     
+    setContinuousCompletion: function() {
+        isContinuousCompletionEnabled = false;
+    },
+    
     updateSettings: function() {
         // Currently no code editor active
         if (!editors.currentEditor || !editors.currentEditor.amlEditor || !tabEditors.getPage())
