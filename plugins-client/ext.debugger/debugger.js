@@ -35,7 +35,7 @@ module.exports = ext.register("ext/debugger/debugger", {
 
     hook : function(){
         var _self = this;
-        
+
         commands.addCommand({
             name: "resume",
             hint: "resume the current paused process",
@@ -433,7 +433,7 @@ module.exports = ext.register("ext/debugger/debugger", {
     destroy : function(){
         commands.removeCommandsByName(
             ["resume", "stepinto", "stepover", "stepout"]);
-        
+
         this.nodes.each(function(item){
             item.destroy(true, true);
             dock.unregisterPage(item);
