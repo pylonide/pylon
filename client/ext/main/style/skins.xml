@@ -4993,7 +4993,7 @@
     <a:style><![CDATA[
         .menu-bk {
             display  : none;
-
+            
             /* fallback (Older Opera) */
             background: #272727;
             /* Mozilla: */
@@ -5007,10 +5007,10 @@
             -webkit-box-shadow    : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.21);
             box-shadow            : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
             border: 1px solid #000000;
-
+            
             margin-left: 5px;
-
-
+            
+            
             margin: -1px 0 0 0;
             padding: 3px 0 3px 0;
             z-index: 10000;
@@ -5023,7 +5023,7 @@
             color         : #f1f1f1;
             cursor:default;
         }
-
+        
         .menu-bk.moveleft {
             margin-left: 6px;
         }
@@ -5032,16 +5032,16 @@
             margin-top: -10px;
             margin-left: 6px;
         }
-
+        
         .menu-bk.downward {
             margin-left: 6px;
             margin-top: 30px;
         }
-
+        
         .menu-bk.moveright {
             margin-left: -8px;
         }
-
+        
         .menu-bk .arrow {
             position : absolute;
             width: 24px;
@@ -5054,20 +5054,12 @@
         .menu-bk.moveright .arrow {
             left: 9px;
         }
-
+        
         .menu-bk.upward .arrow {
             top: auto;
             bottom: -14px;
             width: 20px;
             background-position: -22px -45px;
-        }
-
-        .menu-bk.mnuSbPrefs.upward .arrow, .menu-bk.mnuSbTools.upward .arrow {
-            right: 5px;
-        }
-
-        .menu-bk.mnuSbPrefs.downward .arrow, .menu-bk.mnuSbTools.downward .arrow {
-            right: 4px;
         }
 
         .menu-bk>div.menu_item{
@@ -5163,6 +5155,22 @@
             background-image: url(images/check.gif);
             background-repeat: no-repeat;
             background-position: 0 -16px;
+        }
+        
+        .menu-bk.c9-tooltip {
+            padding : 7px 10px 10px 12px;
+            line-height : 17px;
+            width : 250px;
+            color : #f1f1f1;
+        }
+        
+        .menu-bk.c9-tooltip a, .menu-bk.c9-tooltip span{
+            color: #91c478;
+        }
+        
+        .menu-bk.c9-tooltip .arrow{
+            left : 50%;
+            margin-left : -12px;
         }
     ]]></a:style>
 
