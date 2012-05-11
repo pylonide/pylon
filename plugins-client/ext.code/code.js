@@ -319,8 +319,8 @@ module.exports = ext.register("ext/code/code", {
                 if (this.$page.id != this.$page.parentNode.activepage)
                     return;
 
-                ceEditor.setProperty("syntax", syntax);
-                ceEditor.setProperty("value", doc.acesession);
+                ceEditor.setAttribute("syntax", syntax);
+                ceEditor.setAttribute("value", doc.acesession);
                 // force tokenize first visible rows
                 var rowCount = Math.min(50, doc.acesession.getLength());
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
@@ -664,7 +664,7 @@ module.exports = ext.register("ext/code/code", {
                         }
 
                         if (self.ceEditor)
-                            ceEditor.setProperty("syntax", _self.getSyntax(file));
+                            ceEditor.setAttribute("syntax", _self.getSyntax(file));
                     }
                 }
             }), 300000),
