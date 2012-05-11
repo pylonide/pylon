@@ -4,12 +4,7 @@
             <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime" buttons="">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
                     <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"
-                      onclick  = "
-                        if (tabConsole.activepagenr == 0)
-                            txtConsole.clear();
-                        else if (tabConsole.activepagenr == 1)
-                            txtOutput.clear();
-                      "/>
+                      onclick  = "require('ext/console/console').clear()" />
                     <a:button id="btnConsoleSettings" skin="btn_icon_only"
                       icon    = "console_settings.png"
                       margin  = "2 4 0 0"

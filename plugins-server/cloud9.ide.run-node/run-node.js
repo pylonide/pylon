@@ -101,7 +101,6 @@ util.inherits(NodeRuntimePlugin, Plugin);
             }, self.channel, function(err, pid, child) {
                 if (err)
                     self.error(err, 1, message, client);
-                console.log(child.child.stdin);
             });
         });
     };

@@ -254,10 +254,12 @@ module.exports = ext = {
         if (!command || !command.exec)
             return;
 
-        if (command.msg)
-            c9console.write([command.msg], data);
-        else
-            c9console.write('"' + cmd + '" command executed', data);
+        if (cmd !== "clear" && cmd !== "newtab") {
+            if (command.msg)
+                c9console.write([command.msg], data);
+            else
+                c9console.write('"' + cmd + '" command executed', data);
+        }
 
         var res = commands.exec(cmd, null, data);
         return res === undefined ? false : res;

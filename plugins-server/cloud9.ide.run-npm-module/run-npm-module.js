@@ -57,7 +57,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
         var cmd = (message.command || "").toLowerCase();
         switch(cmd) {
             case "npm-module-stdin":
-                message.line = message.line + "\n";
+                message.line = message.line + '\n';
                 this.child.child.stdin.write(message.line);
                 return true;
         }
@@ -66,31 +66,27 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
     this.$run = function(file, args, env, version, message, client) {
         var self = this;
-        this.workspace.getExt("state").getState(function(err, state) {
+
+        this.pm.spawn("run-npm", {
+            file: file,
+            args: args,
+            env: env,
+            nodeVersion: version,
+            extra: message.extra
+        }, this.channel, function(err, pid, child) {
             if (err)
                 return self.error(err, 1, message, client);
 
-            if (state.processRunning)
-                return self.error("Child process already running!", 1, message);
-
-            self.pm.spawn("run-npm", {
-                file: file,
-                args: args,
-                env: env,
-                nodeVersion: version,
-                extra: message.extra
-            }, self.channel, function(err, pid, child) {
-                if (err)
-                    return self.error(err, 1, message, client);
-
-                self.child = child;
-            });
+            self.child = child;
         });
     };
 
     this.searchAndRunModuleHook = function(message, cb) {
         if (this.child && this.child.pid)
             return cb("NPM module already running.");
+
+        if (message.command === "node")
+            return this.$run(null, [], message.env || {},  message.version, message, null);
 
         var self = this;
         this.searchForModuleHook(message.command, function(found, filePath) {

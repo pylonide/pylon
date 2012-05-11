@@ -83,7 +83,7 @@
                       flex="1"
                       realtime="true"
                       value="[@name]"
-                      disabled="{!lstRunCfg.selected || [{lstRunCfg.selected}::@curfile]}"/>
+                    />
                   </a:hbox>
                   <a:hbox>
                     <a:label width="100" skin="black_label">File Path</a:label>
