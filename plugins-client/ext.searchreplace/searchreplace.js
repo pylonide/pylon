@@ -721,7 +721,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var options = this.getOptions();
         options.needle = txtFind.getValue();
         options.scope = search.Search.SELECTION;
-        this.$editor.replace(txtReplace.getValue() || "", options);
+        
+        var lut = {"n": "\n", "t": "\t", "r": "\r"};
+        var strReplace = (txtReplace.getValue() || "")
+            .replace(/(\\\\)+|\\([ntr])/g, function(m, m1, m2) { 
+                return m1 || lut[m2];
+            });
+        
+        this.$editor.replace(strReplace, options);
         //this.$editor.find(this.$crtSearch, options);
         this.findNext();
         ide.dispatchEvent("track_action", {type: "replace"});
@@ -736,7 +743,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var options = this.getOptions();
         options.needle = txtFind.getValue();
         
-        this.$editor.replaceAll(txtReplace.getValue() || "", options);
+        var lut = {"n": "\n", "t": "\t", "r": "\r"};
+        var strReplace = (txtReplace.getValue() || "")
+            .replace(/(\\\\)+|\\([ntr])/g, function(m, m1, m2) { 
+                return m1 || lut[m2];
+            });
+        
+        this.$editor.replaceAll(strReplace, options);
 
         this.updateCounter();
         ide.dispatchEvent("track_action", {type: "replace"});
