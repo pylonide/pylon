@@ -346,10 +346,12 @@ apf.BaseTab = function(){
               
             if (type == "add")
                 node.dispatchEvent("afteropen");
-            else if (type == "remove")
-                node.dispatchEvent("afterclose");
+            else if (type == "remove") {
+                if (node.dispatchEvent("afterclose") !== false)
+                    callback();
+            }
             
-            return false;
+            return;
         }
         
         if (!apf.window.vManager.check(this, "tabscale", visCheck))

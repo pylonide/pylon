@@ -1783,8 +1783,10 @@ apf.MultiSelect = function(){
                 var _self = this;
                 $setTimeout(function(){
                     //#ifdef __WITH_PROPERTY_BINDING
-                    if (_self.selected == e.selected)
+                    if (_self.selected == e.selected) {
+                        delete _self.selected;
                         _self.setProperty("selected", combinedvalue || e.selected);
+                    }
                     //#endif
                     delete _self.$chained;
                 }, 10);
