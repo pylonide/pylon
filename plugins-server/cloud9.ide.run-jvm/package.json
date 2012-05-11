@@ -1,0 +1,19 @@
+{
+    "name": "cloud9.ide.run-jvm",
+    "description": "Provides a sandboxed JVM runtime and java debugger",
+    "version": "0.0.1",
+
+    "main": "./run-jvm.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "ide",
+            "process-manager",
+            "run-jvm",
+            "run-jvm-debug",
+            "ide.ext.state",
+            "eventbus"
+        ]
+    }
+}

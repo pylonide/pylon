@@ -29,7 +29,7 @@
 
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
-      debugger          = "{this.syntax == 'javascript' ? dbg : null}"
+      debugger          = "{(this.syntax == 'javascript' or this.syntax == 'java') ? dbg : null}"
       readonly          = "{[@loading] || cloud9config.readonly || (location.host &amp;&amp; window.stDebugProcessRunning and stDebugProcessRunning.active &amp;&amp; [@scriptid])}"
     />
 

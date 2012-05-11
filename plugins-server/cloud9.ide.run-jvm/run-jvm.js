@@ -1,54 +1,54 @@
 /**
- * Node Runtime Module for the Cloud9 IDE
+ * Java Runtime Module for the Cloud9 IDE
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-
+var Path = require("path");
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
 
-var name = "node-runtime";
+var name = "jvm-runtime";
 var ProcessManager;
 var EventBus;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
-    imports.ide.register(name, NodeRuntimePlugin, register);
+    imports.ide.register(name, JVMRuntimePlugin, register);
 };
 
-var NodeRuntimePlugin = function(ide, workspace) {
+var JVMRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
     this.pm = ProcessManager;
     this.eventbus = EventBus;
     this.workspace = workspace;
     this.workspaceId = workspace.workspaceId;
 
-    this.channel = this.workspaceId + "::node-runtime";
+    this.channel = this.workspaceId + "::jvm-runtime";
 
     this.hooks = ["command"];
     this.name = name;
     this.processCount = 0;
 };
 
-util.inherits(NodeRuntimePlugin, Plugin);
+sys.inherits(JVMRuntimePlugin, Plugin);
 
 (function() {
 
     this.init = function() {
         var self = this;
         this.eventbus.on(this.channel, function(msg) {
-            msg.type = msg.type.replace(/^node-debug-(start|data|exit)$/, "node-$1");
+            msg.type = msg.type.replace(/^jvm-debug-(start|data|exit)$/, "jvm-$1");
             var type = msg.type;
 
-            if (type == "node-start" || type == "node-exit")
+            if (type == "jvm-start" || type == "jvm-exit")
                 self.workspace.getExt("state").publishState();
 
-            if (msg.type == "node-start")
+            if (msg.type == "jvm-start")
                 self.processCount += 1;
 
-            if (msg.type == "node-exit")
+            if (msg.type == "jvm-exit")
                 self.processCount -= 1;
 
             self.ide.broadcast(JSON.stringify(msg), self.name);
@@ -57,9 +57,9 @@ util.inherits(NodeRuntimePlugin, Plugin);
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
-        if (!(/default|auto|0\.6\.x|0\.4\.x/.test(message.runner))
-            && (cmd.indexOf("debug") != -1 && !this.nodeDebugProxy))
-            return false;
+        if (!(/java|jpy|jrb|groovy|js-rhino/.test(message.runner))
+            && (cmd.indexOf("debug") != -1 && !this.javaDebugProxy))
+          return false;
 
         var res = true;
         switch (cmd) {
@@ -93,11 +93,12 @@ util.inherits(NodeRuntimePlugin, Plugin);
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
 
-            self.pm.spawn("node", {
+            self.pm.spawn("jvm", {
                 file: file,
                 args: args,
                 env: env,
-                nodeVersion: version,
+                type: message.runner,
+                version: version,
                 extra: message.extra
             }, self.channel, function(err, pid) {
                 if (err)
@@ -115,12 +116,13 @@ util.inherits(NodeRuntimePlugin, Plugin);
             if (state.processRunning)
                 return self.error("Child process already running!", 1, message);
 
-            self.pm.spawn("node-debug", {
+            self.pm.spawn("jvm-debug", {
                 file: file,
                 args: args,
                 env: env,
                 breakOnStart: breakOnStart,
-                nodeVersion: version,
+                type: message.runner,
+                version: version,
                 extra: message.extra
             }, self.channel, function(err, pid) {
                 if (err)
@@ -140,4 +142,4 @@ util.inherits(NodeRuntimePlugin, Plugin);
         return this.processCount === 0;
     };
 
-}).call(NodeRuntimePlugin.prototype);
+}).call(JVMRuntimePlugin.prototype);

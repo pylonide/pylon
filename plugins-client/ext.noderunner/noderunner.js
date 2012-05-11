@@ -196,7 +196,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
         var command = {
             "command" : apf.isTrue(debug) ? "RunDebugBrk" : "Run",
             "file"    : path.replace(/^\/+/, ""),
-            "runner"  : "node",
+            "runner"  : ddRunnerSelector.value,
             "args"    : args || "",
             "version" : nodeVersion || settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION,
             "env"     : {
@@ -212,7 +212,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         ide.send({
             "command": "kill",
-            "runner" : "node",
+            "runner" : ddRunnerSelector.value,
             "pid"    : this.nodePid
         });
         ide.send({"command": "state", "action": "publish"});

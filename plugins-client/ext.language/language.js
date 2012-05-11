@@ -15,6 +15,9 @@ var WorkerClient = require("ace/worker/worker_client").WorkerClient;
 var complete = require('ext/language/complete');
 var marker = require('ext/language/marker');
 var refactor = require('ext/language/refactor');
+var outline = require('ext/language/outline');
+var hierarchy = require('ext/language/hierarchy');
+var format = require('ext/language/format');
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");
@@ -25,7 +28,7 @@ var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
 
 module.exports = ext.register("ext/language/language", {
-    name    : "Javascript Outline",
+    name    : "Multiple Language Features",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
     deps    : [editors, code],
@@ -70,6 +73,33 @@ module.exports = ext.register("ext/language/language", {
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
+            outline.hook(_self, worker);
+            hierarchy.hook(_self, worker);
+            format.hook(_self, worker);
+
+            worker.on("serverProxy", function(e) {
+                console.log("proxyMessage", e.data);
+                ide.send(JSON.stringify(e.data));
+            });
+
+            worker.on("commandRequest", function(e) {
+                var cmd = e.data;
+                if (cmd.command == "save") {
+                  save.quicksave(tabEditors.getPage(), function() {
+                    worker.emit("commandComplete", {
+                     data: {
+                      command: cmd.command,
+                      success: true
+                    }});
+                  });
+                }
+            });
+
+            ide.addEventListener("socketMessage", function(e) {
+                var message = e.message;
+                console.log("language: ", message);
+                worker.emit("serverProxy", {data: message});
+            });
 
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){
@@ -197,10 +227,10 @@ module.exports = ext.register("ext/language/language", {
 
     setPath: function() {
         // Currently no code editor active
-        if(!editors.currentEditor.ceEditor || !tabEditors.getPage())
+        if(!editors.currentEditor.amlEditor || !tabEditors.getPage())
             return;
         var currentPath = tabEditors.getPage().getAttribute("id");
-        this.worker.call("switchFile", [currentPath, editors.currentEditor.ceEditor.syntax, this.editor.getSession().getValue(), this.editor.getCursorPosition()]);
+        this.worker.call("switchFile", [currentPath, editors.currentEditor.amlEditor.syntax, this.editor.getSession().getValue(), window.cloud9config.projectName]);
     },
     
     onEditorClick: function(event) {

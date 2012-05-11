@@ -1,0 +1,6 @@
+{
+    "name": "jvm-features",
+    "description": "Provides language features for JVM-based languages",
+    "version": "0.1",
+    "author": "Ajax.org B.V. <info@ajax.org>"
+}

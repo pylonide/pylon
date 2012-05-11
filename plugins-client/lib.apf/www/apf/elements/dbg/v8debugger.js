@@ -81,58 +81,7 @@ var V8Debugger = module.exports = function(dbg, host) {
         return (frame.func.name || frame.func.inferredName || (frame.line + frame.position));
     }
 
-    this.$isEqual = function(xmlFrameSet, frameSet){
-        if (xmlFrameSet.length != frameSet.length)
-            return false;
-
-        var xmlFirst = xmlFrameSet[0];
-        var first    = frameSet[0];
-        if (xmlFirst.getAttribute("scriptid") != first.func.scriptId)
-            return false;
-        if (xmlFirst.getAttribute("id") != getId(first))
-            return false;
-        //if (xmlFirst.selectNodes("vars/item").length != (1 + first.arguments.length + first.locals.length))
-            //return false;
-
-        //@todo check for ref?? might fail for 2 functions in the same file with the same name in a different context
-        return true;
-    };
-
-    /**
-     * Assumptions:
-     *  - .index stays the same
-     *  - sequence in the array stays the same
-     *  - ref stays the same when stepping in the same context
-     */
-    this.$updateFrame = function(xmlFrame, frame){
-        //With code insertion, line/column might change??
-        xmlFrame.setAttribute("line", frame.line);
-        xmlFrame.setAttribute("column", frame.column);
-
-        var i, j, l;
-        var vars  = xmlFrame.selectNodes("vars/item");
-        var fVars = frame.arguments;
-        for (i = 1, j = 0, l = fVars.length; j < l; j++) { //i = 1 to skin this
-            if (fVars[j].name)
-                this.$updateVar(vars[i++], fVars[j]);
-        }
-        fVars = frame.locals;
-        for (j = 0, l = frame.locals.length; j < l; j++) {
-            if (fVars[j].name !== ".arguments")
-                this.$updateVar(vars[i++], fVars[j]);
-        }
-
-        //@todo not caring about globals/scopes right now
-    };
-
-    this.$updateVar = function(xmlVar, fVar){
-        xmlVar.setAttribute("value", this.$valueString(fVar.value));
-        xmlVar.setAttribute("type", fVar.value.type);
-        xmlVar.setAttribute("ref", fVar.value.ref);
-        apf.xmldb.setAttribute(xmlVar, "children", hasChildren[fVar.value.type] ? "true" : "false");
-    };
-
-    this.$buildFrame = function(frame, ref, xml){
+    this.$buildFrame = function(frame, ref, xml) {
         var script = ref(frame.script.ref);
         xml.push(
             "<frame index='", frame.index,
@@ -191,20 +140,14 @@ var V8Debugger = module.exports = function(dbg, host) {
             var i, l;
             var frames    = body.frames;        
             var xmlFrames = model.queryNodes("frame");
-            if (xmlFrames.length && _self.$isEqual(xmlFrames, frames)) {
+            
+            var xml = [];
+            if (frames) {
                 for (i = 0, l = frames.length; i < l; i++)
-                    _self.$updateFrame(xmlFrames[i], frames[i]);
-                _self.setFrame(xmlFrames[0]);
+                    _self.$buildFrame(frames[i], ref, xml);
             }
-            else {
-                var xml = [];
-                if (frames) {
-                    for (i = 0, l = frames.length; i < l; i++)
-                        _self.$buildFrame(frames[i], ref, xml);
-                }
-                model.load("<frames>" + xml.join("") + "</frames>");
-                _self.setFrame(model.data.firstChild);
-            }
+            model.load("<frames>" + xml.join("") + "</frames>");
+            _self.setFrame(model.data.firstChild);
             callback();
         });
     };

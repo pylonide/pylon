@@ -1,0 +1,18 @@
+{
+    "name": "cloud9.run.jvm",
+    "version": "0.0.1",
+
+    "main": "./jvm.js",
+    "private": true,
+
+    "plugin": {
+        "provides": [
+            "run-jvm"
+        ],
+        "consumes": [
+            "process-manager",
+            "sandbox",
+            "ide"
+        ]
+    }
+}

@@ -9,23 +9,31 @@ define(function(require, exports, module) {
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
+var menus = require("ext/menus/menus");
+var commands = require("ext/commands/commands");
 
-var lang = require("ace/lib/lang");
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
 var oldCommandKey, oldOnTextInput;
 
-var deferredInvoke = lang.deferredCall(function() {
-    var editor = editors.currentEditor.ceEditor.$editor;
-    var pos = editor.getCursorPosition();
-    var line = editor.getSession().getDocument().getLine(pos.row);
-    if(keyhandler.preceededByIdentifier(line, pos.column) || line[pos.column - 1] === '.')
-        module.exports.invoke(true);
-    else
-        module.exports.closeCompletionBox();
-    isInvokeScheduled = false;
-});
-var isInvokeScheduled = false;
+var calculatePosition = function(doc, offset) {
+    var row = 0, column, newLineLength = doc.getNewLineCharacter().length;;
+    while (offset > 0) {
+      offset -= doc.getLine(row++).length;
+      offset -= newLineLength; // consider the new line character(s)
+    }
+    if (offset < 0) {
+      row--;
+      offset += newLineLength; // add the new line again
+      column = doc.getLine(row).length + offset;
+    } else {
+      column = 0;
+    }
+    return {
+      row: row,
+      column: column
+    };
+};
 
 function retrievePreceedingIdentifier(text, pos) {
     var buf = [];
@@ -73,10 +81,20 @@ function replaceText(editor, prefix, newText) {
     editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
 }
 
-var menus = require("ext/menus/menus");
-var commands = require("ext/commands/commands");
+function applyDeltas(editor, deltas) {
+    var doc = editor.getSession().getDocument();
+    var nlChar = doc.getNewLineCharacter();
+    for (var i = 0; i < deltas.length; i++) {
+        var delta = deltas[i];
+        if (delta.type == "+") {
+            delta.text = delta.text.replace(/\r\n|\n|\r/g, nlChar);
+            doc.insert(calculatePosition(doc, delta.offset), delta.text);
+        }
+    }
+}
 
 module.exports = {
+
     hook: function(ext, worker) {
         var _self = this;
         worker.on("complete", function(event) {
@@ -100,7 +118,6 @@ module.exports = {
                 return apf.activeElement.localName == "codeeditor";
             },
             exec: function(editor) {
-                if(ext.disabled) return;
                 _self.invoke();
             }
         });
@@ -112,6 +129,7 @@ module.exports = {
         var _self = this;
         this.editor = editors.currentEditor;
         var ace = this.editor.amlEditor.$editor;
+
         this.selectedIdx = 0;
         this.scrollIdx = 0;
         this.matchEls = [];
@@ -158,16 +176,15 @@ module.exports = {
         }, 0);
     },
 
-    closeCompletionBox : function(event, doNotHide) {
+    closeCompletionBox : function() {
         var ace = editors.currentEditor.amlEditor.$editor;
-        if (!doNotHide)
-            barCompleterCont.$ext.style.display = "none";
+        barCompleterCont.$ext.style.display = "none";
         document.removeEventListener("click", this.closeCompletionBox);
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
         
         if(oldCommandKey) {
-        ace.keyBinding.onCommandKey = oldCommandKey;
+            ace.keyBinding.onCommandKey = oldCommandKey;
             ace.keyBinding.onTextInput = oldOnTextInput;
         }
         oldCommandKey = oldOnTextInput = null;
@@ -177,15 +194,15 @@ module.exports = {
     populateCompletionBox: function (matches) {
         var _self = this;
         _self.completionElement.innerHTML = "";
-        var cursorConfig = ceEditor.$editor.renderer.$cursorLayer.config;
+        var cursorConfig = editors.currentEditor.amlEditor.$editor.renderer.$cursorLayer.config;
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? "cc_complete_option_selected" : "cc_complete_option";
             var html = "";
-            
+
             if(match.icon)
                 html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
-            html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
+            html += "<span class='main'><u>" + match.name.substring(0, _self.prefix.length) + "</u>" + match.name.substring(_self.prefix.length);
             if(match.meta) {
                 html += '<span class="meta">' + match.meta + '</span>';
             }
@@ -196,26 +213,28 @@ module.exports = {
                 _self.selectedIdx = idx;
                 _self.matchEls[_self.selectedIdx].className = "cc_complete_option_selected";
             });
+
             matchEl.addEventListener("click", function() {
-                var amlEditor = editors.currentEditor.amlEditor;
-                replaceText(amlEditor.$editor, _self.prefix, match.replaceText);
-                amlEditor.focus();
+                var editor = editors.currentEditor.amlEditor.$editor;
+                replaceText(editor, _self.prefix, match.replaceText);
+                match.deltas && applyDeltas(editor, match.deltas);
+                editor.focus();
             });
             matchEl.style.height = cursorConfig.lineHeight + "px";
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });
     },
-
+    
     onTextInput : function(text, pasted) {
-        var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
+        var keyBinding = editors.currentEditor.amlEditor.$editor.keyBinding;
         oldOnTextInput.apply(keyBinding, arguments);
         if(!pasted) {
             if(text.match(/[^A-Za-z0-9_\$\.]/))
                 this.closeCompletionBox();
             else {
-                this.closeCompletionBox(null, true);
-                deferredInvoke();
+                if(this.cachedMatches)
+                    this.filterAndShow(this.cachedMatches);
             }
         }
     },
@@ -227,14 +246,14 @@ module.exports = {
             keyCode = 40; // Up
         else if(keyCode === 9 && e.shiftKey) // Shift-Tab
             keyCode = 38; // Down
-        
+
         if(e.metaKey || e.ctrlKey || e.altKey) {
             this.closeCompletionBox();
             return;
         }
-        
-        var keyBinding = editors.currentEditor.amlEditor.$editor.keyBinding;
 
+        var keyBinding = editors.currentEditor.amlEditor.$editor.keyBinding;
+        
         switch(keyCode) {
             case 0: break;
             case 32: // Space
@@ -246,10 +265,7 @@ module.exports = {
                 break;
             case 8: // Backspace
                 oldCommandKey.apply(keyBinding, arguments);
-                setTimeout(function() {
-                    _self.closeCompletionBox(null, true);
-                    deferredInvoke();
-                }, 100);
+                this.filterAndShow(this.cachedMatches);
                 e.preventDefault();
                 break;
             case 37:
@@ -260,7 +276,9 @@ module.exports = {
                 break;
             case 13: // Enter
                 var editor = editors.currentEditor.amlEditor.$editor;
-                replaceText(editor, this.prefix, this.matches[this.selectedIdx].replaceText);
+                var match = this.matches[this.selectedIdx];
+                replaceText(editor, this.prefix, match.replaceText);
+                match.deltas && applyDeltas(editor, match.deltas);
                 this.closeCompletionBox();
                 e.preventDefault();
                 break;
@@ -268,6 +286,8 @@ module.exports = {
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
                 if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
+                else
+                    return this.closeCompletionBox();
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx - this.scrollIdx > 4) {
                     this.scrollIdx++;
@@ -280,10 +300,8 @@ module.exports = {
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
                 if(this.selectedIdx > 0) 
                     this.selectedIdx--;
-                else {
-                    this.closeCompletionBox();
-                    return;
-                }
+                else
+                    return this.closeCompletionBox();
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx < this.matches.length - 4 && this.scrollIdx > 0) {
                     this.scrollIdx = this.selectedIdx - 4;
@@ -299,68 +317,78 @@ module.exports = {
         this.worker = worker;
     },
 
-    deferredInvoke: function() {
-       if (isInvokeScheduled)
-            return;
-        isInvokeScheduled = true;
-        deferredInvoke.schedule(200);
-    },
-    
-    onChange: function() {
-        this.deferredInvoke();
-    },
-
     invoke: function(forceBox) {
         var editor = editors.currentEditor.amlEditor.$editor;
+        var _self = this;
         this.forceBox = forceBox;
         editor.addEventListener("change", this.$onChange);
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
         var worker = this.worker;
         setTimeout(function() {
+            var pos = editor.getCursorPosition();
+            var line = editor.getSession().getLine(pos.row);
+            var identifier = retrievePreceedingIdentifier(line, pos.column);
+            _self.cachedIden = identifier;
             worker.emit("complete", {data: editor.getCursorPosition()});
         });
-        var _self = this;
-        if(forceBox)
+        if(forceBox) {
+            clearTimeout(this.hideTimer);
             this.hideTimer = setTimeout(function() {
                 // Completion takes or crashed
                 _self.closeCompletionBox();
             }, 4000);
+        }
     },
     
-    onComplete: function(event) {
+    onComplete: function(event) {        
+        var matches = this.cachedMatches = event.data;
+        this.filterAndShow(matches, true);
+    },
+
+    filterAndShow: function (matches, initialReq) {
+        // copy the matches for not altering the cached matches
+        matches = matches.slice(0);
+
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.getSession().getLine(pos.row);
         var identifier = retrievePreceedingIdentifier(line, pos.column);
-    
+
         editor.removeEventListener("change", this.$onChange);
         clearTimeout(this.hideTimer);
-    
-        var matches = event.data;
-        
+        var identifierLowered = identifier.toLowerCase();
+
+        if (identifierLowered.indexOf(this.cachedIden.toLowerCase()) != 0)
+            return this.closeCompletionBox();
+
         // Remove out-of-date matches
         for (var i = 0; i < matches.length; i++) {
-            if(matches[i].name.indexOf(identifier) !== 0) {
+            // change the condition to fit the java package abbreviation
+            // maybe also compare with ignoring cases
+            if(matches[i].name.toLowerCase().indexOf(identifierLowered) !== 0) {
                 matches.splice(i, 1);
                 i--;
             }
-        }        
-        
-        if (matches.length === 1 && !this.forceBox) {
-            replaceText(editor, identifier, matches[0].replaceText);
+        }
+
+        if (matches.length === 1 && initialReq) {
+            var match = matches[0];
+            replaceText(editor, identifier, match.replaceText);
+            match.deltas && applyDeltas(editor, match.deltas);
+            this.closeCompletionBox();
         }
         else if (matches.length > 0) {
             this.showCompletionBox(matches, identifier);
         }
         else {
-            if(typeof barCompleterCont !== 'undefined')
-                barCompleterCont.$ext.style.display = "none";
+            this.closeCompletionBox();
         }
     },
-    
-    destroy : function(){
+
+    destroy : function() {
         commands.removeCommandByName("complete");
     }
+
 };
 
 });

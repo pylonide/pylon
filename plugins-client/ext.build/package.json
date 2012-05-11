@@ -1,0 +1,14 @@
+{
+    "name": "ext.build",
+    "version": "0.0.1",
+    "main": "build.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.build"
+        ],
+        "consumes": [
+            "client-plugins"
+        ]
+    }
+}

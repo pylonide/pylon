@@ -1,0 +1,27 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+
+    <a:model id="mdlProblems">
+        <problems>
+            <problem type="error" file="newfile.java" path="/sossa1/src/newfile.java" icon="icon1" desc="Error 1 desc" />
+        </problems>
+    </a:model>
+
+    <a:hbox id="trBuildHbox" anchors="5 0 0 0" visible="false" render="runtime">
+        <a:datagrid id="trDGBuild" flex="1"
+          model="mdlProblems"
+          class         = "noscrollbar"
+          scrollbar     = "sbShared 20 2 2"
+          autoselect    = "false"
+          onafterchoose = "require('ext/build/build').jumpTo(this.selected)"
+          visible    = "false">
+              <a:each match="[problem]">
+                  <a:column width="10%" value="[@icon]" caption="Icon" />
+                  <a:column width="30%" value="[@desc]" caption="Desciprion" />
+                  <a:column width="15%" value="[@file]" caption="Resource" />
+                  <a:column width="30%" value="[@path]" caption="Path" /> 
+                  <a:column width="15%" value="[@line]" caption="Line No" />
+              </a:each>
+        </a:datagrid>
+    </a:hbox>
+
+</a:application>
