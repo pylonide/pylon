@@ -8,14 +8,15 @@
       title    = "Test Panel" 
       modal    = "false" 
       buttons  = "close" 
+      minwidth = "193"
       optimize = "true">
         <a:bar skin="c9-header-bar" top="-30" right="28" height="30">
-            <a:hbox id="barTestTools">
+            <a:hbox id="barTestTools" class="testPanelControls">
                 <a:button
                   id       = "btnNewTestType"
                   caption  = "New"
                   onclick  = ""
-                  skin     = "c9-toolbarbutton"
+                  skin     = "c9-toolbarbutton-light"
                   class    = "with-arrow"
                   submenu  = "mnuTestNew" />
                 <a:menu id="mnuTestNew">
@@ -29,17 +30,15 @@
                   onclick  = "require('ext/testpanel/testpanel').run(dgTestProject.getSelection());"
                   submenu  = "mnuRunSettings" 
                   visible  = "{!(stTestRun.active || !dgTestProject.selected)}" />
-            
-                <a:button
+                <a:button id="btnTestStop"
                   icon     = "stop.png"
                   caption  = "Stop Tests"
-                  skin     = "c9-toolbarbutton"
+                  skin     = "c9-toolbarbutton-light"
                   onclick  = "require('ext/testpanel/testpanel').stop()"
                   visible  = "{!btnTestRun.visible}"
                   disabled = "{!stTestRun.active || stTestRun.stopping}" />
             </a:hbox>
         </a:bar>
-      
         <a:button
           skin="header-btn"
           class="panel-settings"
@@ -51,7 +50,7 @@
             <a:divider />
             <a:item type="check" checked="true" onclick="
                 require('ext/testpanel/testpanel').toggleSubmodules(this.value);
-            ">Show Submodules</a:item>
+            ">Show Libraries</a:item>
             <a:item type="check" checked="true" onclick="
                 require('ext/testpanel/testpanel').toggleExpandTests(this.value);
             ">Auto Expand Tests</a:item>
@@ -128,7 +127,7 @@
                 <a:item match="[file]" onclick="dgTestProject.remove()">Remove</a:item>
                 <a:divider />
                 <a:item match="[file]" onclick="
-                    require('ext/tabbehaviors/tabbehaviors').revealfile(dgTestProject.selected);
+                    require('ext/tabbehaviors/tabbehaviors').revealInTree(dgTestProject.selected);
                 ">Show in File Tree</a:item>
             </a:menu>
         </a:vbox>

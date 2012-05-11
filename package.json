@@ -23,9 +23,11 @@
         "simple-template": "~0.0.1",
         
         "optimist": "~0.3.1",
+        "dryice": "0.4.2",
         
         "mappings": "0.1.x",
-        "amd-loader": "~0.0.4"
+        "amd-loader": "~0.0.4",
+        "dryice": "0.4.2"
     },
     
     "devDependencies": {
@@ -35,13 +37,14 @@
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/007f216b8092697fb5b22bcc856aa80fa0886ccd"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/d941eb6409af7d1352ce21db5628e8c72b5b12f0"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/3e404b953ec25b38f45f5f1808928e39f295dd78"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/1e1b08f7e63d23310120e2165da43a90e54a0a94"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
-        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/00f2fb3ba522de1fac0765ee8e62de468be53816"],
+        "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/21c6fea18d3480ef2641d9889e531ded60216082"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"]
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"],
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/b830cc5961190d8442ff7ac3c0c566924a7df195"]
     },
 
     "repository" : {
@@ -54,7 +57,6 @@
     }],
 
     "scripts": {
-        "start": "sh ./bin/cloud9.sh",
-        "postinstall": "node ./node_modules/mappings/scripts/postinstall-notice.js"
+        "start": "sh ./bin/cloud9.sh"
     }
 }

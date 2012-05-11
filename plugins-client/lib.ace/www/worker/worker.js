@@ -154,7 +154,8 @@ define('ace/lib/fixoldbrowsers', ['require', 'exports', 'module' , 'ace/lib/rege
 require("./regexp");
 require("./es5-shim");
 
-});/**
+});
+/*
  *  Based on code from:
  *
  * XRegExp 1.5.0
@@ -292,7 +293,7 @@ define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, ex
 
 define('ace/lib/es5-shim', ['require', 'exports', 'module' ], function(require, exports, module) {
 
-/**
+/*
  * Brings an environment as close to ECMAScript 5 compliance
  * as is possible with the facilities of erstwhile engines.
  *
@@ -1322,7 +1323,8 @@ var prepareString = "a"[0] != "a",
         }
         return Object(o);
     };
-});/* vim:ts=4:sts=4:sw=4:
+});
+/* vim:ts=4:sts=4:sw=4:
  * ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -1399,7 +1401,7 @@ EventEmitter._dispatchEvent = function(eventName, e) {
     }
     
     if (defaultHandler && !e.defaultPrevented)
-        defaultHandler(e);
+        return defaultHandler(e);
 };
 
 EventEmitter.setDefaultHandler = function(eventName, callback) {
@@ -1442,7 +1444,8 @@ EventEmitter.removeAllListeners = function(eventName) {
 
 exports.EventEmitter = EventEmitter;
 
-});/* ***** BEGIN LICENSE BLOCK *****
+});
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -3574,7 +3577,8 @@ exports.Parser = Parser;
 exports.Module = Module;
 exports.Export = Export;
 
-});/* vim: set sw=4 ts=4 et tw=78: */
+});
+/* vim: set sw=4 ts=4 et tw=78: */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -4171,7 +4175,8 @@ Tokenizer.prototype = {
 exports.isIdentifier = isIdentifier;
 exports.Tokenizer = Tokenizer;
 
-});/* vim: set sw=4 ts=4 et tw=78: */
+});
+/* vim: set sw=4 ts=4 et tw=78: */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -4866,7 +4871,8 @@ exports.Dict = Dict;
 exports.WeakMap = _WeakMap;
 exports.Stack = Stack;
 
-});/* vim: set sw=4 ts=4 et tw=78: */
+});
+/* vim: set sw=4 ts=4 et tw=78: */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -4926,7 +4932,8 @@ exports.mozillaMode = true;
 // Allow experimental paren-free mode?
 exports.parenFreeMode = false;
 
-});/**
+});
+/**
  * Cloud9 Language Foundation
  *
  * @copyright 2011, Ajax.org B.V.
@@ -4944,6 +4951,11 @@ var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 
+var WARNING_LEVELS = {
+    error: 3,
+    warning: 2,
+    info: 1
+};
 
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
@@ -4953,6 +4965,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.handlers = [];
     this.currentMarkers = [];
     this.$lastAggregateActions = {};
+    this.$warningLevel = "info";
     
     Mirror.call(this, sender);
     this.setTimeout(500);
@@ -4964,26 +4977,63 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         _self.documentClose(event);
     });
     sender.on("analyze", function(event) {
-        _self.analyze(event);
+        _self.analyze(function() { });
     });
     sender.on("cursormove", function(event) {
         _self.onCursorMove(event);
     });
-    
     sender.on("inspect", function(event) {
         _self.inspect(event);
     });
-    
     sender.on("change", function() {
         _self.scheduledUpdate = true;
     });
-    
+    sender.on("jumpToDefinition", function(event) {
+        _self.jumpToDefinition(event);
+    });
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
 };
 
 oop.inherits(LanguageWorker, Mirror);
+
+function asyncForEach(array, fn, callback) {
+	array = array.slice(0); // Just to be sure
+	function processOne() {
+		var item = array.pop();
+		fn(item, function(result, err) {
+			if (array.length > 0) {
+				processOne();
+			}
+			else {
+				callback(result, err);
+			}
+		});
+	}
+	if (array.length > 0) {
+		processOne();
+	}
+	else {
+		callback();
+	}
+}
+
+function asyncParForEach(array, fn, callback) {
+	var completed = 0;
+	var arLength = array.length;
+	if (arLength === 0) {
+		callback();
+	}
+	for (var i = 0; i < arLength; i++) {
+		fn(array[i], function(result, err) {
+			completed++;
+			if (completed === arLength) {
+				callback(result, err);
+			}
+		});
+	}
+}
 
 (function() {
     
@@ -5005,6 +5055,10 @@ oop.inherits(LanguageWorker, Mirror);
         disabledFeatures[name] = true;
     };
     
+    this.setWarningLevel = function(level) {
+        this.$warningLevel = level;
+    };
+    
     /**
      * Registers a handler by loading its code and adding it the handler array
      */
@@ -5013,24 +5067,25 @@ oop.inherits(LanguageWorker, Mirror);
         this.handlers.push(handler);
     };
 
-    this.parse = function() {
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
+    this.parse = function(callback) {
+        var _self = this;
+        this.cachedAst = null;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
                 try {
-                    var ast = handler.parse(this.doc.getValue());
-                    if(ast) {
-                        this.cachedAst = ast;
-                        return ast;
-                    }
+                    handler.parse(_self.doc.getValue(), function(ast) {
+                        if(ast)
+                            _self.cachedAst = ast;
+                        next();
+                    });
                 } catch(e) {
                     // Ignore parse errors
+                    next();
                 }
             }
-        }
-        // No parser available
-        this.cachedAst = null;
-        return null;
+        }, function() {
+            callback(_self.cachedAst);
+        });
     };
 
     this.scheduleEmit = function(messageType, data) {
@@ -5058,6 +5113,33 @@ oop.inherits(LanguageWorker, Mirror);
         }
     }
     
+    this.analyze = function(callback) {
+        var _self = this;
+        this.parse(function(ast) {
+            var markers = [];
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language) && (ast || !handler.analysisRequiresParsing())) {
+                    handler.analyze(_self.doc, ast, function(result) {
+                        if (result)
+                            markers = markers.concat(result);
+                        next();
+                    });
+                }
+            }, function() {
+                var extendedMakers = markers;
+                filterMarkersAroundError(ast, markers);
+                if (_self.getLastAggregateActions().markers.length > 0)
+                    extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
+                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
+                _self.currentMarkers = markers;
+                if (_self.postponedCursorMove)
+                    _self.onCursorMove(_self.postponedCursorMove);
+                callback();
+            });
+        });
+    };
+
+/*
     this.analyze = function() {
         var ast = this.parse();
         var markers = [];
@@ -5081,7 +5163,7 @@ oop.inherits(LanguageWorker, Mirror);
         if (this.postponedCursorMove) {
             this.onCursorMove(this.postponedCursorMove);
         }
-    };
+*/
 
     this.checkForMarker = function(pos) {
         var astPos = {line: pos.row, col: pos.column};
@@ -5092,6 +5174,17 @@ oop.inherits(LanguageWorker, Mirror);
             }
         }
     };
+    
+    this.filterMarkersBasedOnLevel = function(markers) {
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            if(marker.level && WARNING_LEVELS[marker.level] < WARNING_LEVELS[this.$warningLevel]) {
+                markers.splice(i, 1);
+                i--;
+            }
+        }
+        return markers;
+    }
     
     /**
      * Request the AST node on the current position
@@ -5124,19 +5217,17 @@ oop.inherits(LanguageWorker, Mirror);
             return;
         }
         var pos = event.data;
-        var hintMessage = this.checkForMarker(pos) || "";
+        var _self = this;
+        var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
         var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
-        if (this.cachedAst) {
-            var ast = this.cachedAst;
-            var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            if (currentNode !== this.lastCurrentNode || pos.force) {
-                for (var i = 0; i < this.handlers.length; i++) {
-                    var handler = this.handlers[i];
-                    if (handler.handlesLanguage(this.$language)) {
-                        var response = handler.onCursorMovedNode(this.doc, ast, pos, currentNode);
+        
+        function cursorMoved() {
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.onCursorMovedNode(_self.doc, ast, pos, currentNode, function(response) {
                         if (!response)
-                            continue;
+                            return next();
                         if (response.markers && response.markers.length > 0) {
                             aggregateActions.markers = aggregateActions.markers.concat(response.markers);
                         }
@@ -5147,23 +5238,40 @@ oop.inherits(LanguageWorker, Mirror);
                             // Last one wins, support multiple?
                             aggregateActions.hint = response.hint;
                         }
-                    }
+                        next();
+                    });
                 }
+                else
+                    next();
+            }, function() {
                 if (aggregateActions.hint && !hintMessage) {
                     hintMessage = aggregateActions.hint;
                 }
-                this.scheduleEmit("markers", this.currentMarkers.concat(aggregateActions.markers));
-                this.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
-                this.lastCurrentNode = currentNode;
-                this.setLastAggregateActions(aggregateActions);
+                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(_self.currentMarkers.concat(aggregateActions.markers)));
+                _self.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
+                _self.lastCurrentNode = currentNode;
+                _self.setLastAggregateActions(aggregateActions);
+                _self.scheduleEmit("hint", {
+                    pos: pos,
+                	message: hintMessage
+                });
+            });
+
+        }
+        
+        if (this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            if (currentNode !== this.lastCurrentNode || pos.force) {
+                cursorMoved();
             }
         } else {
-            this.setLastAggregateActions(aggregateActions);
+            cursorMoved();
         }
-        this.scheduleEmit("hint", hintMessage);
     };
-    
-    this.sendVariablePositions = function(event) {
+
+
+    this.jumpToDefinition = function(event) {
         var pos = event.data;
         // Not going to parse for this, only if already parsed successfully
         if (this.cachedAst) {
@@ -5172,25 +5280,48 @@ oop.inherits(LanguageWorker, Mirror);
             for (var i = 0; i < this.handlers.length; i++) {
                 var handler = this.handlers[i];
                 if (handler.handlesLanguage(this.$language)) {
-                    var response = handler.getVariablePositions(this.doc, ast, pos, currentNode);
+                    var response = handler.jumpToDefinition(this.doc, ast, pos, currentNode);
                     if (response)
-                        this.sender.emit("variableLocations", response);
+                        this.sender.emit("jumpToDefinition", response);
                 }
             }
         }
     };
 
+    this.sendVariablePositions = function(event) {
+        var pos = event.data;
+        var _self = this;
+        // Not going to parse for this, only if already parsed successfully
+        if (this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            asyncForEach(this.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
+                        if (response)
+                            _self.sender.emit("variableLocations", response);
+                        next();
+                    });
+                }
+            }, function() {
+            });
+        }
+    };
+
     this.onUpdate = function() {
         this.scheduledUpdate = false;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
-                handler.onUpdate(this.doc);
-            }
-        }
-        this.analyze();
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) { 
+            if (handler.handlesLanguage(_self.$language))
+                handler.onUpdate(_self.doc, next);
+            else
+                next();
+        }, function() {
+            _self.analyze(function() {});
+        });
     };
     
+    // TODO: BUG open an XML file and switch between, language doesn't update soon enough
     this.switchFile = function(path, language, code) {
         var oldPath = this.$path;
         code = code || "";
@@ -5199,20 +5330,19 @@ oop.inherits(LanguageWorker, Mirror);
         this.cachedAst = null;
         this.lastCurrentNode = null;
         this.setValue(code);
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
+        var doc = this.doc;
+        asyncForEach(this.handlers, function(handler, next) {
             handler.path = path;
             handler.language = language;
-            handler.onDocumentOpen(path, this.doc, oldPath);
-        }
+            handler.onDocumentOpen(path, doc, oldPath, next);
+        }, function() { });
     };
     
     this.documentClose = function(event) {
         var path = event.data;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            handler.onDocumentClose(path);
-        }
+        asyncForEach(this.handlers, function(handler, next) {
+            handler.onDocumentClose(path, next);
+        }, function() { });
     };
     
     // For code completion
@@ -5250,43 +5380,56 @@ oop.inherits(LanguageWorker, Mirror);
         var pos = event.data;
         // Check if anybody requires parsing for its code completion
         var ast, currentNode;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language) && handler.completionRequiresParsing()) {
-                ast = this.parse();
-                currentNode = ast.findNode({line: pos.row, col: pos.column});
-                break;
-            }
-        }
+        var _self = this;
         
-        var matches = [];
-        
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
-                var completions = handler.complete(this.doc, ast, pos, currentNode);
-                if (completions)
-                    matches = matches.concat(completions);
+        asyncForEach(this.handlers, function(handler, next) {
+            if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
+                _self.parse(function(hAst) {
+                    if(hAst) {
+                        ast = hAst;
+                        currentNode = ast.findNode({line: pos.row, col: pos.column});
+                    }
+                    next();
+                });
             }
-        }
-
-        removeDuplicateMatches(matches);
-        // Sort by priority, score
-        matches.sort(function(a, b) {
-            if (a.priority < b.priority)
-                return 1;
-            else if (a.priority > b.priority)
-                return -1;
-            else if (a.score < b.score)
-                return 1;
-            else if (a.score > b.score)
-                return -1;
             else
-                return 0;
+                next();
+        }, function() {
+            var matches = [];
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                        if (completions)
+                            matches = matches.concat(completions);
+                        next();
+                    });
+                }
+                else
+                    next();
+            }, function() {
+                removeDuplicateMatches(matches);
+                // Sort by priority, score
+                matches.sort(function(a, b) {
+                    if (a.priority < b.priority)
+                        return 1;
+                    else if (a.priority > b.priority)
+                        return -1;
+                    else if (a.score < b.score)
+                        return 1;
+                    else if (a.score > b.score)
+                        return -1;
+                    else if(a.name < b.name)
+                        return -1;
+                    else if(a.name > b.name)
+                        return 1;
+                    else
+                        return 0;
+                });
+                
+                matches = matches.slice(0, 50); // 50 ought to be enough for everybody
+                _self.sender.emit("complete", matches);
+            });
         });
-        
-        matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-        this.sender.emit("complete", matches);
     };
 
 }).call(LanguageWorker.prototype);
@@ -5334,7 +5477,8 @@ var Mirror = exports.Mirror = function(sender) {
     
 }).call(Mirror.prototype);
 
-});/* ***** BEGIN LICENSE BLOCK *****
+});
+/* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
@@ -5379,6 +5523,21 @@ var EventEmitter = require("./lib/event_emitter").EventEmitter;
 var Range = require("./range").Range;
 var Anchor = require("./anchor").Anchor;
 
+/**
+ * class Document
+ *
+ * Contains the text of the document. Documents are controlled by a single [[EditSession `EditSession`]]. At its core, `Document`s are just an array of strings, with each row in the document matching up to the array index.
+ *
+ *
+ **/
+
+ /**
+ * new Document([text])
+ * - text (String | Array): The starting text
+ *
+ * Creates a new `Document`. If `text` is included, the `Document` contains those strings; otherwise, it's empty.
+ *
+ **/
 var Document = function(text) {
     this.$lines = [];
 
@@ -5398,19 +5557,47 @@ var Document = function(text) {
 
     oop.implement(this, EventEmitter);
 
+    /**
+    * Document.setValue(text) -> Void
+    * - text (String): The text to use
+    *
+    * Replaces all the lines in the current `Document` with the value of `text`.
+    **/
     this.setValue = function(text) {
         var len = this.getLength();
         this.remove(new Range(0, 0, len, this.getLine(len-1).length));
         this.insert({row: 0, column:0}, text);
     };
 
+    /**
+    * Document.getValue() -> String
+    * 
+    * Returns all the lines in the document as a single string, split by the new line character.
+    **/
     this.getValue = function() {
         return this.getAllLines().join(this.getNewLineCharacter());
     };
 
+    /** 
+    * Document.createAnchor(row, column) -> Anchor
+    * - row (Number): The row number to use
+    * - column (Number): The column number to use
+    *
+    * Creates a new `Anchor` to define a floating point in the document.
+    **/
     this.createAnchor = function(row, column) {
         return new Anchor(this, row, column);
     };
+
+    /** internal, hide
+    * Document.$split(text) -> [String]
+    * - text (String): The text to work with
+    * + ([String]): A String array, with each index containing a piece of the original `text` string.
+    * 
+    * Splits a string of text on any newline (`\n`) or carriage-return ('\r') characters.
+    *
+    *
+    **/
 
     // check for IE split bug
     if ("aaa".split(/a/).length == 0)
@@ -5423,6 +5610,11 @@ var Document = function(text) {
         };
 
 
+    /** internal, hide
+    * Document.$detectNewLine(text) -> Void
+    * 
+    * 
+    **/
     this.$detectNewLine = function(text) {
         var match = text.match(/^.*?(\r\n|\r|\n)/m);
         if (match) {
@@ -5432,6 +5624,17 @@ var Document = function(text) {
         }
     };
 
+    /**
+    * Document.getNewLineCharacter() -> String
+    * + (String): If `newLineMode == windows`, `\r\n` is returned.<br/>
+    *  If `newLineMode == unix`, `\n` is returned.<br/>
+    *  If `newLineMode == auto`, the value of `autoNewLine` is returned.
+    * 
+    * Returns the newline character that's being used, depending on the value of `newLineMode`. 
+    *
+    * 
+    * 
+    **/
     this.getNewLineCharacter = function() {
       switch (this.$newLineMode) {
           case "windows":
@@ -5447,6 +5650,12 @@ var Document = function(text) {
 
     this.$autoNewLine = "\n";
     this.$newLineMode = "auto";
+    /**
+     * Document.setNewLineMode(newLineMode) -> Void
+     * - newLineMode(String): [The newline mode to use; can be either `windows`, `unix`, or `auto`]{: #Document.setNewLineMode.param}
+     * 
+     * [Sets the new line mode.]{: #Document.setNewLineMode.desc}
+     **/
     this.setNewLineMode = function(newLineMode) {
         if (this.$newLineMode === newLineMode)
             return;
@@ -5454,51 +5663,92 @@ var Document = function(text) {
         this.$newLineMode = newLineMode;
     };
 
+    /**
+    * Document.getNewLineMode() -> String
+    * 
+    * [Returns the type of newlines being used; either `windows`, `unix`, or `auto`]{: #Document.getNewLineMode}
+    *
+    **/
     this.getNewLineMode = function() {
         return this.$newLineMode;
     };
 
+    /**
+    * Document.isNewLine(text) -> Boolean
+    * - text (String): The text to check
+    *
+    * Returns `true` if `text` is a newline character (either `\r\n`, `\r`, or `\n`).
+    *
+    **/
     this.isNewLine = function(text) {
         return (text == "\r\n" || text == "\r" || text == "\n");
     };
 
     /**
-     * Get a verbatim copy of the given line as it is in the document
-     */
+    * Document.getLine(row) -> String
+    * - row (Number): The row index to retrieve
+    * 
+    * Returns a verbatim copy of the given line as it is in the document
+    *
+    **/
     this.getLine = function(row) {
         return this.$lines[row] || "";
     };
 
+    /**
+    * Document.getLines(firstRow, lastRow) -> [String]
+    * - firstRow (Number): The first row index to retrieve
+    * - lastRow (Number): The final row index to retrieve
+    * 
+    * Returns an array of strings of the rows between `firstRow` and `lastRow`. This function is inclusive of `lastRow`.
+    *
+    **/
     this.getLines = function(firstRow, lastRow) {
         return this.$lines.slice(firstRow, lastRow + 1);
     };
 
     /**
-     * Returns all lines in the document as string array. Warning: The caller
-     * should not modify this array!
-     */
+    * Document.getAllLines() -> [String]
+    * 
+    * Returns all lines in the document as string array. Warning: The caller should not modify this array!
+    **/
     this.getAllLines = function() {
         return this.getLines(0, this.getLength());
     };
 
+    /**
+    * Document.getLength() -> Number
+    * 
+    * Returns the number of rows in the document.
+    **/
     this.getLength = function() {
         return this.$lines.length;
     };
 
+    /**
+    * Document.getTextRange(range) -> String
+    * - range (Range): The range to work with
+    * 
+    * [Given a range within the document, this function returns all the text within that range as a single string.]{: #Document.getTextRange.desc}
+    **/
     this.getTextRange = function(range) {
         if (range.start.row == range.end.row) {
             return this.$lines[range.start.row].substring(range.start.column,
                                                          range.end.column);
         }
         else {
-            var lines = [];
-            lines.push(this.$lines[range.start.row].substring(range.start.column));
-            lines.push.apply(lines, this.getLines(range.start.row+1, range.end.row-1));
-            lines.push(this.$lines[range.end.row].substring(0, range.end.column));
+            var lines = this.getLines(range.start.row+1, range.end.row-1);
+            lines.unshift((this.$lines[range.start.row] || "").substring(range.start.column));
+            lines.push((this.$lines[range.end.row] || "").substring(0, range.end.column));
             return lines.join(this.getNewLineCharacter());
         }
     };
 
+    /** internal, hide
+    * Document.$clipPosition(position) -> Number
+    * 
+    * 
+    **/
     this.$clipPosition = function(position) {
         var length = this.getLength();
         if (position.row >= length) {
@@ -5508,6 +5758,15 @@ var Document = function(text) {
         return position;
     };
 
+    /**
+    * Document.insert(position, text) -> Number
+    * - position (Number): The position to start inserting at 
+    * - text (String): A chunk of text to insert
+    * + (Number): The position of the last line of `text`. If the length of `text` is 0, this function simply returns `position`. 
+    * Inserts a block of `text` and the indicated `position`.
+    *
+    * 
+    **/
     this.insert = function(position, text) {
         if (!text || text.length === 0)
             return position;
@@ -5531,6 +5790,19 @@ var Document = function(text) {
         return position;
     };
 
+    /**
+    * Document.insertLines(row, lines) -> Object
+    * - row (Number): The index of the row to insert at
+    * - lines (Array): An array of strings
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *   ```{row: endRow, column: 0}```<br/>
+    *   If `lines` is empty, this function returns an object containing the current row, and column, like this:<br/>
+    *   ```{row: row, column: 0}```
+    *
+    * Inserts the elements in `lines` into the document, starting at the row index given by `row`. This method also triggers the `'change'` event.
+    *
+    *
+    **/
     this.insertLines = function(row, lines) {
         if (lines.length == 0)
             return {row: row, column: 0};
@@ -5549,6 +5821,17 @@ var Document = function(text) {
         return range.end;
     };
 
+    /**
+    * Document.insertNewLine(position) -> Object
+    * - position (String): The position to insert at
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *    ```{row: endRow, column: 0}```
+    * 
+    * Inserts a new line into the document at the current row's `position`. This method also triggers the `'change'` event. 
+    *
+    *   
+    *
+    **/
     this.insertNewLine = function(position) {
         position = this.$clipPosition(position);
         var line = this.$lines[position.row] || "";
@@ -5571,6 +5854,19 @@ var Document = function(text) {
         return end;
     };
 
+    /**
+    * Document.insertInLine(position, text) -> Object | Number
+    * - position (Number): The position to insert at
+    * - text (String): A chunk of text
+    * + (Object): Returns an object containing the final row and column, like this:<br/>
+    *     ```{row: endRow, column: 0}```
+    * + (Number): If `text` is empty, this function returns the value of `position`
+    * 
+    * Inserts `text` into the `position` at the current row. This method also triggers the `'change'` event.
+    *
+    *
+    *
+    **/
     this.insertInLine = function(position, text) {
         if (text.length == 0)
             return position;
@@ -5595,6 +5891,15 @@ var Document = function(text) {
         return end;
     };
 
+    /**
+    * Document.remove(range) -> Object
+    * - range (Range): A specified Range to remove
+    * + (Object): Returns the new `start` property of the range, which contains `startRow` and `startColumn`. If `range` is empty, this function returns the unmodified value of `range.start`.
+    * 
+    * Removes the `range` from the document.
+    *
+    *
+    **/
     this.remove = function(range) {
         // clip to document
         range.start = this.$clipPosition(range.start);
@@ -5627,6 +5932,17 @@ var Document = function(text) {
         return range.start;
     };
 
+    /**
+    * Document.removeInLine(row, startColumn, endColumn) -> Object
+    * - row (Number): The row to remove from
+    * - startColumn (Number): The column to start removing at 
+    * - endColumn (Number): The column to stop removing at
+    * + (Object): Returns an object containing `startRow` and `startColumn`, indicating the new row and column values.<br/>If `startColumn` is equal to `endColumn`, this function returns nothing.
+    *
+    * Removes the specified columns from the `row`. This method also triggers the `'change'` event.
+    *
+    * 
+    **/
     this.removeInLine = function(row, startColumn, endColumn) {
         if (startColumn == endColumn)
             return;
@@ -5647,12 +5963,15 @@ var Document = function(text) {
     };
 
     /**
-     * Removes a range of full lines
-     *
-     * @param firstRow {Integer} The first row to be removed
-     * @param lastRow {Integer} The last row to be removed
-     * @return {String[]} The removed lines
-     */
+    * Document.removeLines(firstRow, lastRow) -> [String]
+    * - firstRow (Number): The first row to be removed
+    * - lastRow (Number): The last row to be removed
+    * + ([String]): Returns all the removed lines.
+    * 
+    * Removes a range of full lines. This method also triggers the `'change'` event.
+    * 
+    *
+    **/
     this.removeLines = function(firstRow, lastRow) {
         var range = new Range(firstRow, 0, lastRow + 1, 0);
         var removed = this.$lines.splice(firstRow, lastRow - firstRow + 1);
@@ -5667,6 +5986,13 @@ var Document = function(text) {
         return removed;
     };
 
+    /**
+    * Document.removeNewLine(row) -> Void
+    * - row (Number): The row to check
+    * 
+    * Removes the new line between `row` and the row immediately following it. This method also triggers the `'change'` event.
+    *
+    **/
     this.removeNewLine = function(row) {
         var firstLine = this.getLine(row);
         var secondLine = this.getLine(row+1);
@@ -5684,6 +6010,18 @@ var Document = function(text) {
         this._emit("change", { data: delta });
     };
 
+    /**
+    * Document.replace(range, text) -> Object
+    * - range (Range): A specified Range to replace
+    * - text (String): The new text to use as a replacement
+    * + (Object): Returns an object containing the final row and column, like this:
+    *     {row: endRow, column: 0}
+    * If the text and range are empty, this function returns an object containing the current `range.start` value.
+    * If the text is the exact same as what currently exists, this function returns an object containing the current `range.end` value.
+    *
+    * Replaces a range in the document with the new `text`.
+    *
+    **/
     this.replace = function(range, text) {
         if (text.length == 0 && range.isEmpty())
             return range.start;
@@ -5704,6 +6042,11 @@ var Document = function(text) {
         return end;
     };
 
+    /**
+    * Document.applyDeltas(deltas) -> Void
+    * 
+    * Applies all the changes previously accumulated. These can be either `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+    **/
     this.applyDeltas = function(deltas) {
         for (var i=0; i<deltas.length; i++) {
             var delta = deltas[i];
@@ -5720,6 +6063,11 @@ var Document = function(text) {
         }
     };
 
+    /**
+    * Document.revertDeltas(deltas) -> Void
+    * 
+    * Reverts any changes previously applied. These can be either `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+    **/
     this.revertDeltas = function(deltas) {
         for (var i=deltas.length-1; i>=0; i--) {
             var delta = deltas[i];
@@ -5781,6 +6129,23 @@ exports.Document = Document;
 define('ace/range', ['require', 'exports', 'module' ], function(require, exports, module) {
 "use strict";
 
+/**
+ * class Range
+ *
+ * This object is used in various places to indicate a region within the editor. To better visualize how this works, imagine a rectangle. Each quadrant of the rectangle is analogus to a range, as ranges contain a starting row and starting column, and an ending row, and ending column.
+ *
+ **/
+
+/**
+ * new Range(startRow, startColumn, endRow, endColumn)
+ * - startRow (Number): The starting row
+ * - startColumn (Number): The starting column
+ * - endRow (Number): The ending row
+ * - endColumn (Number): The ending column
+ *
+ * Creates a new `Range` object with the given starting and ending row and column points.
+ *
+ **/
 var Range = function(startRow, startColumn, endRow, endColumn) {
     this.start = {
         row: startRow,
@@ -5794,6 +6159,13 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
 };
 
 (function() {
+    /**
+     * Range.isEqual(range) -> Boolean
+     * - range (Range): A range to check against
+     *
+     * Returns `true` if and only if the starting row and column, and ending tow and column, are equivalent to those given by `range`.
+     *
+     **/ 
     this.isEqual = function(range) {
         return this.start.row == range.start.row &&
             this.end.row == range.end.row &&
@@ -5801,28 +6173,51 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
             this.end.column == range.end.column
     };
 
+    /**
+     * Range.toString() -> String
+     *
+     * Returns a string containing the range's row and column information, given like this:
+     *
+     *    [start.row/start.column] -> [end.row/end.column]
+     *
+     **/ 
+
     this.toString = function() {
         return ("Range: [" + this.start.row + "/" + this.start.column +
             "] -> [" + this.end.row + "/" + this.end.column + "]");
     };
 
+    /** related to: Range.compare
+     * Range.contains(row, column) -> Boolean
+     * - row (Number): A row to check for
+     * - column (Number): A column to check for
+     *
+     * Returns `true` if the `row` and `column` provided are within the given range. This can better be expressed as returning `true` if:
+     *
+     *    this.start.row <= row <= this.end.row &&
+     *    this.start.column <= column <= this.end.column
+     *
+     **/ 
+
     this.contains = function(row, column) {
         return this.compare(row, column) == 0;
     };
 
-    /**
-     * Compares this range (A) with another range (B), where B is the passed in
-     * range.
+    /** related to: Range.compare
+     * Range.compareRange(range) -> Number
+     * - range (Range): A range to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * <br/>
+     * * `-2`: (B) is in front of (A), and doesn't intersect with (A)<br/>
+     * * `-1`: (B) begins before (A) but ends inside of (A)<br/>
+     * * `0`: (B) is completely inside of (A) OR (A) is completely inside of (B)<br/>
+     * * `+1`: (B) begins inside of (A) but ends outside of (A)<br/>
+     * * `+2`: (B) is after (A) and doesn't intersect with (A)<br/>
+     * * `42`: FTW state: (B) ends in (A) but starts outside of (A)
+     * 
+     * Compares `this` range (A) with another range (B).
      *
-     * Return values:
-     *  -2: (B) is infront of (A) and doesn't intersect with (A)
-     *  -1: (B) begins before (A) but ends inside of (A)
-     *   0: (B) is completly inside of (A) OR (A) is complety inside of (B)
-     *  +1: (B) begins inside of (A) but ends outside of (A)
-     *  +2: (B) is after (A) and doesn't intersect with (A)
-     *
-     *  42: FTW state: (B) ends in (A) but starts outside of (A)
-     */
+     **/ 
     this.compareRange = function(range) {
         var cmp,
             end = range.end,
@@ -5852,27 +6247,86 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         }
     }
 
+    /** related to: Range.compare
+     * Range.comparePoint(p) -> Number
+     * - p (Range): A point to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * * `0` if the two points are exactly equal<br/>
+     * * `-1` if `p.row` is less then the calling range<br/>
+     * * `1` if `p.row` is greater than the calling range<br/>
+     * <br/>
+     * If the starting row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is greater than or equal to the calling range's starting column, this returns `0`<br/>
+     * * Otherwise, it returns -1<br/>
+     *<br/>
+     * If the ending row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is less than or equal to the calling range's ending column, this returns `0`<br/>
+     * * Otherwise, it returns 1<br/>
+     *
+     * Checks the row and column points of `p` with the row and column points of the calling range.
+     *
+     * 
+     *
+     **/ 
     this.comparePoint = function(p) {
         return this.compare(p.row, p.column);
     }
 
+    /** related to: Range.comparePoint
+     * Range.containsRange(range) -> Boolean
+     * - range (Range): A range to compare with
+     *
+     * Checks the start and end points of `range` and compares them to the calling range. Returns `true` if the `range` is contained within the caller's range.
+     *
+     **/ 
     this.containsRange = function(range) {
         return this.comparePoint(range.start) == 0 && this.comparePoint(range.end) == 0;
     }
 
+    /**
+     * Range.intersects(range) -> Boolean
+     * - range (Range): A range to compare with
+     *
+     * Returns `true` if passed in `range` intersects with the one calling this method.
+     *
+     **/
     this.intersects = function(range) {
         var cmp = this.compareRange(range);
         return (cmp == -1 || cmp == 0 || cmp == 1);
     }
 
+    /**
+     * Range.isEnd(row, column) -> Boolean
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     *
+     * Returns `true` if the caller's ending row point is the same as `row`, and if the caller's ending column is the same as `column`.
+     *
+     **/
     this.isEnd = function(row, column) {
         return this.end.row == row && this.end.column == column;
     }
 
+    /**
+     * Range.isStart(row, column) -> Boolean
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     *
+     * Returns `true` if the caller's starting row point is the same as `row`, and if the caller's starting column is the same as `column`.
+     *
+     **/ 
     this.isStart = function(row, column) {
         return this.start.row == row && this.start.column == column;
     }
 
+    /**
+     * Range.setStart(row, column)
+     * - row (Number): A row point to set
+     * - column (Number): A column point to set
+     *
+     * Sets the starting row and column for the range.
+     *
+     **/ 
     this.setStart = function(row, column) {
         if (typeof row == "object") {
             this.start.column = row.column;
@@ -5883,6 +6337,14 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         }
     }
 
+    /**
+     * Range.setEnd(row, column)
+     * - row (Number): A row point to set
+     * - column (Number): A column point to set
+     *
+     * Sets the starting row and column for the range.
+     *
+     **/ 
     this.setEnd = function(row, column) {
         if (typeof row == "object") {
             this.end.column = row.column;
@@ -5893,6 +6355,14 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         }
     }
 
+    /** related to: Range.compare
+     * Range.inside(row, column) -> Boolean
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     *
+     * Returns `true` if the `row` and `column` are within the given range.
+     *
+     **/ 
     this.inside = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isEnd(row, column) || this.isStart(row, column)) {
@@ -5904,6 +6374,14 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         return false;
     }
 
+    /** related to: Range.compare
+     * Range.insideStart(row, column) -> Boolean
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     *
+     * Returns `true` if the `row` and `column` are within the given range's starting points.
+     *
+     **/ 
     this.insideStart = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isEnd(row, column)) {
@@ -5915,6 +6393,14 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         return false;
     }
 
+    /** related to: Range.compare
+     * Range.insideEnd(row, column) -> Boolean
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     *
+     * Returns `true` if the `row` and `column` are within the given range's ending points.
+     *
+     **/ 
     this.insideEnd = function(row, column) {
         if (this.compare(row, column) == 0) {
             if (this.isStart(row, column)) {
@@ -5926,6 +6412,27 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         return false;
     }
 
+    /** 
+     * Range.compare(row, column) -> Number
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * * `0` if the two points are exactly equal <br/>
+     * * `-1` if `p.row` is less then the calling range <br/>
+     * * `1` if `p.row` is greater than the calling range <br/>
+     *  <br/>
+     * If the starting row of the calling range is equal to `p.row`, and: <br/>
+     * * `p.column` is greater than or equal to the calling range's starting column, this returns `0`<br/>
+     * * Otherwise, it returns -1<br/>
+     * <br/>
+     * If the ending row of the calling range is equal to `p.row`, and: <br/>
+     * * `p.column` is less than or equal to the calling range's ending column, this returns `0` <br/>
+     * * Otherwise, it returns 1
+     *
+     * Checks the row and column points with the row and column points of the calling range.
+     *
+     *
+     **/
     this.compare = function(row, column) {
         if (!this.isMultiLine()) {
             if (row === this.start.row) {
@@ -5949,8 +6456,28 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     };
 
     /**
-     * Like .compare(), but if isStart is true, return -1;
-     */
+     * Range.compareStart(row, column) -> Number
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * <br/>
+     * * `0` if the two points are exactly equal<br/>
+     * * `-1` if `p.row` is less then the calling range<br/>
+     * * `1` if `p.row` is greater than the calling range, or if `isStart` is `true`.<br/>
+     * <br/>
+     * If the starting row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is greater than or equal to the calling range's starting column, this returns `0`<br/>
+     * * Otherwise, it returns -1<br/>
+     * <br/>
+     * If the ending row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is less than or equal to the calling range's ending column, this returns `0`<br/>
+     * * Otherwise, it returns 1
+     *
+     * Checks the row and column points with the row and column points of the calling range.
+     *
+     *
+     *
+     **/
     this.compareStart = function(row, column) {
         if (this.start.row == row && this.start.column == column) {
             return -1;
@@ -5960,8 +6487,26 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
     }
 
     /**
-     * Like .compare(), but if isEnd is true, return 1;
-     */
+     * Range.compareEnd(row, column) -> Number
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * * `0` if the two points are exactly equal<br/>
+     * * `-1` if `p.row` is less then the calling range<br/>
+     * * `1` if `p.row` is greater than the calling range, or if `isEnd` is `true.<br/>
+     * <br/>
+     * If the starting row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is greater than or equal to the calling range's starting column, this returns `0`<br/>
+     * * Otherwise, it returns -1<br/>
+     *<br/>
+     * If the ending row of the calling range is equal to `p.row`, and:<br/>
+     * * `p.column` is less than or equal to the calling range's ending column, this returns `0`<br/>
+     * * Otherwise, it returns 1
+     *
+     * Checks the row and column points with the row and column points of the calling range.
+     *
+     *
+     **/
     this.compareEnd = function(row, column) {
         if (this.end.row == row && this.end.column == column) {
             return 1;
@@ -5970,6 +6515,21 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         }
     }
 
+   /** 
+     * Range.compareInside(row, column) -> Number
+     * - row (Number): A row point to compare with
+     * - column (Number): A column point to compare with
+     * + (Number): This method returns one of the following numbers:<br/>
+     * * `1` if the ending row of the calling range is equal to `row`, and the ending column of the calling range is equal to `column`<br/>
+     * * `-1` if the starting row of the calling range is equal to `row`, and the starting column of the calling range is equal to `column`<br/>
+     * <br/>
+     * Otherwise, it returns the value after calling [[Range.compare `compare()`]].
+     *
+     * Checks the row and column points with the row and column points of the calling range.
+     *
+     *
+     *
+     **/
     this.compareInside = function(row, column) {
         if (this.end.row == row && this.end.column == column) {
             return 1;
@@ -5980,6 +6540,14 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         }
     }
 
+   /** 
+     * Range.clipRows(firstRow, lastRow) -> Range
+     * - firstRow (Number): The starting row
+     * - lastRow (Number): The ending row
+     *
+     * Returns the part of the current `Range` that occurs within the boundaries of `firstRow` and `lastRow` as a new `Range` object.
+     *
+    **/
     this.clipRows = function(firstRow, lastRow) {
         if (this.end.row > lastRow) {
             var end = {
@@ -6011,6 +6579,14 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         return Range.fromPoints(start || this.start, end || this.end);
     };
 
+   /** 
+     * Range.extend(row, column) -> Range
+     * - row (Number): A new row to extend to
+     * - column (Number): A new column to extend to
+     *
+     *  Changes the row and column points for the calling range for both the starting and ending points. This method returns that range with a new row.
+     *
+    **/
     this.extend = function(row, column) {
         var cmp = this.compare(row, column);
 
@@ -6024,33 +6600,36 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
         return Range.fromPoints(start || this.start, end || this.end);
     };
 
-    this.fixOrientation = function() {
-        if (
-            this.start.row < this.end.row 
-            || (this.start.row == this.end.row && this.start.column < this.end.column)
-        ) {
-            return false;
-        }
-        
-        var temp = this.start;
-        this.end = this.start;
-        this.start = temp;
-        return true;
-    };
-
-
     this.isEmpty = function() {
         return (this.start.row == this.end.row && this.start.column == this.end.column);
     };
 
+   /** 
+     * Range.isMultiLine() -> Boolean
+     *
+     * Returns true if the range spans across multiple lines.
+     *
+    **/
     this.isMultiLine = function() {
         return (this.start.row !== this.end.row);
     };
 
+   /** 
+     * Range.clone() -> Range
+     *
+     * Returns a duplicate of the calling range.
+     *
+    **/
     this.clone = function() {
         return Range.fromPoints(this.start, this.end);
     };
 
+   /** 
+     * Range.collapseRows() -> Range
+     *
+     * Returns a range containing the starting and ending rows of the original range, but with a column value of `0`.
+     *
+    **/
     this.collapseRows = function() {
         if (this.end.column == 0)
             return new Range(this.start.row, 0, Math.max(this.start.row, this.end.row-1), 0)
@@ -6058,6 +6637,12 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
             return new Range(this.start.row, 0, this.end.row, 0)
     };
 
+   /** 
+     * Range.toScreenRange(session) -> Range
+     * - session (EditSession): The `EditSession` to retrieve coordinates from
+     * 
+     * Given the current `Range`, this function converts those starting and ending points into screen positions, and then returns a new `Range` object.
+    **/
     this.toScreenRange = function(session) {
         var screenPosStart =
             session.documentToScreenPosition(this.start);
@@ -6072,7 +6657,14 @@ var Range = function(startRow, startColumn, endRow, endColumn) {
 
 }).call(Range.prototype);
 
-
+/** 
+ * Range.fromPoints(start, end) -> Range
+ * - start (Range): A starting point to use
+ * - end (Range): An ending point to use
+ * 
+ * Creates and returns a new `Range` based on the row and column of the given parameters.
+ *
+**/
 Range.fromPoints = function(start, end) {
     return new Range(start.row, start.column, end.row, end.column);
 };
@@ -6123,9 +6715,22 @@ var oop = require("./lib/oop");
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
 
 /**
- * An Anchor is a floating pointer in the document. Whenever text is inserted or
- * deleted before the cursor, the position of the cursor is updated
- */
+ * class Anchor
+ *
+ * Defines the floating pointer in the document. Whenever text is inserted or deleted before the cursor, the position of the cursor is updated
+ *
+ **/
+
+/**
+ * new Anchor(doc, row, column)
+ * - doc (Document): The document to associate with the anchor
+ * - row (Number): The starting row position
+ * - column (Number): The starting column position
+ *
+ * Creates a new `Anchor` and associates it with a document.
+ *
+ **/
+
 var Anchor = exports.Anchor = function(doc, row, column) {
     this.document = doc;
     
@@ -6142,14 +6747,36 @@ var Anchor = exports.Anchor = function(doc, row, column) {
 
     oop.implement(this, EventEmitter);
     
+    /**
+     * Anchor.getPosition() -> Object
+     *
+     * Returns an object identifying the `row` and `column` position of the current anchor.
+     *
+     **/
+
     this.getPosition = function() {
         return this.$clipPositionToDocument(this.row, this.column);
     };
-    
+ 
+     /**
+     * Anchor.getDocument() -> Document
+     *
+     * Returns the current document.
+     *
+     **/
+        
     this.getDocument = function() {
         return this.document;
     };
     
+     /**
+     * Anchor@onChange(e)
+     * - e (Event): Contains data about the event
+     *
+     * Fires whenever the anchor position changes. Events that can trigger this function include `'includeText'`, `'insertLines'`, `'removeText'`, and `'removeLines'`.
+     *
+     **/
+
     this.onChange = function(e) {
         var delta = e.data;
         var range = delta.range;
@@ -6215,6 +6842,16 @@ var Anchor = exports.Anchor = function(doc, row, column) {
         this.setPosition(row, column, true);
     };
 
+     /**
+     * Anchor.setPosition(row, column, noClip)
+     * - row (Number): The row index to move the anchor to
+     * - column (Number): The column index to move the anchor to
+     * - noClip (Boolean): Identifies if you want the position to be clipped
+     *
+     * Sets the anchor position to the specified row and column. If `noClip` is `true`, the position is not clipped.
+     *
+     **/
+
     this.setPosition = function(row, column, noClip) {
         var pos;
         if (noClip) {
@@ -6243,10 +6880,26 @@ var Anchor = exports.Anchor = function(doc, row, column) {
         });
     };
     
+    /**
+     * Anchor.detach()
+     *
+     * When called, the `'change'` event listener is removed.
+     *
+     **/
+
     this.detach = function() {
         this.document.removeEventListener("change", this.$onChange);
     };
     
+    /** internal, hide
+     * Anchor.clipPositionToDocument(row, column)
+     * - row (Number): The row index to clip the anchor to
+     * - column (Number): The column index to clip the anchor to
+     *
+     * Clips the anchor position to the specified row and column.
+     *
+     **/
+
     this.$clipPositionToDocument = function(row, column) {
         var pos = {};
     
@@ -6375,7 +7028,7 @@ exports.arrayToMap = function(arr) {
 
 };
 
-/**
+/*
  * splice out of 'array' anything that === 'value'
  */
 exports.arrayRemove = function(array, value) {
@@ -7080,7 +7733,7 @@ completer.completionRequiresParsing = function() {
     return false;
 };
     
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var identDict = analyze(doc, pos);
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
@@ -7091,7 +7744,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
     }
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
 
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         return {
           name        : m,
           replaceText : m,
@@ -7100,7 +7753,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : "",
           priority    : 1
         };
-    });
+    }));
 };
 
 });
@@ -7142,8 +7795,8 @@ module.exports = {
      * @param code code to parse
      * @return treehugger AST or null if not implemented
      */
-    parse: function(doc) {
-        return null;
+    parse: function(doc, callback) {
+        callback();
     },
     
     /**
@@ -7158,14 +7811,16 @@ module.exports = {
      * Invoked on a successful parse
      * @param ast the resulting AST in treehugger format
      */
-    onParse: function(ast) {
+    onParse: function(ast, callback) {
+        callback();
     },
     
     /**
      * Invoked when the document has been updated (possibly after a certain interval)
      * @param doc the document object
      */
-    onUpdate: function(doc) {
+    onUpdate: function(doc, callback) {
+        callback();
     },
     
     /**
@@ -7174,29 +7829,32 @@ module.exports = {
      * @param doc the document object
      * @param oldPath the path of the document that was active before
      */
-    onDocumentOpen: function(path, doc, oldPath) {
+    onDocumentOpen: function(path, doc, oldPath, callback) {
+        callback();
     },
     
     /**
      * Invoked when a document is closed in the IDE
      * @param path the path of the file
      */
-    onDocumentClose: function(path) {
+    onDocumentClose: function(path, callback) {
+        callback();
     },
     
     /**
      * Invoked when the cursor has been moved inside to a different AST node
      * @return a JSON object with three optional keys: {markers: [...], hint: {message: ...}, enableRefactoring: [...]}
      */
-    onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode) {
+    onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode, callback) {
+        callback();
     },
     
     /**
      * Invoked when an outline is required
      * @return a JSON outline structure or null if not supported
      */
-    outline: function(ast) {
-        return null;
+    outline: function(ast, callback) {
+        callback();
     },
     
     /**
@@ -7213,8 +7871,8 @@ module.exports = {
      * @param cursorPos the current cursor position (object with keys 'row' and 'column')
      * @param currentNode the AST node the cursor is currently at
      */
-    complete: function(doc, fullAst, cursorPos, currentNode) {
-        return null;
+    complete: function(doc, fullAst, cursorPos, currentNode, callback) {
+        callback();
     },
 
     /**
@@ -7227,16 +7885,16 @@ module.exports = {
     /**
      * Enables the handler to do analysis of the AST and annotate as desired
      */
-    analyze: function(doc, fullAst) {
-        return null;
+    analyze: function(doc, fullAst, callback) {
+        callback();
     },
     
     /**
      * Invoked when inline variable renaming is activated
      * @return an array of positions of the currently selected variable
      */
-    getVariablePositions: function(doc, fullAst, pos, currentNode) {
-        return null;
+    getVariablePositions: function(doc, fullAst, pos, currentNode, callback) {
+        callback();
     }
 };
 
@@ -7280,10 +7938,8 @@ function findCompletions(prefix, allIdentifiers) {
     allIdentifiers.sort();
     var startIdx = prefixBinarySearch(allIdentifiers, prefix);
     var matches = [];
-    for (var i = startIdx; i < allIdentifiers.length &&
-                          allIdentifiers[i].indexOf(prefix) === 0; i++) {
+    for (var i = startIdx; i < allIdentifiers.length && allIdentifiers[i].indexOf(prefix) === 0; i++)
         matches.push(allIdentifiers[i]);
-    }
     return matches;
 }
 
@@ -7315,9 +7971,11 @@ completer.fetchText = function(path) {
         return false;
 };
 
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    if(line[pos.column-1] === '.') // No snippet completion after "."
+        return callback([]);
 
     var snippets = snippetCache[this.language];
     
@@ -7331,7 +7989,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
     var allIdentifiers = Object.keys(snippets);
     
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         return {
           name        : m,
           replaceText : snippets[m],
@@ -7339,7 +7997,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : "snippet",
           priority    : 2
         };
-    });
+    }));
 };
 
 
@@ -7403,22 +8061,25 @@ function analyzeDocument(path, allCode) {
     }
 }
 
-completer.onDocumentOpen = function(path, doc) {
+completer.onDocumentOpen = function(path, doc, oldPath, callback) {
     if (!analysisCache[path]) {
         analyzeDocument(path, doc.getValue());
     }
+    callback();
 };
     
-completer.onDocumentClose = function(path) {
+completer.onDocumentClose = function(path, callback) {
     removeDocumentFromCache(path);
+    callback();
 };
 
-completer.onUpdate = function(doc) {
+completer.onUpdate = function(doc, callback) {
     removeDocumentFromCache(this.path);
     analyzeDocument(this.path, doc.getValue());
+    callback();
 };
 
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     var identDict = globalWordIndex;
@@ -7434,7 +8095,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
         return !globalWordFiles[m][currentPath];
     });
 
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         var path = Object.keys(globalWordFiles[m])[0] || "[unknown]";
         var pathParts = path.split("/");
         var foundInFile = pathParts[pathParts.length-1];
@@ -7446,7 +8107,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : foundInFile,
           priority    : 0
         };
-    });
+    }));
 };
 
 });
@@ -7467,9 +8128,9 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
     
-handler.parse = function(code) {
+handler.parse = function(code, callback) {
     code = code.replace(/^(#!.*\n)/, "//$1");
-    return parser.parse(code);
+    callback(parser.parse(code));
 };
 
 /* Ready to be enabled to replace Narcissus, when mature
@@ -9206,10 +9867,12 @@ exports.set_logger = function(logger) {
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define('ext/jslanguage/scope_analyzer', ['require', 'exports', 'module' , 'ext/language/base_handler', 'treehugger/traverse'], function(require, exports, module) {
+define('ext/jslanguage/scope_analyzer', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ext/codecomplete/complete_util', 'treehugger/traverse'], function(require, exports, module) {
+    
 var baseLanguageHandler = require('ext/language/base_handler');
-require('treehugger/traverse');
+var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
+require('treehugger/traverse');
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
@@ -9220,116 +9883,125 @@ var GLOBALS = {
     "null"                   : true,
     "this"                   : true,
     "arguments"              : true,
+    self                     : true,
+    Infinity                 : true,
+    onmessage                : true,
+    postMessage              : true,
+    importScripts            : true,
+    "continue"               : true,
+    "return"                 : true,
+    "else"                   : true,
     // Browser
-    ArrayBuffer              :  true,
-    ArrayBufferView          :  true,
-    Audio                    :  true,
-    addEventListener         :  true,
-    applicationCache         :  true,
-    blur                     :  true,
-    clearInterval            :  true,
-    clearTimeout             :  true,
-    close                    :  true,
-    closed                   :  true,
-    DataView                 :  true,
-    defaultStatus            :  true,
-    document                 :  true,
-    event                    :  true,
-    FileReader               :  true,
-    Float32Array             :  true,
-    Float64Array             :  true,
-    FormData                 :  true,
-    getComputedStyle         :  true,
-    HTMLElement              :  true,
-    HTMLAnchorElement        :  true,
-    HTMLBaseElement          :  true,
-    HTMLBlockquoteElement    :  true,
-    HTMLBodyElement          :  true,
-    HTMLBRElement            :  true,
-    HTMLButtonElement        :  true,
-    HTMLCanvasElement        :  true,
-    HTMLDirectoryElement     :  true,
-    HTMLDivElement           :  true,
-    HTMLDListElement         :  true,
-    HTMLFieldSetElement      :  true,
-    HTMLFontElement          :  true,
-    HTMLFormElement          :  true,
-    HTMLFrameElement         :  true,
-    HTMLFrameSetElement      :  true,
-    HTMLHeadElement          :  true,
-    HTMLHeadingElement       :  true,
-    HTMLHRElement            :  true,
-    HTMLHtmlElement          :  true,
-    HTMLIFrameElement        :  true,
-    HTMLImageElement         :  true,
-    HTMLInputElement         :  true,
-    HTMLIsIndexElement       :  true,
-    HTMLLabelElement         :  true,
-    HTMLLayerElement         :  true,
-    HTMLLegendElement        :  true,
-    HTMLLIElement            :  true,
-    HTMLLinkElement          :  true,
-    HTMLMapElement           :  true,
-    HTMLMenuElement          :  true,
-    HTMLMetaElement          :  true,
-    HTMLModElement           :  true,
-    HTMLObjectElement        :  true,
-    HTMLOListElement         :  true,
-    HTMLOptGroupElement      :  true,
-    HTMLOptionElement        :  true,
-    HTMLParagraphElement     :  true,
-    HTMLParamElement         :  true,
-    HTMLPreElement           :  true,
-    HTMLQuoteElement         :  true,
-    HTMLScriptElement        :  true,
-    HTMLSelectElement        :  true,
-    HTMLStyleElement         :  true,
-    HTMLTableCaptionElement  :  true,
-    HTMLTableCellElement     :  true,
-    HTMLTableColElement      :  true,
-    HTMLTableElement         :  true,
-    HTMLTableRowElement      :  true,
-    HTMLTableSectionElement  :  true,
-    HTMLTextAreaElement      :  true,
-    HTMLTitleElement         :  true,
-    HTMLUListElement         :  true,
-    HTMLVideoElement         :  true,
-    Int16Array               :  true,
-    Int32Array               :  true,
-    Int8Array                :  true,
-    Image                    :  true,
-    localStorage             :  true,
-    location                 :  true,
-    navigator                :  true,
-    open                     :  true,
-    openDatabase             :  true,
-    Option                   :  true,
-    parent                   :  true,
-    print                    :  true,
-    removeEventListener      :  true,
-    resizeBy                 :  true,
-    resizeTo                 :  true,
-    screen                   :  true,
-    scroll                   :  true,
-    scrollBy                 :  true,
-    scrollTo                 :  true,
-    sessionStorage           :  true,
-    setInterval              :  true,
-    setTimeout               :  true,
-    SharedWorker             :  true,
-    Uint16Array              :  true,
-    Uint32Array              :  true,
-    Uint8Array               :  true,
-    WebSocket                :  true,
-    window                   :  true,
-    Worker                   :  true,
-    XMLHttpRequest           :  true,
-    XPathEvaluator           :  true,
-    XPathException           :  true,
-    XPathExpression          :  true,
-    XPathNamespace           :  true,
-    XPathNSResolver          :  true,
-    XPathResult              :  true,
+    ArrayBuffer              : true,
+    ArrayBufferView          : true,
+    Audio                    : true,
+    addEventListener         : true,
+    applicationCache         : true,
+    blur                     : true,
+    clearInterval            : true,
+    clearTimeout             : true,
+    close                    : true,
+    closed                   : true,
+    DataView                 : true,
+    defaultStatus            : true,
+    document                 : true,
+    event                    : true,
+    FileReader               : true,
+    Float32Array             : true,
+    Float64Array             : true,
+    FormData                 : true,
+    getComputedStyle         : true,
+    CDATASection             : true,
+    HTMLElement              : true,
+    HTMLAnchorElement        : true,
+    HTMLBaseElement          : true,
+    HTMLBlockquoteElement    : true,
+    HTMLBodyElement          : true,
+    HTMLBRElement            : true,
+    HTMLButtonElement        : true,
+    HTMLCanvasElement        : true,
+    HTMLDirectoryElement     : true,
+    HTMLDivElement           : true,
+    HTMLDListElement         : true,
+    HTMLFieldSetElement      : true,
+    HTMLFontElement          : true,
+    HTMLFormElement          : true,
+    HTMLFrameElement         : true,
+    HTMLFrameSetElement      : true,
+    HTMLHeadElement          : true,
+    HTMLHeadingElement       : true,
+    HTMLHRElement            : true,
+    HTMLHtmlElement          : true,
+    HTMLIFrameElement        : true,
+    HTMLImageElement         : true,
+    HTMLInputElement         : true,
+    HTMLIsIndexElement       : true,
+    HTMLLabelElement         : true,
+    HTMLLayerElement         : true,
+    HTMLLegendElement        : true,
+    HTMLLIElement            : true,
+    HTMLLinkElement          : true,
+    HTMLMapElement           : true,
+    HTMLMenuElement          : true,
+    HTMLMetaElement          : true,
+    HTMLModElement           : true,
+    HTMLObjectElement        : true,
+    HTMLOListElement         : true,
+    HTMLOptGroupElement      : true,
+    HTMLOptionElement        : true,
+    HTMLParagraphElement     : true,
+    HTMLParamElement         : true,
+    HTMLPreElement           : true,
+    HTMLQuoteElement         : true,
+    HTMLScriptElement        : true,
+    HTMLSelectElement        : true,
+    HTMLStyleElement         : true,
+    HTMLTableCaptionElement  : true,
+    HTMLTableCellElement     : true,
+    HTMLTableColElement      : true,
+    HTMLTableElement         : true,
+    HTMLTableRowElement      : true,
+    HTMLTableSectionElement  : true,
+    HTMLTextAreaElement      : true,
+    HTMLTitleElement         : true,
+    HTMLUListElement         : true,
+    HTMLVideoElement         : true,
+    Int16Array               : true,
+    Int32Array               : true,
+    Int8Array                : true,
+    Image                    : true,
+    localStorage             : true,
+    location                 : true,
+    navigator                : true,
+    open                     : true,
+    openDatabase             : true,
+    Option                   : true,
+    parent                   : true,
+    print                    : true,
+    removeEventListener      : true,
+    resizeBy                 : true,
+    resizeTo                 : true,
+    screen                   : true,
+    scroll                   : true,
+    scrollBy                 : true,
+    scrollTo                 : true,
+    sessionStorage           : true,
+    setInterval              : true,
+    setTimeout               : true,
+    SharedWorker             : true,
+    Uint16Array              : true,
+    Uint32Array              : true,
+    Uint8Array               : true,
+    WebSocket                : true,
+    window                   : true,
+    Worker                   : true,
+    XMLHttpRequest           : true,
+    XPathEvaluator           : true,
+    XPathException           : true,
+    XPathExpression          : true,
+    XPathNamespace           : true,
+    XPathNSResolver          : true,
+    XPathResult              : true,
     // Devel
     alert                    : true,
     confirm                  : true,
@@ -9471,11 +10143,14 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-function Variable(declaration) {
+var scopeId = 0;
+
+var Variable = module.exports.Variable = function Variable(declaration) {
     this.declarations = [];
     if(declaration)
         this.declarations.push(declaration);
     this.uses = [];
+    this.values = [];
 }
 
 Variable.prototype.addUse = function(node) {
@@ -9486,7 +10161,78 @@ Variable.prototype.addDeclaration = function(node) {
     this.declarations.push(node);
 };
 
-handler.analyze = function(doc, ast) {
+/**
+ * Implements Javascript's scoping mechanism using a hashmap with parent
+ * pointers.
+ */
+var Scope = module.exports.Scope = function Scope(parent) {
+    this.id = scopeId++;
+    this.parent = parent;
+    this.vars = {};
+};
+
+/**
+ * Declare a variable in the current scope
+ */
+Scope.prototype.declare = function(name, resolveNode) {
+    if(!this.vars['_'+name]) 
+        this.vars['_'+name] = new Variable(resolveNode);
+    else if(resolveNode)
+        this.vars['_'+name].addDeclaration(resolveNode);
+    return this.vars['_'+name];
+};
+
+Scope.prototype.isDeclared = function(name) {
+    return !!this.get(name);
+};
+
+/**
+ * Get possible values of a variable
+ * @param name name of variable
+ * @return Variable instance 
+ */
+Scope.prototype.get = function(name) {
+    if(this.vars['_'+name])
+        return this.vars['_'+name];
+    else if(this.parent)
+        return this.parent.get(name);
+};
+
+Scope.prototype.getVariableNames = function() {
+    var names = [];
+    for(var p in this.vars) {
+        if(this.vars.hasOwnProperty(p)) {
+            names.push(p.slice(1));
+        }
+    }
+    if(this.parent) {
+        var namesFromParent = this.parent.getVariableNames();
+        for (var i = 0; i < namesFromParent.length; i++) {
+            names.push(namesFromParent[i]);
+        }
+    }
+    return names;
+};
+
+var GLOBALS_ARRAY = Object.keys(GLOBALS);
+
+handler.complete = function(doc, fullAst, pos, currentNode, callback) {
+    var line = doc.getLine(pos.row);
+    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+
+    var matches = completeUtil.findCompletions(identifier, GLOBALS_ARRAY);
+    callback(matches.map(function(m) {
+        return {
+          name        : m,
+          replaceText : m,
+          icon        : null,
+          meta        : "EcmaScript",
+          priority    : 0
+        };
+    }));
+};
+
+handler.analyze = function(doc, ast, callback) {
     var handler = this;
     var markers = [];
     
@@ -9496,26 +10242,19 @@ handler.analyze = function(doc, ast) {
             // var bla;
             'VarDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                if(!scope.hasOwnProperty(b.x.value))
-                    scope[b.x.value] = new Variable(b.x);
-                else
-                    scope[b.x.value].addDeclaration(b.x);
+                scope.declare(b.x.value, b.x);
                 return node;
             },
             // var bla = 10;
-            'VarDeclInit(x, _)', function(b, node) {
+            'VarDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                if(!scope.hasOwnProperty(b.x.value))
-                    scope[b.x.value] = new Variable(b.x);
-                else
-                    scope[b.x.value].addDeclaration(b.x);
-                return node;
+                scope.declare(b.x.value, b.x);
             },
             // function bla(farg) { }
             'Function(x, _, _)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 if(b.x.value) {
-                    scope[b.x.value] = new Variable(b.x);
+                    scope.declare(b.x.value, b.x);
                 }
                 return node;
             }
@@ -9525,38 +10264,38 @@ handler.analyze = function(doc, ast) {
     function scopeAnalyzer(scope, node, parentLocalVars) {
         preDeclareHoisted(scope, node);
         var localVariables = parentLocalVars || [];
+        node.setAnnotation("scope", scope);
         function analyze(scope, node) {
             node.traverseTopDown(
                 'VarDecl(x)', function(b) {
-                    localVariables.push(scope[b.x.value]);
+                    localVariables.push(scope.get(b.x.value));
                 },
                 'VarDeclInit(x, _)', function(b) {
-                    localVariables.push(scope[b.x.value]);
+                    localVariables.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
-                    if(!scope[b.x.value]) {
+                    if(!scope.isDeclared(b.x.value)) {
                         markers.push({
                             pos: node[0].getPos(),
+                            level: 'warning',
                             type: 'warning',
-                            message: 'Assigning to undeclared variable.'
+                            message: "Assigning to undeclared variable."
                         });
                     }
                     else {
-                        scope[b.x.value].addUse(node[0]);
+                        scope.get(b.x.value).addUse(node[0]);
                     }
                     analyze(scope, b.e);
                     return this;
                 },
-                'ForIn(Var(x), e, stats)', function(b, node) {
-                    if(!scope[b.x.value]) {
+                'ForIn(Var(x), e, stats)', function(b) {
+                    if(!scope.isDeclared(b.x.value)) {
                         markers.push({
-                            pos: node[0].getPos(),
+                            pos: this.getPos(),
+                            level: 'warning',
                             type: 'warning',
-                            message: 'Using undeclared variable as iterator variable.'
+                            message: "Using undeclared variable as iterator variable."
                         });
-                    }
-                    else {
-                        scope[b.x.value].addUse(node);
                     }
                     analyze(scope, b.e);
                     analyze(scope, b.stats);
@@ -9564,11 +10303,12 @@ handler.analyze = function(doc, ast) {
                 },
                 'Var(x)', function(b, node) {
                     node.setAnnotation("scope", scope);
-                    if(scope[b.x.value]) {
-                        scope[b.x.value].addUse(node);
+                    if(scope.isDeclared(b.x.value)) {
+                        scope.get(b.x.value).addUse(node);
                     } else if(handler.isFeatureEnabled("undeclaredVars") && !GLOBALS[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
+                            level: 'warning',
                             type: 'warning',
                             message: "Undeclared variable."
                         });
@@ -9576,41 +10316,45 @@ handler.analyze = function(doc, ast) {
                     return node;
                 },
                 'Function(x, fargs, body)', function(b, node) {
-                    node.setAnnotation("scope", scope);
-
-                    var newScope = Object.create(scope);
-                    newScope['this'] = new Variable();
+                    var newScope = new Scope(scope);
+                    node.setAnnotation("localScope", newScope);
+                    newScope.declare("this");
                     b.fargs.forEach(function(farg) {
                         farg.setAnnotation("scope", newScope);
-                        newScope[farg[0].value] = new Variable(farg);
+                        var v = newScope.declare(farg[0].value, farg);
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
-                            localVariables.push(newScope[farg[0].value]);
+                            localVariables.push(v);
                     });
                     scopeAnalyzer(newScope, b.body);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
-                    var oldVar = scope[b.x.value];
+                    var oldVar = scope.get(b.x.value);
                     // Temporarily override
-                    scope[b.x.value] = new Variable(b.x);
+                    scope.vars[b.x.value] = new Variable(b.x);
                     scopeAnalyzer(scope, b.body, localVariables);
                     // Put back
-                    scope[b.x.value] = oldVar;
+                    scope.vars[b.x.value] = oldVar;
                     return node;
                 },
                 'PropAccess(_, "lenght")', function(b, node) {
                     markers.push({
                         pos: node.getPos(),
                         type: 'warning',
+                        level: 'warning',
                         message: "Did you mean 'length'?"
                     });
                 },
                 'Call(Var("parseInt"), [_])', function() {
                     markers.push({
                         pos: this[0].getPos(),
-                        type: 'warning',
+                        type: 'info',
+                        level: 'info',
                         message: "Missing radix argument."
                     });
+                },
+                'Block(_)', function() {
+                    this.setAnnotation("scope", scope);
                 }
             );
         }
@@ -9623,6 +10367,7 @@ handler.analyze = function(doc, ast) {
                         markers.push({
                             pos: decl.getPos(),
                             type: 'unused',
+                            level: 'info',
                             message: 'Unused variable.'
                         });
                     });
@@ -9630,13 +10375,14 @@ handler.analyze = function(doc, ast) {
             }
         }
     }
-    scopeAnalyzer({}, ast);
-    return markers;
+    var rootScope = new Scope();
+    scopeAnalyzer(rootScope, ast);
+    callback(markers);
 };
 
-handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
+handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
-        return;
+        return callback();
     var markers = [];
     var enableRefactorings = [];
     
@@ -9662,66 +10408,66 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             var scope = this.getAnnotation("scope");
             if (!scope)
                 return;
-            var v = scope[b.x.value];
+            var v = scope.get(b.x.value);
             highlightVariable(v);
             // Let's not enable renaming 'this' and only rename declared variables
             if(b.x.value !== "this" && v)
                 enableRefactorings.push("renameVariable");
         },
         'VarDeclInit(x, _)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'VarDecl(x)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'FArg(x)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'Function(x, _, _)', function(b) {
             // Only for named functions
             if(!b.x.value)
                 return;
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         }
     );
     
     if (!this.isFeatureEnabled("instanceHighlight"))
-        return { enableRefactorings: enableRefactorings };    
+        return callback({ enableRefactorings: enableRefactorings });
 
-    return {
+    callback({
         markers: markers,
         enableRefactorings: enableRefactorings
-    };
+    });
 };
 
-handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
+handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     var v;
     var mainNode;    
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
-            mainNode = b.x;    
+            v = node.getAnnotation("scope").get(b.x.value);
+            mainNode = b.x;
         },
         'VarDecl(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
         'FArg(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = node;
         },
         'Function(x, _, _)', function(b, node) {
             if(!b.x.value)
                 return;
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
         'Var(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = node;
         }
     );
@@ -9743,14 +10489,14 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
             others.push({column: pos.sc, row: pos.sl});
         }
     });
-    return {
+    callback({
         length: length,
         pos: {
             row: pos.sl,
             column: pos.sc
         },
         others: others
-    };
+    });
 };
 
 });
@@ -9956,15 +10702,13 @@ exports.addParentPointers = function(node) {
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define('ext/jslanguage/narcissus_jshint', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ace/worker/jshint', 'ace/narcissus/parser'], function(require, exports, module) {
+define('ext/jslanguage/narcissus_jshint', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ace/worker/jshint'], function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
-var parser = require("ace/narcissus/parser");
-
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -9974,32 +10718,11 @@ handler.analysisRequiresParsing = function() {
     return false;
 };
 
-handler.analyze = function(doc) {
+handler.analyze = function(doc, ast, callback) {
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
 
     var markers = [];
-    try {
-        parser.parse(value);
-    }
-    catch (e) {
-        var chunks = e.message.split(":");
-        var message = chunks.pop().trim();
-        var numString = chunks.pop();
-        if(numString) {
-            var lineNumber = parseInt(numString.trim(), 10) - 1;
-            markers = [{
-                pos: {
-                    sl: lineNumber,
-                    el: lineNumber
-                },
-                message: message,
-                type: "error"
-            }];
-        }
-        return markers;
-    }
-    finally {}
     if (this.isFeatureEnabled("jshint")) {
         lint(value, {
             undef: false,
@@ -10009,9 +10732,16 @@ handler.analyze = function(doc) {
             browser: true,
             node: true
         });
+        
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
+            var type = "warning"
+            var reason = warning.reason;
+            if(reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
+                type = "error";
+            if(reason.indexOf("Missing semicolon") !== -1)
+                type = "info";
             for (var i = 0; i < disabledJSHintWarnings.length; i++)
                 if(disabledJSHintWarnings[i].test(warning.reason))
                     return;
@@ -10020,12 +10750,13 @@ handler.analyze = function(doc) {
                     sl: warning.line-1,
                     sc: warning.column-1
                 },
-                type: 'warning',
+                type: type,
+                level: type,
                 message: warning.reason
             });
         });
     }
-    return markers;
+    callback(markers);
 };
     
 });
@@ -14497,7 +15228,8 @@ loop:   for (;;) {
 if (typeof exports === 'object' && exports)
     exports.JSHINT = JSHINT;
 
-});/**
+});
+/**
  * Cloud9 Language Foundation
  *
  * @copyright 2011, Ajax.org B.V.

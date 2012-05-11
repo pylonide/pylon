@@ -30,7 +30,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         var _self = this;
         
         var isAvailable = function(){
-            if (apf.activeElement.localName == "codeeditor")
+            if (apf.activeElement && apf.activeElement.localName == "codeeditor")
                 return !(window.event instanceof KeyboardEvent);
             
             return self.trFiles && apf.activeElement == trFiles;
@@ -55,6 +55,24 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             bindKey: {mac: "Command-V", win: "Ctrl-V"},
             isAvailable : isAvailable,
             exec: function(){ _self.paste(); }
+        });
+        
+        commands.addCommand({
+            name: "clearcut",
+            bindKey: {mac: "ESC", win: "ESC"},
+            isAvailable : function(){
+                return self.trFiles && apf.activeElement == trFiles
+                  && apf.clipboard.store && !apf.clipboard.copied;
+            },
+            exec: function(){ 
+                var nodes = apf.clipboard.store;
+                if (!nodes) return false;
+                
+                apf.clipboard.$highlightSelection(trFiles, nodes, true);
+                apf.clipboard.clear();
+                
+                return false;
+            }
         });
         
         this.nodes.push(

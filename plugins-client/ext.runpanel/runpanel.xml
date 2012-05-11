@@ -7,9 +7,10 @@
       skin     = "fm-window"
       flex     = "1" 
       optimize = "true"
+      minwidth = "200"
       modal    = "false">
         <a:bar skin="c9-header-bar" height="26" class="c9-header-divider">
-            <a:hbox id="barTestTools">
+            <a:hbox>
                 <a:button id="btnAddRunConf"
                   class  = "c9-header-plus c9-header-divider"
                   onclick  = "require('ext/runpanel/runpanel').addConfig()"
@@ -76,35 +77,35 @@
               
             <a:bar skin="basic" class="run-panel-info">
                 <a:vbox>
-                  <a:hbox>
-                    <a:label width="100" skin="black_label" >Name</a:label>
-                    <a:textbox id="txtRunCfgName" 
-                      skin = "black_textbox"
-                      flex="1"
-                      realtime="true"
-                      value="[@name]"
-                    />
-                  </a:hbox>
-                  <a:hbox>
-                    <a:label width="100" skin="black_label">File Path</a:label>
-                    <a:textbox skin = "black_textbox" flex="1" value="[@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
-                    <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
-                    
-                    <!--a:divider span="2" skin="c9-divider-hor" /-->
-                    <a:model id="mdlRunnerSelector">
-                        <data>
-                            <element caption="Default" value="default" />
-                            <element caption="Auto" value="auto" />
-                            <element caption="Node.js 0.6.x" value="0.6.x" />
-                            <element caption="Node.js 0.4.x" value="0.4.x" />
-                        </data>
-                    </a:model>
-                  </a:hbox>
+                    <a:hbox>
+                        <a:label width="100" skin="black_label" >Name</a:label>
+                        <a:textbox id="txtRunCfgName" 
+                          skin = "black_textbox"
+                          flex="1"
+                          realtime="true"
+                          value="[{lstRunCfg.selected}::@name]"
+                          disabled="{!lstRunCfg.selected || [{lstRunCfg.selected}::@curfile]}"/>
+                    </a:hbox>
+                    <a:hbox>
+                        <a:label width="100" skin="black_label">File Path</a:label>
+                        <a:textbox skin = "black_textbox" flex="1" value="[{lstRunCfg.selected}::@path]" disabled="{!lstRunCfg.selected or [{lstRunCfg.selected}::@curfile]}"/>
+                        <!--a:button icon="folder.png" disabled="true" tooltip="Browse ..."></a:button-->
+                        
+                        <!--a:divider span="2" skin="c9-divider-hor" /-->
+                        <a:model id="mdlRunnerSelector">
+                            <data>
+                                <element caption="Default" value="default" />
+                                <element caption="Auto" value="auto" />
+                                <element caption="Node.js 0.6.x" value="0.6.x" />
+                                <element caption="Node.js 0.4.x" value="0.4.x" />
+                            </data>
+                        </a:model>
+                    </a:hbox>
                     <a:hbox>
                       <a:label width="100" skin="black_label">Runtime</a:label>
                       <a:dropdown id="ddRunnerSelector"
+                          skin      = "light_dropdown"
                           model     = "mdlRunnerSelector"
-                          skin      = "black_dropdown"
                           flex      = "1"
                           disabled  = "{!lstRunCfg.selected}"
                           value     = "[{lstRunCfg.selected}::@value]"
@@ -114,8 +115,8 @@
                           eachvalue = "[@value]" />
                     </a:hbox>
                     <a:hbox>
-                      <a:label width="100" skin="black_label">Cmd Line Args</a:label>
-                      <a:textbox skin = "black_textbox" flex="1" value="[@args]" disabled="{!!!lstRunCfg.selected}"/>
+                        <a:label width="100" skin="black_label">Cmd Line Args</a:label>
+                        <a:textbox skin = "black_textbox" flex="1" value="[{lstRunCfg.selected}::@args]" disabled="{!!!lstRunCfg.selected}"/>
                     </a:hbox>
                 </a:vbox>
             </a:bar>

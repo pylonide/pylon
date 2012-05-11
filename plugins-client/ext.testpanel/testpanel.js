@@ -95,6 +95,11 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
 
     init : function() {
+        
+        btnTestRun.$ext.setAttribute("class", "light-dropdown");
+        btnTestStop.$ext.setAttribute("class", btnTestStop.$ext.getAttribute("class") + " btnTestStop");
+        winTestPanel.$ext.setAttribute("class", winTestPanel.$ext.getAttribute("class") + " testpanel");
+
         var _self  = this;
         
         this.panel = winTestPanel;
@@ -109,11 +114,13 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     
         var altKey;
         apf.addListener(document, "keydown", function(e){
-            altKey = (e || event).altKey;
+            if ((e || event).keyCode == 18)
+                altKey = true;
         });
         
         apf.addListener(document, "keyup", function(e){
-            altKey = (e || event).altKey ? false : altKey;
+            if ((e || event).keyCode == 18)
+                altKey = false;
         });
     
         dgTestProject.addEventListener("afterchoose", function(e){

@@ -1,4 +1,3 @@
-
 /**
  * Searchinfiles Module for the Cloud9 IDE
  *
@@ -19,8 +18,11 @@ var menus = require("ext/menus/menus");
 var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
 var commands = require("ext/commands/commands");
+var tooltip = require("ext/tooltip/tooltip");
+var libsearch = require("ext/searchreplace/libsearch");
+var searchreplace = require("ext/searchreplace/searchreplace");
 
-module.exports = ext.register("ext/searchinfiles/searchinfiles", {
+module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     name     : "Search in files",
     dev      : "Ajax.org",
     type     : ext.GENERAL,
@@ -46,7 +48,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             hint: "search for a string through all files in the current workspace",
             bindKey: {mac: "Shift-Command-F", win: "Ctrl-Shift-F"},
             exec: function () {
-                _self.toggleDialog(false);
+                _self.toggleDialog(1);
             }
         });
 
@@ -59,40 +61,126 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
     },
 
     init : function(amlNode){
-        this.txtFind         = txtSFFind;
-        this.btnFind         = btnSFFind;//winSearchInFiles.selectSingleNode("a:vbox/a:hbox/a:button[3]");
-        this.btnFind.onclick = this.execFind.bind(this, false);
-
-        this.txtReplace     = txtSFReplace;
-        this.btnReplaceAll  = btnSFReplaceAll;
-        this.btnReplaceAll.onclick = this.execFind.bind(this, true);
-
         var _self = this;
-        winSearchInFiles.onclose = this.onHide.bind(this);
         
-        this.txtFind.$ext.cols = this.txtFind.cols;
+        ide.addEventListener("settings.load", function(e){
+            e.ext.setDefaults("editors/code/filesearch", [
+                ["regex", "false"],
+                ["matchcase", "false"],
+                ["wholeword", "false"]
+            ]);
+        });
+        
+        commands.addCommand({
+            name: "hidesearchinfiles",
+            bindKey: {mac: "ESC", win: "ESC"},
+            isAvailable : function(editor){
+                return winSearchInFiles.visible;
+            },
+            exec: function(env, args, request) {
+                _self.toggleDialog(-1);
+            }
+        });
+        
+        ide.addEventListener("init.ext/console/console", function(e){
+            mainRow.insertBefore(winSearchInFiles, e.ext.splitter);
+        });
+        if (winSearchInFiles.parentNode != mainRow) {
+            mainRow.insertBefore(winSearchInFiles, 
+                self.winDbgConsole && winDbgConsole.previousSibling || null);
+        }
 
-        winSearchInFiles.onshow = function() {
-            if (self.trFiles)
-                trFiles.addEventListener("afterselect", _self.setSearchSelection);
-            _self.setSearchSelection();
-        };
-
+        winSearchInFiles.addEventListener("prop.visible", function(e) {
+            if (e.value) {
+                if (self.trFiles)
+                    trFiles.addEventListener("afterselect", _self.setSearchSelection);
+                _self.setSearchSelection();
+            }
+            else {
+                var editor = editors.currentEditor;
+                if (editor)
+                    editor.focus();
+        
+                if (self.trFiles)
+                    trFiles.removeEventListener("afterselect", 
+                        this.setSearchSelection);
+            }
+        });
         ide.addEventListener("init.ext/tree/tree", function(){
-            winSearchInFiles.onshow();
+            trFiles.addEventListener("afterselect", _self.setSearchSelection);
         });
 
         txtSFFind.addEventListener("keydown", function(e) {
-            switch (e.keyCode){
-                case 13: //ENTER
-                    if (!e.shiftKey) {
-                        _self.execFind(false);
-                        return false;
-                    }
-                    break;
+            if (e.keyCode == 13 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                _self.execFind();
+                return false;
+            }
+            
+            if (_self.findKeyboardHandler(e, "searchfiles", this, chkSFRegEx) === false)
+                return false;
+                
+            if (chkSFRegEx.checked
+              && _self.evaluateRegExp(txtSFFind, tooltipSearchInFiles, 
+              winSearchInFiles, e.htmlEvent) === false) {
+                return;
             }
         });
-        //ideConsole.show();
+        txtSFFind.addEventListener("keyup", function(e) {
+            if (e.keyCode != 8 && (e.ctrlKey || e.shiftKey || e.metaKey 
+              || e.altKey || !apf.isCharacter(e.keyCode)))
+                return;
+            
+            if (chkSFRegEx.checked) {
+                _self.evaluateRegExp(
+                    txtSFFind, tooltipSearchInFiles, winSearchInFiles);
+            }
+        });
+        
+        txtSFReplace.addEventListener("keydown", function(e) {
+            if (e.keyCode == 13 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                _self.replace();
+                return false;
+            }
+            
+            if (_self.findKeyboardHandler(e, "replacefiles", this, chkSFRegEx) === false)
+                return false;
+        });
+        
+        txtSFPatterns.addEventListener("keydown", function(e){
+            if (e.keyCode == 13)
+                return false;
+            
+            if (_self.findKeyboardHandler(e, "searchwhere", this) === false)
+                return false;
+        });
+        
+        var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
+        
+        chkSFRegEx.addEventListener("prop.value", function(e){
+            if (apf.isTrue(e.value)) {
+                if (txtSFFind.getValue())
+                    _self.updateInputRegExp(txtSFFind);
+            }
+            else
+                _self.removeInputRegExp(txtSFFind);
+        });
+        
+        var cbs = winSearchInFiles.getElementsByTagNameNS(apf.ns.aml, "checkbox");
+        cbs.forEach(function(cb){
+            tooltip.add(cb.$ext, {
+                message : cb.label,
+                width : "auto",
+                timeout : 0,
+                tooltip : tt,
+                animate : false,
+                getPosition : function(){
+                    var pos = apf.getAbsolutePosition(winSearchInFiles.$ext);
+                    var left = pos[0] + cb.getLeft();
+                    var top = pos[1];
+                    return [left, top - 16];
+                }
+            });
+        });
     },
 
     setSearchSelection: function(e){
@@ -141,72 +229,133 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             node = node.parentNode;
         return node;
     },
-
-    toggleDialog: function(isReplace, forceShow) {
+    
+    toggleDialog: function(force, isReplace, noselect, callback) {
+        var _self = this;
+        
         ext.initExtension(this);
 
-        if (apf.isWin && (location.host.indexOf("localhost") > -1 || location.host.indexOf("127.0.0.1") > -1)) {
-            return Util.alert("Search in Files", "Not Supported",
-                "I'm sorry, searching through files is not yet supported on the Windows platform.");
-        }
+        tooltipSearchInFiles.$ext.style.display = "none";
 
-        if (!winSearchInFiles.visible || forceShow || this.$lastState != isReplace) {
+        if (!force && !winSearchInFiles.visible || force > 0) {
+            if (winSearchInFiles.visible) {
+                txtSFFind.focus();
+                txtSFFind.select();
+                return;
+            }
+            
+            if (searchreplace.inited && winSearchReplace.visible) {
+                searchreplace.toggleDialog(-1, null, null, function(){
+                    _self.toggleDialog(force, isReplace, noselect);
+                });
+                return;
+            }
+            
+            winSearchInFiles.$ext.style.overflow = "hidden";
+            winSearchInFiles.$ext.style.height 
+                = winSearchInFiles.$ext.offsetHeight + "px";
+            
+            this.position = -1;
+
             var editor = editors.currentEditor;
             if (editor) {
-                var value  = editor.getDocument().getTextRange(editor.getSelection().getRange());
-                if (value)
-                    this.txtFind.setValue(value);
+                var sel   = editor.getSelection();
+                var doc   = editor.getDocument();
+                var range = sel.getRange();
+                var value = doc.getTextRange(range);
+    
+                if (value) {
+                    txtFind.setValue(value);
+                    
+                    delete txtFind.$undo;
+                    delete txtFind.$redo;
+                    
+                    if (chkRegEx.checked)
+                        this.updateInputRegExp(txtSFFind);
+                }
             }
 
-            ide.dispatchEvent("exitfullscreen");
             winSearchInFiles.show();
+            txtSFFind.focus();
+            txtSFFind.select();
+            
+            winSearchInFiles.$ext.scrollTop = 0;
+            document.body.scrollTop = 0;
+            
+            //Animate
+            Firmin.animate(winSearchInFiles.$ext, {
+                height: "102px",
+                timingFunction: "cubic-bezier(.10, .10, .25, .90)"
+            }, 0.2, function() {
+                winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                winSearchInFiles.$ext.style.height = "";
+                
+                setTimeout(function(){
+                    apf.layout.forceResize();
+                }, 50);
+            });
         }
-        else {
-            winSearchInFiles.hide();
+        else if (winSearchInFiles.visible) {
+            if (txtSFFind.getValue())
+                _self.saveHistory(txtSFFind.getValue());
+            
+            winSearchInFiles.visible = false;
+            
+            winSearchInFiles.$ext.style.height 
+                = winSearchInFiles.$ext.offsetHeight + "px";
+
+            //Animate
+            Firmin.animate(winSearchInFiles.$ext, {
+                height: "0px",
+                timingFunction: "ease-in-out"
+            }, 0.2, function(){
+                winSearchInFiles.visible = true;
+                winSearchInFiles.hide();
+                
+                winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+
+                if (!noselect && editors.currentEditor)
+                    editors.currentEditor.ceEditor.focus();
+                
+                setTimeout(function(){
+                    callback 
+                        ? callback()
+                        : apf.layout.forceResize();
+                }, 50);
+            });
         }
+
         return false;
     },
 
-    onHide : function() {
-        var editor = editors.currentEditor;
-        if (editor)
-            editor.focus();
-
-        trFiles.removeEventListener("afterselect", this.setSearchSelection);
-    },
-
     searchinfiles: function() {
-        return this.toggleDialog(false, true);
+        this.toggleDialog(1);
     },
 
     getOptions: function() {
         var _self = this;
 
-        var matchCase = "0";
-        if (chkSFMatchCase.checked)
-            matchCase = "1";
-        var regex = "0";
-        if (chkSFRegEx.checked)
-            regex = "1";
-
         return {
             query: txtSFFind.value,
             needle: txtSFFind.value,
-            pattern: ddSFPatterns.value,
-            casesensitive: matchCase,
-            regexp: regex,
+            pattern: txtSFPatterns.value,
+            casesensitive: chkSFMatchCase.checked ? "1" : "0",
+            regexp: chkSFRegEx.checked ? "1" : "0",
             replaceAll: _self.replaceAll ? "true" : "false",
             replacement: txtSFReplace.value
         };
     },
+    
+    replace : function(){
+        this.replaceAll = true;
+        this.execFind();
+        this.replaceAll = false;
+    },
 
-    execFind: function(replaceEnabled) {
+    execFind: function() {
         var _self = this;
-        _self.replaceAll = replaceEnabled;
 
-        winSearchInFiles.hide();
-        
-        // show the console (also used by the debugger):
+        // show the console
         ideConsole.show();
         
         if (!this.$panel) {
@@ -215,6 +364,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
             this.$panel.appendChild(trSFHbox);
             
             tabConsole.set(_self.pageID);
+            
             trSFHbox.show();
             trSFResult.setProperty("visible", true);
             this.$model = trSFResult.getModel();
@@ -224,11 +374,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
                 tabConsole.set(_self.pageID);
                 trSFResult.addEventListener("afterselect", function(e) {
                     var node = trSFResult.selected,
-                        line = 0,
-                        text = "",
-                        path;
+                        line = 0, text = "", path;
+
                     if (node.tagName == "d:maxreached" || node.tagName == "d:querydetail")
                         return;
+
                     if (node.tagName == "d:excerpt") { // clicking on a line excerpt
                         path = node.parentNode.getAttribute("path");
                         line = node.getAttribute("line");
@@ -251,13 +401,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         }
         else {
             tabConsole.appendChild(this.$panel);
+            tabConsole.set(this.pageID);
         }
-        // show the tab
-        tabConsole.set(this.pageID);
-
+        
+        //Determine the scope
         var path;
-        if (grpSFScope.value == "projects")
+        if (grpSFScope.value == "projects") {
             path = ide.davPrefix;
+        }
         else if (!self.trFiles) {
             path = settings.model.queryValue("auto/tree_selection/@path");
             if (!path)
@@ -276,46 +427,52 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         var query = txtSFFind.value;
         options.query = query.replace(/\n/g, "\\n");
 
-        if (!_self.replaceAll) {
-            options.replacement = ""; // even if there's text in the "replace" field, don't send it when not replacing
-        }
+        // even if there's text in the "replace" field, don't send it when not replacing
+        if (!this.replaceAll)
+            options.replacement = ""; 
 
-        _self.$model.clear();
-        _self.$panel.setAttribute("caption", _self.pageTitle);
-        trSFResult.$ext.getElementsByClassName("empty")[0].innerText = "Searching for '" + query + "'...";
+        this.$model.clear();
+        this.$panel.setAttribute("caption", _self.pageTitle);
+        
+        trSFResult.setAttribute("empty-message", 
+            "Searching for '" + query + "'...");
 
         davProject.report(path, "codesearch", options, function(data, state, extra){
             _self.replaceAll = false; // reset
 
             var matches = data.getElementsByTagNameNS("DAV:", "excerpt").length;
             var queryDetails = data.getElementsByTagNameNS("DAV:", "querydetail");
-            window.data = data;
-            if(queryDetails.length === 1) {
+            
+            if (queryDetails.length === 1) {
                 queryDetails[0].setAttribute("count", ""+matches);
-                queryDetails[0].setAttribute("filecount", ""+data.getElementsByTagNameNS("DAV:", "response").length);
+                queryDetails[0].setAttribute("filecount", 
+                    "" + data.getElementsByTagNameNS("DAV:", "response").length);
             }
+            
             if (state !== apf.SUCCESS || !matches) {
                 var optionsDesc = [];
-                if (Util.isTrue(options.casesensitive)) {
+                if (Util.isTrue(options.casesensitive))
                     optionsDesc.push("case sensitive");
-                }
-                if (Util.isTrue(options.regexp)) {
+                if (Util.isTrue(options.regexp))
                     optionsDesc.push("regexp");
-                }
 
-                if (optionsDesc.length > 0) {
-                    optionsDesc = "(" + optionsDesc.join(", ") + ")";
-                }
-                else {
-                    optionsDesc = "";
-                }
-                return trSFResult.$ext.getElementsByClassName("empty")[0].innerText = "No matches for '" + query + "' " + optionsDesc;
+                optionsDesc = optionsDesc.length > 0
+                    ? "(" + optionsDesc.join(", ") + ")"
+                    : "";
+                
+                trSFResult.setAttribute("empty-message", 
+                    "No matches for '" + query + "' " + optionsDesc);
+                return;
             }
             else
-                _self.$panel.setAttribute("caption", _self.pageTitle + " (" + matches + ")");
+                _self.$panel.setAttribute("caption", 
+                    _self.pageTitle + " (" + matches + ")");
 
             _self.$model.load(data);
         });
+        
+        this.saveHistory(options.query, "searchfiles");
+        this.position = 0;
 
         ide.dispatchEvent("track_action", {type: "searchinfiles"});
     },
@@ -343,6 +500,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", {
         });
         this.nodes = [];
     }
-});
+}, libsearch));
 
 });
