@@ -325,6 +325,14 @@ module.exports = ext.register("ext/tree/tree", {
             }
         });
 
+        // Block keypressing, else afterchoose from "Enter" inserts new lines in the doc
+        trFiles.addEventListener("keydown", function(e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
         // Opens a file after the user has double-clicked
         trFiles.addEventListener("afterchoose", this.$afterchoose = function() {
             var node = this.selected;
@@ -334,7 +342,7 @@ module.exports = ext.register("ext/tree/tree", {
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
-
+        
         trFiles.addEventListener("beforecopy", this.$beforecopy = function(e) {
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
