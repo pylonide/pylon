@@ -550,24 +550,25 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     },
 
     appendLines : function(doc, content) {
+        if (content.length == 0) // blank lines can get through
+            return;
+            
         var currLength = doc.getLength();
         
         var contentArray = content.split("\n");
         var contentLength = contentArray.length;
         
+        // reached the end of grep
         if (contentLength > 0 && contentArray[contentLength - 1].indexOf("Results:") == 0) {
             var count = contentArray.pop();
             count = count.substring(count.indexOf(" ") + 1);
             
             var countJSON = JSON.parse(count);
             var finalMessage = this.messageFooter(countJSON);
-        }
-        
-        if (content.length > 0)
-            doc.insertLines(currLength, contentArray);
-        
-        if (countJSON !== undefined)
             doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
+        }
+        else
+            doc.insertLines(currLength, contentArray);
     },
     
     messageHeader : function(path, options) {
