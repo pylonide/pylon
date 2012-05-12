@@ -248,7 +248,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 nodes = this.arrayCache;
                 
             var cache = []
-            
+
+            if (this.lastSearch && this.lastSearch[0] !== keyword[0])
+                dgGoToFile.getViewport().setScrollTop(0);
+
             this.arraySearchResults = search(nodes, keyword, cache);
             this.arrayCacheLastSearch = cache;
         }
