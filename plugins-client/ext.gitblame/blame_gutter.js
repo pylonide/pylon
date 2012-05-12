@@ -54,17 +54,25 @@ dom.importCssString("\
 .ace_blame-cell.selected{\
     background: rgba(255, 237, 0, 0.31);\
 }\
+.ace_tooltip{\
+    position:fixed;\
+    background: #F8F7AC;\
+    border: solid 1px rgba(205, 237, 0, 0.81);\
+    border-radius:5px;\
+    z-index: 1000000;\
+    max-width: 500px;\
+    white-space: pre-wrap;\
+}\
 ", "blameGutter");
 
 var BlameGutter = function(editor, blameData) {
     if (editor.blameGutter)
         return;
 
-
     var gutter = editor.renderer.$gutterLayer;
     editor.blameGutter = this;
     gutter.blameColumn = this;
-    
+
     this.element = dom.createElement("div");
     this.element.className = "ace_layer ace_blame-gutter-layer";
     var parentEl = editor.renderer.$gutter;
@@ -73,14 +81,21 @@ var BlameGutter = function(editor, blameData) {
     this.resizer = dom.createElement("div");
     this.resizer.className = "ace_resizer_v";
     parentEl.appendChild(this.resizer);
-    
+
     this.closeButton = dom.createElement("div");
     this.closeButton.className = "ace_closeButton";
     this.resizer.appendChild(this.closeButton);
 
+    editor.tooltip = dom.createElement("div");
+    editor.tooltip.className = "ace_tooltip";
+    editor.tooltip.style.display = "none";
+    editor.container.appendChild(editor.tooltip);
+
     this.onMousedown = this.onMousedown.bind(this);
     this.onChangeSession = this.onChangeSession.bind(this);
-    
+    this.onMousemove = this.onMousemove.bind(this);
+    this.onMouseout = this.onMouseout.bind(this);
+
     this.editor = editor;
     if (blameData)
         this.setData(blameData);
@@ -91,7 +106,7 @@ var BlameGutter = function(editor, blameData) {
 (function(){
     this.update = function(config) {
         this.$config = config;
-        
+
         var blameEl = this.blameColumn.element;
         blameEl.style.marginTop = -config.offset + "px";
 
@@ -102,26 +117,26 @@ var BlameGutter = function(editor, blameData) {
         var foldStart = fold ? fold.start.row : Infinity;
         var foldWidgets = this.$showFoldWidgets && this.session.foldWidgets;
         var lineHeight = config.lineHeight;
-        
+
         var blameData = this.blameData;
         var selectedText = this.selectedText;
         var blameHtml = [];
         var $blameIndex, lastBlameCellIndex = 0;
         var blameCell;
-        
+
         findBlameCell(i);
         if (blameCell)
             addBlameCell(blameCell.text, blameCell.title);
         else
             addBlameCell("", "");
-        
+
         // adjust top margin of first cell to always keep it on screen
         if (!blameData[i + 1]) {
             blameHtml[$blameIndex] -= config.offset - 1;
             blameHtml.splice($blameIndex + 1, 0, "px;margin-top:", config.offset - 1);
         }
-        
-        
+
+
         while (true) {
             if(i > foldStart) {
                 i = fold.end.row + 1;
@@ -135,11 +150,11 @@ var BlameGutter = function(editor, blameData) {
             }
             if(i > lastRow)
                 break;
-    
+
             html.push("<div class='ace_gutter-cell",
                 this.$decorations[i] || "",
                 "' style='height:", lineHeight, "px;'>", (i+1));
-    
+
             if (foldWidgets) {
                 var c = foldWidgets[i];
                 // check if cached value is invalidated and we need to recompute
@@ -152,15 +167,15 @@ var BlameGutter = function(editor, blameData) {
                         "'></span>"
                     );
             }
-    
+
             var wrappedRowLength = this.session.getRowLength(i) - 1;
             while (wrappedRowLength--) {
                 html.push("</div><div class='ace_gutter-cell' style='height:", lineHeight, "px'>\xA6");
             }
             html.push("</div>");
-    
+
             i++;
-            
+
             // html for blame column
             findBlameCell(i);
             if (blameCell)
@@ -168,17 +183,17 @@ var BlameGutter = function(editor, blameData) {
             else
                 blameHtml[$blameIndex] += this.session.getRowLength(i-1) * lineHeight;
         }
-        
+
         this.element = dom.setInnerHtml(this.element, html.join(""));
         this.blameColumn.element = dom.setInnerHtml(blameEl, blameHtml.join(""));
         this.element.style.height = config.minHeight + "px";
-        
+
         var gutterWidth = this.element.parentNode.offsetWidth;
         if (gutterWidth !== this.gutterWidth) {
             this.gutterWidth = gutterWidth;
             this._emit("changeGutterWidth", gutterWidth);
         }
-        
+
         function addBlameCell(text, title) {
             blameHtml.push(
                 "<div class='ace_blame-cell ", text == selectedText ? "selected" : "",
@@ -187,7 +202,7 @@ var BlameGutter = function(editor, blameData) {
                 text, "  ", title,
                 "</div>"
             );
-            $blameIndex = blameHtml.length - 6;        
+            $blameIndex = blameHtml.length - 6;
         }
         function findBlameCell(i) {
             do {
@@ -206,34 +221,41 @@ var BlameGutter = function(editor, blameData) {
         this.resizer.style.display = "";
         this.editor.on("guttermousedown", this.onMousedown);
         this.editor.on("changeSession", this.onChangeSession);
-        
+
+        var gutterEl = this.editor.renderer.$gutter;
+        event.addListener(gutterEl, "mousemove", this.onMousemove);
+        event.addListener(gutterEl, "mouseout", this.onMouseout);
+
         this.resizer.style.right = "40px";
         this.element.style.width = "260px";
         this.element.parentNode.style.width = "300px";
-        
-        gutter.update(this.editor.renderer.layerConfig);    
+
+        gutter.update(this.editor.renderer.layerConfig);
     };
-    
+
     this.removeData = function() {
         var gutter = this.editor.renderer.$gutterLayer;
         delete gutter.update;
 
         this.editor.removeListener("guttermousedown", this.onMousedown);
         this.editor.removeListener("changeSession", this.onChangeSession);
-        
+        var gutterEl = this.editor.renderer.$gutter;
+        event.removeListener(gutterEl, "mousemove", this.onMousemove);
+        event.removeListener(gutterEl, "mouseout", this.onMouseout);
+
         this.element.style.display = "none";
         this.closeButton.style.display = "none";
         this.resizer.style.display = "none";
-        
+
         this.element.parentNode.style.width = "";
         gutter.update(this.editor.renderer.layerConfig);
     };
-    
+
     this.onMousedown = function(e) {
         var target = e.domEvent.target;
         if (target == this.closeButton)
             return this.removeData();
-        
+
         if (target == this.resizer) {
             var rect = this.editor.blameGutter.element.getBoundingClientRect();
             var mouseHandler = this.editor.$mouseHandler;
@@ -246,11 +268,11 @@ var BlameGutter = function(editor, blameData) {
             mouseHandler.captureMouse(e, "resizeBlameGutter");
             return;
         }
-        
+
         if (dom.hasCssClass(target, "ace_blame-cell")) {
             var gutter = this.editor.renderer.$gutterLayer;
             var index = parseInt(target.getAttribute("index"));
-            
+
             var blameCell = gutter.blameData[index];
             if (!blameCell)
                 return;
@@ -262,11 +284,35 @@ var BlameGutter = function(editor, blameData) {
             }
         }
     };
-    
+
     this.onChangeSession = function() {
         this.removeData();
     };
 
+    this.onMousemove = function(e) {
+        var target = e.target;
+        var container = e.currentTarget;
+        var tooltip = this.editor.tooltip;
+        if (this.$highlightedCell != target) {
+            if (dom.hasCssClass(target, "ace_blame-cell")) {
+                tooltip.style.display = "block";
+                this.$highlightedCell = target;
+                tooltip.textContent = target.textContent;
+            }
+        }
+
+        if (this.$highlightedCell) {
+            tooltip.style.top = e.clientY + 10 + "px";
+            tooltip.style.left = e.clientX + 10 + "px";
+        } else {
+            this.onMouseout();
+            return
+        }
+    };
+    this.onMouseout = function(e) {
+        this.editor.tooltip.style.display = "none";
+        this.$highlightedCell = null
+    };
 }).call(BlameGutter.prototype);
 
 
