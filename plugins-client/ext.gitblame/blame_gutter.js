@@ -115,6 +115,11 @@ var BlameGutter = function(editor, blameData) {
         else
             addBlameCell("", "");
         
+        // adjust top margin of first cell to always keep it on screen
+        if (!blameData[i + 1]) {
+            blameHtml[$blameIndex] -= config.offset - 1;
+            blameHtml.splice($blameIndex + 1, 0, "px;margin-top:", config.offset - 1);
+        }
         
         
         while (true) {
@@ -177,7 +182,7 @@ var BlameGutter = function(editor, blameData) {
         function addBlameCell(text, title) {
             blameHtml.push(
                 "<div class='ace_blame-cell ", text == selectedText ? "selected" : "",
-                "' index='", i,"'",
+                "' index='", lastBlameCellIndex - 1,"'",
                 "style='height:", lineHeight, "px'>",
                 text, "  ", title,
                 "</div>"
@@ -187,13 +192,13 @@ var BlameGutter = function(editor, blameData) {
         function findBlameCell(i) {
             do {
                 blameCell = blameData[i];
-            } while (!blameCell && i-- > lastBlameCellIndex)
+            } while (!blameCell && i-- > lastBlameCellIndex);
             lastBlameCellIndex = i + 1;
         }
     };
 
     this.setData = function(blameData) {
-        var gutter = this.editor.renderer.$gutterLayer
+        var gutter = this.editor.renderer.$gutterLayer;
         gutter.blameData = blameData || [];
         gutter.update = this.update;
         this.element.style.display = "";
@@ -202,16 +207,15 @@ var BlameGutter = function(editor, blameData) {
         this.editor.on("guttermousedown", this.onMousedown);
         this.editor.on("changeSession", this.onChangeSession);
         
-        this.resizer.style.right = "40px"
+        this.resizer.style.right = "40px";
         this.element.style.width = "260px";
         this.element.parentNode.style.width = "300px";
-        
         
         gutter.update(this.editor.renderer.layerConfig);    
     };
     
     this.removeData = function() {
-        var gutter = this.editor.renderer.$gutterLayer        
+        var gutter = this.editor.renderer.$gutterLayer;
         delete gutter.update;
 
         this.editor.removeListener("guttermousedown", this.onMousedown);
@@ -234,13 +238,13 @@ var BlameGutter = function(editor, blameData) {
             var rect = this.editor.blameGutter.element.getBoundingClientRect();
             var mouseHandler = this.editor.$mouseHandler;
             mouseHandler.resizeBlameGutter = function() {
-                var gutterWidth = this.x + 40 - rect.left
+                var gutterWidth = this.x + 40 - rect.left;
                 this.editor.renderer.$gutter.style.width = gutterWidth + "px";
                 this.editor.blameGutter.element.style.width = gutterWidth - 40 + "px";
                 this.editor.renderer.$gutterLayer._emit("changeGutterWidth", gutterWidth);
-            }
+            };
             mouseHandler.captureMouse(e, "resizeBlameGutter");
-            return
+            return;
         }
         
         if (dom.hasCssClass(target, "ace_blame-cell")) {
@@ -257,13 +261,13 @@ var BlameGutter = function(editor, blameData) {
                 ch[i].className = "ace_blame-cell" + (isSelected ? " selected" : "");
             }
         }
-    }
+    };
     
     this.onChangeSession = function() {
         this.removeData();
-    }
+    };
 
-}).call(BlameGutter.prototype)
+}).call(BlameGutter.prototype);
 
 
 exports.BlameGutter = BlameGutter;
