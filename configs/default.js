@@ -140,19 +140,19 @@ var config = {
                     //"ext/acebugs/acebugs"
                 ]
             }, {
-                packagePath: "vfs-architect/child",
-                uid: 501,
-                gid: 20,
+                packagePath: "vfs-architect/local",
                 umask: 0750,
                 root: projectDir + "/",
-                skipSearchCheck: false,
-                httpRoot: "http://localhost:" + port + vfsUrl
+                httpRoot: "http://localhost:" + port + vfsUrl,
 
-//                packagePath: "vfs-architect/ssh",
-//                host: "localhost",
-//                nodePath: process.execPath,
-//                root: projectDir + "/",
-//                httpRoot: "http://localhost:" + port + vfsUrl
+//                uid: 501,
+//                gid: 20,
+
+                packagePath: "vfs-architect/ssh",
+                host: "fjakobs@localhost",
+                nodePath: process.execPath,
+                root: projectDir + "/",
+                httpRoot: "http://localhost:" + port + vfsUrl
             }, {
                 packagePath: "vfs-architect/http-adapter",
                 mount: vfsUrl
