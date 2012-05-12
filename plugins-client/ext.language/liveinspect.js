@@ -43,6 +43,7 @@ module.exports = (function () {
         apf.addListener(datagridHtml, "mouseover", function() {
             if (activeTimeout) {
                 clearTimeout(activeTimeout);
+                activeTimeout = null;
             }
         });
         
@@ -225,7 +226,8 @@ module.exports = (function () {
      */
     var onEditorMouseMove = function (ev) {
         if (activeTimeout) {
-            clearTimeout(activeTimeout);   
+            clearTimeout(activeTimeout);
+            activeTimeout = null;
         }
         
         if (!stRunning.active && stDebugProcessRunning.active) {
@@ -285,6 +287,7 @@ module.exports = (function () {
         else {
             // if not visible? then just clear the timeout
             clearTimeout(activeTimeout);
+            activeTimeout = null;
         }
     };
     
