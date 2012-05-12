@@ -334,6 +334,7 @@ module.exports = ext.register("ext/console/console", {
                         original_line : data.line
                     };
 
+                    tabConsole.getPage().setCaption(cmd);
                     ide.send(data);
                     this.command_id_tracer++;
                     return true;
@@ -358,6 +359,11 @@ module.exports = ext.register("ext/console/console", {
         if (spinnerElement) {
             logger.killBufferInterval(id);
             var pNode = spinnerElement.parentNode;
+
+            var page = apf.findHost(pNode.parentNode.parentNode);
+            if (page.id !== "pgOutput")
+                page.setCaption("Console");
+
             if (pNode.className.indexOf("quitting") !== -1) {
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
                 logger.logNodeStream("Process successfully quit", null,
@@ -859,10 +865,13 @@ module.exports = ext.register("ext/console/console", {
     killProcess : function(pNode) {
         var command_id;
         // Simply get the ID of the last command sent to the server
-        if (typeof pNode === "undefined")
-            command_id = (this.command_id_tracer - 1)
-        else
+        if (typeof pNode === "undefined") {
+            command_id = (this.command_id_tracer - 1);
+            pNode = document.getElementById("console_section" + command_id);
+        }
+        else {
             command_id = parseInt(pNode.getAttribute("rel"), 10);
+        }
 
         var pid = this.tracerToPidMap[command_id];
         if (!pid)
@@ -876,6 +885,12 @@ module.exports = ext.register("ext/console/console", {
             command: "kill",
             pid: pid
         });
+    },
+
+    checkIfPageCanClose : function(e) {
+        if (e.page.childNodes[0].$ext.getElementsByClassName("loading").length)
+            return false;
+        return true;
     },
 
     /**

@@ -8397,7 +8397,7 @@
     }
 
     .tab_console .btncontainer{
-        padding : 5px 6px 3px;
+        padding : 5px 106px 3px 6px;
         height: 20px;
         overflow: visible;
         white-space: nowrap;
@@ -8582,7 +8582,7 @@
             <div class="btncontainer"> </div>
         </div>
     </a:main>
-    <a:button caption="div/text()" container="div" icon="div[2]" maxwidth="90" minwidth="10">
+    <a:button caption="div/text()" container="div" icon="div[2]" maxwidth="105" minwidth="20">
         <div class="btntab">
             <div class="tab_console_title">-</div>
             <div class="tab_console_icon"> </div>

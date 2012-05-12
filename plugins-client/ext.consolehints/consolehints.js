@@ -195,6 +195,9 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
     
     show: function(textbox, base, hints, cursorPos) {
+        if (txtConsolePrompt.visible)
+            return;
+
         if (animControl && animControl.stop)
             animControl.stop();
 
