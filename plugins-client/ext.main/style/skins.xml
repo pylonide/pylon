@@ -2988,7 +2988,7 @@
         .grouped_checkbox_holder .chkWholeWords.cbcontainerChecked .checkbox { background-position: 50% -665px; }
         .grouped_checkbox_holder .chkPreserveCase .checkbox { background-position: 50% -690px; }
         .grouped_checkbox_holder .chkPreserveCase.cbcontainerChecked .checkbox { background-position: 50% -715px; }
-        .grouped_checkbox_holder .chkSearchBackwards .checkbox { background: url(images/c9_replace_in_console.png) no-repeat 50% 0; background-position: 50% -790px; }
+        .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
         .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
    
         .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -890px; }
@@ -11585,9 +11585,9 @@
             
             /* Temporary spot */
             .find-and-replace {
-                background-image: url(images/c9-noise-with-background.png);
-                background-position: 0 0;
-                background-repeat: repeat;
+                background-image: url(images/c9-find-and-replace.png), url(images/c9-noise-with-background.png);
+                background-position: 100% 1px, 0 0;	  	
+                background-repeat: repeat-y, repeat;
                 box-shadow: 0 1px 0 0 rgba(255,255,255,.1) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
                 border-top: 1px solid #000;
                 padding: 7px;
