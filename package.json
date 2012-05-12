@@ -12,7 +12,6 @@
 
     "pm": "sm",
     "dependencies": {
-        
         "socket.io": "0.9.x",
         "socket.io-client": "0.9.x",
         "connect": "1.8.x",
@@ -26,8 +25,7 @@
         "dryice": "0.4.2",
         
         "mappings": "0.1.x",
-        "amd-loader": "~0.0.4",
-        "dryice": "0.4.2"
+        "amd-loader": "~0.0.4"
     },
     
     "devDependencies": {
