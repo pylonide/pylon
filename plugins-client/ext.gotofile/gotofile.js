@@ -249,8 +249,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 
             var cache = []
 
-            if (this.lastSearch && this.lastSearch[0] !== keyword[0])
-                dgGoToFile.getViewport().setScrollTop(0);
+            dgGoToFile.$viewport.setScrollTop(0);
 
             this.arraySearchResults = search(nodes, keyword, cache);
             this.arrayCacheLastSearch = cache;
