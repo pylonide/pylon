@@ -235,8 +235,8 @@ module.exports = (function () {
                 
                 // hide it, and set left / top so it gets positioned right when showing again
                 winLiveInspect.hide();
-                windowHtml.style.left = ev.pageX + "px";
-                windowHtml.style.top = (ev.pageY + 8) + "px";
+                windowHtml.style.left = ev.clientX + "px";
+                windowHtml.style.top = (ev.clientY + 8) + "px";
             }, 750);
         }
     };
