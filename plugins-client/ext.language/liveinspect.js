@@ -8,6 +8,7 @@ var markup = require("text!ext/language/liveinspect.xml");
 var skin = require("text!ext/language/liveinspect.skin.xml");
 // postfix plugin because debugger is restricted keyword
 var debuggerPlugin = require("ext/debugger/debugger"); 
+var editors = require("ext/editors/editors");
 
 module.exports = (function () {
     
@@ -222,6 +223,35 @@ module.exports = (function () {
     };
     
     /**
+     * Determine whether the current file is the current frame where the 
+     * debugger is in.
+     */
+    var isCurrentFrame = function(){
+        var frame, page = tabEditors.getPage();
+        
+        if (self.dgStack)
+            frame = dgStack.selected;
+        else
+            frame = mdlDbgStack.queryNode("frame[@index=0]");
+        
+        if (!frame)
+            return false;
+        
+        var scriptName = frame.getAttribute("script");
+        
+        // I have to do a fairly weak filename compare. 
+        // An improvement is to store the full path in the stack model.
+        if (apf.getFilename(page.getModel().queryValue("@path")) != scriptName)
+            return false;
+        
+        var line = frame.getAttribute("line");
+        var column = frame.getAttribute("column");
+        //@todo check if we are still in the current function
+        
+        return true;
+    }
+    
+    /**
      * onMouseMove handler that is being used to show / hide the inline quick watch
      */
     var onEditorMouseMove = function (ev) {
@@ -232,6 +262,9 @@ module.exports = (function () {
         
         if (!stRunning.active && stDebugProcessRunning.active) {
             activeTimeout = setTimeout(function () {
+                if (!isCurrentFrame())
+                    return;
+                
                 var pos = ev.getDocumentPosition();
                 ide.dispatchEvent("liveinspect", { row: pos.row, col: pos.column });
                 
