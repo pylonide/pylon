@@ -15,6 +15,8 @@ var openfiles = require("ext/openfiles/openfiles");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var settings = require("core/settings");
+var clientSettings = require("ext/settings/settings");
+var markupSettings =  require("text!ext/tabbehaviors/settings.xml");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -250,6 +252,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.accessList.changed = true;
                 settings.save();
             }
+            
+            if (apf.isTrue(settings.model.queryValue('general/@revealfile'))) {
+                _self.revealtab(page);
+            }
         });
 
         tabEditors.addEventListener("close", function(e) {
@@ -320,6 +326,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.accessList = list;
             }
         });
+        
+        ide.addEventListener("settings.load", function(e){
+            settings.setDefaults("general", [["revealfile", false]]);
+        });
+        
+        clientSettings.addSettings("General", markupSettings);
     },
     
     closetab: function(page) {

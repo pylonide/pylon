@@ -1,0 +1,3 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox class="underlined" label="Always Reveal Opened Files in Tree" value="[general/@revealfile]" skin="checkbox_grey" position="4000" />
+</a:application>
