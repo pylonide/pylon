@@ -25,7 +25,6 @@ module.exports = function setup(options, imports, register) {
     });
 
     function init(projectDir, workspaceId) {
-
         var mountDir = path.normalize(projectDir);
 
         var davOptions = {

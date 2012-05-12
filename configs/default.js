@@ -1,3 +1,5 @@
+"use strict";
+
 var fs = require("fs");
 var argv = require('optimist').argv;
 var path = require("path");
@@ -140,22 +142,20 @@ var config = {
                     //"ext/acebugs/acebugs"
                 ]
             }, {
-                packagePath: "vfs-architect/local",
-                umask: 0750,
-                root: projectDir + "/",
-                httpRoot: "http://localhost:" + port + vfsUrl,
+                packagePath: "vfs-architect/child",
+                umask: parseInt("0750", 8),
+                root: "/",
 
-//                uid: 501,
-//                gid: 20,
+                uid: 501,
+                gid: 20,
 
-                packagePath: "vfs-architect/ssh",
-                host: "fjakobs@localhost",
-                nodePath: process.execPath,
-                root: projectDir + "/",
-                httpRoot: "http://localhost:" + port + vfsUrl
+//                packagePath: "vfs-architect/ssh",
+//                host: "fjakobs@localhost",
+//                nodePath: process.execPath,
             }, {
                 packagePath: "vfs-architect/http-adapter",
-                mount: vfsUrl
+                mount: vfsUrl,
+                httpRoot: "http://localhost:" + port + vfsUrl
             }, {
                 packagePath: "./cloud9.fs",
                 urlPrefix: fsUrl
@@ -164,7 +164,7 @@ var config = {
             {
                 packagePath: "connect-architect/connect.session",
                 key: "cloud9.sid." + port,
-                secret: "1234"
+                secret: "v1234"
             }, {
                 packagePath: "connect-architect/connect.session.file",
                 sessionsPath: __dirname + "/../.architect/sessions"
