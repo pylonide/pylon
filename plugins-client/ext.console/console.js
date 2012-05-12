@@ -53,6 +53,8 @@ module.exports = ext.register("ext/console/console", {
     excludeParent : true,
     keyEvents: {},
 
+    pageIdToPidMap : {},
+
     onMessageMethods: {
         cd: function(message, outputElDetails) {
             var res = message.body;
@@ -245,13 +247,19 @@ module.exports = ext.register("ext/console/console", {
 
     evalInputCommand: function(line) {
         if (txtConsolePrompt.visible) {
-            var outputBlockEl = document.getElementById("console_section" + (this.command_id_tracer - 1));
+            var htmlPage = tabConsole.getPage().$ext;
+            var loadingBlocks = htmlPage.getElementsByClassName("loading");
+            var outputBlockEl = loadingBlocks[loadingBlocks.length - 1];
             if (outputBlockEl)
                 outputBlockEl.lastChild.innerHTML += line;
 
+            // @TODO update this to not be $uniqueId, but rather just id
+            var pageId = tabConsole.getPage().$uniqueId;
+
             var data = {
                 command: "npm-module-stdin",
-                line: line
+                line: line,
+                pid: this.pageIdToPidMap[pageId].pid
             };
             ide.send(data);
             return;
@@ -331,7 +339,8 @@ module.exports = ext.register("ext/console/console", {
                 else {
                     data.extra = {
                         command_id : this.command_id_tracer,
-                        original_line : data.line
+                        original_line : data.line,
+                        page_id : tabConsole.getPage().$uniqueId
                     };
 
                     tabConsole.getPage().setCaption(cmd);
@@ -436,13 +445,31 @@ module.exports = ext.register("ext/console/console", {
                 return;
             case "npm-module-start":
                 var stdin_prompt = extra.original_line.split(" ")[0];
+                this.pageIdToPidMap[extra.page_id] = {
+                    pid: message.pid,
+                    prompt: stdin_prompt
+                };
                 txtConsolePrompt.setValue("$ " + stdin_prompt);
                 txtConsolePrompt.show();
                 break;
             case "npm-module-data":
                 break;
             case "npm-module-exit":
-                txtConsolePrompt.hide();
+                this.pageIdToPidMap[extra.page_id] = null;
+                if (tabConsole.getPage().$uniqueId === extra.page_id) {
+                    txtConsolePrompt.hide();
+                }
+                else {
+                    // We may have reconstructed the output and have a mismatched
+                    // id
+                    // @TODO implement:
+                    // 1. Give each new page a unique "id" (NOT $uniqueId)
+                    // 2. When sending a command, include the unique ID
+                    // 3. Save the pages in settings.xml
+                    // 4. Recreate pages on refresh
+                    // 5. When this npm-module-exit message happens, don't get the
+                    //    page's uniqueId, map the "id" to the page
+                }
                 break;
             case "kill":
                 if (message.err) {
@@ -730,6 +757,16 @@ module.exports = ext.register("ext/console/console", {
         });
 
         tabConsole.addEventListener("afterswitch", function(e){
+            var pageNpmInfo = _self.pageIdToPidMap[e.nextPage.$uniqueId];
+            if (pageNpmInfo) {
+                txtConsolePrompt.setValue(pageNpmInfo.prompt);
+                txtConsolePrompt.show();
+            }
+            else {
+                txtConsolePrompt.hide();
+            }
+
+            // Now find any running procs
             settings.model.setQueryValue("auto/console/@active", e.nextPage.name);
             setTimeout(function(){
                 txtConsoleInput.focus();

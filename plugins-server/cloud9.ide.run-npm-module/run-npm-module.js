@@ -25,7 +25,7 @@ var NpmRuntimePlugin = function(ide, workspace) {
     this.eventbus = EventBus;
     this.workspace = workspace;
     this.workspaceId = workspace.workspaceId;
-    this.child = null;
+    this.children = {};
 
     this.channel = this.workspaceId + "::npm-runtime";
 
@@ -58,7 +58,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
         switch(cmd) {
             case "npm-module-stdin":
                 message.line = message.line + '\n';
-                this.child.child.stdin.write(message.line);
+                this.children[message.pid].child.stdin.write(message.line);
                 return true;
         }
         return false;
@@ -77,13 +77,14 @@ util.inherits(NpmRuntimePlugin, Plugin);
             if (err)
                 return self.error(err, 1, message, client);
 
-            self.child = child;
+            self.children[pid] = child;
+            //self.child = child;
         });
     };
 
     this.searchAndRunModuleHook = function(message, cb) {
-        if (this.child && this.child.pid)
-            return cb("NPM module already running.");
+        /*if (this.child && this.child.pid)
+            return cb("NPM module already running.");*/
 
         if (message.command === "node")
             return this.$run(null, [], message.env || {},  message.version, message, null);
