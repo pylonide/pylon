@@ -17,7 +17,6 @@ var commands = require("ext/commands/commands");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
-var settings = require("ext/settings/settings");
 
 require("ext/debugger/inspector");
 

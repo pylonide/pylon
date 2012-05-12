@@ -248,7 +248,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         var type = isTop ? "arrow" : "stack";
         this.$lastRow = [row, type];
         this.$editor.renderer.addGutterDecoration(row, type);
-        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10));
+        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10), false);
     };
 
     this.$updateBreakpoints = function(doc) {
