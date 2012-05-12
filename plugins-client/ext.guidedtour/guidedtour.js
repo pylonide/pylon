@@ -12,13 +12,13 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var settings = require("core/settings");
 var skin = require("text!ext/guidedtour/skin.xml");
 var markup = require("text!ext/guidedtour/guidedtour.xml");
 var ideConsole = require("ext/console/console");
 var zen = require("ext/zen/zen");
 var dockpanel = require("ext/dockpanel/dockpanel");
 var panels = require("ext/panels/panels");
-var settings = require("core/settings");
 var strTour = require("text!ext/guidedtour/tour.js");
 var helloWorldScript = require("text!ext/guidedtour/hello-world-script.txt");
 
@@ -69,8 +69,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.hideMenus();
         madeNewFile = wentToZen = madeDebug = deletedFile = false;
         this.currentStep = -1;
-        require("ext/sidebar/sidebar").animateToFullWidth();
+        
         winTourDesc.setValue(this.tour.initialText);
+        
         winTourGuide.show();
         winTourButtonStart.show();
         winTourButtonClose.show();
@@ -91,20 +92,18 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         }
     },
     
-    initTour: function(){
-        //this.animateui = settings.model.queryValue('general/@animateui');
-        //settings.model.setQueryValue('general/@animateui', false);
-        
-        require("ext/sidebar/sidebar").animateToFullWidth();
-        //ext.initExtension();
+    initTour: function() {
+        // Remember the states of everything   
+        this.cliBoxState = settings.model.queryValue("auto/console/@showinput");
         require("ext/console/console").showInput();
-        /*ide.addEventListener("settings.load", function(e){
-            _self.animateui = settings.model.queryValue('general/@animateui');
-            settings.model.setQueryValue('general/@animateui', false);
-        });*/
+            
+        this.gutterState = settings.model.queryValue("editors/code/@gutter");
         
-        !self["winFilesViewer"] && panels.activate(require("ext/tree/tree"));
+        this.statusBarState = settings.model.queryValue("auto/statusbar/@show");
 
+        this.projectFilesState = settings.model.queryValue("auto/panels/@active");
+        require("ext/panels/panels").activate(require("ext/tree/tree"));
+        
         var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
         if (demoFile && !deletedFile && false) {
             txtConsoleInput.setValue("rm helloWorld-quideTour.js");
@@ -156,8 +155,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         this.stepForward();
         
         this.overlay.style = 'block';
-        
-        settings.model.setQueryValue('general/@animateui', false);
         
         apf.removeEventListener("keyup", _self.keyUpEvent);
         
@@ -257,13 +254,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             // All of these fix issues with elements not being available when this plugin loads
             else if (step.div == "ceEditor"){
                 _self.currentEl = ceEditor;
-            }
-            else if (step.div == "ceEditorGutter") {
-                _self.currentEl = ceEditor.$ext.getElementsByClassName("ace_gutter-layer")[0].getElementsByClassName("ace_gutter-cell ")[1];
-            }                    
-            else if (step.div == "expandedDbg") {
-                _self.currentEl = expandedDbg;
-            }
+            }                  
             else if (step.div == "barIdeStatus") {
                 _self.currentEl = barIdeStatus;
             }
@@ -271,6 +262,12 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 if (step.div.indexOf("navbar") >= 0) {
                     _self.currentEl = eval(step.div);
                 }
+                else if (step.div == "expandedDbg") {
+                    _self.currentEl = expandedDbg;
+                } 
+                else if (step.div == "ceEditorGutter") {
+                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[2]/DIV[2]', ceEditor.$ext);
+                } 
                 else if (step.node !== undefined) {
                     _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
                 }
@@ -295,16 +292,16 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             getCurrentEl();
             if(!_self.currentEl)
                 return;
-                
+        
             _self.highlightElement();
-    
-            textTourDesc.setValue(step.desc);
-    
+            
             // Reset Position
             winTourText.setAttribute("bottom", "");
             winTourText.setAttribute("top", "");
             winTourText.setAttribute("left", "");
             winTourText.setAttribute("right", "");
+            
+            textTourDesc.setValue(step.desc);
     
             var pos = _self.getElementPosition(_self.currentEl);
             
@@ -317,7 +314,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             
             if(step.pos)
                 winTourText.show();
-        }, 200);
+        }, 400);
     },
 
     setPositions: function(position, posArray, div, extra) {
@@ -326,18 +323,24 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             div.setAttribute("left", (posArray[0] + (posArray[2] / 2)) - (div.getWidth() / 2));
         }
         else if (position == "right"){
-            div.setAttribute("left", posArray[0] + posArray[2] + 25);
+            if (extra === undefined)
+                extra = 0;
+                
+            div.setAttribute("left", posArray[0] + posArray[2] + 25 + extra);
             div.setAttribute("top", (posArray[1] + (posArray[3] / 2)) - (div.getHeight() / 2));
         }
         else if (position == "bottom"){
+            if (extra === undefined)
+                extra = 0;
+                
             div.setAttribute("top", posArray[3] + 50);
-            div.setAttribute("left", posArray[3]);
+            div.setAttribute("left", posArray[3] + extra);
         }
         else if (position == "left"){
             if (extra === undefined)
-                extra = 15;
+                extra = 0;
                 
-            div.setAttribute("right", (window.innerWidth - posArray[0]) + extra); // compensation for new file dialog 
+            div.setAttribute("right", (window.innerWidth - posArray[0]) + 15 + extra); // compensation for new file dialog 
             div.setAttribute("top", (posArray[1] + (posArray[3] / 2)) - (div.getHeight() / 2));
         }
         
@@ -415,7 +418,6 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     closeTG: function() {
         var _self = this;
         winTourGuide.hide();
-        
         apf.removeEventListener("keyup", _self.keyUpEvent);
     },
 
@@ -431,9 +433,17 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             (hlElement || _self.hlElement).style.display = "none";
             _self.currentStep = -1;
             _self.overlay.style = 'none';
+        
+            settings.model.setQueryValue("auto/console/@showinput", this.cliBoxState);
             
-            //set anim settings to what it was before the tour
-            settings.model.setQueryValue('general/@animateui', _self.animateui);
+            settings.model.setQueryValue("editors/code/@gutter", this.gutterState);
+            
+            settings.model.setQueryValue("auto/statusbar/@show", this.statusBarState);
+    
+            if (this.projectFilesState === false)
+                require("ext/tree/tree").hide();
+        
+            require("ext/sidebar/sidebar").animateToDefaultWidth();
         };        
     },
 

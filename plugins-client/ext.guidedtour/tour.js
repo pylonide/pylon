@@ -13,7 +13,7 @@ this.tour = {
         time: 4
     }, {
         before: function() {
-            require("ext/panels/panels").activate(require("ext/tree/tree"));
+            
         },
         el: undefined,
         div: "navbar.childNodes[1]",
@@ -35,7 +35,7 @@ this.tour = {
         },
         el: undefined,
         div: "navbar.childNodes[navbar.childNodes.length - 2]",
-        desc: "You can enable additional features and change the behavior of the editor.",
+        desc: "Here, you can enable additional features and change the behavior of the editor.",
         pos: "right",
         time: 4
     }, {
@@ -43,7 +43,7 @@ this.tour = {
             require("ext/panels/panels").activate(require("ext/tree/tree"));
         },
         el: "winFilesViewer",
-        desc: "All your project files are listed here. You can rename and delete files, as well as drag in new ones from your computer. You can also right-click to see context options.",
+        desc: "While viewing your project files, you can rename and delete files, as well as drag in new ones from your computer. You can also right-click to see context options.",
         pos: "right",
         time: 4
     }, {
@@ -63,10 +63,14 @@ this.tour = {
                 madeNewFile = true;
                 require("ext/newresource/newresource").newfile();
             }
+            settings.model.setQueryValue("editors/code/@gutter", true); // has to be here to force show when new editor opens
+            settings.model.setQueryValue("auto/statusbar/@show", true);
+            require("ext/statusbar/statusbar").preinit();
         },
         el: tabEditors.$buttons,
         desc: "Rearrange these tabs any way you like, and cycle through them with keyboard shortcuts.",
-        pos: "left",
+        extra: 160,
+        pos: "bottom",
         time: 4
     }, {
         before: function() {
@@ -94,6 +98,7 @@ this.tour = {
         el: undefined,
         div: "ceEditorGutter",
         desc: "The gutter can do more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set breakpoints here.",
+        extra: 15,
         pos: "right",
         time: 5
     }, {
@@ -163,6 +168,7 @@ this.tour = {
         },
         el: undefined,
         div: "ceEditorGutter",
+        extra: 150,
         desc: "We're ready to test our code, so we've inserted a breakpoint on this line by clicking in the gutter. Before debugging, though, we'll need to set up a debugging scenario.",
         pos: "right",
         time: 5
