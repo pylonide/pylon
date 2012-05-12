@@ -914,7 +914,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         for (var i = timestamps.length - 1; i >= 0; i--) {
             var ts = timestamps[i];
             var rev = revisions[ts];
-            var friendlyDate = Util.localDate(ts).toString("MMM d, h:mm tt");
+            var friendlyDate = (new Date(ts)).toString("MMM d, h:mm tt");
             var restoring = rev.restoring || "";
             var savedToDisk = rev.saved !== false;
 
