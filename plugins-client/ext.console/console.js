@@ -189,7 +189,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     showOutput: function() {
-        tabConsole.set(1);
+        tabConsole.set("output");
     },
 
     getCwd: function() {
@@ -248,7 +248,7 @@ module.exports = ext.register("ext/console/console", {
             var outputBlockEl = document.getElementById("console_section" + (this.command_id_tracer - 1));
             if (outputBlockEl)
                 outputBlockEl.lastChild.innerHTML += line;
-                
+
             var data = {
                 command: "npm-module-stdin",
                 line: line
@@ -256,6 +256,9 @@ module.exports = ext.register("ext/console/console", {
             ide.send(data);
             return;
         }
+
+        if (tabConsole.activepage === "output")
+            tabConsole.set("console");
 
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
@@ -268,9 +271,6 @@ module.exports = ext.register("ext/console/console", {
 
         if (line !== "clear" && line !== "newtab")
             this.createOutputBlock(this.getPrompt(line));
-
-        if (tabConsole.activepage === "Output")
-            tabConsole.set("console");
 
         var showConsole = true;
         var cmd = argv[0];
@@ -316,7 +316,7 @@ module.exports = ext.register("ext/console/console", {
 
         // If no local extensions handle the command, send it server-side for
         // those extensions to handle it
-        if (ext.execCommand(cmd, data) !== false) {
+        if (ext.execCommand(cmd, data) !== true) {
             var commandEvt = "consolecommand." + cmd;
             var consoleEvt = "consolecommand";
             var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
@@ -329,9 +329,6 @@ module.exports = ext.register("ext/console/console", {
                     });
                 }
                 else {
-                    if (txtConsolePrompt.visible) {
-                        return;
-                    }
                     data.extra = {
                         command_id : this.command_id_tracer,
                         original_line : data.line
@@ -802,7 +799,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     newtab : function() {
-        var c9shell = tabConsole.add("c9shell");
+        var c9shell = tabConsole.add("Console");
         c9shell.setAttribute("closebtn", true);
         var c9shellText = c9shell.appendChild(new apf.text({
             margin     : "3 0 0 0",

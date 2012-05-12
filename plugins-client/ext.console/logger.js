@@ -110,7 +110,7 @@ document.body.appendChild(preInitOutputBuffer);
 
 // Modify this to create a document fragment if txtOutput is not defined
 var getOutputElement = function(getTxtOutput) {
-    if (typeof getTxtOutput === "object" && getTxtOutput.$ext && getTxtOutput.id) {
+    if (typeof getTxtOutput === "object" && getTxtOutput && getTxtOutput.$ext && getTxtOutput.id) {
         return {
             element: getTxtOutput.$ext,
             id: getTxtOutput.id
