@@ -53,6 +53,8 @@ module.exports = ext.register("ext/console/console", {
     excludeParent : true,
     keyEvents: {},
 
+    pageIdToPidMap : {},
+
     onMessageMethods: {
         cd: function(message, outputElDetails) {
             var res = message.body;
@@ -189,7 +191,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     showOutput: function() {
-        tabConsole.set(1);
+        tabConsole.set("output");
     },
 
     getCwd: function() {
@@ -245,17 +247,26 @@ module.exports = ext.register("ext/console/console", {
 
     evalInputCommand: function(line) {
         if (txtConsolePrompt.visible) {
-            var outputBlockEl = document.getElementById("console_section" + (this.command_id_tracer - 1));
+            var htmlPage = tabConsole.getPage().$ext;
+            var loadingBlocks = htmlPage.getElementsByClassName("loading");
+            var outputBlockEl = loadingBlocks[loadingBlocks.length - 1];
             if (outputBlockEl)
                 outputBlockEl.lastChild.innerHTML += line;
-                
+
+            // @TODO update this to not be $uniqueId, but rather just id
+            var pageId = tabConsole.getPage().$uniqueId;
+
             var data = {
                 command: "npm-module-stdin",
-                line: line
+                line: line,
+                pid: this.pageIdToPidMap[pageId].pid
             };
             ide.send(data);
             return;
         }
+
+        if (tabConsole.activepage === "output")
+            tabConsole.set("console");
 
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
@@ -268,9 +279,6 @@ module.exports = ext.register("ext/console/console", {
 
         if (line !== "clear" && line !== "newtab")
             this.createOutputBlock(this.getPrompt(line));
-
-        if (tabConsole.activepage === "Output")
-            tabConsole.set("console");
 
         var showConsole = true;
         var cmd = argv[0];
@@ -316,7 +324,7 @@ module.exports = ext.register("ext/console/console", {
 
         // If no local extensions handle the command, send it server-side for
         // those extensions to handle it
-        if (ext.execCommand(cmd, data) !== false) {
+        if (ext.execCommand(cmd, data) !== true) {
             var commandEvt = "consolecommand." + cmd;
             var consoleEvt = "consolecommand";
             var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
@@ -329,14 +337,13 @@ module.exports = ext.register("ext/console/console", {
                     });
                 }
                 else {
-                    if (txtConsolePrompt.visible) {
-                        return;
-                    }
                     data.extra = {
                         command_id : this.command_id_tracer,
-                        original_line : data.line
+                        original_line : data.line,
+                        page_id : tabConsole.getPage().$uniqueId
                     };
 
+                    tabConsole.getPage().setCaption(cmd);
                     ide.send(data);
                     this.command_id_tracer++;
                     return true;
@@ -361,6 +368,11 @@ module.exports = ext.register("ext/console/console", {
         if (spinnerElement) {
             logger.killBufferInterval(id);
             var pNode = spinnerElement.parentNode;
+
+            var page = apf.findHost(pNode.parentNode.parentNode);
+            if (page.id !== "pgOutput")
+                page.setCaption("Console");
+
             if (pNode.className.indexOf("quitting") !== -1) {
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
                 logger.logNodeStream("Process successfully quit", null,
@@ -433,13 +445,31 @@ module.exports = ext.register("ext/console/console", {
                 return;
             case "npm-module-start":
                 var stdin_prompt = extra.original_line.split(" ")[0];
+                this.pageIdToPidMap[extra.page_id] = {
+                    pid: message.pid,
+                    prompt: stdin_prompt
+                };
                 txtConsolePrompt.setValue("$ " + stdin_prompt);
                 txtConsolePrompt.show();
                 break;
             case "npm-module-data":
                 break;
             case "npm-module-exit":
-                txtConsolePrompt.hide();
+                this.pageIdToPidMap[extra.page_id] = null;
+                if (tabConsole.getPage().$uniqueId === extra.page_id) {
+                    txtConsolePrompt.hide();
+                }
+                else {
+                    // We may have reconstructed the output and have a mismatched
+                    // id
+                    // @TODO implement:
+                    // 1. Give each new page a unique "id" (NOT $uniqueId)
+                    // 2. When sending a command, include the unique ID
+                    // 3. Save the pages in settings.xml
+                    // 4. Recreate pages on refresh
+                    // 5. When this npm-module-exit message happens, don't get the
+                    //    page's uniqueId, map the "id" to the page
+                }
                 break;
             case "kill":
                 if (message.err) {
@@ -727,6 +757,16 @@ module.exports = ext.register("ext/console/console", {
         });
 
         tabConsole.addEventListener("afterswitch", function(e){
+            var pageNpmInfo = _self.pageIdToPidMap[e.nextPage.$uniqueId];
+            if (pageNpmInfo) {
+                txtConsolePrompt.setValue(pageNpmInfo.prompt);
+                txtConsolePrompt.show();
+            }
+            else {
+                txtConsolePrompt.hide();
+            }
+
+            // Now find any running procs
             settings.model.setQueryValue("auto/console/@active", e.nextPage.name);
             setTimeout(function(){
                 txtConsoleInput.focus();
@@ -802,7 +842,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     newtab : function() {
-        var c9shell = tabConsole.add("c9shell");
+        var c9shell = tabConsole.add("Console");
         c9shell.setAttribute("closebtn", true);
         var c9shellText = c9shell.appendChild(new apf.text({
             margin     : "3 0 0 0",
@@ -862,10 +902,13 @@ module.exports = ext.register("ext/console/console", {
     killProcess : function(pNode) {
         var command_id;
         // Simply get the ID of the last command sent to the server
-        if (typeof pNode === "undefined")
-            command_id = (this.command_id_tracer - 1)
-        else
+        if (typeof pNode === "undefined") {
+            command_id = (this.command_id_tracer - 1);
+            pNode = document.getElementById("console_section" + command_id);
+        }
+        else {
             command_id = parseInt(pNode.getAttribute("rel"), 10);
+        }
 
         var pid = this.tracerToPidMap[command_id];
         if (!pid)
@@ -879,6 +922,12 @@ module.exports = ext.register("ext/console/console", {
             command: "kill",
             pid: pid
         });
+    },
+
+    checkIfPageCanClose : function(e) {
+        if (e.page.childNodes[0].$ext.getElementsByClassName("loading").length)
+            return false;
+        return true;
     },
 
     /**
