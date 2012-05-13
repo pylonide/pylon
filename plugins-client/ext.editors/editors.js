@@ -220,10 +220,12 @@ module.exports = ext.register("ext/editors/editors", {
         });
         this.$buttonContainer.$int.appendChild(tabEditors.$buttons);
         //tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
-        this.$buttonContainer.$int.style.paddingRight
-            = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
-            + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
-
+        var paddingRight = 
+          (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
+            + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight")))
+        
+        this.$buttonContainer.$int.style.paddingRight = paddingRight + "px";
+        tabEditors.$buttons.style.paddingRight = "120px";
         tabEditors.$buttons.style.width = "100%";
 
 //        var timer;
@@ -253,6 +255,13 @@ module.exports = ext.register("ext/editors/editors", {
 //                }
 //            }, 300);
 //        });
+
+        ide.addEventListener("menus.restore", function(){
+            _self.$buttonContainer.$int.style.paddingRight = paddingRight + "px";
+        });
+        ide.addEventListener("menus.minimize", function(){
+            _self.$buttonContainer.$int.style.paddingRight = "120px";
+        });
 
         splitterPanelLeft.addEventListener("dragmove", function(e){
             _self.isResizing = true;
