@@ -11852,7 +11852,7 @@
             
             .searchTxt .btnclose {
                 position: absolute;
-                top: 7px;
+                top: 6px;
                 right: 8px;
                 width: 14px;
                 height: 14px;
