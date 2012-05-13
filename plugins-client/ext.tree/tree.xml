@@ -74,6 +74,8 @@
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
+            <a:item match="[folder]" command="searchinfiles">Search Files in this Folder</a:item>
+            <a:divider />
             <a:item match="[file|folder|project]" onclick="
                 var store = apf.clipboard.store;
                 apf.clipboard.put(trFiles.getSelection().map(function (node) {
@@ -84,7 +86,6 @@
                     trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
                 apf.clipboard.store = store;
             ">Duplicate</a:item>
-            <a:divider />
             <a:item match="[file|folder[not(@root)]]" command="cut">Cut</a:item>
             <a:item match="[file|folder[not(@root)]]" command="copy">Copy</a:item>
             <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" command="paste">Paste</a:item>
