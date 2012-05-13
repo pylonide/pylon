@@ -14,6 +14,9 @@ var RE_relwsp = /(?:\s|^|\.\/)([\w\_\$-]+(?:\/[\w\_\$-]+)+(?:\.[\w\_\$]+))?(\:\d
 var RE_URL = /\b((?:(?:https?):(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()[\]{};:'".,<>?«»“”‘’]))/i;
 var RE_COLOR = /\u001b\[([\d;]+)?m/g;
 
+var BUFFER_INTERVAL = 100;
+var OUTPUT_CUTOFF = 2003;
+
 var openLinkedFile = function(path, row, column) {
     row = parseInt(row.slice(1), 10);
     column = column ? parseInt(column.slice(1), 10) : 0;
@@ -182,6 +185,12 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
             if (parentEl) {
                 parentEl.appendChild(childBuffer[outputId]);
                 childBuffer[outputId] = document.createDocumentFragment();
+
+                // childNodes[3] are the actual lines of output that come after
+                // the spinner, prompt and divider
+                var numChildNodesOverflow = parentEl.childNodes.length - OUTPUT_CUTOFF;
+                for (var i = 0; i < numChildNodesOverflow; i++)
+                    parentEl.removeChild(parentEl.childNodes[3]);
             }
             else {
                 if (typeof txtOutput !== "undefined") {
@@ -193,7 +202,7 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
 
         childBufferInterval[outputId] = setInterval(function() {
             outputBuffer();
-        }, 100);
+        }, BUFFER_INTERVAL);
     }
 
     var lines = (data.toString()).split("\n", MAX_LINES);
@@ -222,7 +231,7 @@ module.exports.killBufferInterval = function(sectionNumber) {
         // Wait for the remaining buffer to output
         setTimeout(function() {
             clearInterval(childBufferInterval[sectionId]);
-        }, 150);
+        }, BUFFER_INTERVAL + (BUFFER_INTERVAL/2));
     }
 };
 
