@@ -492,13 +492,8 @@ module.exports = ext.register("ext/tree/tree", {
      * 
      * @param callback function Called when the tree is fully loaded
      */
-    loadProjectTree : function(callback) {
+    loadProjectTree : function(animateScrollOnLoad) {
         var _self = this;
-
-        // If the root node has been removed, add it back in. It would be removed
-        // from expandedNodes if the user collapsed it
-//        if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
-//            this.expandedNodes.unshift(ide.davPrefix);
 
         // Sort the cached list so it's more probable that nodes near the top of
         // the tree are loaded first, giving the user more visual feedback that
@@ -639,17 +634,24 @@ module.exports = ext.register("ext/tree/tree", {
             }
 
             // Scroll to last set scroll pos
-            if (_self.scrollPos && _self.scrollPos > -1)
-                trFiles.$ext.scrollTop = _self.scrollPos;
+            if (_self.scrollPos && _self.scrollPos > -1) {
+                if (animateScrollOnLoad) {
+                    apf.tween.single(trFiles, {
+                        type: "scrollTop",
+                        from: 0,
+                        to: _self.scrollPos
+                    });
+                }
+                else {
+                    trFiles.$ext.scrollTop = _self.scrollPos;
+                }
+            }
 
             // Now set the "get" attribute of the <a:insert> rule so the tree
             // knows to ask webdav for expanded folders' contents automatically
             self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
 
             settings.save();
-
-            if (callback)
-                return callback();
         }
     },
 
@@ -676,7 +678,7 @@ module.exports = ext.register("ext/tree/tree", {
 
         ide.dispatchEvent("track_action", { type: "reloadtree" });
 
-        this.loadProjectTree();
+        this.loadProjectTree(true);
 
         // Now re-attach the scroll listener
         trFiles.addEventListener("scroll", $trScroll);
