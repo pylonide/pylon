@@ -100,8 +100,6 @@ module.exports = ext.register("ext/console/console", {
                 original_line = proc.extra.original_line;
                 this.createOutputBlock(this.getPrompt(original_line), false, command_id);
 
-                // @TODO When we update how NPM modules are run, be sure to
-                // update the process type here
                 if (proc.type === "run-npm") {
                     txtConsolePrompt.setValue("$ " + original_line.split(" ")[0]);
                     txtConsolePrompt.show();
@@ -832,12 +830,8 @@ module.exports = ext.register("ext/console/console", {
             }
         });
 
-        // @TODO Defunct
-        apf.setStyleClass(txtConsole.$ext, "feedback");
-        apf.setStyleClass(txtOutput.$ext, "feedback");
-
         logger.appendConsoleFragmentsAfterInit();
-        
+
         this.getRunningServerProcesses();
     },
 
@@ -960,8 +954,7 @@ module.exports = ext.register("ext/console/console", {
             var scroll = txt.$scrollArea;
             txt.$scrolldown = scroll.scrollTop >= scroll.scrollHeight
                 - scroll.offsetHeight + apf.getVerBorders(scroll);
-        });
-        // ^^^ @TODO check if the above timeout needs to be 200ms as set in HEAD
+        }, 200);
 
         pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');
     },
