@@ -9,7 +9,7 @@
 define(function(require, exports, module) {
 
 var save;
-var cmds = module.exports = {
+var cliCmds = exports.cliCmds = {
     w: function(editor, data) {
         if (!save)
             save = require("ext/save/save");
@@ -36,6 +36,86 @@ var cmds = module.exports = {
 };
 
 // aliases
-cmds.write = cmds.w;
+cliCmds.write = cliCmds.w;
+
+exports.searchStore = {
+    current: "",
+    options: {
+        needle: "",
+        backwards: false,
+        wrap: true,
+        caseSensitive: false,
+        wholeWord: false,
+        regExp: false
+    }
+};
+
+
+exports.actions = {
+    ":": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue(":");
+        }
+    },
+    "/": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue("/");
+        }
+    },
+    "?": {
+        fn: function(editor, range, count, param) {
+            editor.blur();
+            txtConsoleInput.focus();
+            txtConsoleInput.setValue("?");
+        }
+    }
+};
+
+exports.addCommands = function(handler) {
+    var actions = handler.actions;
+    Object.keys(exports.actions).forEach(function(i){
+        actions[i] = exports.actions[i];
+    })
+}
+
+exports.onConsoleCommand = function(e) {
+    var cmd = e.data.command;
+    if ((typeof ceEditor !== "undefined") && cmd && typeof cmd === "string") {
+        var ed = ceEditor.$editor;
+        if (cmd[0] === ":") {
+            cmd = cmd.substr(1);
+
+            if (cliCmds[cmd]) {
+                cliCmds[cmd](ed, e.data);
+            }
+            else if (cmd.match(/^\d+$/)) {
+                ed.gotoLine(cmd, 0);
+                ed.navigateLineStart();
+            }
+            else {
+                console.log("Vim command '" + cmd + "' not implemented.");
+            }
+
+            ceEditor.focus();
+            e.returnValue = false;
+        }
+        else if (cmd[0] === "/" || cmd[0] === "?") {
+            cmd = cmd.substr(1);
+            if (cmd)
+                exports.searchStore.current = cmd;
+            else
+                cmd = exports.searchStore.current;
+            var options = exports.searchStore.options;
+            options.backwards = cmd[0] === "?";
+            ed.find(cmd, options);
+            ceEditor.focus();
+            e.returnValue = false;
+        }
+    }
+};
 
 });

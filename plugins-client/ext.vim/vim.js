@@ -13,7 +13,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var code = require("ext/code/code");
-var cmdModule = require("ext/vim/commands");
 var cliCmds = require("ext/vim/cli");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
@@ -49,38 +48,6 @@ var _loadKeyboardHandler = function(path, callback) {
 	}
 };
 
-
-var onConsoleCommand = function onConsoleCommand(e) {
-    var cmd = e.data.command;
-    if ((typeof ceEditor !== "undefined") && cmd && typeof cmd === "string") {
-        var ed = ceEditor.$editor;
-        if (cmd[0] === ":") {
-            cmd = cmd.substr(1);
-
-            if (cliCmds[cmd]) {
-                cliCmds[cmd](ed, e.data);
-            }
-            else if (cmd.match(/^\d+$/)) {
-                ed.gotoLine(cmd, 0);
-                ed.navigateLineStart();
-            }
-            else {
-                console.log("Vim command '" + cmd + "' not implemented.");
-            }
-
-            ceEditor.focus();
-            e.returnValue = false;
-        }
-        else if (cmd[0] === "/") {
-            cmd = cmd.substr(1);
-            cmdModule.searchStore.current = cmd;
-            ed.find(cmd, cmdModule.searchStore.options);
-            ceEditor.focus();
-            e.returnValue = false;
-        }
-    }
-};
-
 var enableVim = function enableVim() {
     ext.initExtension(this);
     
@@ -104,6 +71,7 @@ var enableVim = function enableVim() {
 				editor.setKeyboardHandler(vimHandler);				
 				ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
 				require("ext/console/console").showInput();
+				cliCmds.addCommands(vimHandler);
 			})
 		}
     });
@@ -167,8 +135,8 @@ module.exports = ext.register("ext/vim/vim", {
 	// Enable accepts a `doEnable` argument which executes `disable` if false.
     enable: function(doEnable) {
         if (doEnable !== false) {
-            ide.removeEventListener("consolecommand", onConsoleCommand);
-            ide.addEventListener("consolecommand", onConsoleCommand);
+            ide.removeEventListener("consolecommand", cliCmds.onConsoleCommand);
+            ide.addEventListener("consolecommand", cliCmds.onConsoleCommand);
             enableVim.call(this);
         }
         else {
@@ -177,7 +145,7 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     disable: function() {
-        ide.removeEventListener("consolecommand", onConsoleCommand);
+        ide.removeEventListener("consolecommand", cliCmds.onConsoleCommand);
         disableVim();
     },
 
