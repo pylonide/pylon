@@ -131,36 +131,18 @@
               autoselect = "false"
               reselectable = "true"
               anchors    = "0 0 0 0"
-              class      = "noscrollbar"
+              skin       = "breakpoints"
               scrollbar  = "sbShared 2 2 2"
               border     = "0"
               model      = "mdlDbgBreakpoints"
+              mode       = "check"
               each       = "[breakpoint]"
-              caption    = "[@text]"
-              icon       = "debugger/brkp_obj.png">
-                <a:actions />
+              checked    = "[@enabled]">
+                <a:caption>
+                    [@text]
+                    <div>[@content]</div>
+                </a:caption>
             </a:list>
-        </a:page>
-        <a:model id="mdlAceAnnotations"></a:model>
-        <a:page id="aceAnnotations" caption="Bugs" render="runtime">
-            <a:datagrid id="dgAceAnnotations"
-              anchors    = "0 0 0 0" 
-              border     = "0"
-              options    = "size|move"
-              class      = "noscrollbar"
-              scrollbar  = "sbShared 20 2 2"
-              prerender  = "false"
-              caching    = "false"
-              onafterchoose = "require('ext/debugger/debugger').goToAnnotation()"
-              model      = "mdlAceAnnotations"
-              loading-message = "Loading..."
-              empty-message = "None found">
-                <a:each match="[annotation]" sort="[@line]">
-                    <a:column type="icon" width="20" icon="debugger/[@type]_obj.gif" />
-                    <a:column caption="Line" value="[@line]" width="50" />
-                    <a:column caption="Description" value="[@text]" width="100%" />
-                </a:each>
-            </a:datagrid>
         </a:page>
     </a:tab>
 </a:application>

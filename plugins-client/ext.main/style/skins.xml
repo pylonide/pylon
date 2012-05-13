@@ -5617,6 +5617,92 @@
     </a:presentation>
 </a:list>
 
+<a:list name="breakpoints">
+    <a:style><![CDATA[
+        .listBP{
+            overflow: hidden;
+            position: relative;
+            background-color: #fafbfc;
+            cursor: default;
+            padding    : 2px 2px 2px 2px;
+            color      : #333;
+        }
+        
+        .listBP .bpItem{
+            padding    : 2px 2px 2px 22px;
+            position : relative;
+        }
+        
+        .listBP .content{
+            cursor : pointer;
+            font-family : Arial, Tahoma;
+            font-size : 12px;
+            padding : 2px 0 0 0;
+        }
+        
+        .listBP .content div{
+            font-family : Courier New;
+            padding : 2px 0 0 0;
+            font-size : 12px;
+            white-space : nowrap;
+        }
+
+        .listBP .checkbox {
+            width      : 16px;
+            height     : 17px;
+            background : url("images/checkbox_grey.png") no-repeat 0 0;
+            display : block;
+            position : absolute;
+            left : 2px;
+            top : 3px;
+        }
+
+        .listBP .bpItem .checkbox:hover{
+            background-position : 0 -85px;
+        }
+        
+        .listBP .bpItem .checkbox:active{
+            background-position : 0 -51px;
+        }
+
+        .listBP .checked .checkbox:active {
+            background-position : 0 -17px !important;
+        }
+        
+        .listBP .checked .checkbox {
+            background-position : 0 -34px;
+        }
+
+        .listBP .checked .checkbox:hover{
+            background-position : 0 -102px;
+        }
+
+        .listBPDisabled .checkbox {
+            background-position : 0 -68px;
+        }
+
+        .listBPDisabled .bpItem {
+            color : #bebebe;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="listBP">
+            </div>
+        </a:main>
+        <a:item class="." caption="div" icon="div" select="." check="span">
+            <div class="bpItem">
+                <span class="checkbox"> </span> 
+                <div class="content"> </div>
+            </div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+
 <a:menu name="menu">
     <a:style><![CDATA[
         .menu {
@@ -8122,7 +8208,7 @@
     <a:style><![CDATA[
         .splitter {
             position : relative;
-            z-index  : 90000;
+            z-index  : 8000;
         }
 
         .splitterFocus {
@@ -8562,7 +8648,7 @@
     }
 
     .tab_console .btncontainer{
-        padding : 5px 6px 3px;
+        padding : 5px 106px 3px 6px;
         height: 20px;
         overflow: visible;
         white-space: nowrap;
@@ -8747,7 +8833,7 @@
             <div class="btncontainer"> </div>
         </div>
     </a:main>
-    <a:button caption="div/text()" container="div" icon="div[2]" maxwidth="90" minwidth="10">
+    <a:button caption="div/text()" container="div" icon="div[2]" maxwidth="105" minwidth="20">
         <div class="btntab">
             <div class="tab_console_title">-</div>
             <div class="tab_console_icon"> </div>
@@ -10317,39 +10403,6 @@
             background-color: transparent;
             color: #202020;
             line-height: 18px;
-        }
-
-        .console_text {
-            font-family : menlo,courier new,fixed,swiss,sans-serif;
-            background: none;
-            font-size : 12px;
-            margin : 3px 0 0 0;
-            padding : 7px 0 3px 0;
-            color : #eee;
-            overflow : hidden;
-        }
-
-        .console_text .item{
-            /*border-bottom : 1px solid #3F3F3F;*/
-            padding : 2px 10px;
-        }
-
-        .console_text .red {
-            color: #c93a40;
-        }
-
-        .console_text .blue,
-        .console_text .item a:link,
-        .console_text .item a:hover,
-        .console_text .item a:active {
-            color: #86c2f6;
-        }
-        .console_text .gray,
-        .console_text .item a:visited {
-            color: #909090;
-        }
-        .console_text .white {
-            color: #eeeeee;
         }
 
         .apf_console{

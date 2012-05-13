@@ -253,7 +253,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
         node.setAttribute("oldpath", node.getAttribute("path"));
         node.setAttribute("path", newPath);
-        if (isCopyAction)
+        if (isCopyAction || node.getAttribute('name') != name)
             apf.xmldb.setAttribute(node, "name", name);
 
         // when this is a copy action, then we don't want this to happen
@@ -387,7 +387,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 command: "internal-isfile",
                 argv: e.data.argv,
                 cwd: e.data.cwd,
-                sender: "filesystem"
+                sender: "filesystem",
+                extra: e.data.extra
             });
             return false;
         }

@@ -47,17 +47,13 @@ module.exports = ext.register("ext/imgview/imgview", {
             doc.isInited = true;
             doc.dispatchEvent("init");
         }
-        
-        var d = new Date();
-        var img = imgEditor.$ext.getElementsByTagName("img")[0];
-        img.setAttribute("src", img.getAttribute("src") + "?" + d.getTime())
     },
 
     hook : function() {},
 
     init : function(amlPage) {
         var editor = imgEditor;
-        
+
         ide.addEventListener("beforefilesave", function(e) {
             var path = e.node && e.node.getAttribute("path");
             if (!path)
@@ -66,7 +62,7 @@ module.exports = ext.register("ext/imgview/imgview", {
             if (editor.value == path)
                 return false;
         });
-        
+
         //amlPage.appendChild(editor);
         editor.show();
 
