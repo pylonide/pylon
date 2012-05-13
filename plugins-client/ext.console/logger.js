@@ -168,8 +168,11 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     if (eventsAttached !== true) {
         parentEl.addEventListener("click", function(e) {
             var node = e.target;
-            if (node.hasAttribute("data-wsp"))
+            if (node.hasAttribute("data-wsp")) {
                 openLinkedFile.apply(null, e.target.getAttribute("data-wsp").split(","));
+                apf.preventDefault(e);
+                return false;
+            }
         });
         eventsAttached = true;
     }
