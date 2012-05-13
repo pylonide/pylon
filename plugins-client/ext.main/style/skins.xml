@@ -5456,6 +5456,92 @@
     </a:presentation>
 </a:list>
 
+<a:list name="breakpoints">
+    <a:style><![CDATA[
+        .listBP{
+            overflow: hidden;
+            position: relative;
+            background-color: #fafbfc;
+            cursor: default;
+            padding    : 2px 2px 2px 2px;
+            color      : #333;
+        }
+        
+        .listBP .bpItem{
+            padding    : 2px 2px 2px 22px;
+            position : relative;
+        }
+        
+        .listBP .content{
+            cursor : pointer;
+            font-family : Arial, Tahoma;
+            font-size : 12px;
+            padding : 2px 0 0 0;
+        }
+        
+        .listBP .content div{
+            font-family : Courier New;
+            padding : 2px 0 0 0;
+            font-size : 12px;
+            white-space : nowrap;
+        }
+
+        .listBP .checkbox {
+            width      : 16px;
+            height     : 17px;
+            background : url("images/checkbox_grey.png") no-repeat 0 0;
+            display : block;
+            position : absolute;
+            left : 2px;
+            top : 3px;
+        }
+
+        .listBP .bpItem .checkbox:hover{
+            background-position : 0 -85px;
+        }
+        
+        .listBP .bpItem .checkbox:active{
+            background-position : 0 -51px;
+        }
+
+        .listBP .checked .checkbox:active {
+            background-position : 0 -17px !important;
+        }
+        
+        .listBP .checked .checkbox {
+            background-position : 0 -34px;
+        }
+
+        .listBP .checked .checkbox:hover{
+            background-position : 0 -102px;
+        }
+
+        .listBPDisabled .checkbox {
+            background-position : 0 -68px;
+        }
+
+        .listBPDisabled .bpItem {
+            color : #bebebe;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="listBP">
+            </div>
+        </a:main>
+        <a:item class="." caption="div" icon="div" select="." check="span">
+            <div class="bpItem">
+                <span class="checkbox"> </span> 
+                <div class="content"> </div>
+            </div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+
 <a:menu name="menu">
     <a:style><![CDATA[
         .menu {
