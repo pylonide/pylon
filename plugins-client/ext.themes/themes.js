@@ -87,8 +87,6 @@ module.exports = ext.register("ext/themes/themes", {
             apf.setStyleClass(document.body, "dark");
         else
             apf.setStyleClass(document.body, "", ["dark"]);
-        
-        apf.setStyleClass(document.body, theme.cssClass, [_self.currTheme]);
 
         var cssClass = theme.cssClass;
         
