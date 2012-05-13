@@ -95,8 +95,11 @@ module.exports = ext.register("ext/console/console", {
 
         logger.logNodeStream(
             words.sort()
-                .map(function(w) { return w + tabs + commands.commands[w].hint; })
-                .join("\n"),
+                .map(function(w) {
+                    if (!w)
+                        return "";
+                    return w + tabs + (commands.commands[w].hint || "");
+                }).join("\n"),
             null, this.getLogStreamOutObject(data.tracer_id), ide
         );
     },
@@ -204,7 +207,7 @@ module.exports = ext.register("ext/console/console", {
                 argv: argv,
                 line: line,
                 cwd: this.getCwd(),
-                requireshandling: true,
+                requireshandling: !commands.commands[cmd],
                 tracer_id: this.command_id_tracer
             };
 
@@ -327,7 +330,11 @@ module.exports = ext.register("ext/console/console", {
                 break;
             default:
                 if (message.type.match(/-start$/)) {
-                    var command_id = extra.command_id;
+                    var command_id = extra && extra.command_id;
+                    
+                    if (!command_id) {
+                        return;
+                    }
 
                     this.tracerToPidMap[command_id] = message.pid;
                     this.pidToTracerMap[message.pid] = command_id;
@@ -340,8 +347,8 @@ module.exports = ext.register("ext/console/console", {
 
                 if (message.type.match(/-data$/)) {
                     var type = "tracer";
-                    var id = extra.command_id;
-                    if (!command_id) {
+                    var id = extra && extra.command_id;
+                    if (!id) {
                         type = "pid";
                         id = message.pid;
                     }
@@ -352,7 +359,7 @@ module.exports = ext.register("ext/console/console", {
                 }
 
                 if (message.type.match(/-exit$/)) {
-                    if (extra.command_id)
+                    if (extra && extra.command_id)
                         this.markProcessAsCompleted(extra.command_id);
                     else
                         this.markProcessAsCompleted(message.pid, true);
@@ -400,7 +407,7 @@ module.exports = ext.register("ext/console/console", {
             name: "help",
             hint: "show general help information and a list of available commands",
             exec: function () {
-                _self.help();
+                _self.help({tracer_id: _self.command_id_tracer});
             }
         });
 
