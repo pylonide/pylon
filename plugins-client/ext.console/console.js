@@ -95,8 +95,11 @@ module.exports = ext.register("ext/console/console", {
 
         logger.logNodeStream(
             words.sort()
-                .map(function(w) { return w + tabs + commands.commands[w].hint; })
-                .join("\n"),
+                .map(function(w) {
+                    if (!w)
+                        return "";
+                    return w + tabs + (commands.commands[w].hint || "");
+                }).join("\n"),
             null, this.getLogStreamOutObject(data.tracer_id), ide
         );
     },
@@ -204,7 +207,7 @@ module.exports = ext.register("ext/console/console", {
                 argv: argv,
                 line: line,
                 cwd: this.getCwd(),
-                requireshandling: true,
+                requireshandling: !commands.commands[cmd],
                 tracer_id: this.command_id_tracer
             };
 
@@ -404,7 +407,7 @@ module.exports = ext.register("ext/console/console", {
             name: "help",
             hint: "show general help information and a list of available commands",
             exec: function () {
-                _self.help();
+                _self.help({tracer_id: _self.command_id_tracer});
             }
         });
 

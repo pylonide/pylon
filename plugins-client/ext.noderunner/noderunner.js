@@ -88,15 +88,6 @@ module.exports = ext.register("ext/noderunner/noderunner", {
                 stDebugProcessRunning.deactivate();
                 break;
 
-            case "node-exit-with-error":
-                stProcessRunning.deactivate();
-                stDebugProcessRunning.deactivate();
-
-                // TODO: is this the way to report an errror?
-                txtOutput.addValue("<div class='item console_log' style='font-weight:bold;color:#ff0000'>[C9 Server Exception: "
-                        + message.errorMessage + "</div>");
-                break;
-
             case "state":
                 this.nodePid = message.processRunning || 0;
 
