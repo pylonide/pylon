@@ -55,6 +55,34 @@
         </a:main>
     </a:presentation>
 </a:bar>
+<a:bar name="winGoToFile">
+    <a:style><![CDATA[
+        .winGoToFile {
+            background:#e8e8e8;
+            box-shadow:0 5px 7px rgba(0,0,0,0.5);
+            border:1px solid #bbb;
+            border-width:0 1px 1px 1px;
+            position:absolute;
+            left:50%;
+            margin-left:-250px;
+            top : 37px;
+        }
+        .dark .winGoToFile {
+            border-color: rgba(255,255,255,.1);
+        }
+        .dark .winGoToFile .searchbox_textbox .sbtb_middle {
+            border-color: rgba(0,0,0,.9);
+            box-shadow: 0px 1px 0px rgba(255,255,255,.1);
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="winGoToFile">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
 <a:bar name="c9-header-bar">
     <a:style><![CDATA[
         .c9-header-bar{
@@ -5406,12 +5434,19 @@
             padding : 2px 3px 4px 10px;
             border-top : 1px solid rgba(255,255,255,0.8);
             border-bottom : 1px solid rgba(0,0,0,0.1);
-            font-size : 11px;
             cursor : default;
             white-space : nowrap;
         }
         .searchresults>div:hover{
-            background : rgba(255,255,255,0.6);
+            box-shadow : 0 0 0 1000em rgba(255,255,255,0.6) inset;
+        }
+        .dark .searchresults>div {
+            background : rgba(255,255,255,0.1);   
+            border-top-color: rgba(255,255,255,0.05);
+            border-bottom-color : rgba(0,0,0,0.3);
+        }
+        .dark .searchresults>div:hover{
+            box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
         }
         .searchresults>div>span{
             font-size : 14px;
@@ -5419,14 +5454,22 @@
             display : block;
             padding : 2px;
         }
-        .searchresults>div>span>strong{
-            color : #111;
+        .searchresults .path {
+            font-size: 11px;
+            opacity: .7;
+        }
+        .searchresults strong{
+            text-decoration: underline;
         }
         .searchresults>div.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
-            color : white;
         }
+        .searchresults>div.selected,
+        .searchresults>div.selected>span {
+            color : white !important;
+        }
+        
         .searchresults>div.selected>span{
             color : #f1f1f1;
         }
