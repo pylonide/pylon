@@ -46,16 +46,25 @@ module.exports = {
     
     hasCursorOnFirstLine : function(txtFind){
         var selection = window.getSelection();
-        if (selection.anchorNode.nodeType == 1)
+        if (selection.anchorNode == txtFind.$input)
             return true;
         
-        var n = selection.anchorNode.parentNode;
-        if (selection.anchorNode.nodeValue.substr(0, selection.anchorOffset).indexOf("\n") > -1)
-            return false;
-
+        var n;
+        if (selection.anchorNode.nodeType == 1)
+            n = selection.anchorNode;
+        else {
+            n = selection.anchorNode.parentNode;
+            if (selection.anchorNode.nodeValue.substr(0, selection.anchorOffset).indexOf("\n") > -1)
+                return false;
+        }
+        
         if (apf.isChildOf(txtFind.$input, n)) {
             while (n.previousSibling) {
                 n = n.previousSibling;
+                
+                if (n.nodeType != 1 && apf.getStyle(n.nextSibling, "display") == "block")
+                    return false;
+                
                 if ((n.nodeType == 1 ? n.innerText : n.nodeValue).indexOf("\n") > -1)   
                     return false;
             };
@@ -66,16 +75,25 @@ module.exports = {
     
     hasCursorOnLastLine : function(txtFind){
         var selection = window.getSelection();
-        if (selection.anchorNode.nodeType == 1)
+        if (selection.anchorNode == txtFind.$input)
             return true;
         
-        var n = selection.anchorNode.parentNode;
-        if (selection.anchorNode.nodeValue.substr(selection.anchorOffset).indexOf("\n") > -1)
-            return false;
+        var n;
+        if (selection.anchorNode.nodeType == 1)
+            n = selection.anchorNode;
+        else {
+            n = selection.anchorNode.parentNode;
+            if (selection.anchorNode.nodeValue.substr(selection.anchorOffset).indexOf("\n") > -1)
+                return false;
+        }
 
         if (apf.isChildOf(txtFind.$input, n)) {
             while (n.nextSibling) {
                 n = n.nextSibling;
+                
+                if (n.nodeType != 1 && apf.getStyle(n.previousSibling, "display") == "block")
+                    return false;
+                
                 if ((n.nodeType == 1 ? n.innerText : n.nodeValue).indexOf("\n") > -1)   
                     return false;
             };

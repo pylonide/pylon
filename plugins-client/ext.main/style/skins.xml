@@ -189,11 +189,19 @@
 
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
         	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
-        	height: 9px;
+        	height: 10px;
         	left: 24px;
         	position: absolute;
         	top: 4px;
-        	width: 9px;
+        	width: 10px;
+        }
+        .c9-menu-bar .c9-mbar-bcont .c9-activity .light {
+            background : url(images/c9-no-repeat.png) no-repeat 100px 100px; /* nothing */
+            height: 10px;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 10px;
         }
 
         .c9-menu-bar .mainlogo {
@@ -240,7 +248,7 @@
                         
                         <div class="c9-mbar-round">
                             <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
-                            <div id="saveStatus" class="c9-activity"> </div>
+                            <div class="c9-activity"><div id="saveStatus" class="light"> </div></div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
                             <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
                         </div>
@@ -1903,38 +1911,71 @@
             border-radius: 50%;
             box-shadow: 0 1px 0 0 rgba(255,255,255,.2) inset;
             height: 4px;
-            left: 4px;
+            left: auto;
+            right: 4px;
             top: 9px;
             width: 4px;
         }
         .btnSave .c9-label {
-            padding-left: 14px;
-        }
-        .c9-toolbarbutton-glossy.initial .c9-icon {
-            display: none;
+            padding-right: 4px;
         }
         
         @-webkit-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
            @-moz-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
                @-keyframes saving { 0%, 10%, 100% { opacity: 1; } 50%, 60% { opacity: .3; } }
 
+        .c9-toolbarbutton-glossy.saving .c9-label,
+        .c9-toolbarbutton-glossy.saved .c9-label {
+            background-position: 0 -523px;
+            font-size: 9px;
+            line-height: 24px;
+            padding: 0 16px 0 5px;
+            text-transform: uppercase;
+        }
+        .c9-toolbarbutton-glossy.saving .c9-label:after,
+        .c9-toolbarbutton-glossy.saved .c9-label:after {
+            background-position: -476px -523px;
+        }
         .c9-toolbarbutton-glossy.saving .c9-icon {
             background-color: #FF8400;
+            right: 6px;
             -webkit-animation: saving .4s linear 0 infinite;
                -moz-animation: saving .4s linear 0 infinite;
                     animation: saving .4s linear 0 infinite;
         }
         .c9-toolbarbutton-glossy.saved .c9-icon {
-            background-color: #60CC00;
+            background-color: #85C410;
+            right: 6px;
         }
-        .c9-toolbarbutton-glossy.default .c9-icon {
-            background-color: #E50000;
+        .c9-toolbarbutton-glossy.save .c9-icon {
+            background-color: #D01616;
+        }
+        .c9-toolbarbutton-glossy.save .c9-label {
+            font-size: 9px;
+            padding: 0 16px 0 8px;
+            right: 14px;
+            text-transform: uppercase;
         }
         .c9-toolbarbutton-glossy.disabled .c9-icon {
             background-color: white;
             opacity: .2;
         }
         
+
+        .c9-menu-bar .c9-mbar-bcont .c9-activity .saving {
+            -webkit-animation: saving .4s linear 0 infinite;
+               -moz-animation: saving .4s linear 0 infinite;
+                    animation: saving .4s linear 0 infinite;
+            
+            background-position: -102px 0px !important;
+        }
+        .c9-menu-bar .c9-mbar-bcont .c9-activity .saved {
+            background-position: -102px -19px !important;
+        }
+        .c9-menu-bar .c9-mbar-bcont .c9-activity .save {
+            background-position: -84px -19px !important;
+        }
+
     ]]></a:style>
 
     <a:presentation>
@@ -2366,17 +2407,17 @@
 			width    : 30px;
         }
 
-        .mnubtn:hover,
+        .mnubtnOver,
         .mnubtnDown {
         	background-image: url(images/c9-repeat-x.png);
         	background-repeat: repeat-x;
+        	box-shadow: -1px 0 0 0 #000, 1px 0 0 0 #000;
         }
-        .mnubtn:hover {
-        	background-position: 0 -181px;
+        .mnubtnOver {
+            background-position: 50% -181px;
         }
         .mnubtnDown {
-        	box-shadow: -1px 0 0 0 #000 inset, 1px 0 0 0 #000 inset;
-        	background-position: 0 -217px;
+            background-position: 50% -217px;
         }
         
         .mnubtnDisabled .icon, .mnubtnDisabled SPAN{
@@ -2506,6 +2547,10 @@
 
         .mnubtn.shop SPAN {
             display:none;
+        }
+
+        .black-menu-bar .mnubtn:not(:first-child):not(:last-child) {
+            margin-right: 1px !important;
         }
     ]]></a:style>
 
@@ -5712,7 +5757,6 @@
         }
         
         .menu-bk.downward {
-            margin-left: 6px;
             margin-top: 30px;
         }
         
