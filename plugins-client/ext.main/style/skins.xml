@@ -6152,7 +6152,7 @@
                 line-height   : 14px;
                 color         : #595959;
                 text-shadow   : #fff 0px 1px 0px;
-                box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.8) inset;
+                box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.4) inset;
                 text-transform : uppercase;
             }
 
@@ -6163,8 +6163,8 @@
                 top  : 32px;
                 right : 0;
                 bottom : 0;
-                box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, /* top */
-                			-1px 0 0 0 rgba(255,255,255,.8) inset; /* right */
+                box-shadow: 0 1px 0 0 rgba(255,255,255,0.3) inset, /* top */
+                			-1px 0 0 0 rgba(255,255,255,.4) inset; /* right */
                 background-color: rgba(220, 220, 220, 0.93);
                 background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
                 					url(images/c9-noise-light-10.png),
