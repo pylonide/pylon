@@ -565,10 +565,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             var countJSON = JSON.parse(count);
             var finalMessage = this.messageFooter(countJSON);
-            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
         }
-        else
+        
+        if (content.length > 0)
             doc.insertLines(currLength, contentArray);
+        
+        if (countJSON !== undefined)
+            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
     },
     
     messageHeader : function(path, options) {
