@@ -51,7 +51,7 @@
       buttons   = "close"
       skin      = "bk-window2"
       kbclose   = "true"
-      resizable = "true"
+      resizable = "false"
       title     = "Save As"
       onshow    = "require('ext/save/save').expandTree();"
       width     = "480"
