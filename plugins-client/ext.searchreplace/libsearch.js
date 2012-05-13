@@ -45,43 +45,13 @@ module.exports = {
     },
     
     hasCursorOnFirstLine : function(txtFind){
-        var selection = window.getSelection();
-        if (selection.anchorNode.nodeType == 1)
-            return true;
-        
-        var n = selection.anchorNode.parentNode;
-        if (selection.anchorNode.nodeValue.substr(0, selection.anchorOffset).indexOf("\n") > -1)
-            return false;
-
-        if (apf.isChildOf(txtFind.$input, n)) {
-            while (n.previousSibling) {
-                n = n.previousSibling;
-                if ((n.nodeType == 1 ? n.innerText : n.nodeValue).indexOf("\n") > -1)   
-                    return false;
-            };
-        }
-        
-        return true;
+        var ace = txtFind.ace;
+        return ace.getCursorPosition().row == 0;
     },
     
     hasCursorOnLastLine : function(txtFind){
-        var selection = window.getSelection();
-        if (selection.anchorNode.nodeType == 1)
-            return true;
-        
-        var n = selection.anchorNode.parentNode;
-        if (selection.anchorNode.nodeValue.substr(selection.anchorOffset).indexOf("\n") > -1)
-            return false;
-
-        if (apf.isChildOf(txtFind.$input, n)) {
-            while (n.nextSibling) {
-                n = n.nextSibling;
-                if ((n.nodeType == 1 ? n.innerText : n.nodeValue).indexOf("\n") > -1)   
-                    return false;
-            };
-        }
-        
-        return true;
+        var ace = txtFind.ace;
+        return ace.getCursorPosition().row != ace.session.getLength() - 1;
     },
     
     navigateList : function(type, listName, txtFind, chkRegEx){
@@ -112,14 +82,7 @@ module.exports = {
 
         if (lines[next] && next != this.position) {
             txtFind.setValue(lines[next]);
-            
-            if (chkRegEx.checked)
-                this.updateInputRegExp(txtFind);
-
             txtFind.select();
-            delete txtFind.$undo;
-            delete txtFind.$redo;
-            
             this.position = next;
         }
     },
@@ -151,8 +114,6 @@ module.exports = {
     },
     
     evaluateRegExp : function(txtFind, tooltip, win, e){
-        this.updateInputRegExp(txtFind, e);
-        
         var searchTxt = txtFind.getValue();
         try {
             new RegExp(searchTxt);
@@ -177,140 +138,128 @@ module.exports = {
         return true;
     },
     
-    removeInputRegExp : function(txtFind){
-        txtFind.$input.innerHTML = txtFind.getValue();
-        delete txtFind.$undo;
-        delete txtFind.$redo;
+    initSingleLineEditor: function(apfEl) {
+        // horrible hack
+        apfEl.$input.contentEditable=false;
+        apfEl.$input.innerHTML = "";
+        var ace = this.$createSingleLineAceEditor(apfEl.$input);
+        apfEl.$input.parentNode.style.cssText =
+            ["-webkit-", "-khtml-", "-moz-", "-o-", ""].join("user-select: text;");
+        apfEl.$input.style.textShadow = "none";
+        
+        // why are those in ace?
+        ace.commands.removeCommands(["find", "replace", "replaceall", "gotoline"]);
+        
+        apfEl.ace = ace;
+        ace.renderer.scroller.style.backgroundColor = "transparent";
+        apfEl.ace = ace;
+        apfEl.focus = apfEl.getValue = function() {
+            return ace.focus();
+        };
+        apfEl.getValue = function() {
+            return ace.session.getValue();
+        };
+        apfEl.setValue = function(val) {
+            return ace.session.doc.setValue(val);
+        };
+        apfEl.select = function() {
+            return ace.selectAll();
+        };
+    },
+    $createSingleLineAceEditor: function(el) {
+        var Editor = require("ace/editor").Editor;
+        var UndoManager = require("ace/undomanager").UndoManager;
+        var Renderer = require("ace/virtual_renderer").VirtualRenderer;
+        var MultiSelect = require("ace/multi_select").MultiSelect;
+        
+        var renderer = new Renderer(el);
+        el.style.overflow = "hidden";
+        renderer.scrollBar.element.style.display = "none";
+        renderer.scrollBar.width = 0;
+        renderer.content.style.height = "auto";
+
+        renderer.screenToTextCoordinates = function(x, y) {
+            var pos = this.pixelToScreenCoordinates(x, y);
+            return this.session.screenToDocumentPosition(
+                Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
+                Math.max(pos.column, 0)
+            );
+        };
+        // todo size change event
+        renderer.$computeLayerConfig = function() {
+            var longestLine = this.$getLongestLine();
+            var firstRow = 0;
+            var lastRow = this.session.getLength();
+            var height = this.session.getScreenLength() * this.lineHeight;
+
+            this.scrollTop = 0;
+            var config = this.layerConfig;
+            config.width = longestLine;
+            config.padding = this.$padding;
+            config.firstRow = 0;
+            config.firstRowScreen = 0;
+            config.lastRow = lastRow;
+            config.lineHeight = this.lineHeight;
+            config.characterWidth = this.characterWidth;
+            config.minHeight = height;
+            config.maxHeight = height;
+            config.offset = 0;
+            config.height = height;
+
+            this.$gutterLayer.element.style.marginTop = 0 + "px";
+            this.content.style.marginTop = 0 + "px";
+            this.content.style.width = longestLine + 2 * this.$padding + "px";
+            this.content.style.height = height + "px";
+            this.scroller.style.height = height + "px";
+            this.container.style.height = height + "px";
+        };
+        renderer.isScrollableBy=function(){return false};
+
+        var editor = new Editor(renderer);
+        new MultiSelect(editor);
+        editor.session.setUndoManager(new UndoManager());
+
+        editor.setHighlightActiveLine(false);
+        editor.setShowPrintMargin(false);
+        editor.renderer.setShowGutter(false);
+        editor.renderer.setHighlightGutterLine(false);
+        return editor;
     },
     
-    updateInputRegExp : function(txtFind, e){
-        // Find cursor position
-        var selection = window.getSelection();
-        var a = selection.anchorNode;
-        if (!a) return;
-        
-        var value, pos;
-        function getValuePos(){
-            value = txtFind.getValue();
-            
-            var n = a.parentNode; 
-            pos = a.nodeValue ? selection.anchorOffset : 0; 
-            if (apf.isChildOf(txtFind.$input, n)) {
-                while (n.previousSibling) {
-                    n = n.previousSibling;
-                    pos += (n.nodeType == 1 ? n.innerText : n.nodeValue).length;
-                };
-            }  
-        }
-        
-        if (!txtFind.$undo) {
-            getValuePos();
-            txtFind.$undo = [[value, pos]];
-            txtFind.$redo = [];
-        }
-        
-        if (e) {
-            var charHex = e.keyIdentifier.substr(2);
-            var charDec = parseInt(charHex, 16);
-            var isChangeKey = charDec == 8 || charDec == 127 || charDec > 31;
-            
-            if ((apf.isMac && e.metaKey || !apf.isMac && e.ctrlKey) && charDec == 90) {
-                e.preventDefault();
-                if (e.shiftKey) {
-                    if (!txtFind.$redo.length)
-                        return;
-                    var undoItem = txtFind.$redo.pop();
-                    value = undoItem[0];
-                    pos = undoItem[1];
-                    txtFind.$undo.push(undoItem);
-                }
-                else {
-                    if (txtFind.$undo.length < 2)
-                        return;
-                    txtFind.$redo.push(txtFind.$undo.pop());
-                    var undoItem = txtFind.$undo[txtFind.$undo.length - 1];
-                    value = undoItem[0];
-                    pos = undoItem[1];
-                }
-                isChangeKey = false;
-            }
-            else if (!isChangeKey || e.ctrlKey || e.metaKey)
-                return;
-            else {
-                var wasRemoved = false;
-                e.preventDefault();
-                if (!selection.isCollapsed) {
-                    wasRemoved = true;
-                    selection.deleteFromDocument();
-                }
-                
-                getValuePos();
-            }
-        }
-        else {
-            getValuePos();
-        }
-        
-        if (isChangeKey) {
-            //Backspace
-            if (charDec == 8) {
-                if (!wasRemoved) {
-                    selection.deleteFromDocument();
-                    value = value.substr(0, pos - 1) + value.substr(pos);
-                    pos--;
-                }
-            }
-            //Delete
-            else if (charDec == 127) {
-                if (!wasRemoved)
-                    value = value.substr(0, pos) + value.substr(pos + 1);
-            }
-            //Normal chars
-            else if (charDec > 31) {
-                e.preventDefault();
-                var key = JSON.parse('"\\u' + charHex + '"');
-                if (!e.shiftKey)
-                    key = key.toLowerCase();
-                value = value.substr(0, pos) 
-                    + key + value.substr(pos);
-                pos++;
-            }
-            
-            txtFind.$undo.push([value, pos]);
-            txtFind.$redo = [];
-        }
-        
-        // Set value
-        txtFind.$input.innerHTML = this.parseRegExp(value);
-
-        if (!value)
+    removeInputRegExp : function(txtFind){
+        if (!txtFind.ace.regexp)
             return;
-        
-        // Set cursor position to previous location
-        var el, idx, v;
-        var n = txtFind.$input.firstChild;
-        while (n) {
-            v = n.nodeType == 1 ? n.innerText : n.nodeValue;
-            if (pos - v.length <= 0) {
-                el = n;
-                idx = pos;
-                break;
+        txtFind.ace.regexp = false;
+        txtFind.ace.session.bgTokenizer.tokenizer = {
+            getLineTokens: function(val) {
+                return {tokens: [{value: val, type: "text"}], state: ""}
             }
-            else {
-                pos -= v.length;
-                n = n.nextSibling;
+        }
+    },
+    
+    updateInputRegExp : function(txtFind, e) {
+        if (txtFind.ace.regexp)
+            return;
+        txtFind.ace.regexp = true;
+        txtFind.ace.session.bgTokenizer.tokenizer = {
+            getLineTokens: function(val) {
+                return {tokens: module.exports.parseRegExp(val), state: ""}
             }
-        };
-        
-        if (el.nodeType == 1)
-            el = el.firstChild;
-        
-        var range = document.createRange();
-        range.setStart(el, idx);
-        range.setEnd(el, idx);
-        
-        selection.removeAllRanges();
-        selection.addRange(range);
+        }
+        if (this.colorsAdded)
+            return;
+        this.colorsAdded = true;
+        require("ace/lib/dom").importCssString("\
+            .ace_r_collection {background:#ffc080;color:black}\
+            .ace_r_escaped{color:#cb7824}\
+            .ace_r_subescaped{background:#dbef5c;color:orange}\
+            .ace_r_sub{background:#dbef5c;color:black;}\
+            .ace_r_replace{background:#80c0ff;color:black}\
+            .ace_r_range{background:#80c0ff;color:black}\
+            .ace_r_modifier{background:#80c0ff;color:black}\
+            .ace_r_error{background:red;color:white;",
+            "ace_regexps"
+        );
     },
     
     regexp : {
@@ -320,19 +269,7 @@ module.exports = {
         searches : /^\((?:\?\:|\?\!|\?|\?\=|\?\<\=)/,
         range : /^\{\s*\d+(\s*\,\s*\d+\s*)?\}/
     },
-    
-    regColor : {
-        "text" : "color:black",
-        "collection" : "background:#ffc080;color:black",
-        "escaped" : "color:#cb7824",
-        "subescaped" : "background:#dbef5c;color:orange",
-        "sub" : "background:#dbef5c;color:black;",
-        "replace" : "background:#80c0ff;color:black",
-        "range" : "background:#80c0ff;color:black",
-        "modifier" : "background:#80c0ff;color:black",
-        "error" : "background:red;color:white;"
-    },
-    
+
     //Calculate RegExp Colors
     parseRegExp : function(value){
         var re = this.regexp;
@@ -486,17 +423,18 @@ module.exports = {
             value = value.substr(1)
         }
         
-        // Process out
-        var last = "text", res = [], color = this.regColor;
+        // Process out ace token list
+        var last = "text", res = [], token = {type: last, value: ""};
         for (var i = 0; i < out.length; i++) {
             if (out[i][1] != last) {
+                token.value && res.push(token);
                 last = out[i][1];
-                res.push("</span><span style='" + color[last] + "'>");
+                token = {type: "r_" + last, value: ""}
             }
-            res.push(out[i][0]);
+           token.value += out[i][0];
         }
-        
-        return ("<span>" + res.join("") + "</span>").replace(/<span><\/span>/g, "");
+        token.value && res.push(token);
+        return res;
     },
 }
 

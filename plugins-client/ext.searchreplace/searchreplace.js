@@ -196,8 +196,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             if (e.keyCode == 13 && !e.altKey && !e.ctrlKey && !e.metaKey) {
                 _self.execFind(false, !!e.shiftKey, true, true);
                 return false;
+            } else if (e.keyCode == 13) {
+                txtFind.ace.insert("\n");
+                return false;
             }
-            
+
             var ace = _self.$getAce();
             var isTooLong = ace.getSession().getDocument().getLength() > MAX_LINES;
             
@@ -228,7 +231,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             }
 
             return;
-        });
+        }, true);
         
         hboxReplace.addEventListener("afterrender", function(){
             txtReplace.addEventListener("keydown", function(e) {
@@ -259,10 +262,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         document.body.appendChild(tooltipSearchReplace.$ext);
         
         chkRegEx.addEventListener("prop.value", function(e){
-            if (apf.isTrue(e.value)) {
-                if (txtFind.getValue())
-                    _self.updateInputRegExp(txtFind);
-            }
+            if (apf.isTrue(e.value))
+                _self.updateInputRegExp(txtFind);
             else
                 _self.removeInputRegExp(txtFind);
         });
@@ -326,13 +327,24 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             options.needle = txtFind.getValue();
             ace.$search.set(options);
         }
-            
-        var ranges = ace.$search.findAll(ace.getSession());
+
+        var session = ace.session;
+        var ranges = ace.$search.findAll(ace.session);
         if (!ranges || !ranges.length || !txtFind.getValue()) {
             oIter.innerHTML = "0";
             oTotal.innerHTML = "of 0";
             return;
         }
+
+        /*@todo disable for now since update counter isn't called when no matches found
+        clearTimeout(ace.$wordHighlightTimer);
+        session.getMode().clearSelectionHighlight(ace);
+        if (chkHighlightMatches.checked) {
+            ranges.forEach(function(range) {
+                var marker = session.addMarker(range, "ace_selected_word", "text");
+                session.$selectionOccurrences.push(marker);
+            });
+        }*/
 
         if (backwards) {
             var newCount = oIter.innerHTML - 1;
@@ -378,6 +390,15 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         
         tooltipSearchReplace.$ext.style.display = "none";
 
+        if (!this.txtFindInitialized && typeof txtFind != "undefined") {
+            this.initSingleLineEditor(txtFind);
+            this.txtFindInitialized = true;
+        }
+        if (!this.txtReplaceInitialized && typeof txtReplace != "undefined") {
+            this.initSingleLineEditor(txtReplace);
+            this.txtReplaceInitialized = true;
+        }
+
         if (!force && !winSearchReplace.visible || force > 0 || stateChange) {
             if (winSearchReplace.visible && !stateChange) {
                 txtFind.focus();
@@ -411,10 +432,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     
                 if (value) {
                     txtFind.setValue(value);
-                    
-                    delete txtFind.$undo;
-                    delete txtFind.$redo;
-                    
                     if (chkRegEx.checked)
                         this.updateInputRegExp(txtFind);
                 }
@@ -587,7 +604,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             
         var searchTxt = txtFind.getValue();
         if (searchTxt.length < 2 
-          && ace.getSession().getDocument().getLength() > MAX_LINES_SOFT)
+          && ace.getSession().getLength() > MAX_LINES_SOFT)
             return;
 
         //@todo when highlight selection is available, this should change

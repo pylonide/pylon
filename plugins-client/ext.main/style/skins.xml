@@ -3306,8 +3306,6 @@
 
         .ace_scroller {
           position: absolute;
-          overflow-x: scroll;
-          overflow-y: hidden;
           background-color: #fbfbfb;
           -webkit-border-top-left-radius: 6px;
           -moz-border-radius-topleft: 6px;
