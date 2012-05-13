@@ -275,8 +275,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         }
     };
 
-    this.$toggleBreakpoint = function(row) {
-        this.$debugger.toggleBreakpoint(this.xmlRoot, row);
+    this.$toggleBreakpoint = function(row, content) {
+        this.$debugger.toggleBreakpoint(this.xmlRoot, row, content);
     };
 
     this.$propHandlers["theme"] = function(value) {
@@ -623,7 +623,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         ed.addEventListener("gutterclick", function(e) {
             if (_self.$debugger && e.clientX - ed.container.getBoundingClientRect().left < 20) {
-                _self.$toggleBreakpoint(e.getDocumentPosition().row);
+                _self.$toggleBreakpoint(e.getDocumentPosition().row,
+                    ed.getSession().getLine(e.getDocumentPosition().row));
                 e.stop();
             }
             else {
