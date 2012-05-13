@@ -100,7 +100,7 @@
                 top     = "-25"
                 right   = "10"
                 checked = "{require('ext/revisions/revisions').useCompactList == false ? 'false' : 'true'}"
-                label   = "Group by same period of time"
+                label   = "Group by same timeframe"
                 onafterchange = "
                     var model = tabEditors.getPage().$mdlRevisions;
                     require('ext/revisions/revisions').toggleListView(model);
