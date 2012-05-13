@@ -490,9 +490,9 @@ module.exports = ext.register("ext/tree/tree", {
      * folders that were previously expanded, otherwise it contains only the
      * root identifier (i.e. ide.davPrefix)
      * 
-     * @param callback function Called when the tree is fully loaded
+     * @param boolean animateScrollOnFinish
      */
-    loadProjectTree : function(animateScrollOnLoad) {
+    loadProjectTree : function(animateScrollOnFinish) {
         var _self = this;
 
         // Sort the cached list so it's more probable that nodes near the top of
@@ -635,7 +635,7 @@ module.exports = ext.register("ext/tree/tree", {
 
             // Scroll to last set scroll pos
             if (_self.scrollPos && _self.scrollPos > -1) {
-                if (animateScrollOnLoad) {
+                if (animateScrollOnFinish) {
                     apf.tween.single(trFiles, {
                         type: "scrollTop",
                         from: 0,
