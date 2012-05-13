@@ -422,8 +422,8 @@ module.exports = ext.register("ext/save/save", {
                                     .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                     .replace(/\/node\(\)\[@name="workspace"\]/, "")
                                     .replace(/\//, "") || "node()";
-                if (xpath) {
-                    var oNode  = trFiles.queryNode(xpath);
+                if (self.trFiles && xpath) {
+                    var oNode = trFiles.queryNode(xpath);
                     if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]')) {
                         apf.xmldb.appendChild(oNode, file);
                     }

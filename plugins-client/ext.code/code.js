@@ -14,7 +14,6 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
-var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
 var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
@@ -707,7 +706,7 @@ module.exports = ext.register("ext/code/code", {
                 type    : "check",
                 checked : "[{tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
                 isAvailable : function(editor){
-                    return editor && editor.ceEditor;
+                    return editor && editor.ceEditor && tabEditors.activepage;
                 }
             }), 500000),
 
