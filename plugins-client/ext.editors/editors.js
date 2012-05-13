@@ -215,7 +215,7 @@ module.exports = ext.register("ext/editors/editors", {
         this.$buttonContainer = new apf.bar({
             skin : "basic",
             "class": "editor_tab",
-            "style": "position:absolute",
+            "style": "position:absolute;z-index:10;",
             htmlNode : document.body
         });
         this.$buttonContainer.$int.appendChild(tabEditors.$buttons);
