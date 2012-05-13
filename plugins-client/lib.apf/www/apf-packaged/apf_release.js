@@ -2086,7 +2086,7 @@ apf.Class.prototype = new (function(){
         }
         
         //Optimized event calling
-        if (arr = this.$eventsStack[eventName] && isChanged) {
+        if ((arr = this.$eventsStack[eventName]) && isChanged) {
             /*for (i = 0, l = arr.length; i < l; i++) {
                 if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
                     prop     : prop, 
@@ -12498,7 +12498,7 @@ return {
  */
 apf.xmldb = new (function(){
     var _self = this;
-    
+
     this.xmlDocTag    = "a_doc";
     this.xmlIdTag     = "a_id";
     this.xmlListenTag = "a_listen";
@@ -12510,7 +12510,7 @@ apf.xmldb = new (function(){
 
     var cleanRE       = /(?:a_doc|a_id|a_listen|a_loaded)=(?:"|')[^'"]+(?:"|')/g,
         whiteRE       = />[\s\n\r\t]+</g;
-        
+
     /**
      * Clear XML document cache periodically when no model is referencing it
      */
@@ -12518,22 +12518,24 @@ apf.xmldb = new (function(){
         var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
         for (var i = 0, l = cache.length; i < l; i++) {
             xmlNode = cache[i];
-            
+
             if (!xmlNode || xmlNode.nodeFunc)
                 continue;
-            
+
             docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
             model = apf.nameserver.get("model", docId);
-            
+
             if (!model || model.data != xmlNode) {
                 cache[i] = null;
             }
         }
-    }
-    if (window.setInterval)
-        setInterval(function(){
-            _self.garbageCollect();
-        }, 60000);
+    };
+
+    this.$gcInterval = window.setInterval
+        ? setInterval(function(){
+              _self.garbageCollect();
+          }, 60000)
+        : null;
 
     /**
      * @private
@@ -12731,7 +12733,7 @@ apf.xmldb = new (function(){
      * @private
      * @todo this is cleanup hell! Listeners should be completely rearchitected
      */
-    
+
     // make sure that "0" is never a listener index
     this.$listeners = [null];
     this.addNodeListener = function(xmlNode, o, uId){
@@ -12752,9 +12754,9 @@ apf.xmldb = new (function(){
                     var model = apf.all[sUId[3]];
                     if (!model)
                         return;
-                    
+
                     if (model.$propBinds[sUId[1]][sUId[2]]) {
-                        if (!apf.isChildOf(model.data, xmlNode, true)) 
+                        if (!apf.isChildOf(model.data, xmlNode, true))
                             return false;
 
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
@@ -12885,7 +12887,7 @@ apf.xmldb = new (function(){
             undoObj.name = name;
             undoObj.$filled = true;
         }
-        
+
         //Apply Changes
         if (range) { //@todo apf3.0 range
             undoObj.extra.range = range;
@@ -12956,13 +12958,13 @@ apf.xmldb = new (function(){
             undoObj.oldNode = oldNode;
             undoObj.xmlNode = newNode;
         }
-        
+
         this.cleanNode(newNode);
-        
+
         var parentNode = oldNode.parentNode;
         if (!parentNode)
             return;
-        
+
         parentNode.replaceChild(newNode, oldNode);
         this.copyConnections(oldNode, newNode);
 
@@ -13020,10 +13022,10 @@ apf.xmldb = new (function(){
     apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
         if (pNode == xmlNode.parentNode) //Shouldn't this be the same document?
             return apf.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
-        
+
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
-        
+
         // @todo: only do this once! - should store on the undo object
         if (pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument) {
             var oldNode = xmlNode;
@@ -13048,7 +13050,7 @@ apf.xmldb = new (function(){
         }
         else if (xmlNode.parentNode)
             this.removeNode(xmlNode);
-        
+
         if (undoObj && !undoObj.$filled) {
             undoObj.$filled = true;
             this.cleanNode(xmlNode);
@@ -13090,7 +13092,7 @@ apf.xmldb = new (function(){
 
         //Set new id if the node change document (for safari this should be fixed)
         //@todo I don't get this if...
-        /*if (!apf.isWebkit 
+        /*if (!apf.isWebkit
           && xmlNode.getAttribute(this.xmlIdTag)
           && apf.xmldb.getXmlDocId(xmlNode) != apf.xmldb.getXmlDocId(pNode)) {
             xmlNode.removeAttribute(this.xmlIdTag));
@@ -13139,7 +13141,7 @@ apf.xmldb = new (function(){
         var p = xmlNode.parentNode;
         if (!p)
             return;
-        
+
         p.removeChild(xmlNode);
         this.applyChanges("redo-remove", xmlNode, null, p);//undoObj
 
@@ -13156,7 +13158,7 @@ apf.xmldb = new (function(){
     this.removeNodeList =
     apf.removeNodeList  = function(xmlNodeList, undoObj){
         
-        
+
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
         for (var rData = [], i = 0; i < xmlNodeList.length; i++) { //This can be optimized by looping nearer to xmlUpdate
             //ActionTracker Support
@@ -13308,7 +13310,7 @@ apf.xmldb = new (function(){
 
         var myQueue = notifyQueue;
         notifyQueue = {};
-        
+
         apf.setZeroTimeout.clearTimeout(notifyTimer);
         for (var uId in myQueue) {
             if (!uId) continue;
@@ -13330,7 +13332,7 @@ apf.xmldb = new (function(){
             }
         }
 
-        
+
     }
 
     /**
@@ -13443,6 +13445,9 @@ apf.xmldb = new (function(){
                     Nodes[i].setAttribute(this.xmlListenTag, nListen.join(";"));
             }
         }
+
+        if (window.clearInterval)
+            window.clearInterval(this.$gcInterval);
     };
 
     /**
@@ -26595,8 +26600,10 @@ apf.MultiSelect = function(){
                 var _self = this;
                 $setTimeout(function(){
                     
-                    if (_self.selected == e.selected)
+                    if (_self.selected == e.selected) {
+                        delete _self.selected;
                         _self.setProperty("selected", combinedvalue || e.selected);
+                    }
                     
                     delete _self.$chained;
                 }, 10);
@@ -28592,6 +28599,37 @@ apf.BaseList = function(){
     };
     
     
+    
+    /**
+     * @attribute {String} mode Sets the way this element interacts with the user.
+     *   Possible values:
+     *   check  the user can select a single item from this element. The selected item is indicated.
+     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     */
+    this.$mode = 0;
+    this.$propHandlers["mode"] = function(value){
+        if ("check|radio".indexOf(value) > -1) {
+            if (!this.hasFeature(apf.__MULTICHECK__))
+                this.implement(apf.MultiCheck);
+            
+            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
+            
+            this.multicheck = value == "check"; //radio is single
+            this.$mode = this.multicheck ? 1 : 2;
+        }
+        else {
+            //@todo undo actionRules setting
+            this.removeEventListener("afterrename", $afterRenameMode);
+            //@todo unimplement??
+            this.$mode = 0;
+        }
+    };
+    
+    //@todo apf3.0 retest this completely
+    function $afterRenameMode(){
+    }
+    
+    
 
     /**** Keyboard support ****/
 
@@ -28966,6 +29004,8 @@ apf.BaseList = function(){
         }
         
         
+        //@todo
+        
 
         htmlNode.title = this.$applyBindRule("title", xmlNode) || "";
 
@@ -29058,6 +29098,26 @@ apf.BaseList = function(){
         
         
         
+        
+        if (this.$mode) {
+            var elCheck = this.$getLayoutNode("item", "check");
+            if (elCheck) {
+                elCheck.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.checkToggle(this, true);\o.$skipSelect = true;");
+
+                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                    this.$checkedList.push(xmlNode);
+                    this.$setStyleClass(oItem, "checked");
+                }
+                else if (this.isChecked(xmlNode))
+                    this.$setStyleClass(oItem, "checked");
+            }
+            else {
+                
+                return false;
+            }
+        }
         
 
         //Setup Nodes Identity (Look)
@@ -30395,10 +30455,12 @@ apf.BaseTab = function(){
               
             if (type == "add")
                 node.dispatchEvent("afteropen");
-            else if (type == "remove")
-                node.dispatchEvent("afterclose");
+            else if (type == "remove") {
+                if (node.dispatchEvent("afterclose") !== false)
+                    callback();
+            }
             
-            return false;
+            return;
         }
         
         if (!apf.window.vManager.check(this, "tabscale", visCheck))
@@ -32434,6 +32496,15 @@ apf.BaseTree = function(){
                     this.$selectTemp();
 
                 
+                if (this.$mode && !ctrlKey) {
+                    var sel = this.getSelection();
+                    if (!sel.length || !this.multiselect)
+                        this.checkToggle(this.caret, true);
+                    else
+                        this.checkList(sel, this.isChecked(this.selected), true, false, true);
+                }
+                else
+                
                 if (ctrlKey || !this.isSelected(this.caret))
                     this.select(this.caret, true);
                 return false;
@@ -32950,6 +33021,9 @@ apf.DelayedRender = function(){
         this.$rendered = true;
 
         this.dispatchEvent("afterrender");
+        this.addEventListener("$event.afterrender", function(cb){
+            cb.call(this);
+        });
 
         this.$ext.style.visibility = "";
     };
@@ -35423,6 +35497,333 @@ apf.__MEDIA__ = 1 << 20;
  */
 
 apf.__MULTICHECK__ = 1 << 22;
+
+
+
+/**
+ * All elements inheriting from this {@link term.baseclass baseclass} have checkable items.
+ *
+ * @constructor
+ * @baseclass
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       3.0
+ *
+ * @todo type detection, errors (see functions in multiselect)
+ */
+apf.MultiCheck = function(){
+    this.$regbase    = this.$regbase | apf.__MULTICHECK__;
+
+    /**** Properties ****/
+
+    this.multicheck  = true;
+    this.checklength = 0;
+    this.$checkedList = [];
+
+    /**** Public Methods ****/
+    
+    /**
+     * Checks a single, or set of.
+     * The checking can be visually represented in this element.
+     * The element can be checked, partialy checked or unchecked
+     *
+     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @return  {Boolean}  whether the selection could not be made
+     *
+     * @event  beforecheck  Fires before a check is made
+     *
+     * @event  aftercheck  Fires after a check is made
+     *
+     */
+    this.check = function(xmlNode, userAction){
+        if (userAction && this.disabled 
+          || this.$checkedList.indexOf(xmlNode) > -1)
+            return;
+
+        if (userAction
+          && this.$executeSingleValue("check", "checked", xmlNode, "true") !== false)
+            return;
+        
+        if (this.dispatchEvent("beforecheck", {xmlNode : xmlNode}) === false)
+            return false;
+        
+        if (!this.multicheck && this.$checkedList.length)
+            this.clearChecked(true);
+
+        this.$checkedList.push(xmlNode);
+        
+        
+
+        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this),
+            "checked", ["partial"]);
+        
+        this.dispatchEvent("aftercheck", {
+            list        : this.$checkedList,
+            xmlNode     : xmlNode
+        });
+    };
+    
+    /**
+     * Unchecks a single, or set of.
+     *
+     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     * @return  {Boolean}  whether the selection could be made
+     *
+     * @event  beforeuncheck  Fires before a uncheck is made
+     *
+     * @event  afteruncheck  Fires after a uncheck is made
+     *
+     */
+    this.uncheck = function(xmlNode, userAction){
+        if (userAction && this.disabled 
+          || this.$checkedList.indexOf(xmlNode) == -1)
+            return;
+        
+        if (userAction
+          && this.$executeSingleValue("check", "checked", xmlNode, "false") !== false)
+            return;
+        
+        
+        
+        if (this.dispatchEvent("beforeuncheck", {
+            xmlNode : xmlNode
+        }) === false)
+            return false;
+
+        this.$checkedList.remove(xmlNode);
+        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), 
+            "", ["checked", "partial"]);
+        
+        this.dispatchEvent("afteruncheck", {
+            list        : this.$checkedList,
+            xmlNode     : xmlNode
+        });
+    };
+
+    /**
+     * Toggles between check and uncheck a single, or set of.
+     *
+     * @param {mixed}   xmlNode      the identifier to determine the selection.
+     *
+     */
+    this.checkToggle = function(xmlNode, userAction){
+        if (userAction && this.disabled)
+            return;
+        
+        if (xmlNode.style) {
+            var htmlNode = xmlNode,
+                id       = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
+            while (!id && htmlNode.parentNode)
+                id = (htmlNode = htmlNode.parentNode)
+                    .getAttribute(apf.xmldb.htmlIdTag);
+            xmlNode = apf.xmldb.getNode(htmlNode)
+        }
+
+        if (this.$checkedList.indexOf(xmlNode) > -1)
+            this.uncheck(xmlNode, userAction);
+        else
+            this.check(xmlNode, userAction);
+    };
+    
+    /**
+     * Checks a set of items
+     *
+     * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
+     * @param {boolean} uncheck
+     * @param {boolean} noClear
+     * @param {boolean} noEvent whether to not call any events
+     * @event  beforecheck  Fires before a check is made
+     *   object:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
+     * @event  aftercheck   Fires after a check is made
+     *   object:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
+     */
+    this.checkList = function(xmlNodeList, uncheck, noClear, noEvent, userAction){
+        //if (apf.isIE < 8)
+        if (!xmlNodeList.indexOf)
+            xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
+            //@todo is this need for ie8 and/or other browsers
+
+        if (userAction){
+            if (this.disabled) 
+                return;
+            
+            var changes = [];
+            for (var c, i = 0; i < xmlNodeList.length; i++) {
+                c = this.$executeSingleValue("check", "checked", xmlNodeList[i], uncheck ? "false" : "true", true)
+                if (c === false) break;
+                changes.push(c);
+            }
+    
+            if (changes.length) {
+                return this.$executeAction("multicall", changes, "checked", 
+                  xmlNodeList[0], null, null, 
+                  xmlNodeList.length > 1 ? xmlNodeList : null);
+            }
+        }
+        
+        if (userAction && this.disabled) return;
+        
+        if (!noEvent && this.dispatchEvent("beforecheck", {
+            list : xmlNodeList
+        }) === false)
+            return false;
+        
+        if (!uncheck && !noClear) 
+            this.clearChecked(true);
+        
+        if (!this.multicheck)
+            xmlNodeList = [xmlNodeList[0]];
+
+        var i;
+        if (uncheck) {
+            for (i = xmlNodeList.length - 1; i >= 0; i--) {
+                this.$checkedList.remove(xmlNodeList[i]);
+                this.$setStyleClass(
+                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
+            }
+        }
+        else {
+            for (i = xmlNodeList.length - 1; i >= 0; i--) {
+                this.$checkedList.push(xmlNodeList[i]);
+                this.$setStyleClass(
+                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
+            }
+        }
+
+        
+        
+        if (!noEvent)
+            this.dispatchEvent("aftercheck", {
+                list        : xmlNodeList
+            });
+    };
+
+    /**
+     * Removes the selection of one or more checked nodes.
+     *
+     * @param {Boolean} [singleNode] whether to only deselect the indicated node
+     * @param {Boolean} [noEvent]    whether to not call any events
+     * @event  beforeuncheck  Fires before a uncheck is made
+     *   object:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
+     * @event  afteruncheck   Fires after a uncheck is made
+     *   object:
+     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
+     */
+    this.clearChecked = function(noEvent){
+        if (!noEvent && this.dispatchEvent("beforeuncheck", {
+            xmlNode : this.$checkedList
+        }) === false)
+            return false;
+        
+        for (var i = this.$checkedList.length - 1; i >= 0; i--) {
+            this.$setStyleClass(
+                apf.xmldb.getHtmlNode(this.$checkedList[i], this), "", ["checked"]);
+        }
+        
+        this.$checkedList.length = 0;
+        
+        if (!noEvent) {
+            this.dispatchEvent("afteruncheck", {
+                list : this.$checkedList
+            });
+        }
+    };
+    
+    /**
+     * Determines whether a node is checked.
+     *
+     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
+     * @return  {Boolean} whether the element is selected.
+     */
+    this.isChecked = function(xmlNode){
+        return this.$checkedList.indexOf(xmlNode) > -1;
+    };
+
+    /**
+     * Retrieves an array or a document fragment containing all the checked
+     * {@link term.datanode data nodes} from this element.
+     *
+     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
+     * @return {mixed} the selection of this element.
+     */
+    this.getChecked = function(xmldoc){
+        var i, r;
+        if (xmldoc) {
+            r = this.xmlRoot
+                ? this.xmlRoot.ownerDocument.createDocumentFragment()
+                : apf.getXmlDom().createDocumentFragment();
+            for (i = 0; i < this.$checkedList.length; i++)
+                apf.xmldb.cleanNode(r.appendChild(
+                    this.$checkedList[i].cloneNode(true)));
+        }
+        else {
+            for (r = [], i = 0; i < this.$checkedList.length; i++)
+                r.push(this.$checkedList[i]);
+        }
+
+        return r;
+    };
+    
+    /**
+     * Checks all the {@link term.eachnode each nodes} of this element
+     *
+     */
+    this.checkAll = function(userAction){
+        if (!this.multicheck || userAction && this.disabled || !this.xmlRoot)
+            return;
+
+        var nodes = this.$isTreeArch
+            ? this.xmlRoot.selectNodes(".//" 
+              + this.each.split("|").join("|.//"))
+            : this.getTraverseNodes();
+        
+        this.checkList(nodes);
+    };
+    
+    this.addEventListener("beforeload", function(){
+        if (!this.$hasBindRule("checked")) //only reset state when check state isnt recorded
+            this.clearChecked(true);
+    });
+    
+    this.addEventListener("afterload", function(){
+        if (!this.$hasBindRule("checked") && this.$checkedList.length) //only reset state when check state isnt recorded
+            this.checkList(this.$checkedList, false, true, false); //@todo could be optimized (no event calling)
+    });
+    
+    this.addEventListener("xmlupdate", function(e){
+        if (e.action == "attribute" || e.action == "text"
+          || e.action == "synchronize" || e.action == "update") {
+            //@todo list support!
+            var c1 = apf.isTrue(this.$applyBindRule("checked", e.xmlNode));
+            var c2 = this.isChecked(e.xmlNode);
+            if (c1 != c2) {
+                if (c1) {
+                    this.check(e.xmlNode);
+                }
+                else {
+                    this.uncheck(e.xmlNode);
+                }
+            }
+        }
+    });
+    
+    
+    this.addEventListener("aftercheck", function(){
+        //@todo inconsistent because setting this is in event callback
+        if (this.checklength != this.$checkedList.length)
+            this.setProperty("checklength", this.$checkedList.length);
+    });
+    
+    this.addEventListener("afteruncheck", function(){
+        //@todo inconsistent because setting this is in event callback
+        if (this.checklength != this.$checkedList.length)
+            this.setProperty("checklength", this.$checkedList.length);
+    });
+    
+};
 
 
 
@@ -49216,6 +49617,37 @@ apf.datagrid = function(struct, tagName){
 
      
     
+    /**
+     * @attribute {String} mode Sets the way this element interacts with the user.
+     *   Possible values:
+     *   check  the user can select a single item from this element. The selected item is indicated.
+     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     */
+    this.$mode = 0;
+    this.$propHandlers["mode"] = function(value){
+        if ("check|radio".indexOf(value) > -1) {
+            if (!this.hasFeature(apf.__MULTICHECK__))
+                this.implement(apf.MultiCheck);
+            
+            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
+            
+            this.multicheck = value == "check"; //radio is single
+            this.$mode = this.multicheck ? 1 : 2;
+        }
+        else {
+            //@todo undo actionRules setting
+            this.removeEventListener("afterrename", $afterRenameMode);
+            //@todo unimplement??
+            this.$mode = 0;
+        }
+    };
+    
+    //@todo apf3.0 retest this completely
+    function $afterRenameMode(){
+    }
+    
+    
+    
     this.$propHandlers["options"] = function(value){
         for (var i = 0, l = this.$headings.length; i < l; i++) {
             this.$headings[i].setAttribute("options", value);
@@ -49702,13 +50134,33 @@ apf.datagrid = function(struct, tagName){
             }
             else {
                 
-                cellType = "cell";
+                cellType = h.check ? "checkcell" : "cell";
                 
                 
                 this.$getNewContext(cellType);
                 cell = this.$getLayoutNode(cellType);
             }
             
+            
+            if (this.$mode && h.check) {
+                var elCheck = this.$getLayoutNode(cellType, "check");
+                if (elCheck) {
+                    elCheck.setAttribute("onmousedown",
+                        "var o = apf.lookup(" + this.$uniqueId + ");\
+                        o.checkToggle(this, true);\o.$skipSelect = true;");
+    
+                    if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                        this.$checkedList.push(xmlNode);
+                        this.$setStyleClass(oRow, "checked");
+                    }
+                    else if (this.isChecked(xmlNode))
+                        this.$setStyleClass(oRow, "checked");
+                }
+                else {
+                    
+                    return false;
+                }
+            }
             
             
             apf.setStyleClass(cell, h.$className);
@@ -49801,6 +50253,8 @@ apf.datagrid = function(struct, tagName){
                 apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
 
             if (h.tree) {
+                
+                //@todo
                 
                 
                 /*var oc = this.$getLayoutNode("treecell", "openclose", cell);
@@ -64668,8 +65122,11 @@ apf.textbox  = function(struct, tagName){
                 }
             }
             
-            this.$input.onpaste = function(){
+            this.$input.onpaste = function(e){
                 if (apf.hasMsRangeObject)
+                    return;
+                
+                if (e.clipboardData.types.indexOf("text/html") == -1)
                     return;
                     
                 var sel   = window.getSelection();
@@ -65029,6 +65486,37 @@ apf.tree = function(struct, tagName){
     
     
     
+    /**
+     * @attribute {String} mode Sets the way this element interacts with the user.
+     *   Possible values:
+     *   check  the user can select a single item from this element. The selected item is indicated.
+     *   radio  the user can select multiple items from this element. Each selected item is indicated.
+     */
+    this.$mode = 0;
+    this.$propHandlers["mode"] = function(value){
+        if ("check|radio".indexOf(value) > -1) {
+            if (!this.hasFeature(apf.__MULTICHECK__))
+                this.implement(apf.MultiCheck);
+            
+            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
+            
+            this.multicheck = value == "check"; //radio is single
+            this.$mode = this.multicheck ? 1 : 2;
+        }
+        else {
+            //@todo undo actionRules setting
+            this.removeEventListener("afterrename", $afterRenameMode);
+            //@todo unimplement??
+            this.$mode = 0;
+        }
+    };
+    
+    //@todo apf3.0 retest this completely
+    function $afterRenameMode(){
+        
+    }
+    
+    
     this.$initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
         this.$getNewContext("item");
@@ -65064,6 +65552,26 @@ apf.tree = function(struct, tagName){
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
         
+        
+        if (this.$mode) {
+            var elCheck = this.$getLayoutNode("item", "check");
+            if (elCheck) {
+                elCheck.setAttribute("onmousedown",
+                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    o.checkToggle(this, true);\o.$skipSelect = true;");
+
+                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                    this.$checkedList.push(xmlNode);
+                    this.$setStyleClass(oItem, "checked");
+                }
+                else if (this.isChecked(xmlNode))
+                    this.$setStyleClass(oItem, "checked");
+            }
+            else {
+                
+                return false;
+            }
+        }
         
         
         var ocAction = this.opencloseaction || "ondblclick";
@@ -65199,6 +65707,8 @@ apf.tree = function(struct, tagName){
                     + apf.getAbsolutePath(this.iconPath, iconURL) + ")";
         }
         
+        
+        //@todo
         
 
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
