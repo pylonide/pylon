@@ -100,8 +100,6 @@ module.exports = ext.register("ext/console/console", {
                 original_line = proc.extra.original_line;
                 this.createOutputBlock(this.getPrompt(original_line), false, command_id);
 
-                // @TODO When we update how NPM modules are run, be sure to
-                // update the process type here
                 if (proc.type === "run-npm") {
                     txtConsolePrompt.setValue("$ " + original_line.split(" ")[0]);
                     txtConsolePrompt.show();
@@ -149,8 +147,11 @@ module.exports = ext.register("ext/console/console", {
 
         logger.logNodeStream(
             words.sort()
-                .map(function(w) { return w + tabs + commands.commands[w].hint; })
-                .join("\n"),
+                .map(function(w) {
+                    if (!w)
+                        return "";
+                    return w + tabs + (commands.commands[w].hint || "");
+                }).join("\n"),
             null, this.getLogStreamOutObject(data.tracer_id), ide
         );
     },
@@ -298,7 +299,7 @@ module.exports = ext.register("ext/console/console", {
                 argv: argv,
                 line: line,
                 cwd: this.getCwd(),
-                requireshandling: true,
+                requireshandling: !commands.commands[cmd],
                 tracer_id: this.command_id_tracer,
                 extra : {
                     command_id : this.command_id_tracer
@@ -565,7 +566,7 @@ module.exports = ext.register("ext/console/console", {
             name: "help",
             hint: "show general help information and a list of available commands",
             exec: function () {
-                _self.help();
+                _self.help({tracer_id: _self.command_id_tracer});
             }
         });
         commands.addCommand({
@@ -832,12 +833,8 @@ module.exports = ext.register("ext/console/console", {
             }
         });
 
-        // @TODO Defunct
-        apf.setStyleClass(txtConsole.$ext, "feedback");
-        apf.setStyleClass(txtOutput.$ext, "feedback");
-
         logger.appendConsoleFragmentsAfterInit();
-        
+
         this.getRunningServerProcesses();
     },
 
@@ -960,8 +957,7 @@ module.exports = ext.register("ext/console/console", {
             var scroll = txt.$scrollArea;
             txt.$scrolldown = scroll.scrollTop >= scroll.scrollHeight
                 - scroll.offsetHeight + apf.getVerBorders(scroll);
-        });
-        // ^^^ @TODO check if the above timeout needs to be 200ms as set in HEAD
+        }, 200);
 
         pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');
     },

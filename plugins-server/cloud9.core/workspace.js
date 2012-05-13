@@ -47,16 +47,23 @@ var Workspace = module.exports = function(ide) {
         // handle this command
         var message = args.length > 1 && args[1];
         if (message && message.requireshandling === true) {
-            this.plugins["npm-runtime"].searchAndRunModuleHook(message, function(err, found) {
-                if (err || !found) {
-                    self.send({
-                        type: "result",
-                        subtype: "info",
-                        body: err || "Command '" + message.command + "' was not recognized",
-                        extra: message.extra
-                    }, message);
-                }
-            });
+            function sendCommandNotFound(err) {
+                self.send({
+                    type: "result",
+                    subtype: "info",
+                    body: err || "Command '" + message.command + "' was not recognized",
+                    extra: message.extra
+                }, message);
+            }
+
+            if (this.plugins["npm-runtime"]) {
+                this.plugins["npm-runtime"].searchAndRunModuleHook(message, function(err, found) {
+                    if (err || !found)
+                        sendCommandNotFound(err);
+                });
+            }
+            else
+                sendCommandNotFound();
         }
     };
 
