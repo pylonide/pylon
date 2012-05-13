@@ -99,8 +99,8 @@
                 skin    = "checkbox_grey"
                 top     = "-25"
                 right   = "10"
-                checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
-                label   = "Show Details"
+                checked = "{require('ext/revisions/revisions').useCompactList == false ? 'false' : 'true'}"
+                label   = "Group by same period of time"
                 onafterchange = "
                     var model = tabEditors.getPage().$mdlRevisions;
                     require('ext/revisions/revisions').toggleListView(model);
