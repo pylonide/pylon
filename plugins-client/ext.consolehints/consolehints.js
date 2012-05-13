@@ -51,7 +51,7 @@ var hintLink = function(data) {
 
     var cmdText = "";
     if (data.showHelperText)
-        cmdText = '<span>' + data.cmd.hint + '</span>';
+        cmdText = '<span>' + (data.cmd.hint || '') + '</span>';
     cmdText += spanHotkey;
     return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + cmdText + '</a>';
 };
