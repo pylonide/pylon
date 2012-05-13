@@ -1,5 +1,5 @@
 this.tour = {
-    initialText: "This guided tour introduces you to some of the ways<br/> Cloud9 IDE makes it easy for you to program faster and smarter.\n\nClick the play button below to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own. Remember that during the tour, you won't be able to interact with any of the editor's features.",
+    initialText: "Welcome to the guided tour! We'll introduce you to some of the ways Cloud9 IDE makes it easy for you to program faster and smarter.\n\nDuring the tour, you can click the play button to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.\n\nDuring the tour, the IDE is mostly disabled to provide a smoother experience.",
     finalText: "Well, that's everything! Still have questions? Head on over to <a href=\"http://support.cloud9ide.com/forums\" target=\"_blank\">our documentation site</a>.",
     steps: [
     {
@@ -8,7 +8,7 @@ this.tour = {
         },
         el: undefined,
         div: "navbar",
-        desc: "This is the project bar. These buttons control the behavior of the IDE, as well as the presentation of your code.",
+        desc: "This is the project bar, where your workflow begins and ends. Your project tree, preferences, debugging and deploy options are all located here.",
         pos: "bottom",
         time: 4
     }, {
@@ -35,7 +35,7 @@ this.tour = {
         },
         el: undefined,
         div: "navbar.childNodes[navbar.childNodes.length - 2]",
-        desc: "Here, you can enable additional features and change the behavior of the editor.",
+        desc: "This is the preferences hub for all Cloud9 IDE features.",
         pos: "right",
         time: 4
     }, {
@@ -43,7 +43,7 @@ this.tour = {
             require("ext/panels/panels").activate(require("ext/tree/tree"));
         },
         el: "winFilesViewer",
-        desc: "While viewing your project files, you can rename and delete files, as well as drag in new ones from your computer. You can also right-click to see context options.",
+        desc: "The Project Tree lets you drag and drop new files into your project. Your project files can also be quickly searched by pressing Ctrl/Cmd-E. You can also right-click to see context options.",
         pos: "right",
         time: 4
     }, {
@@ -79,6 +79,7 @@ this.tour = {
                 save = require("ext/save/save");
             var page = tabEditors.getPage();
             var file = page.$model.data;
+            file.setAttribute("guidedtour", "1");
             save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-guidedTour.js");
             require("ext/tree/tree").refresh();
         },
@@ -107,7 +108,7 @@ this.tour = {
         },
         el: undefined,
         div: "barIdeStatus",
-        desc: "The status bar shows your cursor position. Clicking on it modifies some of the IDE aspects.",
+        desc: "The status bar shows your cursor position, and provides quick access to some editor settings.",
         pos: "left",
         time: 4
     }, {
@@ -137,7 +138,7 @@ this.tour = {
                                 
                 hlElement.style.visibility = "visible";
                 winTourText.show();
-            }, 2000);
+            }, 2300);
         },
         time: 4,
         desc: "",
@@ -147,7 +148,7 @@ this.tour = {
             require("ext/console/console").showInput();
         },
         el: cliBox,
-        desc: "This area down here acts just like a command line for your project in the Cloud9 IDE. You can always type 'help' to get a list of the available commands.",
+        desc: "This command line is similar to what you expect from your local terminal. You can always type 'help' to get a list of available commands.",
         pos: "top",
         time: 5
     }, {
@@ -183,7 +184,7 @@ this.tour = {
             });
         },
         el: "winRunPanel",
-        desc: "Here's where the fun begins! After clicking Debug, then Run Configurations, you'll be able to create or modify a debug configuration. Every configuration needs a name and a file to run, but you can also pass command-line arguments.",
+        desc: "Here's where the fun begins! After clicking Run & Debug in the project bar, you'll be able to create or modify a debug configuration. Every configuration needs a name and a file to run, but you can also pass command-line arguments.",
         pos: "right",
         time: 5
     }, {
