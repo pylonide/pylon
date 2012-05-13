@@ -13,7 +13,8 @@
         <a:dropdown
           skin      = "light_dropdown"
           model     = "mdlRunnerSelector2"
-          width     ="100"  height="21"
+          width     = "100"  
+          height    = "21"
           disabled  = "{!lstRunCfg.selected}"
           value     = "[{require('core/settings').model}::auto/node-version/@version]"
           default   = "auto"
