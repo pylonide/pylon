@@ -16,9 +16,13 @@ var panels = require("ext/panels/panels");
 var markup = require("text!ext/tree/tree.xml");
 var commands = require("ext/commands/commands");
 
+var showHideScrollPos;
+
 function $trScroll() {
     if (this.$scrollTimer)
         clearTimeout(this.$scrollTimer);
+
+    showHideScrollPos = trFiles.$ext.scrollTop;
 
     // Set to -1 in case the user scrolls before the tree is done loading,
     // in which case we don't want to set the scroll pos to the saved one
@@ -299,6 +303,16 @@ module.exports = ext.register("ext/tree/tree", {
     setupTreeListeners : function() {
         var _self = this;
 
+        winFilesViewer.addEventListener("prop.visible", function(e) {
+            if (e.value) {
+                if (showHideScrollPos) {
+                    setTimeout(function() {
+                        trFiles.$ext.scrollTop = showHideScrollPos;
+                    });
+                }
+            }
+        });
+
         // After an item in the tree has been clicked on, this saves that
         // selection in the settings model
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
@@ -325,6 +339,14 @@ module.exports = ext.register("ext/tree/tree", {
             }
         });
 
+        // Block keypressing, else afterchoose from "Enter" inserts new lines in the doc
+        trFiles.addEventListener("keydown", function(e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
         // Opens a file after the user has double-clicked
         trFiles.addEventListener("afterchoose", this.$afterchoose = function() {
             var node = this.selected;
@@ -334,7 +356,7 @@ module.exports = ext.register("ext/tree/tree", {
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
-
+        
         trFiles.addEventListener("beforecopy", this.$beforecopy = function(e) {
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
