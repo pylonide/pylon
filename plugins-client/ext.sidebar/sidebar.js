@@ -80,6 +80,16 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         });
         
         ide.addEventListener("panels.animate", function(e){
+            if (e.noanim) {
+                _self.animateToDefaultWidth();
+                if (e.activate)
+                    apf.setStyleClass(navbar.$ext, "", ["closed"]);
+                else 
+                    apf.setStyleClass(navbar.$ext, "closed");
+                
+                return;
+            }
+            
             //Stop and prevent any animation to happen
             clearTimeout(timer);
             _self.animating = true;
@@ -166,45 +176,58 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         
         editors.pauseTabResize();
         
-        var i = 0;
-        apf.tween.single(navbar.$ext, {
-            type: "width",
-            from: navbar.getWidth(),
-            to: navbar.$int.scrollWidth + (editors.showTabs? 6 : 9),
-            steps : 10,
-            interval : apf.isChrome ? 0 : 5,
-            control : this.animateControl = {},
-            anim : apf.tween.easeOutCubic,
-            oneach : function(){
-                apf.layout.forceResize();
-            }
-        });
+        var i = 0, toWidth = navbar.$int.scrollWidth + (editors.showTabs? 6 : 9);
+        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+            apf.tween.single(navbar.$ext, {
+                type: "width",
+                from: navbar.getWidth(),
+                to: toWidth,
+                steps : 10,
+                interval : apf.isChrome ? 0 : 5,
+                control : this.animateControl = {},
+                anim : apf.tween.easeOutCubic,
+                oneach : function(){
+                    apf.layout.forceResize();
+                }
+            });
+        }
+        else {
+            navbar.$ext.style.width = toWidth + "px";
+            apf.layout.forceResize();
+        }
     },
     
     animateToDefaultWidth : function(){
         if (this.animateControl)
             this.animateControl.stop();
         
-        var i = 0;
-        apf.tween.single(navbar.$ext, {
-            type: "width",
-            from: navbar.getWidth(),
-            to: colLeft.getWidth(),
-            steps : 10,
-            interval : apf.isChrome ? 0 : 5,
-            control : this.animateControl = {},
-            anim : apf.tween.easeOutCubic,
-            oneach : function(){
-                if (i++ == 4 && colLeft.getWidth() == 0)
-                    apf.setStyleClass(navbar.$ext, "closed");
-                
-                apf.layout.forceResize();
-            },
-            onfinish : function(){
-                apf.layout.forceResize();
-                editors.continueTabResize();
-            }
-        });
+        var i = 0, toWidth = colLeft.getWidth();
+        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+            apf.tween.single(navbar.$ext, {
+                type: "width",
+                from: navbar.getWidth(),
+                to: toWidth,
+                steps : 10,
+                interval : apf.isChrome ? 0 : 5,
+                control : this.animateControl = {},
+                anim : apf.tween.easeOutCubic,
+                oneach : function(){
+                    if (i++ == 4 && colLeft.getWidth() == 0)
+                        apf.setStyleClass(navbar.$ext, "closed");
+                    
+                    apf.layout.forceResize();
+                },
+                onfinish : function(){
+                    apf.layout.forceResize();
+                    editors.continueTabResize();
+                }
+            });
+        }
+        else {
+            navbar.$ext.style.width = toWidth + "px";
+            apf.layout.forceResize();
+            editors.continueTabResize();
+        }
     },
     
     add : function(panelExt, options) {

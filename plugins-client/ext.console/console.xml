@@ -68,7 +68,7 @@
                   caption = "Auto-show console when running" />
             </a:menu>
 
-            <a:hbox id="cliBox" class="consoleInputBox" edge="1" padding="4" pack="end" visible="false">
+            <a:hbox id="cliBox" class="consoleInputBox" edge="1 1 2 1" padding="4" pack="end" visible="false">
                 <a:text id="txtConsolePrompt"
                     class="txt_console_prompt"
                     visible="false"
