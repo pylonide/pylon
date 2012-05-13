@@ -4602,6 +4602,12 @@
             background: url(images/toolbar-divider.png) 0px 0px repeat-y;
         }
         
+        .dark .divider-status-bar {
+            background: none;
+            border-left: 1px solid rgba(0,0,0,.3);   
+            border-right: 1px solid rgba(255,255,255,.05);
+        }
+        
         .ace_dark .divider-status-bar {
             background: url(images/toolbar-divider.png) -6px 0px repeat-y;
         }
