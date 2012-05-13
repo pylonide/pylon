@@ -8720,17 +8720,20 @@
         margin : 0 auto;
         overflow: hidden;
         position:relative;
+        border-bottom : 1px solid rgba(255,255,255,.8);
+    }
+    .dark .editor_tab {
+        border-bottom : 1px solid rgba(255,255,255,.1);
     }
     
     .editor_tab .btnsesssioncontainer {
-        padding : 0px 45px 0 21px;	
+        padding : 0px 45px 0 21px;  
         height: 27px;
         overflow: visible;
         white-space: nowrap;
         color: #f5f5f5;
         font-family : Arial;
         font-size : 12px;
-        border-bottom : 1px solid #fff;
         background: rgba(24,24,24,.9) url(images/c9-noise.png);
         width : auto;
 
