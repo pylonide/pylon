@@ -17,7 +17,6 @@ var commands = require("ext/commands/commands");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
-var settings = require("ext/settings/settings");
 
 require("ext/debugger/inspector");
 
@@ -135,14 +134,14 @@ module.exports = ext.register("ext/debugger/debugger", {
                     }]
                 },
                 {
-                    width : 250,
-                    height : 300,
+                    width : 410,
+                    height : 230,
                     buttons : [
                         { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true}
                     ]
                 },
                 {
-                    width : 250,
+                    width : 380,
                     height : 300,
                     buttons : [
                         { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
