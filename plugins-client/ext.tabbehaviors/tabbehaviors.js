@@ -253,7 +253,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 settings.save();
             }
             
-            if (apf.isTrue(settings.model.queryValue('general/@revealfile'))) {
+            if (settings.model.queryValue("auto/panels/@active") == "ext/tree/tree" && apf.isTrue(settings.model.queryValue('general/@revealfile'))) {
                 _self.revealtab(page);
             }
         });
