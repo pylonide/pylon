@@ -436,7 +436,7 @@ module.exports = ext.register("ext/console/console", {
         switch(message.type) {
             case "node-start":
                 var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
-                if (apf.isTrue(clearOnRun))
+                if (apf.isTrue(clearOnRun) && window["txtOutput"])
                     txtOutput.clear();
                 this.createNodeProcessLog(message.pid);
                 return;
