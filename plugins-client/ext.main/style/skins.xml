@@ -48,7 +48,6 @@
         }
         
         .fakehbox{
-            padding : 0 5px 0 5px;
             white-space : nowrap;
         }
         
