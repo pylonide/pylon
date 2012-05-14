@@ -23,6 +23,7 @@ var keyhandler = require("ext/language/keyhandler");
 
 var markupSettings = require("text!ext/language/settings.xml");
 var settings = require("ext/settings/settings");
+var isContinuousCompletionEnabled;
 
 module.exports = ext.register("ext/language/language", {
     name    : "Javascript Outline",
@@ -113,6 +114,11 @@ module.exports = ext.register("ext/language/language", {
         });
         
         this.updateSettings();
+        
+        var defaultHandler = this.editor.keyBinding.onTextInput.bind(this.editor.keyBinding);
+        var defaultCommandHandler = this.editor.keyBinding.onCommandKey.bind(this.editor.keyBinding);
+        this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.onTextInput, defaultHandler);
+        this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.onCommandKey, defaultCommandHandler);
     
         this.editor.on("changeSession", function() {
             // Time out a litle, to let the page path be updated
@@ -143,28 +149,13 @@ module.exports = ext.register("ext/language/language", {
         this.editor.addEventListener("mousedown", this.onEditorClick.bind(this));
         
     },
-
-    setContinuousCompletion: function(enabled) {
-        if(enabled) {
-            if(!this.defaultKeyHandler) {
-                this.defaultKeyHandler = this.editor.keyBinding.onTextInput;
-                this.defaultCommandKeyHandler = this.editor.keyBinding.onCommandKey;
-                this.editor.keyBinding.onTextInput = keyhandler.composeHandlers(keyhandler.typeAlongCompleteTextInput, this.defaultKeyHandler.bind(this.editor.keyBinding));
-                this.editor.keyBinding.onCommandKey = keyhandler.composeHandlers(keyhandler.typeAlongComplete, this.defaultCommandKeyHandler.bind(this.editor.keyBinding));
-            }
-        }
-        else {
-            if(this.defaultKeyHandler) {
-                this.editor.keyBinding.onTextInput = this.defaultKeyHandler;
-                this.editor.keyBinding.onCommandKey = this.defaultCommandKeyHandler;
-                this.defaultKeyHandler = null;
-                this.defaultCommandKeyHandler = null;
-            }
-        }
-    },
     
     isContinuousCompletionEnabled: function() {
-        return !!this.defaultKeyHandler;
+        return isContinuousCompletionEnabled;
+    },
+    
+    setContinuousCompletion: function() {
+        isContinuousCompletionEnabled = false;
     },
     
     updateSettings: function() {
@@ -191,7 +182,7 @@ module.exports = ext.register("ext/language/language", {
         var cursorPos = this.editor.getCursorPosition();
         cursorPos.force = true;
         this.worker.emit("cursormove", {data: cursorPos});
-        this.setContinuousCompletion(settings.model.queryValue("language/@continuousComplete") == "true");
+        isContinuousCompletionEnabled = settings.model.queryValue("language/@continuousComplete") === "true";
         this.setPath();
     },
 

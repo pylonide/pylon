@@ -162,14 +162,6 @@ exports.getDocPath = function(page) {
     return exports.stripWSFromPath(page.name);
 };
 
-exports.localDate = function(ts) {
-    var getTZOffset = function() {
-        return -(new Date()).getTimezoneOffset() * 60000;
-    };
-
-    return new Date(ts + getTZOffset());
-};
-
 exports.question = function(title, header, msg, onyes, onyesall, onno, onnoall) {
     winQuestionRev.show();
     winQuestionRev.setAttribute("title", title);

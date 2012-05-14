@@ -194,7 +194,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     setSaveButtonCaption: function(caption, page) {
         if (!self.btnSave)
             return;
-        
+
         if (caption)
             return btnSave.setCaption(caption);
 
@@ -389,18 +389,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.$switchToPageModel(page);
+        if (!this.isNewPage(page)) {
+            ide.send({
+                command: "revisions",
+                subCommand: "getRevisionHistory",
+                path: path
+            });
 
-        ide.send({
-            command: "revisions",
-            subCommand: "getRevisionHistory",
-            path: path
-        });
-
+            this.setSaveButtonCaption();
+        }
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
-
-        this.setSaveButtonCaption();
     },
-
+    
     onSwitchFile: function(e) {
         this.$switchToPageModel(e.nextPage);
     },
@@ -519,13 +519,16 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        clearTimeout(this.docChangeTimeout);
-        this.docChangeTimeout = setTimeout(function(self) {
-            if (doc.$page && Util.isAutoSaveEnabled()) {
-                self.setSaveButtonCaption();
-                self.save(doc.$page);
-            }
-        }, CHANGE_TIMEOUT, this);
+        var page = doc.$page;
+        if (!this.isNewPage(page)) {
+            clearTimeout(this.docChangeTimeout);
+            this.docChangeTimeout = setTimeout(function(self) {
+                if (page && Util.isAutoSaveEnabled()) {
+                    self.setSaveButtonCaption();
+                    self.save(page);
+                }
+            }, CHANGE_TIMEOUT, this);
+        }
     },
 
     onWorkerMessage: function(e) {
@@ -635,7 +638,14 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 var revision = this.revisionQueue[ts].revision;
                 if (revision) {
-                    revision.saved = true;
+                    revision.saved = true
+                    // In the case that a new file has just been created and saved
+                    // `allRevisions` won't be there (since there has never been
+                    // a `getRevisionhistory` that creates it), so we create it.
+                    if (!revObj.allRevisions) {
+                        revObj.allRevisions = {};
+                    }
+
                     revObj.allRevisions[ts] = revision;
                     delete this.revisionQueue[ts];
 
@@ -882,6 +892,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Populates the revisions model with the current revision list and attributes.
      **/
     populateModel: function(revObj, model) {
+        var page = tabEditors.getPage();
+        if (this.isNewPage(page)) {
+            return;
+        }
+
         if (!revObj || !model) {
             console.error("Expected a parameter and a model");
             return;
@@ -904,7 +919,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         for (var i = timestamps.length - 1; i >= 0; i--) {
             var ts = timestamps[i];
             var rev = revisions[ts];
-            var friendlyDate = Util.localDate(ts).toString("MMM d, h:mm tt");
+            var friendlyDate = (new Date(ts)).toString("MMM d, h:mm tt");
             var restoring = rev.restoring || "";
             var savedToDisk = rev.saved !== false;
 
@@ -1150,7 +1165,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             editor.setSession(newSession);
             doc = newSession.doc;
         }
-        
+
         editor.setReadOnly(true);
         editor.selection.clearSelection();
 
@@ -1357,6 +1372,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.populateModel(revObj, this.model);
+    },
+    
+    isNewPage: function(page) {
+        return parseInt(page.$model.getXml().getAttribute("newfile"), 10) === 1;
     },
 
     show: function() {
