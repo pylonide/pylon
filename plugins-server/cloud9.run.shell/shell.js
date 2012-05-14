@@ -1,5 +1,7 @@
 "use strict";
 
+var util = require("util");
+var c9util = require("../cloud9.core/util");
 var spawn = require("child_process").spawn;
 var killTree = require("./killtree").killTree;
 
@@ -23,30 +25,36 @@ var exports = module.exports = function setup(options, imports, register) {
 
 exports.factory = function(uid) {
     return function(args, eventEmitter, eventName) {
-        return new Runner(uid, args.command, args.args, args.cwd, args.env, args.extra, eventEmitter, eventName);
+        var options = {};
+        c9util.extend(options, args);
+        options.uid = uid;
+        options.eventEmitter = eventEmitter;
+        options.eventName = eventName;
+        options.args = args;
+
+        return new Runner(options);
     };
 };
 
-var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, eventEmitter, eventName) {
-    this.uid = uid;
-    this.command = command;
-    this.args = args || [];
-    this.extra = extra;
+var Runner = exports.Runner = function(options) {
+    this.uid = options.uid;
+    this.command = options.command;
+    this.args = options.args.args || [];
+    this.extra = options.extra;
 
     this.runOptions = {};
-    if (cwd)
-        this.runOptions.cwd = cwd;
+    if (options.cwd)
+        this.runOptions.cwd = options.cwd;
 
-    env = env || {};
-    env = env;
+    this.env = options.env || {};
     for (var key in process.env)
-        if (!env.hasOwnProperty(key))
-            env[key] = process.env[key];
+        if (!this.env.hasOwnProperty(key))
+            this.env[key] = process.env[key];
 
-    this.runOptions.env = env;
+    this.runOptions.env = this.env;
 
-    this.eventEmitter = eventEmitter;
-    this.eventName = eventName;
+    this.eventEmitter = options.eventEmitter;
+    this.eventName = options.eventName;
 
     this.child = {
         pid: null
@@ -107,6 +115,7 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
             this.command = "sudo";
         }
 
+        console.log("About to spawn child", this.command, this.args, this.runOptions);
         try {
             var child = spawn(this.command, this.args, this.runOptions);
         } catch (e) {

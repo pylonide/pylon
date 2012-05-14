@@ -421,7 +421,7 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         var message = e.message;
-        //console.log(message.type, message);
+        console.log(message.type, message);
         var extra = message.extra;
         if (!extra && message.body)
             extra = message.body.extra;

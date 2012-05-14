@@ -1,6 +1,7 @@
 "use strict";
 
 var util = require("util");
+var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
 /**
@@ -25,20 +26,28 @@ var exports = module.exports = function setup(options, imports, register) {
 exports.factory = function(uid, ide) {
     return function(args, eventEmitter, eventName) {
         var cwd = args.cwd || ide.workspaceDir;
-        return new Runner(uid, args.file, args.args, cwd, args.env, args.extra, eventEmitter, eventName);
+        var options = {};
+        c9util.extend(options, args);
+        options.uid = uid;
+        options.eventEmitter = eventEmitter;
+        options.eventName = eventName;
+        options.args = args;
+        options.command = process.execPath;
+        options.cwd = cwd;
+        return new Runner(options);
     };
 };
 
-var Runner = exports.Runner = function(uid, file, args, cwd, env, extra, eventEmitter, eventName) {
-    this.uid = uid;
-    this.file = file;
-    this.extra = extra;
+var Runner = exports.Runner = function(options) {
+    this.uid = options.uid;
+    this.file = options.file;
+    this.extra = options.extra;
 
-    this.scriptArgs = args || [];
+    this.scriptArgs = options.args || [];
     this.nodeArgs = [];
 
-    env = env || {};
-    ShellRunner.call(this, uid, process.execPath, [], cwd, env, extra, eventEmitter, eventName);
+    this.env = options.env || {};
+    ShellRunner.call(this, options);
 };
 
 util.inherits(Runner, ShellRunner);

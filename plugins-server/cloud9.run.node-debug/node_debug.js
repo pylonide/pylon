@@ -2,6 +2,7 @@
 
 var util = require("util");
 var netutil = require("../cloud9.core/netutil");
+var c9util = require("../cloud9.core/util");
 var NodeRunner = require("../cloud9.run.node/node").Runner;
 var NodeDebugProxy = require("./nodedebugproxy");
 
@@ -27,14 +28,22 @@ var exports = module.exports = function setup(options, imports, register) {
 exports.factory = function(uid, ide) {
     return function(args, eventEmitter, eventName) {
         var cwd = args.cwd || ide.workspaceDir;
-        return new Runner(uid, args.file, args.args, cwd, args.env, args.breakOnStart, args.extra, eventEmitter, eventName);
+        var options = {};
+        c9util.extend(options, args);
+        options.uid = uid;
+        options.eventEmitter = eventEmitter;
+        options.eventName = eventName;
+        options.args = args;
+        options.command = process.execPath;
+        options.cwd = cwd;
+        return new Runner(options);
     };
 };
 
-var Runner = exports.Runner = function(uid, file, args, cwd, env, breakOnStart, extra, eventEmitter, eventName) {
-    NodeRunner.call(this, uid, file, args, cwd, env, extra, eventEmitter, eventName);
-    this.breakOnStart = breakOnStart;
-    this.extra = extra;
+var Runner = exports.Runner = function(options) {
+    NodeRunner.call(this, options);
+    this.breakOnStart = options.breakOnStart;
+    this.extra = options.extra;
     this.msgQueue = [];
 };
 
