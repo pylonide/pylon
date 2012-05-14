@@ -53,6 +53,7 @@ module.exports = ext.register("ext/panels/panels", {
         ide.addEventListener("init." + panelExt.path, function(e){
             panelExt.panel.setAttribute("draggable", "false");
             panelExt.panel.$ext.style.zIndex = 100;
+            panelExt.panel.$ext.style.minWidth = ""; //Needed for the anims
         });
         
         ide.addEventListener("settings.load", function(){
@@ -224,8 +225,13 @@ module.exports = ext.register("ext/panels/panels", {
         
         if (noAnim || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             panelExt.panel.show();
-            colLeft.setWidth(width);
+            colLeft.show();
             colLeft.setAttribute("minwidth", panelExt.panel.minwidth);
+            colLeft.setWidth(width);
+            
+            ide.dispatchEvent("panels.animate", {noanim : true, activate: true});
+            
+            apf.layout.forceResize();
         }
         else if (!noAnim)
             this.animate(lastPanel && lastPanel.panel, panelExt.panel, width);
@@ -253,6 +259,10 @@ module.exports = ext.register("ext/panels/panels", {
 
         if (anim === false || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             this.currentPanel.panel.hide();
+            colLeft.hide();
+            ide.dispatchEvent("panels.animate", {noanim : true, activate: false});
+            
+            apf.layout.forceResize();
         }
         else if (anim)
             this.animate(this.currentPanel.panel);

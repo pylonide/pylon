@@ -296,14 +296,15 @@ apf.dbg = module.exports = function(struct, tagName){
         this.$debugger.loadFrame(frame, callback);
     };
 
-    this.toggleBreakpoint = function(script, row) {
+    this.toggleBreakpoint = function(script, row, content) {
         var model = this.$mdlBreakpoints;
         if (this.$debugger) {
-            this.$debugger.toggleBreakpoint(script, row, model);
+            this.$debugger.toggleBreakpoint(script, row, model, content);
         }
         else {
             var scriptName = script.getAttribute("scriptname");
-            var bp = model.queryNode("breakpoint[@script='" + scriptName + "' and @line='" + row + "']");
+            var bp = model.queryNode("breakpoint[@script='" + scriptName 
+                + "' and @line='" + row + "']");
             if (bp) {
                 apf.xmldb.removeNode(bp);
             }
@@ -322,11 +323,22 @@ apf.dbg = module.exports = function(struct, tagName){
                     .attr("line", row)
                     .attr("text", displayText + ":" + (parseInt(row, 10) + 1))
                     .attr("lineoffset", 0)
+                    .attr("content", content)
+                    .attr("enabled", "true")
                     .node();
                 model.appendXml(bp);
             }
         }
     };
+    
+    this.setBreakPointEnabled = function(node, value){
+        if (this.$debugger) {
+            this.$debugger.setBreakPointEnabled(node, value);
+        }
+        else {
+            node.setAttribute("enabled", value ? true : false);
+        }
+    },
 
     this.continueScript = function(callback) {
         this.dispatchEvent("beforecontinue");

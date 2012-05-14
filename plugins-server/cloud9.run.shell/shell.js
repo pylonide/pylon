@@ -113,7 +113,6 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, encoding, e
         }
 
         try {
-            // console.log(this.command, this.args)
             var child = spawn(this.command, this.args, this.runOptions);
         } catch (e) {
             return callback(e);
