@@ -705,7 +705,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
             var center = (tree.$container.offsetHeight / 2) | 0;
             var newTop = itemPos[1] - center;
-            tree.$ext.scrollTop = newTop;
+
+            apf.tween.single(trFiles, {
+                type: "scrollTop",
+                from: trFiles.$ext.scrollTop,
+                to: newTop
+            });
         }
     },
 
