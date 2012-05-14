@@ -679,10 +679,10 @@ module.exports = ext.register("ext/console/console", {
         });
 
         ide.addEventListener("settings.load", function(e){
-            if (!e.model.queryNode("auto/console/@autoshow"))
-                e.model.setQueryValue("auto/console/@autoshow", true);
-            if (!e.model.queryNode("auto/console/@clearonrun"))
-                e.model.setQueryValue("auto/console/@clearonrun", true);
+            settings.setDefaults("auto/console", [
+                ["autoshow", "true"],
+                ["clearonrun", "true"]
+            ]);
 
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
 
