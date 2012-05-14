@@ -55,54 +55,56 @@
             </a:datagrid>
         </a:page>
         <a:page id="dbInteractive" caption="Interactive" render="runtime">
-            <a:vbox anchors="0 0 0 0">
-                <a:toolbar>
-                    <a:bar border="0 0 1 0">
-                        <a:button
-                          disabled = "{!stDebugProcessRunning.active || stRunning.active}"
-                          caption  = "Execute" 
-                          tooltip  = "Ctrl+Enter"
-                          onclick  = "
-                            require('ext/debugger/inspector').consoleTextHandler({keyCode:13,ctrlKey:true})
-                          " />
-                        <a:button
-                          disabled2 = "{!txtCode.value.trim()}"
-                          caption  = "Clear" 
-                          onclick  = "
-                            txtCode.clear();
-                          " />
-                        <a:divider skin2="c9-divider"/>
-                        <a:dropdown id="lstScripts"
-                          skin2       = "black_dropdown"
-                          margin     = "3 0 0 4"
-                          width      = "120"
-                          maxitems   = "10"
-                          model      = "mdlDbgSources"
-                          disabled   = "{!stDebugProcessRunning.active &amp;&amp; 1}" 
-                          each       = "[file]"
-                          caption    = "[@text]"
-                          autoselect = "false"
-                          icon       = "debugger/file_obj.gif" />
-                    </a:bar>
-                </a:toolbar>
-                <a:codeeditor id="txtCode" 
-                  flex      = "1"
-                  disabled  = "{stRunning.active || !stDebugProcessRunning.active}"
-                  onkeydown = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
-                  realtime  = "true"
-                  border    = "0" 
-                  model     = "{require('ext/settings/settings').model}" 
-                  value     = "[auto/console/input]"
-                  softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
-                  tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
-                  scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-                  theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
-                  selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
-                  activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
-                  showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-                  showprintmargin   = "false"
-                  printmargincolumn = "0" />
-            </a:vbox>
+            <a:toolbar>
+                <a:bar border="0 0 1 0">
+                    <a:button
+                      disabled = "{!stDebugProcessRunning.active || stRunning.active}"
+                      caption  = "Execute" 
+                      tooltip  = "Ctrl+Enter"
+                      onclick  = "
+                        require('ext/debugger/inspector').consoleTextHandler({keyCode:13,ctrlKey:true})
+                      " />
+                    <a:button
+                      disabled2 = "{!txtCode.value.trim()}"
+                      caption  = "Clear" 
+                      onclick  = "
+                        txtCode.clear();
+                      " />
+                    <a:divider skin2="c9-divider"/>
+                    <a:dropdown id="lstScripts"
+                      skin2       = "black_dropdown"
+                      margin     = "3 0 0 4"
+                      width      = "120"
+                      maxitems   = "10"
+                      model      = "mdlDbgSources"
+                      disabled   = "{!stDebugProcessRunning.active &amp;&amp; 1}" 
+                      each       = "[file]"
+                      caption    = "[@text]"
+                      autoselect = "false"
+                      icon       = "debugger/file_obj.gif" />
+                </a:bar>
+            </a:toolbar>
+            <a:codeeditor id="txtCode" 
+              flex              = "1"
+              disabled          = "{stRunning.active || !stDebugProcessRunning.active}"
+              onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
+              realtime          = "true"
+              border            = "0" 
+              model             = "{require('core/settings').model}" 
+              value             = "[auto/console/input]"
+              softtabs          = "[editors/code/@softtabs]"
+              tabsize           = "[editors/code/@tabsize]"
+              scrollspeed       = "[editors/code/@scrollspeed]"
+              theme             = "[editors/code/@theme]"
+              selectstyle       = "[editors/code/@selectstyle]"
+              activeline        = "[editors/code/@activeline]"
+              showinvisibles    = "[editors/code/@showinvisibles]"
+              animatedscroll    = "[editors/code/@animatedscroll]"
+              fontsize          = "[editors/code/@fontsize]"
+              showprintmargin   = "false"
+              highlightselectedword = "[editors/code/@highlightselectedword]"
+              printmargincolumn = "0"
+              anchors           = "29 0 0 0" />
         </a:page>
         <a:page id="dbgVariable" caption="Variables" render="runtime">
             <a:datagrid id="dgVars"
