@@ -17,20 +17,6 @@ var Socket = module.exports = function(sessionStore, sessionKey, mountDir) {
 util.inherits(Socket, EventEmitter);
 
 (function() {
-    
-    var $stringify = function (err) {
-        if (typeof err === "undefined") return err;
-        
-        if (typeof err === "string") return err;
-        
-        try {
-            return JSON.stringify(err);
-        }
-        catch (e) {
-            console.log("Stringifying ", err, "failed");
-            return "Error occured";
-        }
-    };    
 
     this.listen = function(server) {
         var io = this.io = socketIo.listen(server, {
@@ -45,19 +31,19 @@ util.inherits(Socket, EventEmitter);
 
         io.sockets.on("connection", this._onConnection.bind(this));
     };
-    
+
     this._auth = function(req, callback) {
         if (!req.headers.cookie)
-            return callback("Session ID missing");
+            return callback(new Error("Session ID missing"));
 
         var cookies = connectUtil.parseCookie(req.headers.cookie);
         var sessionId = cookies[this.sessionKey];
 
         if (!sessionId)
-            return callback("Session ID missing");
+            return callback(new Error("Session ID missing"));
 
         this._getSession(sessionId, function(err, session) {
-            callback($stringify(err), !err);
+            callback(err, !err);
         });
     };
 
@@ -97,10 +83,10 @@ util.inherits(Socket, EventEmitter);
     this._getSession = function(sessionId, callback) {
         this.sessionStore.get(sessionId, function(err, session) {
             if (err)
-                return callback($stringify(err));
+                return callback(new error.InternalServerError(err));
 
             if (!session || !session.uid)
-                return callback("Session ID missing");
+                return callback(new error.Unauthorized("Session ID missing"));
 
             return callback(null, session);
         });
