@@ -165,30 +165,40 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         txtLineNr.focus();
 
         //Animate
-        apf.tween.single(winGotoLine, {
-            type     : "left",
-            anim     : apf.tween.easeInOutCubic,
-            from     : -60,
-            to       : 0,
-            steps    : 8,
-            interval : 10,
-            control  : (this.control = {})
-        });
+        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+            apf.tween.single(winGotoLine, {
+                type     : "left",
+                anim     : apf.tween.easeInOutCubic,
+                from     : -60,
+                to       : 0,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {})
+            });
+        }
+        else {
+            winGotoLine.setLeft(0);
+        }
     },
 
     hide : function() {
-        apf.tween.single(winGotoLine, {
-            type     : "left",
-            anim     : apf.tween.EASEOUT,
-            from     : winGotoLine.$ext.offsetLeft,
-            to       : -60,
-            steps    : 8,
-            interval : 10,
-            control  : (this.control = {}),
-            onfinish : function(){
-                winGotoLine.hide();
-            }
-        });
+        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+            apf.tween.single(winGotoLine, {
+                type     : "left",
+                anim     : apf.tween.EASEOUT,
+                from     : winGotoLine.$ext.offsetLeft,
+                to       : -60,
+                steps    : 8,
+                interval : 10,
+                control  : (this.control = {}),
+                onfinish : function(){
+                    winGotoLine.hide();
+                }
+            });
+        }
+        else {
+            winGotoLine.hide();
+        }
     },
 
     gotoline: function() {

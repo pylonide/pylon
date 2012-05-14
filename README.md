@@ -45,7 +45,7 @@ Install:
     
     # or
     
-    git clone https://cadorn@github.com/ajaxorg/cloud9.git cloud9
+    git clone https://github.com/ajaxorg/cloud9.git cloud9
     cd cloud9
     sm install
 

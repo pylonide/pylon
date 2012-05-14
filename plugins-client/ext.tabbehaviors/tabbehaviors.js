@@ -300,11 +300,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 page.removeEventListener("aftersavedialogclosed", arguments.callee);
             }
         });
-        
+
         ide.addEventListener("settings.save", function(e){
             if (_self.accessList.changed) {
                 var list = _self.accessList.slice(0);
-                list.forEach(function(page, i){ this[i] = page.id }, list);
+                list.forEach(function(page, i){
+                    if (page)
+                        this[i] = page.id;
+                }, list);
                 e.model.setQueryValue("auto/tabcycle/text()", JSON.stringify(list));
                 _self.accessList.changed = false;
             }
