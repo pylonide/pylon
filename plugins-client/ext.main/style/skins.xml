@@ -9260,8 +9260,8 @@
     .editor_tab .editor_bg {
         height : 100%;
         position : absolute;
-        top : 25%;
-        margin: -100px auto 0 auto;
+        top : 0;
+        margin : 0 auto 0 auto;
         background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
         /*border-bottom: 1px solid #8c8c8c;
         border-left: 1px solid #8c8c8c;
@@ -9274,13 +9274,15 @@
 
     .editor_tab .editor_bg .editor_bg_content {
         width: 430px;
-        margin: 100px auto 0;
+        margin: 0 auto 0;
         background: url(images/empty_editor_icon.png) no-repeat center 0;
         padding-top: 170px;
         text-align: center;
         color: #333333;
         text-shadow : rgba(255, 255, 255, .71) 1px 1px 1px;
         font-size: 18px;
+        top : 25%;
+        position : relative;
     }
 
     .infraeditor.editor_tab .editor_bg .editor_bg_content {
