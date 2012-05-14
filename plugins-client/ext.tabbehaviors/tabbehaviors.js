@@ -632,6 +632,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     revealInTree : function(docNode) {
+        var _self = this;
+
+        if (this.control && this.control.stop)
+            this.control.stop();
+
         panels.activate(require("ext/tree/tree"));
         
         var parts, file, pathList, str, xpath;
@@ -707,9 +712,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var newTop = itemPos[1] - center;
 
             apf.tween.single(trFiles, {
-                type: "scrollTop",
-                from: trFiles.$ext.scrollTop,
-                to: newTop
+                type    : "scrollTop",
+                from    : trFiles.$ext.scrollTop,
+                to      : newTop,
+                control : (_self.control = {})
             });
         }
     },
