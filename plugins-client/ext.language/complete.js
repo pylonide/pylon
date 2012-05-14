@@ -311,6 +311,10 @@ module.exports = {
 
     invoke: function(forceBox) {
         var editor = editors.currentEditor.amlEditor.$editor;
+        if (editor.inMultiSelectMode) {
+            _self.closeCompletionBox();
+            return;
+        }
         this.forceBox = forceBox;
         editor.addEventListener("change", this.$onChange);
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
