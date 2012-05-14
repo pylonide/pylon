@@ -8859,30 +8859,29 @@
         margin : 0 auto;
         overflow: hidden;
         position:relative;
-        border-bottom : 1px solid rgba(255,255,255,.8);
-    }
-    .dark .editor_tab {
-        border-bottom : 1px solid rgba(255,255,255,.1);
     }
     
     .editor_tab .btnsesssioncontainer {
-        padding : 0px 45px 0 21px;  
+        background: rgba(24,24,24,.9) url(images/c9-noise.png);
+        padding : 0 100px 0 21px;  
         height: 27px;
         overflow: visible;
         white-space: nowrap;
         color: #f5f5f5;
         font-family : Arial;
         font-size : 12px;
-        background: rgba(24,24,24,.9) url(images/c9-noise.png);
         width : auto;
-
-        -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-           -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-                box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
 
         position: relative;
 
-        box-shadow: 0 -1px 0 0 black inset;
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset, 0 1px 0 0 rgba(255, 255, 255, .9);
+        margin-bottom: 1px;
+    }
+    .dark .editor_tab .btnsesssioncontainer {
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset, 0 1px 0 0 rgba(255, 255, 255, .1);
+    }
+    .editor_tab.hidetabs .btnsesssioncontainer {
+        padding-right: 80px;
     }
         
     .editor_tab .btnsesssioncontainer > div {
@@ -8890,7 +8889,7 @@
         display : inline-block;
         position : relative;
         vertical-align : top;
-        top : 6px;
+        top : 5px;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -8979,19 +8978,23 @@
     /* ------------------------------------------------------------------------------------------
      * Selected tab default state
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .curbtn {
+    .editor_tab .btnsesssioncontainer .curbtn {
         cursor      : default;
-        height      : 22px;
+        height      : 23px;
         text-shadow : 0px 1px 0px rgba(255, 255, 255, .4);
-        top         : 1px;
         z-index     : 10;
     }
     .dark .editor_tab .curbtn {
         text-shadow : 0px 1px 0px rgba(0, 0, 0, .4);
     }
+    .editor_tab .curbtn .tab_middle:before,
+    .editor_tab .curbtn .tab_middle:after {
+        height: 23px;
+    }
     .editor_tab .curbtn .tab_middle {
         background-color    : #e8e8e8;
         color               : #000;
+        height              : 19px;
         padding-top         : 4px;
         text-shadow         : 0 1px 0 0 rgba(255,255,255,.4);
     }
@@ -9091,7 +9094,7 @@
     .editor_tab .tab_middle {
         background-image    : url(images/editor_tab.png);
         background-position : 0 -104px;
-        height              : 20px;
+        height              : 18px;
         position            : relative;
         overflow            : hidden;
         padding             : 4px 0 0 0;
@@ -9176,7 +9179,7 @@
     	border-bottom: 2px solid transparent;
         height: 5px;
     	overflow: hidden;
-        top : 4px;
+        top : 5px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
     	overflow: visible;
@@ -9223,7 +9226,7 @@
     .editor_tab.hidetabs .curbtn {
     	height: 8px;
     	overflow: hidden;
-        top : 3px;
+        top : 5px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
@@ -9231,14 +9234,20 @@
         background-repeat   : no-repeat, repeat-x;
         border-top-right-radius: 1px;   
     }
+    .dark .editor_tab.hidetabs .curbtn .tab_middle {
+        background-position: 50% -129px, 0 -1126px;
+    }
     .editor_tab.hidetabs .curbtn .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -111px;
         background-repeat   : repeat-x;
-    	border-top-left-radius: 1px;	
+        border-top-left-radius: 1px;    
+    }
+    .dark .editor_tab.hidetabs .curbtn .tab_middle:before {
+        background-position: 0 -1126px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle:after {
-    		display: none;
+		display: none;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9394,9 +9403,6 @@
         text-shadow: none;
         color: #d9d9d9;
     }
-
-    .codeditorHolder {
-    }
     
     .editor_tab.offline .btnsesssioncontainer .btnclose strong{
         display : none;
@@ -9550,13 +9556,12 @@
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .session_btn:not(.curbtn) .tab_middle,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:before,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:after {
-        box-shadow   : 0 -1px 0 0 #fff inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
+        box-shadow   : 0 1px 0 0 rgba(255,255,255,.10) inset, 0 -1px 0 0 #000 inset;
     }
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
-        box-shadow   : 0 0px 0 1px rgba(0,0,0,0.7), 0 -3px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
+        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
     }
     .editor_tab .session_btn .tab_middle {
         background-image    : url(images/c9-repeat-x.png);
@@ -9608,7 +9613,6 @@
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -57px;
         background-repeat   : repeat-x;
-        box-shadow          : 0 0px 0 1px rgba(0,0,0,0.7);
         color               : #000;
     }
     .dark .editor_tab .curbtn .tab_middle {
