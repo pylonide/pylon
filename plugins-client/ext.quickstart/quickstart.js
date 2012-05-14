@@ -11,6 +11,7 @@ define(function(require, exports, module) {
 
 var ext = require("core/ext");
 var ide = require("core/ide");
+var settings = require("core/settings");
 var skin = require("text!ext/quickstart/skin.xml");
 var markup = require("text!ext/quickstart/quickstart.xml");
 
@@ -38,9 +39,14 @@ module.exports = ext.register("ext/quickstart/quickstart", {
         jsonQuickStart = {
             identifiers: [
                 {
-                    el : winFilesViewer,
+                    el : navbar,
                     name : "qsProjectBar",
-                    pos: "right"
+                    pos: "right",
+                    before: function(){
+                        if(!require("ext/panels/panels").currentPanel)
+                            navbar.childNodes[1].dispatchEvent("mousedown");
+                        return false;
+                    }
                 },
                 {
                     el : logobar,
@@ -56,13 +62,27 @@ module.exports = ext.register("ext/quickstart/quickstart", {
                     }
                 },
                 {
-                    el : self["winDbgConsole"],
+                    el : self["txtConsoleInput"],
                     name : "qsCLI",
-                    pos: "top"
+                    pos: "top",
+                    before: function(){
+                        require("ext/console/console").showInput();
+                        return self["txtConsoleInput"];
+                    }
                 }
             ]
         };
-
+        
+        this.animateui = settings.model.queryValue('general/@animateui');
+        settings.model.setQueryValue('general/@animateui', false);
+        
+        for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
+            var idn = jsonQuickStart.identifiers[i];
+            if(idn.before) {
+                idn.el = idn.before() || idn.el;
+            }
+        }
+        
         this.overlay = document.createElement("div");
         this.overlay.setAttribute("style",
             "z-index:9016;display:none;position:fixed;left: 0px;top: 0px;width:100%;height:100%;opacity:0.6;background:#000;");
@@ -122,6 +142,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     arrangeQSImages : function() {
         var divToId, position, imgDiv;
         for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
+            console.log(jsonQuickStart.identifiers[i].el)
             if((jsonQuickStart.identifiers[i].visible && !jsonQuickStart.identifiers[i].visible()) || !jsonQuickStart.identifiers[i].el)
                 continue;
 
@@ -172,6 +193,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
             imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
             imgDiv.hide();
         }
+        settings.model.setQueryValue('general/@animateui', this.animateui);
     },
 
     shutdownQSStartGT : function() {
