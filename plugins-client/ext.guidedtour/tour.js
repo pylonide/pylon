@@ -13,7 +13,7 @@ this.tour = {
         time: 4
     }, {
         before: function() {
-            
+           panels.activate(require("ext/tree/tree"));
         },
         el: undefined,
         div: "navbar.childNodes[1]",
@@ -22,7 +22,7 @@ this.tour = {
         time: 4
     }, {
         before: function() {
-            require("ext/panels/panels").activate(require("ext/openfiles/openfiles"));
+            panels.activate(require("ext/openfiles/openfiles"));
         },
         el: undefined,
         div: "navbar.childNodes[2]",
@@ -40,7 +40,7 @@ this.tour = {
         time: 4
     }, {
         before: function() {
-            require("ext/panels/panels").activate(require("ext/tree/tree"));
+            panels.activate(require("ext/tree/tree"));
         },
         el: "winFilesViewer",
         desc: "The Project Tree lets you drag and drop new files into your project. Your project files can also be quickly searched by pressing Ctrl/Cmd-E. You can also right-click to see context options.",
@@ -55,6 +55,7 @@ this.tour = {
         },
         el: plus_tab_button,
         desc: "Use this button to quickly add new files to the editor. We'll push it right now.",
+        extraTop: -37,
         pos: "left",
         time: 4
     }, {
@@ -99,7 +100,7 @@ this.tour = {
         el: undefined,
         div: "ceEditorGutter",
         desc: "The gutter can do more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set breakpoints here.",
-        extra: 15,
+        extraTop: -40,
         pos: "right",
         time: 5
     }, {
@@ -109,6 +110,7 @@ this.tour = {
         el: undefined,
         div: "barIdeStatus",
         desc: "The status bar shows your cursor position, and provides quick access to some editor settings.",
+        extraTop: -40,
         pos: "left",
         time: 4
     }, {
@@ -119,6 +121,7 @@ this.tour = {
         el: undefined,
         div: undefined,
         desc: "If you hover over this corner, you can activate Zen Mode, which is a distraction-free environment. We'll press that button now.",
+        extraTop: -40,
         pos: "left",
         time: 5
     }, {
@@ -169,7 +172,7 @@ this.tour = {
         },
         el: undefined,
         div: "ceEditorGutter",
-        extra: 150,
+        extraTop: -40,
         desc: "We're ready to test our code, so we've inserted a breakpoint on this line by clicking in the gutter. Before debugging, though, we'll need to set up a debugging scenario.",
         pos: "right",
         time: 5
@@ -221,6 +224,7 @@ this.tour = {
             return pgDebugNav;
         },
         desc: "In this toolbar, the usual start, stop, and step buttons are at the top, to help control the flow of the debugging.",
+        extraTop: -40,
         pos: "left",
         time: 4
     }, {
@@ -296,6 +300,7 @@ this.tour = {
         },
         el: "winFilesViewer",
         desc: "Voila! Notice that the file is gone from your project.",
+        extraTop: -20,
         pos: "right",
         time: 4
     }]
