@@ -387,7 +387,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             }
             
             if (searchinfiles && searchinfiles.inited && winSearchInFiles.visible) {
-                searchinfiles.toggleDialog(-1, null, null, function(){
+                txtFind.focus();
+                txtFind.select();
+                searchinfiles.toggleDialog(-1, null, true, function(){
                     _self.toggleDialog(force, isReplace, noselect);
                 });
                 return;

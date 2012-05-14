@@ -303,6 +303,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
         }
         else if (winSearchInFiles.visible) {
+            
+
             if (txtSFFind.getValue())
                 _self.saveHistory(txtSFFind.getValue());
             
@@ -319,13 +321,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     timingFunction: "ease-in-out"
                 }, 0.2, function(){
                     winSearchInFiles.visible = true;
-                    winSearchInFiles.hide();
                     
+                    if(noselect && apf.window.activeElement) {
+                        var curEle = apf.window.activeElement;
+                        winSearchInFiles.hide();
+                        curEle.focus();
+                    } else {
+                        winSearchInFiles.hide();
+                    }
+
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-    
+                    
                     if (!noselect && editors.currentEditor)
                         editors.currentEditor.ceEditor.focus();
-                    
+                        
                     setTimeout(function(){
                         callback 
                             ? callback()
