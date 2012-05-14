@@ -67,11 +67,11 @@ function asyncForEach(array, fn, callback) {
 	array = array.slice(0); // Just to be sure
 	function processOne() {
 		var item = array.pop();
-		fn(item, function(result, err) {
+		fn(item, function next(result, err) {
 			if (array.length > 0) {
 				processOne();
 			}
-			else {
+			else if (callback) {
 				callback(result, err);
 			}
 		});
@@ -79,7 +79,7 @@ function asyncForEach(array, fn, callback) {
 	if (array.length > 0) {
 		processOne();
 	}
-	else {
+	else if (callback) {
 		callback();
 	}
 }
@@ -91,13 +91,24 @@ function asyncParForEach(array, fn, callback) {
 		callback();
 	}
 	for (var i = 0; i < arLength; i++) {
-		fn(array[i], function(result, err) {
+		fn(array[i], function next(result, err) {
 			completed++;
-			if (completed === arLength) {
+			if (completed === arLength && callback) {
 				callback(result, err);
 			}
 		});
 	}
+}
+
+function asyncForEachHandler(fn, callback) {
+    asyncForEach(this.handlers, function(handler, next) {
+        if (handler.handlesLanguage(_self.$language)) {
+            fn(handler, next);
+        }
+        else {
+            next();
+        }
+    }, callback);
 }
 
 (function() {
@@ -139,8 +150,10 @@ function asyncParForEach(array, fn, callback) {
             if (handler.handlesLanguage(_self.$language)) {
                 try {
                     handler.parse(_self.doc.getValue(), function(ast) {
-                        if(ast)
+                        if (ast) {
+                            require("treehugger/traverse").addParentPointers(ast);
                             _self.cachedAst = ast;
+                        }
                         next();
                     });
                 } catch(e) {
@@ -254,25 +267,38 @@ function asyncParForEach(array, fn, callback) {
     /**
      * Request the AST node on the current position
      */
-    this.inspect = function (event) {
+    this.inspect = function(event) {
         var _self = this;
         
         if (this.cachedAst) {
             // find the current node based on the ast and the position data
             var ast = this.cachedAst;
             var node = ast.findNode({ line: event.data.row, col: event.data.col });
+            var frameNode = ast.findNode({ line: event.data.frameRow, col: event.data.frameCol });
             
-            // find a handler that can build an expression for this language
-            var handler = this.handlers.filter(function (h) { 
-                return h.handlesLanguage(_self.$language) && h.buildExpression;
+            if (this.getDebuggerFrameScope(node) !== this.getDebuggerFrameScope(frameNode))
+                return;
+            
+            this.handlers.forEach(function (h) {
+                if (!h.handlesLanguage)
+                    return;
+                var expr = h.buildDebuggerExpression(node);
+                if (expr)
+                    _self.scheduleEmit("inspect", expr);
             });
-            
-            // then invoke it and build an expression out of this
-            if (handler && handler.length) {
-                var expression = handler[0].buildExpression(node);
-                this.scheduleEmit("inspect", expression);
-            }
         }
+    };
+    
+    this.getDebuggerFrameScope = function(node) {
+        var result;
+        this.handlers.forEach(function (h) {
+            if (!h.handlesLanguage)
+                return;
+            var scope = h.getDebuggerFrameScope(node);
+            if (scope)
+                result = scope;
+        });
+        return result;
     };
 
     this.onCursorMove = function(event) {

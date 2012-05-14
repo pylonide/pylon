@@ -141,7 +141,12 @@ module.exports = ext.register("ext/language/language", {
         });
 
         ide.addEventListener("liveinspect", function (e) {
-            worker.emit("inspect", { data: { row: e.row, col: e.col } });
+            worker.emit("inspect", { data: {
+                row: e.row,
+                col: e.col,
+                frameRow: e.frameRow,
+                frameCol: e.frameCol
+            } });
         });
 
         settings.model.addEventListener("update", this.updateSettings.bind(this));

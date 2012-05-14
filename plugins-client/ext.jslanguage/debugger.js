@@ -19,11 +19,19 @@ define(function(require, exports, module) {
     };
         
     // builds an expression for the v8 debugger based on a node
-    expressionBuilder.buildExpression = function(node) {
-        if (!node) return null;
+    expressionBuilder.buildDebuggerExpression = function(node) {
+        if (!node)
+            return null;
         
         return getExpressionValue(node);
     };
+    
+    expressionBuilder.getDebuggerFrameScope = function(node) {
+        if (!node)
+            return null;
+        
+        return getSurroundingFunction(node);
+    }
     
     /*** privates ***/
     
@@ -84,6 +92,18 @@ define(function(require, exports, module) {
                     result = "";
             }
         );
+        return result;
+    };
+    
+    var getSurroundingFunction = function(node) {
+        var result;
+        node.rewrite(
+            'Function(_, _, _)', function(b, node) {
+                result = node;
+            }
+        );
+        if (!result && node.parent)
+            return getSurroundingFunction(node.parent);
         return result;
     };
 

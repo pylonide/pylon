@@ -226,13 +226,8 @@ module.exports = (function () {
      * Determine whether the current file is the current frame where the 
      * debugger is in.
      */
-    var isCurrentFrame = function(){
-        var frame, page = tabEditors.getPage();
-        
-        if (self.dgStack)
-            frame = dgStack.selected;
-        else
-            frame = mdlDbgStack.queryNode("frame[@index=0]");
+    var isCurrentFrameFile = function(frame) {
+        var page = tabEditors.getPage();
         
         if (!frame)
             return false;
@@ -243,10 +238,6 @@ module.exports = (function () {
         // An improvement is to store the full path in the stack model.
         if (apf.getFilename(page.getModel().queryValue("@path")) != scriptName)
             return false;
-        
-        var line = frame.getAttribute("line");
-        var column = frame.getAttribute("column");
-        //@todo check if we are still in the current function
         
         return true;
     }
@@ -262,11 +253,21 @@ module.exports = (function () {
         
         if (!stRunning.active && stDebugProcessRunning.active) {
             activeTimeout = setTimeout(function () {
-                if (!isCurrentFrame())
+                var pos = ev.getDocumentPosition();
+                var frame;
+                if (self.dgStack)
+                    frame = dgStack.selected;
+                else
+                    frame = mdlDbgStack.queryNode("frame[@index=0]");
+                if (!isCurrentFrameFile(frame))
                     return;
                 
-                var pos = ev.getDocumentPosition();
-                ide.dispatchEvent("liveinspect", { row: pos.row, col: pos.column });
+                ide.dispatchEvent("liveinspect", {
+                    row: pos.row,
+                    col: pos.column,
+                    frameRow: frame.getAttribute("line"),
+                    frameCol: frame.getAttribute("column")
+                });
                 
                 // hide it, and set left / top so it gets positioned right when showing again
                 winLiveInspect.hide();

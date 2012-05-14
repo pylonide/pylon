@@ -136,6 +136,20 @@ module.exports = {
      */
     getVariablePositions: function(doc, fullAst, pos, currentNode, callback) {
         callback();
+    },
+    
+    /**
+     * Builds a cookie for the debugger that identifies the given expression.
+     */
+    buildDebuggerExpression: function(node) {
+        return null;
+    },
+    
+    /**
+     * Gets the tree node (e.g, a function) that scopes the given expression.
+     */
+    getDebuggerFrameScope: function(node) {
+        return null;
     }
 };
 
