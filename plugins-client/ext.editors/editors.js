@@ -1060,11 +1060,11 @@ module.exports = ext.register("ext/editors/editors", {
         var _self   = this;
 
         if (row !== undefined) {
-            var editor = _self.currentEditor.amlEditor;
             var jumpTo = function(){
                 var f;
                 setTimeout(f = function() {
                     // TODO move this to the editor
+                    var editor = _self.currentEditor.amlEditor;
                     editor.$editor.gotoLine(row, column, false);
                     if (text)
                         editor.$editor.find(text, null, false);
