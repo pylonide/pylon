@@ -38,7 +38,7 @@ var language = require("ext/language/language");
 
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
-var CHANGE_TIMEOUT = 1000;
+var CHANGE_TIMEOUT = 500;
 
 var isInfoActive = false;
 module.exports = ext.register("ext/revisions/revisions", {
