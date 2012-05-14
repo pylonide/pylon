@@ -8732,7 +8732,6 @@
     .editor_tab {
         padding : 0 0 0 0;
         margin : 0 auto;
-        overflow: hidden;
         position:relative;
     }
     
@@ -9353,7 +9352,6 @@
         /*background-color: #e8e8e8;*/
         /*border-bottom: 1px solid #8C8C8C;*/
         padding-top:6px;
-        overflow: hidden;
         clear: both;
     }
 
@@ -9451,7 +9449,7 @@
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -57px;
         background-repeat   : repeat-x;
-        box-shadow          : 0 0px 0 1px rgba(0,0,0,0.7);
+        /*box-shadow          : 0 0px 0 1px rgba(0,0,0,0.7);*/
         color               : #000;
     }
     .editor_tab .curbtn .tab_middle:before {
