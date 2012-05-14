@@ -84,27 +84,35 @@
                       icon       = "debugger/file_obj.gif" />
                 </a:bar>
             </a:toolbar>
-            <a:codeeditor id="txtCode" 
-              flex              = "1"
-              disabled          = "{stRunning.active || !stDebugProcessRunning.active}"
-              onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
-              realtime          = "true"
-              border            = "0" 
-              model             = "{require('core/settings').model}" 
-              value             = "[auto/console/input]"
-              softtabs          = "[editors/code/@softtabs]"
-              tabsize           = "[editors/code/@tabsize]"
-              scrollspeed       = "[editors/code/@scrollspeed]"
-              theme             = "[editors/code/@theme]"
-              selectstyle       = "[editors/code/@selectstyle]"
-              activeline        = "[editors/code/@activeline]"
-              showinvisibles    = "[editors/code/@showinvisibles]"
-              animatedscroll    = "[editors/code/@animatedscroll]"
-              fontsize          = "[editors/code/@fontsize]"
-              showprintmargin   = "false"
-              highlightselectedword = "[editors/code/@highlightselectedword]"
-              printmargincolumn = "0"
-              anchors           = "29 0 0 0" />
+            <a:vbox anchors="29 0 0 0" flex="1" splitters="true">
+                <a:codeeditor id="txtCode" 
+                  flex              = "1"
+                  disabled          = "{stRunning.active || !stDebugProcessRunning.active}"
+                  onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
+                  realtime          = "true"
+                  border            = "0" 
+                  model             = "{require('core/settings').model}" 
+                  value             = "[auto/console/input]"
+                  softtabs          = "[editors/code/@softtabs]"
+                  tabsize           = "[editors/code/@tabsize]"
+                  scrollspeed       = "[editors/code/@scrollspeed]"
+                  theme             = "[editors/code/@theme]"
+                  selectstyle       = "[editors/code/@selectstyle]"
+                  activeline        = "[editors/code/@activeline]"
+                  showinvisibles    = "[editors/code/@showinvisibles]"
+                  animatedscroll    = "[editors/code/@animatedscroll]"
+                  fontsize          = "[editors/code/@fontsize]"
+                  showprintmargin   = "false"
+                  highlightselectedword = "[editors/code/@highlightselectedword]"
+                  printmargincolumn = "0" />
+                <a:text id="txtInteractiveOutput"
+                  class      = "interactive_output"
+                  flex       = "1"
+                  scrolldown = "true"
+                  focussable = "true"
+                  textselect = "true" 
+                  scrollbar  = "sbShared 20 2 2" />
+            </a:vbox>
         </a:page>
         <a:page id="dbgVariable" caption="Variables" render="runtime">
             <a:datagrid id="dgVars"
