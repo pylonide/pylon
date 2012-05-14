@@ -52,7 +52,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     skin: skin,
     
     isAutoSaveEnabled: false,
-
+    
     /**
      * Revisions#rawRevisions -> Object
      * Holds the cached revisions and some meta-data about them so Cloud9 can
@@ -103,7 +103,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     hook: function() {
         var self = this;
-
         commands.addCommand({
             name: "revisionpanel",
             hint: "File Revision History...",
@@ -464,7 +463,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         rev.revisions = revObj.allRevisions;
         // To not have to extract and sort timestamps from allRevisions
         rev.timestamps = revObj.allTimestamps;
-        this.worker.postMessage(rev);
+        var self = this;
+        setTimeout(function() {
+            self.worker.postMessage(rev);
+        });
     },
 
     onRevisionSaved: function(data) {
@@ -694,6 +696,13 @@ module.exports = ext.register("ext/revisions/revisions", {
                     group: group,
                     type: message.nextAction
                 };
+                
+                var self = this;
+                var postMsg = function(d) {
+                    setTimeout(function() {
+                        self.worker.postMessage(d);
+                    })
+                };
 
                 var len = revObj.groupedRevisionIds.length;
                 if (revObj.useCompactList && len > 0) {
@@ -714,14 +723,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                     if (keys.length > 1) {
                         data.groupKeys = keys;
                         data.data = this.getRevision(keys[0]);
-                        this.worker.postMessage(data);
+                        postMsg(data);
                         break;
                     }
                 }
 
                 group[message.id] = this.getRevision(message.id);
                 data.groupKeys = [parseInt(message.id, 10)];
-                this.worker.postMessage(data);
+                postMsg(data);
                 break;
 
             case "getRealFileContents":
@@ -1254,7 +1263,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!Util.pageIsCode(page)) {
             return;
         }
-
+        
         var docPath = Util.getDocPath(page);
         var contributors = this.$getEditingUsers(docPath);
         if (contributors.length === 0 && this.defaultUser.email) {
@@ -1289,7 +1298,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                 data.revisions = revObj.allRevisions;
                 // To not have to extract and sort timestamps from allRevisions
                 data.timestamps = revObj.allTimestamps;
-                this.worker.postMessage(data);
+                var self = this;
+                setTimeout(function() {
+                    self.worker.postMessage(data);
+                })
                 return;
             }
         }
