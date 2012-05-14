@@ -420,6 +420,7 @@ module.exports = ext.register("ext/console/console", {
         if (!e.message.type)
             return;
 
+        var _self = this;
         var message = e.message;
         //console.log(message.type, message);
         var extra = message.extra;
@@ -435,6 +436,9 @@ module.exports = ext.register("ext/console/console", {
 
         switch(message.type) {
             case "node-start":
+                var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
+                if (apf.isTrue(clearOnRun))
+                    txtOutput.clear();
                 this.createNodeProcessLog(message.pid);
                 return;
             case "node-data":
@@ -678,6 +682,8 @@ module.exports = ext.register("ext/console/console", {
         ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/console/@autoshow"))
                 e.model.setQueryValue("auto/console/@autoshow", true);
+            if (!e.model.queryNode("auto/console/@clearonrun"))
+                e.model.setQueryValue("auto/console/@clearonrun", true);
 
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
 
