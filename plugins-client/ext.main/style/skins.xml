@@ -224,7 +224,7 @@
         	width: 10px;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-activity .light {
-            background : url(images/c9-no-repeat.png) no-repeat 100px 100px; /* nothing */
+            background : url(images/c9-no-repeat.png) no-repeat -102px -19px; /* nothing */
             height: 10px;
             left: 0;
             position: absolute;
