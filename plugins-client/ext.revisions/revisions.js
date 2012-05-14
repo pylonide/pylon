@@ -38,7 +38,7 @@ var language = require("ext/language/language");
 
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
-var CHANGE_TIMEOUT = 5000;
+var CHANGE_TIMEOUT = 500;
 
 var isInfoActive = false;
 module.exports = ext.register("ext/revisions/revisions", {
@@ -201,7 +201,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = page || tabEditors.getPage();
         if (page) {
-            var hasChanged = Util.pageHasChanged(tabEditors.getPage());
+            var hasChanged = Util.pageHasChanged(page);
             if (Util.isAutoSaveEnabled() && hasChanged) {
                 apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
                 apf.setStyleClass(saveStatus, "saving", ["saved"]);
@@ -228,7 +228,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.nodes.push(this.panel = new apf.bar({
                 id: "revisionsPanel",
                 visible: false,
-                top: 2,
+                top: 6,
                 bottom: 0,
                 right: 0,
                 width: BAR_WIDTH,
@@ -513,6 +513,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    isSaving : false,
     onDocChange: function(e, doc) {
         if (e.data && e.data.delta) {
             var suffix = e.data.delta.suffix;
@@ -522,14 +523,17 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        var page = doc.$page;
-        if (!this.isNewPage(page)) {
+        //@todo this is all ery slow.... happens on every keystroke...
+        var page = doc.$page, self = this;
+        if (page && !this.isNewPage(page) 
+          && Util.isAutoSaveEnabled()) {
+            setTimeout(function(){
+                self.setSaveButtonCaption();
+            });
+            
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
-                if (page && Util.isAutoSaveEnabled()) {
-                    self.setSaveButtonCaption();
-                    self.save(page);
-                }
+                self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
     },

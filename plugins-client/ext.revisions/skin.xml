@@ -45,7 +45,7 @@
                 .revisionsBar .topbar .btn {
                     cursor: pointer;
                     position: absolute;
-                    right: 5px;
+                    right: -5px;
                     top: 0;
                 }
                 .revisionsBar .topbar .btn .left,
