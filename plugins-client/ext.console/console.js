@@ -706,9 +706,8 @@ module.exports = ext.register("ext/console/console", {
                 }, 200);
             }
             else {
-                if (tabConsole.visible) {
+                if (self.tabConsole && tabConsole.visible)
                     _self.showOutput();
-                }
             }
         });
     },
