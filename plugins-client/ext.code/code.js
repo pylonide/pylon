@@ -704,9 +704,9 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("View/Wrap Lines", new apf.item({
                 type    : "check",
-                checked : "[{tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
+                checked : "[{tabEditors.activepage && tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
                 isAvailable : function(editor){
-                    return editor && editor.ceEditor && tabEditors.activepage;
+                    return editor && editor.ceEditor;
                 }
             }), 500000),
 
