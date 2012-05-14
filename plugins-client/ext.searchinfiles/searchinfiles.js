@@ -122,59 +122,26 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             trFiles.addEventListener("afterselect", _self.setSearchSelection);
         });
 
-        txtSFFind.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                _self.execFind();
-                return false;
-            }
-            
-            if (_self.findKeyboardHandler(e, "searchfiles", this, chkSFRegEx) === false)
-                return false;
+        
+        txtSFFind.ace.session.on("change", function() {
+            _self.checkRegExp(txtSFFind, tooltipSearchInFiles, winSearchInFiles)
+        });
+        this.addSearchKeyboardHandler(txtSFFind, "searchfiles");
                 
-            if (chkSFRegEx.checked
-              && _self.evaluateRegExp(txtSFFind, tooltipSearchInFiles, 
-              winSearchInFiles, e.htmlEvent) === false) {
-                return;
-            }
-        });
-        txtSFFind.addEventListener("keyup", function(e) {
-            if (e.keyCode != 8 && (e.ctrlKey || e.shiftKey || e.metaKey 
-              || e.altKey || !apf.isCharacter(e.keyCode)))
-                return;
-            
-            if (chkSFRegEx.checked) {
-                _self.evaluateRegExp(
-                    txtSFFind, tooltipSearchInFiles, winSearchInFiles);
-            }
+        var kb = this.addSearchKeyboardHandler(txtSFReplace, "replacefiles");
+        kb.bindKeys({
+            "Return|Shift-Return": function(){ _self.replace(); }
         });
         
-        txtSFReplace.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13 && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                _self.replace();
-                return false;
-            }
-            
-            if (_self.findKeyboardHandler(e, "replacefiles", this, chkSFRegEx) === false)
-                return false;
-        });
-        
-        txtSFPatterns.addEventListener("keydown", function(e){
-            if (e.keyCode == 13)
-                return false;
-            
-            if (_self.findKeyboardHandler(e, "searchwhere", this) === false)
-                return false;
+        var kb = this.addSearchKeyboardHandler(txtSFPatterns, "searchwhere");
+        kb.bindKeys({
+            "Return|Shift-Return": function(){ _self.replace(); }
         });
         
         var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
         
         chkSFRegEx.addEventListener("prop.value", function(e){
-            if (apf.isTrue(e.value)) {
-                if (txtSFFind.getValue())
-                    _self.updateInputRegExp(txtSFFind);
-            }
-            else
-                _self.removeInputRegExp(txtSFFind);
+            _self.$setRegexpMode(txtSFFind, apf.isTrue(e.value));
         });
         
         var cbs = winSearchInFiles.getElementsByTagNameNS(apf.ns.aml, "checkbox");
@@ -279,11 +246,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 if (value) {
                     txtFind.setValue(value);
                     
-                    delete txtFind.$undo;
-                    delete txtFind.$redo;
-                    
-                    if (chkRegEx.checked)
-                        this.updateInputRegExp(txtSFFind);
+                    this.$setRegexpMode(txtSFFind, chkRegEx.checked);
                 }
             }
 

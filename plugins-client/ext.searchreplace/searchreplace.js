@@ -146,18 +146,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     init : function(amlNode){
         var _self = this;
         
-        ide.addEventListener("settings.load", function(e){
-            e.ext.setDefaults("editors/code/search", [
-                ["regex", "false"],
-                ["matchcase", "false"],
-                ["wholeword", "false"],
-                ["backwards", "false"],
-                ["wraparound", "true"],
-                ["highlightmatches", "true"],
-                ["preservecase", "false"]
-            ]);
-        });
-        
         var isAvailable = commands.commands["findnext"].isAvailable;
         commands.commands["findnext"].isAvailable =
         commands.commands["findprevious"].isAvailable = function(editor){
@@ -187,69 +175,18 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             mainRow.insertBefore(winSearchReplace, 
                 self.winDbgConsole && winDbgConsole.previousSibling || null);
         }
-        
-        txtFind.addEventListener("clear", function() {
-            _self.execFind();
-        })
-
-        txtFind.addEventListener("keydown", function(e) {
-            if (e.keyCode == 13 && !e.altKey && !e.ctrlKey && !e.metaKey) {
-                _self.execFind(false, !!e.shiftKey, true, true);
-                return false;
-            } else if (e.keyCode == 13) {
-                txtFind.ace.insert("\n");
-                return false;
-            }
-
-            var ace = _self.$getAce();
-            var isTooLong = ace.getSession().getDocument().getLength() > MAX_LINES;
-            
-            if (_self.findKeyboardHandler(e, "search", this, chkRegEx) === false) {
-                apf.layout.forceResize();
-                if (!isTooLong)
-                    _self.updateCounter(null, true);
-                return false;
-            }
-            
-            if (chkRegEx.checked
-              && _self.evaluateRegExp(txtFind, tooltipSearchReplace, 
-              winSearchReplace, e.htmlEvent) === false) {
-                if (!isTooLong)
-                    _self.updateCounter(null, true);
-                return;
-            }
-
-            if (isTooLong)
-                return;
-
-            if (e.keyCode == 8 || !e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
-                clearTimeout(this.$timer);
-                this.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
-                    _self.execFind();
-                    apf.layout.forceResize();
-                }, 20);
-            }
-
-            return;
-        }, true);
-        
+               
         hboxReplace.addEventListener("afterrender", function(){
-            txtReplace.addEventListener("keydown", function(e) {
-                if (e.keyCode == 13 && !e.altKey && !e.ctrlKey && !e.metaKey) {
-                    _self.replace();
-                    return false;
-                }
-                
-                if (_self.findKeyboardHandler(e, "replace", this, chkRegEx) === false) {
-                    apf.layout.forceResize();
-                    return false;
-                }
+            var kb = _self.addSearchKeyboardHandler(txtReplace, "replace");
+            kb.bindKeys({
+                "Return": function(codebox) { _self.replace(); },
+                "Shift-Return": function(codebox) { _self.replace(false); }
             });
             
             _self.decorateCheckboxes(this);
         });
         
-        var blur = function(e){
+        var blur = function(e) {
             if (self.hboxReplace && !hboxReplace.visible 
               && self.winSearchReplace && winSearchReplace.visible 
               && !apf.isChildOf(winSearchReplace, e.toElement))
@@ -262,15 +199,22 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         document.body.appendChild(tooltipSearchReplace.$ext);
         
         chkRegEx.addEventListener("prop.value", function(e){
-            if (apf.isTrue(e.value))
-                _self.updateInputRegExp(txtFind);
-            else
-                _self.removeInputRegExp(txtFind);
+            _self.$setRegexpMode(txtFind, apf.isTrue(e.value));
         });
         
         this.decorateCheckboxes(hboxFind);
+
+        this.addSearchKeyboardHandler(txtFind, "search");        
+        txtFind.ace.session.on("change", function() {
+            clearTimeout(_self.$timer);
+            _self.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
+                _self.execFind();
+                apf.layout.forceResize();
+                _self.updateCounter(null, true);
+            }, 20);
+        });
     },
-    
+
     decorateCheckboxes : function(parent){
         var _self = this;
         
@@ -390,15 +334,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         
         tooltipSearchReplace.$ext.style.display = "none";
 
-        if (!this.txtFindInitialized && typeof txtFind != "undefined") {
-            this.initSingleLineEditor(txtFind);
-            this.txtFindInitialized = true;
-        }
-        if (!this.txtReplaceInitialized && typeof txtReplace != "undefined") {
-            this.initSingleLineEditor(txtReplace);
-            this.txtReplaceInitialized = true;
-        }
-
         if (!force && !winSearchReplace.visible || force > 0 || stateChange) {
             if (winSearchReplace.visible && !stateChange) {
                 txtFind.focus();
@@ -414,8 +349,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             }
             
             winSearchReplace.$ext.style.overflow = "hidden";
-            winSearchReplace.$ext.style.height 
-                = winSearchReplace.$ext.offsetHeight + "px";
+            winSearchReplace.$ext.style.height = winSearchReplace.$ext.offsetHeight + "px";
             
             if (stateChange && isReplace || !wasVisible)
                 this.setupDialog(isReplace);
@@ -425,25 +359,21 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             this.position = -1;
 
             if (!wasVisible) {
-                var sel   = editor.getSelection();
-                var doc   = editor.getDocument();
-                var range = sel.getRange();
-                var value = doc.getTextRange(range);
-    
-                if (value) {
+                var ace = this.$getAce()
+                var value = ace.getCopyText();
+                if (value)
                     txtFind.setValue(value);
-                    if (chkRegEx.checked)
-                        this.updateInputRegExp(txtFind);
-                }
+                this.startPos = {
+                    range: ace.getSelectionRange(),
+                    scrollTop: ace.session.getScrollTop(),
+                    scrollLeft: ace.session.getScrollLeft()
+                };
             }
 
             winSearchReplace.show();
             txtFind.focus();
             txtFind.select();
             
-            winSearchReplace.$ext.scrollTop = 0;
-            document.body.scrollTop = 0;
-
             //Animate
             var toHeight = winSearchReplace.$ext.scrollHeight;
             if (stateChange && !isReplace && wasVisible)
@@ -500,6 +430,16 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         }
 
         return false;
+    },
+    
+    restore : function() {
+        var editor = this.$getAce();
+        editor.focus();
+        if (!this.startPos)
+            return;
+        editor.selection.setSelectionRange(this.startPos.range);
+        editor.session.setScrollTop(this.startPos.scrollTop);
+        editor.session.setScrollLeft(this.startPos.scrollLeft);
     },
 
     onHide : function() {
@@ -601,7 +541,10 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var ace = this.$getAce();
         if (!ace)
             return;
-            
+
+        if (this.$timer)
+            this.$timer = clearTimeout(this.$timer);
+
         var searchTxt = txtFind.getValue();
         if (searchTxt.length < 2 
           && ace.getSession().getLength() > MAX_LINES_SOFT)
@@ -622,7 +565,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             this.$crtSearch = searchTxt;
 
         if (options.regExp
-          && this.evaluateRegExp(txtFind, tooltipSearchReplace, winSearchReplace) === false)
+          && this.checkRegExp(txtFind, tooltipSearchReplace, winSearchReplace) === false)
             return;
         
         var range = ace.selection.getRange();
@@ -668,7 +611,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
         if (close) {
             winSearchReplace.hide();
-            editors.currentEditor.amlEditor.focus();
+            ace.focus();
         }
 
         this.updateCounter(options.backwards);

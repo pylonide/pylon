@@ -11,54 +11,59 @@ var settings = require("core/settings");
 var prefix   = "search/"
 
 module.exports = {
-    findKeyboardHandler : function(e, listName, txtFind, chkRegEx){
-        switch (e.keyCode){
-            case 27: //ESCAPE
-                this.toggleDialog(-1);
+    addSearchKeyboardHandler: function(txtFind, type) {
+        var _self = this;
+        var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
+        
+        txtFind.ace.session.listName = type;
+        var iSearchHandler = new HashHandler();
+        iSearchHandler.bindKeys({
+            "Up": function(codebox) {
+                if (codebox.selection.lead.row != 0)
+                    return false;
+                _self.navigateList("prev", codebox)
+            },
+            "Down": function(codebox) {
+                if (codebox.selection.lead.row != codebox.session.getLength() - 1)
+                    return false;
+                _self.navigateList("next", codebox)
+            },
+            "Ctrl-Home":  function(codebox) { _self.navigateList("first", codebox) },
+            "Ctrl-End": function(codebox) {    _self.navigateList("last", codebox)    },
+            "Esc": function() { _self.toggleDialog(-1); },
+            "Shift-Esc|Ctrl-Esc": function() { _self.restore() },
+            "Ctrl-Return|Alt-Return": function(codebox) { codebox.insert("\n"); },
+            "Return": function(codebox) {
+                _self.saveHistory(codebox.session.getValue());
+                _self.execFind(false, false, true, true);
+            },
+            "Shift-Return": function(codebox) {
+                _self.saveHistory(codebox.session.getValue());
+                _self.execFind(false, true, true, true);
+            }
+        });
 
-                if (e.htmlEvent)
-                    apf.stopEvent(e.htmlEvent);
-                else if (e.stop)
-                    e.stop();
-                return false;
-            case 38: //UP
-                if (!this.hasCursorOnFirstLine(txtFind))
-                    return;
-                this.navigateList("prev", listName, txtFind, chkRegEx);
-                return false;
-            case 40: //DOWN
-                if (!this.hasCursorOnLastLine(txtFind))
-                    return;
-                this.navigateList("next", listName, txtFind, chkRegEx);
-                return false;
-            case 36: //HOME
-                if (!e.ctrlKey)
-                    return;
-                this.navigateList("first", listName, txtFind, chkRegEx);
-                return false;
-            case 35: //END
-                if (!e.ctrlKey)
-                    return;
-                this.navigateList("last", listName, txtFind, chkRegEx);
-                return false;
-        }
+        iSearchHandler.handleKeyboard = function(data, hashId, keyString, keyCode) {
+            if (keyString == "\x00")
+                return;
+            var command = this.findKeyCommand(hashId, keyString)
+            var editor = data.editor;
+            if (!command)
+                return;
+
+            var success = command.exec(editor);        
+            if (success != false)
+                return {command: "null"};
+        };
+        txtFind.ace.setKeyboardHandler(iSearchHandler);        
+        return iSearchHandler;
     },
-    
-    hasCursorOnFirstLine : function(txtFind){
-        var ace = txtFind.ace;
-        return ace.getCursorPosition().row == 0;
-    },
-    
-    hasCursorOnLastLine : function(txtFind){
-        var ace = txtFind.ace;
-        return ace.getCursorPosition().row != ace.session.getLength() - 1;
-    },
-    
-    navigateList : function(type, listName, txtFind, chkRegEx){
+    navigateList : function(type, codebox){
+        var listName = codebox.session.listName;
         var model = settings.model;
         var lines = JSON.parse(model.queryValue(prefix + listName + "/text()") || "[]");
         
-        var value = txtFind.getValue();
+        var value = codebox.getValue();
         if (value && (this.position == -1 || lines[this.position] != value)) {
             lines = this.saveHistory(value, listName);
             this.position = 0;
@@ -67,7 +72,7 @@ module.exports = {
         var next;
         if (type == "prev") {
             if (this.position <= 0) {
-                txtFind.setValue("");
+                codebox.setValue("");
                 this.position = -1;
                 return;
             }
@@ -81,8 +86,7 @@ module.exports = {
             next = 0;
 
         if (lines[next] && next != this.position) {
-            txtFind.setValue(lines[next]);
-            txtFind.select();
+            codebox.setValue(lines[next]);
             this.position = next;
         }
     },
@@ -113,7 +117,7 @@ module.exports = {
         return json;
     },
     
-    evaluateRegExp : function(txtFind, tooltip, win, e){
+    checkRegExp : function(txtFind, tooltip, win){
         var searchTxt = txtFind.getValue();
         try {
             new RegExp(searchTxt);
@@ -137,115 +141,15 @@ module.exports = {
         
         return true;
     },
-    
-    initSingleLineEditor: function(apfEl) {
-        // horrible hack
-        apfEl.$input.contentEditable=false;
-        apfEl.$input.innerHTML = "";
-        var ace = this.$createSingleLineAceEditor(apfEl.$input);
-        apfEl.$input.parentNode.style.cssText =
-            ["-webkit-", "-khtml-", "-moz-", "-o-", ""].join("user-select: text;");
-        apfEl.$input.style.textShadow = "none";
         
-        // why are those in ace?
-        ace.commands.removeCommands(["find", "replace", "replaceall", "gotoline"]);
+    $setRegexpMode : function(txtFind, isRegexp) {
+        var tokenizer = {};
+        tokenizer.getLineTokens = isRegexp
+            ? function(val) { return {tokens: module.exports.parseRegExp(val), state: ""}; }
+            : function(val) { return {tokens: [{value: val, type: "text"}], state: ""}; };
         
-        apfEl.ace = ace;
-        ace.renderer.scroller.style.backgroundColor = "transparent";
-        apfEl.ace = ace;
-        apfEl.focus = apfEl.getValue = function() {
-            return ace.focus();
-        };
-        apfEl.getValue = function() {
-            return ace.session.getValue();
-        };
-        apfEl.setValue = function(val) {
-            return ace.session.doc.setValue(val);
-        };
-        apfEl.select = function() {
-            return ace.selectAll();
-        };
-    },
-    $createSingleLineAceEditor: function(el) {
-        var Editor = require("ace/editor").Editor;
-        var UndoManager = require("ace/undomanager").UndoManager;
-        var Renderer = require("ace/virtual_renderer").VirtualRenderer;
-        var MultiSelect = require("ace/multi_select").MultiSelect;
+        txtFind.ace.session.bgTokenizer.tokenizer = tokenizer;
         
-        var renderer = new Renderer(el);
-        el.style.overflow = "hidden";
-        renderer.scrollBar.element.style.display = "none";
-        renderer.scrollBar.width = 0;
-        renderer.content.style.height = "auto";
-
-        renderer.screenToTextCoordinates = function(x, y) {
-            var pos = this.pixelToScreenCoordinates(x, y);
-            return this.session.screenToDocumentPosition(
-                Math.min(this.session.getScreenLength() - 1, Math.max(pos.row, 0)),
-                Math.max(pos.column, 0)
-            );
-        };
-        // todo size change event
-        renderer.$computeLayerConfig = function() {
-            var longestLine = this.$getLongestLine();
-            var firstRow = 0;
-            var lastRow = this.session.getLength();
-            var height = this.session.getScreenLength() * this.lineHeight;
-
-            this.scrollTop = 0;
-            var config = this.layerConfig;
-            config.width = longestLine;
-            config.padding = this.$padding;
-            config.firstRow = 0;
-            config.firstRowScreen = 0;
-            config.lastRow = lastRow;
-            config.lineHeight = this.lineHeight;
-            config.characterWidth = this.characterWidth;
-            config.minHeight = height;
-            config.maxHeight = height;
-            config.offset = 0;
-            config.height = height;
-
-            this.$gutterLayer.element.style.marginTop = 0 + "px";
-            this.content.style.marginTop = 0 + "px";
-            this.content.style.width = longestLine + 2 * this.$padding + "px";
-            this.content.style.height = height + "px";
-            this.scroller.style.height = height + "px";
-            this.container.style.height = height + "px";
-        };
-        renderer.isScrollableBy=function(){return false};
-
-        var editor = new Editor(renderer);
-        new MultiSelect(editor);
-        editor.session.setUndoManager(new UndoManager());
-
-        editor.setHighlightActiveLine(false);
-        editor.setShowPrintMargin(false);
-        editor.renderer.setShowGutter(false);
-        editor.renderer.setHighlightGutterLine(false);
-        return editor;
-    },
-    
-    removeInputRegExp : function(txtFind){
-        if (!txtFind.ace.regexp)
-            return;
-        txtFind.ace.regexp = false;
-        txtFind.ace.session.bgTokenizer.tokenizer = {
-            getLineTokens: function(val) {
-                return {tokens: [{value: val, type: "text"}], state: ""}
-            }
-        }
-    },
-    
-    updateInputRegExp : function(txtFind, e) {
-        if (txtFind.ace.regexp)
-            return;
-        txtFind.ace.regexp = true;
-        txtFind.ace.session.bgTokenizer.tokenizer = {
-            getLineTokens: function(val) {
-                return {tokens: module.exports.parseRegExp(val), state: ""}
-            }
-        }
         if (this.colorsAdded)
             return;
         this.colorsAdded = true;
