@@ -149,7 +149,9 @@ module.exports = {
             : function(val) { return {tokens: [{value: val, type: "text"}], state: ""}; };
         
         txtFind.ace.session.bgTokenizer.tokenizer = tokenizer;
-        
+        txtFind.ace.session.bgTokenizer.lines = [];
+        txtFind.ace.renderer.updateFull();
+
         if (this.colorsAdded)
             return;
         this.colorsAdded = true;
