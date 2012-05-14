@@ -160,6 +160,7 @@ var config = {
             "./cloud9.run.jvm",
             "./cloud9.run.jvm-debug",
             "./cloud9.run.npm",
+            "./cloud9.run.npmnode",
             "./cloud9.log",
             "./cloud9.ide.auth",
             "./cloud9.ide.blame",
@@ -170,6 +171,7 @@ var config = {
             "./cloud9.ide.run-node",
             "./cloud9.ide.run-jvm",
             "./cloud9.ide.jvm-features",
+            "./cloud9.ide.run-npm-module",
             "./cloud9.ide.run-python",
             "./cloud9.ide.revisions",
             {

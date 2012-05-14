@@ -4,47 +4,47 @@
             <a:hbox padding="3" edge="4 3 5">
                 <div class="expand-panel-bg"></div>
                 <a:button id="btnResume" tooltip="Resume"
-                  icon     = "play.png"
-                  command  = "resume"
-                  skin     = "c9-sidepanelsbutton"
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                icon     = "play.png"
+                command  = "resume"
+                skin     = "c9-sidepanelsbutton"
+                disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button  tooltip="Suspend"
-                  skin     = "c9-sidepanelsbutton"
-                  icon     = "pause.png"
-                  onclick  = "dbg.suspend();"
-                  disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
+                skin     = "c9-sidepanelsbutton"
+                icon     = "pause.png"
+                onclick  = "dbg.suspend();"
+                disabled = "{!stDebugProcessRunning.active or !stRunning.active}"/>
                 <a:divider skin="c9-divider" />
                 <a:button id="btnStepOver" tooltip="Step Over"
-                  icon     = "step.png"
-                  skin     = "c9-sidepanelsbutton"
-                  command  = "stepover"
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                icon     = "step.png"
+                skin     = "c9-sidepanelsbutton"
+                command  = "stepover"
+                disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button id="btnStepInto" tooltip="Step Into"
-                  icon     = "stepinto.png" 
-                  skin     = "c9-sidepanelsbutton"
-                  command  = "stepinto" 
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                icon     = "stepinto.png" 
+                skin     = "c9-sidepanelsbutton"
+                command  = "stepinto" 
+                disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
                 <a:button id="btnStepOut" tooltip="Step Out"
-                  icon     = "stepback.png" 
-                  skin     = "c9-sidepanelsbutton"
-                  command  = "stepout"
-                  disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
+                icon     = "stepback.png" 
+                skin     = "c9-sidepanelsbutton"
+                command  = "stepout"
+                disabled = "{!stDebugProcessRunning.active or stRunning.active}" />
             </a:hbox>
         </a:page>
     </a:tab>
     <a:tab id="tabDebug" skin="docktab" visible="false" activepage="0" buttons="close">
         <a:page id="dbgCallStack" caption="Call Stack" render="runtime" prerender="true">
             <a:datagrid
-              id         = "dgStack"
-              anchors    = "0 0 0 0"
-              border     = "0"
-              options    = "size|move"
-              caching    = "false"
-              model      = "mdlDbgStack"
-              class      = "noscrollbar"
-              scrollbar  = "sbShared 20 2 2"
-              disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
-              selected   = "{dbg.activeframe}">
+                id         = "dgStack"
+                anchors    = "0 0 0 0"
+                border     = "0"
+                options    = "size|move"
+                caching    = "false"
+                model      = "mdlDbgStack"
+                class      = "noscrollbar"
+                scrollbar  = "sbShared 20 2 2"
+                disabled   = "{!stDebugProcessRunning.active || stRunning.active}"
+                selected   = "{dbg.activeframe}">
                 <a:actions />
                 <a:each match="[frame]">
                     <a:column caption="Function" value="[@name]" width="60%" icon2="debugger/stckframe_obj.gif" />
@@ -55,72 +55,82 @@
             </a:datagrid>
         </a:page>
         <a:page id="dbInteractive" caption="Interactive" render="runtime">
-            <a:vbox anchors="0 0 0 0">
-                <a:toolbar>
-                    <a:bar border="0 0 1 0">
-                        <a:button
-                          disabled = "{!stDebugProcessRunning.active or stRunning.active}"
-                          caption  = "Execute" 
-                          tooltip  = "Ctrl+Enter"
-                          onclick  = "
-                            require('ext/debugger/inspector').consoleTextHandler({keyCode:13,ctrlKey:true})
-                          " />
-                        <a:button
-                          disabled2 = "{!txtCode.value.trim()}"
-                          caption  = "Clear" 
-                          onclick  = "
-                            txtCode.clear();
-                          " />
-                        <a:divider skin2="c9-divider"/>
-                        <a:dropdown id="lstScripts"
-                          skin2       = "black_dropdown"
-                          margin     = "3 0 0 4"
-                          width      = "120"
-                          maxitems   = "10"
-                          model      = "mdlDbgSources"
-                          disabled   = "{!stDebugProcessRunning.active &amp;&amp; 1}" 
-                          each       = "[file]"
-                          caption    = "[@text]"
-                          autoselect = "false"
-                          icon       = "debugger/file_obj.gif" />
-                    </a:bar>
-                </a:toolbar>
+            <a:toolbar>
+                <a:bar border="0 0 1 0">
+                    <a:button
+                    disabled = "{!stDebugProcessRunning.active || stRunning.active}"
+                    caption  = "Execute" 
+                    tooltip  = "Ctrl+Enter"
+                    onclick  = "
+                    require('ext/debugger/inspector').consoleTextHandler({keyCode:13,ctrlKey:true})
+                    " />
+                    <a:button
+                    disabled2 = "{!txtCode.value.trim()}"
+                    caption  = "Clear" 
+                    onclick  = "
+                    txtCode.clear();
+                    " />
+                    <a:divider skin2="c9-divider"/>
+                    <a:dropdown id="lstScripts"
+                    skin2       = "black_dropdown"
+                    margin     = "3 0 0 4"
+                    width      = "120"
+                    maxitems   = "10"
+                    model      = "mdlDbgSources"
+                    disabled   = "{!stDebugProcessRunning.active &amp;&amp; 1}" 
+                    each       = "[file]"
+                    caption    = "[@text]"
+                    autoselect = "false"
+                    icon       = "debugger/file_obj.gif" />
+                </a:bar>
+            </a:toolbar>
+            <a:vbox anchors="29 0 0 0" flex="1" splitters="true">
                 <a:codeeditor id="txtCode" 
-                  flex      = "1"
-                  disabled  = "{stRunning.active or !stDebugProcessRunning.active}"
-                  onkeydown = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
-                  realtime  = "true"
-                  border    = "0" 
-                  model     = "{require('ext/settings/settings').model}" 
-                  value     = "[auto/console/input]"
-                  softtabs          = "[{require('ext/settings/settings').model}::editors/code/@softtabs]"
-                  tabsize           = "[{require('ext/settings/settings').model}::editors/code/@tabsize]"
-                  scrollspeed       = "[{require('ext/settings/settings').model}::editors/code/@scrollspeed]"
-                  theme             = "[{require('ext/settings/settings').model}::editors/code/@theme]"
-                  selectstyle       = "[{require('ext/settings/settings').model}::editors/code/@selectstyle]"
-                  activeline        = "[{require('ext/settings/settings').model}::editors/code/@activeline]"
-                  showinvisibles    = "[{require('ext/settings/settings').model}::editors/code/@showinvisibles]"
-                  showprintmargin   = "false"
-                  printmargincolumn = "0" />
+                flex              = "1"
+                disabled          = "{stRunning.active || !stDebugProcessRunning.active}"
+                onkeydown         = "return require('ext/debugger/inspector').consoleTextHandler(event)" 
+                realtime          = "true"
+                border            = "0" 
+                model             = "{require('core/settings').model}" 
+                value             = "[auto/console/input]"
+                softtabs          = "[editors/code/@softtabs]"
+                tabsize           = "[editors/code/@tabsize]"
+                scrollspeed       = "[editors/code/@scrollspeed]"
+                theme             = "[editors/code/@theme]"
+                selectstyle       = "[editors/code/@selectstyle]"
+                activeline        = "[editors/code/@activeline]"
+                showinvisibles    = "[editors/code/@showinvisibles]"
+                animatedscroll    = "[editors/code/@animatedscroll]"
+                fontsize          = "[editors/code/@fontsize]"
+                showprintmargin   = "false"
+                highlightselectedword = "[editors/code/@highlightselectedword]"
+                printmargincolumn = "0" />
+                <a:text id="txtInteractiveOutput"
+                class      = "interactive_output"
+                flex       = "1"
+                scrolldown = "true"
+                focussable = "true"
+                textselect = "true" 
+                scrollbar  = "sbShared 20 2 2" />
             </a:vbox>
         </a:page>
         <a:page id="dbgVariable" caption="Variables" render="runtime">
             <a:datagrid id="dgVars"
-              anchors    = "0 0 0 0" 
-              border     = "0"
-              class      = "noscrollbar"
-              scrollbar  = "sbShared 20 2 2"
-              options    = "size|move"
-              prerender  = "false"
-              caching    = "false"
-              model      = "[{dbg.activeframe}::vars]"
-              disabled   = "{!stDebugProcessRunning.active or stRunning.active}"
-              loading-message = "Calculating...">
+                anchors    = "0 0 0 0" 
+                border     = "0"
+                class      = "noscrollbar"
+                scrollbar  = "sbShared 20 2 2"
+                options    = "size|move"
+                prerender  = "false"
+                caching    = "false"
+                model      = "[{dbg.activeframe}::vars]"
+                disabled   = "{!stDebugProcessRunning.active || stRunning.active}"
+                loading-message = "Calculating...">
                 <a:actions />
                 <a:each match="[item|globals]" sort="[@name]">
                     <a:insert match="[globals]" get="{adbg.loadFrame(dbg, {dbg.activeframe})}"/>
                     <a:insert match="[item[@children='true']]" get="{adbg.loadObjects(dbg, %[.])}" />
-                    <a:column caption="Property" value="{[@name] or 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
+                    <a:column caption="Property" value="{[@name] || 'Globals'}" width="40%" icon="debugger/genericvariable_obj.gif" tree="true" />
                     <a:column caption="Value" value="[@value]" width="60%" />
                     <a:column caption="Type" value="[@type]" width="50"/>
                 </a:each>
@@ -128,39 +138,21 @@
         </a:page>
         <a:page id="dbgBreakpoints" caption="Breakpoints" render="runtime" prerender="true">
             <a:list id="lstBreakpoints"
-              autoselect = "false"
-              reselectable = "true"
-              anchors    = "0 0 0 0"
-              class      = "noscrollbar"
-              scrollbar  = "sbShared 2 2 2"
-              border     = "0"
-              model      = "mdlDbgBreakpoints"
-              each       = "[breakpoint]"
-              caption    = "[@text]"
-              icon       = "debugger/brkp_obj.png">
-                <a:actions />
+                autoselect = "false"
+                reselectable = "true"
+                anchors    = "0 0 0 0"
+                skin       = "breakpoints"
+                scrollbar  = "sbShared 2 2 2"
+                border     = "0"
+                model      = "mdlDbgBreakpoints"
+                mode       = "check"
+                each       = "[breakpoint]"
+                checked    = "[@enabled]">
+                <a:caption>
+                    [@text]
+                    <div>[@content]</div>
+                </a:caption>
             </a:list>
-        </a:page>
-        <a:model id="mdlAceAnnotations"></a:model>
-        <a:page id="aceAnnotations" caption="Bugs" render="runtime">
-            <a:datagrid id="dgAceAnnotations"
-              anchors    = "0 0 0 0" 
-              border     = "0"
-              options    = "size|move"
-              class      = "noscrollbar"
-              scrollbar  = "sbShared 20 2 2"
-              prerender  = "false"
-              caching    = "false"
-              onafterchoose = "require('ext/debugger/debugger').goToAnnotation()"
-              model      = "mdlAceAnnotations"
-              loading-message = "Loading..."
-              empty-message = "None found">
-                <a:each match="[annotation]" sort="[@line]">
-                    <a:column type="icon" width="20" icon="debugger/[@type]_obj.gif" />
-                    <a:column caption="Line" value="[@line]" width="50" />
-                    <a:column caption="Description" value="[@text]" width="100%" />
-                </a:each>
-            </a:datagrid>
         </a:page>
     </a:tab>
 </a:application>

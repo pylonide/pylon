@@ -83,9 +83,7 @@ module.exports = ext.register("ext/stripws/stripws", {
         });
         
         ide.addEventListener("settings.load", function(){
-            settings.setDefaults("editors/code", [
-                ["stripws", "false"]
-            ]);
+            settings.setDefaults("editors/code", [["stripws", "false"]]);
         });
 
         settings.addSettings("General", markupSettings);

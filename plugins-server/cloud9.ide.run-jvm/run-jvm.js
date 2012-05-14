@@ -100,7 +100,7 @@ util.inherits(JVMRuntimePlugin, Plugin);
                 type: message.runner,
                 version: version,
                 extra: message.extra
-            }, self.channel, function(err, pid) {
+            }, self.channel, function(err, pid, child) {
                 if (err)
                     self.error(err, 1, message, client);
             });

@@ -25,7 +25,7 @@ module.exports = ext.register("ext/html/html", {
         
         this.nodes.push(
             menus.$insertByIndex(barTools, new apf.button({
-                skin : "c9-toolbarbutton",
+                skin : "c9-toolbarbutton-glossy",
                 //icon : "preview.png" ,
                 "class" : "preview",
                 tooltip : "Preview in browser",
