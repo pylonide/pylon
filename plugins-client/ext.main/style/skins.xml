@@ -2255,7 +2255,7 @@
         }
 
         .panel-settings {
-        	background-position: 0px -269px;
+        	background-position: 0px -270px;
         	right: 0;
         }
         .panel-settings:hover,
@@ -2286,6 +2286,9 @@
         }
         .header-btnOver {
             background-color: rgba(255,255,255,.3);
+        }
+        .panel-settings:not(:first-child) {
+            background-color: none;
         }
         .c9-header-plus.header-btnDown {
             background-color: rgba(0,0,0,.05);
@@ -9232,7 +9235,7 @@
         border-top-right-radius: 1px;   
     }
     .dark .editor_tab.hidetabs .curbtn .tab_middle {
-        background-position: 50% -129px, 0 -1126px;
+        background-position: 50% -129px, 0 -1185px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
@@ -9241,7 +9244,7 @@
         border-top-left-radius: 1px;    
     }
     .dark .editor_tab.hidetabs .curbtn .tab_middle:before {
-        background-position: 0 -1126px;
+        background-position: 0 -1185px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle:after {
 		display: none;
