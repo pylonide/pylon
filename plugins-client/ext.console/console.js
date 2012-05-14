@@ -420,7 +420,6 @@ module.exports = ext.register("ext/console/console", {
         if (!e.message.type)
             return;
 
-        var _self = this;
         var message = e.message;
         //console.log(message.type, message);
         var extra = message.extra;
