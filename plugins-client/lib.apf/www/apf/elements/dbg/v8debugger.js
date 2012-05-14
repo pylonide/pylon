@@ -325,7 +325,7 @@ var V8Debugger = module.exports = function(dbg, host) {
     /**
      * Used from the UI to enable or disable a breakpoint
      */
-    this.toggleBreakpoint = function(script, relativeRow, model) {
+    this.toggleBreakpoint = function(script, relativeRow, model, content) {
         var _self      = this;
         
         // grab some basic info from the 'script' attribute
@@ -365,9 +365,18 @@ var V8Debugger = module.exports = function(dbg, host) {
                 name: name,
                 row: row,
                 col: 0,
+                content : content,
                 lineOffset: lineOffset,
                 scriptId: script.getAttribute("scriptid")
             }, model);
+        }
+    };
+    
+    this.setBreakPointEnabled = function(node, value){
+        var v8bp = this.$getV8BreakpointFromModel(node);
+        if (v8bp.enabled != value) {
+            v8bp.setEnabled(value);
+            v8bp.flush();
         }
     };
     
@@ -404,9 +413,10 @@ var V8Debugger = module.exports = function(dbg, host) {
         var v8bp = new Breakpoint(options.name, options.row, options.col, options.dbg);
 
         // no clue what this does
-        if (options.data) {
+        if (options.data)
             apf.extend(v8bp, options.data);
-        }
+        if (options.content)
+            v8bp.content = options.content;
         
         // now attach it
         v8bp.attach(this.$debugger, function () {
@@ -452,6 +462,7 @@ var V8Debugger = module.exports = function(dbg, host) {
             scriptId ? "' scriptid='" + scriptId : "",
             "' lineoffset='", lineOffset || 0,
             "' line='", breakpoint.line,
+            "' content='", apf.escapeXML(breakpoint.content || ""),
             "' condition='", apf.escapeXML(breakpoint.condition || ""),
             "' ignorecount='", breakpoint.ignoreCount || 0,
             "' enabled='", breakpoint.enabled,

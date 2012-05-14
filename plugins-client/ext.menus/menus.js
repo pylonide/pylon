@@ -297,7 +297,6 @@ module.exports = ext.register("ext/menus/menus", {
         }
         
         //index...
-//        if (name.indexOf("Tools/B") > -1) debugger;
         if (typeof index == "number")
             this.$insertByIndex(parent, item, index);
         else
@@ -364,12 +363,6 @@ module.exports = ext.register("ext/menus/menus", {
         return menu.id;
     },
     
-    /**
-     * - Bug in APF, appendChild children while not parent attached dont render
-     * - mnuXXX throughout C9 need to be using this plugin
-     * - Architect submenus used in multiple location
-     */
-    
     restore : function(preview){
         if (this.animateControl)
             this.animateControl.stop();
@@ -396,6 +389,8 @@ module.exports = ext.register("ext/menus/menus", {
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "false");
             this.minimized = false;
+            
+            ide.dispatchEvent("menus.restore");
         }
     },
     
@@ -431,6 +426,8 @@ module.exports = ext.register("ext/menus/menus", {
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "true");
             this.minimized = true;
+            
+            ide.dispatchEvent("menus.minimize");
         }
     },
 

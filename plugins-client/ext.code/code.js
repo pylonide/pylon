@@ -14,7 +14,6 @@ var ext = require("core/ext");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
-var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
 var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
@@ -319,8 +318,8 @@ module.exports = ext.register("ext/code/code", {
                 if (this.$page.id != this.$page.parentNode.activepage)
                     return;
 
-                ceEditor.setProperty("syntax", syntax);
-                ceEditor.setProperty("value", doc.acesession);
+                ceEditor.setAttribute("syntax", syntax);
+                ceEditor.setAttribute("value", doc.acesession);
                 // force tokenize first visible rows
                 var rowCount = Math.min(50, doc.acesession.getLength());
                 doc.acesession.bgTokenizer.getTokens(0, rowCount);
@@ -432,6 +431,7 @@ module.exports = ext.register("ext/code/code", {
                 ["showinvisibles", "false"],
                 ["showprintmargin", "true"],
                 ["printmargincolumn", "80"],
+                ["behaviors", ""],
                 ["softtabs", "true"],
                 ["tabsize", "4"],
                 ["scrollspeed", "2"],
@@ -660,7 +660,7 @@ module.exports = ext.register("ext/code/code", {
                         }
 
                         if (self.ceEditor)
-                            ceEditor.setProperty("syntax", _self.getSyntax(file));
+                            ceEditor.setAttribute("syntax", _self.getSyntax(file));
                     }
                 }
             }), 300000),
@@ -706,7 +706,7 @@ module.exports = ext.register("ext/code/code", {
                 type    : "check",
                 checked : "[{tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]",
                 isAvailable : function(editor){
-                    return editor && editor.ceEditor;
+                    return editor && editor.ceEditor && tabEditors.activepage;
                 }
             }), 500000),
 

@@ -108,8 +108,6 @@ module.exports = function(filelist, keyword, cache) {
     var type = "name";
     res = res.join("\n").split("\n");
     
-    console.log(new Date() - dt);
-    
     return res;
 }
 
