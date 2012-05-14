@@ -5034,7 +5034,6 @@
         }
         
         .menu-bk.downward {
-            margin-left: 6px;
             margin-top: 30px;
         }
         
