@@ -165,7 +165,7 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     var parentEl = out.element;
     var outputId = out.id;
 
-    if (eventsAttached !== true) {
+    if (parentEl.eventsAttached !== true) {
         parentEl.addEventListener("click", function(e) {
             var node = e.target;
             if (node.hasAttribute("data-wsp")) {
@@ -174,7 +174,7 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
                 return false;
             }
         });
-        eventsAttached = true;
+        parentEl.eventsAttached = true;
     }
 
     // Interval console output so the browser doesn't crash from high-volume
