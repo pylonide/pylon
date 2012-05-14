@@ -26,20 +26,24 @@ exports.factory = function(uid, ide) {
     return function(args, eventEmitter, eventName) {
         var cwd = args.cwd || ide.workspaceDir;
         
-        return new Runner(uid, args.file, args.args, cwd, args.env, args.encoding, args.extra, eventEmitter, eventName);
+        return new Runner({
+            uid: uid, file: args.file, args: args.args, cwd: cwd, env: args.env, 
+            encoding: args.encoding, extra: args.extra, 
+            eventEmitter: eventEmitter, eventName: eventName
+        });
     };
 };
 
-var Runner = exports.Runner = function(uid, file, args, cwd, env, encoding, extra, eventEmitter, eventName) {
-    this.uid = uid;
-    this.file = file;
-    this.extra = extra;
+var Runner = exports.Runner = function(options) {
+    this.uid = options.uid;
+    this.file = options.file;
+    this.extra = options.extra;
 
-    this.scriptArgs = args || [];
+    this.scriptArgs = options.args || [];
     this.nodeArgs = [];
 
-    env = env || {};
-    ShellRunner.call(this, uid, process.execPath, [], cwd, env, encoding, extra, eventEmitter, eventName);
+    env = options.env || {};
+    ShellRunner.call(this, options);
 };
 
 util.inherits(Runner, ShellRunner);

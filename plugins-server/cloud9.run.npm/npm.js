@@ -23,12 +23,16 @@ var exports = module.exports = function setup(options, imports, register) {
 
 exports.factory = function(root, port, uid) {
     return function(args, eventEmitter, eventName) {
-        return new Runner(uid, args.args, args.cwd, args.nodeVersion, args.encoding, args.extra, eventEmitter, eventName);
+        return new Runner({
+            uid: uid, args: args.args, cwd: args.cwd, nodeVersion: args.nodeVersion, 
+            encoding: args.encoding, extra: args.extra, eventEmitter: eventEmitter, 
+            eventName: eventName
+        });
     };
 };
 
-var Runner = exports.Runner = function(uid, args, cwd, nodeVersion, encoding, extra, eventEmitter, eventName) {
-    ShellRunner.call(this, uid, "npm", args, cwd, {}, encoding, extra, eventEmitter, eventName);
+var Runner = exports.Runner = function(options) {
+    ShellRunner.call(this, options);
 };
 
 util.inherits(Runner, ShellRunner);

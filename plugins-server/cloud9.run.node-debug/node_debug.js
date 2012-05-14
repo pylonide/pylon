@@ -27,12 +27,16 @@ var exports = module.exports = function setup(options, imports, register) {
 exports.factory = function(uid, ide) {
     return function(args, eventEmitter, eventName) {
         var cwd = args.cwd || ide.workspaceDir;
-        return new Runner(uid, args.file, args.args, cwd, args.env, args.encoding, args.breakOnStart, args.extra, eventEmitter, eventName);
+        return new Runner({
+            uid: uid, file: args.file, args: args.args, cwd: cwd, env: args.env, 
+            encoding: args.encoding, breakOnStart: args.breakOnStart, 
+            extra: args.extra, eventEmitter: eventEmitter, eventName: eventName
+        });
     };
 };
 
-var Runner = exports.Runner = function(uid, file, args, cwd, env, encoding, breakOnStart, extra, eventEmitter, eventName) {
-    NodeRunner.call(this, uid, file, args, cwd, env, encoding, extra, eventEmitter, eventName);
+var Runner = exports.Runner = function(options) {
+    NodeRunner.call(this, options);
     this.breakOnStart = breakOnStart;
     this.extra = extra;
     this.msgQueue = [];

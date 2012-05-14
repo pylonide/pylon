@@ -23,35 +23,39 @@ var exports = module.exports = function setup(options, imports, register) {
 
 exports.factory = function(uid) {
     return function(args, eventEmitter, eventName) {
-        return new Runner(uid, args.command, args.args, args.cwd, args.env, args.encoding, args.extra, eventEmitter, eventName);
+        return new Runner({
+            uid: uid, command: args.command, args: args.args, cwd: args.cwd, 
+            env: args.env, encoding: args.encoding, extra: args.extra, 
+            eventEmitter: eventEmitter, eventName: eventName
+        });
     };
 };
 
-var Runner = exports.Runner = function(uid, command, args, cwd, env, encoding, extra, eventEmitter, eventName) {
-    this.uid = uid;
-    this.command = command;
-    this.args = args || [];
-    this.encoding = encoding || "utf8";
+var Runner = exports.Runner = function(options) {
+    this.uid = options.uid;
+    this.command = options.command;
+    this.args = options.args || [];
+    this.encoding = options.encoding || "utf8";
 
     if (this.encoding === "binary") {
         this.encoding = null;
     }
-    this.extra = extra;
+    this.extra = options.extra;
 
     this.runOptions = {};
-    if (cwd)
-        this.runOptions.cwd = cwd;
+    if (options.cwd)
+        this.runOptions.cwd = options.cwd;
 
-    env = env || {};
-    env = env;
+    var env = options.env || {};
+    
     for (var key in process.env)
         if (!env.hasOwnProperty(key))
             env[key] = process.env[key];
 
     this.runOptions.env = env;
 
-    this.eventEmitter = eventEmitter;
-    this.eventName = eventName;
+    this.eventEmitter = options.eventEmitter;
+    this.eventName = options.eventName;
 
     this.child = {
         pid: null
