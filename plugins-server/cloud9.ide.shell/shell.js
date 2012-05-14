@@ -156,8 +156,6 @@ util.inherits(ShellPlugin, Plugin);
             cwd: message.cwd || this.workspaceDir,
             extra: message.extra
         }, function(code, out, err) {
-            console.log(code, out, err);
-            console.trace();
             self.processCount -= 1;
             self.sendResult(0, message.command, {
                 code    : code,
