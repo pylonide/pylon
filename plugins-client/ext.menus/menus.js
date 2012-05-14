@@ -30,11 +30,10 @@ module.exports = ext.register("ext/menus/menus", {
         var _self = this;
         
         this.nodes.push(
-            this.menubar = logobar.firstChild.insertBefore(new apf.hbox({
-                edge    : "0 5 0 5",
-                padding : "3",
-                align   : "center"
-            }), logobar.firstChild.firstChild),
+            this.menubar = logobar.insertBefore(new apf.bar({
+                "class" : "fakehbox aligncenter",
+                style : "padding : 0 5px 0 5px;",
+            }), logobar.firstChild),
 
             //this.setRootMenu("Project", 10),
             this.setRootMenu("File", 100),

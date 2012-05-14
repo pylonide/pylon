@@ -29,15 +29,12 @@
 
     <a:vbox anchors="0 0 0 0" id="vbMain">
         <a:bar skin="c9-menu-bar" id="logobar">
-            <a:hbox>
-                <a:hbox id="barTools" edge="0 0 0 0" padding="3" align="center">
-                    <a:divider skin="c9-divider-double" />
-                </a:hbox>
-                <a:filler />
-                <a:hbox id="barExtras" edge="0 0 0 0" padding="3" align="center">
-                    <a:divider skin="c9-divider" visible="false" />
-                </a:hbox>
-            </a:hbox>
+            <a:bar skin="basic" class="fakehbox aligncenter padding3" id="barTools">
+                <a:divider skin="c9-divider-double" />
+            </a:bar>
+            <a:bar skin="basic" style="float:right;" class="fakehbox aligncenter padding3" id="barExtras">
+                <a:divider skin="c9-divider" visible="false" />
+            </a:bar>
         </a:bar>
         
         <a:hbox flex="1" padding="0">

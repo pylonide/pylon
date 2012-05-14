@@ -46,6 +46,27 @@
         .basic{
             position : relative;
         }
+        
+        .fakehbox{
+            padding : 0 5px 0 5px;
+            white-space : nowrap;
+        }
+        
+        .fakehbox>div{
+            display : inline-block;
+        }
+        
+        .fakehbox.aligntop>div{
+            vertical-align : top;
+        }
+        
+        .fakehbox.aligncenter>div{
+            vertical-align : middle;
+        }
+        
+        .fakehbox.padding3>div{
+            margin-left : 3px;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -147,6 +168,11 @@
             box-shadow: 0 1px 0 0 #353535 inset;
             border-bottom: 1px solid #000;
             border-top: 1px solid #000;
+        }
+        
+        .c9-menu-bar .c9-mbar-cont>div{
+            display : inline-block;
+            vertical-align : top;
         }
 
         .c9-menu-bar .c9-mbar-cont .c9-divider-double, 
@@ -1541,6 +1567,7 @@
             -khtml-user-select : none;
             user-select        : none;
             line-height        : 17px;
+            display            : inline-block;
         }
 
         .c9-menu-btn .c9-left,
