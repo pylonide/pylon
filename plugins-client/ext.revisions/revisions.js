@@ -228,7 +228,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.nodes.push(this.panel = new apf.bar({
                 id: "revisionsPanel",
                 visible: false,
-                top: 2,
+                top: 6,
                 bottom: 0,
                 right: 0,
                 width: BAR_WIDTH,
