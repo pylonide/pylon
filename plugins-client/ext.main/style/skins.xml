@@ -27,22 +27,6 @@
 </a:checkbox>
 <a:bar name="bar">
     <a:style><![CDATA[
-        .bar{
-            overflow : hidden;
-            position : relative;
-        }
-    ]]></a:style>
-    <a:presentation>
-        <a:main container="div">
-            <div class="bar">
-                <div class="contents"> </div>
-                <div class="barFooter"><div><div> </div></div></div>
-            </div>
-        </a:main>
-    </a:presentation>
-</a:bar>
-<a:bar name="basic">
-    <a:style><![CDATA[
         .basic{
             position : relative;
         }
@@ -71,6 +55,22 @@
     <a:presentation>
         <a:main container=".">
             <div class="basic">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:bar name="deprecated">
+    <a:style><![CDATA[
+        .bar{
+            overflow : hidden;
+            position : relative;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main container="div">
+            <div class="bar">
+                <div class="contents"> </div>
+                <div class="barFooter"><div><div> </div></div></div>
             </div>
         </a:main>
     </a:presentation>

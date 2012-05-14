@@ -109,9 +109,9 @@ module.exports = ext.register("ext/editors/editors", {
 
     addTabSection : function(){
         var _self = this;
-        var vbox = this.hbox.appendChild(
-            new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
-        );
+//        var vbox = this.hbox.appendChild(
+//            new apf.bar({id:"tabPlaceholder", flex:1, skin:"basic"})
+//        );
 
         var btn, btnMenu;
         var tab = new apf.bar({
@@ -176,7 +176,8 @@ module.exports = ext.register("ext/editors/editors", {
             ]
         });
 
-        apf.document.documentElement.appendChild(tab);
+//        apf.document.documentElement.appendChild(tab);
+        colMiddle.appendChild(tab);
         var tabs = tabEditors;
 
         this.buttons = {
@@ -214,15 +215,20 @@ module.exports = ext.register("ext/editors/editors", {
             }
         });
 
-        this.$buttonContainer = new apf.bar({
-            skin : "basic",
-            "class": "editor_tab",
-            "style": "position:absolute",
-            htmlNode : document.body
-        });
-        this.$buttonContainer.$int.appendChild(tabEditors.$buttons);
-        //tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
-        this.$buttonContainer.$int.style.paddingRight
+//        this.$buttonContainer = new apf.bar({
+//            skin : "basic",
+//            "class": "editor_tab",
+//            "style": "position:absolute",
+//            htmlNode : document.body
+//        });
+//        this.$buttonContainer.$int.appendChild(tabEditors.$buttons);
+//        //tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
+//        this.$buttonContainer.$int.style.paddingRight
+//            = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
+//            + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
+
+        barButtonContainer.$int.appendChild(tabEditors.$buttons);
+        barButtonContainer.$int.style.paddingRight
             = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
             + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
 
@@ -256,24 +262,24 @@ module.exports = ext.register("ext/editors/editors", {
 //            }, 300);
 //        });
 
-        splitterPanelLeft.addEventListener("dragmove", function(e){
-            _self.isResizing = true;
-        });
-        splitterPanelLeft.addEventListener("dragdrop", function(e){
-            _self.isResizing = false;
-        });
+//        splitterPanelLeft.addEventListener("dragmove", function(e){
+//            _self.isResizing = true;
+//        });
+//        splitterPanelLeft.addEventListener("dragdrop", function(e){
+//            _self.isResizing = false;
+//        });
 
-        ide.addEventListener("init.ext/sidebar/sidebar", function(){
-            navbar.addEventListener("resize", function(){
-                _self.$resizeButtons();
-            });
-        });
+//        ide.addEventListener("init.ext/sidebar/sidebar", function(){
+//            navbar.addEventListener("resize", function(){
+//                _self.$resizeButtons();
+//            });
+//        });
 
-        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
-            _self.$resize(tabEditors.parentNode.$ext);
-        });
+//        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize = function(e){
+//            _self.$resize(tabEditors.parentNode.$ext);
+//        });
 
-        return vbox;
+//        return vbox;
     },
 
     /**
@@ -360,40 +366,40 @@ module.exports = ext.register("ext/editors/editors", {
                 this.buttons.add.setHeight(10);
             }
 
-            this.$resize(ext, preview);
+//            this.$resize(ext, preview);
         }
     },
 
-    $resize : function(ext, preview){
-        if (this.previewing || this.animating)
-            return;
-
-        var ph;
-        var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
-        var d = apf.getDiff(ext);
-
-        ext.style.left = (pos[0] - 2) + "px";
-        ext.style.top = ((this.showTabs || preview ? 0 : - 16) + pos[1]) + "px";
-        // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
-        ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
-        ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
-
-        if (this.isResizing)
-            this.$resizeButtons([pos[0], pos[1] - 27], ph.offsetWidth);
-    },
-
-    $resizeButtons : function(pos, width){
-        var ph, ext = this.$buttonContainer.$ext;
-        var d2 = apf.getDiff(ext);
-        if (!pos)
-            pos = apf.getAbsolutePosition(ph = barButtonContainer.$ext);
-        if (!width)
-            width = ph.offsetWidth;
-
-        ext.style.left = (Math.max(this.showTabs ? 45 : 0, pos[0])) + "px";
-        ext.style.top = (pos[1]) + "px"; // - 28
-        ext.style.width = (width + 2 - d2[0]) + "px";
-    },
+//    $resize : function(ext, preview){
+//        if (this.previewing || this.animating)
+//            return;
+//
+//        var ph;
+//        var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
+//        var d = apf.getDiff(ext);
+//
+//        ext.style.left = (pos[0] - 2) + "px";
+//        ext.style.top = ((this.showTabs || preview ? 0 : - 16) + pos[1]) + "px";
+//        // + (hboxDockPanel.getWidth() && apf.isGecko ? 2 : 0)
+//        ext.style.width = (ph.offsetWidth + 2 - d[0]) + "px";
+//        ext.style.height = ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]) + "px";
+//
+//        if (this.isResizing)
+//            this.$resizeButtons([pos[0], pos[1] - 27], ph.offsetWidth);
+//    },
+//
+//    $resizeButtons : function(pos, width){
+//        var ph, ext = this.$buttonContainer.$ext;
+//        var d2 = apf.getDiff(ext);
+//        if (!pos)
+//            pos = apf.getAbsolutePosition(ph = barButtonContainer.$ext);
+//        if (!width)
+//            width = ph.offsetWidth;
+//
+//        ext.style.left = (Math.max(this.showTabs ? 45 : 0, pos[0])) + "px";
+//        ext.style.top = (pos[1]) + "px"; // - 28
+//        ext.style.width = (width + 2 - d2[0]) + "px";
+//    },
 
     /**
      * Disable the resize event when the editors are in focus mode
@@ -828,14 +834,14 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
         });
 
-        var vbox  = colMiddle;
-        this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
+//        var vbox  = colMiddle;
+//        this.hbox = vbox.appendChild(new apf.hbox({flex : 1, padding : 5, splitters : true}));
 
         this.$itmGroup = new apf.group();
 
         this.nodes.push(this.addTabSection());
 
-        this.panel = this.hbox;
+        //this.panel = this.hbox;
 
         /**** Support for state preservation ****/
 
@@ -1096,12 +1102,12 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     enable : function(){
-        this.hbox.show();
+//        this.hbox.show();
         //this.splitter.show();
     },
 
     disable : function(){
-        this.hbox.hide();
+//        this.hbox.hide();
         //this.splitter.hide();
     },
 
@@ -1109,7 +1115,7 @@ module.exports = ext.register("ext/editors/editors", {
         menus.remove("View/Tab Bar");
         menus.remove("View/Editors/");
 
-        this.hbox.destroy(true, true);
+//        this.hbox.destroy(true, true);
         //this.splitter.destroy(true, true);
     }
 });

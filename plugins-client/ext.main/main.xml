@@ -27,31 +27,31 @@
         zindex   = "100000"
     />
 
-    <a:vbox anchors="0 0 0 0" id="vbMain">
+    <a:bar anchors="0 0 0 0" id="vbMain">
         <a:bar skin="c9-menu-bar" id="logobar">
-            <a:bar skin="basic" class="fakehbox aligncenter padding3" id="barTools">
+            <a:bar class="fakehbox aligncenter padding3" id="barTools">
                 <a:divider skin="c9-divider-double" />
             </a:bar>
-            <a:bar skin="basic" style="float:right;" class="fakehbox aligncenter padding3" id="barExtras">
+            <a:bar style="float:right;" class="fakehbox aligncenter padding3" id="barExtras">
                 <a:divider skin="c9-divider" visible="false" />
             </a:bar>
         </a:bar>
         
-        <a:hbox flex="1" padding="0">
-            <a:vbox id="mainRow" padding="0" flex="1">
-                <a:hbox id="hboxTabBar" padding="0" edge="0" height="27" align="start">
+        <a:bar class="fakehbox" anchors="27 0 0 0">
+            <a:bar id="mainRow" anchors="0 0 0 0">
+                <a:bar class="fakehbox" id="hboxTabBar" width="100%">
                     <a:hbox id="barButtonContainer" flex="1" align="start" />
-                </a:hbox>
-                <a:hbox id="hboxMain" padding="0" edge="0" flex="1">
-                    <a:vbox id="colLeft" width="200" minwidth="105" visible="false" />
-                    <a:splitter width="0" id="splitterPanelLeft" />
-                    <a:vbox id="colMiddle" flex="1" padding="3" />
-                </a:hbox>
-            </a:vbox>
-            <a:vbox id="colRight" padding="0">
-                <a:hbox id="hboxDockPanel" flex="1" class="hboxdockpanel">
-                </a:hbox>
-            </a:vbox>
-        </a:hbox>
-    </a:vbox>
+                </a:bar>
+                <a:bar class="fakehbox" id="hboxMain" padding="0" edge="0" flex="1" height="100%">
+                    <a:bar id="colLeft" width="200" minwidth="105" visible="false"  height="100%"/>
+                    <a:splitter width="0" id="splitterPanelLeft"  height="100%"/>
+                    <a:bar id="colMiddle" flex="1" padding="3"  height="100%"/>
+                </a:bar>
+            </a:bar>
+            <a:bar id="colRight" padding="0">
+                <a:bar class="fakehbox hboxdockpanel" id="hboxDockPanel" flex="1">
+                </a:bar>
+            </a:bar>
+        </a:bar>
+    </a:bar>
 </a:application>
