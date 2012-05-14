@@ -82,7 +82,7 @@ b- Copy CodeComplePlugin...jar to ${eclipse-path}/plugins/
 
 ## More files with absolute paths
 * cloud9/support/jvm-run/build-tools/StandAloneWebAppStarter/bin/web_apps.properties
-* cloud9/support/jvm_features/src/com/.../CreateProjectCommand.java --> replace static jetty libraries location
+* cloud9/support/jvm_features/src/settings.properties
 * cloud9/support/jvm-run/build-tools/templates/j2ee-template/build.xml --> jetty location
 * cloud9/server/cloud9/ext/jvm-features/jvm-features.js --> workspace location
 * cloud9/support/jvm_features/js/lib/eclipse/config.js --> init command
