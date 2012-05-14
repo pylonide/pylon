@@ -167,8 +167,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         });
         
         // remove the modal overlay, but keep it around to block input
-        //var modalBackground = document.getElementsByClassName("bk-window-cover");
-        //modalBackground[modalBackground.length - 1].style.opacity = "0";
+        var modalBackground = document.getElementsByClassName("bk-window-cover");
+        modalBackground[modalBackground.length - 1].style.opacity = "0";
     },
 
     stepBack: function(){
@@ -459,6 +459,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                 require("ext/tree/tree").hide();
         
             require("ext/sidebar/sidebar").animateToDefaultWidth();
+            
         };        
     },
 

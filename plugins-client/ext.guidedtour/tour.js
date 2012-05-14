@@ -2,7 +2,7 @@ this.tour = {
     initialText: "Welcome to the guided tour! We'll introduce you to some of the ways Cloud9 IDE makes it easy for you to program faster and smarter.\n\nDuring the tour, you can click the play button to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.\n\nDuring the tour, the IDE is mostly disabled to provide a smoother experience.",
     finalText: "Well, that's everything! Still have questions? Head on over to <a href=\"http://support.cloud9ide.com/forums\" target=\"_blank\">our documentation site</a>.",
     steps: [
-    {
+    /*{
         before: function() {
             
         },
@@ -58,7 +58,7 @@ this.tour = {
         extraTop: -37,
         pos: "left",
         time: 4
-    }, {
+    }, */{
         before: function(){
             if (madeNewFile == false) {
                 madeNewFile = true;
@@ -81,6 +81,7 @@ this.tour = {
             var page = tabEditors.getPage();
             var file = page.$model.data;
             file.setAttribute("guidedtour", "1");
+            file.setAttribute("contenttype", "javascript");
             save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-guidedTour.js");
             require("ext/tree/tree").refresh();
         },
@@ -99,7 +100,7 @@ this.tour = {
         },
         el: undefined,
         div: "ceEditorGutter",
-        desc: "The gutter can do more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set breakpoints here.",
+        desc: "The gutter does more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging a Node.js application, you can also set breakpoints here.",
         extraTop: -40,
         pos: "right",
         time: 5
@@ -135,12 +136,15 @@ this.tour = {
             
             setTimeout(function(){
                 zen.escapeFromZenMode();
-                document.getElementsByClassName("tgDialog")[0].style.display = "";
-                require("ext/guidedtour/guidedtour").stepForward();
                 zen.fadeZenButtonOut();
-                                
-                hlElement.style.visibility = "visible";
-                winTourText.show();
+                
+                setTimeout(function() {
+                    document.getElementsByClassName("tgDialog")[0].style.display = "";
+                    hlElement.style.visibility = "visible";      
+                    winTourText.show();
+                    
+                    require("ext/guidedtour/guidedtour").stepForward();
+                }, 250);
             }, 2300);
         },
         time: 4,
@@ -246,7 +250,9 @@ this.tour = {
             var menuId = dockpanel.getButtons("ext/debugger/debugger", "dbgCallStack")[0];
             if(menuId)
                 dockpanel.layout.showMenu(menuId.uniqueId);
-            dbgCallStack.parentNode.set(dbgCallStack)
+            dbgCallStack.parentNode.set(dbgCallStack);
+            
+            txtConsoleInput.setValue("");
         },
         el: function(){
             return dbgCallStack;
