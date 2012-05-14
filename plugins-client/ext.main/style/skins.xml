@@ -5458,9 +5458,6 @@
             font-size: 11px;
             opacity: .9;
         }
-        .searchresults strong{
-            text-decoration: underline;
-        }
         .searchresults>div.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
