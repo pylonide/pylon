@@ -3396,19 +3396,19 @@
           background-position: 4px center;
        }
 
-       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
+       .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.arrow {
           background-image: url("icons/debugger/brkp_obj_current_line.png");
           background-repeat: no-repeat;
           background-position: 4px center;
        }
 
-       .ace_gutter-layer .ace_gutter-cell.ace_arrow {
+       .ace_gutter-layer .ace_gutter-cell.arrow {
           background-image: url("icons/debugger/current_line.png");
           background-repeat: no-repeat;
           background-position: 4px center;
        }
 
-       .ace_gutter-layer .ace_gutter-cell.ace_stack {
+       .ace_gutter-layer .ace_gutter-cell.stack {
           background-image: url("icons/debugger/stack_co.png");
           background-repeat: no-repeat;
           background-position: 4px center;
