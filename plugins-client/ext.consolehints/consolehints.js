@@ -20,8 +20,10 @@ var commands = require("ext/commands/commands");
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 var filterCommands = function(commands, word) {
+    var escapedWord = word.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     return commands.filter(function(cmd) {
-        return cmd.search(new RegExp("^" + word)) !== -1;
+        var regEx = new RegExp("^" + escapedWord, "i");
+        return cmd.search(regEx) !== -1;
     }).sort();
 };
 
