@@ -16,9 +16,13 @@ var panels = require("ext/panels/panels");
 var markup = require("text!ext/tree/tree.xml");
 var commands = require("ext/commands/commands");
 
+var showHideScrollPos;
+
 function $trScroll() {
     if (this.$scrollTimer)
         clearTimeout(this.$scrollTimer);
+
+    showHideScrollPos = trFiles.$ext.scrollTop;
 
     // Set to -1 in case the user scrolls before the tree is done loading,
     // in which case we don't want to set the scroll pos to the saved one
@@ -299,6 +303,16 @@ module.exports = ext.register("ext/tree/tree", {
     setupTreeListeners : function() {
         var _self = this;
 
+        winFilesViewer.addEventListener("prop.visible", function(e) {
+            if (e.value) {
+                if (showHideScrollPos) {
+                    setTimeout(function() {
+                        trFiles.$ext.scrollTop = showHideScrollPos;
+                    });
+                }
+            }
+        });
+
         // After an item in the tree has been clicked on, this saves that
         // selection in the settings model
         trFiles.addEventListener("afterselect", this.$afterselect = function(e) {
@@ -325,6 +339,14 @@ module.exports = ext.register("ext/tree/tree", {
             }
         });
 
+        // Block keypressing, else afterchoose from "Enter" inserts new lines in the doc
+        trFiles.addEventListener("keydown", function(e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
         // Opens a file after the user has double-clicked
         trFiles.addEventListener("afterchoose", this.$afterchoose = function() {
             var node = this.selected;
@@ -334,7 +356,7 @@ module.exports = ext.register("ext/tree/tree", {
 
             ide.dispatchEvent("openfile", {doc: ide.createDocument(node)});
         });
-
+        
         trFiles.addEventListener("beforecopy", this.$beforecopy = function(e) {
             if (!ide.onLine && !ide.offlineFileSystemSupport)
                 return false;
@@ -468,15 +490,10 @@ module.exports = ext.register("ext/tree/tree", {
      * folders that were previously expanded, otherwise it contains only the
      * root identifier (i.e. ide.davPrefix)
      * 
-     * @param callback function Called when the tree is fully loaded
+     * @param boolean animateScrollOnFinish
      */
-    loadProjectTree : function(callback) {
+    loadProjectTree : function(animateScrollOnFinish) {
         var _self = this;
-
-        // If the root node has been removed, add it back in. It would be removed
-        // from expandedNodes if the user collapsed it
-//        if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
-//            this.expandedNodes.unshift(ide.davPrefix);
 
         // Sort the cached list so it's more probable that nodes near the top of
         // the tree are loaded first, giving the user more visual feedback that
@@ -617,17 +634,24 @@ module.exports = ext.register("ext/tree/tree", {
             }
 
             // Scroll to last set scroll pos
-            if (_self.scrollPos && _self.scrollPos > -1)
-                trFiles.$ext.scrollTop = _self.scrollPos;
+            if (_self.scrollPos && _self.scrollPos > -1) {
+                if (animateScrollOnFinish) {
+                    apf.tween.single(trFiles, {
+                        type: "scrollTop",
+                        from: 0,
+                        to: _self.scrollPos
+                    });
+                }
+                else {
+                    trFiles.$ext.scrollTop = _self.scrollPos;
+                }
+            }
 
             // Now set the "get" attribute of the <a:insert> rule so the tree
             // knows to ask webdav for expanded folders' contents automatically
             self["trFilesInsertRule"] && trFilesInsertRule.setAttribute("get", "{davProject.readdir([@path])}");
 
             settings.save();
-
-            if (callback)
-                return callback();
         }
     },
 
@@ -654,7 +678,7 @@ module.exports = ext.register("ext/tree/tree", {
 
         ide.dispatchEvent("track_action", { type: "reloadtree" });
 
-        this.loadProjectTree();
+        this.loadProjectTree(true);
 
         // Now re-attach the scroll listener
         trFiles.addEventListener("scroll", $trScroll);

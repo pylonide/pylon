@@ -125,10 +125,6 @@ exports.addCodeMarker = function(session, doc, type, range) {
     anchor.on("change", updateFloat);
 };
 
-exports.isAutoSaveEnabled = function() {
-    return apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-};
-
 exports.pageHasChanged = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");
@@ -160,14 +156,6 @@ exports.getDocPath = function(page) {
     // the server. I am sure that these workspace string manipulation
     // functions are somewhere...to be fixed.
     return exports.stripWSFromPath(page.name);
-};
-
-exports.localDate = function(ts) {
-    var getTZOffset = function() {
-        return -(new Date()).getTimezoneOffset() * 60000;
-    };
-
-    return new Date(ts + getTZOffset());
 };
 
 exports.question = function(title, header, msg, onyes, onyesall, onno, onnoall) {

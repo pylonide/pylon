@@ -125,6 +125,8 @@ module.exports = ext.register("ext/editors/editors", {
                     skin    : "editor_tab",
                     style   : "height : 100%",
                     buttons : "close,scale,order",
+                    animate : "[{require('core/settings').model}::general/@animateui]",
+                    anims   : "{apf.isTrue(this.animate) ? 'add|remove|sync' : ''}",
                     overactivetab  : true,
                     onfocus        : function(e){
                         _self.switchfocus(e);
@@ -1058,11 +1060,11 @@ module.exports = ext.register("ext/editors/editors", {
         var _self   = this;
 
         if (row !== undefined) {
-            var editor = _self.currentEditor.amlEditor;
             var jumpTo = function(){
                 var f;
                 setTimeout(f = function() {
                     // TODO move this to the editor
+                    var editor = _self.currentEditor.amlEditor;
                     editor.$editor.gotoLine(row, column, false);
                     if (text)
                         editor.$editor.find(text, null, false);

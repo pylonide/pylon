@@ -8,11 +8,7 @@
       modal     = "false"
       model     = "{require('ext/settings/settings').model}"
       optimize  = "true">
-        <a:hbox
-          anchors  = "0 0 0 0"
-          overflow = "hidden">
-            <a:bar id="barSettings" skinset="prefs" skin="bar-preferences" flex="1" scrollbar="sbShared 2 2 2">
-            </a:bar>
-        </a:hbox>
+        <a:bar id="barSettings" skinset="prefs" anchors ="0 0 0 0" skin="bar-preferences" flex="1" scrollbar="sbShared 2 2 2">
+        </a:bar>
     </a:window>
 </a:application>

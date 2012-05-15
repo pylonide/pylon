@@ -15,6 +15,7 @@ var editors = require("ext/editors/editors");
 var fs = require("ext/filesystem/filesystem");
 var ideConsole = require("ext/console/console");
 var menus = require("ext/menus/menus");
+var skin = require("text!ext/searchinfiles/skin.xml");
 var markup = require("text!ext/searchinfiles/searchinfiles.xml");
 var commands = require("ext/commands/commands");
 var tooltip = require("ext/tooltip/tooltip");
@@ -38,7 +39,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     replaceAll : false,
     markup   : markup,
     skin     : {
-        id   : "searchinfiles"
+        id   : "searchinfiles",
+        data : skin,
+        "media-path" : ide.staticPrefix + "/ext/searchinfiles/images/"
     },
     pageTitle: "Search Results",
     pageID   : "pgSFResults",
@@ -216,6 +219,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
         tooltipSearchInFiles.$ext.style.display = "none";
 
+        var animate = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (!force && !winSearchInFiles.visible || force > 0) {
             if (winSearchInFiles.visible) {
                 txtSFFind.focus();
@@ -224,6 +228,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
             
             if (searchreplace.inited && winSearchReplace.visible) {
+                ext.initExtension(this);
+                winSearchReplace.$ext.style.height = "0px";
+                txtSFFind.focus();
+                
                 searchreplace.toggleDialog(-1, null, null, function(){
                     _self.toggleDialog(force, isReplace, noselect);
                 });
@@ -244,7 +252,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 var value = doc.getTextRange(range);
     
                 if (value) {
-                    txtFind.setValue(value);
+                    txtSFFind.setValue(value);
                     
                     this.$setRegexpMode(txtSFFind, chkRegEx.checked);
                 }
@@ -258,6 +266,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             document.body.scrollTop = 0;
             
             //Animate
+            if (animate) {
             Firmin.animate(winSearchInFiles.$ext, {
                 height: "102px",
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)"
@@ -270,16 +279,23 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 }, 200);
             });
         }
+            else {
+                winSearchInFiles.$ext.style.height = "";
+                apf.layout.forceResize();
+            }
+        }
         else if (winSearchInFiles.visible) {
             if (txtSFFind.getValue())
                 _self.saveHistory(txtSFFind.getValue());
             
+            
+            //Animate
+            if (animate) {
             winSearchInFiles.visible = false;
             
             winSearchInFiles.$ext.style.height 
                 = winSearchInFiles.$ext.offsetHeight + "px";
 
-            //Animate
             Firmin.animate(winSearchInFiles.$ext, {
                 height: "0px",
                 timingFunction: "ease-in-out"
@@ -298,6 +314,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                         : apf.layout.forceResize();
                 }, 50);
             });
+        }
+            else {
+                winSearchInFiles.hide();
+                callback 
+                    ? callback()
+                    : apf.layout.forceResize();
+            }
         }
 
         return false;
@@ -331,6 +354,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     execFind: function() {
         var _self = this;
    
+        if (btnSFFind.$ext.innerText == "Find") 
+            btnSFFind.$ext.innerText = "Cancel";
+        else if (btnSFFind.$ext.innerText == "Cancel") {
+            btnSFFind.$ext.innerText = "Find"
+            this.cancelFind();
+            return;
+        }
+        
         if (chkSFConsole.checked) {
             // show the console
             ideConsole.show();
@@ -457,14 +488,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         
         var resultingData = "";
         var firstStream = false;
-        var id = davProject.report(path, "codesearch", options, function(data, state, extra) {         
+        this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {         
             resultingData = data;
             firstStream = true;
         });
         
         // Start streaming
-        var timer = setInterval(function() {  
-            var q = davProject.realWebdav.queue[id];
+        this.timer = setInterval(function() {  
+            var q = davProject.realWebdav.queue[_self.id];
             
             if (!chkSFConsole.checked)
                 _self.appendLines(_self.tabacedoc, resultingData);
@@ -476,7 +507,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     node.setAttribute("saving", "0");
                     node.setAttribute("changed", "0");
                 }
-                return clearInterval(timer);
+                btnSFFind.$ext.innerText = "Find";
+                return clearInterval(_self.timer);
             }
         }, 200);
         
@@ -528,10 +560,13 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             var countJSON = JSON.parse(count);
             var finalMessage = this.messageFooter(countJSON);
-            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
         }
-        else
+        
+        if (content.length > 0)
             doc.insertLines(currLength, contentArray);
+        
+        if (countJSON !== undefined)
+            doc.insertLines(doc.getLength(), ["\n", finalMessage, "\n", "\n"]);
     },
     
     messageHeader : function(path, options) {
@@ -571,6 +606,18 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         return message;
     },
     
+    cancelFind : function() {
+        clearInterval(this.timer); // still need to handle actual kill for server
+    
+        var killMessage = "Search ended prematurely.";
+        
+        if (chkSFConsole.checked) {
+            this.appendLines(this.consoleacedoc,killMessage);
+        }
+        else {
+            this.appendLines(this.tabacedoc, killMessage);
+        } 
+    },
     
     enable : function(){
         this.nodes.each(function(item){

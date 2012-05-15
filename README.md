@@ -42,6 +42,12 @@ Requirements:
 Install:
 
     sm clone --dev https://github.com/ajaxorg/cloud9/tree/master cloud9
+    
+    # or
+    
+    git clone https://github.com/ajaxorg/cloud9.git cloud9
+    cd cloud9
+    sm install
 
 This creates a `cloud9` directory in your current directory, just `cd` into it
 and run `bin/cloud9.sh` to start:
@@ -62,6 +68,10 @@ To update to the latest version (if this doesn't work, just make a fresh clone):
 
     git pull
     sm update
+
+`sm update` does not currently install missing npm dependencies. To do so use:
+
+    sm install
 
 ## Development
 
@@ -97,6 +107,14 @@ The sourcemint package manager works alongside NPM so to link in a
 
 `sm` always works on your program sub-tree other than pulling things in
 from the cache.
+
+To view help info for cloud9 use:
+
+    sm help
+
+To view usage info for `sm` use:
+
+    sm -h
 
 ## Open Source Projects Used
 
