@@ -479,7 +479,15 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     timingFunction: "ease-in-out"
                 }, 0.2, function(){
                     winSearchReplace.visible = true;
-                    winSearchReplace.hide();
+                    
+                    if(noselect && apf.window.activeElement) {
+                        var curEle = apf.window.activeElement;
+                        winSearchReplace.hide();
+                        curEle.focus();
+                        curEle.select();
+                    } else {
+                        winSearchReplace.hide();   
+                    }
                     
                     winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
     
