@@ -20,6 +20,8 @@ var startChar = {
     "insert": "+ "
 };
 
+var docContentsOnRev = {};
+
 var getLastAndAfterRevisions = function(data) {
     var group = data.group;
     // Ordered timestamps
@@ -75,6 +77,9 @@ self.onmessage = function(e) {
     switch (e.data.type) {
         case "preloadlibs":
             loadLibs();
+            break;
+        case "closefile":
+            docContentsOnRev[e.data.path] = null;
             break;
         case "preview":
             var results = getLastAndAfterRevisions(e.data);
@@ -158,15 +163,27 @@ self.onmessage = function(e) {
             break;
 
         case "newRevision":
-            beforeRevision = "";
-            var tss = e.data.timestamps || [];
-            for (var i = 0, l = tss.length; i < l; i++) {
-                patch = e.data.revisions[tss[i]].patch[0];
-                beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
-            }
-
             lastContent = e.data.lastContent;
+            // That means that the main thread has already sent the revisions to
+            // the worker before, thus the latter has the data and the previous 
+            // content of the document, so we don't have to calculate again, and 
+            // more important, the amount of data the main thread has to sent is
+            // MUCH smaller.
+            if (e.data.hasBeenSentToWorker === true) {
+                // Assuming it always is the previous revision, which could be wrong
+                beforeRevision = docContentsOnRev[e.data.path];
+            }
+            else {
+                beforeRevision = "";
+                var tss = e.data.timestamps || [];
+                for (var i = 0, l = tss.length; i < l; i++) {
+                    patch = e.data.revisions[tss[i]].patch[0];
+                    beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
+                }
+            }
+            
             patch = self.dmp.patch_make(beforeRevision, lastContent);
+            docContentsOnRev[e.data.path] = lastContent;
 
             // If there is no actual changes, let's return
             if (patch.length === 0) {

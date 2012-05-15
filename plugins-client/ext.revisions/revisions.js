@@ -446,6 +446,11 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (self.docChangeListeners[path]) {
                 delete self.docChangeListeners[path];
             }
+            
+            self.worker.postMessage({
+                type: "closefile",
+                path: path
+            });
 
             for (var rev in self.revisionQueue) {
                 var _path = self.revisionQueue[rev].path;
@@ -463,10 +468,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         rev.revisions = revObj.allRevisions;
         // To not have to extract and sort timestamps from allRevisions
         rev.timestamps = revObj.allTimestamps;
-        var self = this;
-        setTimeout(function() {
-            self.worker.postMessage(rev);
-        });
+        this.worker.postMessage(rev);
     },
 
     onRevisionSaved: function(data) {
@@ -744,10 +746,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                             type: "recovery",
                             lastContent: page.$doc.getValue(),
                             realContent: message.contents,
-                            revisions: revObj.allRevisions,
-                            path: message.path,
-                            // To not have to extract and sort timestamps from allRevisions
-                            timestamps: revObj.allTimestamps
+                            path: message.path
                         };
 
                         if (message.nextAction === "storeAsRevision") {
@@ -1287,7 +1286,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!this.isCollab(doc)) {
             data.type = "newRevision";
             data.lastContent = doc.getValue();
-
+            
             if (ide.onLine === false) {
                 data.ts = Date.now();
                 this.offlineQueue.push(data);
@@ -1299,9 +1298,18 @@ module.exports = ext.register("ext/revisions/revisions", {
                 // To not have to extract and sort timestamps from allRevisions
                 data.timestamps = revObj.allTimestamps;
                 var self = this;
-                setTimeout(function() {
+                if (revObj.hasBeenSentToWorker === true) {
+                    self.worker.postMessage({
+                        type: "newRevision",
+                        path: docPath,
+                        lastContent: data.lastContent,
+                        hasBeenSentToWorker: true
+                    });
+                }
+                else {
                     self.worker.postMessage(data);
-                })
+                    revObj.hasBeenSentToWorker = true;
+                }
                 return;
             }
         }
