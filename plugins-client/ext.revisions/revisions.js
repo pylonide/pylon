@@ -50,6 +50,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
+    
+    isAutoSaveEnabled: false,
 
     /**
      * Revisions#rawRevisions -> Object
@@ -129,6 +131,14 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
+            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+        });
+        
+        ide.addEventListener("settings.save", function(e) {
+            if (!e.model.data)
+                return;
+                
+            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
         btnSave.setAttribute("caption", "");
@@ -202,7 +212,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(page);
-            if (Util.isAutoSaveEnabled() && hasChanged) {
+            if (this.isAutoSaveEnabled && hasChanged) {
                 apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
                 apf.setStyleClass(saveStatus, "saving", ["saved"]);
                 return btnSave.setCaption("Saving");
@@ -288,7 +298,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions === true && lstRevisions) {
+        if (page.$showRevisions === true && lstRevisions && !this.isNewPage(page)) {
             var selection = lstRevisions.selection;
             var node = model.data.firstChild;
             if (selection && selection.length === 0 && page.$selectedRevision) {
@@ -327,7 +337,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
-        this.prevAutoSaveValue = Util.isAutoSaveEnabled();
+        this.prevAutoSaveValue = this.isAutoSaveEnabled;
         settings.model.setQueryValue("general/@autosaveenabled", false);
 
         var path = Util.stripWSFromPath(e.path);
@@ -365,7 +375,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onBeforeSaveWarning: function(e) {
         var isNewFile = apf.isTrue(e.doc.getNode().getAttribute("newfile"));
-        if (!isNewFile && Util.isAutoSaveEnabled()) {
+        if (!isNewFile && this.isAutoSaveEnabled) {
             this.save();
             return false;
         }
@@ -523,10 +533,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        //@todo this is all ery slow.... happens on every keystroke...
         var page = doc.$page, self = this;
-        if (page && !this.isNewPage(page) 
-          && Util.isAutoSaveEnabled()) {
+        if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
             setTimeout(function(){
                 self.setSaveButtonCaption();
             });
@@ -1201,7 +1209,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
-        if (typeof tabEditors === "undefined" || !Util.isAutoSaveEnabled())
+        if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
 
         tabEditors.getPages().forEach(this.save, this);
