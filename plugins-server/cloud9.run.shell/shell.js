@@ -115,7 +115,6 @@ var Runner = exports.Runner = function(options) {
             this.command = "sudo";
         }
 
-        console.log("About to spawn child", this.command, this.args, this.runOptions);
         try {
             var child = spawn(this.command, this.args, this.runOptions);
         } catch (e) {
