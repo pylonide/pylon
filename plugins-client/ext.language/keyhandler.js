@@ -23,7 +23,6 @@ function composeHandlers(mainHandler, fallbackHandler) {
 }
 
 function onTextInput(text, pasted) {
-    console.log("onTextInput");
     if (language.disabled)
         return false;
     if (language.isContinuousCompletionEnabled())
@@ -75,7 +74,6 @@ function typeAlongCompleteTextInput(text, pasted) {
 }
 
 function handleChar(ch) {
-    console.log("char: " + ch);
     if(ch.match(/[A-Za-z0-9_\$\.]/)) {
         var ext = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
