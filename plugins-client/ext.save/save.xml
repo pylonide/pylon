@@ -49,7 +49,7 @@
       height    = "395"
       icon      = ""
       buttons   = "close"
-      skin      = "bk-window"
+      skin      = "bk-window2"
       kbclose   = "true"
       resizable = "true"
       title     = "Save As"
@@ -62,16 +62,21 @@
             <a:hbox
               align     = "center"
               padding   = "5">
-                <a:label flex="1" class="lbl_saveas">Save as:</a:label>
+                <a:label class="lbl_saveas">Save as:</a:label>
                 <a:textbox
                   id           = "txtSaveAs"
                   flex         = "7"
                   focusselect  = "true"
                   onkeydown    = "if (event.keyCode == 13) require('ext/save/save').choosePath(lblPath.getProperty('caption') + this.getValue())" />
             </a:hbox>
-            <a:label id="lblPath" class="lbl_filepath" />
-
-            <div class="dgLikeContaier">
+            <a:hbox
+              align     = "center"
+              padding   = "5">
+                <a:label class="lbl_saveas">Where:</a:label>
+                <a:label id="lblPath" class="lbl_filepath" />
+            </a:hbox>
+            
+            <div class="dgLikeContaier"  flex="1">
                 <div class="heading">Project folder</div>
                 <a:hbox
                   anchors  = "20 0 0 0"
@@ -110,7 +115,7 @@
                             action="tree-append" copy="{event.ctrlKey}" />
                     </a:tree>
                 </a:hbox>
-            </div>
+            </div> 
             <a:hbox padding="15" align="center">
                 <a:button
                   width    = "104"
@@ -133,22 +138,22 @@
                         apf.setStyleClass(trSaveAs.$ext, 'hidefiles');
                   ">Show files in tree</a:checkbox>
             </a:hbox>
-            <a:hbox
-              edge    = "23 0 10"
-              pack    = "end"
-              padding = "8">
+            
+            <a:hbox edge="23 0 10" pack="end" padding = "8">
                 <a:button
-                  skin    = "btn-default-css3"
-                  onclick = "winSaveAs.hide()">
-                    Cancel
-                </a:button>
-                <a:button
-                  class    = "btn-green"
-                  default  = "2"
                   skin     = "btn-default-css3"
-                  onclick  = "require('ext/save/save').confirmSaveAs()">
-                    Save
-                </a:button>
+                  caption  = "Cancel"
+                  margin   = "0 10 0 0"
+                  onclick  = "winSaveAs.hide()"
+                />
+                <a:button
+                  class   = "btn-green"
+                  caption = "Save"
+                  default  = "2"
+                  margin = "0 0 0 10"
+                  skin = "btn-default-css3"
+                  onclick = "require('ext/save/save').confirmSaveAs()"
+                />
             </a:hbox>
         </a:vbox>
     </a:window>

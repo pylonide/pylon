@@ -53,6 +53,8 @@ module.exports = ext.register("ext/console/console", {
     excludeParent : true,
     keyEvents: {},
 
+    pageIdToPidMap : {},
+
     onMessageMethods: {
         cd: function(message, outputElDetails) {
             var res = message.body;
@@ -63,11 +65,16 @@ module.exports = ext.register("ext/console/console", {
         },
 
         error: function(message, outputElDetails) {
-            logger.logNodeStream(message.body, null, outputElDetails, ide);
+            logger.logNodeStream(message.body.errmsg, null, outputElDetails, ide);
         },
 
         info: function (message, outputElDetails) {
             logger.logNodeStream(message.body, null, outputElDetails, ide);
+        },
+
+        ps: function(message, outputElDetails) {
+            if (message.body.extra.sentatinit)
+                this.recreateLogStreamBlocks(message.body.out);
         },
 
         __default__: function(message, outputElDetails) {
@@ -79,12 +86,57 @@ module.exports = ext.register("ext/console/console", {
         }
     },
 
-    getLogStreamOutObject : function(tracer_id, idIsPid) {
+    recreateLogStreamBlocks: function(serverProcs) {
+        for (var spi in serverProcs) {
+            if (this.pidToTracerMap[spi])
+                continue;
+
+            var proc = serverProcs[spi];
+
+            var original_line;
+            var command_id;
+            if (proc.extra) {
+                command_id = proc.extra.command_id;
+                original_line = proc.extra.original_line;
+                this.createOutputBlock(this.getPrompt(original_line), false, command_id);
+
+                if (proc.type === "run-npm") {
+                    txtConsolePrompt.setValue("$ " + original_line.split(" ")[0]);
+                    txtConsolePrompt.show();
+                }
+            }
+            else {
+                command_id = this.createNodeProcessLog(spi);
+            }
+
+            this.tracerToPidMap[command_id] = spi;
+            this.pidToTracerMap[spi] = command_id;
+
+            var containerEl = document.getElementById("console_section" + command_id);
+            containerEl.setAttribute("rel", command_id);
+            apf.setStyleClass(containerEl, "has_pid");
+
+            if (!proc.extra)
+                this.command_id_tracer++;
+            else
+                this.command_id_tracer = Math.max(this.command_id_tracer, command_id);
+        }
+    },
+
+    getLogStreamOutObject: function(tracer_id, idIsPid, originalInput) {
         if (idIsPid)
             tracer_id = this.pidToTracerMap[tracer_id];
         var id = "section" + tracer_id;
+        var $ext = document.getElementById("console_" + id);
+
+        // Create the output block
+        if (!$ext && typeof originalInput !== "undefined") {
+            this.createOutputBlock(this.getPrompt(originalInput), null, tracer_id);
+            $ext = document.getElementById("console_" + id);
+        }
+
         return {
-            $ext : document.getElementById("console_" + id),
+            $ext : $ext,
             id : id
         };
     },
@@ -95,15 +147,30 @@ module.exports = ext.register("ext/console/console", {
 
         logger.logNodeStream(
             words.sort()
-                .map(function(w) { return w + tabs + commands.commands[w].hint; })
-                .join("\n"),
+                .map(function(w) {
+                    if (!w)
+                        return "";
+                    return w + tabs + (commands.commands[w].hint || "");
+                }).join("\n"),
             null, this.getLogStreamOutObject(data.tracer_id), ide
         );
     },
 
     clear: function() {
-        if (txtConsole)
-            txtConsole.clear();
+        var activePg = tabConsole.getPage();
+        if (activePg.childNodes[0].tagName.indexOf("text") === -1)
+            return;
+
+        var outputHtmlEl = activePg.childNodes[0].$ext;
+        var outputBlocks = outputHtmlEl.getElementsByClassName("output_section");
+        for (var o = 0; o < outputBlocks.length; /* empty */) {
+            if (outputBlocks[0].className.indexOf("loaded") === -1) {
+                o++;
+                continue;
+            }
+
+            outputBlocks[0].parentNode.removeChild(outputBlocks[0]);
+        }
 
         return false;
     },
@@ -125,7 +192,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     showOutput: function() {
-        tabConsole.set(1);
+        tabConsole.set("output");
     },
 
     getCwd: function() {
@@ -143,9 +210,8 @@ module.exports = ext.register("ext/console/console", {
     },
 
     commandTextHandler: function(e) {
-        var code = e.keyCode;
-        if (this.keyEvents[code])
-            this.keyEvents[code](e.currentTarget);
+        if (this.keyEvents[e.keyCode])
+            this.keyEvents[e.keyCode](e.currentTarget);
     },
 
     keyupHandler: function(e) {
@@ -158,21 +224,51 @@ module.exports = ext.register("ext/console/console", {
             return this.commandTextHandler(e);
     },
 
-    createOutputBlock: function(line, useOutput) {
-        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner', this.command_id_tracer,
+    createOutputBlock: function(line, useOutput, tracerIdFromServer) {
+        var command_id_tracer = tracerIdFromServer || this.command_id_tracer;
+        var spinnerBtn = ['<div class="prompt_spinner"', ' id="spinner', command_id_tracer,
             '" onclick="return require(\'ext/console/console\').handleOutputBlockClick(event)"></div>']
             .join("");
 
-        var outputId = "console_section" + this.command_id_tracer;
-        logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>', useOutput, outputId);
+        var outputId = "console_section" + command_id_tracer;
+        if (this.inited && (typeof useOutput === "undefined" || (typeof useOutput === "boolean" && !useOutput))) {
+            useOutput = {
+                $ext : tabConsole.getPage().childNodes[0].$ext,
+                id : outputId
+            };
+        }
+        logger.log(line, "prompt", spinnerBtn, '<div class="prompt_spacer"></div>',
+            useOutput, outputId);
 
         var outputEl = document.getElementById(outputId);
         apf.setStyleClass(outputEl, "loading");
 
-        return this.command_id_tracer;
+        return command_id_tracer;
     },
 
     evalInputCommand: function(line) {
+        if (txtConsolePrompt.visible) {
+            var htmlPage = tabConsole.getPage().$ext;
+            var loadingBlocks = htmlPage.getElementsByClassName("loading");
+            var outputBlockEl = loadingBlocks[loadingBlocks.length - 1];
+            if (outputBlockEl)
+                outputBlockEl.lastChild.innerHTML += line;
+
+            // @TODO update this to not be $uniqueId, but rather just id
+            var pageId = tabConsole.getPage().$uniqueId;
+
+            var data = {
+                command: "npm-module-stdin",
+                line: line,
+                pid: this.pageIdToPidMap[pageId].pid
+            };
+            ide.send(data);
+            return;
+        }
+
+        if (tabConsole.activepage === "output")
+            tabConsole.set("console");
+
         parseLine || (parseLine = require("ext/console/parser"));
         var argv = parseLine(line);
         if (!argv || argv.length === 0) // no commmand line input
@@ -182,9 +278,8 @@ module.exports = ext.register("ext/console/console", {
         argv[0] = argv[0].replace(/["'`]/g, "");
         this.cliInputHistory.push(line);
 
-        this.createOutputBlock(this.getPrompt(line));
-
-        tabConsole.set("console");
+        if (line !== "clear" && line !== "newtab")
+            this.createOutputBlock(this.getPrompt(line));
 
         var showConsole = true;
         var cmd = argv[0];
@@ -204,8 +299,11 @@ module.exports = ext.register("ext/console/console", {
                 argv: argv,
                 line: line,
                 cwd: this.getCwd(),
-                requireshandling: true,
-                tracer_id: this.command_id_tracer
+                requireshandling: !commands.commands[cmd],
+                tracer_id: this.command_id_tracer,
+                extra : {
+                    command_id : this.command_id_tracer
+                }
             };
 
             if (cmd.trim() === "npm")
@@ -227,7 +325,7 @@ module.exports = ext.register("ext/console/console", {
 
         // If no local extensions handle the command, send it server-side for
         // those extensions to handle it
-        if (ext.execCommand(cmd, data) !== false) {
+        if (ext.execCommand(cmd, data) !== true) {
             var commandEvt = "consolecommand." + cmd;
             var consoleEvt = "consolecommand";
             var commandEvResult = ide.dispatchEvent(commandEvt, { data: data });
@@ -241,10 +339,15 @@ module.exports = ext.register("ext/console/console", {
                 }
                 else {
                     data.extra = {
-                        command_id : this.command_id_tracer
+                        command_id : this.command_id_tracer,
+                        original_line : data.line,
+                        page_id : tabConsole.getPage().$uniqueId
                     };
 
+                    tabConsole.getPage().setCaption(cmd);
                     ide.send(data);
+                    this.command_id_tracer++;
+                    return true;
                 }
             }
             else {
@@ -253,6 +356,7 @@ module.exports = ext.register("ext/console/console", {
             }
         }
 
+        this.markProcessAsCompleted(data.tracer_id);
         this.command_id_tracer++;
         return true;
     },
@@ -261,25 +365,55 @@ module.exports = ext.register("ext/console/console", {
         if (idIsPid)
             id = this.pidToTracerMap[id];
         var spinnerElement = document.getElementById("spinner" + id);
+
         if (spinnerElement) {
+            logger.killBufferInterval(id);
             var pNode = spinnerElement.parentNode;
+
+            var page = apf.findHost(pNode.parentNode.parentNode);
+            if (page.id !== "pgOutput")
+                page.setCaption("Console");
+
             if (pNode.className.indexOf("quitting") !== -1) {
                 apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
                 logger.logNodeStream("Process successfully quit", null,
                     this.getLogStreamOutObject(id), ide);
             }
 
-            Firmin.animate(spinnerElement, {
-                opacity : 0,
-                delay : 0.2 },
-            0.3, function() {
-                spinnerElement.setAttribute("style", "");
-                apf.setStyleClass(spinnerElement.parentNode, "loaded", ["loading"]);
+            setTimeout(function() {
+                spinnerElement = document.getElementById("spinner" + id);
+                spinnerElement.style.opacity = 0;
                 setTimeout(function() {
+                    spinnerElement = document.getElementById("spinner" + id);
+                    pNode = spinnerElement.parentNode;
+                    apf.setStyleClass(pNode, "loaded", ["loading"]);
+                    spinnerElement.setAttribute("style", "");
                     spinnerElement.style.opacity = "1";
-                }, 100);
-            });
+                }, 300);
+            }, 200);
         }
+    },
+
+    createNodeProcessLog : function(message_pid) {
+        var command_id = this.createOutputBlock("Running Node Process", true);
+        this.tracerToPidMap[command_id] = message_pid;
+        this.pidToTracerMap[message_pid] = command_id;
+
+        var containerEl = this.getLogStreamOutObject(command_id).$ext;
+        containerEl.setAttribute("rel", command_id);
+        apf.setStyleClass(containerEl, "has_pid");
+
+        if (window.cloud9config.hosted) {
+            var url = location.protocol + "//" +
+                ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
+                "." + location.host;
+            logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
+                "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
+                null, this.getLogStreamOutObject(message_pid, true), ide);
+        }
+
+        this.command_id_tracer++;
+        return command_id;
     },
 
     onMessage: function(e) {
@@ -287,30 +421,24 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         var message = e.message;
+        //console.log(message.type, message);
         var extra = message.extra;
         if (!extra && message.body)
             extra = message.body.extra;
 
+        if (extra) {
+            // If true, this client is receiving data about a command that did
+            // not originate from it
+            if (extra.command_id >= this.command_id_tracer)
+                this.command_id_tracer = extra.command_id + 1;
+        }
+
         switch(message.type) {
             case "node-start":
-                var command_id = this.createOutputBlock("Running Node Process", true);
-                this.tracerToPidMap[command_id] = message.pid;
-                this.pidToTracerMap[message.pid] = command_id;
-
-                var containerEl = this.getLogStreamOutObject(command_id).$ext;
-                containerEl.setAttribute("rel", command_id);
-                apf.setStyleClass(containerEl, "has_pid");
-
-                if (window.cloud9config.hosted) {
-                    var url = location.protocol + "//" +
-                        ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
-                        "." + location.host;
-                    logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
-                        "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
-                        null, this.getLogStreamOutObject(message.pid, true), ide);
-                }
-
-                this.command_id_tracer++;
+                var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
+                if (apf.isTrue(clearOnRun) && window["txtOutput"])
+                    txtOutput.clear();
+                this.createNodeProcessLog(message.pid);
                 return;
             case "node-data":
                 logger.logNodeStream(message.data, message.stream,
@@ -319,6 +447,34 @@ module.exports = ext.register("ext/console/console", {
             case "node-exit":
                 this.markProcessAsCompleted(message.pid, true);
                 return;
+            case "npm-module-start":
+                var stdin_prompt = extra.original_line.split(" ")[0];
+                this.pageIdToPidMap[extra.page_id] = {
+                    pid: message.pid,
+                    prompt: stdin_prompt
+                };
+                txtConsolePrompt.setValue("$ " + stdin_prompt);
+                txtConsolePrompt.show();
+                break;
+            case "npm-module-data":
+                break;
+            case "npm-module-exit":
+                this.pageIdToPidMap[extra.page_id] = null;
+                if (tabConsole.getPage().$uniqueId === extra.page_id) {
+                    txtConsolePrompt.hide();
+                }
+                else {
+                    // We may have reconstructed the output and have a mismatched
+                    // id
+                    // @TODO implement:
+                    // 1. Give each new page a unique "id" (NOT $uniqueId)
+                    // 2. When sending a command, include the unique ID
+                    // 3. Save the pages in settings.xml
+                    // 4. Recreate pages on refresh
+                    // 5. When this npm-module-exit message happens, don't get the
+                    //    page's uniqueId, map the "id" to the page
+                }
+                break;
             case "kill":
                 if (message.err) {
                     logger.logNodeStream(message.err, null,
@@ -326,60 +482,67 @@ module.exports = ext.register("ext/console/console", {
                 }
                 break;
             default:
-                if (message.type.match(/-start$/)) {
-                    var command_id = extra && extra.command_id;
-
-                    if (!command_id) {
-                        return;
-                    }
-
-                    this.tracerToPidMap[command_id] = message.pid;
-                    this.pidToTracerMap[message.pid] = command_id;
-
-                    var containerEl = this.getLogStreamOutObject(command_id).$ext;
-                    containerEl.setAttribute("rel", command_id);
-                    apf.setStyleClass(containerEl, "has_pid");
-                    return;
-                }
-
-                if (message.type.match(/-data$/)) {
-                    var type = "tracer";
-                    var id = extra && extra.command_id;
-                    if (!id) {
-                        type = "pid";
-                        id = message.pid;
-                    }
-
-                    logger.logNodeStream(message.data, message.stream,
-                        this.getLogStreamOutObject(id, type === "pid"), ide);
-                    return;
-                }
-
-                if (message.type.match(/-exit$/)) {
-                    if (extra && extra.command_id)
-                        this.markProcessAsCompleted(extra.command_id);
-                    else
-                        this.markProcessAsCompleted(message.pid, true);
-                    return;
-                }
                 break;
         }
 
-        // If we get to this point and `extra` is available, it's a process that
-        // sends all its stdout _after_ it has quit. Thus, we complete it here
-        if (extra)
-            this.markProcessAsCompleted(extra.command_id);
+        if (message.type.match(/-start$/)) {
+            var command_id = extra && extra.command_id;
+            // @TODO Check from Merge 9966d812455546e7d53c60f4aab5ffa0ffbb5b99
+            //if (!command_id)
+            //    return;
+
+            this.tracerToPidMap[command_id] = message.pid;
+            this.pidToTracerMap[message.pid] = command_id;
+
+            var containerEl = this.getLogStreamOutObject(command_id, null, extra.original_line).$ext;
+            containerEl.setAttribute("rel", command_id);
+            apf.setStyleClass(containerEl, "has_pid");
+            return;
+        }
+
+        if (message.type.match(/-data$/)) {
+            var type = "tracer";
+            var id = extra && extra.command_id;
+            if (!command_id) {
+                type = "pid";
+                id = message.pid;
+            }
+
+            logger.logNodeStream(message.data, message.stream,
+                this.getLogStreamOutObject(id, type === "pid"), ide);
+            return;
+        }
+
+        if (message.type.match(/-exit$/)) {
+            if (extra.command_id)
+                this.markProcessAsCompleted(extra.command_id);
+            else
+                this.markProcessAsCompleted(message.pid, true);
+            return;
+        }
 
         if (message.type !== "result")
             return;
 
         var outputElDetails;
         if (extra)
-            outputElDetails = this.getLogStreamOutObject(extra.command_id);
+            outputElDetails = this.getLogStreamOutObject(extra.command_id, null, extra.original_line);
+
         if (this.onMessageMethods[message.subtype])
             this.onMessageMethods[message.subtype].call(this, message, outputElDetails);
         else
             this.onMessageMethods.__default__.call(this, message, outputElDetails);
+
+        // If we get to this point and `extra` is available, it's a process that
+        // sends all its stdout _after_ it has quit. Thus, we complete it here
+        if (extra) {
+            if (message.subtype === "internal-isfile") {
+                var fileOutputMsg = message.body.isfile ? "File opened" : "File not found";
+                logger.logNodeStream(fileOutputMsg, null,
+                    this.getLogStreamOutObject(extra.command_id), ide);
+            }
+            this.markProcessAsCompleted(extra.command_id);
+        }
 
         ide.dispatchEvent("consoleresult." + message.subtype, {
             data: message.body
@@ -400,14 +563,22 @@ module.exports = ext.register("ext/console/console", {
         // Append the console window at the bottom below the tab
         this.markupInsertionPoint = mainRow;
 
+        ide.addEventListener("socketMessage", this.onMessage.bind(this));
+
         commands.addCommand({
             name: "help",
             hint: "show general help information and a list of available commands",
             exec: function () {
-                _self.help();
+                _self.help({tracer_id: _self.command_id_tracer});
             }
         });
-
+        commands.addCommand({
+            name: "newtab",
+            hint: "add a new tab to the CLI",
+            exec: function () {
+                _self.newtab();
+            }
+        });
         commands.addCommand({
             name: "clear",
             hint: "clear all the messages from the console",
@@ -423,7 +594,6 @@ module.exports = ext.register("ext/console/console", {
                 _self.switchconsole();
             }
         });
-
         commands.addCommand({
             name: "toggleconsole",
             bindKey: {mac: "Ctrl-Esc", win: "F6"},
@@ -434,7 +604,6 @@ module.exports = ext.register("ext/console/console", {
                     _self.hide();
             }
         });
-
         commands.addCommand({
             name: "toggleinputbar",
             exec: function () {
@@ -510,8 +679,10 @@ module.exports = ext.register("ext/console/console", {
         });
 
         ide.addEventListener("settings.load", function(e){
-            if (!e.model.queryNode("auto/console/@autoshow"))
-                e.model.setQueryValue("auto/console/@autoshow", true);
+            settings.setDefaults("auto/console", [
+                ["autoshow", "true"],
+                ["clearonrun", "true"]
+            ]);
 
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
 
@@ -534,6 +705,10 @@ module.exports = ext.register("ext/console/console", {
                     _self.showOutput();
                 }, 200);
             }
+            else {
+                if (self.tabConsole && tabConsole.visible)
+                    _self.showOutput();
+            }
         });
     },
 
@@ -549,16 +724,18 @@ module.exports = ext.register("ext/console/console", {
             visible : false
         }), winDbgConsole);
 
-        ide.addEventListener("socketMessage", this.onMessage.bind(this));
         ide.addEventListener("consoleresult.internal-isfile", function(e) {
             var data = e.data;
             var path = data.cwd.replace(ide.workspaceDir, ide.davPrefix);
             if (!editors)
                 editors = require("ext/editors/editors");
-            if (data.isfile)
+            if (data.isfile) {
                 editors.showFile(path);
-            else
-                logger.log("'" + path + "' is not a file.");
+            }
+            else {
+                // @TODO Update
+                //logger.log("'" + path + "' is not a file.");
+            }
         });
 
         txtConsoleInput.addEventListener("keyup", this.keyupHandler.bind(this));
@@ -585,6 +762,16 @@ module.exports = ext.register("ext/console/console", {
         });
 
         tabConsole.addEventListener("afterswitch", function(e){
+            var pageNpmInfo = _self.pageIdToPidMap[e.nextPage.$uniqueId];
+            if (pageNpmInfo) {
+                txtConsolePrompt.setValue(pageNpmInfo.prompt);
+                txtConsolePrompt.show();
+            }
+            else {
+                txtConsolePrompt.hide();
+            }
+
+            // Now find any running procs
             settings.model.setQueryValue("auto/console/@active", e.nextPage.name);
             setTimeout(function(){
                 txtConsoleInput.focus();
@@ -650,9 +837,48 @@ module.exports = ext.register("ext/console/console", {
             }
         });
 
-        // @TODO Defunct
-        apf.setStyleClass(txtConsole.$ext, "feedback");
-        apf.setStyleClass(txtOutput.$ext, "feedback");
+        logger.appendConsoleFragmentsAfterInit();
+
+        this.getRunningServerProcesses();
+    },
+
+    newtab : function() {
+        var c9shell = tabConsole.add("Console");
+        c9shell.setAttribute("closebtn", true);
+        var c9shellText = c9shell.appendChild(new apf.text({
+            margin     : "3 0 0 0",
+            anchors    : "0 17 0 0",
+            flex       : "1",
+            scrolldown : "true",
+            focussable : "true",
+            textselect : "true",
+            "class"    : "console_text"
+        }));
+        c9shell.appendChild(new apf.scrollbar({
+            "for"     : c9shellText,
+            right     : "0",
+            top       : "0",
+            bottom    : "0",
+            skin      : "console_scrollbar",
+            width     : "17"
+        }));
+        tabConsole.set(c9shell);
+    },
+
+    getRunningServerProcesses : function() {
+        var data = {
+            command: "ps",
+            argv: null,
+            line: "ps",
+            cwd: this.getCwd(),
+            requireshandling: true,
+            tracer_id: this.command_id_tracer,
+            extra : {
+                sentatinit: true
+            }
+        };
+
+        ide.send(data);
     },
 
     /**
@@ -677,10 +903,13 @@ module.exports = ext.register("ext/console/console", {
     killProcess : function(pNode) {
         var command_id;
         // Simply get the ID of the last command sent to the server
-        if (typeof pNode === "undefined")
-            command_id = (this.command_id_tracer - 1)
-        else
+        if (typeof pNode === "undefined") {
+            command_id = (this.command_id_tracer - 1);
+            pNode = document.getElementById("console_section" + command_id);
+        }
+        else {
             command_id = parseInt(pNode.getAttribute("rel"), 10);
+        }
 
         var pid = this.tracerToPidMap[command_id];
         if (!pid)
@@ -696,6 +925,12 @@ module.exports = ext.register("ext/console/console", {
         });
     },
 
+    checkIfPageCanClose : function(e) {
+        if (e.page.childNodes[0].$ext.getElementsByClassName("loading").length)
+            return false;
+        return true;
+    },
+
     /**
      * @param DOMElement pNode The container block to be expanded
      * @param Event e The click event
@@ -707,34 +942,26 @@ module.exports = ext.register("ext/console/console", {
         var txt = apf.findHost(pNode);
         txt.$scrolldown = false;
 
-        var height = parseInt(pNode.getAttribute("rel"), 10);
         apf.setStyleClass(pNode, null, ["collapsed"]);
-        Firmin.animate(pNode, {
-            height : height + "px"
-        }, 0.2, function() {
+        pNode.style.height = (pNode.scrollHeight-20) + "px";
+        setTimeout(function() {
             apf.layout.forceResize(tabConsole.$ext);
-        });
+        }, 200);
     },
 
     /**
      * @param DOMElement pNode The container block to be collapsed
      */
     collapseOutputBlock : function(pNode) {
-        // 20 = padding
-        var startingHeight = apf.getHtmlInnerHeight(pNode) - 20;
-        pNode.style.height = startingHeight + "px";
-        pNode.setAttribute("rel", startingHeight);
         apf.setStyleClass(pNode, "collapsed");
-        Firmin.animate(pNode, {
-            height : "14px"
-        }, 0.2, function() {
+        pNode.style.height = "14px";
+        setTimeout(function() {
             apf.layout.forceResize(tabConsole.$ext);
-
             var txt = apf.findHost(pNode);
             var scroll = txt.$scrollArea;
             txt.$scrolldown = scroll.scrollTop >= scroll.scrollHeight
                 - scroll.offsetHeight + apf.getVerBorders(scroll);
-        });
+        }, 200);
 
         pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');
     },
@@ -792,7 +1019,8 @@ module.exports = ext.register("ext/console/console", {
 
         cliBox.show();
 
-        if (!immediate) {
+        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        if (!immediate && animOn) {
             cliBox.$ext.style.height = "0px";
             cliBox.$ext.scrollTop = 0;
             setTimeout(function(){
@@ -848,8 +1076,9 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         this.$collapsedHeight = 0;
-
-        if (!immediate) {
+        
+        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        if (!immediate && animOn) {
             if (this.hidden) {
                 Firmin.animate(winDbgConsole.$ext, {
                     height: "0px",
@@ -863,6 +1092,7 @@ module.exports = ext.register("ext/console/console", {
                 timingFunction: "ease-in-out"
             }, 0.3, function(){
                 cliBox.hide();
+                cliBox.$ext.style.height = "";
                 apf.layout.forceResize();
                 clearTimeout(timer);
             });
@@ -982,4 +1212,3 @@ module.exports = ext.register("ext/console/console", {
     }
 });
 });
-

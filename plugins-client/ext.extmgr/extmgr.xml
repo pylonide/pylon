@@ -92,6 +92,7 @@
                   "
                 />
                 <a:button
+                  class   = "btn-green"
                   caption = "Done"
                   margin = "0 0 0 10"
                   skin = "btn-default-css3"

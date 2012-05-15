@@ -1,0 +1,3 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox class="underlined" label="Reveal Active File in Project Tree" value="[general/@revealfile]" skin="checkbox_grey" position="4000" />
+</a:application>

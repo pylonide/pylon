@@ -323,13 +323,15 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     addConfig : function() {
         var path, name, file = ide.getActivePageModel();
         var extension = "";
-
-        if(!file)
-            return;
-
-        path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
-        name  = file.getAttribute("name").replace(/\.(js|py)$/,
-            function(full, ext){ extension = ext; return ""; });
+        
+        if (file) {
+            path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
+            name  = file.getAttribute("name").replace(/\.(js|py)$/,
+                function(full, ext){ extension = ext; return ""; });
+        }
+        else {
+            extension = name = path = "";
+        }
 
         var cfg = apf.n("<config />")
             .attr("path", path)

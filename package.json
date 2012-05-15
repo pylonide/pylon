@@ -12,7 +12,6 @@
 
     "pm": "sm",
     "dependencies": {
-
         "socket.io": "0.9.x",
         "socket.io-client": "0.9.x",
         "connect": "1.8.x",
@@ -26,8 +25,7 @@
         "dryice": "0.4.2",
 
         "mappings": "0.1.x",
-        "amd-loader": "~0.0.4",
-        "dryice": "0.4.2"
+        "amd-loader": "~0.0.4"
     },
 
     "devDependencies": {
@@ -37,12 +35,12 @@
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/3e404b953ec25b38f45f5f1808928e39f295dd78"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/f4b5a13855997e60abe8b57bfcc56755ea00dc7d"],
         "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/10179a17662c221c72bb010bd7e4feda485d2b34"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/21c6fea18d3480ef2641d9889e531ded60216082"],
-        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/c61477136918bda992faf3d4a61834ff680af45c"],
+        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/09ce2bef1c33add76ed5c52ce477df339101b435"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/6417527445915e5794e37849a1eeb8a9c6493a75"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/a8527d943900a239c9f3d36b14c995f0119a2760"]
     },

@@ -419,13 +419,13 @@ module.exports = ext.register("ext/save/save", {
                 apf.xmldb.removeAttribute(file, "newfile");
                 apf.xmldb.removeAttribute(file, "changed");
                 var xpath = newPath.replace(new RegExp("\/" + cloud9config.davPrefix.split("/")[1]), "")
-                                   .replace(new RegExp("\/" + file.getAttribute("name")), "")
-                                   .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
-                                   .replace(/\/node\(\)\[@name="workspace"\]/, "")
-                                   .replace(/\//, "") || "node()";
-                if (xpath) {
-                    var oNode  = trFiles.queryNode(xpath);
-                    if (oNode && !trFiles.queryNode("//node()[@path=\"" + newPath + "\"]")) {
+                                    .replace(new RegExp("\/" + file.getAttribute("name")), "")
+                                    .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
+                                    .replace(/\/node\(\)\[@name="workspace"\]/, "")
+                                    .replace(/\//, "") || "node()";
+                if (self.trFiles && xpath) {
+                    var oNode = trFiles.queryNode(xpath);
+                    if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]')) {
                         apf.xmldb.appendChild(oNode, file);
                     }
                 }
@@ -553,15 +553,23 @@ module.exports = ext.register("ext/save/save", {
 
     expandTree : function(){
         var _self = this;
-        setTimeout(function(){
+        
+        function expand(){
             var tabPage = tabEditors.getPage(),
-                path    = tabPage ? tabPage.$model.data.getAttribute("path") : false,
-                isNew   = tabPage.$model.data.getAttribute("newfile");
-            if(!isNew)
+                path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
+                isNew   = tabPage.$model.data.getAttribute('newfile');
+            if (!isNew)
                 _self.choosePath(path);
             else
-                trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode("//folder"));
-        });
+                trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
+        }
+        
+        if (trSaveAs.getModel()) {
+            expand();
+        }
+        else {
+            trSaveAs.addEventListener("afterload", expand);
+        }
     },
 
     enable : function(){

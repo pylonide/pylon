@@ -150,25 +150,6 @@ BODY {
     position: relative;
 }
 
-.consoleInputBox {
-    background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #1d1d1d),color-stop(1, #292929));
-    background: -moz-linear-gradient(center bottom,#1d1d1d 0%,#292929 100%);
-    padding : 1px;
-    margin: 0;
-    overflow: hidden;
-    border-top: 1px solid #1f1f1f;
-    /*border-bottom: 1px solid #b2b2b2;*/
-    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
-    -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
-    position: relative;
-    z-index: 999;
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-}
-
 .dockcol{
 /*    border-left : 1px solid #333;*/
 /*    -moz-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;
@@ -206,6 +187,33 @@ BODY {
 }
 .dockcol .basic .hbox {
 
+}
+
+.text.interactive_output {
+    border-top: 1px solid #999;
+    padding: 5px 10px;
+    font-family: menlo,courier new,fixed,swiss,sans-serif;
+    font-size: 12px;
+    color: #000;
+    line-height: 18px;
+    overflow: hidden;
+}
+.text.interactive_output .output_section {
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.text.interactive_output .prompt {
+    color: #0080ff;
+}
+
+.text.interactive_output .xmlhl {
+    color: green;
+    font-weight: bold;
+}
+
+.interactive_output .error {
+    color: red;
+    font-weight: bold;
 }
 
 .unselectable {

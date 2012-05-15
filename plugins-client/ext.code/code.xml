@@ -79,6 +79,5 @@
         <a:item type="radio" value="text/x-web-textile">Textile</a:item>
         <a:item type="radio" value="text/html">(X)HTML</a:item>
         <a:item type="radio" value="application/xml">XML</a:item>
->>>>>>> 9423a6f57ad85cb2c40d03eb764434c60406a0ae
     </a:menu>
 </a:application>

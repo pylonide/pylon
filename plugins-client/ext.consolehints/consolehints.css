@@ -13,29 +13,23 @@
     border-width: 1px 1px 0 1px;
 
     background-color: #000000;
-    background-image: linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
-    background-image: -o-linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
-    background-image: -moz-linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
-    background-image: -webkit-linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
-    background-image: -ms-linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
-    
+    background-image: url("/static/ext/main/style/images/noise_pattern_transparent30.png"),
+        linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
+    background-image: url("/static/ext/main/style/images/noise_pattern_transparent30.png"),
+        -o-linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
+    background-image: url("/static/ext/main/style/images/noise_pattern_transparent30.png"),
+        -moz-linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
+    background-image: url("/static/ext/main/style/images/noise_pattern_transparent30.png"),
+        -webkit-linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
+    background-image: url("/static/ext/main/style/images/noise_pattern_transparent30.png"),
+        -ms-linear-gradient(bottom, rgb(31,31,31) 0%, rgb(45,47,51) 100%);
+    background-repeat: repeat;
     max-height: 300px;
     overflow: auto;
     
     -webkit-box-shadow: inset 0px 1px 0px 0px #3e4041;
     -moz-box-shadow: inset 0px 1px 0px 0px #3e4041;
     box-shadow: inset 0px 1px 0px 0px #3e4041; 
-}
-
-.consoleHintsBg {
-    background-image: url("/static/ext/main/style/images/noise_pattern_transparent.png");
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;    
-    opacity: 0.3;
-    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=30);
 }
 
 .barConsoleHints a {
