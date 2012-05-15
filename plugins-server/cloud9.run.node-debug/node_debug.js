@@ -12,30 +12,62 @@ var NodeDebugProxy = require("./nodedebugproxy");
 
 var exports = module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
-    var ide = imports.ide.getServer();
+    var sandbox = imports.sandbox;
 
-    imports.sandbox.getUnixId(function(err, unixId) {
+    var url = options.url;
+
+    sandbox.getProjectDir(function(err, projectDir) {
         if (err) return register(err);
+        
+        sandbox.getPort(function(err, port) {
+            if (err) return register(err);
+            
+            sandbox.getUnixId(function(err, unixId) {
+                if (err) return register(err);
+                
+                console.log("I HAZ URL?", url);
+                if (!url) {
+                    sandbox.getHost(function(err, host) {
+                        if (err) return register(err);
+                        
+                        url = "http://" + host + ":" + port;
+                        
+                        init(projectDir, port, unixId, url);
+                    });
+                }
+                else {
+                    init(projectDir, port, unixId, url);
+                }
+            });
+        });
+    });
 
-        pm.addRunner("node-debug", exports.factory(unixId, ide));
+    function init(projectDir, port, unixId, url) {
+        pm.addRunner("node-debug", exports.factory(projectDir, port, unixId, url));
 
         register(null, {
             "run-node-debug": {}
         });
-    });
+    }
 };
 
-exports.factory = function(uid, ide) {
+exports.factory = function(root, port, uid, url) {
     return function(args, eventEmitter, eventName) {
-        var cwd = args.cwd || ide.workspaceDir;
         var options = {};
         c9util.extend(options, args);
+        options.root = root;
+        options.port = port;
         options.uid = uid;
+        options.file = args.file;
+        options.args = args.args;
+        options.cwd = args.cwd;
+        options.env = args.env;
+        options.nodeVersion = args.nodeVersion;
+        options.encoding = args.encoding;
+        options.breakOnStart = args.breakOnStart;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
-        options.args = args.args;
-        options.command = process.execPath;
-        options.cwd = cwd;
+        options.url = url;
         return new Runner(options);
     };
 };
@@ -43,7 +75,6 @@ exports.factory = function(uid, ide) {
 var Runner = exports.Runner = function(options) {
     NodeRunner.call(this, options);
     this.breakOnStart = options.breakOnStart;
-    this.extra = options.extra;
     this.msgQueue = [];
 };
 

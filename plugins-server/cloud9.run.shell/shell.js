@@ -116,6 +116,8 @@ var Runner = exports.Runner = function(options) {
         }
 
         try {
+            console.log("CALLING SHELL", this.command, this.args, this.runOptions);
+            
             var child = spawn(this.command, this.args, this.runOptions);
         } catch (e) {
             return callback(e);

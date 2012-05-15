@@ -5,29 +5,43 @@ var c9util = require("../cloud9.core/util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
 var exports = module.exports = function setup(options, imports, register) {
-   var pm = imports["process-manager"];
-   var ide = imports.ide.getServer();
+    var pm = imports["process-manager"];
+    var sandbox = imports.sandbox;
 
-   imports.sandbox.getUnixId(function(err, unixId) {
-       if (err) return register(err);
+    sandbox.getUserDir(function(err, userDir) {
+        if (err) return register(err);
+        
+        sandbox.getPort(function(err, port) {
+            if (err) return register(err);
+            
+            sandbox.getUnixId(function(err, unixId) {
+                if (err) return register(err);
+                
+                init(userDir, port, unixId);
+            });
+        });
+    });
 
-       pm.addRunner("run-npm", exports.factory(unixId, ide));
+    function init(userDir, port, unixId) {
+        pm.addRunner("run-npm", exports.factory(userDir, port, unixId));
 
-       register(null, {
-           "run-run-npm": {}
-       });
-   });
+        register(null, {
+            "run-run-npm": {}
+        });
+    }
 };
 
-exports.factory = function(uid, ide) {
+exports.factory = function(root, port, uid) {
     return function(args, eventEmitter, eventName) {
         var options = {};
         c9util.extend(options, args);
+        options.root = root;
+        options.port = port;
         options.uid = uid;
         options.file = args.file;
         options.args = args.args;
         options.env = args.env;
-        options.cwd = args.cwd || ide.workspaceDir;
+        options.cwd = args.cwd;
         options.extra = args.extra;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
@@ -45,6 +59,9 @@ var Runner = exports.Runner = function(options) {
 
     options.env = options.env || {};
     options.command = process.execPath;
+    
+    console.log("RUN NPM SHELLRUNNER", options);
+    
     ShellRunner.call(this, options);
 };
 
