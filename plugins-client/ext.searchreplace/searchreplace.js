@@ -248,10 +248,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
         
         var blur = function(e){ 
+            var searchInFilesFocus = (typeof(txtSFFind) === "undefined") ? null : txtSFFind;
+            
             if (self.hboxReplace && !hboxReplace.visible 
               && self.winSearchReplace && winSearchReplace.visible 
               && !apf.isChildOf(winSearchReplace, e.toElement)
-              && e.toElement !== txtSFFind)
+              && e.toElement !== searchInFilesFocus)
                 _self.toggleDialog(-1, null, true);
         }
         
