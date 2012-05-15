@@ -50,7 +50,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
-    
     isAutoSaveEnabled: false,
     
     /**
@@ -576,6 +575,12 @@ module.exports = ext.register("ext/revisions/revisions", {
                 };
 
                 this.$saveExistingRevision(e.data.path, revision);
+                break;
+            case "newRevision.error":
+                var revObj = this.$getRevisionObject(e.data.path);
+                if (revObj) {
+                    revObj.hasBeenSentToWorker = false;
+                }
                 break;
             case "recovery":
                 if (e.data.revision.nextAction === "storeAsRevision") {

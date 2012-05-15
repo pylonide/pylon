@@ -174,11 +174,19 @@ self.onmessage = function(e) {
                 beforeRevision = docContentsOnRev[e.data.path];
             }
             else {
-                beforeRevision = "";
-                var tss = e.data.timestamps || [];
-                for (var i = 0, l = tss.length; i < l; i++) {
-                    patch = e.data.revisions[tss[i]].patch[0];
-                    beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
+                try {
+                    beforeRevision = "";
+                    var tss = e.data.timestamps;
+                    for (var i = 0, l = tss.length; i < l; i++) {
+                        patch = e.data.revisions[tss[i]].patch[0];
+                        beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
+                    }
+                }
+                catch(e) {
+                    self.postMessage({
+                        type: "newRevision.error",
+                        path: e.data.path
+                    });
                 }
             }
             
