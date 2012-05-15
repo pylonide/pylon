@@ -33,7 +33,7 @@ exports.factory = function(uid, ide) {
         options.uid = uid;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
-        options.args = args;
+        options.args = args.args;
         options.command = process.execPath;
         options.cwd = cwd;
         return new Runner(options);

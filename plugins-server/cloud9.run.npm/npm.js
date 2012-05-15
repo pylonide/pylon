@@ -29,7 +29,7 @@ exports.factory = function(root, port, uid) {
         options.uid = uid;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
-        options.args = args;
+        options.args = args.args;
         options.command = "npm";
         return new Runner(options);
     };

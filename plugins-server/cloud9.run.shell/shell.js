@@ -30,7 +30,7 @@ exports.factory = function(uid) {
         options.uid = uid;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
-        options.args = args;
+        options.args = args.args;
 
         return new Runner(options);
     };
@@ -39,7 +39,7 @@ exports.factory = function(uid) {
 var Runner = exports.Runner = function(options) {
     this.uid = options.uid;
     this.command = options.command;
-    this.args = options.args.args || [];
+    this.args = options.args || [];
     this.extra = options.extra;
 
     this.runOptions = {};
