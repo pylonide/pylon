@@ -74,7 +74,7 @@
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()">Rename</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()">Delete</a:item>
             <a:divider />
-            <a:item match="[folder]" command="searchinfiles">Search Files in this Folder</a:item>
+            <a:item match="[file|folder]" command="searchinfiles">Search Files in this Folder</a:item>
             <a:divider />
             <a:item match="[file|folder|project]" onclick="
                 var store = apf.clipboard.store;

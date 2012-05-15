@@ -391,54 +391,62 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     execFind: function() {
         var _self = this;
 
-        if (chkSFConsole.checked) {
-        // show the console
-        ideConsole.show();
+        if (btnSFFind.$ext.innerText == "Find") 
+            btnSFFind.$ext.innerText = "Cancel";
+        else if (btnSFFind.$ext.innerText == "Cancel") {
+            btnSFFind.$ext.innerText = "Find"
+            this.cancelFind();
+            return;
+        }
         
-        if (!this.$panel) {
-            this.$panel = tabConsole.add(this.pageTitle, this.pageID);
-            this.$panel.setAttribute("closebtn", true);
+        if (chkSFConsole.checked) {
+            // show the console
+            ideConsole.show();
             
-                tabConsole.set(_self.pageID);
-
-                this.codeEditor = this.$panel.appendChild(new apf.codeeditor({
-                    syntax            : "c9search",
-                    "class"           : "nocorner",
-                    anchors           : "0 0 0 0",
-                    theme             : "ace/theme/monokai",
-                    overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
-                    folding           : "true",
-                    behaviors         : "[{require('core/settings').model}::editors/code/@behaviors]",
-                    selectstyle       : "[{require('core/settings').model}::editors/code/@selectstyle]",
-                    activeline        : "[{require('core/settings').model}::editors/code/@activeline]",
-                    gutterline        : "[{require('core/settings').model}::editors/code/@gutterline]",
-                    showinvisibles    : "[{require('core/settings').model}::editors/code/@showinvisibles]",
-                    showprintmargin   : "false",
-                    softtabs          : "[{require('core/settings').model}::editors/code/@softtabs]",
-                    tabsize           : "[{require('core/settings').model}::editors/code/@tabsize]",
-                    scrollspeed       : "[{require('core/settings').model}::editors/code/@scrollspeed]",
-                    newlinemode       : "[{require('core/settings').model}::editors/code/@newlinemode]",
-                    animatedscroll    : "[{require('core/settings').model}::editors/code/@animatedscroll]",
-                    fontsize          : "[{require('core/settings').model}::editors/code/@fontsize]",
-                    gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
-                    highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
-                    autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
-                    fadefoldwidgets   : "false"
-                }));
-
-                this.codeEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
-                    _self.launchFileFromSearch(_self.codeEditor.$editor);
-            });
-
-            this.$panel.addEventListener("afterclose", function(){
-                this.removeNode();
-                return false;
-            });
-        }
-        else {
-            tabConsole.appendChild(this.$panel);
-            tabConsole.set(this.pageID);
-        }
+            if (!this.$panel) {
+                this.$panel = tabConsole.add(this.pageTitle, this.pageID);
+                this.$panel.setAttribute("closebtn", true);
+                
+                    tabConsole.set(_self.pageID);
+    
+                    this.codeEditor = this.$panel.appendChild(new apf.codeeditor({
+                        syntax            : "c9search",
+                        "class"           : "nocorner",
+                        anchors           : "0 0 0 0",
+                        theme             : "ace/theme/monokai",
+                        overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
+                        folding           : "true",
+                        behaviors         : "[{require('core/settings').model}::editors/code/@behaviors]",
+                        selectstyle       : "[{require('core/settings').model}::editors/code/@selectstyle]",
+                        activeline        : "[{require('core/settings').model}::editors/code/@activeline]",
+                        gutterline        : "[{require('core/settings').model}::editors/code/@gutterline]",
+                        showinvisibles    : "[{require('core/settings').model}::editors/code/@showinvisibles]",
+                        showprintmargin   : "false",
+                        softtabs          : "[{require('core/settings').model}::editors/code/@softtabs]",
+                        tabsize           : "[{require('core/settings').model}::editors/code/@tabsize]",
+                        scrollspeed       : "[{require('core/settings').model}::editors/code/@scrollspeed]",
+                        newlinemode       : "[{require('core/settings').model}::editors/code/@newlinemode]",
+                        animatedscroll    : "[{require('core/settings').model}::editors/code/@animatedscroll]",
+                        fontsize          : "[{require('core/settings').model}::editors/code/@fontsize]",
+                        gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
+                        highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
+                        autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
+                        fadefoldwidgets   : "false"
+                    }));
+    
+                    this.codeEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
+                        _self.launchFileFromSearch(_self.codeEditor.$editor);
+                });
+    
+                this.$panel.addEventListener("afterclose", function(){
+                    this.removeNode();
+                    return false;
+                });
+            }
+            else {
+                tabConsole.appendChild(this.$panel);
+                tabConsole.set(this.pageID);
+            }
         }
         
         // Determine the scope of the search
@@ -513,18 +521,18 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
                 _self.searcheditor.gotoLine(_self.tabacedoc.getLength() + 2);
             } 
-            }
+        }
             
         var resultingData = "";
         var firstStream = false;
-        var id = davProject.report(path, "codesearch", options, function(data, state, extra) {         
+        this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {         
             resultingData = data;
             firstStream = true;
         });
 
         // Start streaming
-        var timer = setInterval(function() {  
-            var q = davProject.realWebdav.queue[id];
+        this.timer = setInterval(function() {  
+            var q = davProject.realWebdav.queue[_self.id];
                 
             if (!chkSFConsole.checked)
                 _self.appendLines(_self.tabacedoc, resultingData);
@@ -536,7 +544,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     node.setAttribute("saving", "0");
                     node.setAttribute("changed", "0");
                 }
-                return clearInterval(timer);
+                btnSFFind.$ext.innerText = "Find";
+                return clearInterval(_self.timer);
             }
         }, 200);
         
@@ -634,6 +643,18 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         return message;
     },
     
+    cancelFind : function() {
+        clearInterval(this.timer); // still need to handle actual kill for server
+        
+        var killMessage = "Search ended prematurely.";
+        
+        if (chkSFConsole.checked) {
+            this.appendLines(this.consoleacedoc,killMessage);
+        }
+        else {
+            this.appendLines(this.tabacedoc, killMessage);
+        } 
+    },
     
     enable : function(){
         this.nodes.each(function(item){
