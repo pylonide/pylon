@@ -731,31 +731,40 @@ apf.codebox = function(struct, tagName) {
         
         // disable unneded commands
         ace.commands.removeCommands(["find", "replace", "replaceall", "gotoline", "findnext", "findprevious"]);
+        // todo is there a property for these?
+        ace.commands.removeCommands(["indent", "outdent"])
         
         this.$editor = this.ace = ace;
-        ace.renderer.scroller.style.backgroundColor = "transparent";
-        ace.renderer.scroller.style.borderRadius = "0";
         ace.renderer.setPadding(0);
         this.ace.codebox = this;
         
         ace.on("focus", function(){
+            ace.$isFocused = true;
             if (ace.session.getValue())
                 return;
             dom.removeCssClass(ace.codebox.$ext, "tb_textboxInitial");
             ace.renderer.$markerBack.element.textContent = "";
+            
+            if (ace.renderer.initialMessageNode) {
+                ace.renderer.scroller.removeChild(ace.renderer.initialMessageNode);
+                ace.renderer.initialMessageNode = null;
+            }
         });
 
-        function onBlur(){
+        function onBlur() {
+            ace.$isFocused = false;
             if (ace.session.getValue())
                 return;
             dom.addCssClass(ace.codebox.$ext, "tb_textboxInitial");
-            ace.renderer.$markerBack.element.textContent = ace.codebox["initial-message"];
+            
+            if (ace.renderer.initialMessageNode)
+                return;
+            ace.renderer.initialMessageNode = document.createTextNode(ace.codebox["initial-message"]);
+            ace.renderer.scroller.appendChild(ace.renderer.initialMessageNode);
         }
         ace.on("blur", onBlur);
-        
-        // todo is this the right way?
-        setTimeout(onBlur, 100);
-        // todo should we do this?
+        setTimeout(onBlur, function() { if (!ace.$isFocused)onBlur(); }, 100);
+        // todo should we do this here?
         // ace.on("resize", function(){apf.layout.forceResize();});
     },
     this.getValue = function() {
@@ -776,17 +785,14 @@ apf.codebox = function(struct, tagName) {
         this.$editor.focus();
     };
     
-    this.createSingleLineAceEditor = function(el) {
-        var Editor = require("ace/editor").Editor;
-        var UndoManager = require("ace/undomanager").UndoManager;
-        var Renderer = require("ace/virtual_renderer").VirtualRenderer;
-        var MultiSelect = require("ace/multi_select").MultiSelect;
-        
-        var renderer = new Renderer(el);
+    this.createSingleLineAceEditor = function(el) {        
+        var renderer = new VirtualRenderer(el);
         el.style.overflow = "hidden";
+        renderer.scrollBar.element.style.top = "0";
         renderer.scrollBar.element.style.display = "none";
+        renderer.scrollBar.orginalWidth = renderer.scrollBar.width;
         renderer.scrollBar.width = 0;
-        renderer.content.style.height = "auto";
+        renderer.content.style.height = "auto"; 
 
         renderer.screenToTextCoordinates = function(x, y) {
             var pos = this.pixelToScreenCoordinates(x, y);
@@ -796,14 +802,44 @@ apf.codebox = function(struct, tagName) {
             );
         };
         
+        renderer.maxLines = 4;
+        renderer.$computeLayerConfigWithScroll = renderer.$computeLayerConfig;
         renderer.$computeLayerConfig = function() {
+            var config = this.layerConfig;
+            var height = this.session.getScreenLength() * this.lineHeight;
+            if (config.height != height) {
+                var vScroll = height > this.maxLines * this.lineHeight;
+                
+                if (vScroll != this.$vScroll) {
+                    if (vScroll) {
+                        this.scrollBar.element.style.display = "";
+                        this.scrollBar.width = this.scrollBar.orginalWidth; 
+                        this.container.style.height = config.height + "px";
+                        height = config.height;
+                        this.scrollTop = height - this.maxLines * this.lineHeight;
+                    } else {
+                        this.scrollBar.element.style.display = "none";
+                        this.scrollBar.width = 0;
+                    }
+                    
+                    this.onResize();
+                    this.$vScroll = vScroll;
+                }                
+                
+                if (this.$vScroll)
+                    return renderer.$computeLayerConfigWithScroll();
+                
+                this.container.style.height = height + "px";
+                this.scroller.style.height = height + "px";
+                this.content.style.height = height + "px";
+                this._emit("resize");
+            }
+            
             var longestLine = this.$getLongestLine();
             var firstRow = 0;
             var lastRow = this.session.getLength();
-            var height = this.session.getScreenLength() * this.lineHeight;
 
-            this.scrollTop = 0;
-            var config = this.layerConfig;
+            this.scrollTop = 0;            
             config.width = longestLine;
             config.padding = this.$padding;
             config.firstRow = 0;
@@ -813,14 +849,8 @@ apf.codebox = function(struct, tagName) {
             config.characterWidth = this.characterWidth;
             config.minHeight = height;
             config.maxHeight = height;
-            config.offset = 0;
-            if (config.height != height) {
-                this._emit("resize");
-                config.height = height;
-                this.content.style.height = height + "px";
-                this.scroller.style.height = height + "px";
-                this.container.style.height = height + "px";
-            }
+            config.offset = 0;            
+            config.height = height;
 
             this.$gutterLayer.element.style.marginTop = 0 + "px";
             this.content.style.marginTop = 0 + "px";
@@ -837,14 +867,7 @@ apf.codebox = function(struct, tagName) {
         editor.setShowPrintMargin(false);
         editor.renderer.setShowGutter(false);
         editor.renderer.setHighlightGutterLine(false);
-        
-        // add some css doesn't belong here
-        dom.importCssString("\
-            .ace_one-line .ace_cursor.ace_hidden {opacity:0}\
-            }",
-            "ace_one-line"
-        );
-        
+
         return editor;
     },
 

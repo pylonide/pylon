@@ -254,7 +254,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 if (value) {
                     txtSFFind.setValue(value);
                     
-                    this.$setRegexpMode(txtSFFind, chkRegEx.checked);
+                    this.$setRegexpMode(txtSFFind, chkSFRegEx.checked);
                 }
             }
 

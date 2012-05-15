@@ -462,10 +462,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     },
     
     restore : function() {
-        var editor = this.$getAce();
-        editor.focus();
         if (!this.startPos)
-            return;
+            return false;
+        var editor = this.$getAce();
         editor.selection.setSelectionRange(this.startPos.range);
         editor.session.setScrollTop(this.startPos.scrollTop);
         editor.session.setScrollLeft(this.startPos.scrollLeft);
