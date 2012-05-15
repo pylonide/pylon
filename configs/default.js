@@ -55,7 +55,7 @@ var config = {
                 packagePath: "./cloud9.sandbox",
                 projectDir: projectDir,
                 workspaceId: "Cloud9",
-                userDir: "/usr/local/lib/node_modules/root", // is this always there??
+                userDir: null, // is this always there??
                 unixId: null,
                 host: host
             }, {

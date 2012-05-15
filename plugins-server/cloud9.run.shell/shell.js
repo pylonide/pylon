@@ -59,6 +59,8 @@ var Runner = exports.Runner = function(options) {
     this.child = {
         pid: null
     };
+    
+    console.log("HELLO FROM SHELLRUNNER", this);
 
     var self = this;
     this.__defineGetter__("pid", function(){
@@ -71,6 +73,7 @@ var Runner = exports.Runner = function(options) {
     this.name = "shell";
 
     this.exec = function(onStart, onExit) {
+        console.log("SHELL ONEXEC");
         var self = this;
         this.createChild(function(err, child) {
             if (err)
