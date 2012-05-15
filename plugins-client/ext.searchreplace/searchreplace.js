@@ -366,9 +366,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     
     toggleDialog: function(force, isReplace, noselect, callback) {
         var _self = this;
-        
-        ext.initExtension(this);
 
+        ext.initExtension(this);
+                
         var editor = editors.currentEditor;
         if (!editor || !editor.amlEditor)
             return;
@@ -386,7 +386,12 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             }
             
             if (searchinfiles && searchinfiles.inited && winSearchInFiles.visible) {
-                searchinfiles.toggleDialog(-1, null, null, function(){
+                ext.initExtension(this);
+                winSearchInFiles.$ext.style.height = "0px";
+                txtFind.focus();
+                txtFind.select();
+                
+                searchinfiles.toggleDialog(-1, null, null, function() {
                     _self.toggleDialog(force, isReplace, noselect);
                 });
                 return;
@@ -481,7 +486,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 }, 50);
             });
         }
-
+        else if (callback)
+            callback();
+            
         return false;
     },
 

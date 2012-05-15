@@ -165,7 +165,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             if (_self.findKeyboardHandler(e, "searchwhere", this) === false)
                 return false;
         });
-        
+
         var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
         
         chkSFRegEx.addEventListener("prop.value", function(e){
@@ -246,7 +246,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var _self = this;
         
         ext.initExtension(this);
-
+        
         tooltipSearchInFiles.$ext.style.display = "none";
 
         if (!force && !winSearchInFiles.visible || force > 0) {
@@ -256,7 +256,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 return;
             }
             
-            if (searchreplace.inited && winSearchReplace.visible) {
+            if (searchreplace.inited && winSearchReplace.visible) {  
+                ext.initExtension(this);
+                winSearchReplace.$ext.style.height = "0px";
+                txtSFFind.focus();
+                
                 searchreplace.toggleDialog(-1, null, null, function(){
                     _self.toggleDialog(force, isReplace, noselect);
                 });
@@ -322,8 +326,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 timingFunction: "ease-in-out"
             }, 0.2, function(){
                 winSearchInFiles.visible = true;
-                winSearchInFiles.hide();
-                
+                        winSearchInFiles.hide();
+                    
                 winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
 
                 if (!noselect && editors.currentEditor)
@@ -336,7 +340,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 }, 50);
             });
         }
-
+            
         return false;
     },
 
