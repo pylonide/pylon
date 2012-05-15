@@ -151,14 +151,5 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         child.kill();
         return true;
     };
-    
-    var self = this;
-    Object.keys(self).forEach(function (f) {
-        var _cache = self[f];
-        self[f] = function () {
-            console.log("PM entering", f);
-            _cache.apply(this, arguments);
-        };
-    });
 
 }).call(ProcessManager.prototype);
