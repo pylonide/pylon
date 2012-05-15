@@ -147,6 +147,18 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     init : function(amlNode){
         var _self = this;
         
+        ide.addEventListener("settings.load", function(e){
+            e.ext.setDefaults("editors/code/search", [
+                ["regex", "false"],
+                ["matchcase", "false"],
+                ["wholeword", "false"],
+                ["backwards", "false"],
+                ["wraparound", "true"],
+                ["highlightmatches", "true"],
+                ["preservecase", "false"]
+            ]);
+        });
+        
         var isAvailable = commands.commands["findnext"].isAvailable;
         commands.commands["findnext"].isAvailable =
         commands.commands["findprevious"].isAvailable = function(editor){
@@ -181,7 +193,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             var kb = _self.addSearchKeyboardHandler(txtReplace, "replace");
             kb.bindKeys({
                 "Return": function(codebox) { _self.replace(); },
-                "Shift-Return": function(codebox) { _self.replace(false); }
+                "Shift-Return": function(codebox) { _self.replace(true); }
             });
             
             _self.decorateCheckboxes(this);
@@ -366,10 +378,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             this.position = -1;
 
             if (!wasVisible) {
-                var ace = this.$getAce()
-                var value = ace.getCopyText();
-                if (value)
-                    txtFind.setValue(value);
+                var ace = this.$getAce();
+                if (!ace.selection.isEmpty() && !ace.selection.isMultiLine())
+                    txtFind.setValue(ace.getCopyText());
                 this.startPos = {
                     range: ace.getSelectionRange(),
                     scrollTop: ace.session.getScrollTop(),
@@ -517,17 +528,25 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         return this;
     },
 
-    getOptions: function() {
-        return {
+    getOptions: function() {		
+        var options = {
             backwards: chkSearchBackwards.checked,
             wrap: chkWrapAround.checked,
             caseSensitive: chkMatchCase.checked,
             wholeWord: chkWholeWords.checked,
-            regExp: chkRegEx.checked,
-            scope: chkSearchSelection.checked 
-                ? search.Search.SELECTION 
-                : search.Search.ALL
+            regExp: chkRegEx.checked
         };
+		
+		if (chkSearchSelection.checked) {
+			var range = this.startPos && (this.startPos.searchRange || this.startPos.range);
+			if (range) {
+				options.scope = search.Search.SELECTION;
+				options.range = range;
+			}			
+		} else {
+			options.scope = search.Search.ALL;
+		}
+		return options
     },
 
     findNext: function(backwards) {
@@ -581,9 +600,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         //@todo when highlight selection is available, this should change
         if (!save && chkSearchSelection.checked)
             return;
-
-        //if (!searchTxt)
-          //  return this.updateCounter();
 
         var options = this.getOptions();
         if (reverseBackwards)
@@ -680,24 +696,21 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         return false;
     },
 
-    replace: function() {
+    replace: function(backwards) {
         if (!this.$editor)
             this.setEditor();
         if (!this.$editor)
             return;
-        var options = this.getOptions();
-        options.needle = txtFind.getValue();
-        options.scope = search.Search.SELECTION;
-        
+                
         var lut = {"n": "\n", "t": "\t", "r": "\r"};
         var strReplace = (txtReplace.getValue() || "")
             .replace(/(\\\\)+|\\([ntr])/g, function(m, m1, m2) { 
                 return m1 || lut[m2];
             });
         
-        this.$editor.replace(strReplace, options);
+        this.$editor.insert(strReplace);
         //this.$editor.find(this.$crtSearch, options);
-        this.findNext();
+        this.findNext(backwards);
         ide.dispatchEvent("track_action", {type: "replace"});
     },
 

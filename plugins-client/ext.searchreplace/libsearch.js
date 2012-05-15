@@ -202,6 +202,16 @@ module.exports = {
                     
                     continue;
                 }
+
+				// \uXXXX
+                if (t = value.match(/^\\(?:(u)\d{0,4}|(x)\d{0,2})/)) {
+					var isError = (t[1] == "u" && t[0].length != 6)
+						|| (t[1] == "x" && t[0].length != 4);
+					out.push([t[0], isError ? "error" : "escaped"]);
+                    value = value.substr(t[0].length);
+                    
+                    continue;
+                }
                 
                 // Escaped symbols
                 out.push([value.substr(0, 2), "escaped"]);
@@ -209,7 +219,14 @@ module.exports = {
                 
                 continue;
             }
-            
+			
+            if (c == "|") {
+				value = value.substr(1);
+				out.push([c, "collection"]);
+				
+                continue;
+			}
+			
             // Start Sub Matches
             if (c == "(") {
                 sub++;
