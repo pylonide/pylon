@@ -25,7 +25,6 @@ var exports = module.exports = function setup(options, imports, register) {
             sandbox.getUnixId(function(err, unixId) {
                 if (err) return register(err);
                 
-                console.log("I HAZ URL?", url);
                 if (!url) {
                     sandbox.getHost(function(err, host) {
                         if (err) return register(err);

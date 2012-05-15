@@ -60,8 +60,6 @@ var Runner = exports.Runner = function(options) {
     options.env = options.env || {};
     options.command = process.execPath;
     
-    console.log("RUN NPM SHELLRUNNER", options);
-    
     ShellRunner.call(this, options);
 };
 

@@ -122,7 +122,6 @@ var Runner = exports.Runner = function(options) {
     options.cwd = options.cwd ? options.cwd : options.root;
     options.command = "node"; 
     
-    console.log("FORWARDING TO SHELLRUNNER", options);
     ShellRunner.call(this, options);
 };
 
@@ -158,7 +157,6 @@ util.inherits(Runner, ShellRunner);
                 self.command = c9Node.nodeBinary(version, process.platform, true);
                 self.args = nodeArgs.concat(script).concat(scriptArgs);
 
-                console.log("NODE RUNNER SPAWNING", self.command + " " + self.nodeArgs.join(" ") + " " + script + " " + self.scriptArgs.join(" "))
                 var child = spawn(self.command, self.args, self.runOptions);
             } catch (e) {
                 return callback(e);
