@@ -698,13 +698,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                     group: group,
                     type: message.nextAction
                 };
-                
-                var self = this;
-                var postMsg = function(d) {
-                    setTimeout(function() {
-                        self.worker.postMessage(d);
-                    })
-                };
 
                 var len = revObj.groupedRevisionIds.length;
                 if (revObj.useCompactList && len > 0) {
@@ -725,14 +718,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                     if (keys.length > 1) {
                         data.groupKeys = keys;
                         data.data = this.getRevision(keys[0]);
-                        postMsg(data);
+                        this.worker.postMessage(data);
                         break;
                     }
                 }
 
                 group[message.id] = this.getRevision(message.id);
                 data.groupKeys = [parseInt(message.id, 10)];
-                postMsg(data);
+                this.worker.postMessage(data);
                 break;
 
             case "getRealFileContents":
