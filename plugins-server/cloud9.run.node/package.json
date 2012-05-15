@@ -2,7 +2,7 @@
     "name": "cloud9.run.node",
     "version": "0.0.1",
 
-    "main": "./node.js",
+    "main": "./node-plugin.js",
     "private": true,
 
     "plugin": {
