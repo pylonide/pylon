@@ -371,7 +371,7 @@ module.exports = ext.register("ext/console/console", {
             var pNode = spinnerElement.parentNode;
 
             var page = apf.findHost(pNode.parentNode.parentNode);
-            if (page.id !== "pgOutput")
+            if (page && page.id !== "pgOutput")
                 page.setCaption("Console");
 
             if (pNode.className.indexOf("quitting") !== -1) {
