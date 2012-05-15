@@ -4951,6 +4951,11 @@ var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
 
+var WARNING_LEVELS = {
+    error: 3,
+    warning: 2,
+    info: 1
+};
 
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
@@ -4960,6 +4965,7 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     this.handlers = [];
     this.currentMarkers = [];
     this.$lastAggregateActions = {};
+    this.$warningLevel = "info";
     
     Mirror.call(this, sender);
     this.setTimeout(500);
@@ -4971,26 +4977,63 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         _self.documentClose(event);
     });
     sender.on("analyze", function(event) {
-        _self.analyze(event);
+        _self.analyze(function() { });
     });
     sender.on("cursormove", function(event) {
         _self.onCursorMove(event);
     });
-    
     sender.on("inspect", function(event) {
         _self.inspect(event);
     });
-    
     sender.on("change", function() {
         _self.scheduledUpdate = true;
     });
-    
+    sender.on("jumpToDefinition", function(event) {
+        _self.jumpToDefinition(event);
+    });
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
     });
 };
 
 oop.inherits(LanguageWorker, Mirror);
+
+function asyncForEach(array, fn, callback) {
+	array = array.slice(0); // Just to be sure
+	function processOne() {
+		var item = array.pop();
+		fn(item, function(result, err) {
+			if (array.length > 0) {
+				processOne();
+			}
+			else {
+				callback(result, err);
+			}
+		});
+	}
+	if (array.length > 0) {
+		processOne();
+	}
+	else {
+		callback();
+	}
+}
+
+function asyncParForEach(array, fn, callback) {
+	var completed = 0;
+	var arLength = array.length;
+	if (arLength === 0) {
+		callback();
+	}
+	for (var i = 0; i < arLength; i++) {
+		fn(array[i], function(result, err) {
+			completed++;
+			if (completed === arLength) {
+				callback(result, err);
+			}
+		});
+	}
+}
 
 (function() {
     
@@ -5012,6 +5055,10 @@ oop.inherits(LanguageWorker, Mirror);
         disabledFeatures[name] = true;
     };
     
+    this.setWarningLevel = function(level) {
+        this.$warningLevel = level;
+    };
+    
     /**
      * Registers a handler by loading its code and adding it the handler array
      */
@@ -5020,24 +5067,25 @@ oop.inherits(LanguageWorker, Mirror);
         this.handlers.push(handler);
     };
 
-    this.parse = function() {
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
+    this.parse = function(callback) {
+        var _self = this;
+        this.cachedAst = null;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
                 try {
-                    var ast = handler.parse(this.doc.getValue());
-                    if(ast) {
-                        this.cachedAst = ast;
-                        return ast;
-                    }
+                    handler.parse(_self.doc.getValue(), function(ast) {
+                        if(ast)
+                            _self.cachedAst = ast;
+                        next();
+                    });
                 } catch(e) {
                     // Ignore parse errors
+                    next();
                 }
             }
-        }
-        // No parser available
-        this.cachedAst = null;
-        return null;
+        }, function() {
+            callback(_self.cachedAst);
+        });
     };
 
     this.scheduleEmit = function(messageType, data) {
@@ -5065,6 +5113,33 @@ oop.inherits(LanguageWorker, Mirror);
         }
     }
     
+    this.analyze = function(callback) {
+        var _self = this;
+        this.parse(function(ast) {
+            var markers = [];
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language) && (ast || !handler.analysisRequiresParsing())) {
+                    handler.analyze(_self.doc, ast, function(result) {
+                        if (result)
+                            markers = markers.concat(result);
+                        next();
+                    });
+                }
+            }, function() {
+                var extendedMakers = markers;
+                filterMarkersAroundError(ast, markers);
+                if (_self.getLastAggregateActions().markers.length > 0)
+                    extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
+                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
+                _self.currentMarkers = markers;
+                if (_self.postponedCursorMove)
+                    _self.onCursorMove(_self.postponedCursorMove);
+                callback();
+            });
+        });
+    };
+
+/*
     this.analyze = function() {
         var ast = this.parse();
         var markers = [];
@@ -5088,7 +5163,7 @@ oop.inherits(LanguageWorker, Mirror);
         if (this.postponedCursorMove) {
             this.onCursorMove(this.postponedCursorMove);
         }
-    };
+*/
 
     this.checkForMarker = function(pos) {
         var astPos = {line: pos.row, col: pos.column};
@@ -5099,6 +5174,17 @@ oop.inherits(LanguageWorker, Mirror);
             }
         }
     };
+    
+    this.filterMarkersBasedOnLevel = function(markers) {
+        for (var i = 0; i < markers.length; i++) {
+            var marker = markers[i];
+            if(marker.level && WARNING_LEVELS[marker.level] < WARNING_LEVELS[this.$warningLevel]) {
+                markers.splice(i, 1);
+                i--;
+            }
+        }
+        return markers;
+    }
     
     /**
      * Request the AST node on the current position
@@ -5131,19 +5217,17 @@ oop.inherits(LanguageWorker, Mirror);
             return;
         }
         var pos = event.data;
-        var hintMessage = this.checkForMarker(pos) || "";
+        var _self = this;
+        var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
         var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
-        if (this.cachedAst) {
-            var ast = this.cachedAst;
-            var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            if (currentNode !== this.lastCurrentNode || pos.force) {
-                for (var i = 0; i < this.handlers.length; i++) {
-                    var handler = this.handlers[i];
-                    if (handler.handlesLanguage(this.$language)) {
-                        var response = handler.onCursorMovedNode(this.doc, ast, pos, currentNode);
+        
+        function cursorMoved() {
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.onCursorMovedNode(_self.doc, ast, pos, currentNode, function(response) {
                         if (!response)
-                            continue;
+                            return next();
                         if (response.markers && response.markers.length > 0) {
                             aggregateActions.markers = aggregateActions.markers.concat(response.markers);
                         }
@@ -5154,23 +5238,40 @@ oop.inherits(LanguageWorker, Mirror);
                             // Last one wins, support multiple?
                             aggregateActions.hint = response.hint;
                         }
-                    }
+                        next();
+                    });
                 }
+                else
+                    next();
+            }, function() {
                 if (aggregateActions.hint && !hintMessage) {
                     hintMessage = aggregateActions.hint;
                 }
-                this.scheduleEmit("markers", this.currentMarkers.concat(aggregateActions.markers));
-                this.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
-                this.lastCurrentNode = currentNode;
-                this.setLastAggregateActions(aggregateActions);
+                _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(_self.currentMarkers.concat(aggregateActions.markers)));
+                _self.scheduleEmit("enableRefactorings", aggregateActions.enableRefactorings);
+                _self.lastCurrentNode = currentNode;
+                _self.setLastAggregateActions(aggregateActions);
+                _self.scheduleEmit("hint", {
+                    pos: pos,
+                	message: hintMessage
+                });
+            });
+
+        }
+        
+        if (this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            if (currentNode !== this.lastCurrentNode || pos.force) {
+                cursorMoved();
             }
         } else {
-            this.setLastAggregateActions(aggregateActions);
+            cursorMoved();
         }
-        this.scheduleEmit("hint", hintMessage);
     };
-    
-    this.sendVariablePositions = function(event) {
+
+
+    this.jumpToDefinition = function(event) {
         var pos = event.data;
         // Not going to parse for this, only if already parsed successfully
         if (this.cachedAst) {
@@ -5179,25 +5280,48 @@ oop.inherits(LanguageWorker, Mirror);
             for (var i = 0; i < this.handlers.length; i++) {
                 var handler = this.handlers[i];
                 if (handler.handlesLanguage(this.$language)) {
-                    var response = handler.getVariablePositions(this.doc, ast, pos, currentNode);
+                    var response = handler.jumpToDefinition(this.doc, ast, pos, currentNode);
                     if (response)
-                        this.sender.emit("variableLocations", response);
+                        this.sender.emit("jumpToDefinition", response);
                 }
             }
         }
     };
 
+    this.sendVariablePositions = function(event) {
+        var pos = event.data;
+        var _self = this;
+        // Not going to parse for this, only if already parsed successfully
+        if (this.cachedAst) {
+            var ast = this.cachedAst;
+            var currentNode = ast.findNode({line: pos.row, col: pos.column});
+            asyncForEach(this.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
+                        if (response)
+                            _self.sender.emit("variableLocations", response);
+                        next();
+                    });
+                }
+            }, function() {
+            });
+        }
+    };
+
     this.onUpdate = function() {
         this.scheduledUpdate = false;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
-                handler.onUpdate(this.doc);
-            }
-        }
-        this.analyze();
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) { 
+            if (handler.handlesLanguage(_self.$language))
+                handler.onUpdate(_self.doc, next);
+            else
+                next();
+        }, function() {
+            _self.analyze(function() {});
+        });
     };
     
+    // TODO: BUG open an XML file and switch between, language doesn't update soon enough
     this.switchFile = function(path, language, code) {
         var oldPath = this.$path;
         code = code || "";
@@ -5206,20 +5330,19 @@ oop.inherits(LanguageWorker, Mirror);
         this.cachedAst = null;
         this.lastCurrentNode = null;
         this.setValue(code);
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
+        var doc = this.doc;
+        asyncForEach(this.handlers, function(handler, next) {
             handler.path = path;
             handler.language = language;
-            handler.onDocumentOpen(path, this.doc, oldPath);
-        }
+            handler.onDocumentOpen(path, doc, oldPath, next);
+        }, function() { });
     };
     
     this.documentClose = function(event) {
         var path = event.data;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            handler.onDocumentClose(path);
-        }
+        asyncForEach(this.handlers, function(handler, next) {
+            handler.onDocumentClose(path, next);
+        }, function() { });
     };
     
     // For code completion
@@ -5257,43 +5380,56 @@ oop.inherits(LanguageWorker, Mirror);
         var pos = event.data;
         // Check if anybody requires parsing for its code completion
         var ast, currentNode;
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language) && handler.completionRequiresParsing()) {
-                ast = this.parse();
-                currentNode = ast.findNode({line: pos.row, col: pos.column});
-                break;
-            }
-        }
+        var _self = this;
         
-        var matches = [];
-        
-        for (var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language)) {
-                var completions = handler.complete(this.doc, ast, pos, currentNode);
-                if (completions)
-                    matches = matches.concat(completions);
+        asyncForEach(this.handlers, function(handler, next) {
+            if (!ast && handler.handlesLanguage(_self.$language) && handler.completionRequiresParsing()) {
+                _self.parse(function(hAst) {
+                    if(hAst) {
+                        ast = hAst;
+                        currentNode = ast.findNode({line: pos.row, col: pos.column});
+                    }
+                    next();
+                });
             }
-        }
-
-        removeDuplicateMatches(matches);
-        // Sort by priority, score
-        matches.sort(function(a, b) {
-            if (a.priority < b.priority)
-                return 1;
-            else if (a.priority > b.priority)
-                return -1;
-            else if (a.score < b.score)
-                return 1;
-            else if (a.score > b.score)
-                return -1;
             else
-                return 0;
+                next();
+        }, function() {
+            var matches = [];
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
+                        if (completions)
+                            matches = matches.concat(completions);
+                        next();
+                    });
+                }
+                else
+                    next();
+            }, function() {
+                removeDuplicateMatches(matches);
+                // Sort by priority, score
+                matches.sort(function(a, b) {
+                    if (a.priority < b.priority)
+                        return 1;
+                    else if (a.priority > b.priority)
+                        return -1;
+                    else if (a.score < b.score)
+                        return 1;
+                    else if (a.score > b.score)
+                        return -1;
+                    else if(a.name < b.name)
+                        return -1;
+                    else if(a.name > b.name)
+                        return 1;
+                    else
+                        return 0;
+                });
+                
+                matches = matches.slice(0, 50); // 50 ought to be enough for everybody
+                _self.sender.emit("complete", matches);
+            });
         });
-        
-        matches = matches.slice(0, 50); // 50 ought to be enough for everybody
-        this.sender.emit("complete", matches);
     };
 
 }).call(LanguageWorker.prototype);
@@ -7597,7 +7733,7 @@ completer.completionRequiresParsing = function() {
     return false;
 };
     
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var identDict = analyze(doc, pos);
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
@@ -7608,7 +7744,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
     }
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
 
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         return {
           name        : m,
           replaceText : m,
@@ -7617,7 +7753,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : "",
           priority    : 1
         };
-    });
+    }));
 };
 
 });
@@ -7659,8 +7795,8 @@ module.exports = {
      * @param code code to parse
      * @return treehugger AST or null if not implemented
      */
-    parse: function(doc) {
-        return null;
+    parse: function(doc, callback) {
+        callback();
     },
     
     /**
@@ -7675,14 +7811,16 @@ module.exports = {
      * Invoked on a successful parse
      * @param ast the resulting AST in treehugger format
      */
-    onParse: function(ast) {
+    onParse: function(ast, callback) {
+        callback();
     },
     
     /**
      * Invoked when the document has been updated (possibly after a certain interval)
      * @param doc the document object
      */
-    onUpdate: function(doc) {
+    onUpdate: function(doc, callback) {
+        callback();
     },
     
     /**
@@ -7691,29 +7829,32 @@ module.exports = {
      * @param doc the document object
      * @param oldPath the path of the document that was active before
      */
-    onDocumentOpen: function(path, doc, oldPath) {
+    onDocumentOpen: function(path, doc, oldPath, callback) {
+        callback();
     },
     
     /**
      * Invoked when a document is closed in the IDE
      * @param path the path of the file
      */
-    onDocumentClose: function(path) {
+    onDocumentClose: function(path, callback) {
+        callback();
     },
     
     /**
      * Invoked when the cursor has been moved inside to a different AST node
      * @return a JSON object with three optional keys: {markers: [...], hint: {message: ...}, enableRefactoring: [...]}
      */
-    onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode) {
+    onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode, callback) {
+        callback();
     },
     
     /**
      * Invoked when an outline is required
      * @return a JSON outline structure or null if not supported
      */
-    outline: function(ast) {
-        return null;
+    outline: function(ast, callback) {
+        callback();
     },
     
     /**
@@ -7730,8 +7871,8 @@ module.exports = {
      * @param cursorPos the current cursor position (object with keys 'row' and 'column')
      * @param currentNode the AST node the cursor is currently at
      */
-    complete: function(doc, fullAst, cursorPos, currentNode) {
-        return null;
+    complete: function(doc, fullAst, cursorPos, currentNode, callback) {
+        callback();
     },
 
     /**
@@ -7744,16 +7885,16 @@ module.exports = {
     /**
      * Enables the handler to do analysis of the AST and annotate as desired
      */
-    analyze: function(doc, fullAst) {
-        return null;
+    analyze: function(doc, fullAst, callback) {
+        callback();
     },
     
     /**
      * Invoked when inline variable renaming is activated
      * @return an array of positions of the currently selected variable
      */
-    getVariablePositions: function(doc, fullAst, pos, currentNode) {
-        return null;
+    getVariablePositions: function(doc, fullAst, pos, currentNode, callback) {
+        callback();
     }
 };
 
@@ -7797,10 +7938,8 @@ function findCompletions(prefix, allIdentifiers) {
     allIdentifiers.sort();
     var startIdx = prefixBinarySearch(allIdentifiers, prefix);
     var matches = [];
-    for (var i = startIdx; i < allIdentifiers.length &&
-                          allIdentifiers[i].indexOf(prefix) === 0; i++) {
+    for (var i = startIdx; i < allIdentifiers.length && allIdentifiers[i].indexOf(prefix) === 0; i++)
         matches.push(allIdentifiers[i]);
-    }
     return matches;
 }
 
@@ -7832,9 +7971,11 @@ completer.fetchText = function(path) {
         return false;
 };
 
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+    if(line[pos.column-1] === '.') // No snippet completion after "."
+        return callback([]);
 
     var snippets = snippetCache[this.language];
     
@@ -7848,7 +7989,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
     var allIdentifiers = Object.keys(snippets);
     
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         return {
           name        : m,
           replaceText : snippets[m],
@@ -7856,7 +7997,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : "snippet",
           priority    : 2
         };
-    });
+    }));
 };
 
 
@@ -7920,22 +8061,25 @@ function analyzeDocument(path, allCode) {
     }
 }
 
-completer.onDocumentOpen = function(path, doc) {
+completer.onDocumentOpen = function(path, doc, oldPath, callback) {
     if (!analysisCache[path]) {
         analyzeDocument(path, doc.getValue());
     }
+    callback();
 };
     
-completer.onDocumentClose = function(path) {
+completer.onDocumentClose = function(path, callback) {
     removeDocumentFromCache(path);
+    callback();
 };
 
-completer.onUpdate = function(doc) {
+completer.onUpdate = function(doc, callback) {
     removeDocumentFromCache(this.path);
     analyzeDocument(this.path, doc.getValue());
+    callback();
 };
 
-completer.complete = function(doc, fullAst, pos, currentNode) {
+completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     var identDict = globalWordIndex;
@@ -7951,7 +8095,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
         return !globalWordFiles[m][currentPath];
     });
 
-    return matches.map(function(m) {
+    callback(matches.map(function(m) {
         var path = Object.keys(globalWordFiles[m])[0] || "[unknown]";
         var pathParts = path.split("/");
         var foundInFile = pathParts[pathParts.length-1];
@@ -7963,7 +8107,7 @@ completer.complete = function(doc, fullAst, pos, currentNode) {
           meta        : foundInFile,
           priority    : 0
         };
-    });
+    }));
 };
 
 });
@@ -7984,9 +8128,9 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
     
-handler.parse = function(code) {
+handler.parse = function(code, callback) {
     code = code.replace(/^(#!.*\n)/, "//$1");
-    return parser.parse(code);
+    callback(parser.parse(code));
 };
 
 /* Ready to be enabled to replace Narcissus, when mature
@@ -9723,10 +9867,12 @@ exports.set_logger = function(logger) {
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define('ext/jslanguage/scope_analyzer', ['require', 'exports', 'module' , 'ext/language/base_handler', 'treehugger/traverse'], function(require, exports, module) {
+define('ext/jslanguage/scope_analyzer', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ext/codecomplete/complete_util', 'treehugger/traverse'], function(require, exports, module) {
+    
 var baseLanguageHandler = require('ext/language/base_handler');
-require('treehugger/traverse');
+var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
+require('treehugger/traverse');
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
@@ -9737,116 +9883,125 @@ var GLOBALS = {
     "null"                   : true,
     "this"                   : true,
     "arguments"              : true,
+    self                     : true,
+    Infinity                 : true,
+    onmessage                : true,
+    postMessage              : true,
+    importScripts            : true,
+    "continue"               : true,
+    "return"                 : true,
+    "else"                   : true,
     // Browser
-    ArrayBuffer              :  true,
-    ArrayBufferView          :  true,
-    Audio                    :  true,
-    addEventListener         :  true,
-    applicationCache         :  true,
-    blur                     :  true,
-    clearInterval            :  true,
-    clearTimeout             :  true,
-    close                    :  true,
-    closed                   :  true,
-    DataView                 :  true,
-    defaultStatus            :  true,
-    document                 :  true,
-    event                    :  true,
-    FileReader               :  true,
-    Float32Array             :  true,
-    Float64Array             :  true,
-    FormData                 :  true,
-    getComputedStyle         :  true,
-    HTMLElement              :  true,
-    HTMLAnchorElement        :  true,
-    HTMLBaseElement          :  true,
-    HTMLBlockquoteElement    :  true,
-    HTMLBodyElement          :  true,
-    HTMLBRElement            :  true,
-    HTMLButtonElement        :  true,
-    HTMLCanvasElement        :  true,
-    HTMLDirectoryElement     :  true,
-    HTMLDivElement           :  true,
-    HTMLDListElement         :  true,
-    HTMLFieldSetElement      :  true,
-    HTMLFontElement          :  true,
-    HTMLFormElement          :  true,
-    HTMLFrameElement         :  true,
-    HTMLFrameSetElement      :  true,
-    HTMLHeadElement          :  true,
-    HTMLHeadingElement       :  true,
-    HTMLHRElement            :  true,
-    HTMLHtmlElement          :  true,
-    HTMLIFrameElement        :  true,
-    HTMLImageElement         :  true,
-    HTMLInputElement         :  true,
-    HTMLIsIndexElement       :  true,
-    HTMLLabelElement         :  true,
-    HTMLLayerElement         :  true,
-    HTMLLegendElement        :  true,
-    HTMLLIElement            :  true,
-    HTMLLinkElement          :  true,
-    HTMLMapElement           :  true,
-    HTMLMenuElement          :  true,
-    HTMLMetaElement          :  true,
-    HTMLModElement           :  true,
-    HTMLObjectElement        :  true,
-    HTMLOListElement         :  true,
-    HTMLOptGroupElement      :  true,
-    HTMLOptionElement        :  true,
-    HTMLParagraphElement     :  true,
-    HTMLParamElement         :  true,
-    HTMLPreElement           :  true,
-    HTMLQuoteElement         :  true,
-    HTMLScriptElement        :  true,
-    HTMLSelectElement        :  true,
-    HTMLStyleElement         :  true,
-    HTMLTableCaptionElement  :  true,
-    HTMLTableCellElement     :  true,
-    HTMLTableColElement      :  true,
-    HTMLTableElement         :  true,
-    HTMLTableRowElement      :  true,
-    HTMLTableSectionElement  :  true,
-    HTMLTextAreaElement      :  true,
-    HTMLTitleElement         :  true,
-    HTMLUListElement         :  true,
-    HTMLVideoElement         :  true,
-    Int16Array               :  true,
-    Int32Array               :  true,
-    Int8Array                :  true,
-    Image                    :  true,
-    localStorage             :  true,
-    location                 :  true,
-    navigator                :  true,
-    open                     :  true,
-    openDatabase             :  true,
-    Option                   :  true,
-    parent                   :  true,
-    print                    :  true,
-    removeEventListener      :  true,
-    resizeBy                 :  true,
-    resizeTo                 :  true,
-    screen                   :  true,
-    scroll                   :  true,
-    scrollBy                 :  true,
-    scrollTo                 :  true,
-    sessionStorage           :  true,
-    setInterval              :  true,
-    setTimeout               :  true,
-    SharedWorker             :  true,
-    Uint16Array              :  true,
-    Uint32Array              :  true,
-    Uint8Array               :  true,
-    WebSocket                :  true,
-    window                   :  true,
-    Worker                   :  true,
-    XMLHttpRequest           :  true,
-    XPathEvaluator           :  true,
-    XPathException           :  true,
-    XPathExpression          :  true,
-    XPathNamespace           :  true,
-    XPathNSResolver          :  true,
-    XPathResult              :  true,
+    ArrayBuffer              : true,
+    ArrayBufferView          : true,
+    Audio                    : true,
+    addEventListener         : true,
+    applicationCache         : true,
+    blur                     : true,
+    clearInterval            : true,
+    clearTimeout             : true,
+    close                    : true,
+    closed                   : true,
+    DataView                 : true,
+    defaultStatus            : true,
+    document                 : true,
+    event                    : true,
+    FileReader               : true,
+    Float32Array             : true,
+    Float64Array             : true,
+    FormData                 : true,
+    getComputedStyle         : true,
+    CDATASection             : true,
+    HTMLElement              : true,
+    HTMLAnchorElement        : true,
+    HTMLBaseElement          : true,
+    HTMLBlockquoteElement    : true,
+    HTMLBodyElement          : true,
+    HTMLBRElement            : true,
+    HTMLButtonElement        : true,
+    HTMLCanvasElement        : true,
+    HTMLDirectoryElement     : true,
+    HTMLDivElement           : true,
+    HTMLDListElement         : true,
+    HTMLFieldSetElement      : true,
+    HTMLFontElement          : true,
+    HTMLFormElement          : true,
+    HTMLFrameElement         : true,
+    HTMLFrameSetElement      : true,
+    HTMLHeadElement          : true,
+    HTMLHeadingElement       : true,
+    HTMLHRElement            : true,
+    HTMLHtmlElement          : true,
+    HTMLIFrameElement        : true,
+    HTMLImageElement         : true,
+    HTMLInputElement         : true,
+    HTMLIsIndexElement       : true,
+    HTMLLabelElement         : true,
+    HTMLLayerElement         : true,
+    HTMLLegendElement        : true,
+    HTMLLIElement            : true,
+    HTMLLinkElement          : true,
+    HTMLMapElement           : true,
+    HTMLMenuElement          : true,
+    HTMLMetaElement          : true,
+    HTMLModElement           : true,
+    HTMLObjectElement        : true,
+    HTMLOListElement         : true,
+    HTMLOptGroupElement      : true,
+    HTMLOptionElement        : true,
+    HTMLParagraphElement     : true,
+    HTMLParamElement         : true,
+    HTMLPreElement           : true,
+    HTMLQuoteElement         : true,
+    HTMLScriptElement        : true,
+    HTMLSelectElement        : true,
+    HTMLStyleElement         : true,
+    HTMLTableCaptionElement  : true,
+    HTMLTableCellElement     : true,
+    HTMLTableColElement      : true,
+    HTMLTableElement         : true,
+    HTMLTableRowElement      : true,
+    HTMLTableSectionElement  : true,
+    HTMLTextAreaElement      : true,
+    HTMLTitleElement         : true,
+    HTMLUListElement         : true,
+    HTMLVideoElement         : true,
+    Int16Array               : true,
+    Int32Array               : true,
+    Int8Array                : true,
+    Image                    : true,
+    localStorage             : true,
+    location                 : true,
+    navigator                : true,
+    open                     : true,
+    openDatabase             : true,
+    Option                   : true,
+    parent                   : true,
+    print                    : true,
+    removeEventListener      : true,
+    resizeBy                 : true,
+    resizeTo                 : true,
+    screen                   : true,
+    scroll                   : true,
+    scrollBy                 : true,
+    scrollTo                 : true,
+    sessionStorage           : true,
+    setInterval              : true,
+    setTimeout               : true,
+    SharedWorker             : true,
+    Uint16Array              : true,
+    Uint32Array              : true,
+    Uint8Array               : true,
+    WebSocket                : true,
+    window                   : true,
+    Worker                   : true,
+    XMLHttpRequest           : true,
+    XPathEvaluator           : true,
+    XPathException           : true,
+    XPathExpression          : true,
+    XPathNamespace           : true,
+    XPathNSResolver          : true,
+    XPathResult              : true,
     // Devel
     alert                    : true,
     confirm                  : true,
@@ -9988,11 +10143,14 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
 
-function Variable(declaration) {
+var scopeId = 0;
+
+var Variable = module.exports.Variable = function Variable(declaration) {
     this.declarations = [];
     if(declaration)
         this.declarations.push(declaration);
     this.uses = [];
+    this.values = [];
 }
 
 Variable.prototype.addUse = function(node) {
@@ -10003,7 +10161,78 @@ Variable.prototype.addDeclaration = function(node) {
     this.declarations.push(node);
 };
 
-handler.analyze = function(doc, ast) {
+/**
+ * Implements Javascript's scoping mechanism using a hashmap with parent
+ * pointers.
+ */
+var Scope = module.exports.Scope = function Scope(parent) {
+    this.id = scopeId++;
+    this.parent = parent;
+    this.vars = {};
+};
+
+/**
+ * Declare a variable in the current scope
+ */
+Scope.prototype.declare = function(name, resolveNode) {
+    if(!this.vars['_'+name]) 
+        this.vars['_'+name] = new Variable(resolveNode);
+    else if(resolveNode)
+        this.vars['_'+name].addDeclaration(resolveNode);
+    return this.vars['_'+name];
+};
+
+Scope.prototype.isDeclared = function(name) {
+    return !!this.get(name);
+};
+
+/**
+ * Get possible values of a variable
+ * @param name name of variable
+ * @return Variable instance 
+ */
+Scope.prototype.get = function(name) {
+    if(this.vars['_'+name])
+        return this.vars['_'+name];
+    else if(this.parent)
+        return this.parent.get(name);
+};
+
+Scope.prototype.getVariableNames = function() {
+    var names = [];
+    for(var p in this.vars) {
+        if(this.vars.hasOwnProperty(p)) {
+            names.push(p.slice(1));
+        }
+    }
+    if(this.parent) {
+        var namesFromParent = this.parent.getVariableNames();
+        for (var i = 0; i < namesFromParent.length; i++) {
+            names.push(namesFromParent[i]);
+        }
+    }
+    return names;
+};
+
+var GLOBALS_ARRAY = Object.keys(GLOBALS);
+
+handler.complete = function(doc, fullAst, pos, currentNode, callback) {
+    var line = doc.getLine(pos.row);
+    var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
+
+    var matches = completeUtil.findCompletions(identifier, GLOBALS_ARRAY);
+    callback(matches.map(function(m) {
+        return {
+          name        : m,
+          replaceText : m,
+          icon        : null,
+          meta        : "EcmaScript",
+          priority    : 0
+        };
+    }));
+};
+
+handler.analyze = function(doc, ast, callback) {
     var handler = this;
     var markers = [];
     
@@ -10013,26 +10242,19 @@ handler.analyze = function(doc, ast) {
             // var bla;
             'VarDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                if(!scope.hasOwnProperty(b.x.value))
-                    scope[b.x.value] = new Variable(b.x);
-                else
-                    scope[b.x.value].addDeclaration(b.x);
+                scope.declare(b.x.value, b.x);
                 return node;
             },
             // var bla = 10;
-            'VarDeclInit(x, _)', function(b, node) {
+            'VarDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                if(!scope.hasOwnProperty(b.x.value))
-                    scope[b.x.value] = new Variable(b.x);
-                else
-                    scope[b.x.value].addDeclaration(b.x);
-                return node;
+                scope.declare(b.x.value, b.x);
             },
             // function bla(farg) { }
             'Function(x, _, _)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 if(b.x.value) {
-                    scope[b.x.value] = new Variable(b.x);
+                    scope.declare(b.x.value, b.x);
                 }
                 return node;
             }
@@ -10042,38 +10264,38 @@ handler.analyze = function(doc, ast) {
     function scopeAnalyzer(scope, node, parentLocalVars) {
         preDeclareHoisted(scope, node);
         var localVariables = parentLocalVars || [];
+        node.setAnnotation("scope", scope);
         function analyze(scope, node) {
             node.traverseTopDown(
                 'VarDecl(x)', function(b) {
-                    localVariables.push(scope[b.x.value]);
+                    localVariables.push(scope.get(b.x.value));
                 },
                 'VarDeclInit(x, _)', function(b) {
-                    localVariables.push(scope[b.x.value]);
+                    localVariables.push(scope.get(b.x.value));
                 },
                 'Assign(Var(x), e)', function(b, node) {
-                    if(!scope[b.x.value]) {
+                    if(!scope.isDeclared(b.x.value)) {
                         markers.push({
                             pos: node[0].getPos(),
+                            level: 'warning',
                             type: 'warning',
-                            message: 'Assigning to undeclared variable.'
+                            message: "Assigning to undeclared variable."
                         });
                     }
                     else {
-                        scope[b.x.value].addUse(node[0]);
+                        scope.get(b.x.value).addUse(node[0]);
                     }
                     analyze(scope, b.e);
                     return this;
                 },
-                'ForIn(Var(x), e, stats)', function(b, node) {
-                    if(!scope[b.x.value]) {
+                'ForIn(Var(x), e, stats)', function(b) {
+                    if(!scope.isDeclared(b.x.value)) {
                         markers.push({
-                            pos: node[0].getPos(),
+                            pos: this.getPos(),
+                            level: 'warning',
                             type: 'warning',
-                            message: 'Using undeclared variable as iterator variable.'
+                            message: "Using undeclared variable as iterator variable."
                         });
-                    }
-                    else {
-                        scope[b.x.value].addUse(node);
                     }
                     analyze(scope, b.e);
                     analyze(scope, b.stats);
@@ -10081,11 +10303,12 @@ handler.analyze = function(doc, ast) {
                 },
                 'Var(x)', function(b, node) {
                     node.setAnnotation("scope", scope);
-                    if(scope[b.x.value]) {
-                        scope[b.x.value].addUse(node);
+                    if(scope.isDeclared(b.x.value)) {
+                        scope.get(b.x.value).addUse(node);
                     } else if(handler.isFeatureEnabled("undeclaredVars") && !GLOBALS[b.x.value]) {
                         markers.push({
                             pos: this.getPos(),
+                            level: 'warning',
                             type: 'warning',
                             message: "Undeclared variable."
                         });
@@ -10093,41 +10316,45 @@ handler.analyze = function(doc, ast) {
                     return node;
                 },
                 'Function(x, fargs, body)', function(b, node) {
-                    node.setAnnotation("scope", scope);
-
-                    var newScope = Object.create(scope);
-                    newScope['this'] = new Variable();
+                    var newScope = new Scope(scope);
+                    node.setAnnotation("localScope", newScope);
+                    newScope.declare("this");
                     b.fargs.forEach(function(farg) {
                         farg.setAnnotation("scope", newScope);
-                        newScope[farg[0].value] = new Variable(farg);
+                        var v = newScope.declare(farg[0].value, farg);
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
-                            localVariables.push(newScope[farg[0].value]);
+                            localVariables.push(v);
                     });
                     scopeAnalyzer(newScope, b.body);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
-                    var oldVar = scope[b.x.value];
+                    var oldVar = scope.get(b.x.value);
                     // Temporarily override
-                    scope[b.x.value] = new Variable(b.x);
+                    scope.vars[b.x.value] = new Variable(b.x);
                     scopeAnalyzer(scope, b.body, localVariables);
                     // Put back
-                    scope[b.x.value] = oldVar;
+                    scope.vars[b.x.value] = oldVar;
                     return node;
                 },
                 'PropAccess(_, "lenght")', function(b, node) {
                     markers.push({
                         pos: node.getPos(),
                         type: 'warning',
+                        level: 'warning',
                         message: "Did you mean 'length'?"
                     });
                 },
                 'Call(Var("parseInt"), [_])', function() {
                     markers.push({
                         pos: this[0].getPos(),
-                        type: 'warning',
+                        type: 'info',
+                        level: 'info',
                         message: "Missing radix argument."
                     });
+                },
+                'Block(_)', function() {
+                    this.setAnnotation("scope", scope);
                 }
             );
         }
@@ -10140,6 +10367,7 @@ handler.analyze = function(doc, ast) {
                         markers.push({
                             pos: decl.getPos(),
                             type: 'unused',
+                            level: 'info',
                             message: 'Unused variable.'
                         });
                     });
@@ -10147,13 +10375,14 @@ handler.analyze = function(doc, ast) {
             }
         }
     }
-    scopeAnalyzer({}, ast);
-    return markers;
+    var rootScope = new Scope();
+    scopeAnalyzer(rootScope, ast);
+    callback(markers);
 };
 
-handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
+handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
-        return;
+        return callback();
     var markers = [];
     var enableRefactorings = [];
     
@@ -10179,66 +10408,66 @@ handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode) {
             var scope = this.getAnnotation("scope");
             if (!scope)
                 return;
-            var v = scope[b.x.value];
+            var v = scope.get(b.x.value);
             highlightVariable(v);
             // Let's not enable renaming 'this' and only rename declared variables
             if(b.x.value !== "this" && v)
                 enableRefactorings.push("renameVariable");
         },
         'VarDeclInit(x, _)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'VarDecl(x)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'FArg(x)', function(b) {
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         },
         'Function(x, _, _)', function(b) {
             // Only for named functions
             if(!b.x.value)
                 return;
-            highlightVariable(this.getAnnotation("scope")[b.x.value]);
+            highlightVariable(this.getAnnotation("scope").get(b.x.value));
             enableRefactorings.push("renameVariable");
         }
     );
     
     if (!this.isFeatureEnabled("instanceHighlight"))
-        return { enableRefactorings: enableRefactorings };    
+        return callback({ enableRefactorings: enableRefactorings });
 
-    return {
+    callback({
         markers: markers,
         enableRefactorings: enableRefactorings
-    };
+    });
 };
 
-handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
+handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, callback) {
     var v;
     var mainNode;    
     currentNode.rewrite(
         'VarDeclInit(x, _)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
-            mainNode = b.x;    
+            v = node.getAnnotation("scope").get(b.x.value);
+            mainNode = b.x;
         },
         'VarDecl(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
         'FArg(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = node;
         },
         'Function(x, _, _)', function(b, node) {
             if(!b.x.value)
                 return;
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = b.x;
         },
         'Var(x)', function(b, node) {
-            v = node.getAnnotation("scope")[b.x.value];
+            v = node.getAnnotation("scope").get(b.x.value);
             mainNode = node;
         }
     );
@@ -10260,14 +10489,14 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode) {
             others.push({column: pos.sc, row: pos.sl});
         }
     });
-    return {
+    callback({
         length: length,
         pos: {
             row: pos.sl,
             column: pos.sc
         },
         others: others
-    };
+    });
 };
 
 });
@@ -10473,15 +10702,13 @@ exports.addParentPointers = function(node) {
  * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
-define('ext/jslanguage/narcissus_jshint', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ace/worker/jshint', 'ace/narcissus/parser'], function(require, exports, module) {
+define('ext/jslanguage/narcissus_jshint', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ace/worker/jshint'], function(require, exports, module) {
 
 var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
-var parser = require("ace/narcissus/parser");
-
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -10491,32 +10718,11 @@ handler.analysisRequiresParsing = function() {
     return false;
 };
 
-handler.analyze = function(doc) {
+handler.analyze = function(doc, ast, callback) {
     var value = doc.getValue();
     value = value.replace(/^(#!.*\n)/, "//$1");
 
     var markers = [];
-    try {
-        parser.parse(value);
-    }
-    catch (e) {
-        var chunks = e.message.split(":");
-        var message = chunks.pop().trim();
-        var numString = chunks.pop();
-        if(numString) {
-            var lineNumber = parseInt(numString.trim(), 10) - 1;
-            markers = [{
-                pos: {
-                    sl: lineNumber,
-                    el: lineNumber
-                },
-                message: message,
-                type: "error"
-            }];
-        }
-        return markers;
-    }
-    finally {}
     if (this.isFeatureEnabled("jshint")) {
         lint(value, {
             undef: false,
@@ -10526,9 +10732,16 @@ handler.analyze = function(doc) {
             browser: true,
             node: true
         });
+        
         lint.errors.forEach(function(warning) {
             if (!warning)
                 return;
+            var type = "warning"
+            var reason = warning.reason;
+            if(reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
+                type = "error";
+            if(reason.indexOf("Missing semicolon") !== -1)
+                type = "info";
             for (var i = 0; i < disabledJSHintWarnings.length; i++)
                 if(disabledJSHintWarnings[i].test(warning.reason))
                     return;
@@ -10537,12 +10750,13 @@ handler.analyze = function(doc) {
                     sl: warning.line-1,
                     sc: warning.column-1
                 },
-                type: 'warning',
+                type: type,
+                level: type,
                 message: warning.reason
             });
         });
     }
-    return markers;
+    callback(markers);
 };
     
 });

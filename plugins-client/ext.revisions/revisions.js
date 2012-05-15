@@ -38,7 +38,7 @@ var language = require("ext/language/language");
 
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
-var CHANGE_TIMEOUT = 5000;
+var CHANGE_TIMEOUT = 500;
 
 var isInfoActive = false;
 module.exports = ext.register("ext/revisions/revisions", {
@@ -50,6 +50,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     offline: true,
     nodes: [],
     skin: skin,
+    
+    isAutoSaveEnabled: false,
 
     /**
      * Revisions#rawRevisions -> Object
@@ -129,13 +131,21 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
+            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+        });
+        
+        ide.addEventListener("settings.save", function(e) {
+            if (!e.model.data)
+                return;
+                
+            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
-        btnSave.removeAttribute("icon");
         btnSave.setAttribute("caption", "");
+        btnSave.setAttribute("margin", "0 20");
         btnSave.removeAttribute("tooltip");
-        btnSave.setAttribute("margin", "0 20 0 20");
         btnSave.removeAttribute("command");
+        apf.setStyleClass(btnSave.$ext, "btnSave");
 
         tooltip.add(btnSave, {
             message : "Changes to your file are automatically saved.<br />\
@@ -143,7 +153,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                 onclick='require(\"ext/revisions/revisions\").toggle();' \
                 class='revisionsInfoLink'>the Revision History pane</a>. \
                 Rollback to a previous state, or make comparisons.",
-            width : "250px"
+            width : "250px",
+            hideonclick : true
         });
 
         // Declaration of event listeners
@@ -192,18 +203,24 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     setSaveButtonCaption: function(caption, page) {
-        if (caption) {
+        if (!self.btnSave)
+            return;
+
+        if (caption)
             return btnSave.setCaption(caption);
-        }
 
         var page = page || tabEditors.getPage();
         if (page) {
-            var hasChanged = Util.pageHasChanged(tabEditors.getPage());
-            if (Util.isAutoSaveEnabled() && hasChanged) {
-                return btnSave.setCaption("Saving...");
+            var hasChanged = Util.pageHasChanged(page);
+            if (this.isAutoSaveEnabled && hasChanged) {
+                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
+                return btnSave.setCaption("Saving");
             }
             else if (!hasChanged) {
-                return btnSave.setCaption("All changes saved");
+                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
+                return btnSave.setCaption("Changes saved");
             }
         }
         btnSave.setCaption("");
@@ -221,7 +238,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.nodes.push(this.panel = new apf.bar({
                 id: "revisionsPanel",
                 visible: false,
-                top: 2,
+                top: 6,
                 bottom: 0,
                 right: 0,
                 width: BAR_WIDTH,
@@ -281,7 +298,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions === true && lstRevisions) {
+        if (page.$showRevisions === true && lstRevisions && !this.isNewPage(page)) {
             var selection = lstRevisions.selection;
             var node = model.data.firstChild;
             if (selection && selection.length === 0 && page.$selectedRevision) {
@@ -320,7 +337,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
-        this.prevAutoSaveValue = Util.isAutoSaveEnabled();
+        this.prevAutoSaveValue = this.isAutoSaveEnabled;
         settings.model.setQueryValue("general/@autosaveenabled", false);
 
         var path = Util.stripWSFromPath(e.path);
@@ -358,7 +375,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onBeforeSaveWarning: function(e) {
         var isNewFile = apf.isTrue(e.doc.getNode().getAttribute("newfile"));
-        if (!isNewFile && Util.isAutoSaveEnabled()) {
+        if (!isNewFile && this.isAutoSaveEnabled) {
             this.save();
             return false;
         }
@@ -385,18 +402,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.$switchToPageModel(page);
+        if (!this.isNewPage(page)) {
+            ide.send({
+                command: "revisions",
+                subCommand: "getRevisionHistory",
+                path: path
+            });
 
-        ide.send({
-            command: "revisions",
-            subCommand: "getRevisionHistory",
-            path: path
-        });
-
+            this.setSaveButtonCaption();
+        }
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
-
-        this.setSaveButtonCaption();
     },
-
+    
     onSwitchFile: function(e) {
         this.$switchToPageModel(e.nextPage);
     },
@@ -506,6 +523,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    isSaving : false,
     onDocChange: function(e, doc) {
         if (e.data && e.data.delta) {
             var suffix = e.data.delta.suffix;
@@ -515,13 +533,17 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        clearTimeout(this.docChangeTimeout);
-        this.docChangeTimeout = setTimeout(function(self) {
-            if (doc.$page && Util.isAutoSaveEnabled()) {
+        var page = doc.$page, self = this;
+        if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
+            setTimeout(function(){
                 self.setSaveButtonCaption();
-                self.save(doc.$page);
-            }
-        }, CHANGE_TIMEOUT, this);
+            });
+            
+            clearTimeout(this.docChangeTimeout);
+            this.docChangeTimeout = setTimeout(function(self) {
+                self.save(page);
+            }, CHANGE_TIMEOUT, this);
+        }
     },
 
     onWorkerMessage: function(e) {
@@ -626,7 +648,14 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 var revision = this.revisionQueue[ts].revision;
                 if (revision) {
-                    revision.saved = true;
+                    revision.saved = true
+                    // In the case that a new file has just been created and saved
+                    // `allRevisions` won't be there (since there has never been
+                    // a `getRevisionhistory` that creates it), so we create it.
+                    if (!revObj.allRevisions) {
+                        revObj.allRevisions = {};
+                    }
+
                     revObj.allRevisions[ts] = revision;
                     delete this.revisionQueue[ts];
 
@@ -873,6 +902,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Populates the revisions model with the current revision list and attributes.
      **/
     populateModel: function(revObj, model) {
+        var page = tabEditors.getPage();
+        if (this.isNewPage(page)) {
+            return;
+        }
+
         if (!revObj || !model) {
             console.error("Expected a parameter and a model");
             return;
@@ -895,7 +929,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         for (var i = timestamps.length - 1; i >= 0; i--) {
             var ts = timestamps[i];
             var rev = revisions[ts];
-            var friendlyDate = Util.localDate(ts).toString("MMM d, h:mm tt");
+            var friendlyDate = (new Date(ts)).toString("MMM d, h:mm tt");
             var restoring = rev.restoring || "";
             var savedToDisk = rev.saved !== false;
 
@@ -1141,7 +1175,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             editor.setSession(newSession);
             doc = newSession.doc;
         }
-        
+
         editor.setReadOnly(true);
         editor.selection.clearSelection();
 
@@ -1175,7 +1209,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
-        if (typeof tabEditors === "undefined" || !Util.isAutoSaveEnabled())
+        if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
 
         tabEditors.getPages().forEach(this.save, this);
@@ -1348,6 +1382,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.populateModel(revObj, this.model);
+    },
+    
+    isNewPage: function(page) {
+        return parseInt(page.$model.getXml().getAttribute("newfile"), 10) === 1;
     },
 
     show: function() {

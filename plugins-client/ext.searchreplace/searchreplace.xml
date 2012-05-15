@@ -1,43 +1,49 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:window id="winSearchReplace"
-      onhide  = "require('ext/searchreplace/searchreplace').onHide()"
-      title   = "Search &amp; Replace" 
-      buttons = "close" 
-      modal   = "false" 
-      center  = "true" 
-      skin    = "bk-window"
-      class   = "relative"
-      width   = "800" 
-      kbclose = "true">
-        <a:vbox edge="15 10 20" padding="5">
-
-          <a:bar skin="find-and-replace">
-          </a:bar>
-            <a:hbox align="center">
-                <a:label width="75">Search</a:label>
-                <a:textbox id="txtFind" flex="1" focusselect="true" class="searchTxt"/>
-                <div id="divSearchReplaceCount"><span class="searchIter" id="spanSearchReplaceIter">0</span><span class="searchTotal" id="spanSearchReplaceTotal">0</span></div>
+    <a:label id="tooltipSearchReplace" skin="tooltipLabel" visible="false" />
+    <a:bar id="winSearchReplace" skin="basic" skinset="searchreplace" focussable="container" zindex="1000" minheight="0" visible="false" height="0">
+        <div id="divSearchCount"><span class="searchIter" id="spanSearchIter">0</span><span class="searchTotal" id="spanSearchTotal">0</span></div>
+        <a:button onclick="require('ext/searchreplace/searchreplace').findprevious(1)" 
+          skin="btnquicksearchnav" class="btnquicksearchnavLeft withDivider" 
+          icon="arrow_left_search.png"
+          right="29"
+          top="7"
+          focussable = "false"
+          zindex="100"/>
+        <a:button onclick="require('ext/searchreplace/searchreplace').findnext(1)" 
+          skin="btnquicksearchnav" class="btnquicksearchnavRight" 
+          icon="arrow_right_search.png" 
+          right="7"
+          top="7"
+          focussable = "false"
+          zindex="100"/>
+        <a:vbox class="find-and-replace" padding="5" edge="5" model="{require('core/settings').model}">
+             <a:hbox id="hboxFind" padding="5" align="start">
+                <a:hbox class="grouped_checkbox_holder" align="start">
+                    <a:checkbox id="chkRegEx" value="[editors/code/search/@regex]" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkMatchCase" value="[editors/code/search/@matchcase]" class="chkMatchCase" label="Match Case" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkWholeWords" value="[editors/code/search/@wholeword]" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" width="28" />
+                </a:hbox>
+                <a:hbox class="grouped_checkbox_holder" align="start">
+                    <a:checkbox id="chkSearchBackwards" value="[editors/code/search/@backwards]" class="chkSearchBackwards" label="Search Backwards" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkWrapAround" value="[editors/code/search/@wraparound]" class="chkWrapAround" label="Wrap Around" skin="grouped_checkbox" width="28" />
+                    <a:checkbox id="chkSearchSelection" class="chkSearchSelection" label="Search Selection" skin="grouped_checkbox" width="28" />
+                </a:hbox>
+                <a:hbox class="grouped_checkbox_holder" align="start">
+                    <a:checkbox id="chkHighlightMatches" value="[editors/code/search/@highlightmatches]" class="chkHighlightMatches" label="Highlight Matches" skin="grouped_checkbox" width="28" />
+                </a:hbox>
+                <a:textbox id="txtFind" tabindex="1000" flex="1" skin="searchbox" initial-message="Find" focusselect="true" class="buttonsright" />
             </a:hbox>
-            <a:hbox id="barSingleReplace" align="center">
-                <a:label width="75">Replace With</a:label>
-                <a:textbox id="txtReplace" flex="1" focusselect="true"/>
-            </a:hbox>
-            <a:hbox class="grouped_checkbox_holder" width="84">
-              <a:checkbox id="chkRegEx" class="chkRegEx" label="Regular Expressions" skin="grouped_checkbox" flex="1" />
-              <a:checkbox id="chkMatchCase" class="chkMatchCase" checked="false" label="Match Case" skin="grouped_checkbox" flex="1" />
-              <a:checkbox id="chkWholeWords" class="chkWholeWords" label="Whole Words" skin="grouped_checkbox" flex="1" />
-            </a:hbox>
-            <a:hbox class="grouped_checkbox_holder" width="84">
-                <a:checkbox id="chkSearchBackwards" class="chkSearchBackwards" label="Search Backwards" skin="grouped_checkbox" flex="1" />
-                <a:checkbox id="chkWrapAround" class="chkWrapAround" checked="true" label="Wrap Around" skin="grouped_checkbox" flex="1" />
-                <a:checkbox id="chkSearchSelection" class="chkSearchSelection" label="Search Selection" skin="grouped_checkbox" flex="1" />
+            <a:hbox id="hboxReplace" padding="5" align="start" render="runtime">
+                <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
+                    <a:checkbox id="chkPreserveCase" value="[editors/code/search/@preservecase]" class="chkPreserveCase" label="Preserve Case" skin="grouped_checkbox" width="28" />
+                </a:hbox>
+                <a:hbox class="grouped_checkbox_holder" margin="0 56 0 0">
+                
+                </a:hbox>
+                <a:textbox id="txtReplace" tabindex="1001" skin="searchbox" margin="0 -1 0 0"  flex="1" initial-message="Replace With" focusselect="true" />
+                <a:button margin="0 -2 0 0" focussable="false" skin="blackbutton" onclick="require('ext/searchreplace/searchreplace').replace()">Replace</a:button>
+                <a:button skin="blackbutton" tabindex="1002" onclick="require('ext/searchreplace/searchreplace').replaceAll()" >Replace All</a:button>
             </a:hbox>
         </a:vbox>
-        <a:hbox padding="10" pack="end" edge="6 10 10">
-            <a:button id="btnReplace" skin="btn-default-css3">Replace</a:button>
-            <a:button id="btnReplaceAll" skin="btn-default-css3">Replace All</a:button>
-            <a:button id="btnFind" default="2" class="btn-green" skin="btn-default-css3">Find</a:button>
-            <a:button onclick="winSearchReplace.hide()" skin="btn-default-css3">Close</a:button>
-        </a:hbox>
-    </a:window>
+    </a:bar>
 </a:application>

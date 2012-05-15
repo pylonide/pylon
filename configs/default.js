@@ -85,7 +85,6 @@ var config = {
                     "ext/searchinfiles/searchinfiles",
                     "ext/searchreplace/searchreplace",
                     "ext/quickwatch/quickwatch",
-                    "ext/quicksearch/quicksearch",
                     "ext/gotoline/gotoline",
                     "ext/preview/preview",
                     "ext/log/log",
@@ -157,6 +156,7 @@ var config = {
             "./cloud9.run.node",
             "./cloud9.run.node-debug",
             "./cloud9.run.npm",
+            "./cloud9.run.npmnode",
             "./cloud9.log",
             "./cloud9.ide.auth",
             "./cloud9.ide.blame",
@@ -165,6 +165,7 @@ var config = {
             "./cloud9.ide.hg",
             "./cloud9.ide.npm",
             "./cloud9.ide.run-node",
+            "./cloud9.ide.run-npm-module",
             "./cloud9.ide.run-python",
             "./cloud9.ide.revisions",
             {

@@ -149,7 +149,7 @@ module.exports = ext.register("ext/save/save", {
                 icon     : "save.png",
                 caption  : "Save",
                 tooltip  : "Save",
-                skin     : "c9-toolbarbutton",
+                skin     : "c9-toolbarbutton-glossy",
                 disabled : "{!!!tabEditors.activepage}",
                 command  : "quicksave"
             }), 1000)
@@ -399,7 +399,7 @@ module.exports = ext.register("ext/save/save", {
             var doc = page.$doc;
 
             if (path !== newPath || parseInt(node.getAttribute("newfile") || 0, 10) === 1) {
-                file = apf.getCleanCopy(node)
+                file = apf.getCleanCopy(node);
                 fs.beforeRename(file, null, newPath, false, isReplace);
                 doc.setNode(file);
                 model.load(file);
@@ -421,11 +421,12 @@ module.exports = ext.register("ext/save/save", {
                                     .replace(new RegExp("\/" + file.getAttribute("name")), "")
                                     .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
                                     .replace(/\/node\(\)\[@name="workspace"\]/, "")
-                                    .replace(/\//, "");
-                if (xpath) {
-                    var oNode  = trFiles.queryNode(xpath);
-                    if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]'))
+                                    .replace(/\//, "") || "node()";
+                if (self.trFiles && xpath) {
+                    var oNode = trFiles.queryNode(xpath);
+                    if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]')) {
                         apf.xmldb.appendChild(oNode, file);
+                    }
                 }
             }
 
@@ -514,7 +515,7 @@ module.exports = ext.register("ext/save/save", {
             if (window.winConfirm) {
                 winConfirm.hide();
                 
-                if (btnConfirmOk.caption == "Yes")
+                if (self["btnConfirmOk"] && btnConfirmOk.caption == "Yes")
                     btnConfirmOk.setCaption("Ok");
             }
         };
@@ -551,15 +552,23 @@ module.exports = ext.register("ext/save/save", {
 
     expandTree : function(){
         var _self = this;
-        setTimeout(function(){
+        
+        function expand(){
             var tabPage = tabEditors.getPage(),
                 path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
                 isNew   = tabPage.$model.data.getAttribute('newfile');
-            if(!isNew)
+            if (!isNew)
                 _self.choosePath(path);
             else
                 trSaveAs.slideOpen(null, trSaveAs.getModel().data.selectSingleNode('//folder'));
-        });
+        }
+        
+        if (trSaveAs.getModel()) {
+            expand();
+        }
+        else {
+            trSaveAs.addEventListener("afterload", expand);
+        }
     },
 
     enable : function(){

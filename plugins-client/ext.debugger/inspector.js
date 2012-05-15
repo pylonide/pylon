@@ -7,28 +7,60 @@
 
 define(function(require, exports, module) {
 
-var Console = require("ext/console/console");
-var Logger  = require("ext/console/logger");
-
 exports.evaluate = function(expression, callback){
-    var _self = this;
     var frame = (self.dgStack && dgStack.selected && dgStack.selected.getAttribute("ref")) || null;
-
     dbg.evaluate(expression, frame, null, null, callback || exports.showObject);
 };
 
-exports.checkChange = function(xmlNode){
-    var value = xmlNode.getAttribute("value");
+exports.checkChange = function(xmlNode) {
     if (xmlNode.tagName == "method" || "Boolean|String|undefined|null|Number".indexOf(xmlNode.getAttribute("type")) == -1)
         return false;
 };
+
+var MESSAGE_TYPES = {
+    "prompt" : '<span class="prompt">&gt; __MSG__</span>',
+    "error" : '<span class="error">__MSG__</span>',
+    "log" : '__MSG__'
+};
+
+var numOutputSection = 0;
+function logToInspectorOutput(output, type, pre, post, existingDiv) {
+    var outStr = MESSAGE_TYPES[type];
+    outStr = outStr.replace("__MSG__", output);
+
+    if (!existingDiv) {
+        numOutputSection++;
+        pre = '<div class="output_section" id="output_section' + numOutputSection + '">' +
+            (pre || "");
+    }
+    pre = (pre || "");
+    post = (post || "");
+
+    if (!existingDiv)
+        post += '</div>';
+
+    outStr = pre + outStr + post;
+
+    if (existingDiv) {
+        var outElement = document.getElementById(existingDiv);
+        if (outElement)
+            outElement.innerHTML = outElement.innerHTML + '<br />' + outStr;
+    }
+    else {
+        txtInteractiveOutput.addValue(outStr);
+    }
+
+    if (!existingDiv)
+        return  "output_section" + numOutputSection;
+}
 
 exports.applyChange = function(xmlNode){
     var value = xmlNode.getAttribute("value");
     var name = exports.calcName(xmlNode);
     try {
         if (name.indexOf(".") > -1) {
-            var prop, obj = self.parent.eval(name.replace(/\.([^\.\s]+)$/, ""));
+            var prop;
+            var obj = self.parent.eval(name.replace(/\.([^\.\s]+)$/, ""));
             if (obj && obj.$supportedProperties && obj.$supportedProperties.contains(prop = RegExp.$1)) {
                 obj.setProperty(prop, self.parent.eval(value));
                 return;
@@ -50,18 +82,15 @@ exports.consoleTextHandler = function(e) {
     if (!(e.keyCode == 13 && e.ctrlKey))
         return;
 
-    var _self = this;
-
     var expression = txtCode.getValue().trim();
     if (!expression)
         return;
 
-    Console.showOutput();
-    Logger.log(expression, "command", null, null, true);
+    var existingDiv = logToInspectorOutput(expression, "prompt");
 
     this.evaluate(expression, function(xmlNode, body, refs, error){
         if (error) {
-            Logger.log(error.message, "error");
+            logToInspectorOutput(error.message, "error", null, null, existingDiv);
         }
         else {
             var type      = body.type,
@@ -70,29 +99,30 @@ exports.consoleTextHandler = function(e) {
                 className = body.className;
 
             if (className == "Function") {
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(null, ["
+                var pre = "<a class='xmlhl' href='javascript:void(0)' onclick='require(\"ext/debugger/inspector\").showObject(null, ["
                     + body.scriptId + ", " + body.line + ", " + body.position + ", "
                     + body.handle + ",\"" + (body.name || body.inferredName) + "\"], \""
                     + (expression || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>";
                 var post = "</a>";
                 var name = body.name || body.inferredName || "function";
-                Logger.log(name + "()", "log", pre, post, true);
+                logToInspectorOutput(name + "()", "log", pre, post, existingDiv);
             }
             else if (className == "Array") {
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(\""
+                var pre = "<a class='xmlhl' href='javascript:void(0)' style='' onclick='require(\"ext/debugger/inspector\").showObject(\""
                     + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
 
-                Logger.log("Array { length: "
-                    + (body.properties && body.properties.length - 1), "log", pre, post, txtOutput);
+
+                logToInspectorOutput("Array { length: "
+                    + (body.properties && body.properties.length - 1), "log", pre, post, existingDiv);
             }
             else if (type == "object") {
                 var refs = [], props = body.properties;
                 for (var i = 0, l = body.properties.length; i < l; i++)
                     refs.push(props[i].ref);
 
-                var pre = "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='require(\"ext/debugger/inspector\").showObject(\""
+                var pre = "<a class='xmlhl' href='javascript:void(0)' onclick='require(\"ext/debugger/inspector\").showObject(\""
                     + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
                     + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
@@ -113,11 +143,11 @@ exports.consoleTextHandler = function(e) {
                     }
                     if (t) out.pop();
 
-                    Logger.log(out.join(" "), "log", pre, post, true);
+                    logToInspectorOutput(out.join(" "), "log", pre, post, existingDiv);
                 });
             }
             else
-                Logger.log(value, "log", null, null, true);
+                logToInspectorOutput(value, "log", null, null, existingDiv);
         }
     });
 

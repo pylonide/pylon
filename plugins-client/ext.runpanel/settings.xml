@@ -8,11 +8,12 @@
             <!--element caption="Python" value="py" /-->
         </data>
     </a:model>
-    <a:hbox position="4000" edge="0 5 5 0" align="center" class="underlined">
-        <a:label flex="1">Runtime:</a:label>        
+    <a:hbox position="19000" edge="5 5 2 5" align="center" class="underlined">
+        <a:label flex="1">Node.js Runtime</a:label>        
         <a:dropdown
           model     = "mdlRunnerSelector2"
-          width="175"  height="21"
+          width     = "100"  
+          height    = "21"
           disabled  = "{!lstRunCfg.selected}"
           value     = "[{require('core/settings').model}::auto/node-version/@version]"
           default   = "auto"

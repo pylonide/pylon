@@ -15,9 +15,9 @@ handler.handlesLanguage = function(language) {
     return language === 'javascript';
 };
     
-handler.parse = function(code) {
+handler.parse = function(code, callback) {
     code = code.replace(/^(#!.*\n)/, "//$1");
-    return parser.parse(code);
+    callback(parser.parse(code));
 };
 
 /* Ready to be enabled to replace Narcissus, when mature

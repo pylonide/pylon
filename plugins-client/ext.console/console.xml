@@ -1,15 +1,11 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:bar id="winDbgConsole" height="30" zindex="9000">
+    <a:bar id="winDbgConsole" height="30" zindex="1000">
         <a:vbox anchors="0 0 0 0">
-            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime" buttons="">
+            <a:tab id="tabConsole" skin="tab_console" flex="1" visible="false" render2="runtime" buttons="scale,order"
+              onclose="return require('ext/console/console').checkIfPageCanClose(event)">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
                     <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"
-                      onclick  = "
-                        if (tabConsole.activepagenr == 0)
-                            txtConsole.clear();
-                        else if (tabConsole.activepagenr == 1)
-                            txtOutput.clear();
-                      "/>
+                      onclick  = "require('ext/console/console').clear()" />
                     <a:button id="btnConsoleSettings" skin="btn_icon_only"
                       icon    = "console_settings.png"
                       margin  = "2 4 0 0"
@@ -70,12 +66,19 @@
                 <a:item type="check"
                   checked = "[{require('core/settings').model}::auto/console/@autoshow]"
                   caption = "Auto-show console when running" />
+                <a:item type="check"
+                  checked = "[{require('core/settings').model}::auto/console/@clearonrun]"
+                  caption = "Clear output on run" />
             </a:menu>
 
-            <a:hbox id="cliBox" class="consoleInputBox" edge="1" padding="4" pack="end" visible="false">
+            <a:hbox id="cliBox" class="consoleInputBox" edge="1 1 2 1" padding="4" pack="end" visible="false">
+                <a:text id="txtConsolePrompt"
+                    class="txt_console_prompt"
+                    visible="false"
+                    value="" />
                 <a:textbox id="txtConsoleInput"
                   initial-message = 'Type "help" to get a list of commands'
-                  margin          = "2 0 0"
+                  margin          = "2 1 1 5"
                   skin            = "tb_console"
                   flex            = "1" />
                 <a:button id="btnCollapseConsole" skin="btn_console_open" icon="switch.png" state="true" height="27"
