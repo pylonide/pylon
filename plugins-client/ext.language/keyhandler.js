@@ -7,6 +7,7 @@
 define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
+var language = require("ext/language/language");
 var completionUtil = require("ext/codecomplete/complete_util");
 
 function composeHandlers(mainHandler, fallbackHandler) {
@@ -17,12 +18,30 @@ function composeHandlers(mainHandler, fallbackHandler) {
     };
 }
 
+function onTextInput(text, pasted) {
+    if (language.disabled)
+        return false;
+    if (language.isContinuousCompletionEnabled)
+        typeAlongCompleteTextInput(text, pasted);
+    else
+        inputTriggerComplete(text, pasted);
+    return false;
+}
+
+function onCommandKey(e) {
+    if (language.disabled)
+        return false;
+    if (language.isContinuousCompletionEnabled)
+        typeAlongComplete(e);
+    return false;
+}
+
 function typeAlongComplete(e) {
     if(e.metaKey || e.altKey || e.ctrlKey)
         return false;
     if(editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
-    if(e.keyCode === 8) {
+    if(e.keyCode === 8) { // Backspace
         var ext = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
@@ -31,7 +50,17 @@ function typeAlongComplete(e) {
             return false;
         ext.deferredInvoke();
     }
-    return false;
+}
+
+function inputTriggerComplete(text, pasted) {
+    if (editors.currentEditor.amlEditor.syntax !== "javascript")
+        return false;
+    if (!pasted && text === "." && isInferAvailable())
+        handleChar(text);
+}
+
+function isInferAvailable() {
+    return !!require("core/ext").extLut["ext/jsinfer/jsinfer"];
 }
 
 function typeAlongCompleteTextInput(text, pasted) {
@@ -96,6 +125,9 @@ function preceededByIdentifier(line, column, postfix) {
     return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column);
 }
 
+exports.onTextInput = onTextInput;
+exports.onCommandKey = onCommandKey;
+exports.inputTriggerComplete = inputTriggerComplete;
 exports.typeAlongCompleteTextInput = typeAlongCompleteTextInput;
 exports.typeAlongComplete = typeAlongComplete;
 exports.composeHandlers = composeHandlers;

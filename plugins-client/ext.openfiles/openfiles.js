@@ -10,6 +10,7 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var ext = require("core/ext");
 var util = require("core/util");
+var settings = require("core/settings");
 var panels = require("ext/panels/panels");
 var markup = require("text!ext/openfiles/openfiles.xml");
 var commands = require("ext/commands/commands");
@@ -120,7 +121,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             
             if (!self.trFiles)
                 return;
-                
+
             if (node.getAttribute("customtype") == util.getContentType("c9search")) {
                 apf.xmldb.setAttribute(node, "changed", 0);
                 return;
@@ -149,7 +150,8 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     },
     
     animateAdd : function(xmlNode){
-        var _self = this;
+        if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
+            return;
 
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
             
@@ -165,9 +167,10 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     animateRemove : function(xmlNode){
         var _self = this;
 
+        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
         var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
+            htmlNode.style.overflow = "hidden";
             
-        htmlNode.style.overflow = "hidden";
         apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
             //{type: "height", from:20, to: 0, steps: 10, interval: 10, anim: apf.tween.NORMAL}
             {type: "left", from:0, to: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
@@ -175,6 +178,10 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             htmlNode.style.display = 'none';
             _self.model.removeXml(xmlNode);
         }});
+        }
+        else {
+            _self.model.removeXml(xmlNode);
+        }
     },
 
     init : function() {

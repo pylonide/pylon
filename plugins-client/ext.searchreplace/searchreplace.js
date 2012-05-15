@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var settings = require("core/settings");
 var menus = require("ext/menus/menus");
 var search = require("ace/search");
 var editors = require("ext/editors/editors");
@@ -378,6 +379,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         
         tooltipSearchReplace.$ext.style.display = "none";
 
+        var animate = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (!force && !winSearchReplace.visible || force > 0 || stateChange) {
             if (winSearchReplace.visible && !stateChange) {
                 txtFind.focus();
@@ -401,7 +403,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             winSearchReplace.$ext.style.height 
                 = winSearchReplace.$ext.offsetHeight + "px";
             
-            if (stateChange && isReplace || !wasVisible)
+            if (!animate || stateChange && isReplace || !wasVisible)
                 this.setupDialog(isReplace);
 
             chkSearchSelection.uncheck();
@@ -437,23 +439,31 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             if (stateChange && !isReplace && wasVisible)
                 toHeight -= hboxReplace.$ext.scrollHeight;
             
-            Firmin.animate(winSearchReplace.$ext, {
-                height: toHeight + "px", //(isReplace ? 70 : 38)
-                timingFunction: "cubic-bezier(.10, .10, .25, .90)"
-            }, 0.2, function() {
-                if (stateChange && !isReplace && wasVisible)
-                    _self.setupDialog(isReplace);
-                
-                winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+            if (animate) {
+                Firmin.animate(winSearchReplace.$ext, {
+                    height: toHeight + "px", //(isReplace ? 70 : 38)
+                    timingFunction: "cubic-bezier(.10, .10, .25, .90)"
+                }, 0.2, function() {
+                    if (stateChange && !isReplace && wasVisible)
+                        _self.setupDialog(isReplace);
+                    
+                    winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                    winSearchReplace.$ext.style.height = "";
+                    
+                    divSearchCount.$ext.style.visibility = "";
+                    _self.updateCounter();
+                    
+                    setTimeout(function(){
+                        apf.layout.forceResize();
+                    }, 50);
+                });
+            }
+            else {
                 winSearchReplace.$ext.style.height = "";
-                
                 divSearchCount.$ext.style.visibility = "";
                 _self.updateCounter();
-                
-                setTimeout(function(){
-                    apf.layout.forceResize();
-                }, 50);
-            });
+                apf.layout.forceResize();
+            }
         }
         else if (winSearchReplace.visible) {
             divSearchCount.$ext.style.visibility = "hidden";
@@ -467,24 +477,36 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 = winSearchReplace.$ext.offsetHeight + "px";
 
             //Animate
-            Firmin.animate(winSearchReplace.$ext, {
-                height: "0px",
-                timingFunction: "ease-in-out"
-            }, 0.2, function(){
+            if (animate) {
+                Firmin.animate(winSearchReplace.$ext, {
+                    height: "0px",
+                    timingFunction: "ease-in-out"
+                }, 0.2, function(){
+                    winSearchReplace.visible = true;
+                    winSearchReplace.hide();
+                    
+                    winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+    
+                    if (!noselect)
+                        editor.ceEditor.focus();
+                    
+                    setTimeout(function(){
+                        callback
+                            ? callback()
+                            : apf.layout.forceResize();
+                    }, 50);
+                });
+            }
+            else {
                 winSearchReplace.visible = true;
                 winSearchReplace.hide();
-                
-                winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-
                 if (!noselect)
                     editor.ceEditor.focus();
                 
-                setTimeout(function(){
-                    callback
-                        ? callback()
-                        : apf.layout.forceResize();
-                }, 50);
-            });
+                callback
+                    ? callback()
+                    : apf.layout.forceResize();
+            }
         }
         else if (callback)
             callback();
@@ -707,7 +729,14 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var options = this.getOptions();
         options.needle = txtFind.getValue();
         options.scope = search.Search.SELECTION;
-        this.$editor.replace(txtReplace.getValue() || "", options);
+        
+        var lut = {"n": "\n", "t": "\t", "r": "\r"};
+        var strReplace = (txtReplace.getValue() || "")
+            .replace(/(\\\\)+|\\([ntr])/g, function(m, m1, m2) { 
+                return m1 || lut[m2];
+            });
+        
+        this.$editor.replace(strReplace, options);
         //this.$editor.find(this.$crtSearch, options);
         this.findNext();
         ide.dispatchEvent("track_action", {type: "replace"});
@@ -722,7 +751,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var options = this.getOptions();
         options.needle = txtFind.getValue();
         
-        this.$editor.replaceAll(txtReplace.getValue() || "", options);
+        var lut = {"n": "\n", "t": "\t", "r": "\r"};
+        var strReplace = (txtReplace.getValue() || "")
+            .replace(/(\\\\)+|\\([ntr])/g, function(m, m1, m2) { 
+                return m1 || lut[m2];
+            });
+        
+        this.$editor.replaceAll(strReplace, options);
 
         this.updateCounter();
         ide.dispatchEvent("track_action", {type: "replace"});

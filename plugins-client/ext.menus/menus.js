@@ -374,24 +374,32 @@ module.exports = ext.register("ext/menus/menus", {
         if (this.animateControl)
             this.animateControl.stop();
 
-        logobar.$ext.style.overflow = "hidden";
         apf.setStyleClass(logobar.$ext, "", ["minimized"]);
-        apf.tween.single(logobar.$ext, {
-            from : logobar.$ext.offsetHeight,
-            to : 31,
-            anim : apf.tween.easeOutCubic,
-            type : "height",
-            control : this.animateControl = {},
-            interval : apf.isWebkit ? 0 : 10,
-            steps : 5,
-            oneach : function(){
-                apf.layout.forceResize(tabEditors.$ext);
-            },
-            onfinish : function(){
-                apf.layout.forceResize(tabEditors.$ext);
-                logobar.$ext.style.overflow = "";
-            }
-        });
+        
+        if (apf.isTrue(settings.model.queryValue("general/@animateui"))) {
+            logobar.$ext.style.overflow = "hidden";
+            
+            apf.tween.single(logobar.$ext, {
+                from : logobar.$ext.offsetHeight,
+                to : 31,
+                anim : apf.tween.easeOutCubic,
+                type : "height",
+                control : this.animateControl = {},
+                interval : apf.isWebkit ? 0 : 10,
+                steps : 5,
+                oneach : function(){
+                    apf.layout.forceResize(tabEditors.$ext);
+                },
+                onfinish : function(){
+                    apf.layout.forceResize(tabEditors.$ext);
+                    logobar.$ext.style.overflow = "";
+                }
+            });
+        }
+        else {
+            logobar.$ext.style.height = "31px";
+            apf.layout.forceResize(tabEditors.$ext);
+        }
         
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "false");
@@ -403,9 +411,11 @@ module.exports = ext.register("ext/menus/menus", {
         if (this.animateControl)
             this.animateControl.stop();
 
-        if (noAnim) {
+        var animate = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        if (noAnim || !animate) {
             apf.setStyleClass(logobar.$ext, "minimized");
             logobar.$ext.style.height = "12px";
+            apf.layout.forceResize();
         }
         else {
             logobar.$ext.style.overflow = "hidden";
@@ -422,7 +432,7 @@ module.exports = ext.register("ext/menus/menus", {
                 },
                 onfinish : function(){
                     apf.setStyleClass(logobar.$ext, "minimized");
-                    apf.layout.forceResize(tabEditors.$ext);
+                    apf.layout.forceResize();
                     logobar.$ext.style.overflow = "";
                 }
             });

@@ -3,23 +3,19 @@
 var util = require("util");
 var ShellRunner = require("../cloud9.run.shell/shell").Runner;
 
-/**
- * Run node scripts with restricted user rights
- */
-
 var exports = module.exports = function setup(options, imports, register) {
-    var pm = imports["process-manager"];
-    var ide = imports.ide.getServer();
+   var pm = imports["process-manager"];
+   var ide = imports.ide.getServer();
 
-    imports.sandbox.getUnixId(function(err, unixId) {
-        if (err) return register(err);
+   imports.sandbox.getUnixId(function(err, unixId) {
+       if (err) return register(err);
 
-        pm.addRunner("node", exports.factory(unixId, ide));
+       pm.addRunner("run-npm", exports.factory(unixId, ide));
 
-        register(null, {
-            "run-node": {}
-        });
-    });
+       register(null, {
+           "run-run-npm": {}
+       });
+   });
 };
 
 exports.factory = function(uid, ide) {
@@ -45,7 +41,7 @@ util.inherits(Runner, ShellRunner);
 
 (function() {
 
-    this.name = "node";
+    this.name = "run-npm";
 
     this.createChild = function(callback) {
         this.args = this.nodeArgs.concat(this.file, this.scriptArgs);

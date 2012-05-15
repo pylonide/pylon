@@ -4,12 +4,13 @@
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
+var ide; //Global on purpose!!!!
 
 define(function(require, exports, module) {
     var Document = require("core/document");
     var util = require("core/util");
 
-    ide = new apf.Class().$init(); //Global on purpose!!!!
+    ide = new apf.Class().$init(); 
 
     ide.createDocument = function(node, value){
         return new Document(node, value);
