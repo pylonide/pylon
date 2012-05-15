@@ -8954,7 +8954,7 @@
     .editor_tab .tab_middle {
         background-image    : url(images/editor_tab.png);
         background-position : 0 -104px;
-        height              : 18px;
+        height              : 20px;
         position            : relative;
         overflow            : hidden;
         padding             : 4px 0 0 0;
@@ -8962,7 +8962,7 @@
     .editor_tab .tab_left,
     .editor_tab .tab_right {
         position            : absolute;
-        height              : 22px;
+        height              : 25px;
         width               : 20px;
         background-image    : url(images/editor_tab.png);
         background-repeat   : no-repeat;
@@ -9382,6 +9382,14 @@
     }
     .editor_tab.hidetabs .curbtn {
         top: 5px;
+    }
+
+    .editor_tab .tab_middle {
+        height : 18px;
+    }
+
+    .editor_tab .tab_right, .editor_tab .tab_left {
+        height : 22px;
     }
 </a:style>
 <a:style condition="apf.isWebkit">
