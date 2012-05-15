@@ -209,7 +209,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (caption)
             return btnSave.setCaption(caption);
 
-        btnSave.$ext.style.display = "block";
+        btnSave.show();
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(page);
@@ -437,7 +437,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
-            btnSave.$ext.style.display = "none"; 
+            btnSave.hide(); 
         else
             this.setSaveButtonCaption(null, e.page);
             
