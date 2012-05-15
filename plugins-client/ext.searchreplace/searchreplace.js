@@ -247,10 +247,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             _self.decorateCheckboxes(this);
         });
         
-        var blur = function(e){
+        var blur = function(e){ 
             if (self.hboxReplace && !hboxReplace.visible 
               && self.winSearchReplace && winSearchReplace.visible 
-              && !apf.isChildOf(winSearchReplace, e.toElement))
+              && !apf.isChildOf(winSearchReplace, e.toElement)
+              && e.toElement !== txtSFFind)
                 _self.toggleDialog(-1, null, true);
         }
         
@@ -493,7 +494,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     
                     if (!noselect)
                         editor.ceEditor.focus();
-                    
+
                     setTimeout(function(){
                         callback
                             ? callback()
