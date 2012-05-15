@@ -209,6 +209,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (caption)
             return btnSave.setCaption(caption);
 
+        btnSave.show();
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(page);
@@ -435,8 +436,11 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
-        this.setSaveButtonCaption(null, e.page);
-
+        if (tabEditors.getPages().length == 1)
+            btnSave.hide(); 
+        else
+            this.setSaveButtonCaption(null, e.page);
+            
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
