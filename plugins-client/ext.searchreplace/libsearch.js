@@ -20,28 +20,36 @@ module.exports = {
         var iSearchHandler = new HashHandler();
         iSearchHandler.bindKeys({
             "Up": function(codebox) {
+                if (codebox.getCursorPosition().row > 0)
+                    return false;
+    
                 _self.keyStroke = "next";
                 _self.navigateList(_self.keyStroke, codebox);
-                codebox.selection.lead.row = 0;
+                codebox.selection.moveCursorFileStart();
+                codebox.selection.clearSelection();
             },
             "Down": function(codebox) {
-                if (codebox.session.getLength() > 1 && _self.keyStroke == "next")
+                if (codebox.getCursorPosition().row < codebox.session.getLength() - 1)
+                    return false;
+        
                 _self.keyStroke = "prev";
                 _self.navigateList(_self.keyStroke, codebox);
-                codebox.selection.lead.row != codebox.session.getLength() - 2;
+                codebox.selection.lead.row = codebox.session.getLength() - 1;
             },
-            "Ctrl-Home":  function(codebox) { _self.navigateList("first", codebox) },
-            "Ctrl-End": function(codebox) {    _self.navigateList("last", codebox)    },
-            "Esc": function() { _self.toggleDialog(-1); },
-            "Shift-Esc|Ctrl-Esc": function() { _self.restore() },
-            "Ctrl-Return|Alt-Return": function(codebox) { codebox.insert("\n"); },
+            "Ctrl-Home":  function(codebox) { _self.navigateList("first", codebox); _self.keyStroke = "prev"; },
+            "Ctrl-End": function(codebox) {    _self.navigateList("last", codebox); _self.keyStroke = "next";  },
+            "Esc": function() { _self.toggleDialog(-1); _self.keyStroke = "";},
+            "Shift-Esc|Ctrl-Esc": function() { _self.restore(); _self.keyStroke = ""; },
+            "Ctrl-Return|Alt-Return": function(codebox) { codebox.insert("\n"); _self.keyStroke = "";},
             "Return": function(codebox) {
                 _self.saveHistory(codebox.session.getValue());
                 _self.execFind(false, false, true, true);
+                _self.keyStroke = "";
             },
             "Shift-Return": function(codebox) {
                 _self.saveHistory(codebox.session.getValue());
                 _self.execFind(false, true, true, true);
+                _self.keyStroke = "";
             }
         });
 
@@ -88,7 +96,7 @@ module.exports = {
             next = 0;
 
         if (lines[next] && next != this.position) {
-            codebox.setValue(lines[next]);
+            codebox.setValue(lines[next], true);
             this.position = next;
         }
     },

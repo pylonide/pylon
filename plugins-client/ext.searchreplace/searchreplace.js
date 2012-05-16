@@ -223,8 +223,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             _self.$timer = setTimeout(function() { // chillax, then fire--necessary for rapid key strokes
                 if (_self.keyStroke != "next" && _self.keyStroke != "prev") // don't search, keep counter update
                     _self.execFind();
-              //  else
-            //        _self.keyStroke = "";
                     
                 apf.layout.forceResize();
                 _self.updateCounter(null, true);
