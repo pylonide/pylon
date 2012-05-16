@@ -394,7 +394,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     gutter            : "[{require('core/settings').model}::editors/code/@gutter]",
                     highlightselectedword : "[{require('core/settings').model}::editors/code/@highlightselectedword]",
                     autohidehorscrollbar  : "[{require('core/settings').model}::editors/code/@autohidehorscrollbar]",
-                    fadefoldwidgets   : "false"
+                    fadefoldwidgets   : "false",
+                    wrapmodeViewport  : "true"
                 }));
                 
                 this.codeEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
@@ -486,22 +487,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             } 
         }
         
-        var resultingData = "";
         var firstStream = false;
-        this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {         
-            resultingData = data;
+        this.id = davProject.report(path, "codesearch", options, function(data, state, extra) {   
             firstStream = true;
+            if (!chkSFConsole.checked)
+                _self.appendLines(_self.tabacedoc, data);
+            else
+                _self.appendLines(_self.consoleacedoc, data);
         });
-        
+
         // Start streaming
+        var start = 0;
         this.timer = setInterval(function() {  
             var q = davProject.realWebdav.queue[_self.id];
-            
-            if (!chkSFConsole.checked)
-                _self.appendLines(_self.tabacedoc, resultingData);
-            else 
-                _self.appendLines(_self.consoleacedoc, resultingData);
-
+                
             if (firstStream && !q) {
                 if (!chkSFConsole.checked) {
                     node.setAttribute("saving", "0");
@@ -510,7 +509,11 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 btnSFFind.$ext.innerText = "Find";
                 return clearInterval(_self.timer);
             }
-        }, 200);
+            
+            // client not streaming atm
+            //var str = q.http.responseText;   
+            //console.log(str.substr(start).length);
+        }, 50);
         
         this.saveHistory(options.query, "searchfiles");
         this.position = 0;

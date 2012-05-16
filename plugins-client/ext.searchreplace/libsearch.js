@@ -11,6 +11,7 @@ var settings = require("core/settings");
 var prefix   = "search/"
 
 module.exports = {
+    keyStroke: "",
     addSearchKeyboardHandler: function(txtFind, type) {
         var _self = this;
         var HashHandler = require("ace/keyboard/hash_handler").HashHandler;
@@ -19,14 +20,15 @@ module.exports = {
         var iSearchHandler = new HashHandler();
         iSearchHandler.bindKeys({
             "Up": function(codebox) {
-                if (codebox.selection.lead.row != 0)
-                    return false;
-                _self.navigateList("prev", codebox)
+                _self.keyStroke = "next";
+                _self.navigateList(_self.keyStroke, codebox);
+                codebox.selection.lead.row = 0;
             },
             "Down": function(codebox) {
-                if (codebox.selection.lead.row != codebox.session.getLength() - 1)
-                    return false;
-                _self.navigateList("next", codebox)
+                if (codebox.session.getLength() > 1 && _self.keyStroke == "next")
+                _self.keyStroke = "prev";
+                _self.navigateList(_self.keyStroke, codebox);
+                codebox.selection.lead.row != codebox.session.getLength() - 2;
             },
             "Ctrl-Home":  function(codebox) { _self.navigateList("first", codebox) },
             "Ctrl-End": function(codebox) {    _self.navigateList("last", codebox)    },
