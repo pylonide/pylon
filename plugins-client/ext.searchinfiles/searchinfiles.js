@@ -266,7 +266,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             document.body.scrollTop = 0;
             
             //Animate
-            if (animate) {
+            if (animate && !apf.isGecko) {
             Firmin.animate(winSearchInFiles.$ext, {
                 height: "102px",
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)"
@@ -290,7 +290,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             
             
             //Animate
-            if (animate) {
+            if (animate && !apf.isGecko) {
             winSearchInFiles.visible = false;
             
             winSearchInFiles.$ext.style.height 

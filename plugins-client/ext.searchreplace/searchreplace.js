@@ -399,7 +399,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             if (stateChange && !isReplace && wasVisible)
                 toHeight -= hboxReplace.$ext.scrollHeight;
             
-            if (animate) {
+            if (animate && !apf.isGecko) {
                 Firmin.animate(winSearchReplace.$ext, {
                     height: toHeight + "px", //(isReplace ? 70 : 38)
                     timingFunction: "cubic-bezier(.10, .10, .25, .90)"
@@ -437,7 +437,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 = winSearchReplace.$ext.offsetHeight + "px";
 
             //Animate
-            if (animate) {
+            if (animate && !apf.isGecko) {
                 Firmin.animate(winSearchReplace.$ext, {
                     height: "0px",
                     timingFunction: "ease-in-out"
