@@ -146,7 +146,7 @@ module.exports = ext.register("ext/tree/tree", {
             var expandedNodes = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
             _self.expandedNodes = [];
 
-            var path, id;//, lut = {};
+            var path, id, lut = {};
 
             // expandedList keeps an active record of all the expanded nodes
             // so that on each save this gets serialized into the auto/projecttree
@@ -156,26 +156,32 @@ module.exports = ext.register("ext/tree/tree", {
                 if (!path)
                     delete _self.expandedList[id];
                 else
-                    _self.expandedNodes.push(path);//lut[path] = true;
+                    lut[path] = true;
             }
+            
+            console.log("These are the paths we're checking", lut);
 
             // This checks that each expanded folder has a root that's already
             // been saved
-            /*var numNodesToSplice = ide.davPrefix.split("/").length;
+            var rootPrefixNodes = ide.davPrefix.split("/").length - 2;
+            console.log("Length root prefix nodes", rootPrefixNodes);
             var cc, parts;
             for (path in lut) {
+                console.log("Checking that path has a parent", path);
                 parts = path.split("/");//.splice(numNodesToSplice);
                 cc = parts.shift();
                 do {
-                    if (!parts.length)
+                    if (parts.length == rootPrefixNodes)
                         break;
 
                     cc += "/" + parts.shift();
                 } while(lut[cc]);
 
-                if (!parts.length)
+                if (parts.length == rootPrefixNodes)
                     _self.expandedNodes.push(path);
-            }*/
+            }
+            
+            console.log("And this is what we got!", _self.expandedNodes);
 
             expandedNodes.nodeValue = JSON.stringify(_self.expandedNodes);
             _self.changed = false;
@@ -464,12 +470,21 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("collapse", this.$collapse = function(e){
             if (!e.xmlNode)
                 return;
-            delete _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
 
-            if (!_self.loading) {
-                _self.changed = true;
-                settings.save();
-            }
+            var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+            //var path = e.xmlNode.getAttribute("path");
+            delete _self.expandedList[id];
+            //console.log(id, path);
+
+            /*for (var el in _self.expandedList) {
+                console.log(_self.expandedList[el]);
+                if (_self.expandedList[el].indexOf(path) === 0) {
+                    
+                }
+            }*/
+
+            _self.changed = true;
+            settings.save();
         });
     },
 
