@@ -109,6 +109,9 @@ apf.DelayedRender = function(){
         this.$rendered = true;
 
         this.dispatchEvent("afterrender");
+        this.addEventListener("$event.afterrender", function(cb){
+            cb.call(this);
+        });
 
         this.$ext.style.visibility = "";
     };
