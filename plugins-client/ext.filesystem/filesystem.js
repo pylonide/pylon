@@ -374,13 +374,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
 
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
-        this.webdav = new apf.webdav({
+        this.webdav = apf.document.documentElement.appendChild(new apf.webdav({
             id  : "davProject",
             url : dav_url,
             onauthfailure: function() {
                 ide.dispatchEvent("authrequired");
             }
-        });
+        }));
 
         function openHandler(e) {
             ide.send({
