@@ -146,7 +146,7 @@ module.exports = ext.register("ext/tree/tree", {
             var expandedNodes = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
             _self.expandedNodes = [];
 
-            var path, id, lut = {};
+            var path, id;//, lut = {};
 
             // expandedList keeps an active record of all the expanded nodes
             // so that on each save this gets serialized into the auto/projecttree
@@ -156,14 +156,15 @@ module.exports = ext.register("ext/tree/tree", {
                 if (!path)
                     delete _self.expandedList[id];
                 else
-                    lut[path] = true;
+                    _self.expandedNodes.push(path);//lut[path] = true;
             }
 
             // This checks that each expanded folder has a root that's already
             // been saved
+            /*var numNodesToSplice = ide.davPrefix.split("/").length;
             var cc, parts;
             for (path in lut) {
-                parts = path.split("/");
+                parts = path.split("/");//.splice(numNodesToSplice);
                 cc = parts.shift();
                 do {
                     if (!parts.length)
@@ -174,7 +175,7 @@ module.exports = ext.register("ext/tree/tree", {
 
                 if (!parts.length)
                     _self.expandedNodes.push(path);
-            }
+            }*/
 
             expandedNodes.nodeValue = JSON.stringify(_self.expandedNodes);
             _self.changed = false;
@@ -230,8 +231,6 @@ module.exports = ext.register("ext/tree/tree", {
                 trFiles.add(xmlNode, parent);
             }
         });
-        
-        //ext.initExtension(this);
     },
 
     onReady : function() {
@@ -494,6 +493,9 @@ module.exports = ext.register("ext/tree/tree", {
      */
     loadProjectTree : function(animateScrollOnFinish) {
         var _self = this;
+
+        if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
+            this.expandedNodes.unshift(ide.davPrefix);
 
         // Sort the cached list so it's more probable that nodes near the top of
         // the tree are loaded first, giving the user more visual feedback that
