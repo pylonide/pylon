@@ -151,10 +151,6 @@ exports.getDocPath = function(page) {
         page = tabEditors.getPage();
     }
 
-    // Can we rely on `name`?
-    // What follows is a hacky way to get a path that we can use on
-    // the server. I am sure that these workspace string manipulation
-    // functions are somewhere...to be fixed.
     return exports.stripWSFromPath(page.$model.queryValue("@path"));
 };
 
