@@ -158,31 +158,24 @@ module.exports = ext.register("ext/tree/tree", {
                 else
                     lut[path] = true;
             }
-            
-            console.log("These are the paths we're checking", lut);
 
             // This checks that each expanded folder has a root that's already
             // been saved
-            var rootPrefixNodes = ide.davPrefix.split("/").length - 2;
-            console.log("Length root prefix nodes", rootPrefixNodes);
+            var rootPrefixNodes = ide.davPrefix.split("/").length - 1;
             var cc, parts;
             for (path in lut) {
-                console.log("Checking that path has a parent", path);
                 parts = path.split("/").splice(rootPrefixNodes);
-                cc = parts.shift();
-                do {
+                cc = "/" + parts.shift();
+                while(lut[cc]) {
                     if (!parts.length)
                         break;
 
                     cc += "/" + parts.shift();
-                } while(lut[cc]);
+                }
 
                 if (!parts.length)
                     _self.expandedNodes.push(path);
-                else
-                    console.log("Couldn't find it!", parts.length, path);
             }
-            
             console.log("And this is what we got!", _self.expandedNodes);
 
             expandedNodes.nodeValue = JSON.stringify(_self.expandedNodes);
