@@ -77,13 +77,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      */
     offlineQueue: [],
 
-    /** related to: Revisions#onExternalChange
-     * Revisions#changedPaths -> Array
-     * Holds the list of filepaths that have ben changed in the server from an
-     * external source.
-     **/
-    changedPaths: [],
-
     /** related to: Revisions#show
      * Revisions#toggle() -> Void
      *
@@ -175,6 +168,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("revisionSaved", this.$onRevisionSaved);
         ide.addEventListener("beforewatcherchange", this.$onExternalChange);
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
+
+        window.addEventListener("focus", function(e) {
+            self.onDocGetsFocus();
+        });
 
         this.defaultUser = { email: null };
 
@@ -324,6 +321,17 @@ module.exports = ext.register("ext/revisions/revisions", {
     // Event listeners //
     /////////////////////
 
+    onDocGetsFocus: function(page) {
+        page = page || (tabEditors && tabEditors.getPage());
+        if (page && !this.$isDocOnSync(page)) {
+            ide.send({
+                command: "revisions",
+                subCommand: "getRealFileContents",
+                path: Util.getDocPath(page)
+            });
+        }
+    },
+
     /** related to: Revisions#showQuestionWindow
      * Revisions#onExternalChange(e) -> Boolean
      * - e(Object): Event object
@@ -342,15 +350,16 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.model.setQueryValue("general/@autosaveenabled", false);
 
         var path = Util.stripWSFromPath(e.path);
-        this.changedPaths.push(path);
-
-        if (winQuestionRev.visible !== true &&
-            !this.isCollab(tabEditors.getPage().$doc)) { // Only in single user mode
+        var doc = tabEditors.getPage().$doc;
+        if (typeof winQuestionRev !== "undefined") {
+            if (winQuestionRev.visible !== true && !this.isCollab(doc)) { // Only in single user mode
             ide.send({
                 command: "revisions",
                 subCommand: "getRealFileContents",
-                path: path
+                    path: path,
+                    nextAction: "storeAsRevision"
             });
+        }
         }
         return false;
     },
@@ -425,10 +434,13 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         if (e.nextPage.$showRevisions === true) {
-            return this.show();
+            this.show();
+        }
+        else {
+            this.hide();
         }
 
-        return this.hide();
+        this.onDocGetsFocus(e.nextPage);
     },
 
     onFileSave: function(e) {
@@ -529,6 +541,8 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     isSaving : false,
     onDocChange: function(e, doc) {
+        doc.$page.docHasChangedSinceOpen = true;
+
         if (e.data && e.data.delta) {
             var suffix = e.data.delta.suffix;
             var user = this.getUser(suffix, doc);
@@ -554,6 +568,8 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!e.data.type)
             return;
 
+        ext.initExtension(this);
+
         switch (e.data.type) {
             case "apply":
                 this.applyRevision(e.data.content.id, e.data.content.value);
@@ -570,12 +586,24 @@ module.exports = ext.register("ext/revisions/revisions", {
                     return;
                 }
 
+                var path = e.data.path;
                 this.revisionQueue[revision.ts] = {
-                    path: e.data.path,
+                    path: path,
                     revision: revision
                 };
 
-                this.$saveExistingRevision(e.data.path, revision);
+                // Holds the value of the last saved revision in this particular
+                // editor instance. Useful to know if this editor is the one who
+                // saved the last revision on the list.
+
+                var page = tabEditors.getPages().filter(function(p) {
+                    return Util.getDocPath(p) === path;
+                })[0];
+                
+                if (page) {
+                    page.syncedRevision = revision.ts;
+                }
+                this.$saveExistingRevision(path, revision);
                 break;
             case "recovery":
                 if (e.data.revision.nextAction === "storeAsRevision") {
@@ -589,7 +617,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     var pages = tabEditors.getPages();
                     for (var i = 0; i < pages.length; i++) {
                         page = pages[i];
-                        path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                        path = Util.stripWSFromPath(page.$model.queryValue("@path"));
                         if (e.data.path === path) {
                             page.$doc.setValue(c9DocContent);
                             break;
@@ -604,8 +632,10 @@ module.exports = ext.register("ext/revisions/revisions", {
                         forceRevisionListResponse: true
                     });
                 }
-                else if (e.data.revision.inDialog === true && winQuestionRev.visible !== true) {
+                else if (e.data.revision.inDialog === true) {
+                    if (typeof winQuestionRev !== "undefined" && winQuestionRev.visible !== true) {
                     this.showQuestionWindow(e.data);
+                }
                 }
                 break;
             case "debug":
@@ -737,7 +767,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 var self = this;
                 var pages = tabEditors.getPages();
                 pages.forEach(function(page) {
-                    var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                    var path = Util.stripWSFromPath(page.$model.queryValue("@path"));
                     if (message.path === path) {
                         var data = {
                             inDialog: true,
@@ -750,10 +780,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                             timestamps: revObj.allTimestamps
                         };
 
-                        if (message.nextAction === "storeAsRevision") {
-                            data.nextAction = "storeAsRevision";
-                        }
-
+                        data.nextAction = message.nextAction;
                         self.worker.postMessage(data);
                     }
                 });
@@ -761,6 +788,22 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
+    $isDocOnSync: function(page) {
+        var page = page || tabEditors.getPage();
+        if (page && page.docHasChangedSinceOpen === true && page.syncedRevision) {
+            var docRev = parseInt(page.syncedRevision, 10);
+            if (page.$mdlRevisions && page.$mdlRevisions.data) {
+                var lastRevisionInModel = page.$mdlRevisions.data.firstChild;
+                if (lastRevisionInModel) {
+                    var modelRev = parseInt(lastRevisionInModel.getAttribute("id"), 10);
+                    if (docRev === modelRev) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    },
 
     /**
      * Revisions#showQuestionWindow(data) -> Void
@@ -787,9 +830,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Reload page if it has been changed. Once reloaded, the page is saved
         // with the new content.
         var reloadAndSave = function(_page) {
-            var path = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            var index = self.changedPaths.indexOf(path);
-            if (self.changedPaths.indexOf(path) > -1) {
                 ide.addEventListener("afterreload", function onDocReload(e) {
                     if (e.doc === _page.$doc) {
                         // doc.setValue is redundant here, but it ensures that
@@ -802,28 +842,22 @@ module.exports = ext.register("ext/revisions/revisions", {
                     }
                 });
                 ide.dispatchEvent("reload", { doc : _page.$doc });
-            }
-            return index;
         };
 
         var dontReloadAndStore = function(_page) {
-            var path = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            var index = self.changedPaths.indexOf(path);
-            if (index > -1) {
+            var path = Util.stripWSFromPath(_page.$model.queryValue("@path"));
                 ide.send({
                     command: "revisions",
                     subCommand: "getRealFileContents",
                     path: path,
                     nextAction: "storeAsRevision"
                 });
-            }
-            return index;
         };
 
         var self = this;
         var pages = tabEditors.getPages();
         var page = pages.filter(function(_page) {
-            var pagePath = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
+            var pagePath = Util.stripWSFromPath(_page.$model.queryValue("@path"));
             return data.path === pagePath
         })[0];
 
@@ -832,27 +866,19 @@ module.exports = ext.register("ext/revisions/revisions", {
             "'" + data.path + "' has been modified while you were editing it.",
             "Do you want to reload it?",
             function YesReload() {
-                var index = reloadAndSave(page);
-                if (index > -1) {
-                    self.changedPaths.splice(index, 1);
-                }
+                reloadAndSave(page);
                 setTimeout(finalize);
             },
             function YesReloadAll() {
                 pages.forEach(reloadAndSave);
-                self.changedPaths = [];
                 setTimeout(finalize);
             },
             function NoDontReload() {
-                var index = dontReloadAndStore(page);
-                if (index > -1) {
-                    self.changedPaths.splice(index, 1);
-                }
+                dontReloadAndStore(page);
                 setTimeout(finalize);
             },
             function NoDontReloadAll() {
                 pages.forEach(dontReloadAndStore);
-                self.changedPaths = [];
                 setTimeout(finalize);
             }
         );

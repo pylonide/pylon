@@ -155,7 +155,7 @@ exports.getDocPath = function(page) {
     // What follows is a hacky way to get a path that we can use on
     // the server. I am sure that these workspace string manipulation
     // functions are somewhere...to be fixed.
-    return exports.stripWSFromPath(page.name);
+    return exports.stripWSFromPath(page.$model.queryValue("@path"));
 };
 
 exports.question = function(title, header, msg, onyes, onyesall, onno, onnoall) {
