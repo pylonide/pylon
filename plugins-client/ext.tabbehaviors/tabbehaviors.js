@@ -77,8 +77,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             name: "closealltotheright",
             isAvailable : function(){
                 return ide.onLine && tabEditors.length > 1 
-                  && mnuContextTabs.$page.nextSibling
-                  && mnuContextTabs.$page.nextSibling.localName == "page";
+                  && tabEditors.getPage().nextSibling
+                  && tabEditors.getPage().nextSibling.localName == "page";
             },
             exec: function (editor, args) { 
                 _self.closealltotheright(args[0]); 
@@ -632,6 +632,11 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     revealInTree : function(docNode) {
+        var _self = this;
+
+        if (this.control && this.control.stop)
+            this.control.stop();
+
         panels.activate(require("ext/tree/tree"));
         
         var parts, file, pathList, str, xpath;
@@ -705,7 +710,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
             var center = (tree.$container.offsetHeight / 2) | 0;
             var newTop = itemPos[1] - center;
-            tree.$ext.scrollTop = newTop;
+
+            apf.tween.single(trFiles, {
+                type    : "scrollTop",
+                from    : trFiles.$ext.scrollTop,
+                to      : newTop,
+                control : (_self.control = {})
+            });
         }
     },
 

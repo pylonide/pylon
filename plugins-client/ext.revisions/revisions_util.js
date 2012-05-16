@@ -125,10 +125,6 @@ exports.addCodeMarker = function(session, doc, type, range) {
     anchor.on("change", updateFloat);
 };
 
-exports.isAutoSaveEnabled = function() {
-    return apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-};
-
 exports.pageHasChanged = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");

@@ -1,57 +1,61 @@
 this.tour = {
-    initialText: "This guided tour introduces you to some of the ways<br/> Cloud9 IDE makes it easy for you to program faster and smarter.\n\nClick the play button below to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own. Remember that during the tour, you won't be able to interact with any of the editor's features.",
+    initialText: "Welcome to the guided tour! We'll introduce you to some of the ways Cloud9 IDE makes it easy for you to program faster and smarter.\n\nDuring the tour, you can click the play button to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.\n\nDuring the tour, the IDE is mostly disabled to provide a smoother experience.",
     finalText: "Well, that's everything! Still have questions? Head on over to <a href=\"http://support.cloud9ide.com/forums\" target=\"_blank\">our documentation site</a>.",
     steps: [
     {
         before: function() {
-            require("ext/sidebar/sidebar").showOrHide(true);
+            
         },
         el: undefined,
         div: "navbar",
-        desc: "This is the project bar. It controls the behavior of the IDE, as well as the presentation of your code.",
-        pos: "right",
+        desc: "This is the project bar, where your workflow begins and ends. Your project tree, preferences, debugging and deploy options are all located here.",
+        pos: "bottom",
         time: 4
     }, {
         before: function() {
-            // require("ext/tree/tree").enable();
+           panels.activate(require("ext/tree/tree"));
         },
         el: undefined,
-        div: "navbar.childNodes[0]",
+        div: "navbar.childNodes[1]",
         desc: "This button shows and hides your project files.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            //require("ext/openfiles/openfiles").enable();
+            panels.activate(require("ext/openfiles/openfiles"));
         },
         el: undefined,
-        div: "navbar.childNodes[1]",
+        div: "navbar.childNodes[2]",
         desc: "This button shows and hides your open files in a list view.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            //require("ext/settings/settings").enable();
+            require("ext/settings/settings").show();
         },
         el: undefined,
-        div: "navbar.childNodes[navbar.childNodes.length - 1]",
-        desc: "Here, you can change the behavior of the editor, manipulate the code beautifier, and change the indentation and width of the editor, among other options.",
+        div: "navbar.childNodes[navbar.childNodes.length - 2]",
+        desc: "This is the preferences hub for all Cloud9 IDE features.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            //require("ext/tree/tree").enable();
+            panels.activate(require("ext/tree/tree"));
         },
         el: "winFilesViewer",
-        desc: "All your project files are listed here. You can rename and delete files, as well as drag in new ones from your computer. You can also right-click to see context options.",
+        desc: "The Project Tree lets you drag and drop new files into your project. Your project files can also be quickly searched by pressing Ctrl/Cmd-E. You can also right-click to see context options.",
         pos: "right",
         time: 4
     }, {
         before: function() {
-            //require("ext/tree/tree").enable();
+            if (madeNewFile) {
+                madeNewFile = false;
+                require("ext/tabbehaviors/tabbehaviors").closetab(tabEditors.getPage());
+            }
         },
         el: plus_tab_button,
-        desc: "You can use this button to quickly add new files to the editor. We'll simulate pushing that right now.",
+        desc: "Use this button to quickly add new files to the editor. We'll push it right now.",
+        extraTop: -37,
         pos: "left",
         time: 4
     }, {
@@ -60,9 +64,13 @@ this.tour = {
                 madeNewFile = true;
                 require("ext/newresource/newresource").newfile();
             }
+            settings.model.setQueryValue("editors/code/@gutter", true); // has to be here to force show when new editor opens
+            settings.model.setQueryValue("auto/statusbar/@show", true);
+            require("ext/statusbar/statusbar").preinit();
         },
-        el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabEditors.$ext),
-        desc: "Here's a tabbed arrangement of all your active files, including the new one we just created. You can rearrange the tabs however you like and swap through them with keyboard shortcuts.",
+        el: tabEditors.$buttons,
+        desc: "Rearrange these tabs any way you like, and cycle through them with keyboard shortcuts.",
+        extra: 160,
         pos: "bottom",
         time: 4
     }, {
@@ -72,14 +80,17 @@ this.tour = {
                 save = require("ext/save/save");
             var page = tabEditors.getPage();
             var file = page.$model.data;
-            save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-quideTour.js");
+            file.setAttribute("guidedtour", "1");
+            file.setAttribute("contenttype", "javascript");
+            save._saveAsNoUI(page, file.getAttribute("path"), ide.davPrefix + "/helloWorld-guidedTour.js");
             require("ext/tree/tree").refresh();
         },
         el: undefined,
         div: "ceEditor",
-        desc: "We've just typed up a quick code example and saved it as \"helloWorld-quideTour.js.\" We'll work with this file, then delete it when we're done.",
+        desc: "Here's a quick Node.js example, saved as \"helloWorld-guidedTour.js.\"",
+        extra: -40,
         pos: "left",
-        time: 5
+        time: 4
     }, {
         before: function(){
             if (wentToZen){
@@ -89,7 +100,8 @@ this.tour = {
         },
         el: undefined,
         div: "ceEditorGutter",
-        desc: "The gutter can do more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging an application, you can also set breakpoints here.",
+        desc: "The gutter does more than show line numbers. It also detects and displays warnings and errors in your code. If you're debugging a Node.js application, you can also set breakpoints here.",
+        extraTop: -40,
         pos: "right",
         time: 5
     }, {
@@ -98,7 +110,8 @@ this.tour = {
         },
         el: undefined,
         div: "barIdeStatus",
-        desc: "This is the status bar. It shows your current line number and column position. Clicking on it lets you modify IDE aspects, like vim mode, line margins, and scroll speed.",
+        desc: "The status bar shows your cursor position, and provides quick access to some editor settings.",
+        extraTop: -40,
         pos: "left",
         time: 4
     }, {
@@ -108,7 +121,8 @@ this.tour = {
         },
         el: undefined,
         div: undefined,
-        desc: "If you hover over this corner, you can activate Zen Mode, which is a distraction-free environment. We'll simulate pressing that button now.",
+        desc: "If you hover over this corner, you can activate Zen Mode, which is a distraction-free environment. We'll press that button now.",
+        extraTop: -40,
         pos: "left",
         time: 5
     }, {
@@ -122,13 +136,16 @@ this.tour = {
             
             setTimeout(function(){
                 zen.escapeFromZenMode();
-                document.getElementsByClassName("tgDialog")[0].style.display = "";
-                require("ext/guidedtour/guidedtour").stepForward();
                 zen.fadeZenButtonOut();
-                                
-                hlElement.style.visibility = "visible";
-                winTourText.show();
-            }, 2000);
+                
+                setTimeout(function() {
+                    document.getElementsByClassName("tgDialog")[0].style.display = "";
+                    hlElement.style.visibility = "visible";      
+                    winTourText.show();
+                    
+                    require("ext/guidedtour/guidedtour").stepForward();
+                }, 250);
+            }, 2300);
         },
         time: 4,
         desc: "",
@@ -138,7 +155,7 @@ this.tour = {
             require("ext/console/console").showInput();
         },
         el: cliBox,
-        desc: "This area down here acts just like a command line for your project in the Cloud9 IDE. You can always type 'help' to get a list of the available commands.",
+        desc: "This command line is similar to what you expect from your local terminal. You can always type 'help' to get a list of available commands.",
         pos: "top",
         time: 5
     }, {
@@ -159,6 +176,7 @@ this.tour = {
         },
         el: undefined,
         div: "ceEditorGutter",
+        extraTop: -40,
         desc: "We're ready to test our code, so we've inserted a breakpoint on this line by clicking in the gutter. Before debugging, though, we'll need to set up a debugging scenario.",
         pos: "right",
         time: 5
@@ -173,7 +191,7 @@ this.tour = {
             });
         },
         el: "winRunPanel",
-        desc: "Here's where the fun begins! After clicking Debug, then Run Configurations, you'll be able to create or modify a debug configuration. Every configuration needs a name and a file to run, but you can also pass arguments.",
+        desc: "Here's where the fun begins! After clicking Run & Debug in the project bar, you'll be able to create or modify a debug configuration. Every configuration needs a name and a file to run, but you can also pass command-line arguments.",
         pos: "right",
         time: 5
     }, {
@@ -194,7 +212,7 @@ this.tour = {
         el: function(){
             return dockpanel.layout.$getLastBar();;
         },
-        desc: "Next, when you start debugging, you'll instantly get a new debugging toolbar.",
+        desc: "Next, whenever you're debugging code, you get a new debugging toolbar.",
         pos: "left",
         time: 4
     }, {
@@ -210,6 +228,7 @@ this.tour = {
             return pgDebugNav;
         },
         desc: "In this toolbar, the usual start, stop, and step buttons are at the top, to help control the flow of the debugging.",
+        extraTop: -40,
         pos: "left",
         time: 4
     }, {
@@ -231,7 +250,9 @@ this.tour = {
             var menuId = dockpanel.getButtons("ext/debugger/debugger", "dbgCallStack")[0];
             if(menuId)
                 dockpanel.layout.showMenu(menuId.uniqueId);
-            dbgCallStack.parentNode.set(dbgCallStack)
+            dbgCallStack.parentNode.set(dbgCallStack);
+            
+            txtConsoleInput.setValue("");
         },
         el: function(){
             return dbgCallStack;
@@ -247,41 +268,29 @@ this.tour = {
             txtConsoleInput.setValue("git status");
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
-        desc: "We indicated to the debugger that we want to continue. At last, the console.log() message printed out. Now, we're going to simulate typing 'git status' in the command line.",
+        desc: "We indicated to the debugger that we want to continue. At last, the console.log() message about the server running printed out. Now, we're going to simulate typing 'git status' in the command line.",
         pos: "top",
         time: 4
-    }, {
-        before: function(){
-            require(["c9/ext/deploy/deploy"], function(deploy) { 
-                hasDeploy = true;
-                panels.activate(deploy);
-            });
-        },
-        el: "winDeploy",
-        desc: "In this panel you can manage(add/remove) your deploy targets for your application, in different services, like Joyent and Heroku.",
-        pos: "right",
-        notAvailable: !hasDeploy,
-        time: 5
     }, {
         before: function() {
             require('ext/runpanel/runpanel').stop();
             
-            if(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']")) {
+            if(trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-guidedTour.js']")) {
                 require("ext/console/console").commandTextHandler({
                     keyCode: 13,
                     currentTarget: txtConsoleInput
                 });
-                txtConsoleInput.setValue("rm helloWorld-quideTour.js");
+                txtConsoleInput.setValue("rm helloWorld-guidedTour.js");
             }
         },
         el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
-        desc: "As expected, there's been a new file added to git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-quideTour.js'.",
+        desc: "As expected, there's our new file being tracked by git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-guidedTour.js'.",
         pos: "top",
         time: 4
     }, {
         before: function() {
             panels.activate(require("ext/tree/tree"));
-            var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-quideTour.js']");
+            var demoFile = trFiles.$model.queryNode("//file[@path='" + ide.davPrefix + "/helloWorld-guidedTour.js']");
             if(demoFile && !deletedFile) {
                 deletedFile = true;
                 tabEditors.remove(tabEditors.getPage());
@@ -297,6 +306,7 @@ this.tour = {
         },
         el: "winFilesViewer",
         desc: "Voila! Notice that the file is gone from your project.",
+        extraTop: -20,
         pos: "right",
         time: 4
     }]
