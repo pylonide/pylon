@@ -9405,6 +9405,14 @@
     .editor_tab.hidetabs .curbtn {
         top: 5px;
     }
+
+    .editor_tab .tab_middle {
+        height : 18px;
+    }
+
+    .editor_tab .tab_right, .editor_tab .tab_left {
+        height : 22px;
+    }
 </a:style>
 <a:style condition="apf.isWebkit">
     /* ------------------------------------------------------------------------------------------
