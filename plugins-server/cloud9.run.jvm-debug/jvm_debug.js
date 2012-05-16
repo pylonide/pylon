@@ -71,7 +71,7 @@ function mixin(Class, Parent) {
 
             setTimeout(function() {
                 self._startDebug(port);
-            }, 1000);
+            }, 2000);
         });
     };
 
@@ -104,10 +104,9 @@ function mixin(Class, Parent) {
             self.eventEmitter.emit(self.eventName, msg);
         }
 
-        var appPath = self.cwd;
         var debugOptions = {
             port: port,
-            sourcepath: Path.join(appPath, 'src')
+            sourcepath: Path.join(self.cwd, 'src')
         };
 
         console.log('debug proxy created: port: ', port, ' \r\nopts: ', debugOptions);

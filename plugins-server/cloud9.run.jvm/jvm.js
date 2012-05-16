@@ -58,7 +58,7 @@ var Runner = exports.Runner = function(uid, jvmType, file, args, cwd, env, extra
     ShellRunner.call(this, uid, "java", [], cwd, env, extra, eventEmitter, eventName);
 };
 
-function getJVMInstance (jvmType, cwd, file, callback) {
+function getJVMInstance (runner, jvmType, cwd, file, callback) {
     switch (jvmType) {
         case "java":
             var javaClass = srcToJavaClass(file);
@@ -71,6 +71,7 @@ function getJVMInstance (jvmType, cwd, file, callback) {
 
                 return buildApp(new WebJVMInstance(cwd, 'j2ee', port));
             });
+            break;
 
         case "jpy":
             return callback(null, new ScriptJVMInstance(cwd, "jython", file));
@@ -100,9 +101,13 @@ function getJVMInstance (jvmType, cwd, file, callback) {
             else {
                 console.log("Found " + compilationProblems.length + " compilation errors");
                 // send compilation errors to the user
-                _self.sendResult(0, "jvmfeatures:build", {
-                    success: true,
-                    body: compilationProblems
+                runner.eventEmitter.emit(runner.eventName, {
+                    type: "jvm-build",
+                    code: 0,
+                    body: {
+                        success: true,
+                        body: compilationProblems
+                    }
                 });
             }
         }, "build");
@@ -113,11 +118,11 @@ util.inherits(Runner, ShellRunner);
 
 (function() {
 
-    this.name = "jvm";
+    this.name = "node";
 
     this.createChild = function(callback) {
         var _self = this;
-        getJVMInstance(this.jvmType, this.cwd, this.file, function (err, jvmInstance) {
+        getJVMInstance(this, this.jvmType, this.cwd, this.file, function (err, jvmInstance) {
             if (err) return console.error(err);
 
             jvmInstance.runArgs(function (runArgs) {

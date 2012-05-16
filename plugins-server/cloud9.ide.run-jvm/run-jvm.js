@@ -42,6 +42,9 @@ util.inherits(JVMRuntimePlugin, Plugin);
             msg.type = msg.type.replace(/^node-debug-(start|data|exit)$/, "node-$1");
             var type = msg.type;
 
+            if (type == "jvm-build")
+                return self.sendResult(msg.code, "jvmfeatures:build", msg.body);
+
             if (type == "node-start" || type == "node-exit")
                 self.workspace.getExt("state").publishState();
 
