@@ -19,7 +19,7 @@ function wordDistanceAnalyzer(doc, pos, prefix) {
     var textBefore = doc.getLines(0, pos.row-1).join("\n") + "\n";
     var currentLine = doc.getLine(pos.row);
     textBefore += currentLine.substr(0, pos.column);
-    var prefixPosition = textBefore.trim().split(SPLIT_REGEX).length;
+    var prefixPosition = textBefore.trim().split(SPLIT_REGEX).length - 1;
     
     // Split entire document into words
     var identifiers = text.split(SPLIT_REGEX);
@@ -27,6 +27,8 @@ function wordDistanceAnalyzer(doc, pos, prefix) {
     
     // Find prefix to find other identifiers close it
     for (var i = 0; i < identifiers.length; i++) {
+        if (i === prefixPosition)
+            continue;
         var ident = identifiers[i];
         var distance = Math.max(prefixPosition, i) - Math.min(prefixPosition, i);
         // Score substracted from 100000 to force descending ordering
@@ -44,8 +46,6 @@ function analyze(doc, pos) {
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     
     var analysisCache = wordDistanceAnalyzer(doc, pos, identifier);
-    // Remove the word to be completed
-    delete analysisCache[identifier];
     return analysisCache;
 }
 
