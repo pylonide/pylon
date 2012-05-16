@@ -179,7 +179,6 @@ module.exports = ext.register("ext/tree/tree", {
                 if (!parts.length)
                     _self.expandedNodes.push(path);
             }
-            console.log("And this is what we got!", _self.expandedNodes);
 
             expandedNodes.nodeValue = JSON.stringify(_self.expandedNodes);
             _self.changed = false;
@@ -470,16 +469,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return;
 
             var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
-            //var path = e.xmlNode.getAttribute("path");
             delete _self.expandedList[id];
-            //console.log(id, path);
-
-            /*for (var el in _self.expandedList) {
-                console.log(_self.expandedList[el]);
-                if (_self.expandedList[el].indexOf(path) === 0) {
-                    
-                }
-            }*/
 
             _self.changed = true;
             settings.save();
