@@ -2,7 +2,7 @@ this.tour = {
     initialText: "Welcome to the guided tour! We'll introduce you to some of the ways Cloud9 IDE makes it easy for you to program faster and smarter.\n\nDuring the tour, you can click the play button to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.\n\nDuring the tour, the IDE is mostly disabled to provide a smoother experience.",
     finalText: "Well, that's everything! Still have questions? Head on over to <a href=\"http://support.cloud9ide.com/forums\" target=\"_blank\">our documentation site</a>.",
     steps: [
-    /*{
+    {
         before: function() {
             
         },
@@ -58,7 +58,7 @@ this.tour = {
         extraTop: -37,
         pos: "left",
         time: 4
-    }, */{
+    }, {
         before: function(){
             if (madeNewFile == false) {
                 madeNewFile = true;
