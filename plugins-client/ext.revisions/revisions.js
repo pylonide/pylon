@@ -631,6 +631,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
+        
+        // guided tour magic conflicts with revisions--skip it
+        if (page.$model.getXml().getAttribute("guidedtour") === "1")
+            return;
+            
         switch (message.subtype) {
             case "confirmSave":
                 revObj = this.$getRevisionObject(message.path);
