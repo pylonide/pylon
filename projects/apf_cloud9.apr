@@ -303,7 +303,7 @@
         <p:define name="__AMLTELEPORT" value="1" />
 
         <p:define name="__AMLLABEL" value="1" />
-        <p:define name="__AMLSPLITBUTTON"  value="1" />
+	<p:define name="__AMLSPLITBUTTON"  value="1" />
         <p:define name="__AMLBUTTON" value="1" />
         <!--p:define name="__AMLSTATUSBAR" value="1" /-->
 
@@ -333,7 +333,7 @@
 
         <p:define name="__AMLCODEEDITOR" value="1" />
         <p:define name="__AMLDEBUGGER" value="1" />
-        <p:define name="__AMLNOTIFIER" value="1" />
+        <!--p:define name="__AMLNOTIFIER" value="1" /-->
         <p:define name="__WITH_COOKIE" value="1" />
 
         <!-- NOT USED DEFINES -->
@@ -377,9 +377,9 @@
         <p:define name="__WITH_RSB" value="1" />
         <p:define name="__AMLSELECT1" value="1" />
         <p:define name="__AMLRANGE" value="1" />
-        <p:define name="__AMLSUBMITFORM" value="1" /-->
+        <p:define name="__AMLSUBMITFORM" value="1" />
         <p:define name="__WITH_RDB" value="1" />
-        <!--p:define name="__WITH_HTML5_TEST" value="1" />
+        <p:define name="__WITH_HTML5_TEST" value="1" />
         <p:define name="__WITH_GEOLOCATION" value="1" />
         <p:define name="__TP_RPC_JSON" value="1" />
         <p:define name="__TP_RPC_RDB" value="1" />
