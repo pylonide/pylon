@@ -329,6 +329,7 @@ apf.$x = apf.$loader
         "elements/gallery.js",
         "elements/graph.js",
         "elements/hbox.js",
+        "elements/splitbox.js",
         "elements/iconmap.js",
         "elements/img.js",
         "elements/item.js",
