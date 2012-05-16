@@ -1,9 +1,9 @@
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/jpack_begin.js)SIZE(0)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/apf.js)SIZE(96350)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -1403,7 +1403,7 @@ apf.Init.run("apf");
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/class.js)SIZE(46124)TIME(Wed, 16 May 2012 09:30:13 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2086,7 +2086,7 @@ apf.Class.prototype = new (function(){
         }
         
         //Optimized event calling
-        if ((arr = this.$eventsStack[eventName]) && isChanged) {
+        if (arr = this.$eventsStack[eventName] && isChanged) {
             /*for (i = 0, l = arr.length; i < l; i++) {
                 if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
                     prop     : prop, 
@@ -2477,7 +2477,7 @@ apf.Init.run("class");
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/color.js)SIZE(10920)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2720,7 +2720,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/abstractevent.js)SIZE(4316)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2746,7 +2746,7 @@ apf.color = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/async.js)SIZE(4124)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2890,7 +2890,7 @@ apf.asyncChain = function(funcs) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/cookie.js)SIZE(3073)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -2979,7 +2979,7 @@ apf.delcookie = function (name, domain){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/ecmaext.js)SIZE(25965)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3761,7 +3761,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/flash.js)SIZE(22995)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3787,7 +3787,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/hook.js)SIZE(10100)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -3813,7 +3813,7 @@ if (!Date.now) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/hotkey.js)SIZE(6514)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 
 //@todo maybe generalize this to pub/sub event system??
@@ -4024,33 +4024,7 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/iepngfix.js)SIZE(3570)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/json.js)SIZE(26243)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4078,7 +4052,33 @@ apf.hotkeys = {};
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/nameserver.js)SIZE(5807)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4191,7 +4191,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/o3.js)SIZE(8157)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4216,7 +4216,7 @@ apf.nameserver = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/plane.js)SIZE(8624)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4448,7 +4448,7 @@ apf.plane = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/popup.js)SIZE(13343)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4831,7 +4831,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/silverlight.js)SIZE(25659)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -4857,7 +4857,7 @@ apf.popup = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/style.js)SIZE(18681)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5363,32 +5363,7 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/syntax.js)SIZE(12610)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/textdiff.js)SIZE(89290)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5414,7 +5389,32 @@ apf.getViewPort = function(win) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/utilities.js)SIZE(14497)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -5894,7 +5894,7 @@ apf.selectTextHtml = function(oHtml){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/visibilitymanager.js)SIZE(4965)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -6056,7 +6056,7 @@ apf.visibilitymanager = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/xml.js)SIZE(49534)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7488,7 +7488,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/xmldiff.js)SIZE(36580)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7513,7 +7513,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/util/zmanager.js)SIZE(2524)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7593,7 +7593,7 @@ apf.zmanager = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/history.js)SIZE(9996)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -7872,7 +7872,7 @@ apf.history = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/config.js)SIZE(8137)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8022,7 +8022,7 @@ if (apf.history)
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline.js)SIZE(19757)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8052,7 +8052,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/application.js)SIZE(11733)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8078,7 +8078,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/gears.js)SIZE(4771)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8104,7 +8104,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/detector.js)SIZE(4827)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8130,7 +8130,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/models.js)SIZE(5471)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8156,7 +8156,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/queue.js)SIZE(7009)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8182,7 +8182,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/state.js)SIZE(7979)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8208,7 +8208,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/offline/transactions.js)SIZE(9781)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8234,7 +8234,7 @@ apf.offline = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/data.js)SIZE(16420)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -8637,7 +8637,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/date.js)SIZE(40737)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9703,31 +9703,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/draw.js)SIZE(66997)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/flow.js)SIZE(71086)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9753,7 +9729,31 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/flow2.js)SIZE(70664)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9779,7 +9779,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/geolocation.js)SIZE(11303)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9805,7 +9805,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/html.js)SIZE(15340)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9831,7 +9831,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/language.js)SIZE(8586)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -9857,7 +9857,7 @@ apf.setModel = function(instruction, amlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/layout.js)SIZE(13425)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10276,7 +10276,7 @@ apf.getWindowHeight = function(){
     return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
 }
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/printer.js)SIZE(5120)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10302,7 +10302,7 @@ apf.getWindowHeight = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/queue.js)SIZE(3633)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10426,7 +10426,7 @@ apf.queue = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/resize.js)SIZE(13139)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10822,7 +10822,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/resize2.js)SIZE(10417)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10847,7 +10847,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/selection.js)SIZE(32184)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -10872,7 +10872,7 @@ apf.resize.square = function(posY, posX, objResize) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/skins.js)SIZE(12336)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11206,7 +11206,7 @@ apf.skins = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/sort.js)SIZE(8266)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11435,7 +11435,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage.js)SIZE(9036)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -11461,7 +11461,7 @@ apf.Sort = function(xmlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/tween.js)SIZE(35741)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12443,13 +12443,13 @@ return {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder.js)SIZE(397)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/vector.js)SIZE(46289)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -12475,7 +12475,7 @@ return {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/xmldb.js)SIZE(40903)TIME(Wed, 16 May 2012 09:30:13 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13566,7 +13566,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/draw/canvas.js)SIZE(21818)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13590,7 +13590,7 @@ apf.xmldb = new (function(){
  */
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/draw/chartdraw.js)SIZE(47182)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13615,106 +13615,7 @@ apf.xmldb = new (function(){
  
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/draw/vml.js)SIZE(20284)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/air.file.js)SIZE(10053)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/air.js)SIZE(9669)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/air.sql.js)SIZE(11835)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/cookie.js)SIZE(10315)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13740,7 +13641,30 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/flash.js)SIZE(15459)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13766,7 +13690,6 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/gears.js)SIZE(12314)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13792,7 +13715,6 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/html5.js)SIZE(8229)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13818,7 +13740,7 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/storage/memory.js)SIZE(10210)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -13844,7 +13766,85 @@ apf.xmldb = new (function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/teleport/http.js)SIZE(36015)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14686,7 +14686,7 @@ apf.http = function(){
 apf.Init.run("http");
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/teleport/iframe.js)SIZE(5720)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14711,7 +14711,7 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/teleport/socket.js)SIZE(19222)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -14737,24 +14737,24 @@ apf.Init.run("http");
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder/capture.js)SIZE(21922)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder/playback.js)SIZE(28844)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder/selenium.js)SIZE(9161)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/lib/uirecorder/ui.js)SIZE(18464)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/domparser.js)SIZE(18376)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15216,7 +15216,7 @@ apf.AmlNamespace.prototype = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml.js)SIZE(1478)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15259,7 +15259,7 @@ apf.aml = new apf.AmlNamespace();
 apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/node.js)SIZE(22631)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -15842,7 +15842,7 @@ apf.AmlNode = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/element.js)SIZE(22982)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16435,7 +16435,7 @@ apf.AmlElement = function(struct, tagName){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/characterdata.js)SIZE(2018)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16499,7 +16499,7 @@ apf.AmlCharacterData = function(){
 apf.AmlCharacterData.prototype = new apf.AmlNode();
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/text.js)SIZE(3974)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16599,7 +16599,7 @@ apf.AmlText = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/attr.js)SIZE(4674)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16728,7 +16728,7 @@ apf.AmlAttr = function(ownerElement, name, value){
 }).call(apf.AmlAttr.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/cdatasection.js)SIZE(1300)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16765,7 +16765,7 @@ apf.AmlCDATASection.prototype.serialize = function(){
 };
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/comment.js)SIZE(1509)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16811,7 +16811,7 @@ apf.AmlComment = function(isPrototype){
 }).call(apf.AmlComment.prototype = new apf.AmlCharacterData());
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/configuration.js)SIZE(1384)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -16852,7 +16852,7 @@ apf.AmlConfiguration = function(isPrototype){
 }).call(apf.AmlConfiguration.prototype = new apf.Class());
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/document.js)SIZE(9508)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17038,7 +17038,7 @@ apf.AmlDocument = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/documentfragment.js)SIZE(1286)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17072,7 +17072,7 @@ apf.AmlDocumentFragment.prototype.nodeType =
     apf.AmlDocumentFragment.prototype.NODE_DOCUMENT_FRAGMENT;
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/event.js)SIZE(2086)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17143,7 +17143,7 @@ apf.AmlEvent.prototype = {
 };
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/namednodemap.js)SIZE(3407)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17254,7 +17254,7 @@ apf.AmlNamedNodeMap = function(host){
 }).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/processinginstruction.js)SIZE(4180)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17363,7 +17363,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 }).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/range.js)SIZE(15809)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17388,7 +17388,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/selection.js)SIZE(8861)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17413,7 +17413,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/aml/textrectangle.js)SIZE(1662)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17457,7 +17457,7 @@ apf.AmlTextRectangle = function(host){
 apf.AmlTextRectangle.prototype = new apf.Class();
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml.js)SIZE(1530)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17508,7 +17508,7 @@ if (apf.getTextNode(x)) {
 
 */
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/element.js)SIZE(5022)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17665,7 +17665,7 @@ apf.xhtml.setElement("@default", apf.XhtmlElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/body.js)SIZE(1783)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17716,7 +17716,7 @@ apf.xhtml.setElement("body", apf.XhtmlBodyElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/html.js)SIZE(2693)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17797,7 +17797,7 @@ apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/ignore.js)SIZE(1360)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17833,7 +17833,7 @@ apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
 apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/input.js)SIZE(2187)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17894,7 +17894,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 apf.xhtml.setElement("input", apf.XhtmlInputElement);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/option.js)SIZE(1537)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17937,7 +17937,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
 apf.xhtml.setElement("option", apf.XhtmlOptionElement);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xhtml/skipchildren.js)SIZE(2342)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -17999,7 +17999,7 @@ apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
 apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd.js)SIZE(12998)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18025,7 +18025,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/element.js)SIZE(1869)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18050,7 +18050,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/enumeration.js)SIZE(1844)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18075,7 +18075,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/fractiondigits.js)SIZE(1620)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18100,7 +18100,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/length.js)SIZE(1527)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18125,7 +18125,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/list.js)SIZE(1215)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18150,7 +18150,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/maxexclusive.js)SIZE(1553)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18175,7 +18175,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/maxinclusive.js)SIZE(1568)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18200,7 +18200,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/maxlength.js)SIZE(1597)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18225,7 +18225,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/maxscale.js)SIZE(1436)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18250,7 +18250,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/minexclusive.js)SIZE(1556)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18275,7 +18275,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/mininclusive.js)SIZE(1567)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18300,7 +18300,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/minlength.js)SIZE(1610)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18325,7 +18325,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/minscale.js)SIZE(1436)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18350,7 +18350,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/pattern.js)SIZE(1537)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18375,7 +18375,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/restriction.js)SIZE(1644)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18400,7 +18400,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/schema.js)SIZE(1124)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18425,7 +18425,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/simpletype.js)SIZE(2201)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18450,7 +18450,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/totaldigits.js)SIZE(1564)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18475,7 +18475,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xsd/union.js)SIZE(2331)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18500,7 +18500,7 @@ apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/html5.js)SIZE(3232)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18535,7 +18535,7 @@ if (tagName == "input") {
 //#-endif*/
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xforms.js)SIZE(4191)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18568,7 +18568,7 @@ if (tagName == "input") {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xinclude.js)SIZE(1325)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18610,7 +18610,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xinclude/fallback.js)SIZE(1322)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18635,7 +18635,7 @@ apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xinclude/include.js)SIZE(6818)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18818,7 +18818,7 @@ apf.aml.setElement("include", apf.XiInclude);
 }).call(apf.XiInclude.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/markup/xslt/xslt.js)SIZE(13722)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18844,7 +18844,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit.js)SIZE(34638)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -18871,293 +18871,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/richtext.js)SIZE(53610)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/anchor.js)SIZE(4565)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/blockquote.js)SIZE(1594)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/charmap.js)SIZE(6951)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/clipboard.js)SIZE(13429)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/code.js)SIZE(11899)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/color.js)SIZE(7167)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/datetime.js)SIZE(3585)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/directions.js)SIZE(1579)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/emotions.js)SIZE(4322)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/fontbase.js)SIZE(8575)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/fontstyle.js)SIZE(25741)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19184,7 +18898,6 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/help.js)SIZE(1485)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19210,7 +18923,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/hr.js)SIZE(1593)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19236,7 +18949,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/image.js)SIZE(5033)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19262,7 +18975,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/links.js)SIZE(7721)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19288,7 +19001,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/list.js)SIZE(4641)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19314,7 +19027,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/media.js)SIZE(1489)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19340,7 +19053,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/printing.js)SIZE(2098)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19366,7 +19079,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/search.js)SIZE(10436)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19392,7 +19105,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/spell.js)SIZE(11849)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19418,7 +19131,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/subsup.js)SIZE(1935)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19444,7 +19157,7 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/tables.js)SIZE(27128)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19470,7 +19183,8 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/liveedit/visualaid.js)SIZE(1736)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19496,7 +19210,293 @@ apf.__LIVEEDIT__  = 1 << 23;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/anchoring.js)SIZE(18882)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -19994,7 +19994,7 @@ apf.Anchoring = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable.js)SIZE(20162)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20020,7 +20020,7 @@ apf.__CONTENTEDITABLE__  = 1 << 24;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/guielement.js)SIZE(34138)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -20831,7 +20831,7 @@ apf.GuiElement.propHandlers = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/presentation.js)SIZE(20758)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -21431,7 +21431,7 @@ apf.config.$inheritProperties["skinset"] = 1;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/validation.js)SIZE(27683)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -22157,7 +22157,7 @@ apf.config.$inheritProperties["validgroup"] = 1;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/databinding.js)SIZE(58946)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -23595,7 +23595,7 @@ apf.Init.run("databinding");
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/databinding/multiselect.js)SIZE(47627)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24794,7 +24794,7 @@ apf.MultiselectBinding = function(){
 }).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/databinding/standard.js)SIZE(6499)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -24964,7 +24964,7 @@ apf.StandardBinding.prototype = new apf.DataBinding();
 apf.Init.run("standardbinding");
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/multiselect.js)SIZE(71723)TIME(Fri, 11 May 2012 14:12:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26776,7 +26776,7 @@ apf.MultiSelectServer = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/childvalue.js)SIZE(3934)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -26882,7 +26882,7 @@ apf.ChildValue = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/dataaction.js)SIZE(27069)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27416,7 +27416,7 @@ apf.config.$inheritProperties["create-model"] = 1;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/cache.js)SIZE(12532)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -27782,7 +27782,7 @@ apf.GuiElement.propHandlers["caching"] = function(value) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/rename.js)SIZE(15023)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28196,7 +28196,7 @@ apf.Rename.initEditableArea = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/a11y.js)SIZE(5144)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28223,7 +28223,7 @@ apf.__ALIGNMENT__ = 1 << 29;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basebutton.js)SIZE(10335)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -28541,7 +28541,7 @@ apf.BaseButton = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/baselist.js)SIZE(39277)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29437,7 +29437,7 @@ apf.BaseList = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basesimple.js)SIZE(1729)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -29494,7 +29494,7 @@ apf.BaseSimple = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basestatebuttons.js)SIZE(27242)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -30160,7 +30160,7 @@ apf.BaseStateButtons = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basetab.js)SIZE(57933)TIME(Fri, 11 May 2012 14:12:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -31567,7 +31567,7 @@ apf.BaseTab = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/basetree.js)SIZE(53544)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -32941,7 +32941,7 @@ apf.BaseTree = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/delayedrender.js)SIZE(5354)TIME(Wed, 16 May 2012 09:30:13 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -33054,9 +33054,6 @@ apf.DelayedRender = function(){
         this.$rendered = true;
 
         this.dispatchEvent("afterrender");
-        this.addEventListener("$event.afterrender", function(cb){
-            cb.call(this);
-        });
 
         this.$ext.style.visibility = "";
     };
@@ -33096,7 +33093,7 @@ apf.config.$inheritProperties["render-delay"] = 1;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/dragdrop.js)SIZE(56327)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34582,7 +34579,7 @@ apf.DragServer.Init();
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/focussable.js)SIZE(3405)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -34687,7 +34684,7 @@ apf.Focussable = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/interactive.js)SIZE(30523)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35478,7 +35475,7 @@ apf.Init.run("interactive");
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/media.js)SIZE(18898)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35506,7 +35503,7 @@ apf.__MEDIA__ = 1 << 20;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/multicheck.js)SIZE(16594)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35533,7 +35530,7 @@ apf.__MULTICHECK__ = 1 << 22;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/teleport.js)SIZE(8790)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35761,7 +35758,7 @@ apf.__TELEPORT__ = 1 << 28;
 apf.Init.run("teleport");
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/transaction.js)SIZE(23494)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -35788,7 +35785,7 @@ apf.__TRANSACTION__ = 1 << 3;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/virtualviewport.js)SIZE(31773)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36536,7 +36533,7 @@ apf.$viewportVirtual = function(amlNode){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/xforms.js)SIZE(9367)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36564,7 +36561,7 @@ apf.__XFORMS__ = 1 << 17;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/clipboard.js)SIZE(3480)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36673,7 +36670,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/commands.js)SIZE(30488)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36699,57 +36696,7 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/interactive.js)SIZE(57362)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/selectrect.js)SIZE(5678)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/visualconnect.js)SIZE(36914)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36775,32 +36722,6 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/baseclasses/contenteditable/visualselect.js)SIZE(18159)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/window-o3.js)SIZE(5461)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -36826,7 +36747,83 @@ apf.clipboard.pasteSelection = function(amlNode, selected){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/window.js)SIZE(50818)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -37968,11 +37965,11 @@ apf.window = new apf.window();
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/gears.js)SIZE(1391)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/gecko.js)SIZE(6753)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38161,7 +38158,7 @@ apf.runGecko = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/ie.js)SIZE(14081)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38413,7 +38410,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/iphone.js)SIZE(11827)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38438,7 +38435,7 @@ apf.runIE = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/non_ie.js)SIZE(24354)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38795,12 +38792,12 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/o3.js)SIZE(9131)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/opera.js)SIZE(6583)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -38826,7 +38823,7 @@ apf.runNonIe = function (){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/webkit.js)SIZE(8405)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39003,11 +39000,11 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/browsers/node/XMLHttpRequest.js)SIZE(6419)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/barrett.js)SIZE(2650)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
 
 /**
  * Crypt.Barrett, a class for performing Barrett modular reduction computations in
@@ -39028,7 +39025,7 @@ apf.runWebkit = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/base64.js)SIZE(6758)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39241,7 +39238,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/bigint.js)SIZE(20439)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /**
  * BigInt, a suite of routines for performing multiple-precision arithmetic in
@@ -39295,7 +39292,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/blowfish.js)SIZE(26046)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39321,7 +39318,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/md4.js)SIZE(9799)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39347,7 +39344,7 @@ apf.crypto.UTF8 = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/md5.js)SIZE(10997)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39605,7 +39602,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/rsa.js)SIZE(5048)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /**
  * RSA, a suite of routines for performing RSA public-key computations in
@@ -39627,7 +39624,7 @@ apf.crypto.MD5 = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/crypto/sha1.js)SIZE(5258)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39810,7 +39807,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/debug/debug.js)SIZE(9811)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39836,7 +39833,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/debug/debugwin.js)SIZE(42735)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39862,12 +39859,12 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/debug/profiler.js)SIZE(24827)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/parsers/js.js)SIZE(9016)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -39893,7 +39890,7 @@ global.SHA1 = function(str) {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/parsers/livemarkup.js)SIZE(113273)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42348,7 +42345,7 @@ apf.lm_exec = new (function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/parsers/url.js)SIZE(4570)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -42470,7 +42467,7 @@ apf.url.options = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/core/parsers/xpath.js)SIZE(21971)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 
 /**
@@ -43096,7 +43093,7 @@ apf.CodeCompilation = function(code){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingrule.js)SIZE(8842)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43347,7 +43344,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/accordion.js)SIZE(22288)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43372,7 +43369,7 @@ apf.aml.setElement("empty",      apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actionrule.js)SIZE(4035)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43497,7 +43494,7 @@ apf.aml.setElement("change", apf.ActionRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actions.js)SIZE(3251)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -43601,7 +43598,7 @@ apf.aml.setElement("actions", apf.actions);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actiontracker.js)SIZE(36828)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44196,7 +44193,7 @@ apf.aml.setElement("actiontracker", apf.actiontracker);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/application.js)SIZE(1834)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44251,7 +44248,7 @@ apf.aml.setElement("application", apf.application);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/appsettings.js)SIZE(9304)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44412,7 +44409,7 @@ apf.appsettings = function(struct, tagName){
 apf.aml.setElement("appsettings", apf.appsettings);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/audio.js)SIZE(12958)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -44438,7 +44435,7 @@ apf.aml.setElement("appsettings", apf.appsettings);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/auth.js)SIZE(24087)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45045,7 +45042,7 @@ apf.aml.setElement("auth", apf.auth);
 }).call(apf.auth.prototype = new apf.AmlElement());
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/axis.js)SIZE(14009)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45070,7 +45067,7 @@ apf.aml.setElement("auth", apf.auth);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bar.js)SIZE(4205)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45198,7 +45195,7 @@ apf.aml.setElement("section", apf.section);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingcolorrule.js)SIZE(2906)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45269,7 +45266,7 @@ apf.aml.setElement("color", apf.BindingColorRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingcolumnrule.js)SIZE(21714)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45876,7 +45873,7 @@ apf.aml.setElement("column", apf.BindingColumnRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingdndrule.js)SIZE(3623)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -45994,7 +45991,7 @@ apf.aml.setElement("drop", apf.BindingDndRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingeachrule.js)SIZE(11503)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46324,7 +46321,7 @@ apf.aml.setElement("each", apf.BindingEachRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingloadrule.js)SIZE(1529)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46373,7 +46370,7 @@ apf.aml.setElement("insert", apf.BindingLoadRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingquicksandrule.js)SIZE(12333)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46680,7 +46677,7 @@ apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindings.js)SIZE(8618)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -46945,7 +46942,7 @@ apf.aml.setElement("bindings", apf.bindings);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/bindingseriesrule.js)SIZE(1944)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47007,7 +47004,7 @@ apf.aml.setElement("series", apf.BindingSeriesRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/body.js)SIZE(1861)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47063,7 +47060,7 @@ apf.aml.setElement("config", apf.AmlConfig);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/browser.js)SIZE(6466)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47276,7 +47273,7 @@ apf.aml.setElement("browser", apf.browser);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/button.js)SIZE(31088)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47896,7 +47893,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/caldropdown.js)SIZE(36424)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47922,32 +47919,7 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/calendar.js)SIZE(28862)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/calendarlist.js)SIZE(15123)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47973,7 +47945,6 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/chart.js)SIZE(9687)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -47998,7 +47969,33 @@ apf.aml.setElement("button",  apf.button);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/checkbox.js)SIZE(8188)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48269,7 +48266,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/collection.js)SIZE(2383)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48294,7 +48291,7 @@ apf.aml.setElement("checkbox", apf.checkbox);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/colorpicker.js)SIZE(12736)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -48675,7 +48672,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/colorpicker2.js)SIZE(16009)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49098,7 +49095,7 @@ apf.aml.setElement("colorpicker", apf.colorpicker);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/comment.js)SIZE(1324)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49140,7 +49137,7 @@ apf.aml.setElement("comment", apf.comment);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/contextmenu.js)SIZE(2557)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -49217,7 +49214,7 @@ apf.aml.setElement("contextmenu", apf.contextmenu);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/datagrid.js)SIZE(53921)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50391,7 +50388,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/defaults.js)SIZE(1838)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50417,7 +50414,7 @@ apf.aml.setElement("contents",    apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/divider.js)SIZE(2882)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50510,7 +50507,7 @@ apf.aml.setElement("divider", apf.divider);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/dropdown.js)SIZE(15434)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50961,7 +50958,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/editor.js)SIZE(18601)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -50987,7 +50984,7 @@ apf.aml.setElement("dropdown", apf.dropdown);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/errorbox.js)SIZE(6106)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51171,7 +51168,7 @@ apf.errorbox = function(struct, tagName){
 apf.aml.setElement("errorbox", apf.errorbox);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/event.js)SIZE(2115)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51233,7 +51230,7 @@ apf.event = function(struct, tagName){
 apf.aml.setElement("event", apf.event);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/filler.js)SIZE(1385)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51274,32 +51271,7 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/flashplayer.js)SIZE(5856)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/flowchart.js)SIZE(50799)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51325,7 +51297,6 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/flowchart2.js)SIZE(45889)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51351,7 +51322,33 @@ apf.aml.setElement("filler", apf.filler);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/frame.js)SIZE(4838)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51500,7 +51497,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/gallery.js)SIZE(27418)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51525,7 +51522,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/graph.js)SIZE(21525)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -51550,7 +51547,7 @@ apf.aml.setElement("frame", apf.frame);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/hbox.js)SIZE(41682)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52545,7 +52542,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/iconmap.js)SIZE(3244)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52571,7 +52568,7 @@ apf.aml.setElement("vbox", apf.vbox);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/img.js)SIZE(7692)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -52817,7 +52814,7 @@ apf.aml.setElement("image", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/item.js)SIZE(25315)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53547,7 +53544,7 @@ apf.aml.setElement("item",  apf.item);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/junction.js)SIZE(2555)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53634,7 +53631,7 @@ apf.aml.setElement("junction", apf.junction);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/label.js)SIZE(4978)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53792,7 +53789,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/lineselect.js)SIZE(4747)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -53818,7 +53815,7 @@ apf.aml.setElement("label", apf.label);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/list.js)SIZE(14336)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54177,7 +54174,7 @@ apf.aml.setElement("list",      apf.list);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/loader.js)SIZE(3558)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54293,7 +54290,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/loadindicator.js)SIZE(5234)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54319,7 +54316,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/map.js)SIZE(21831)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54345,7 +54342,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/markupedit.js)SIZE(55951)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54371,7 +54368,7 @@ apf.aml.setElement("loader", apf.loader);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/menu.js)SIZE(19485)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -54934,7 +54931,7 @@ apf.menu = function(struct, tagName){
 apf.aml.setElement("menu", apf.menu);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/method.js)SIZE(3973)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55042,7 +55039,7 @@ apf.method = function(struct, tagName){
 apf.aml.setElement("method", apf.method);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/modalwindow.js)SIZE(24684)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -55674,7 +55671,7 @@ apf.aml.setElement("window",      apf.modalwindow);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/model.js)SIZE(42646)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -56819,7 +56816,7 @@ apf.aml.setElement("model", apf.model);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/notifier.js)SIZE(15297)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57233,7 +57230,7 @@ apf.aml.setElement("event", apf.event);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/page.js)SIZE(27116)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -57989,7 +57986,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/pager.js)SIZE(9037)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58015,7 +58012,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/palette.js)SIZE(5945)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58040,7 +58037,7 @@ apf.aml.setElement("page", apf.page);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/param.js)SIZE(1681)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58083,7 +58080,7 @@ apf.aml.setElement("variable", apf.param); //backwards compatibility
 apf.aml.setElement("param", apf.param);
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/persist.js)SIZE(17598)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58109,7 +58106,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/portal.js)SIZE(25076)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58134,7 +58131,7 @@ apf.aml.setElement("param", apf.param);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/progressbar.js)SIZE(8709)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58407,7 +58404,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/propedit.js)SIZE(46649)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58434,7 +58431,7 @@ apf.aml.setElement("progressbar", apf.progressbar);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/radiobutton.js)SIZE(17104)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -58987,7 +58984,7 @@ apf.aml.setElement("group", apf.$group);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/remote.js)SIZE(20970)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -59521,7 +59518,7 @@ apf.aml.setElement("remote", apf.remote);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc.js)SIZE(21108)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60144,7 +60141,7 @@ apf.aml.setElement("rpc", apf.rpc);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/script.js)SIZE(3679)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -60259,7 +60256,7 @@ apf.aml.setElement("script", apf.script);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/scrollbar.js)SIZE(32682)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61198,7 +61195,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/services.js)SIZE(1488)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61224,7 +61221,7 @@ apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/skin.js)SIZE(9698)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61421,7 +61418,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/slider.js)SIZE(32341)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61446,7 +61443,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/slideshow.js)SIZE(47089)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -61471,7 +61468,7 @@ apf.aml.setElement("skin", apf.skin);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/smartbinding.js)SIZE(33619)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62319,7 +62316,7 @@ apf.aml.setElement("smartbinding", apf.smartbinding);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/source.js)SIZE(1566)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62374,7 +62371,7 @@ apf.aml.setElement("source", apf.source);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/spinner.js)SIZE(16965)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -62914,7 +62911,7 @@ apf.aml.setElement("spinner", apf.spinner);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/splitbutton.js)SIZE(5510)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63077,7 +63074,7 @@ apf.aml.setElement("splitbutton",  apf.splitbutton);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/splitter.js)SIZE(16817)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63498,7 +63495,7 @@ apf.aml.setElement("splitter", apf.splitter);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/state-group.js)SIZE(3131)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63591,7 +63588,7 @@ apf.aml.setElement("state-group", apf.stateGroup);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/state.js)SIZE(10893)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63916,7 +63913,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/statusbar.js)SIZE(3824)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63942,32 +63939,7 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/style.js)SIZE(1888)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/submitform.js)SIZE(30092)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -63993,7 +63965,32 @@ apf.aml.setElement("state", apf.state);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/tab.js)SIZE(2990)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64092,7 +64089,7 @@ apf.aml.setElement("tab",    apf.tab);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/table.js)SIZE(17204)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64569,7 +64566,7 @@ apf.aml.setElement("table", apf.table);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/teleport.js)SIZE(1019)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64598,7 +64595,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/template.js)SIZE(2498)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64624,7 +64621,7 @@ apf.aml.setElement("teleport", apf.AmlElement);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/text.js)SIZE(12616)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -64980,7 +64977,7 @@ apf.aml.setElement("text", apf.text);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/textbox.js)SIZE(30819)TIME(Fri, 11 May 2012 14:12:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65863,7 +65860,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/toc.js)SIZE(8342)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65889,7 +65886,7 @@ apf.aml.setElement("textbox",  apf.textbox);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/toolbar.js)SIZE(2787)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -65983,7 +65980,7 @@ apf.aml.setElement("toolbar", apf.toolbar);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/tree.js)SIZE(17445)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66331,32 +66328,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/upload.js)SIZE(28994)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/vectorflow.js)SIZE(65716)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66382,7 +66354,6 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video.js)SIZE(20319)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66408,7 +66379,7 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/viewport.js)SIZE(1796)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66434,7 +66405,33 @@ apf.aml.setElement("checked", apf.BindingRule);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/webdav.js)SIZE(49988)TIME(Wed, 16 May 2012 09:30:13 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -66806,8 +66803,7 @@ apf.webdav = function(struct, tagName){
             authRequired = true;
         }
 
-        var auth = this.ownerDocument 
-           && this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (authRequired) {
             auth.authRequired(callback);
         }
@@ -67720,7 +67716,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/xmpp.js)SIZE(101266)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67746,7 +67742,7 @@ apf.webdav.STATUS_CODES = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actiontracker/undodata.js)SIZE(11852)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -67904,7 +67900,7 @@ apf.UndoData = function(settings, at){
 };
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/actiontracker/xmlactions.js)SIZE(8814)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68168,57 +68164,7 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/audio/type_flash.js)SIZE(12951)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/audio/type_native.js)SIZE(11013)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/modalwindow/widget.js)SIZE(7077)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68244,7 +68190,57 @@ apf.actiontracker.actions = {
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/cgi.js)SIZE(7168)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68457,7 +68453,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/header.js)SIZE(3062)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68483,7 +68479,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/jphp.js)SIZE(5874)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68509,7 +68505,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/jsonrpc.js)SIZE(3126)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68535,7 +68531,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/rdb.js)SIZE(8293)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68561,7 +68557,7 @@ apf.cgi = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/rest.js)SIZE(3962)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68688,7 +68684,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/soap.js)SIZE(10943)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68714,7 +68710,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/xmlrpc.js)SIZE(10831)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68740,7 +68736,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/rpc/yql.js)SIZE(3962)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68766,7 +68762,7 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/textbox/autocomplete.js)SIZE(7030)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -68792,12 +68788,12 @@ apf.rest = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/textbox/autocomplete2.js)SIZE(14483)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/textbox/masking.js)SIZE(12869)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69241,132 +69237,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/upload/flash.js)SIZE(9564)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/upload/html4.js)SIZE(9512)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/upload/html5.js)SIZE(8910)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_flv.js)SIZE(17057)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_native.js)SIZE(10825)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
-
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_qt.js)SIZE(23357)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69392,7 +69263,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_silverlight.js)SIZE(15347)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69418,7 +69288,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_vlc.js)SIZE(12493)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69444,7 +69313,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/video/type_wmp.js)SIZE(12632)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69470,7 +69338,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/xmpp/muc.js)SIZE(18991)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69496,7 +69363,6 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/xmpp/rdb.js)SIZE(21319)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69522,7 +69388,7 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/elements/xmpp/roster.js)SIZE(13725)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69548,7 +69414,137 @@ apf.textbox.masking = function(){
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/processinginstructions/livemarkup.js)SIZE(4360)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69668,7 +69664,7 @@ apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/jpack_end.js)SIZE(773)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 
 
@@ -69700,32 +69696,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/apf-node.js)SIZE(1245)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
-/*
- * See the NOTICE file distributed with this work for additional
- * information regarding copyright ownership.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- *
- */
-
-
-
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/apf-o3.js)SIZE(14016)TIME(Wed, 16 May 2012 09:30:13 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69751,7 +69722,6 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/loader-o3.js)SIZE(7470)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69777,7 +69747,33 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/loader.js)SIZE(15799)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
+
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+
+
+
+
 
 /*
  * See the NOTICE file distributed with this work for additional
@@ -69810,7 +69806,7 @@ apf.start();
 
 
 
-/*FILEHEAD(/Users/janjongboom/repos/cloud9infra/node_modules/cloud9/node_modules/packager/lib/../../apf/loader2.js)SIZE(18652)TIME(Fri, 11 May 2012 14:06:40 GMT)*/
+
 
 /*
  * See the NOTICE file distributed with this work for additional
