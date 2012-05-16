@@ -168,17 +168,19 @@ module.exports = ext.register("ext/tree/tree", {
             var cc, parts;
             for (path in lut) {
                 console.log("Checking that path has a parent", path);
-                parts = path.split("/");//.splice(numNodesToSplice);
+                parts = path.split("/").splice(rootPrefixNodes);
                 cc = parts.shift();
                 do {
-                    if (parts.length == rootPrefixNodes)
+                    if (!parts.length)
                         break;
 
                     cc += "/" + parts.shift();
                 } while(lut[cc]);
 
-                if (parts.length == rootPrefixNodes)
+                if (!parts.length)
                     _self.expandedNodes.push(path);
+                else
+                    console.log("Couldn't find it!", parts.length, path);
             }
             
             console.log("And this is what we got!", _self.expandedNodes);
