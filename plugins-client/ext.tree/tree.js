@@ -161,11 +161,14 @@ module.exports = ext.register("ext/tree/tree", {
 
             // This checks that each expanded folder has a root that's already
             // been saved
-            var rootPrefixNodes = ide.davPrefix.split("/").length - 1;
+            var splitPrefix = ide.davPrefix.split("/");
+            splitPrefix.pop();
+            var rootPrefixNodes = splitPrefix.length;
+            var rootPrefix = splitPrefix.join("/");
             var cc, parts;
             for (path in lut) {
                 parts = path.split("/").splice(rootPrefixNodes);
-                cc = "/" + parts.shift();
+                cc = rootPrefix + "/" + parts.shift();
                 while(lut[cc]) {
                     if (!parts.length)
                         break;
