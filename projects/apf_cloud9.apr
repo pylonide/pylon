@@ -217,7 +217,7 @@
         <!--p:define name="__WITH_AMLDOM_FULL" value="1" /-->
         <p:define name="__WITH_MULTIBINDING" value="1" />
         <p:define name="__WITH_MULTISELECT" value="1" />
-        <!--p:define name="__WITH_MULTICHECK" value="1" /-->
+        <p:define name="__WITH_MULTICHECK" value="1" />
         <!--p:define name="__WITH_MULTICHECK_TREE" value="1" /-->
         <p:define name="__WITH_PRESENTATION" value="1" />
         <p:define name="__WITH_RENAME" value="1" />
