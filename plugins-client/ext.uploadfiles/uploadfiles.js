@@ -389,6 +389,11 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     addToFileTree: function(file) {
         var filename = apf.escapeXML(file.name)
         var path = apf.escapeXML(file.path);
+        
+        var treeNode = trFiles.getModel().queryNode("//file[@path='" + path + "/" + filename + "']");
+        if (treeNode)
+            apf.xmldb.removeNode(treeNode);
+            
         var xmlNode = "<file type='fileupload'" +
             " name='" + filename + "'" +
             " path='" + path + "/" + filename + "'" +
@@ -421,7 +426,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     removeCurrentUploadFile: function() {
         var file = this.currentFile;
         apf.xmldb.removeNode(file.queueNode);
-        apf.xmldb.removeNode(file.treeNode);
+        //apf.xmldb.removeNode(file.treeNode);
         if (!mdlUploadActivity.data.childNodes.length) {
             boxUploadActivity.hide();
         }
@@ -587,6 +592,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             _self.existingSkipAll = false;
             btnCancelUploads.hide();
             (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
+            require("ext/tree/tree").refresh();
             _self.hideUploadActivityTimeout = setTimeout(function() {
                 mdlUploadActivity.load("<data />");
                 boxUploadActivity.hide();
@@ -610,7 +616,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var path     = node.getAttribute("path");
         var filename = file.name;
         var treeNode = trFiles.getModel().queryNode("//file[@path='" + path + "/" + filename + "']");
-        apf.xmldb.removeNode(treeNode);
+        if (treeNode)
+            apf.xmldb.removeNode(treeNode);
+
         fs.remove(path + "/" + filename, this.upload);
     },
     
@@ -650,7 +658,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         }
         
         setTimeout(function() {
-            if (!_self.lockHideQueue)
+            if (!_self.lockHideQueue && file.queueNode)
                 apf.xmldb.removeNode(file.queueNode);
             else
                 _self.lockHideQueueItems.push(file);
@@ -693,7 +701,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         boxUploadActivity.hide();
         
         (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
-        apf.xmldb.removeNode(this.currentFile.treeNode);
+        if (this.currentFile.treeNode)
+            apf.xmldb.removeNode(this.currentFile.treeNode);
     },
     
     getFormData: function(file) {

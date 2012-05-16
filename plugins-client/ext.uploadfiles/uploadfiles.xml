@@ -47,9 +47,10 @@
               caption="Cancel" 
               skin="btn-cancel-upload" 
               skinset="uploadfiles" 
+              margin="7 3 0 0"
               onclick="require('ext/uploadfiles/uploadfiles').cancelAll()"
             ></a:button>
-            <a:checkbox id="cbToggleUploadQueue" skin="uploadactivity-switch" skinset="uploadfiles" value="1" margin="0 5" />
+            <a:checkbox id="cbToggleUploadQueue" skin="uploadactivity-switch" skinset="uploadfiles" value="1" margin="6 5 0 0" />
         </a:hbox>
         <a:list id="lstUploadActivity"
             skin = "list-uploadactivity"

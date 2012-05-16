@@ -147,7 +147,6 @@
                 overflow   : visible;
                 width      : 9px;
                 height     : 15px;
-                top        : 4px;
             }
     
             .uploadactivity-switch .checkbox {
@@ -204,7 +203,7 @@
                 color               : #a4a4a4;
                 font-size           : 11px;
                 height              : 14px;
-                top                 : 4px;
+                cursor              : default;
             }
             
             .btn-cancel-uploadOver {
