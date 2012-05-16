@@ -66,7 +66,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main containaer=".">
+        <a:main container=".">
             <div class="c9-header-bar">
             </div>
         </a:main>
@@ -4602,7 +4602,7 @@
             border-top    : 1px dotted #040404;
         }
     ]]></a:style>
-    <a:style condition="{apf.isGecko}">
+    <a:style condition="apf.isGecko">
         .divider-debugpanel div div {
             position : relative;
             left : -1px;
