@@ -161,16 +161,20 @@ module.exports = ext.register("ext/tree/tree", {
 
             // This checks that each expanded folder has a root that's already
             // been saved
+            var splitPrefix = ide.davPrefix.split("/");
+            splitPrefix.pop();
+            var rootPrefixNodes = splitPrefix.length;
+            var rootPrefix = splitPrefix.join("/");
             var cc, parts;
             for (path in lut) {
-                parts = path.split("/");
-                cc = parts.shift();
-                do {
+                parts = path.split("/").splice(rootPrefixNodes);
+                cc = rootPrefix + "/" + parts.shift();
+                while(lut[cc]) {
                     if (!parts.length)
                         break;
 
                     cc += "/" + parts.shift();
-                } while(lut[cc]);
+                }
 
                 if (!parts.length)
                     _self.expandedNodes.push(path);
@@ -230,8 +234,6 @@ module.exports = ext.register("ext/tree/tree", {
                 trFiles.add(xmlNode, parent);
             }
         });
-        
-        //ext.initExtension(this);
     },
 
     onReady : function() {
@@ -465,12 +467,12 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("collapse", this.$collapse = function(e){
             if (!e.xmlNode)
                 return;
-            delete _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
 
-            if (!_self.loading) {
-                _self.changed = true;
-                settings.save();
-            }
+            var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+            delete _self.expandedList[id];
+
+            _self.changed = true;
+            settings.save();
         });
     },
 
