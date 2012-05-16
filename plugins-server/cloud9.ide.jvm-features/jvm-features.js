@@ -24,8 +24,8 @@ var JVMFeatures = function(ide, workspace) {
 
     this.hooks = ["connect", "disconnect", "command"];
     this.name = name;
-    this.workspaceDir  = ide.workspaceDir + "/";
-    console.log("jvm-features: use this.workspaceDir = ", this.workspaceDir);
+    // remove the project name
+    this.workspaceDir  = Path.dirname(ide.workspaceDir);
 };
 
 util.inherits(JVMFeatures, Plugin);
@@ -134,7 +134,7 @@ util.inherits(JVMFeatures, Plugin);
             if (err)
               return _self.$error("Could not find a free port", 1, err);
             var eclipseClient = new EclipseClient("localhost", port,
-                "/Users/eweda/workspace/runtime-CodeCompletePlugin.Cloud9Eclipse");
+               _self.workspaceDir);
             eclipseClient.on("lifecycle:connected", function() {
               console.log("Eclipse session initalied");
               _self.eclipseClient = eclipseClient;

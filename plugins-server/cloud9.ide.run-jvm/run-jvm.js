@@ -63,7 +63,6 @@ util.inherits(JVMRuntimePlugin, Plugin);
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
-        console.log('\n message: ', message);
         if (!(/java|jpy|jrb|groovy|js-rhino/.test(message.runner))
             && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
           return false;

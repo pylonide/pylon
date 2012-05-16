@@ -76,7 +76,6 @@ function mixin(Class, Parent) {
     };
 
     proto.debugCommand = function(msg) {
-        console.log("debugCommand called");
         this.msgQueue.push(msg);
 
         if (!this.javaDebugProxy)
@@ -87,7 +86,7 @@ function mixin(Class, Parent) {
 
     proto._flushSendQueue = function() {
         for (var i = 0; i < this.msgQueue.length; i++) {
-            console.log("\nSEND", this.msgQueue[i])
+            // console.log("\nSEND", this.msgQueue[i])
             try {
                 this.javaDebugProxy.send(this.msgQueue[i]);
             } catch(e) {
@@ -109,11 +108,9 @@ function mixin(Class, Parent) {
             sourcepath: Path.join(self.cwd, 'src')
         };
 
-        console.log('debug proxy created: port: ', port, ' \r\nopts: ', debugOptions);
-
         this.javaDebugProxy = new JavaDebugProxy(JAVA_DEBUG_PORT, debugOptions);
         this.javaDebugProxy.on("message", function(body) {
-            console.log("\nRECV", body);
+            // console.log("\nRECV", body);
             send({
                 "type": "node-debug",
                 "pid": self.pid,
@@ -123,7 +120,7 @@ function mixin(Class, Parent) {
         });
 
         this.javaDebugProxy.on("connection", function() {
-            console.log('debug proxy connected');
+            // console.log('debug proxy connected');
             send({
                 "type": "node-debug-ready",
                 "pid": self.pid,
@@ -133,7 +130,7 @@ function mixin(Class, Parent) {
         });
 
         this.javaDebugProxy.on("end", function(err) {
-            console.log('javaDebugProxy terminated');
+            // console.log('javaDebugProxy terminated');
             if (err) {
                 // TODO send the error message back to the client
                 // _self.send({"type": "jvm-exit-with-error", errorMessage: err}, null, _self.name);

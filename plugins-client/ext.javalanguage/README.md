@@ -4,11 +4,11 @@
 
 1- Install sun java 1.6 on your machine
 
-2- install ant to build the source code
+2- install ant to build dependency projects from java source code
 
 3- Build the java debug project:
 
-    $ cd support/lib-javadebug && npm install && ant
+    $ cd node_modules/lib-javadebug && npm install && ant
 
 You may want to change the log file location in bin/log4j.properties instead of log/cloud9-java-debug.log to somewhere else
 
@@ -18,11 +18,15 @@ You may want to change the log file location in bin/log4j.properties instead of 
 
 The debug is now ready for cloud9 debug connections
 
+5- Build the jvm-run sub projects:
+
+    $ cd node_modules/jvm-run && && ant
+
 5- Download eclipse hellios sr2 for your platform and extract it somewhere
 
 6-
 
-    $ cd support/jvm_features && npm install
+    $ cd node_modules/jvm_features && npm install
 
 7- Initial build and run for the eclipse plugin:
 
@@ -30,7 +34,7 @@ a- Start eclipse into any workspace
 
 b- select File -> Import -> Existing project into workspace
 
-c- Select the project: cloud9/support/jvm_features
+c- Select the project: cloud9/node_modules/jvm_features
 
 d- Wait few seconds for eclipse to import the project (no compile errors should be found)
 
@@ -40,26 +44,18 @@ f- you should see:
 
     >>> STARTED
 
-8- Open the init config file is: cloud9/support/jvm_features/js/lib/eclipse/config.js and change paths according to your eclipse installation
+8- Open the init config file is: cloud9/node_modules/jvm_features/js/lib/eclipse/config.js and change paths according to your eclipse installation
 
 a- Change the path of the equinox launcher jar to your eclipse installation equivalent:
 ${eclipse-installation-path}\plugins\org.eclipse.equinox.launcher_${version}${qualifier}.jar
 
-b- Change the -configuration folder to your ${cloud9 absolute path}/support/jvm_features/config/ and -dev file the same with appending dev.properties at the end.
+b- Change the -configuration and -dev attributes according to your last (in or outside eclipse) values
 
-For me, it was:
+--> for me from inside eclipse, it was:
 
-    $ java -Dosgi.requiredJavaVersion=1.5 -Xms200m -Xmx1024m -XX:MaxPermSize=512m -Dfile.encoding=UTF-8 -classpath /media/DATA/COLLEGE/IDEs/eclipse-linux-jee-helios-SR2/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar org.eclipse.equinox.launcher.Main -application CodeCompletePlugin.Cloud9Eclipse -data ~/runtime-CodeCompletePlugin.Cloud9Eclipse -configuration file:/home/eweda/cloud9/support/jvm_features/config/ -dev file:/home/eweda/cloud9/support/jvm_features/config/dev.properties -nl en_US -consoleLog
+-configuration file:/Users/eweda/workspace/eclipse-workspace/.metadata/.plugins/org.eclipse.pde.core/CodeCompletePlugin.Cloud9Eclipse/ -dev file:/Users/eweda/workspace/eclipse-workspace/.metadata/.plugins/org.eclipse.pde.core/CodeCompletePlugin.Cloud9Eclipse/dev.properties
 
-9- test it with running
-
-    $ java ${initCmd} with changing the ${data} to the workspace folder for the user's projects and remove the ${port} part
-
-You should see:
-
-    >>> STARTED
-
-If you ever reach here, then the full java stack is now ready for testing :)
+Now, the full java stack SHOULD BE ready for testing :)
 
 ## Totally headless installaton (production environment) (NOT WORKING YET)
 
@@ -69,23 +65,20 @@ Replace step 7 with
 
 a- build the plugin jar file
 
-    $ java -jar ${eclipse-installation-path}\plugins\org.eclipse.equinox.launcher_${version}${qualifier}.jar -application org.eclipse.ant.core.antRunner -buildfile ${cloud9 absolute path}/support/jvm_features/build.xml
+    $ java -jar ${eclipse-installation-path}\plugins\org.eclipse.equinox.launcher_${version}${qualifier}.jar -application org.eclipse.ant.core.antRunner -buildfile ${cloud9 absolute path}/node_modules/jvm_features/build.xml
 
 For me it was:
 
-    $ java -jar /media/DATA/COLLEGE/IDEs/eclipse-linux-jee-helios-SR2/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar -application org.eclipse.ant.core.antRunner -buildfile /home/eweda/cloud9/support/jvm_features/build.xml
+    $ java -jar /media/DATA/COLLEGE/IDEs/eclipse-linux-jee-helios-SR2/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar -application org.eclipse.ant.core.antRunner -buildfile /home/eweda/cloud9/node_modules/jvm_features/build.xml
 
 Ref: [Eclipse plugin headless build](http://eclipse.dzone.com/articles/headless-build-beginners-part)
 
 b- Copy CodeComplePlugin...jar to ${eclipse-path}/plugins/
 
 
-## More files with absolute paths
-* cloud9/support/jvm-run/build-tools/StandAloneWebAppStarter/bin/web_apps.properties
-* cloud9/support/jvm_features/src/settings.properties
-* cloud9/support/jvm-run/build-tools/templates/j2ee-template/build.xml --> jetty location
-* cloud9/server/cloud9/ext/jvm-features/jvm-features.js --> workspace location
-* cloud9/support/jvm_features/js/lib/eclipse/config.js --> init command
+## More files to care about
+* cloud9/node_modules/jvm-run/build-tools/templates/j2ee-template/build.xml --> absoulte jetty location
+* cloud9/node_modules/jvm_features/js/lib/eclipse/config.js --> init command tweaking
 
 ## TODOs
 
