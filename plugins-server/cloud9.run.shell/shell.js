@@ -23,30 +23,39 @@ var exports = module.exports = function setup(options, imports, register) {
 
 exports.factory = function(uid) {
     return function(args, eventEmitter, eventName) {
-        return new Runner(uid, args.command, args.args, args.cwd, args.env, args.extra, eventEmitter, eventName);
+        return new Runner({
+            uid: uid, command: args.command, args: args.args, cwd: args.cwd, 
+            env: args.env, encoding: args.encoding, extra: args.extra, 
+            eventEmitter: eventEmitter, eventName: eventName
+        });
     };
 };
 
-var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, eventEmitter, eventName) {
-    this.uid = uid;
-    this.command = command;
-    this.args = args || [];
-    this.extra = extra;
+var Runner = exports.Runner = function(options) {
+    this.uid = options.uid;
+    this.command = options.command;
+    this.args = options.args || [];
+    this.encoding = options.encoding || "utf8";
+
+    if (this.encoding === "binary") {
+        this.encoding = null;
+    }
+    this.extra = options.extra;
 
     this.runOptions = {};
-    if (cwd)
-        this.runOptions.cwd = cwd;
+    if (options.cwd)
+        this.runOptions.cwd = options.cwd;
 
-    env = env || {};
-    env = env;
+    var env = options.env || {};
+    
     for (var key in process.env)
         if (!env.hasOwnProperty(key))
             env[key] = process.env[key];
 
     this.runOptions.env = env;
 
-    this.eventEmitter = eventEmitter;
-    this.eventName = eventName;
+    this.eventEmitter = options.eventEmitter;
+    this.eventName = options.eventName;
 
     this.child = {
         pid: null
@@ -121,7 +130,12 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
 
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
-
+        
+        if (this.encoding) {
+            child.stdout.setEncoding(this.encoding);
+            child.stderr.setEncoding(this.encoding);
+        }
+        
         function emit(msg) {
             // console.log(self.eventName, msg);
             self.eventEmitter.emit(self.eventName, msg);
@@ -133,7 +147,7 @@ var Runner = exports.Runner = function(uid, command, args, cwd, env, extra, even
                     "type": self.name + "-data",
                     "pid": pid,
                     "stream": stream,
-                    "data": data.toString("utf8"),
+                    "data": data,
                     "extra": self.extra
                 });
             };
