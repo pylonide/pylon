@@ -203,7 +203,7 @@ module.exports = {
                 oldCommandKey.apply(keyBinding, arguments);
                 break;
         }
-    }
+    },
 
     destroy : function(){
         commands.removeCommandByName("renameVar");

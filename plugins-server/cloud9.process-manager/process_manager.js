@@ -132,6 +132,7 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
     };
 
     this.debug = function(pid, debugMessage, callback) {
+        console.log('\r\nPM debug: ', pid);
         var child = this.processes[pid];
         if (!child || !child.pid)
             return callback("Process is not running: " + pid);

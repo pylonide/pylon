@@ -56,9 +56,10 @@ util.inherits(NodeRuntimePlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
+        return false;
         var cmd = (message.command || "").toLowerCase();
         if (!(/default|auto|0\.6\.x|0\.4\.x/.test(message.runner))
-            && (cmd.indexOf("debug") != -1 && !this.nodeDebugProxy))
+            && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
             return false;
 
         var res = true;
@@ -76,7 +77,9 @@ util.inherits(NodeRuntimePlugin, Plugin);
                 this.$kill(message.pid, message, client);
                 break;
             case "debugnode":
-                this.pm.debug(message.pid, message.body, function(err) {});
+                this.pm.debug(message.pid, message.body, function(err) {
+                    if (err) console.error(err);
+                });
                 break;
             default:
                 res = false;

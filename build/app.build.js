@@ -64,6 +64,7 @@
 	'ext/guidedtour': 'plugins-client/ext.guidedtour',
 	'ext/quickstart': 'plugins-client/ext.quickstart',
 	'ext/jslanguage': 'plugins-client/ext.jslanguage',
+	'ext/javalanguage': 'plugins-client/ext.javalanguage',
 	'ext/closeconfirmation': 'plugins-client/ext.closeconfirmation',
 	'ext/codetools': 'plugins-client/ext.codetools',
 	'ext/colorpicker': 'plugins-client/ext.colorpicker',

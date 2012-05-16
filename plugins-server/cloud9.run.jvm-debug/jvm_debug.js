@@ -1,6 +1,7 @@
 "use strict";
 
 var util = require("util");
+var Path = require("path");
 var netutil = require("../cloud9.core/netutil");
 var JvmRunner = require("../cloud9.run.jvm/jvm").Runner;
 var JavaDebugProxy = require("./javadebugproxy");
@@ -28,12 +29,12 @@ var exports = module.exports = function setup(options, imports, register) {
 exports.factory = function(uid, ide) {
     return function(options, eventEmitter, eventName) {
         var cwd = options.cwd || ide.workspaceDir;
-        return new Runner(uid, options.file, options.args, cwd, options.env, options.breakOnStart, options.extra, eventEmitter, eventName);
+        return new Runner(uid, options.type, options.file, options.args, cwd, options.env, options.breakOnStart, options.extra, eventEmitter, eventName);
     };
 };
 
-var Runner = exports.Runner = function(uid, file, args, cwd, env, breakOnStart, extra, eventEmitter, eventName) {
-    JvmRunner.call(this, uid, file, args, cwd, env, extra, eventEmitter, eventName);
+var Runner = exports.Runner = function(uid, jvmType, file, args, cwd, env, breakOnStart, extra, eventEmitter, eventName) {
+    JvmRunner.call(this, uid, jvmType, file, args, cwd, env, extra, eventEmitter, eventName);
     this.breakOnStart = breakOnStart;
     this.extra = extra;
     this.msgQueue = [];
@@ -47,7 +48,7 @@ function mixin(Class, Parent) {
     Class.prototype = Class.prototype || {};
     var proto = Class.prototype;
 
-    proto.name = "jvm-debug";
+    proto.name = "node-debug";
 
     proto.createChild = function(callback) {
         var self = this;
@@ -70,28 +71,27 @@ function mixin(Class, Parent) {
 
             setTimeout(function() {
                 self._startDebug(port);
-            }, 100);
+            }, 1000);
         });
     };
 
     proto.debugCommand = function(msg) {
+        console.log("debugCommand called");
         this.msgQueue.push(msg);
 
-        if (!this.nodeDebugProxy)
+        if (!this.javaDebugProxy)
             return;
 
         this._flushSendQueue();
     };
 
     proto._flushSendQueue = function() {
-        if (this.msgQueue.length) {
-            for (var i = 0; i < this.msgQueue.length; i++) {
-                // console.log("SEND", this.msgQueue[i])
-                try {
-                    this.nodeDebugProxy.send(this.msgQueue[i]);
-                } catch(e) {
-                    console.log("Sending node debug message failed: " + e.message);
-                }
+        for (var i = 0; i < this.msgQueue.length; i++) {
+            console.log("\nSEND", this.msgQueue[i])
+            try {
+                this.javaDebugProxy.send(this.msgQueue[i]);
+            } catch(e) {
+                console.log("Sending jvm debug message failed: " + e.message);
             }
         }
 
@@ -107,12 +107,14 @@ function mixin(Class, Parent) {
         var appPath = self.cwd;
         var debugOptions = {
             port: port,
-            sourcepath: appPath + 'src'
+            sourcepath: Path.join(appPath, 'src')
         };
 
-        this.javaDebugProxy = new JavaDebugProxy(port, debugOptions);
+        console.log('debug proxy created: port: ', port, ' \r\nopts: ', debugOptions);
+
+        this.javaDebugProxy = new JavaDebugProxy(JAVA_DEBUG_PORT, debugOptions);
         this.javaDebugProxy.on("message", function(body) {
-            // console.log("REC", body)
+            console.log("\nRECV", body);
             send({
                 "type": "node-debug",
                 "pid": self.pid,
@@ -122,12 +124,24 @@ function mixin(Class, Parent) {
         });
 
         this.javaDebugProxy.on("connection", function() {
+            console.log('debug proxy connected');
             send({
                 "type": "node-debug-ready",
                 "pid": self.pid,
                 "extra": self.extra
             });
             self._flushSendQueue();
+        });
+
+        this.javaDebugProxy.on("end", function(err) {
+            console.log('javaDebugProxy terminated');
+            if (err) {
+                // TODO send the error message back to the client
+                // _self.send({"type": "jvm-exit-with-error", errorMessage: err}, null, _self.name);
+                console.error(err);
+            }
+            if (self.javaDebugProxy === this)
+                delete self.javaDebugProxy;
         });
 
         this.javaDebugProxy.connect();

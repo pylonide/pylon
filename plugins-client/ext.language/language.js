@@ -18,6 +18,7 @@ var refactor = require('ext/language/refactor');
 var outline = require('ext/language/outline');
 var hierarchy = require('ext/language/hierarchy');
 var format = require('ext/language/format');
+var save = require("ext/save/save");
 var markup = require("text!ext/language/language.xml");
 var skin = require("text!ext/language/skin.xml");
 var css = require("text!ext/language/language.css");

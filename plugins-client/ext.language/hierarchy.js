@@ -6,6 +6,7 @@ define(function(require, exports, module) {
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var ide = require("core/ide");
+var menus = require("ext/menus/menus");
 
 module.exports = {
     hook: function(ext, worker) {
@@ -21,12 +22,11 @@ module.exports = {
             worker.emit("hierarchy", {data: {pos: editor.getCursorPosition()}});
         }
 
-        var hierarchyItem = new apf.item({
-            caption: "Hierarchy",
-            onclick: triggerHierarchy
-        });
-        ext.nodes.push(ide.mnuEdit.appendChild(hierarchyItem));
-        
+        ext.nodes.push(
+            menus.addItemByPath("View/Type Hierarchy", new apf.item({
+                onclick: triggerHierarchy
+            }))
+        );
         var hierarchyContextItem = new apf.item({
             caption: "Open Type Hierarchy",
             onclick: triggerHierarchy

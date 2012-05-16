@@ -6,6 +6,7 @@ define(function(require, exports, module) {
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var ide = require("core/ide");
+var menus = require("ext/menus/menus");
 
 module.exports = {
     hook: function(ext, worker) {
@@ -15,14 +16,13 @@ module.exports = {
             _self.renderOutline(event);
         });
 
-        var outlineItem = new apf.item({
-            caption: "Outline",
-            onclick: function() {
-                worker.emit("outline", {data: {}});
-            }
-        });
-        var node = ide.mnuEdit.appendChild(outlineItem);
-        ext.nodes.push(node);
+        ext.nodes.push(
+            menus.addItemByPath("View/Outline", new apf.item({
+                onclick: function() {
+                    worker.emit("outline", {data: {}});
+                }
+            }))
+        );
     },
 
     outlineJsonToXml: function(array, selected, tag) {

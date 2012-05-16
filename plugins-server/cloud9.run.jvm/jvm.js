@@ -50,9 +50,9 @@ var Runner = exports.Runner = function(uid, jvmType, file, args, cwd, env, extra
     this.cwd = cwd;
     this.extra = extra;
     this.jvmType = jvmType;
+    this.jvmArgs = [];
 
     this.scriptArgs = args || [];
-    this.jvmArgs = [];
 
     env = env || {};
     ShellRunner.call(this, uid, "java", [], cwd, env, extra, eventEmitter, eventName);
@@ -85,7 +85,7 @@ function getJVMInstance (jvmType, cwd, file, callback) {
             return callback("JS-Rhino not tested yet");
 
         default:
-            return callback("Unsupported JVM runtime environment !!");
+            return callback("Unsupported JVM runtime environment '" + jvmType + "' !!");
     }
 
     function buildApp(jvmInstance) {
@@ -118,11 +118,10 @@ util.inherits(Runner, ShellRunner);
     this.createChild = function(callback) {
         var _self = this;
         getJVMInstance(this.jvmType, this.cwd, this.file, function (err, jvmInstance) {
-            if (err)
-                console.error(err);
+            if (err) return console.error(err);
 
             jvmInstance.runArgs(function (runArgs) {
-                _self.args = _self.jvmArgs.concat(_self.scriptArgs);
+                _self.args = _self.jvmArgs.concat(runArgs).concat(_self.scriptArgs);
 
                 ShellRunner.prototype.createChild.call(_self, callback);
             });

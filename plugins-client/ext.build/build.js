@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var menus = require("ext/menus/menus");
 var util = require("core/util");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
@@ -54,9 +55,8 @@ module.exports = ext.register("ext/build/build", {
         var _self = this;
 
         this.nodes.push(
-            mnuEdit.appendChild(new apf.divider()),
-            mnuEdit.appendChild(new apf.item({
-                caption : "Build project",
+            menus.addItemByPath("Edit/~", new apf.divider()),
+            menus.addItemByPath("Edit/Build project", new apf.item({
                 onclick : function() {
                     _self.execBuild();
                 }

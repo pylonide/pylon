@@ -129,7 +129,7 @@ util.inherits(JVMFeatures, Plugin);
         var _self = this;
 
         //  init the eclipse instance for that user
-        netutil.findFreePort(this.ECLIPSE_START_PORT, 64000, "localhost",
+        netutil.findFreePort(ECLIPSE_START_PORT, 64000, "localhost",
           function(err, port) {
             if (err)
               return _self.$error("Could not find a free port", 1, err);

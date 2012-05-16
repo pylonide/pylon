@@ -80,14 +80,12 @@ function mixin(Class, Parent) {
     };
 
     proto._flushSendQueue = function() {
-        if (this.msgQueue.length) {
-            for (var i = 0; i < this.msgQueue.length; i++) {
-                // console.log("SEND", this.msgQueue[i])
-                try {
-                    this.nodeDebugProxy.send(this.msgQueue[i]);
-                } catch(e) {
-                    console.log("Sending node debug message failed: " + e.message);
-                }
+        for (var i = 0; i < this.msgQueue.length; i++) {
+            // console.log("SEND", this.msgQueue[i])
+            try {
+                this.nodeDebugProxy.send(this.msgQueue[i]);
+            } catch(e) {
+                console.log("Sending node debug message failed: " + e.message);
             }
         }
 

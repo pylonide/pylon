@@ -317,6 +317,10 @@ module.exports = {
         this.worker = worker;
     },
 
+    onChange: function () {
+        this.invoke();
+    },
+
     invoke: function(forceBox) {
         var editor = editors.currentEditor.amlEditor.$editor;
         var _self = this;

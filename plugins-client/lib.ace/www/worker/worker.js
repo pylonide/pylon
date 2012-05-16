@@ -4945,11 +4945,12 @@ exports.parenFreeMode = false;
  * delegate messages it receives to the various handlers that have registered
  * themselves with the worker.
  */
-define('ext/language/worker', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/worker/mirror', 'treehugger/tree'], function(require, exports, module) {
+define('ext/language/worker', ['require', 'exports', 'module' , 'ace/lib/oop', 'ace/worker/mirror', 'treehugger/tree', 'ace/lib/event_emitter'], function(require, exports, module) {
 
 var oop = require("ace/lib/oop");
 var Mirror = require("ace/worker/mirror").Mirror;
 var tree = require('treehugger/tree');
+var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
 
 var WARNING_LEVELS = {
     error: 3,
@@ -4960,18 +4961,77 @@ var WARNING_LEVELS = {
 // Leaking into global namespace of worker, to allow handlers to have access
 disabledFeatures = {};
 
+EventEmitter.once = function(event, fun) {
+  var _self = this;
+  var newCallback = function() {
+    fun && fun.apply(null, arguments);
+    _self.removeEventListener(event, newCallback);
+  };
+  this.addEventListener(event, newCallback);
+};
+
+var ServerProxy = function(sender) {
+
+  this.emitter = Object.create(EventEmitter);
+  this.emitter.emit = this.emitter._dispatchEvent;
+
+  this.send = function(data) {
+      sender.emit("serverProxy", data);
+  };
+  
+  this.once = function(messageType, messageSubtype, callback) {
+    var channel = messageType;
+    if (messageSubtype)
+       channel += (":" + messageSubtype);
+    this.emitter.once(channel, callback);
+  };
+
+  this.subscribe = function(messageType, messageSubtype, callback) {
+    var channel = messageType;
+    if (messageSubtype)
+       channel += (":" + messageSubtype);
+    this.emitter.addEventListener(channel, callback);
+  };
+  
+  this.unsubscribe = function(messageType, messageSubtype, f) {
+    var channel = messageType;
+    if (messageSubtype)
+       channel += (":" + messageSubtype);
+    this.emitter.removeEventListener(channel, f);
+  };
+
+  this.onMessage = function(msg) {
+    var channel = msg.type;
+    if (msg.subtype)
+      channel += (":" + msg.subtype);
+    console.log("publish to: " + channel);
+    this.emitter.emit(channel, msg.body);
+  };
+};
+
 var LanguageWorker = exports.LanguageWorker = function(sender) {
     var _self = this;
     this.handlers = [];
     this.currentMarkers = [];
     this.$lastAggregateActions = {};
     this.$warningLevel = "info";
+    sender.once = EventEmitter.once;
+    this.serverProxy = new ServerProxy(sender);
     
     Mirror.call(this, sender);
     this.setTimeout(500);
-    
-    sender.on("complete", function(pos) {
-        _self.complete(pos);
+
+    sender.on("outline", function(event) {
+        _self.outline();
+    });
+    sender.on("hierarchy", function(event) {
+        _self.hierarchy(event);
+    });
+    sender.on("code_format", function(event) {
+        _self.codeFormat();
+    });
+    sender.on("complete", function(event) {
+        _self.complete(event);
     });
     sender.on("documentClose", function(event) {
         _self.documentClose(event);
@@ -4993,6 +5053,18 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     });
     sender.on("fetchVariablePositions", function(event) {
         _self.sendVariablePositions(event);
+    });
+    sender.on("startRefactoring", function(event) {
+        _self.startRefactoring(event);
+    });
+    sender.on("finishRefactoring", function(event) {
+        _self.finishRefactoring(event);
+    });
+    sender.on("cancelRefactoring", function(event) {
+        _self.cancelRefactoring(event);
+    });
+    sender.on("serverProxy", function(event) {
+        _self.serverProxy.onMessage(event.data);
     });
 };
 
@@ -5064,6 +5136,8 @@ function asyncParForEach(array, fn, callback) {
      */
     this.register = function(path) {
         var handler = require(path);
+        handler.proxy = this.serverProxy;
+        handler.sender = this.sender;
         this.handlers.push(handler);
     };
 
@@ -5083,8 +5157,58 @@ function asyncParForEach(array, fn, callback) {
                     next();
                 }
             }
+            else
+                next();
         }, function() {
             callback(_self.cachedAst);
+        });
+    };
+
+    this.outline = function() {
+        var _self = this;
+        this.parse(function(ast) {
+            asyncForEach(_self.handlers, function(handler, next) {
+                if (handler.handlesLanguage(_self.$language)) {
+                    handler.outline(_self.doc, ast, function(outline) {
+                        if(outline)
+                            return _self.sender.emit("outline", outline);
+                    });
+                }
+                else
+                    next();
+            }, function() {
+            });
+        });
+    };
+
+    this.hierarchy = function(event) {
+        var data = event.data;
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.hierarchy(_self.doc, data.pos, function(hierarchy) {
+                    if(hierarchy)
+                        return _self.sender.emit("hierarchy", hierarchy);
+                });
+            }
+            else
+                next();
+        }, function() {
+        });
+    };
+
+    this.codeFormat = function() {
+        var _self = this;
+        asyncForEach(_self.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.codeFormat(_self.doc, function(newSource) {
+                    if(newSource)
+                        return _self.sender.emit("code_format", newSource);
+                });
+            }
+            else
+                next();
+        }, function() {
         });
     };
 
@@ -5112,7 +5236,7 @@ function asyncParForEach(array, fn, callback) {
             }
         }
     }
-    
+
     this.analyze = function(callback) {
         var _self = this;
         this.parse(function(ast) {
@@ -5125,6 +5249,8 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 }
+                else
+                    next();
             }, function() {
                 var extendedMakers = markers;
                 filterMarkersAroundError(ast, markers);
@@ -5132,38 +5258,12 @@ function asyncParForEach(array, fn, callback) {
                     extendedMakers = markers.concat(_self.getLastAggregateActions().markers);
                 _self.scheduleEmit("markers", _self.filterMarkersBasedOnLevel(extendedMakers));
                 _self.currentMarkers = markers;
-                if (_self.postponedCursorMove)
-                    _self.onCursorMove(_self.postponedCursorMove);
+                if (_self.postponedCursorMove) {}
+                    // _self.onCursorMove(_self.postponedCursorMove);
                 callback();
             });
         });
     };
-
-/*
-    this.analyze = function() {
-        var ast = this.parse();
-        var markers = [];
-        var handlerCount = 0;
-        for(var i = 0; i < this.handlers.length; i++) {
-            var handler = this.handlers[i];
-            if (handler.handlesLanguage(this.$language) && (ast || !handler.analysisRequiresParsing())) {
-                var result = handler.analyze(this.doc, ast);
-                if (result)
-                    markers = markers.concat(result);
-                handlerCount++;
-            }
-        }
-        var extendedMakers = markers;
-        filterMarkersAroundError(ast, markers);
-        if (this.getLastAggregateActions().markers.length > 0)
-            extendedMakers = markers.concat(this.getLastAggregateActions().markers);
-        if(handlerCount > 0)
-            this.scheduleEmit("markers", extendedMakers);
-        this.currentMarkers = markers;
-        if (this.postponedCursorMove) {
-            this.onCursorMove(this.postponedCursorMove);
-        }
-*/
 
     this.checkForMarker = function(pos) {
         var astPos = {line: pos.row, col: pos.column};
@@ -5221,7 +5321,7 @@ function asyncParForEach(array, fn, callback) {
         var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
         var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
-        
+
         function cursorMoved() {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
@@ -5292,21 +5392,69 @@ function asyncParForEach(array, fn, callback) {
         var pos = event.data;
         var _self = this;
         // Not going to parse for this, only if already parsed successfully
-        if (this.cachedAst) {
-            var ast = this.cachedAst;
-            var currentNode = ast.findNode({line: pos.row, col: pos.column});
-            asyncForEach(this.handlers, function(handler, next) {
-                if (handler.handlesLanguage(_self.$language)) {
-                    handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
-                        if (response)
-                            _self.sender.emit("variableLocations", response);
-                        next();
-                    });
-                }
-            }, function() {
-            });
-        }
+        var ast = this.cachedAst;
+        var currentNode = ast && ast.findNode({line: pos.row, col: pos.column});
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.getVariablePositions(_self.doc, ast, pos, currentNode, function(response) {
+                    if (response)
+                        _self.sender.emit("variableLocations", response);
+                    next();
+                });
+            }
+            else
+                next();
+        }, function() {
+        });
     };
+
+    this.startRefactoring = function(event) {
+        var _self = this;
+        this.handlers.forEach(function(handler){
+			if (handler.handlesLanguage(_self.$language))
+				handler.startRefactoring(_self.doc);
+		});
+    };
+
+    this.finishRefactoring = function(event) {
+        var _self = this;
+        var data = event.data;
+
+        var oldId = data.oldId;
+        var newName = data.newName;
+
+        var handled = false;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.finishRefactoring(_self.doc, oldId, newName, function(response) {
+                    if (response) {
+                        handled = true;
+                        _self.sender.emit("refactorResult", response);
+                    }
+                    next();
+                });
+            }
+            else
+                next();
+        }, function() {
+            if (! handled)
+                _self.sender.emit("refactorResult", {success: true});
+        });
+    };
+
+    this.cancelRefactoring = function(event) {
+        var _self = this;
+        asyncForEach(this.handlers, function(handler, next) {
+            if (handler.handlesLanguage(_self.$language)) {
+                handler.cancelRefactoring(function() {
+                    next();
+                });
+            }
+            else
+                next();
+        }, function() {
+        });
+    }
 
     this.onUpdate = function() {
         this.scheduledUpdate = false;
@@ -5322,7 +5470,13 @@ function asyncParForEach(array, fn, callback) {
     };
     
     // TODO: BUG open an XML file and switch between, language doesn't update soon enough
-    this.switchFile = function(path, language, code) {
+    this.switchFile = function(path, language, code, project) {
+        var _self = this;
+        if (! this.$analyzeInterval) {
+            this.$analyzeInterval = setInterval(function() {
+                _self.analyze(function(){});
+            }, 2000);
+        }
         var oldPath = this.$path;
         code = code || "";
         this.$path = path;
@@ -5333,12 +5487,17 @@ function asyncParForEach(array, fn, callback) {
         var doc = this.doc;
         asyncForEach(this.handlers, function(handler, next) {
             handler.path = path;
+            handler.project = project;
             handler.language = language;
             handler.onDocumentOpen(path, doc, oldPath, next);
         }, function() { });
     };
     
     this.documentClose = function(event) {
+        if (this.$analyzeInterval) {
+            clearInterval(this.$analyzeInterval);
+            this.$analyzeInterval = null;
+        }
         var path = event.data;
         asyncForEach(this.handlers, function(handler, next) {
             handler.onDocumentClose(path, next);
@@ -5396,6 +5555,7 @@ function asyncParForEach(array, fn, callback) {
                 next();
         }, function() {
             var matches = [];
+            
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
                     handler.complete(_self.doc, ast, pos, currentNode, function(completions) {
@@ -5425,8 +5585,8 @@ function asyncParForEach(array, fn, callback) {
                     else
                         return 0;
                 });
-                
-                matches = matches.slice(0, 50); // 50 ought to be enough for everybody
+                // Don't slice the results to benefit from caching
+                // matches = matches.slice(0, 50); // 50 ought to be enough for everybody
                 _self.sender.emit("complete", matches);
             });
         });
@@ -7792,7 +7952,7 @@ module.exports = {
     /**
      * If the language handler implements parsing, this function should take
      * the source code and turn it into an AST (in treehugger format)
-     * @param code code to parse
+     * @param doc the Document object repersenting the source
      * @return treehugger AST or null if not implemented
      */
     parse: function(doc, callback) {
@@ -7808,16 +7968,8 @@ module.exports = {
     },
     
     /**
-     * Invoked on a successful parse
-     * @param ast the resulting AST in treehugger format
-     */
-    onParse: function(ast, callback) {
-        callback();
-    },
-    
-    /**
      * Invoked when the document has been updated (possibly after a certain interval)
-     * @param doc the document object
+     * @param doc the Document object repersenting the source
      */
     onUpdate: function(doc, callback) {
         callback();
@@ -7826,10 +7978,11 @@ module.exports = {
     /**
      * Invoked when a new document has been opened
      * @param path the path of the newly opened document
-     * @param doc the document object
+     * @param doc the Document object repersenting the source
      * @param oldPath the path of the document that was active before
      */
     onDocumentOpen: function(path, doc, oldPath, callback) {
+        this.refactorInProgress = false;
         callback();
     },
     
@@ -7838,11 +7991,16 @@ module.exports = {
      * @param path the path of the file
      */
     onDocumentClose: function(path, callback) {
+        this.refactorInProgress = false;
         callback();
     },
     
     /**
      * Invoked when the cursor has been moved inside to a different AST node
+     * @param doc the Document object repersenting the source
+     * @param fullAst the entire AST of the current file (if exists)
+     * @param cursorPos the current cursor position (object with keys 'row' and 'column')
+     * @param currentNode the AST node the cursor is currently at (if exists)
      * @return a JSON object with three optional keys: {markers: [...], hint: {message: ...}, enableRefactoring: [...]}
      */
     onCursorMovedNode: function(doc, fullAst, cursorPos, currentNode, callback) {
@@ -7851,9 +8009,22 @@ module.exports = {
     
     /**
      * Invoked when an outline is required
+     * @param doc the Document object repersenting the source
+     * @param fullAst the entire AST of the current file (if exists)
      * @return a JSON outline structure or null if not supported
      */
-    outline: function(ast, callback) {
+    outline: function(doc, fullAst, callback) {
+        callback();
+    },
+
+    /**
+     * Invoked when an type hierarchy is required
+     * (either for a selected element, or the enclosing element)
+     * @param doc the Document object repersenting the source
+     * @param cursorPos the current cursor position (object with keys 'row' and 'column')
+     * @return a JSON hierarchy structure or null if not supported
+     */
+    hierarchy: function(doc, cursorPos, callback) {
         callback();
     },
     
@@ -7866,10 +8037,11 @@ module.exports = {
     
     /**
      * Performs code completion for the user based on the current cursor position
-     * @param doc the entire source code as string
-     * @param fullAst the entire AST of the current file
+     * @param doc the Document object repersenting the source
+     * @param fullAst the entire AST of the current file (if exists)
      * @param cursorPos the current cursor position (object with keys 'row' and 'column')
-     * @param currentNode the AST node the cursor is currently at
+     * @param currentNode the AST node the cursor is currently at (if exists)
+     * @return an array of completion matches
      */
     complete: function(doc, fullAst, cursorPos, currentNode, callback) {
         callback();
@@ -7884,6 +8056,9 @@ module.exports = {
     
     /**
      * Enables the handler to do analysis of the AST and annotate as desired
+     * @param doc the Document object repersenting the source
+     * @param fullAst the entire AST of the current file (if exists)
+     * @return an array of error and warning markers
      */
     analyze: function(doc, fullAst, callback) {
         callback();
@@ -7891,14 +8066,57 @@ module.exports = {
     
     /**
      * Invoked when inline variable renaming is activated
-     * @return an array of positions of the currently selected variable
+     * @param doc the Document object repersenting the source
+     * @param fullAst the entire AST of the current file (if exists)
+     * @param pos the current cursor position (object with keys 'row' and 'column')
+     * @param currentNode the AST node the cursor is currently at (if exists)
+     * @return an object with the main occurence and array of other occurences of the selected element
      */
     getVariablePositions: function(doc, fullAst, pos, currentNode, callback) {
+        callback();
+    },
+
+    /**
+     * Invoked when refactoring is started -> So, for java, saving the file is no more legal to do
+     * @param doc the Document object repersenting the source
+     * @param oldId the old identifier wanted to be refactored
+     */
+    startRefactoring: function(doc) {
+      this.refactorInProgress = true;
+    },
+
+    /**
+     * Invoked when a refactor request is being finalized and waiting for a status
+     * @param doc the Document object repersenting the source
+     * @param oldId the old identifier wanted to be refactored
+     * @param newName the new name of the element after refactoring
+     * @return boolean indicating whether to progress or an error message if refactoring failed
+     */
+    finishRefactoring: function(doc, oldId, newName, callback) {
+        this.refactorInProgress = false;
+        callback();
+    },
+
+    /**
+     * Invoked when a refactor request is cancelled
+     */
+    cancelRefactoring: function(callback) {
+        this.refactorInProgress = false;
+        callback();
+    },
+
+    /**
+     * Invoked when an automatic code formating is wanted
+     * @param doc the Document object repersenting the source
+     * @return a string value representing the new source code after formatting or null if not supported
+     */
+    codeFormat: function(doc, callback) {
         callback();
     }
 };
 
-});define('ext/codecomplete/complete_util', ['require', 'exports', 'module' ], function(require, exports, module) {
+});
+define('ext/codecomplete/complete_util', ['require', 'exports', 'module' ], function(require, exports, module) {
 
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 
@@ -7911,6 +8129,26 @@ function retrievePreceedingIdentifier(text, pos) {
             break;
     }
     return buf.reverse().join("");
+}
+
+function retrieveFullIdentifier(text, pos) {
+    var buf = [];
+    var i = pos >= text.length ? (text.length - 1) : pos;
+    while (i < text.length && ID_REGEX.test(text[i]))
+        i++;
+    // e.g edge semicolon check
+    i = pos == text.length ? i : i-1;
+    for (; i >= 0 && ID_REGEX.test(text[i]); i--) {
+        buf.push(text[i]);
+    }
+    i++;
+    var text = buf.reverse().join("");
+    if (text.length == 0)
+        return null;
+    return {
+        sc: i,
+        text: text
+    };
 }
 
 function prefixBinarySearch(items, prefix) {
@@ -7944,6 +8182,7 @@ function findCompletions(prefix, allIdentifiers) {
 }
 
 exports.retrievePreceedingIdentifier = retrievePreceedingIdentifier;
+exports.retrieveFullIdentifier = retrieveFullIdentifier;
 exports.findCompletions = findCompletions;
 
 });var globalRequire = require;
@@ -7958,7 +8197,7 @@ var completer = module.exports = Object.create(baseLanguageHandler);
 var snippetCache = {}; // extension -> snippets
     
 completer.handlesLanguage = function(language) {
-    return true;
+    return language !== 'java';
 };
 
 completer.fetchText = function(path) {
@@ -9884,7 +10123,7 @@ var GLOBALS = {
     "this"                   : true,
     "arguments"              : true,
     self                     : true,
-    Infinity                 : true,
+    "Infinity"               : true,
     onmessage                : true,
     postMessage              : true,
     importScripts            : true,
@@ -10708,7 +10947,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/, /Expected an assignment or function call/];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -10738,10 +10977,14 @@ handler.analyze = function(doc, ast, callback) {
                 return;
             var type = "warning"
             var reason = warning.reason;
-            if(reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
+            if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
                 type = "error";
-            if(reason.indexOf("Missing semicolon") !== -1)
+            if (reason.indexOf("Missing semicolon") !== -1)
                 type = "info";
+            if (reason.indexOf("conditional expression and instead saw an assignment") !== -1) {
+                type = "warning";
+                warning.reason = "Assignment in conditional expression";
+            }
             for (var i = 0; i < disabledJSHintWarnings.length; i++)
                 if(disabledJSHintWarnings[i].test(warning.reason))
                     return;
@@ -15317,5 +15560,459 @@ define('ext/jslanguage/debugger', ['require', 'exports', 'module' , 'ext/languag
         );
         return result;
     };
+
+});
+/**
+ * Cloud9 Language Foundation
+ *
+ * @copyright 2011, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
+ */
+define('ext/javalanguage/processor', ['require', 'exports', 'module' , 'ext/language/base_handler', 'ext/codecomplete/complete_util'], function(require, exports, module) {
+
+var baseLanguageHandler = require("ext/language/base_handler");
+var completeUtil = require("ext/codecomplete/complete_util");
+
+var handler = module.exports = Object.create(baseLanguageHandler);
+
+var getFilePath = function(filePath) {
+    if (filePath.indexOf("/workspace/") === 0)
+        filePath = filePath.substr(11);
+    return filePath;
+};
+
+var calculateOffset = function(doc, cursorPos) {
+    var offset = 0, newLineLength = doc.getNewLineCharacter().length;
+    var prevLines = doc.getLines(0, cursorPos.row - 1);
+
+    for (var i=0; i < prevLines.length; i++) {
+      offset += prevLines[i].length;
+      offset += newLineLength;
+    }
+    offset += cursorPos.column;
+
+    return offset;
+};
+
+var calculatePosition = function(doc, offset) {
+    var row = 0, column, newLineLength = doc.getNewLineCharacter().length;;
+    while (offset > 0) {
+      offset -= doc.getLine(row++).length;
+      offset -= newLineLength; // consider the new line character(s)
+    }
+    if (offset < 0) {
+      row--;
+      offset += newLineLength; // add the new line again
+      column = doc.getLine(row).length + offset;
+    } else {
+      column = 0;
+    }
+    return {
+      row: row,
+      column: column
+    };
+};
+
+var convertToOutlineTree = function(doc, root) {
+  var items = root.items, newItems = [];
+  var start = calculatePosition(doc, root.offset);
+  var end = calculatePosition(doc, root.offset + root.length);
+  var newRoot = {
+    icon: root.type,
+    name: root.name,
+    items: newItems,
+    meta: root.meta,
+    pos: {
+      sl: start.row,
+      sc: start.column,
+      el: end.row,
+      ec: end.column
+    },
+    modifiers: root.modifiers
+  };
+  for (var i = 0; i < items.length; i++) {
+    newItems.push(convertToOutlineTree(doc, items[i]));
+  }
+  return newRoot;
+};
+
+var convertToHierarchyTree = function(doc, root) {
+  var items = root.items, newItems = [];
+  var newRoot = {
+    icon: root.type,
+    name: root.name,
+    items: newItems,
+    meta: root.meta,
+    src: root.src
+  };
+  for (var i = 0; i < items.length; i++) {
+    newItems.push(convertToHierarchyTree(doc, items[i]));
+  }
+  return newRoot;
+};
+
+(function() {
+
+    this.$saveFileAndDo = function(callback) {
+      var todos = this.todos = this.todos || [];
+      callback && todos.push(callback);
+
+      if (this.refactorInProgress)
+        return console.log("waiting refactor to finish");
+      var sender = this.sender;
+      var doCallbacks = function(status) {
+        while (todos.length > 0)
+          todos.pop()(status);
+      };
+      var checkSavingDone = function(event) {
+        var data = event.data;
+          if (data.command != "save")
+            return;
+          sender.removeEventListener("commandComplete", checkSavingDone);
+          if (! data.success) {
+            console.log("Couldn't save the file !!");
+            return doCallbacks(false);
+          }
+          console.log("Saving Complete");
+          doCallbacks(true);
+      };
+      sender.addEventListener("commandComplete", checkSavingDone);
+      sender.emit("commandRequest", { command: "save" });
+    };
+
+    this.handlesLanguage = function(language) {
+        return language === "java";
+    };
+
+    this.complete = function(doc, fullAst, cursorPos, currentNode, callback) {
+        var _self = this;
+        var doComplete = function(savingDone) {
+          if (! savingDone)
+            return callback([]);
+          // The file has been saved, proceed to code complete request
+          var offset = calculateOffset(doc, cursorPos);
+          var command = {
+            command : "jvmfeatures",
+            subcommand : "complete",
+            project: _self.project,
+            file : getFilePath(_self.path),
+            offset: offset
+          };
+          console.log("offset = " + offset);
+          _self.proxy.once("result", "jvmfeatures:complete", function(message) {
+            callback(message.body || []);
+          });
+          _self.proxy.send(command);
+        };
+
+        this.$saveFileAndDo(doComplete);
+    };
+
+    this.onCursorMovedNode = function(doc, fullAst /*null*/, cursorPos, currentNode /*null*/, callback) {
+
+        console.log("onCursorMovedNode called");
+
+        if (this.getVariablesInProgress)
+          return callback();
+        this.getVariablesInProgress = true;
+
+        var _self = this;
+        var markers = [];
+        var enableRefactorings = [];
+
+        var originalCallback = callback;
+        callback = function() {
+          console.log("onCursorMove callback called");
+          originalCallback.apply(null, arguments);
+          _self.getVariablesInProgress = false;
+        };
+
+        var line = doc.getLine(cursorPos.row);
+        var identifier = completeUtil.retrieveFullIdentifier(line, cursorPos.column);
+        if (! identifier)
+          return callback();
+
+        var offset = calculateOffset(doc, { row: cursorPos.row, column: identifier.sc } );
+        var length = identifier.text.length;
+        console.log("cursor: " + cursorPos.row + ":" + cursorPos.column + " & offset: " + offset + " & length: " + identifier.text.length);
+        var command = {
+          command : "jvmfeatures",
+          subcommand : "get_locations",
+          project: _self.project,
+          file : getFilePath(_self.path),
+          offset: offset,
+          length: length
+        };
+
+        var doGetVariablePositions = function(savingDone) {
+          if (! savingDone)
+            return callback();
+
+          _self.proxy.once("result", "jvmfeatures:get_locations", function(message) {
+            _self.proxy.emitter.removeAllListeners("result:jvmfeatures:get_locations");
+            if (! message.success)
+              return callback();
+            console.log("variable positions retrieved");
+            console.log(message.body);
+            var v = message.body;
+            highlightVariable(v);
+            enableRefactorings.push("renameVariable");
+            doneHighlighting();
+          });
+          console.log("command: " + JSON.stringify(command));
+          _self.proxy.send(command);
+        };
+
+        function highlightVariable(v) {
+            if (!v)
+                return callback();
+            v.declarations.forEach(function(match) {
+                var pos = calculatePosition(doc, match.offset);
+                markers.push({
+                    pos: {
+                      sl: pos.row, el: pos.row,
+                      sc: pos.column, ec: pos.column + length
+                    },
+                    type: 'occurrence_main'
+                });
+            });
+            v.uses.forEach(function(match) {
+                var pos = calculatePosition(doc, match.offset);
+                markers.push({
+                    pos: {
+                      sl: pos.row, el: pos.row,
+                      sc: pos.column, ec: pos.column + length
+                    },
+                    type: 'occurrence_other'
+                });
+            });
+        }
+
+        function doneHighlighting() {
+          /*if (! _self.isFeatureEnabled("instanceHighlight"))
+            return callback({ enableRefactorings: enableRefactorings });*/
+
+          callback({
+              markers: markers,
+              enableRefactorings: enableRefactorings
+          });
+        }
+
+        this.$saveFileAndDo(doGetVariablePositions);
+    };
+
+    this.getVariablePositions = function(doc, fullAst /*null*/, pos, currentNode /*null*/, callback) {
+
+        var _self = this;
+
+        var line = doc.getLine(pos.row);
+        var identifier = completeUtil.retrieveFullIdentifier(line, pos.column);
+        var offset = calculateOffset(doc, { row: pos.row, column: identifier.sc } );
+        var command = {
+          command : "jvmfeatures",
+          subcommand : "get_locations",
+          project: _self.project,
+          file : getFilePath(_self.path),
+          offset: offset,
+          length: identifier.text.length
+        };
+
+        var doGetVariablePositions = function(savingDone) {
+          if (! savingDone)
+            return callback();
+
+          _self.proxy.once("result", "jvmfeatures:get_locations", function(message) {
+
+            _self.proxy.emitter.removeAllListeners("result:jvmfeatures:get_locations");
+            if (! message.success)
+              return callback();
+            console.log("variable positions retrieved");
+            console.log(message.body);
+            var v = message.body;
+            var elementPos = {column: identifier.sc, row: pos.row};
+            var others = [];
+
+            var appendToOthers = function(match) {
+               if(offset !== match.offset) {
+                  var pos = calculatePosition(doc, match.offset);
+                  others.push(pos);
+                }
+            };
+
+            v.declarations.forEach(appendToOthers);
+            v.uses.forEach(appendToOthers);
+
+            callback({
+                length: identifier.text.length,
+                pos: elementPos,
+                others: others
+            });
+          });
+          _self.proxy.send(command);
+        };
+
+        this.$saveFileAndDo(doGetVariablePositions);
+    };
+
+    this.finishRefactoring = function(doc, oldId, newName, callback) {
+        var _self = this;
+
+        var offset = calculateOffset(doc, oldId);
+
+        var command = {
+          command : "jvmfeatures",
+          subcommand : "refactor",
+          project: _self.project,
+          file : getFilePath(_self.path),
+          offset: offset,
+          newname: newName,
+          length: oldId.text.length
+        };
+
+        console.log("finishRefactoring called");
+
+        this.proxy.once("result", "jvmfeatures:refactor", function(message) {
+          _self.refactorInProgress = false;
+          _self.$saveFileAndDo(); // notify of ending the refactor
+          // Error handling in the callback
+          console.log({success: message.success, body: message.body});
+          callback({success: message.success, body: message.body});
+        });
+        this.proxy.send(command);
+    };
+
+    this.cancelRefactoring = function(callback) {
+        this.refactorInProgress = false;
+        this.$saveFileAndDo(); // notify of ending the refactor
+        callback();
+    };
+
+    this.outline = function(doc, fullAst /*null*/, callback) {
+        var _self = this;
+        var command = {
+          command : "jvmfeatures",
+          subcommand : "outline",
+          project: _self.project,
+          file : getFilePath(_self.path)
+        };
+
+        var doGetOutline = function() {
+          _self.proxy.once("result", "jvmfeatures:outline", function(message) {
+            var outline = null;
+            if (! message.success)
+              console.log("FAILED: outline call");
+            else
+              outline = convertToOutlineTree(doc, message.body);
+            // Error handling in the callback
+            callback({success: message.success, body: outline});
+          });
+          _self.proxy.send(command);
+        };
+
+        this.$saveFileAndDo(doGetOutline);
+    };
+
+    this.hierarchy = function(doc, cursorPos, callback) {
+        console.log("hierarchy called");
+
+        var _self = this;
+        var offset = calculateOffset(doc, cursorPos);
+        var command = {
+          command : "jvmfeatures",
+          subcommand : "hierarchy",
+          project: _self.project,
+          file : getFilePath(_self.path),
+          offset: offset
+        };
+
+        var line = doc.getLine(cursorPos.row);
+        var identifier = completeUtil.retrieveFullIdentifier(line, cursorPos.column);
+        if (identifier)
+          command.type = identifier.text;
+
+        var doGetHierarchy = function() {
+          _self.proxy.once("result", "jvmfeatures:hierarchy", function(message) {
+            // Super and subtype hierarchies roots
+            var result = message.body;
+            var hierarchy;
+            if (! message.success) {
+              console.log("FAILED: hierarchy call");
+            } else {
+              hierarchy = [convertToHierarchyTree(doc, result[0]),
+                convertToHierarchyTree(doc, result[1])];
+            }
+            // Error handling in the callback
+            callback({success: message.success, body: hierarchy});
+          });
+          _self.proxy.send(command);
+        };
+
+        this.$saveFileAndDo(doGetHierarchy);
+    };
+
+    this.analysisRequiresParsing = function() {
+        return false;
+    };
+
+     this.analyze = function(doc, fullAst /* null */, callback) {
+        var _self = this;
+        var command = {
+          command : "jvmfeatures",
+          subcommand : "analyze_file",
+          project: _self.project,
+          file : getFilePath(_self.path)
+        };
+
+        console.log("analyze_file called");
+
+        var doAnalyzeFile = function() {
+          _self.proxy.once("result", "jvmfeatures:analyze_file", function(message) {
+            if (message.success) {
+              callback(message.body.map(function(marker) {
+                var start = calculatePosition(doc, marker.offset);
+                var end = calculatePosition(doc, marker.offset + marker.length);
+                return {
+                  pos: {
+                    sl: start.row,
+                    sc: start.column,
+                    el: end.row,
+                    ec: end.column
+                  },
+                  level: marker.level,
+                  type: marker.type,
+                  message: marker.message
+                };
+              }));
+            } else {
+              console.log("FAILED: analyze call");
+              callback();
+            }
+          });
+          _self.proxy.send(command);
+        };
+
+        this.$saveFileAndDo(doAnalyzeFile);
+    };
+
+    this.codeFormat = function(doc, callback) {
+        var _self = this;
+        var command = {
+          command : "jvmfeatures",
+          subcommand : "code_format",
+          project: _self.project,
+          file : getFilePath(_self.path)
+        };
+
+        var doGetNewSource = function() {
+          _self.proxy.once("result", "jvmfeatures:code_format", function(message) {
+            callback(message.success ? message.body : null);
+          });
+          _self.proxy.send(command);
+        };
+
+        this.$saveFileAndDo(doGetNewSource);
+    };
+
+}).call(handler);
 
 });

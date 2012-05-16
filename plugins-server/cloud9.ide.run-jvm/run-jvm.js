@@ -25,7 +25,7 @@ var JVMRuntimePlugin = function(ide, workspace) {
     this.workspace = workspace;
     this.workspaceId = workspace.workspaceId;
 
-    this.channel = this.workspaceId + "::jvm-runtime";
+    this.channel = this.workspaceId + "::" + name;
 
     this.hooks = ["command"];
     this.name = name;
@@ -39,26 +39,30 @@ util.inherits(JVMRuntimePlugin, Plugin);
     this.init = function() {
         var self = this;
         this.eventbus.on(this.channel, function(msg) {
-            msg.type = msg.type.replace(/^jvm-debug-(start|data|exit)$/, "jvm-$1");
+            msg.type = msg.type.replace(/^node-debug-(start|data|exit)$/, "node-$1");
             var type = msg.type;
 
-            if (type == "jvm-start" || type == "jvm-exit")
+            if (type == "node-start" || type == "node-exit")
                 self.workspace.getExt("state").publishState();
 
-            if (msg.type == "jvm-start")
+            if (msg.type == "node-start")
                 self.processCount += 1;
 
-            if (msg.type == "jvm-exit")
+            if (msg.type == "node-exit")
                 self.processCount -= 1;
 
+            // For compatability with node running messages
+            // TODO: refactor console.js & other dependant parts
+            // msg.type = msg.type.replace(/^jvm-/, "node-");
             self.ide.broadcast(JSON.stringify(msg), self.name);
         });
     };
 
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
+        console.log('\n message: ', message);
         if (!(/java|jpy|jrb|groovy|js-rhino/.test(message.runner))
-            && (cmd.indexOf("debug") != -1 && !this.javaDebugProxy))
+            && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
           return false;
 
         var res = true;
@@ -76,7 +80,9 @@ util.inherits(JVMRuntimePlugin, Plugin);
                 this.$kill(message.pid, message, client);
                 break;
             case "debugnode":
-                this.pm.debug(message.pid, message.body, function(err) {});
+                this.pm.debug(message.pid, message.body, function(err) {
+                    if (err) console.error(err);
+                });
                 break;
             default:
                 res = false;
