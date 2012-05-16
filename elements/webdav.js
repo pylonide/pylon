@@ -377,7 +377,8 @@ apf.webdav = function(struct, tagName){
             authRequired = true;
         }
 
-        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        var auth = this.ownerDocument 
+           && this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (authRequired) {
             auth.authRequired(callback);
         }
