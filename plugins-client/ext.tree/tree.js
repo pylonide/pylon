@@ -497,9 +497,6 @@ module.exports = ext.register("ext/tree/tree", {
     loadProjectTree : function(animateScrollOnFinish) {
         var _self = this;
 
-        if (this.expandedNodes.indexOf(ide.davPrefix) === -1)
-            this.expandedNodes.unshift(ide.davPrefix);
-
         // Sort the cached list so it's more probable that nodes near the top of
         // the tree are loaded first, giving the user more visual feedback that
         // something is happening
