@@ -246,7 +246,9 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
             
             if (searchreplace.inited && winSearchReplace.visible) {
-                searchreplace.toggleDialog(-1, null, null, function(){
+                txtSFFind.focus();
+                txtSFFind.select();
+                searchreplace.toggleDialog(-1, null, true, function(){
                     _self.toggleDialog(force, isReplace, noselect);
                 });
                 return;
@@ -303,6 +305,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             }
         }
         else if (winSearchInFiles.visible) {
+            
+
             if (txtSFFind.getValue())
                 _self.saveHistory(txtSFFind.getValue());
             
@@ -319,13 +323,21 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     timingFunction: "ease-in-out"
                 }, 0.2, function(){
                     winSearchInFiles.visible = true;
-                    winSearchInFiles.hide();
                     
+                    if(noselect && apf.window.activeElement) {
+                        var curEle = apf.window.activeElement;
+                        winSearchInFiles.hide();
+                        curEle.focus();
+                        curEle.select();
+                    } else {
+                        winSearchInFiles.hide();
+                    }
+
                     winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-    
+                    
                     if (!noselect && editors.currentEditor)
                         editors.currentEditor.ceEditor.focus();
-                    
+                        
                     setTimeout(function(){
                         callback 
                             ? callback()
