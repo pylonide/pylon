@@ -7,8 +7,12 @@
 define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
-var language = require("ext/language/language");
 var completionUtil = require("ext/codecomplete/complete_util");
+var language;
+
+function hook(ext) {
+    language = ext;
+}
 
 function composeHandlers(mainHandler, fallbackHandler) {
     return function onKeyPress() {
@@ -21,7 +25,7 @@ function composeHandlers(mainHandler, fallbackHandler) {
 function onTextInput(text, pasted) {
     if (language.disabled)
         return false;
-    if (language.isContinuousCompletionEnabled)
+    if (language.isContinuousCompletionEnabled())
         typeAlongCompleteTextInput(text, pasted);
     else
         inputTriggerComplete(text, pasted);
@@ -31,7 +35,7 @@ function onTextInput(text, pasted) {
 function onCommandKey(e) {
     if (language.disabled)
         return false;
-    if (language.isContinuousCompletionEnabled)
+    if (language.isContinuousCompletionEnabled())
         typeAlongComplete(e);
     return false;
 }
@@ -42,13 +46,13 @@ function typeAlongComplete(e) {
     if(editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
     if(e.keyCode === 8) { // Backspace
-        var ext = require("ext/language/complete");
+        var complete = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
         if(!preceededByIdentifier(line, pos.column))
             return false;
-        ext.deferredInvoke();
+        complete.deferredInvoke();
     }
 }
 
@@ -125,6 +129,7 @@ function preceededByIdentifier(line, column, postfix) {
     return id !== "" && !(id[0] >= '0' && id[0] <= '9') && inCompletableCodeContext(line, column);
 }
 
+exports.hook = hook;
 exports.onTextInput = onTextInput;
 exports.onCommandKey = onCommandKey;
 exports.inputTriggerComplete = inputTriggerComplete;
