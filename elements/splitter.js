@@ -110,7 +110,7 @@ apf.splitter = function(struct, tagName){
             e.$oldParent.removeEventListener("DOMNodeRemoved", this.$siblingChange);
         }*/
         
-        this.init();
+        this.init && this.init();
     });
     
     /*this.$siblingChange = function(e){
@@ -119,292 +119,15 @@ apf.splitter = function(struct, tagName){
         //this.init();
     }*/
     
-    this.update = function(newPos, finalPass){
-        with (this.$info) {
-            //var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]);
-            var max = this.$previous 
-                ? this.$previous.$ext[offsetSize] + this.$next.$ext[offsetSize]
-                : (this.parentNode).getWidth();
-            var method = finalPass ? "setAttribute" : "setProperty";
-            if (apf.hasFlexibleBox)
-                newPos -= this.$previous ? apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int)[d1] : 0;
-
-            //Both flex
-            if (this.$previous && this.$next && (this.$previous.flex || this.$previous.flex === 0) && (this.$next.flex || this.$next.flex === 0)) {
-                if (!finalPass && !this.realtime) 
-                    newPos -= this.$ext[offsetSize];
-
-                //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
-                if (!this.$scale || this.$scale == 1)
-                    this.$previous[method]("flex", newPos);
-                if (!this.$scale || this.$scale == 2)
-                    this.$next[method]("flex", this.$totalFlex - newPos);
-            }
-            //Fixed
-            else {
-                if (this.$next && !this.$next.flex && (!this.$scale || this.$scale == 2))
-                    this.$next[method](osize, max - newPos);
-                if (this.$previous && !this.$previous.flex && (!this.$scale || this.$scale == 1))
-                    this.$previous[method](osize, newPos);
-            }
-        }
-
-        if (apf.hasSingleResizeEvent)
-            apf.layout.forceResize(this.$ext.parentNode);
-    };
-    
-    this.$setSiblings = function(){
-        this.$previous = this.previousSibling;
-        while(this.$previous && (this.$previous.nodeType != 1 
-          || this.$previous.visible === false 
-          || this.$previous.nodeFunc != apf.NODE_VISIBLE))
-            this.$previous = this.$previous.previousSibling;
-        this.$next     = this.nextSibling;
-        while(this.$next && (this.$next.nodeType != 1 
-          || this.$next.visible === false 
-          || this.$next.nodeFunc != apf.NODE_VISIBLE))
-            this.$next = this.$next.nextSibling;
-    }
-    
-    this.init = function(size, refNode, oItem){
-        //this.parentNode.addEventListener("DOMNodeInserted", this.$siblingChange);
-        //this.parentNode.addEventListener("DOMNodeRemoved", this.$siblingChange);
-        
-        this.$setSiblings();
-        
-        this.$thickness = null;
-        if (this.parentNode && this.parentNode.$box) {
-            this.setProperty("type", this.parentNode.localName == "vbox" 
-                ? "horizontal" 
-                : "vertical");
-            this.$thickness = parseInt(this.parentNode.padding);
-        }
-        
-        if (!this.$previous || !this.$next)
-            return this;
-        
-        with (this.$info) {
-            var diff = apf.getDiff(this.$ext);
-            if (!this.parentNode.$box) {
-                var iSize  = Math.max(
-                    this.$previous.$ext[offsetSize], this.$next.$ext[offsetSize]);
-                this.$ext.style[size] = (iSize - diff[d1]) + "px";
-            }
-
-            var iThick = this[osize] = this.$thickness 
-                || (this.$next[oOffsetPos] - this.$previous[oOffsetPos] 
-                    - this.$previous[oOffsetSize]);
-
-            this.$ext.style[osize] = (iThick - diff[d2]) + "px";
-        }
-        
-        return this;
-    };
-    
     this.$draw = function(){
         //Build Main Skin
         this.$ext = this.$getExternal();
 
-        var _self = this;
-        this.$ext.onmousedown = function(e){
-            if (!e)
-                e = event;
+        var template = "vbox|hbox".indexOf(this.parentNode.localName) == 0
+            ? "box" : "splitbox";
             
-            apf.dragMode = true; //prevent selection
-            
-            _self.$setSiblings();
-
-            var changedPosition, pHtml = _self.parentNode.$int, diff = 0;
-            if ("absolute|fixed|relative".indexOf(apf.getStyle(pHtml, "position")) == -1) {
-                pHtml.style.position = "relative";
-                changedPosition = true;
-            }
-
-            _self.$totalFlex = 0;
-            with (_self.$info) {
-                if (_self.$parent) {
-                    if (!_self.$previous) {
-                        var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
-                        var wd = _self.$parent.getWidth();
-                        
-                        if (_self.$scale == 2) {
-                            var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
-                            diff = (_self.parentNode.$int[offsetSize] - max);
-                            var min = max - wd - diff;
-                        }
-                    }
-                    else if (!_self.$next) {
-                        //@todo
-                    }
-                }
-                else {
-                    if (_self.$previous) {
-                        var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
-                        var min = _self.$scale 
-                            ? 0 
-                            : (posPrev[d1] || 0) + (parseInt(_self.$previous.minwidth) || 0);
-                    }
-                    if (_self.$next) {
-                        var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
-                        var max = posNext[d1] + _self.$next.$ext[offsetSize] 
-                            - this[offsetSize] - (parseInt(_self.$next.minwidth) || 0);
-                    }
-                }
-                
-                //Set flex to pixel sizes
-                if (_self.$previous && _self.$next) {
-                    if ((_self.$previous.flex || _self.$previous.flex === 0) 
-                      && (_self.$next.flex || _self.$next.flex === 0)) {
-                        var set = [], nodes = _self.parentNode.childNodes, padding = 0;
-                        for (var node, i = 0, l = nodes.length; i < l; i++) {
-                            if ((node = nodes[i]).visible === false 
-                              || node.nodeFunc != apf.NODE_VISIBLE || node.$splitter)
-                                continue;
-                            
-                            if (node.flex)
-                                set.push(node, node.$ext[offsetSize] 
-                                    + (apf.hasFlexibleBox && !_self.realtime && node == _self.$previous 
-                                        ? 2 * _self.parentNode.padding : 0));
-                        }
-                        for (var i = 0, l = set.length; i < l; i+=2) {
-                            set[i].setAttribute("flex", set[i+1]);
-                        }
-                    }
-                    
-                    _self.$totalFlex += _self.$next.flex + _self.$previous.flex;
-                }
-                
-                var startPos, startOffset;
-                if (apf.hasFlexibleBox) {
-                    var coords = apf.getAbsolutePosition(this);
-                    startPos = e[clientPos] - coords[d1];
-
-                    if (!_self.realtime) {
-                        if (_self.$previous.flex && !_self.$next.flex) {
-                            var mBox = apf.getBox(_self.$next.margin);
-                            mBox[x1] = _self.parentNode.padding;
-                            _self.$next.$ext.style.margin = mBox.join("px ") + "px";
-                        }
-                        else {
-                            var mBox = apf.getBox(_self.$previous.margin);
-                            mBox[x2] = _self.parentNode.padding;
-                            _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
-                        }
-                        
-                        var diff = apf.getDiff(this);
-                        this.style.left     = coords[0] + "px";
-                        this.style.top      = coords[1] + "px"; //(apf.getHtmlTop(this) - Math.ceil(this.offsetHeight/2))
-                        this.style.width    = (this.offsetWidth - diff[0]) + "px";
-                        this.style.height   = (this.offsetHeight - diff[1]) + "px";
-                        this.style.position = "absolute";
-                    }
-                }
-                else {
-                    var coords = apf.getAbsolutePosition(this.offsetParent);
-                    startOffset = apf.getAbsolutePosition(_self.$previous.$ext)[d1];
-                    startPos    = e[clientPos] - coords[d1];
-                    
-                    if (!_self.realtime) {
-                        this.style.left     = "0px";
-                        this.style.top      = "0px";
-                        this.style.position = "relative";
-                    }
-                    min = -1000; //@todo
-                }
-            }
-            
-            //e.returnValue  = false;
-            //e.cancelBubble = true;
-            //apf.stopEvent(e);
-            
-            // #ifdef __WITH_PLANE
-            apf.plane.show(this);
-            // #endif
-
-            _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
-            
-            _self.$setStyleClass(document.body,
-                _self.type == "vertical" ? "w-resize" : "n-resize",
-                [_self.type == "vertical" ? "n-resize" : "w-resize"]);
-            
-            _self.dispatchEvent("dragstart");
-            
-            //@todo convert to proper way
-            document.onmouseup = function(e){
-                if(!e) e = event;
-                
-                with (_self.$info) {
-                    var newPos;
-                    if (e[clientPos] >= 0) {
-                        var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
-                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
-                            (apf.hasFlexibleBox ? startPos : startOffset)))) + diff;
-                    }
-                }
-
-                _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
-                _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
-                
-                if (changedPosition)
-                    pHtml.style.position = "";
-                
-                if (apf.hasFlexibleBox && !_self.realtime)
-                    (_self.$previous.flex && !_self.$next.flex
-                      ? _self.$next : _self.$previous).$ext.style.margin 
-                        = apf.getBox(_self.$previous.margin).join("px ") + "px";
-                
-                if (newPos)
-                    _self.update(newPos, true);
-                
-                // #ifdef __WITH_PLANE
-                apf.plane.hide();
-                // #endif
-                
-                if (!_self.realtime) {
-                    _self.$ext.style.left     = "";
-                    _self.$ext.style.top      = "";
-                    _self.$ext.style[_self.$info.size] = "";
-                    _self.$ext.style.position = "";
-                }
-                
-                _self.dispatchEvent("dragdrop");
-                
-                document.onmouseup   = 
-                document.onmousemove = null;
-                
-                apf.dragMode = false; //return to default selection policy
-            };
-            
-            //@todo convert to proper way
-            document.onmousemove = function(e){
-                if(!e) e = event;
-        
-                with (_self.$info) {
-                    var newPos;
-                    if (e[clientPos] >= 0) {
-                        var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
-                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
-                            (apf.hasFlexibleBox || !_self.realtime ? startPos : startOffset)))) + diff;
-
-                        if (_self.realtime)
-                            _self.update(newPos);
-                        else {
-                            _self.$ext.style[pos] = newPos + "px";
-                        }
-                    }
-                }
-                
-                apf.stopEvent(e);
-                //e.returnValue  = false;
-                //e.cancelBubble = true;
-                
-                _self.dispatchEvent("dragmove");
-            };
-        }
-        
-        apf.queue.add("splitter" + this.$uniqueId, function(){
-            _self.init();
-        });
+        apf.extend(this, apf.splitter.templates[template]);
+        this.decorate();
     };
         
     this.$loadAml = function(x){
@@ -412,6 +135,453 @@ apf.splitter = function(struct, tagName){
             this.$propHandlers.realtime.call(this, this.realtime = true);
     };
 }).call(apf.splitter.prototype = new apf.Presentation());
+
+apf.splitter.templates = {
+    box : {
+        update : function(newPos, finalPass){
+            with (this.$info) {
+                //var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]);
+                var max = this.$previous 
+                    ? this.$previous.$ext[offsetSize] + this.$next.$ext[offsetSize]
+                    : (this.parentNode).getWidth();
+                var method = finalPass ? "setAttribute" : "setProperty";
+                if (apf.hasFlexibleBox)
+                    newPos -= this.$previous ? apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int)[d1] : 0;
+    
+                //Both flex
+                if (this.$previous && this.$next && (this.$previous.flex || this.$previous.flex === 0) && (this.$next.flex || this.$next.flex === 0)) {
+                    if (!finalPass && !this.realtime) 
+                        newPos -= this.$ext[offsetSize];
+    
+                    //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
+                    if (!this.$scale || this.$scale == 1)
+                        this.$previous[method]("flex", newPos);
+                    if (!this.$scale || this.$scale == 2)
+                        this.$next[method]("flex", this.$totalFlex - newPos);
+                }
+                //Fixed
+                else {
+                    if (this.$next && !this.$next.flex && (!this.$scale || this.$scale == 2))
+                        this.$next[method](osize, max - newPos);
+                    if (this.$previous && !this.$previous.flex && (!this.$scale || this.$scale == 1))
+                        this.$previous[method](osize, newPos);
+                }
+            }
+    
+            if (apf.hasSingleResizeEvent)
+                apf.layout.forceResize(this.$ext.parentNode);
+        },
+        
+        $setSiblings : function(){
+            this.$previous = this.previousSibling;
+            while(this.$previous && (this.$previous.nodeType != 1 
+              || this.$previous.visible === false 
+              || this.$previous.nodeFunc != apf.NODE_VISIBLE))
+                this.$previous = this.$previous.previousSibling;
+            this.$next     = this.nextSibling;
+            while(this.$next && (this.$next.nodeType != 1 
+              || this.$next.visible === false 
+              || this.$next.nodeFunc != apf.NODE_VISIBLE))
+                this.$next = this.$next.nextSibling;
+        },
+        
+        init : function(size, refNode, oItem){
+            //this.parentNode.addEventListener("DOMNodeInserted", this.$siblingChange);
+            //this.parentNode.addEventListener("DOMNodeRemoved", this.$siblingChange);
+            
+            this.$setSiblings();
+            
+            this.$thickness = null;
+            if (this.parentNode && this.parentNode.$box) {
+                this.setProperty("type", this.parentNode.localName == "vbox" 
+                    ? "horizontal" 
+                    : "vertical");
+                this.$thickness = parseInt(this.parentNode.padding);
+            }
+            
+            if (!this.$previous || !this.$next)
+                return this;
+            
+            with (this.$info) {
+                var diff = apf.getDiff(this.$ext);
+                if (!this.parentNode.$box) {
+                    var iSize  = Math.max(
+                        this.$previous.$ext[offsetSize], this.$next.$ext[offsetSize]);
+                    this.$ext.style[size] = (iSize - diff[d1]) + "px";
+                }
+    
+                var iThick = this[osize] = this.$thickness 
+                    || (this.$next[oOffsetPos] - this.$previous[oOffsetPos] 
+                        - this.$previous[oOffsetSize]);
+    
+                this.$ext.style[osize] = (iThick - diff[d2]) + "px";
+            }
+            
+            return this;
+        },
+        
+        decorate : function(){
+            var _self = this;
+            this.$ext.onmousedown = function(e){
+                if (!e)
+                    e = event;
+                
+                apf.dragMode = true; //prevent selection
+                
+                _self.$setSiblings();
+    
+                var changedPosition, pHtml = _self.parentNode.$int, diff = 0;
+                if ("absolute|fixed|relative".indexOf(apf.getStyle(pHtml, "position")) == -1) {
+                    pHtml.style.position = "relative";
+                    changedPosition = true;
+                }
+    
+                _self.$totalFlex = 0;
+                with (_self.$info) {
+                    if (_self.$parent) {
+                        if (!_self.$previous) {
+                            var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
+                            var wd = _self.$parent.getWidth();
+                            
+                            if (_self.$scale == 2) {
+                                var max = posNext[d1] + _self.$next.$ext[offsetSize] - this[offsetSize];
+                                diff = (_self.parentNode.$int[offsetSize] - max);
+                                var min = max - wd - diff;
+                            }
+                        }
+                        else if (!_self.$next) {
+                            //@todo
+                        }
+                    }
+                    else {
+                        if (_self.$previous) {
+                            var posPrev = apf.getAbsolutePosition(_self.$previous.$ext, _self.parentNode.$int);
+                            var min = _self.$scale 
+                                ? 0 
+                                : (posPrev[d1] || 0) + (parseInt(_self.$previous.minwidth) || 0);
+                        }
+                        if (_self.$next) {
+                            var posNext = apf.getAbsolutePosition(_self.$next.$ext, _self.parentNode.$int);
+                            var max = posNext[d1] + _self.$next.$ext[offsetSize] 
+                                - this[offsetSize] - (parseInt(_self.$next.minwidth) || 0);
+                        }
+                    }
+                    
+                    //Set flex to pixel sizes
+                    if (_self.$previous && _self.$next) {
+                        if ((_self.$previous.flex || _self.$previous.flex === 0) 
+                          && (_self.$next.flex || _self.$next.flex === 0)) {
+                            var set = [], nodes = _self.parentNode.childNodes, padding = 0;
+                            for (var node, i = 0, l = nodes.length; i < l; i++) {
+                                if ((node = nodes[i]).visible === false 
+                                  || node.nodeFunc != apf.NODE_VISIBLE || node.$splitter)
+                                    continue;
+                                
+                                if (node.flex)
+                                    set.push(node, node.$ext[offsetSize] 
+                                        + (apf.hasFlexibleBox && !_self.realtime && node == _self.$previous 
+                                            ? 2 * _self.parentNode.padding : 0));
+                            }
+                            for (var i = 0, l = set.length; i < l; i+=2) {
+                                set[i].setAttribute("flex", set[i+1]);
+                            }
+                        }
+                        
+                        _self.$totalFlex += _self.$next.flex + _self.$previous.flex;
+                    }
+                    
+                    var startPos, startOffset;
+                    if (apf.hasFlexibleBox) {
+                        var coords = apf.getAbsolutePosition(this);
+                        startPos = e[clientPos] - coords[d1];
+    
+                        if (!_self.realtime) {
+                            if (_self.$previous.flex && !_self.$next.flex) {
+                                var mBox = apf.getBox(_self.$next.margin);
+                                mBox[x1] = _self.parentNode.padding;
+                                _self.$next.$ext.style.margin = mBox.join("px ") + "px";
+                            }
+                            else {
+                                var mBox = apf.getBox(_self.$previous.margin);
+                                mBox[x2] = _self.parentNode.padding;
+                                _self.$previous.$ext.style.margin = mBox.join("px ") + "px";
+                            }
+                            
+                            var diff = apf.getDiff(this);
+                            this.style.left     = coords[0] + "px";
+                            this.style.top      = coords[1] + "px"; //(apf.getHtmlTop(this) - Math.ceil(this.offsetHeight/2))
+                            this.style.width    = (this.offsetWidth - diff[0]) + "px";
+                            this.style.height   = (this.offsetHeight - diff[1]) + "px";
+                            this.style.position = "absolute";
+                        }
+                    }
+                    else {
+                        var coords = apf.getAbsolutePosition(this.offsetParent);
+                        startOffset = apf.getAbsolutePosition(_self.$previous.$ext)[d1];
+                        startPos    = e[clientPos] - coords[d1];
+                        
+                        if (!_self.realtime) {
+                            this.style.left     = "0px";
+                            this.style.top      = "0px";
+                            this.style.position = "relative";
+                        }
+                        min = -1000; //@todo
+                    }
+                }
+                
+                //e.returnValue  = false;
+                //e.cancelBubble = true;
+                //apf.stopEvent(e);
+                
+                // #ifdef __WITH_PLANE
+                apf.plane.show(this);
+                // #endif
+    
+                _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
+                
+                _self.$setStyleClass(document.body,
+                    _self.type == "vertical" ? "w-resize" : "n-resize",
+                    [_self.type == "vertical" ? "n-resize" : "w-resize"]);
+                
+                _self.dispatchEvent("dragstart");
+                
+                //@todo convert to proper way
+                document.onmouseup = function(e){
+                    if(!e) e = event;
+                    
+                    with (_self.$info) {
+                        var newPos;
+                        if (e[clientPos] >= 0) {
+                            var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                            newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
+                                (apf.hasFlexibleBox ? startPos : startOffset)))) + diff;
+                        }
+                    }
+    
+                    _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
+                    _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+                    
+                    if (changedPosition)
+                        pHtml.style.position = "";
+                    
+                    if (apf.hasFlexibleBox && !_self.realtime)
+                        (_self.$previous.flex && !_self.$next.flex
+                          ? _self.$next : _self.$previous).$ext.style.margin 
+                            = apf.getBox(_self.$previous.margin).join("px ") + "px";
+                    
+                    if (newPos)
+                        _self.update(newPos, true);
+                    
+                    // #ifdef __WITH_PLANE
+                    apf.plane.hide();
+                    // #endif
+                    
+                    if (!_self.realtime) {
+                        _self.$ext.style.left     = "";
+                        _self.$ext.style.top      = "";
+                        _self.$ext.style[_self.$info.size] = "";
+                        _self.$ext.style.position = "";
+                    }
+                    
+                    _self.dispatchEvent("dragdrop");
+                    
+                    document.onmouseup   = 
+                    document.onmousemove = null;
+                    
+                    apf.dragMode = false; //return to default selection policy
+                };
+                
+                //@todo convert to proper way
+                document.onmousemove = function(e){
+                    if(!e) e = event;
+            
+                    with (_self.$info) {
+                        var newPos;
+                        if (e[clientPos] >= 0) {
+                            var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                            newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
+                                (apf.hasFlexibleBox || !_self.realtime ? startPos : startOffset)))) + diff;
+    
+                            if (_self.realtime)
+                                _self.update(newPos);
+                            else {
+                                _self.$ext.style[pos] = newPos + "px";
+                            }
+                        }
+                    }
+                    
+                    apf.stopEvent(e);
+                    //e.returnValue  = false;
+                    //e.cancelBubble = true;
+                    
+                    _self.dispatchEvent("dragmove");
+                };
+            }
+            
+            apf.queue.add("splitter" + this.$uniqueId, function(){
+                _self.init();
+            });
+        }
+    },
+    
+    splitbox : {
+        update : function(newPos, finalPass){
+            with (this.$info) {
+                var method = finalPass ? "setAttribute" : "setProperty";
+                
+                var pNode = this.parentNode;
+                if (pNode.fixedChild) 
+                
+                
+                if (apf.hasFlexibleBox)
+                    newPos -= this.$previous ? apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int)[d1] : 0;
+    
+                //Both flex
+                if (this.$previous && this.$next && (this.$previous.flex || this.$previous.flex === 0) && (this.$next.flex || this.$next.flex === 0)) {
+                    if (!finalPass && !this.realtime) 
+                        newPos -= this.$ext[offsetSize];
+    
+                    //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
+                    if (!this.$scale || this.$scale == 1)
+                        this.$previous[method]("flex", newPos);
+                    if (!this.$scale || this.$scale == 2)
+                        this.$next[method]("flex", this.$totalFlex - newPos);
+                }
+                //Fixed
+                else {
+                    if (this.$next && !this.$next.flex && (!this.$scale || this.$scale == 2))
+                        this.$next[method](osize, max - newPos);
+                    if (this.$previous && !this.$previous.flex && (!this.$scale || this.$scale == 1))
+                        this.$previous[method](osize, newPos);
+                }
+            }
+    
+            if (apf.hasSingleResizeEvent)
+                apf.layout.forceResize(this.$ext.parentNode);
+        },
+        
+        $setSiblings : function(){
+            this.$previous = this.parentNode.firstChild
+            this.$next = this.parentNode.lastChild;
+        },
+        
+        decorate : function(){
+            var _self = this;
+            
+            if (this.parentNode && this.parentNode.$box) {
+                this.setProperty("type", this.parentNode.$vbox
+                    ? "horizontal" 
+                    : "vertical");
+            }
+            
+            this.$ext.onmousedown = function(e){
+                if (!e)
+                    e = event;
+
+                apf.dragMode = true; //prevent selection
+                
+                _self.$setSiblings();
+
+                var pNode = _self.parentNode;
+                if (pNode.$vbox) {
+                    var min = parseInt(pNode.firstChild.minheight) + pNode.$edge[0];
+                    var max = pNode.$ext.offsetHeight 
+                        - pNode.lastChild.minHeight - pNode.$edge[2];
+                }
+                else {
+                    var min = parseInt(pNode.firstChild.minwidth) + pNode.$edge[3];
+                    var max = pNode.$ext.offsetWidth
+                        - pNode.lastChild.minWidth - pNode.$edge[1];
+                }
+    
+                var pHtml = _self.parentNode.$int, diff = 0;
+    
+                // #ifdef __WITH_PLANE
+                apf.plane.show(this);
+                // #endif
+    
+                _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
+                
+                _self.$setStyleClass(document.body,
+                    _self.type == "vertical" ? "w-resize" : "n-resize",
+                    [_self.type == "vertical" ? "n-resize" : "w-resize"]);
+                
+                _self.dispatchEvent("dragstart");
+                
+                //@todo convert to proper way
+                document.onmouseup = function(e){
+                    if (!e) e = event;
+                    
+                    with (_self.$info) {
+                        var newPos;
+                        if (e[clientPos] >= 0) {
+                            var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                            newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
+                                (apf.hasFlexibleBox ? startPos : startOffset)))) + diff;
+                        }
+                    }
+    
+                    _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
+                    _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
+                    
+                    if (changedPosition)
+                        pHtml.style.position = "";
+                    
+                    if (apf.hasFlexibleBox && !_self.realtime)
+                        (_self.$previous.flex && !_self.$next.flex
+                          ? _self.$next : _self.$previous).$ext.style.margin 
+                            = apf.getBox(_self.$previous.margin).join("px ") + "px";
+                    
+                    if (newPos)
+                        _self.update(newPos, true);
+                    
+                    // #ifdef __WITH_PLANE
+                    apf.plane.hide();
+                    // #endif
+                    
+                    if (!_self.realtime) {
+                        _self.$ext.style.left     = "";
+                        _self.$ext.style.top      = "";
+                        _self.$ext.style[_self.$info.size] = "";
+                        _self.$ext.style.position = "";
+                    }
+                    
+                    _self.dispatchEvent("dragdrop");
+                    
+                    document.onmouseup   = 
+                    document.onmousemove = null;
+                    
+                    apf.dragMode = false; //return to default selection policy
+                };
+                
+                //@todo convert to proper way
+                document.onmousemove = function(e){
+                    if(!e) e = event;
+            
+                    with (_self.$info) {
+                        var newPos;
+                        if (e[clientPos] >= 0) {
+                            var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
+                            newPos = Math.min(max, Math.max(min, (e[clientPos] - coords[d1])));
+    
+                            if (_self.realtime)
+                                _self.update(newPos);
+                            else {
+                                _self.$ext.style[pos] = newPos + "px";
+                            }
+                        }
+                    }
+                    
+                    apf.stopEvent(e);
+                    //e.returnValue  = false;
+                    //e.cancelBubble = true;
+                    
+                    _self.dispatchEvent("dragmove");
+                };
+            }
+        }
+    }
+};
 
 apf.aml.setElement("splitter", apf.splitter);
 // #endif

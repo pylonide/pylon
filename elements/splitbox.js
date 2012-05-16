@@ -64,6 +64,9 @@ apf.vsplitbox = function(struct, tagName){
         
         if (!this.$amlLoaded)
             return;
+            
+        if (this.$splitter)
+            this.$splitter.$ext.style[this.$vbox ? "height" : "width"] = value + "px";
         
         if (this.$vbox) {
             //Two flex children
@@ -105,11 +108,13 @@ apf.vsplitbox = function(struct, tagName){
         }
     }
     
-    this.$propHandlers["splitters"] = function(value){
+    this.$propHandlers["splitter"] = function(value){
         if (value) {
             this.$splitter = this.insertBefore(
                 this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                 this.lastChild);
+            
+            //@todo position the splitter;
         }
         else {
             this.$splitter.destroy(true, true);
@@ -142,13 +147,32 @@ apf.vsplitbox = function(struct, tagName){
                 lNode.$ext.style.top = String(fNode.height).indexOf("%") > -1 
                     ? fNode.height 
                     : ((parseInt(fNode.height) + this.padding + this.$edge[0]) + "px");
+                
+                if (this.$splitter) {
+                    this.$splitter.$ext.style.left = this.$edge[3] + "px";
+                    this.$splitter.$ext.style.right = this.$edge[1] + "px";
+                    this.$splitter.$ext.style.top = String(fNode.height).indexOf("%") > -1 
+                        ? fNode.height 
+                        : ((parseInt(fNode.height) + this.$edge[0]) + "px");
+                }
             }
             else {
                 lNode.$ext.style.top = this.$edge[0] + "px";
                 lNode.$ext.style.right = String(fNode.width).indexOf("%") > -1 
                     ? fNode.width 
                     : ((parseInt(fNode.width) + this.padding + this.$edge[3]) + "px");
+                
+                if (this.$splitter) {
+                    this.$splitter.$ext.style.top = this.$edge[3] + "px";
+                    this.$splitter.$ext.style.bottom = this.$edge[1] + "px";
+                    this.$splitter.$ext.style.width = String(fNode.width).indexOf("%") > -1 
+                    ? fNode.width 
+                    : ((parseInt(fNode.width) + this.$edge[3]) + "px");
+                }
             }
+            
+            if (this.$splitter)
+                this.$splitter.$ext.style.position = "absolute";
         }
         else {
             if (!this.$vbox)
@@ -160,7 +184,7 @@ apf.vsplitbox = function(struct, tagName){
     
     this.getFirstVisibleChild = function(startNode){
         var node = startNode || this.firstChild;
-        while (node && !node.visible && !node.$splitter) {
+        while (node && (!node.visible || node.$splitter)) {
             node = node.nextSibling;
         }
         if (node && node.visible)
@@ -239,6 +263,9 @@ apf.vsplitbox = function(struct, tagName){
     }
     
     this.register = function(amlNode, insert){
+        if (amlNode.$splitter)
+            return;
+        
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
@@ -363,303 +390,5 @@ apf.hsplitbox.prototype = apf.vsplitbox.prototype;
 
 apf.aml.setElement("hsplitbox", apf.hsplitbox);
 apf.aml.setElement("vsplitbox", apf.vsplitbox);
-
-/**
- * @constructor
- * @private
- */
-apf.splitboxSplitter = function(struct, tagName){
-    this.$init(tagName || "splitboxsplitter", apf.NODE_VISIBLE, struct);
-};
-
-(function() {
-    this.minwidth    = 0;
-    this.minheight   = 0;
-    
-    this.$scale = 0; // 0 both, 1 left/top, 2 right/bottom 
-    
-    this.$focussable = false; // This object can get the focus
-    this.$splitter   = true;
-    
-    this.$booleanProperties["realtime"] = true;
-    
-    this.$propHandlers["realtime"] = function(value){
-        this.$setStyleClass(this.$ext, value && (this.$baseCSSname + "Realtime") || "", 
-            [this.$baseCSSname + "Realtime"]);
-    }
-    
-    this.$propHandlers["scale"] = function(value){
-        this.$scale = value == "left" || value == "top"
-            ? 1 : (value == "right" || "bottom " 
-                ? 2 : 0);
-    }
-    
-    this.$propHandlers["parent"] = function(value){
-        this.$parent = typeof value == "object" ? value : self[value];
-    }
-    
-    this.$propHandlers["type"] = function(value){
-        this.$setStyleClass(this.$ext, value,
-            [value == "horizontal" ? "vertical" : "horizontal"]);
-        
-        if (value == "vertical")
-            this.$setStyleClass(this.$ext, "w-resize", ["n-resize"]);
-        else
-            this.$setStyleClass(this.$ext, "n-resize", ["w-resize"]);
-
-        //Optimize this to not recalc for certain cases
-        if (value == "horizontal") {
-            this.$info = {
-                pos         : "top",
-                opos        : "left",
-                size        : "width",
-                osize       : "height",
-                offsetPos   : "offsetTop",
-                offsetSize  : "offsetHeight",
-                oOffsetPos  : "offsetLeft",
-                oOffsetSize : "offsetWidth",
-                clientPos   : "clientY",
-                d1          : 1,
-                d2          : 0,
-                x1          : 0,
-                x2          : 2
-            };
-        }
-        else {
-            this.$info = {
-                pos         : "left",
-                opos        : "top",
-                size        : "height",
-                osize       : "width",
-                offsetPos   : "offsetLeft",
-                offsetSize  : "offsetWidth",
-                oOffsetPos  : "offsetTop",
-                oOffsetSize : "offsetHeight",
-                clientPos   : "clientX",
-                d1          : 0,
-                d2          : 1,
-                x1          : 3,
-                x2          : 1
-            }
-        }
-    }
-    
-    this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget != this)
-            return;
-        
-        /*if (e.$oldParent) {
-            e.$oldParent.removeEventListener("DOMNodeInserted", this.$siblingChange);
-            e.$oldParent.removeEventListener("DOMNodeRemoved", this.$siblingChange);
-        }*/
-        
-        this.init();
-    });
-    
-    /*this.$siblingChange = function(e){
-        //if (e.currentTarget
-        
-        //this.init();
-    }*/
-    
-    this.update = function(newPos, finalPass){
-        with (this.$info) {
-            //var pos = Math.ceil(apf.getAbsolutePosition(this.$ext, this.parentNode.$int)[d1] - posPrev[d1]);
-            var max = this.$previous 
-                ? this.$previous.$ext[offsetSize] + this.$next.$ext[offsetSize]
-                : (this.parentNode).getWidth();
-            var method = finalPass ? "setAttribute" : "setProperty";
-            if (apf.hasFlexibleBox)
-                newPos -= this.$previous ? apf.getAbsolutePosition(this.$previous.$ext, this.parentNode.$int)[d1] : 0;
-
-            //Both flex
-            if (this.$previous && this.$next && (this.$previous.flex || this.$previous.flex === 0) && (this.$next.flex || this.$next.flex === 0)) {
-                if (!finalPass && !this.realtime) 
-                    newPos -= this.$ext[offsetSize];
-
-                //var totalFlex = this.$previous.flex + this.$next.flex - (finalPass && !this.realtime ? this.parentNode.padding : 0);
-                if (!this.$scale || this.$scale == 1)
-                    this.$previous[method]("flex", newPos);
-                if (!this.$scale || this.$scale == 2)
-                    this.$next[method]("flex", this.$totalFlex - newPos);
-            }
-            //Fixed
-            else {
-                if (this.$next && !this.$next.flex && (!this.$scale || this.$scale == 2))
-                    this.$next[method](osize, max - newPos);
-                if (this.$previous && !this.$previous.flex && (!this.$scale || this.$scale == 1))
-                    this.$previous[method](osize, newPos);
-            }
-        }
-
-        if (apf.hasSingleResizeEvent)
-            apf.layout.forceResize(this.$ext.parentNode);
-    };
-    
-    this.$setSiblings = function(){
-        this.$previous = this.previousSibling;
-        while(this.$previous && (this.$previous.nodeType != 1 
-          || this.$previous.visible === false 
-          || this.$previous.nodeFunc != apf.NODE_VISIBLE))
-            this.$previous = this.$previous.previousSibling;
-        this.$next     = this.nextSibling;
-        while(this.$next && (this.$next.nodeType != 1 
-          || this.$next.visible === false 
-          || this.$next.nodeFunc != apf.NODE_VISIBLE))
-            this.$next = this.$next.nextSibling;
-    }
-    
-    this.init = function(size){
-        this.$setSiblings();
-        this.$thickness = null;
-        
-        if (this.parentNode && this.parentNode.$box) {
-            this.setProperty("type", this.parentNode.$vbox
-                ? "horizontal" 
-                : "vertical");
-            this.$thickness = parseInt(this.parentNode.padding);
-            this.$ext.style.marginTop = (-1 * this.$thickness) + "px";
-        }
-        
-        if (!this.$previous || !this.$next)
-            return this;
-        
-        with (this.$info) {
-            var diff = apf.getDiff(this.$ext);
-            if (!this.parentNode.$box) {
-                var iSize  = Math.max(
-                    this.$previous.$ext[offsetSize], this.$next.$ext[offsetSize]);
-                this.$ext.style[size] = (iSize - diff[d1]) + "px";
-            }
-
-            var iThick = this[osize] = this.$thickness 
-                || (this.$next[oOffsetPos] - this.$previous[oOffsetPos] 
-                    - this.$previous[oOffsetSize]);
-
-            this.$ext.style[osize] = (iThick - diff[d2]) + "px";
-        }
-        
-        return this;
-    };
-    
-    this.$draw = function(){
-        //Build Main Skin
-        this.$ext = this.$getExternal();
-
-        var _self = this;
-        this.$ext.onmousedown = function(e){
-            if (!e)
-                e = event;
-            
-            apf.dragMode = true; //prevent selection
-            
-            _self.$setSiblings();
-
-            if (this.parentNode.$vbox) {
-                var min = parseInt(this.firstChild.minheight) + this.$edge[0];
-                var max = this.parentNode.$ext.offsetHeight 
-                    - this.lastChild.minHeight - this.$edge[2];
-            }
-            else {
-                var min = parseInt(this.firstChild.minwidth) + this.$edge[3];
-                var max = this.parentNode.$ext.offsetWidth
-                    - this.lastChild.minWidth - this.$edge[1];
-            }
-            
-            // #ifdef __WITH_PLANE
-            apf.plane.show(this);
-            // #endif
-
-            _self.$setStyleClass(this, _self.$baseCSSname + "Moving");
-            
-            _self.$setStyleClass(document.body,
-                _self.type == "vertical" ? "w-resize" : "n-resize",
-                [_self.type == "vertical" ? "n-resize" : "w-resize"]);
-            
-            _self.dispatchEvent("dragstart");
-            
-            //@todo convert to proper way
-            document.onmouseup = function(e){
-                if(!e) e = event;
-                
-                with (_self.$info) {
-                    var newPos;
-                    if (e[clientPos] >= 0) {
-                        var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
-                        newPos = (Math.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
-                            (apf.hasFlexibleBox ? startPos : startOffset)))) + diff;
-                    }
-                }
-
-                _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Moving"]);
-                _self.$setStyleClass(document.body, "", ["n-resize", "w-resize"]);
-                
-                if (changedPosition)
-                    pHtml.style.position = "";
-                
-                if (apf.hasFlexibleBox && !_self.realtime)
-                    (_self.$previous.flex && !_self.$next.flex
-                      ? _self.$next : _self.$previous).$ext.style.margin 
-                        = apf.getBox(_self.$previous.margin).join("px ") + "px";
-                
-                if (newPos)
-                    _self.update(newPos, true);
-                
-                // #ifdef __WITH_PLANE
-                apf.plane.hide();
-                // #endif
-                
-                if (!_self.realtime) {
-                    _self.$ext.style.left     = "";
-                    _self.$ext.style.top      = "";
-                    _self.$ext.style[_self.$info.size] = "";
-                    _self.$ext.style.position = "";
-                }
-                
-                _self.dispatchEvent("dragdrop");
-                
-                document.onmouseup   = 
-                document.onmousemove = null;
-                
-                apf.dragMode = false; //return to default selection policy
-            };
-            
-            //@todo convert to proper way
-            document.onmousemove = function(e){
-                if(!e) e = event;
-        
-                with (_self.$info) {
-                    var newPos;
-                    if (e[clientPos] >= 0) {
-                        var coords = apf.getAbsolutePosition(_self.$ext.offsetParent);
-                        newPos = (M ath.min(max, Math.max(min, (e[clientPos] - coords[d1]) - 
-                            (apf.hasFlexibleBox || !_self.realtime ? startPos : startOffset)))) + diff;
-
-                        if (_self.realtime)
-                            _self.update(newPos);
-                        else {
-                            _self.$ext.style[pos] = newPos + "px";
-                        }
-                    }
-                }
-                
-                apf.stopEvent(e);
-                //e.returnValue  = false;
-                //e.cancelBubble = true;
-                
-                _self.dispatchEvent("dragmove");
-            };
-        }
-        
-        apf.queue.add("splitter" + this.$uniqueId, function(){
-            _self.init();
-        });
-    };
-        
-    this.$loadAml = function(x){
-        if (this.realtime !== false) // && (!apf.isIE || apf.isIE > 8))
-            this.$propHandlers.realtime.call(this, this.realtime = true);
-    };
-}).call(apf.splitboxSplitter.prototype = new apf.Presentation());
 
 // #endif
