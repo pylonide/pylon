@@ -16,7 +16,7 @@ var debug = function() {
 var keysToSortedArray = function(obj) {
     return Object.keys(obj)
         .map(function(key) { return parseInt(key, 10); })
-        .sort(function(a, b) { return a - b; })
+        .sort(function(a, b) { return a - b; });
 };
 
 var rNL = /\r?\n/;
@@ -189,7 +189,7 @@ self.onmessage = function(e) {
                         beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
                     }
                 }
-                catch(e) {
+                catch(err) {
                     self.postMessage({
                         type: "newRevision.error",
                         path: e.data.path
