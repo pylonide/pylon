@@ -17,7 +17,7 @@
             "process-manager",
             "run-node",
             "vfs",
-            "ide"
+            "sandbox"
         ]
     }
 }

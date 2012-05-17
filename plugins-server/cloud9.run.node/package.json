@@ -12,7 +12,7 @@
         "consumes": [
             "process-manager",
             "vfs",
-            "ide"
+            "sandbox"
         ]
     }
 }
