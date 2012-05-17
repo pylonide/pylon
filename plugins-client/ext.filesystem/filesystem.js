@@ -12,6 +12,8 @@ var ext = require("core/ext");
 var util = require("core/util");
 var commands = require("ext/commands/commands");
 
+require("ext/main/main"); //Make sure apf is inited.
+
 module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
     dev    : "Ajax.org",
