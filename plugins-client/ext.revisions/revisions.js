@@ -633,7 +633,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var revObj = this.$getRevisionObject(message.path);
         
         // guided tour magic conflicts with revisions--skip it
-        if (page.$model.getXml().getAttribute("guidedtour") === "1")
+        if (page && page.$model.data.getAttribute("guidedtour") === "1")
             return;
             
         switch (message.subtype) {
