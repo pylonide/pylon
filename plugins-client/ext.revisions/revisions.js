@@ -716,20 +716,13 @@ module.exports = ext.register("ext/revisions/revisions", {
                         }
                     }
 
-                    var keys = Object.keys(group)
-                        .map(function(key) { return parseInt(key, 10); })
-                        .sort(function(a, b) { return a - b; });
-
-                    if (keys.length > 1) {
-                        data.groupKeys = keys;
-                        data.data = this.getRevision(keys[0]);
+                    if (Object.keys(group).length > 1) {
                         this.worker.postMessage(data);
                         break;
                     }
                 }
 
                 group[message.id] = this.getRevision(message.id);
-                data.groupKeys = [parseInt(message.id, 10)];
                 this.worker.postMessage(data);
                 break;
 
@@ -974,7 +967,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         id = parseInt(id, 10);
 
         var revObj = this.$getRevisionObject(Util.getDocPath());
-        var tstamps = revObj.allTimestamps.slice(0);
+        var tstamps = revObj.allTimestamps;
         var revision = tstamps.indexOf(id);
 
         if (revision !== -1) {
@@ -982,7 +975,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 content: content,
                 id: id,
                 revision: revision,
-                ts: tstamps,
                 tsValues: {}
             };
 

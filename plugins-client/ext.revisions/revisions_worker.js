@@ -13,6 +13,12 @@ var debug = function() {
     });
 };
 
+var keysToSortedArray = function(obj) {
+    return Object.keys(obj)
+        .map(function(key) { return parseInt(key, 10); })
+        .sort(function(a, b) { return a - b; })
+};
+
 var rNL = /\r?\n/;
 var startChar = {
     "equal" : "  ",
@@ -25,7 +31,7 @@ var docContentsOnRev = {};
 var getLastAndAfterRevisions = function(data) {
     var group = data.group;
     // Ordered timestamps
-    var keys = data.groupKeys;
+    var keys = keysToSortedArray(data.group);
     var minKey = keys[0];
     var maxKey = keys[keys.length - 1];
     var revision = group[keys[0]];
@@ -33,8 +39,9 @@ var getLastAndAfterRevisions = function(data) {
 
     var i, ts;
     var patches = [];
-    for (i = 0; i <= revision.ts.length; i++) {
-        ts = revision.ts[i];
+    var timestamps = keysToSortedArray(revision.tsValues);
+    for (i = 0; i <= timestamps.length; i++) {
+        ts = timestamps[i];
         if (minKey == ts) {
             break;
         }
