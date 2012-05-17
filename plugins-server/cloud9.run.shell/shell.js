@@ -21,8 +21,7 @@ exports.factory = function(vfs) {
             args: args.args,
             cwd: args.cwd,
             env: args.env,
-            encoding:
-            args.encoding,
+            encoding: args.encoding,
             extra: args.extra,
             eventEmitter: eventEmitter,
             eventName: eventName
@@ -30,7 +29,7 @@ exports.factory = function(vfs) {
     };
 };
 
-var Runner = exports.Runner = function(vfs, options) {
+var Runner = exports.Runner = function(vfs, options, callback) {
     this.vfs = vfs;
     this.uid = options.uid;
     this.command = options.command;
@@ -58,6 +57,8 @@ var Runner = exports.Runner = function(vfs, options) {
     this.eventName = options.eventName;
 
     this.pid = 0;
+
+    callback(null, this);
 };
 
 (function() {
