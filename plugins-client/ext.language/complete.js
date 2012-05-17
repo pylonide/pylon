@@ -205,13 +205,13 @@ module.exports = {
             
             if (match.icon)
                 html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
-            if (!hasIcons || match.icon)
+            if (!hasIcons || match.icon) {
                 html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
-            else {
+            } else {
                 html += "<span class='main'>" + match.name;
                 matchEl.style.color = "#666666";
             }
-            if(match.meta) {
+            if (match.meta) {
                 html += '<span class="meta">' + match.meta + '</span>';
             }
             html += '</span>';
