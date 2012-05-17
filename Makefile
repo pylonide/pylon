@@ -18,8 +18,12 @@ pack_apf:
 	mv plugins-client/lib.apf/www/apf-packaged/apf_release.js build/src/apf_release.js
 	node build/r.js -o name=./build/src/apf_release.js out=./plugins-client/lib.apf/www/apf-packaged/apf_release.js baseUrl=.
 
+# makes ace; at the moment, requires dryice@0.4.2
+ace:
+	cd node_modules/ace; make clean build
+
 # packages core
-core:
+core: ace
 	mkdir -p build/src
 	node build/r.js -o build/core.build.js
 
