@@ -308,7 +308,7 @@ module.exports = ext.register("ext/code/code", {
                 if (this.editor != _self)
                     return;
                 
-                if (!doc.acesession)
+                if (!doc || !doc.acesession)
                     return; //This is probably a deconstructed document
 
                 doc.acesession.setValue(e.value || "");
