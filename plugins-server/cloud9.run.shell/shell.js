@@ -59,7 +59,7 @@ var Runner = exports.Runner = function(options) {
     this.child = {
         pid: null
     };
-    
+
     var self = this;
     this.__defineGetter__("pid", function(){
         return (self.child.exitCode === null && self.child.signalCode === null)  ? self.child.pid : 0;
