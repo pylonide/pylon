@@ -24,6 +24,8 @@ document.body.style.display = "block"; //might wanna make this variable based on
 apf.config.resize = cloud9config.debug ? true : false;
 apf.initialize('<a:application xmlns:a="http://ajax.org/2005/aml" />');
 
+var splitterPanelLeft; //Intended to be global
+
 module.exports = ext.register("ext/main/main", {
     dev     : "Ajax.org",
     name    : "Main",
@@ -45,6 +47,8 @@ module.exports = ext.register("ext/main/main", {
             apf.config.resize = true;
             apf.layout.$onresize();
         });
+        
+        splitterPanelLeft = hboxMain.$splitter;
     },
 
     enable : function(){

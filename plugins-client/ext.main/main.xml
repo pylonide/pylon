@@ -27,8 +27,8 @@
         zindex   = "100000"
     />
 
-    <a:bar anchors="0 0 0 0" id="vbMain">
-        <a:bar skin="c9-menu-bar" id="logobar">
+    <a:vsplitbox anchors="0 0 0 0" id="vbMain">
+        <a:bar skin="c9-menu-bar" id="logobar" height="27">
             <a:bar class="fakehbox aligncenter padding3" id="barTools">
                 <a:divider skin="c9-divider-double" />
             </a:bar>
@@ -37,21 +37,19 @@
             </a:bar>
         </a:bar>
         
-        <a:bar class="fakehbox" anchors="27 0 0 0">
-            <a:bar id="mainRow" anchors="0 0 0 0">
-                <a:bar class="fakehbox" id="hboxTabBar" width="100%">
-                    <a:hbox id="barButtonContainer" flex="1" align="start" />
-                </a:bar>
-                <a:bar class="fakehbox" id="hboxMain" padding="0" edge="0" flex="1" height="100%">
-                    <a:bar id="colLeft" width="200" minwidth="105" visible="false"  height="100%"/>
-                    <a:splitter width="0" id="splitterPanelLeft"  height="100%"/>
-                    <a:bar id="colMiddle" flex="1" padding="3"  height="100%"/>
-                </a:bar>
-            </a:bar>
-            <a:bar id="colRight" padding="0">
-                <a:bar class="fakehbox hboxdockpanel" id="hboxDockPanel" flex="1">
-                </a:bar>
-            </a:bar>
-        </a:bar>
-    </a:bar>
+        <a:hsplitbox flex="1" padding="0">
+            <a:vsplitbox id="mainRow" padding="0" flex="1">
+                <a:hsplitbox id="hboxTabBar" padding="0" edge="0" height="27" align="start">
+                    <a:bar id="barButtonContainer" flex="1" align="start" />
+                </a:hsplitbox>
+                <a:hsplitbox id="hboxMain" padding="0" edge="0" flex="1" splitter="true">
+                    <a:bar id="colLeft" width="200" minwidth="105" visible="false" />
+                    <a:bar id="colMiddle" flex="1" padding="3" />
+                </a:hsplitbox>
+            </a:vsplitbox>
+            <a:vsplitbox id="colRight" padding="0" width="39">
+                <a:hbox id="hboxDockPanel" flex="1" class="hboxdockpanel" />
+            </a:vsplitbox>
+        </a:hsplitbox>
+    </a:vsplitbox>
 </a:application>
