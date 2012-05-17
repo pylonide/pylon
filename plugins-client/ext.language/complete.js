@@ -191,7 +191,8 @@ module.exports = {
                 html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
             if (!hasIcons || match.icon) {
                 html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
-            } else {
+            }
+            else {
                 html += "<span class='main'>" + match.name;
                 matchEl.style.color = "#666666";
             }
