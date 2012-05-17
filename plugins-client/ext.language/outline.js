@@ -56,7 +56,6 @@ module.exports = {
     },
 
     renderOutline : function(event) {
-        console.log("Rendering layout");
         var ace = editors.currentEditor.amlEditor.$editor;
         var data = event.data;
         if (! data.success) {

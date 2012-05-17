@@ -80,7 +80,7 @@ module.exports = ext.register("ext/language/language", {
             format.hook(_self, worker);
 
             worker.on("serverProxy", function(e) {
-                console.log("proxyMessage", e.data);
+                // console.log("proxyMessage", e.data);
                 ide.send(JSON.stringify(e.data));
             });
 
@@ -99,7 +99,7 @@ module.exports = ext.register("ext/language/language", {
 
             ide.addEventListener("socketMessage", function(e) {
                 var message = e.message;
-                console.log("language: ", message);
+                // console.log("language: ", message);
                 worker.emit("serverProxy", {data: message});
             });
 

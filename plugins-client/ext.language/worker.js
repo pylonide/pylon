@@ -69,7 +69,7 @@ var ServerProxy = function(sender) {
     var channel = msg.type;
     if (msg.subtype)
       channel += (":" + msg.subtype);
-    console.log("publish to: " + channel);
+    // console.log("publish to: " + channel);
     this.emitter.emit(channel, msg.body);
   };
 };
@@ -237,6 +237,8 @@ function asyncParForEach(array, fn, callback) {
                     handler.outline(_self.doc, ast, function(outline) {
                         if(outline)
                             return _self.sender.emit("outline", outline);
+                        else
+                            next();
                     });
                 }
                 else
@@ -254,6 +256,8 @@ function asyncParForEach(array, fn, callback) {
                 handler.hierarchy(_self.doc, data.pos, function(hierarchy) {
                     if(hierarchy)
                         return _self.sender.emit("hierarchy", hierarchy);
+                    else
+                        next();
                 });
             }
             else
@@ -475,7 +479,7 @@ function asyncParForEach(array, fn, callback) {
 
     this.startRefactoring = function(event) {
         var _self = this;
-        this.handlers.forEach(function(handler){
+        this.handlers.forEach(function(handler) {
 			if (handler.handlesLanguage(_self.$language))
 				handler.startRefactoring(_self.doc);
 		});
@@ -488,22 +492,20 @@ function asyncParForEach(array, fn, callback) {
         var oldId = data.oldId;
         var newName = data.newName;
 
-        var handled = false;
         asyncForEach(this.handlers, function(handler, next) {
             if (handler.handlesLanguage(_self.$language)) {
                 handler.finishRefactoring(_self.doc, oldId, newName, function(response) {
                     if (response) {
-                        handled = true;
                         _self.sender.emit("refactorResult", response);
+                    } else {
+                        next();
                     }
-                    next();
                 });
             }
             else
                 next();
         }, function() {
-            if (! handled)
-                _self.sender.emit("refactorResult", {success: true});
+            _self.sender.emit("refactorResult", {success: true});
         });
     };
 

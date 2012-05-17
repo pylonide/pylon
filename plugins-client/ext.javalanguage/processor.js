@@ -109,7 +109,6 @@ var convertToHierarchyTree = function(doc, root) {
             console.log("Couldn't save the file !!");
             return doCallbacks(false);
           }
-          console.log("Saving Complete");
           doCallbacks(true);
       };
       sender.addEventListener("commandComplete", checkSavingDone);
@@ -134,7 +133,6 @@ var convertToHierarchyTree = function(doc, root) {
             file : getFilePath(_self.path),
             offset: offset
           };
-          console.log("offset = " + offset);
           _self.proxy.once("result", "jvmfeatures:complete", function(message) {
             callback(message.body || []);
           });
@@ -145,9 +143,6 @@ var convertToHierarchyTree = function(doc, root) {
     };
 
     this.onCursorMovedNode = function(doc, fullAst /*null*/, cursorPos, currentNode /*null*/, callback) {
-
-        console.log("onCursorMovedNode called");
-
         if (this.getVariablesInProgress)
           return callback();
         this.getVariablesInProgress = true;
@@ -158,7 +153,6 @@ var convertToHierarchyTree = function(doc, root) {
 
         var originalCallback = callback;
         callback = function() {
-          console.log("onCursorMove callback called");
           originalCallback.apply(null, arguments);
           _self.getVariablesInProgress = false;
         };
@@ -170,7 +164,7 @@ var convertToHierarchyTree = function(doc, root) {
 
         var offset = calculateOffset(doc, { row: cursorPos.row, column: identifier.sc } );
         var length = identifier.text.length;
-        console.log("cursor: " + cursorPos.row + ":" + cursorPos.column + " & offset: " + offset + " & length: " + identifier.text.length);
+        // console.log("cursor: " + cursorPos.row + ":" + cursorPos.column + " & offset: " + offset + " & length: " + identifier.text.length);
         var command = {
           command : "jvmfeatures",
           subcommand : "get_locations",
@@ -188,8 +182,6 @@ var convertToHierarchyTree = function(doc, root) {
             _self.proxy.emitter.removeAllListeners("result:jvmfeatures:get_locations");
             if (! message.success)
               return callback();
-            console.log("variable positions retrieved");
-            console.log(message.body);
             var v = message.body;
             highlightVariable(v);
             enableRefactorings.push("renameVariable");
@@ -262,8 +254,6 @@ var convertToHierarchyTree = function(doc, root) {
             _self.proxy.emitter.removeAllListeners("result:jvmfeatures:get_locations");
             if (! message.success)
               return callback();
-            console.log("variable positions retrieved");
-            console.log(message.body);
             var v = message.body;
             var elementPos = {column: identifier.sc, row: pos.row};
             var others = [];
@@ -311,7 +301,6 @@ var convertToHierarchyTree = function(doc, root) {
           _self.refactorInProgress = false;
           _self.$saveFileAndDo(); // notify of ending the refactor
           // Error handling in the callback
-          console.log({success: message.success, body: message.body});
           callback({success: message.success, body: message.body});
         });
         this.proxy.send(command);
@@ -349,8 +338,6 @@ var convertToHierarchyTree = function(doc, root) {
     };
 
     this.hierarchy = function(doc, cursorPos, callback) {
-        console.log("hierarchy called");
-
         var _self = this;
         var offset = calculateOffset(doc, cursorPos);
         var command = {
@@ -391,6 +378,7 @@ var convertToHierarchyTree = function(doc, root) {
     };
 
      this.analyze = function(doc, fullAst /* null */, callback) {
+        return callback();
         var _self = this;
         var command = {
           command : "jvmfeatures",

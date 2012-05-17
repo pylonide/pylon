@@ -78,7 +78,6 @@ module.exports = {
     },
 
     renderHierarchy : function(event, hierId) {
-        console.log("Rendering heirarchy, ", event.data);
         var ace = editors.currentEditor.amlEditor.$editor;
         var data = event.data;
         if (! data.success) {
