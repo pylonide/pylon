@@ -71,9 +71,16 @@ apf.vsplitbox = function(struct, tagName){
         if (this.$vbox) {
             //Two flex children
             if (this.flexChild2) {
-                this.flexChild2.$ext.style.marginTop = 
-                    (this.$edge[0] + value 
-                        + apf.getHeightDiff(this.flexChild2.$ext)) + "px";
+                if (this.firstChild.height) {
+                    this.lastChild.$ext.style.marginTop = 
+                        (this.$edge[0] + value 
+                            + apf.getHeightDiff(this.firstChild.$ext)) + "px";
+                }
+                else {
+                    this.firstChild.$ext.style.marginBottom = 
+                        (this.$edge[2] + value 
+                            + apf.getHeightDiff(this.lastChild.$ext)) + "px";
+                }
             }
             
             //One flex child (first)
@@ -90,9 +97,16 @@ apf.vsplitbox = function(struct, tagName){
         else {
             //Two flex children
             if (this.flexChild2) {
-                this.flexChild2.$ext.style.marginLeft = 
-                    (this.$edge[3] + value 
-                        + apf.getWidthDiff(this.flexChild2.$ext)) + "px";
+                if (this.firstChild.width) {
+                    this.lastChild.$ext.style.marginLeft = 
+                        (this.$edge[3] + value 
+                            + apf.getWidthDiff(this.firstChild.$ext)) + "px";
+                }
+                else {
+                    this.firstChild.$ext.style.marginRight = 
+                        (this.$edge[1] + value 
+                            + apf.getWidthDiff(this.lastChild.$ext)) + "px";
+                }
             }
             
             //One flex child (first)
@@ -114,6 +128,11 @@ apf.vsplitbox = function(struct, tagName){
                 this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
                 this.lastChild);
             
+            var _self = this;
+            setTimeout(function(){
+                _self.$splitter.$ext.style.background = "black";
+                _self.$splitter.$ext.style.opacity = 0;
+            });
             //@todo position the splitter;
         }
         else {
@@ -143,31 +162,82 @@ apf.vsplitbox = function(struct, tagName){
             lNode.$ext.style.right = this.$edge[1] + "px";
             lNode.$ext.style.bottom = this.$edge[2] + "px";
             if (this.$vbox) {
+                var isPercentage;
+                
                 lNode.$ext.style.left = this.$edge[3] + "px";
-                lNode.$ext.style.top = String(fNode.height).indexOf("%") > -1 
-                    ? fNode.height 
-                    : ((parseInt(fNode.height) + this.padding + this.$edge[0]) + "px");
+                if (fNode.height) {
+                    isPercentage = String(fNode.height).indexOf("%") > -1;
+                    lNode.$ext.style.top = isPercentage 
+                        ? fNode.height 
+                        : ((parseInt(fNode.height) + this.padding + this.$edge[0]) + "px");
+                    
+                    if (this.$splitter) {
+                        this.$splitter.$ext.style.top = isPercentage
+                            ? fNode.height 
+                            : ((parseInt(fNode.height) + this.$edge[0]) + "px");
+                        this.$splitter.$ext.style.marginTop = isPercentage
+                            ? this.padding + "px"
+                            : "0";
+                    }
+                }
+                else {
+                    isPercentage = String(lNode.height).indexOf("%") > -1;
+                    fNode.$ext.style.bottom = isPercentage 
+                        ? lNode.height 
+                        : ((parseInt(lNode.height) + this.padding + this.$edge[2]) + "px");
+                    
+                    if (this.$splitter) {
+                        this.$splitter.$ext.style.bottom = isPercentage
+                            ? lNode.height 
+                            : ((parseInt(lNode.height) + this.$edge[0]) + "px");
+                        this.$splitter.$ext.style.marginBottom = isPercentage
+                            ? this.padding + "px"
+                            : "0";
+                    }
+                }
                 
                 if (this.$splitter) {
                     this.$splitter.$ext.style.left = this.$edge[3] + "px";
                     this.$splitter.$ext.style.right = this.$edge[1] + "px";
-                    this.$splitter.$ext.style.top = String(fNode.height).indexOf("%") > -1 
-                        ? fNode.height 
-                        : ((parseInt(fNode.height) + this.$edge[0]) + "px");
                 }
             }
             else {
                 lNode.$ext.style.top = this.$edge[0] + "px";
-                lNode.$ext.style.right = String(fNode.width).indexOf("%") > -1 
-                    ? fNode.width 
-                    : ((parseInt(fNode.width) + this.padding + this.$edge[3]) + "px");
+                
+                if (fNode.width) {
+                    var isPercentage = String(fNode.width).indexOf("%") > -1;
+                    lNode.$ext.style.left = isPercentage
+                        ? fNode.width 
+                        : ((parseInt(fNode.width) + this.padding + this.$edge[3]) + "px");
+                    
+                    if (this.$splitter) {
+                        this.$splitter.$ext.style.left = isPercentage
+                            ? fNode.width 
+                            : ((parseInt(fNode.width) + this.$edge[3]) + "px");
+                        this.$splitter.$ext.style.marginLeft = isPercentage
+                            ? this.padding + "px"
+                            : "0";
+                    }
+                }
+                else {
+                    var isPercentage = String(lNode.width).indexOf("%") > -1;
+                    fNode.$ext.style.right = isPercentage
+                        ? lNode.width 
+                        : ((parseInt(lNode.width) + this.padding + this.$edge[1]) + "px");
+                    
+                    if (this.$splitter) {
+                        this.$splitter.$ext.style.right = isPercentage
+                            ? lNode.width 
+                            : ((parseInt(lNode.width) + this.$edge[3]) + "px");
+                        this.$splitter.$ext.style.marginRight = isPercentage
+                            ? this.padding + "px"
+                            : "0";
+                    }
+                }
                 
                 if (this.$splitter) {
-                    this.$splitter.$ext.style.top = this.$edge[3] + "px";
-                    this.$splitter.$ext.style.bottom = this.$edge[1] + "px";
-                    this.$splitter.$ext.style.width = String(fNode.width).indexOf("%") > -1 
-                    ? fNode.width 
-                    : ((parseInt(fNode.width) + this.$edge[3]) + "px");
+                    this.$splitter.$ext.style.top = this.$edge[0] + "px";
+                    this.$splitter.$ext.style.bottom = this.$edge[2] + "px";
                 }
             }
             
@@ -213,6 +283,7 @@ apf.vsplitbox = function(struct, tagName){
         apf.layout.forceResize(this.parentNode.$int);
         
         //If no children visible, hide me
+        //Change margin
     }
 //    
 //    function resizeHandler(){
@@ -242,6 +313,10 @@ apf.vsplitbox = function(struct, tagName){
                     ? value + "px"
                     : value)
                 : "";
+            
+            //This can be optimized
+            if (this.$amlLoaded)
+                this.parentNode.$propHandlers["edge"].call(this.parentNode, this.parentNode.edge);
         },
         
         "height" : function(value){
@@ -254,6 +329,10 @@ apf.vsplitbox = function(struct, tagName){
                     ? value + "px"
                     : value)
                 : (apf.isGecko && this.flex && this.parentNode.$vbox ? "auto" : "");
+            
+            //This can be optimized
+            if (this.$amlLoaded)
+                this.parentNode.$propHandlers["edge"].call(this.parentNode, this.parentNode.edge);
         },
         
         "margin" : function(value){
