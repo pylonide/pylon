@@ -444,16 +444,14 @@ apf.splitter.templates = {
                 }
             }
             else if (pNode.firstChild.height) {
-                var total = apf.getHtmlInnerHeight(pNode.$int) 
-                    - pNode.$edge[0] - pNode.$edge[2];
+                var total = apf.getHtmlInnerHeight(pNode.$int);
                 pNode.firstChild[method]("height", 
                     ((newPos - pNode.$edge[0])/total*100) + "%");
             }
             else {
-                var iheight = apf.getHtmlInnerHeight(pNode.$int) ;
-                var total = iheight - pNode.$edge[0] - pNode.$edge[2];
+                var total = apf.getHtmlInnerHeight(pNode.$int) ;
                 pNode.lastChild[method]("height", 
-                    ((iheight - newPos - pNode.$edge[2] - pNode.padding)/total*100) + "%");
+                    ((total - newPos - pNode.$edge[2] - pNode.padding)/total*100) + "%");
             }
     
             if (apf.hasSingleResizeEvent)
@@ -462,7 +460,7 @@ apf.splitter.templates = {
         
         updateH : function(newPos, finalPass){
             var method = finalPass ? "setAttribute" : "setProperty";
-            console.log(newPos);
+
             var pNode = this.parentNode;
             if (pNode.fixedChild) {
                 if (pNode.fixedChild == pNode.firstChild) {
@@ -475,16 +473,14 @@ apf.splitter.templates = {
                 }
             }
             else if (pNode.firstChild.width) {
-                var total = apf.getHtmlInnerWidth(pNode.$int) 
-                    - pNode.$edge[3] - pNode.$edge[1];
+                var total = apf.getHtmlInnerWidth(pNode.$int);
                 pNode.firstChild[method]("width", 
                     ((newPos - pNode.$edge[3])/total*100) + "%");
             }
             else {
-                var iwidth = apf.getHtmlInnerWidth(pNode.$int) ;
-                var total = iwidth - pNode.$edge[3] - pNode.$edge[1];
+                var total = apf.getHtmlInnerWidth(pNode.$int) ;
                 pNode.lastChild[method]("width", 
-                    ((iwidth - newPos - pNode.$edge[1] - pNode.padding)/total*100) + "%");
+                    ((total - newPos - pNode.$edge[1] - pNode.padding)/total*100) + "%");
             }
     
             if (apf.hasSingleResizeEvent)
