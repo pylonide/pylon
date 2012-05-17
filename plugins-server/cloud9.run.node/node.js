@@ -42,7 +42,7 @@ var Runner = exports.Runner = function(options) {
     this.scriptArgs = options.args || [];
     this.nodeArgs = [];
 
-    env = options.env || {};
+    options.env = options.env || {};
     ShellRunner.call(this, options);
 };
 

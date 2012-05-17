@@ -37,8 +37,8 @@ exports.factory = function(uid, ide) {
 
 var Runner = exports.Runner = function(options) {
     NodeRunner.call(this, options);
-    this.breakOnStart = breakOnStart;
-    this.extra = extra;
+    this.breakOnStart = options.breakOnStart;
+    this.extra = options.extra;
     this.msgQueue = [];
 };
 
