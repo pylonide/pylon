@@ -190,6 +190,9 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 }
+                else {
+                    next();
+                }
             }, function() {
                 var extendedMakers = markers;
                 filterMarkersAroundError(ast, markers);
