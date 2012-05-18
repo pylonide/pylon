@@ -109,7 +109,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 // in order to get the current file).
                 case "getRevisionHistory":
                     if (!message.path) {
-                        return console.error("No path sent for the file to save");
+                        return console.error("No path sent for the file to get revisions from");
                     }
 
                     this.getRevisions(message.path, function(err, revObj) {
@@ -146,13 +146,13 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
                 case "closeFile":
                     if (!message.path) {
-                        return console.error("No path sent for the file to save");
+                        return console.error("No path sent for the file to be closed");
                     }
                     break;
                     
                 case "removeRevision":
                     if (!message.path) {
-                        return console.error("No path sent for the file to save");
+                        return console.error("No path sent for the file to be removed");
                     }
                     
                     var path = PathUtils.getAbsolutePath.call(this, message.path);
@@ -260,7 +260,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * - upperTSBound (Number): Timestamp of the revision to retrieve. Optional.
      * - currentDoc (Function): Callback to pass the results to.
      *
-     * Asynchronoulsy calculates the content of the documentat a particular
+     * Asynchronoulsy calculates the content of the document at a particular
      * revision, or defaults to the current content of the document according to
      * the last revision.
      **/
