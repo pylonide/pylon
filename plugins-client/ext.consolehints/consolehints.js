@@ -12,6 +12,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var markup = require("text!ext/consolehints/consolehints.xml");
 var css = require("text!ext/consolehints/consolehints.css");
 var c9console = require("ext/console/console");
@@ -20,8 +21,10 @@ var commands = require("ext/commands/commands");
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 var filterCommands = function(commands, word) {
+    var escapedWord = util.escapeRegExp(word);
     return commands.filter(function(cmd) {
-        return cmd.search(new RegExp("^" + word)) !== -1;
+        var regEx = new RegExp("^" + escapedWord, "i");
+        return cmd.search(regEx) !== -1;
     }).sort();
 };
 

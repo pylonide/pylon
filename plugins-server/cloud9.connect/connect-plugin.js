@@ -30,13 +30,13 @@ module.exports = function startup(options, imports, register) {
 
     api.addRoute = server.addRoute;
     api.use = api.useStart;
-    
+
     api.on = server.on;
     api.emit = server.emit;
     api.close = server.close;
-    
+
     function startListening (port, host) {
-        api.getPort = function () { 
+        api.getPort = function () {
             return port;
         };
         api.getHost = function () {
@@ -46,9 +46,9 @@ module.exports = function startup(options, imports, register) {
         server.listen(port, host, function(err) {
             if (err)
                 return register(err);
-    
+
             imports.log.info("Connect server listening at http://" + host + ":" + port);
-    
+
             register(null, {
                 "onDestruct": function(callback) {
                     server.close();
@@ -63,12 +63,12 @@ module.exports = function startup(options, imports, register) {
             });
         });
     }
-    
+
     if (options.port instanceof Array) {
         netutil.findFreePort(options.port[0], options.port[1], options.host, function(err, port) {
-            if (err) 
+            if (err)
                 return register(err);
-            
+
             startListening(port, options.host);
         });
     } else {
