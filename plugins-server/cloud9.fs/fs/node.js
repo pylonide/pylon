@@ -52,8 +52,6 @@ exports.jsDAV_FS_Node = jsDAV_FS_Node;
         if (this.$stat)
             return callback(null, this.$stat);
 
-console.log("S2", this.$stat, this)
-console.trace()
         return this.vfs.stat(this.path, {}, function(err, stat) {
             if (err || !stat) {
                 return callback(new Exc.jsDAV_Exception_FileNotFound("File at location "
