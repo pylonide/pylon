@@ -1,0 +1,65 @@
+.lbl_saveas {
+    font-weight: bold;
+    color: #323232;
+}
+.lbl_filepath {
+    padding-left: 7px;
+    font-size: 11px;
+    color: #bababa;
+    text-shadow: rgba(255, 255, 255, 1) 0px 1px 0px;
+}
+
+.trDgLike .item-fix:nth-child(4n-1) {
+    background-color: #f1f0f1;
+}
+.trDgLike .item-fix:nth-child(4n+1) {
+    background-color: #fefdfe;
+}
+
+.trDgLike .item-fix.root {
+    background-color: #fefdfe;
+}
+
+.dgLikeContaier {
+    background-color: white;
+    border: 1px solid #C3C3C3;
+    color: #333333;
+    cursor: default;
+    font-family: Tahoma, Arial;
+    font-size: 8pt;
+    overflow: hidden;
+    position: relative;
+    height: 210px;
+}
+
+.dgLikeContaier .heading {
+    position : relative;
+    top : 0;
+    left : 0;
+    height : 20px;
+    z-index : 10;
+    /*padding-left : 5px;*/
+    background-color : #e6e6e6;
+    margin : 0 0 0 0;
+    white-space : nowrap;
+    
+    display : inline-block;
+    background : -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(229,229,229)),color-stop(1, rgb(248,248,248)));
+    background: -moz-linear-gradient(center bottom,rgb(229,229,229) 0%,rgb(248,248,248) 100%);
+    overflow : hidden;
+    text-overflow : ellipsis;
+    color: #333;
+    border-bottom: 1px solid #BFBFBF;
+
+    padding : 2px 4px 1px 3px;
+    display : block;
+    height : 15px;
+    text-decoration : none;
+    border-left : 1px solid white;
+    border-right : none;
+    border-top : 1px solid white;
+}
+
+.hidefiles .file_item {
+    display: none;
+}

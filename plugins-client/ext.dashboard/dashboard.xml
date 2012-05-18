@@ -1,0 +1,83 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:window 
+  id = "dashboard"
+  width = "900"
+  center    = "true"
+>
+    
+  <a:bar 
+    class = "c9-menu-bar"
+    height = "4"
+  ></a:bar>
+  <a:hbox
+    class = "darkOpaque"
+    height = "46"
+  >
+      <a:bar
+        align     = "center"
+        skin      = "basic"
+        padding   = "5"
+        flex     = "1">
+          <a:label>New project:</a:label>
+          <a:textbox
+            id           = "projectTitle"
+            focusselect  = "true"
+            />
+      </a:bar>
+      <a:bar
+        skin      = "basic"
+        padding   = "5">
+          <a:label>Where is your data stored</a:label>
+          <a:dropdown value="auto" width="150" height="27" skin="dropdown-dark-glossy">
+              <a:item value="cloud9Git">On Cloud9 as a git repo</a:item>
+              <a:item value="cloud9Hg">On Cloud9 as a mercurial repo</a:item>
+              <a:item value="vm">FTP Server</a:item>
+              <a:item value="vm">On my own private virtual machine</a:item>
+          </a:dropdown>
+      </a:bar>
+      <a:hbox flex = "1">
+        <a:button caption="Upload" skin="" flex="1" />
+        <a:button caption="Clone" skin="" flex="1" />
+        <a:button caption="Choose template" skin="" flex="1" />
+      </a:hbox>
+  </a:hbox>
+   <!--
+        
+        .oooooo.   oooo                                      .o88o.                                         ooooo     ooo ooooooooo.   ooooo        
+       d8P'  `Y8b  `888                                      888 `"                                         `888'     `8' `888   `Y88. `888'        
+      888           888   .ooooo.  ooo. .oo.    .ooooo.     o888oo  oooo d8b  .ooooo.  ooo. .oo.  .oo.       888       8   888   .d88'  888         
+      888           888  d88' `88b `888P"Y88b  d88' `88b     888    `888""8P d88' `88b `888P"Y88bP"Y88b      888       8   888ooo88P'   888         
+      888           888  888   888  888   888  888ooo888     888     888     888   888  888   888   888      888       8   888`88b.     888         
+      `88b    ooo   888  888   888  888   888  888    .o     888     888     888   888  888   888   888      `88.    .8'   888  `88b.   888       o 
+       `Y8bood8P'  o888o `Y8bod8P' o888o o888o `Y8bod8P'    o888o   d888b    `Y8bod8P' o888o o888o o888o       `YbodP'    o888o  o888o o888ooooood8 
+                                                                                                                                                    
+   -->
+   <a:hbox class="darkOpaque">
+      <a:label flex="1">Where is your data stored</a:label>
+      <a:textbox
+            id           = "cloneURL"
+            focusselect  = "true"
+            flex         = "5"
+            />
+      <a:button caption="Go" skin="" flex="1" />
+   </a:hbox>
+   <!--
+          
+          .oooooo.                                   oooooo     oooo ooo        ooooo 
+         d8P'  `Y8b                                   `888.     .8'  `88.       .888' 
+        888      888 oooo oooo    ooo ooo. .oo.        `888.   .8'    888b     d'888  
+        888      888  `88. `88.  .8'  `888P"Y88b        `888. .8'     8 Y88. .P  888  
+        888      888   `88..]88..8'    888   888         `888.8'      8  `888'   888  
+        `88b    d88'    `888'`888'     888   888          `888'       8    Y     888  
+         `Y8bood8P'      `8'  `8'     o888o o888o          `8'       o8o        o888o 
+                                                                                      
+   -->
+   <a:hbox>
+
+   </a:hbox>
+
+   <a:hbox>
+   </a:hbox>
+
+</a:window>
+</a:application>

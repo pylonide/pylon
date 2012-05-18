@@ -127,6 +127,7 @@ var config = {
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
                     "ext/revisions/revisions",
+                    "ext/dashboard/dashboard",
                     "ext/language/liveinspect"
                     //"ext/splitview/splitview"
                     //"ext/minimap/minimap"

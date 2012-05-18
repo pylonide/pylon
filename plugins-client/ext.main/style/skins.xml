@@ -512,6 +512,27 @@
         </a:main>
     </a:presentation>
 </a:bar>
+
+<a:bar name="darkOpaque">
+    <a:style><![CDATA[
+        .darkOpaque {
+            background-color: #262626;
+            background-image: -webkit-linear-gradient(top, #292929,#242424);
+            background-image:    -moz-linear-gradient(top, #292929,#242424);
+            background-image:         linear-gradient(top, #292929,#242424);
+            border-top: 1px solid black;
+            box-shadow: 0 1px 0 0 #353535 inset;
+            color: #EDEDED;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main containter=".">
+            <div class="darkOpaque">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+
 <a:button name="btn-access_request">
     <a:style><![CDATA[
         .btn-access_request {
@@ -4925,6 +4946,114 @@
         </a:empty>
     </a:presentation>
 </a:dropdown>
+
+<a:dropdown name="dropdown-dark-glossy">
+    <a:style><![CDATA[
+    /* 
+     * Idle
+     */
+        .dropdown-dark-glossy {
+            background: #292929 url(images/dropdown-dark-glossy/background.png) repeat-x 50% 0;
+            border: 1px solid #010910;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 0 rgba(255, 255, 255, .10) inset,
+                        0 0 0 1px rgba(236, 245, 255, .10) inset,
+                        0 1px 0 0 rgba(237,237,237,.1);
+            max-height: 100px !important;
+            height: 27px;
+            padding: 0 18px 0 0;
+            position: relative;
+        }
+        .dropdown-dark-glossy .label {
+            color: #C0DABE;
+            display: inline-block;
+            font-size: 12px;
+            line-height: 27px;
+            overflow: hidden;
+            padding: 0 0 0 8px;
+        }
+        .dropdown-dark-glossy .button {
+            background: url(images/dropdown-dark-glossy/button.png) no-repeat 50% 0;
+            display: inline-block;
+            height: 25px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 16px;
+        }
+        .dropdown-dark-glossy .button:before {
+            background: url(images/dropdown-dark-glossy/divider.png) no-repeat 50% 0;
+            content: "";
+            display: block;
+            height: 25px;
+            left: -2px;
+            position: absolute;
+            top: 0;
+            width: 2px;
+        }
+    /*
+     * Hover
+     */
+        .dropdown-dark-glossyOver,
+        .dropdown-dark-glossyOver .button,
+        .dropdown-dark-glossyOver .button:before {
+            background-position: 50% -30px;
+        }
+    /*
+     * Down
+     */
+        .dropdown-dark-glossyDown,
+        .dropdown-dark-glossyDown .button,
+        .dropdown-dark-glossyDown .button:before {
+            background-position: 50% -60px;
+        }
+        .dropdown-dark-glossyDown {
+            box-shadow: 0 0 5px 1px rgba(0, 0, 0, .6) inset,
+                        0 0 0 1px rgba(0, 0, 0, .2) inset,
+                        0 1px 0 0 rgba(237,237,237,.04);
+        }
+    /*
+     * Disabled
+     */
+        .dropdown-dark-glossyDisabled,
+        .dropdown-dark-glossyDisabled .button,
+        .dropdown-dark-glossyDisabled .button:before {
+            background-position: 50% -90px;
+        }
+        .dropdown-dark-glossyDisabled {
+            background-color: transparent;
+            border-color: rgba(0, 0, 0, .34);
+            box-shadow: 0 1px 0 0 rgba(255, 255, 255, .02) inset;
+        }
+        .dropdown-dark-glossyDisabled .label {
+            color: rgba(255,255,255,.2);
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="div[1]/text()" button="." width-diff="-1">
+            <div class="dropdown-dark-glossy">
+                <div class="label">-</div>
+                <div class="button"> </div>
+            </div>
+        </a:main>
+        <a:container contents=".">
+            <div class="c9-optionList">
+            </div>
+        </a:container>
+        <a:item
+          class       = "."
+          caption     = "text()"
+          select      = "."
+          inherit     = "true">
+            <div class="c9-dd-item">-</div>
+        </a:item>
+        <a:empty caption=".">
+            <div class="empty">-</div>
+        </a:empty>
+    </a:presentation>
+</a:dropdown>
+
 <a:dropdown name="light_dropdown">
     <a:style><![CDATA[
         .light_dropdown {
