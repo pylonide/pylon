@@ -3,7 +3,6 @@
 var jsDAV_FS_Node   = require("./node").jsDAV_FS_Node;
 var jsDAV_iFile     = require("jsDAV/lib/DAV/iFile").jsDAV_iFile;
 
-var Exc             = require("jsDAV/lib/DAV/exceptions");
 var Util            = require("jsDAV/lib/DAV/util");
 
 function jsDAV_FS_File(vfs, path, stat) {
@@ -13,6 +12,8 @@ function jsDAV_FS_File(vfs, path, stat) {
 }
 
 exports.jsDAV_FS_File = jsDAV_FS_File;
+
+require("util").inherits(jsDAV_FS_File, jsDAV_FS_Node);
 
 (function() {
     this.implement(jsDAV_iFile);
@@ -93,21 +94,6 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
         this.vfs.rmfile(this.path, {}, callback);
     };
 
-    this._stat = function(callback) {
-        var self = this;
-        if (this.$stat)
-            return callback(null, this.$stat);
-
-        return this.vfs.stat(this.path, {}, function(err, stat) {
-            if (err || !stat) {
-                return callback(new Exc.jsDAV_Exception_FileNotFound("File at location "
-                    + self.path + " not found"));
-            }
-            self.$stat = stat;
-            callback(null, stat);
-        });
-    };
-
     /**
      * Returns the size of the node, in bytes
      *
@@ -153,4 +139,4 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
             callback(null, stat.mime);
         });
     };
-}).call(jsDAV_FS_File.prototype = new jsDAV_FS_Node());
+}).call(jsDAV_FS_File.prototype);

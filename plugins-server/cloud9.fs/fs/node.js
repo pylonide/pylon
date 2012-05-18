@@ -6,13 +6,13 @@
 "use strict";
 
 var jsDAV_iNode = require("jsDAV/lib/DAV/iNode").jsDAV_iNode;
-
-var Fs          = require("fs");
-var Path        = require("path");
+var Exc         = require("jsDAV/lib/DAV/exceptions");
 var Util        = require("jsDAV/lib/DAV/util");
 
-function jsDAV_FS_Node(path) {
+function jsDAV_FS_Node(vfs, path, stat) {
+    this.vfs = vfs;
     this.path = path;
+    this.$stat = stat;
 }
 
 exports.jsDAV_FS_Node = jsDAV_FS_Node;
@@ -33,17 +33,34 @@ exports.jsDAV_FS_Node = jsDAV_FS_Node;
      * @param {string} name The new name
      * @return void
      */
-    this.setName = function(name, cbfssetname) {
+    this.setName = function(name, callback) {
         var parentPath = Util.splitPath(this.path)[0];
         var newName    = Util.splitPath(name)[1];
 
         var newPath = parentPath + "/" + newName;
         var self = this;
-        Fs.rename(this.path, newPath, function(err) {
+        this.vfs.rename(newPath, {from: this.path}, function(err) {
             if (err)
-                return cbfssetname(err);
+                return callback(err);
             self.path = newPath;
-            cbfssetname();
+            callback();
+        });
+    };
+
+    this._stat = function(callback) {
+        var self = this;
+        if (this.$stat)
+            return callback(null, this.$stat);
+
+console.log("S2", this.$stat, this)
+console.trace()
+        return this.vfs.stat(this.path, {}, function(err, stat) {
+            if (err || !stat) {
+                return callback(new Exc.jsDAV_Exception_FileNotFound("File at location "
+                    + self.path + " not found"));
+            }
+            self.$stat = stat;
+            callback(null, stat);
         });
     };
 
@@ -52,14 +69,12 @@ exports.jsDAV_FS_Node = jsDAV_FS_Node;
      *
      * @return {Number}
      */
-    this.getLastModified = function(cbfsgetlm) {
-        if (this.$stat)
-            return cbfsgetlm(null, this.$stat.mtime);
-        Fs.stat(this.path, function(err, stat) {
-            if (err || typeof stat == "undefined")
-                return cbfsgetlm(err);
-            //_self.$stat = stat;
-            cbfsgetlm(null, stat.mtime);
+    this.getLastModified = function(callback) {
+        this._stat(function(err, stat) {
+            if (err)
+                return callback(err);
+
+            callback(null, stat.mtime);
         });
     };
 
@@ -68,7 +83,9 @@ exports.jsDAV_FS_Node = jsDAV_FS_Node;
      *
      * @return {Boolean}
      */
-    this.exists = function(cbfsexist) {
-        Path.exists(this.path, cbfsexist);
+    this.exists = function(callback) {
+        this._stat(function(err, stat) {
+            return callback(!err && !stat.err);
+        });
     };
 }).call(jsDAV_FS_Node.prototype = new jsDAV_iNode());

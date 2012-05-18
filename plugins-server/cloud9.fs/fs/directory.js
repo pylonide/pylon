@@ -20,10 +20,12 @@ var Stream            = require('stream').Stream;
 function jsDAV_FS_Directory(vfs, path, stat) {
     this.vfs = vfs;
     this.path = path;
-    this.stat = stat;
+    this.$stat = stat;
 }
 
 exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
+
+require("util").inherits(jsDAV_FS_Directory, jsDAV_FS_Node);
 
 (function() {
     this.implement(jsDAV_Directory, jsDAV_iCollection, jsDAV_iQuota);
@@ -143,7 +145,7 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
         var self = this;
         var path = Path.join(this.path, name);
 
-        this.vfs.stat(path, {}, function(err, stat) {
+        this._stat(path, {}, function(err, stat) {
             if (err)
                 return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found"));
 
@@ -201,4 +203,4 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
         return callback(null, [0, 0]);
     };
 
-}).call(jsDAV_FS_Directory.prototype = new jsDAV_FS_Node());
+}).call(jsDAV_FS_Directory.prototype);
