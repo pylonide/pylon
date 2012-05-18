@@ -6,6 +6,7 @@ exports.findFreePort = function(start, end, hostname, callback) {
     var port = pivot;
     asyncRepeat(function(next, done) {
         var stream = net.createConnection(port, hostname);
+        var done = false;
 
         stream.on("connect", function() {
             stream.destroy();
@@ -14,13 +15,23 @@ exports.findFreePort = function(start, end, hostname, callback) {
                 port = start;
 
             if (port == pivot)
-                done("Could not find free port.");
+                return done("Could not find free port.");
 
             next();
         });
 
         stream.on("error", function() {
+            if (done)
+                return;
             done();
+            done = true;
+        });
+
+        stream.on("timeout", function() {
+            if (done)
+                return;
+            done();
+            done = true;
         });
     }, function(err) {
         callback(err, port);
