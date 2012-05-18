@@ -26,7 +26,7 @@ var getLastAndAfterRevisions = function(data) {
     var keys = data.groupKeys;
     var minKey = keys[0];
     var maxKey = keys[keys.length - 1];
-    var revision = group[keys[0]];
+    var revision = group[minKey];
     var beforeRevision = "";
 
     var i, ts;

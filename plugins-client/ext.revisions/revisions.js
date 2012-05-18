@@ -140,6 +140,15 @@ module.exports = ext.register("ext/revisions/revisions", {
                 
             self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
+        
+        // Remove the revision file if the file is removed.
+        ide.addEventListener("removefile", function(data) {
+            ide.send({
+                command: "revisions",
+                subCommand: "removeRevision",
+                path: Util.stripWSFromPath(data.path)
+            });
+        });
 
         btnSave.setAttribute("caption", "");
         btnSave.setAttribute("margin", "0 20");
@@ -343,9 +352,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var path = Util.stripWSFromPath(e.path);
         this.changedPaths.push(path);
-
-        if (winQuestionRev.visible !== true &&
-            !this.isCollab(tabEditors.getPage().$doc)) { // Only in single user mode
+        if (winQuestionRev.visible !== true && !this.isCollab()) { // Only in single user mode
             ide.send({
                 command: "revisions",
                 subCommand: "getRealFileContents",

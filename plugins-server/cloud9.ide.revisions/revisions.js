@@ -149,6 +149,15 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         return console.error("No path sent for the file to save");
                     }
                     break;
+                    
+                case "removeRevision":
+                    if (!message.path) {
+                        return console.error("No path sent for the file to save");
+                    }
+                    
+                    var path = PathUtils.getAbsolutePath.call(this, message.path);
+                    Fs.unlink(path + "." + FILE_SUFFIX);
+                    break;
             }
         }
         return true;

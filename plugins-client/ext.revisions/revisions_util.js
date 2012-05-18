@@ -2,7 +2,6 @@ define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
 var Anchor = require("ace/anchor").Anchor;
-var settings = require("ext/settings/settings");
 var ide = require("core/ide");
 
 var TIMELAPSE = 10 * 60 * 1000;
