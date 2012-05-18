@@ -58,7 +58,9 @@ theme:
 	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` plugins-client/lib.ace/www/theme
 
 gzip:
-	gzip plugins-client/lib.packed/www/packed.js
+	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
+		gzip -9 -v -c $$i > $$i.gz ; \
+	done
 
 package: apf core worker mode theme ext
 
