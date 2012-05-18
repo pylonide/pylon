@@ -20,6 +20,7 @@ var exports = module.exports = function setup(options, imports, register) {
 exports.factory = function(vfs) {
     return function(args, eventEmitter, eventName) {
         return new Runner(vfs, {
+            command: "npm",
             args: args.args,
             cwd: args.cwd,
             nodeVersion: args.nodeVersion,
