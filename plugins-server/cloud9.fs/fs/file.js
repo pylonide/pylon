@@ -6,9 +6,10 @@ var jsDAV_iFile     = require("jsDAV/lib/DAV/iFile").jsDAV_iFile;
 var Exc             = require("jsDAV/lib/DAV/exceptions");
 var Util            = require("jsDAV/lib/DAV/util");
 
-function jsDAV_FS_File(vfs, path) {
+function jsDAV_FS_File(vfs, path, stat) {
     this.vfs = vfs;
     this.path = path;
+    this.$stat = stat;
 }
 
 exports.jsDAV_FS_File = jsDAV_FS_File;
@@ -94,6 +95,9 @@ exports.jsDAV_FS_File = jsDAV_FS_File;
 
     this._stat = function(callback) {
         var self = this;
+        if (this.$stat)
+            return callback(null, this.$stat);
+
         return this.vfs.stat(this.path, {}, function(err, stat) {
             if (err || !stat) {
                 return callback(new Exc.jsDAV_Exception_FileNotFound("File at location "

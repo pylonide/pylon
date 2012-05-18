@@ -44,8 +44,8 @@ exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
                 return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found 1"));
 
             callback(null, stat.mime == "inode/directory"
-                ? new jsDAV_FS_Directory(self.vfs, path)
-                : new jsDAV_FS_File(self.vfs, path)
+                ? new jsDAV_FS_Directory(self.vfs, path, stat)
+                : new jsDAV_FS_File(self.vfs, path, stat)
             );
         });
     };

@@ -17,9 +17,10 @@ var Path              = require("path");
 var Exc               = require("jsDAV/lib/DAV/exceptions");
 var Stream            = require('stream').Stream;
 
-function jsDAV_FS_Directory(vfs, path) {
+function jsDAV_FS_Directory(vfs, path, stat) {
     this.vfs = vfs;
     this.path = path;
+    this.stat = stat;
 }
 
 exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
@@ -171,8 +172,8 @@ exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
             stream.on("data", function(stat) {
                 var path = Path.join(self.path, stat.name);
                 nodes.push(stat.mime === "inode/directory"
-                    ? new jsDAV_FS_Directory(self.vfs, path)
-                    : new jsDAV_FS_File(self.vfs, path)
+                    ? new jsDAV_FS_Directory(self.vfs, path, stat)
+                    : new jsDAV_FS_File(self.vfs, path, stat)
                 );
             });
 
