@@ -12,6 +12,8 @@ define(function(require, exports, module) {
 var ext = require("core/ext");
 var ide = require("core/ide");
 var settings = require("core/settings");
+var editors = require("ext/editors/editors");
+var sidebar = require("ext/sidebar/sidebar");
 var skin = require("text!ext/quickstart/skin.xml");
 var markup = require("text!ext/quickstart/quickstart.xml");
 
