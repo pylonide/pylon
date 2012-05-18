@@ -24,10 +24,8 @@ var NpmRuntimePlugin = function(ide, workspace) {
     this.pm = ProcessManager;
     this.eventbus = EventBus;
     this.workspace = workspace;
-    this.workspaceId = workspace.workspaceId;
+    this.channel = workspace.workspaceId + "::npm-runtime"; // wtf this should not be needed
     this.children = {};
-
-    this.channel = this.workspaceId + "::npm-runtime";
 
     this.hooks = ["command"];
     this.name = name;
@@ -66,14 +64,15 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
     this.$run = function(file, args, env, version, message, client) {
         var self = this;
-
+        
         this.pm.spawn("run-npm", {
             file: file,
             args: args,
             env: env,
             nodeVersion: version,
-            extra: message.extra
-        }, this.channel, function(err, pid, child) {
+            extra: message.extra,
+            cwd: message.cwd
+        }, self.channel, function(err, pid, child) {
             if (err)
                 return self.error(err, 1, message, client);
 
