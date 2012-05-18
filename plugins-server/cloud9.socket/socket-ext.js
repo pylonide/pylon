@@ -13,7 +13,7 @@ module.exports = function setup(options, imports, register) {
         var uid = message.session.uid;
         permissions.getPermissions(uid, message.workspaceId, function(err, userPermissions) {
             if (err) {
-                return client.send(JSON.stringify({
+                client.send(JSON.stringify({
                     "type": "error",
                     "code": err.code || 500,
                     "message": err.message || err
