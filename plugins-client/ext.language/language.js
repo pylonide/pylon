@@ -71,6 +71,7 @@ module.exports = ext.register("ext/language/language", {
             marker.hook(_self, worker);
             complete.hook(_self, worker);
             refactor.hook(_self, worker);
+            keyhandler.hook(_self, worker);
 
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){
@@ -154,8 +155,8 @@ module.exports = ext.register("ext/language/language", {
         return isContinuousCompletionEnabled;
     },
     
-    setContinuousCompletion: function() {
-        isContinuousCompletionEnabled = false;
+    setContinuousCompletionEnabled: function(value) {
+        isContinuousCompletionEnabled = value;
     },
     
     updateSettings: function() {
