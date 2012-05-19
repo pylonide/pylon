@@ -739,11 +739,10 @@ apf.codebox = function(struct, tagName) {
         this.ace.codebox = this;
         
         ace.on("focus", function(){
-            ace.$isFocused = true;
-            if (ace.session.getValue())
+            if (ace.$isFocused)
                 return;
+            ace.$isFocused = true;
             dom.removeCssClass(ace.codebox.$ext, "tb_textboxInitial");
-            ace.renderer.$markerBack.element.textContent = "";
             
             if (ace.renderer.initialMessageNode) {
                 ace.renderer.scroller.removeChild(ace.renderer.initialMessageNode);
@@ -867,6 +866,8 @@ apf.codebox = function(struct, tagName) {
         editor.setShowPrintMargin(false);
         editor.renderer.setShowGutter(false);
         editor.renderer.setHighlightGutterLine(false);
+        
+        editor.$mouseHandler.$focusWaitTimout = 0;
 
         return editor;
     },
