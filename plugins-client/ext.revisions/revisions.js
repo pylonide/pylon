@@ -186,7 +186,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
         // in OSS Cloud9.
-        if (!this.isCollab || window.cloud9config.hosted) {
+        if (!this.isCollab() || window.cloud9config.hosted) {
             apf.ajax("/api/context/getemail", {
                 method: "get",
                 callback: function(data, state, extra) {
@@ -631,6 +631,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
+        
+        // guided tour magic conflicts with revisions--skip it
+        if (page && page.$model.data.getAttribute("guidedtour") === "1")
+            return;
+            
         switch (message.subtype) {
             case "confirmSave":
                 revObj = this.$getRevisionObject(message.path);

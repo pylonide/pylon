@@ -311,6 +311,9 @@ module.exports = ext.register("ext/code/code", {
             doc.addEventListener("prop.value", function(e) {
                 if (this.editor != _self)
                     return;
+                
+                if (!doc || !doc.acesession)
+                    return; //This is probably a deconstructed document
 
                 doc.acesession.setValue(e.value || "");
 

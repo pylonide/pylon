@@ -7,17 +7,19 @@
                 overflow      : hidden;
                 left: 0;
                 right: 0;
+                background  : url(images/list_uploadactivity_bg.png) no-repeat 0 0;
+                background-size: 100% 100%;
             }
             
             .list-uploadactivity>DIV.uploadactivity-items {
                 height: 100px;
                 max-height: 100px;
-                overflow      : hidden;
+                overflow: hidden;
             }
             
             .list-uploadactivity .item {
                 height      : 20px;
-                padding     : 0 12px 2px 5px;
+                padding     : 0 5px 2px 5px;
                 position    : relative;
                 cursor      : default;
                 border-bottom:1px solid transparent;
@@ -34,7 +36,7 @@
 
             .list-uploadactivity .item .uploadactivity-caption,
             .list-uploadactivity .item .uploadactivity-progress {
-                display     : inline-block;
+                display     : block;
                 height      : 18px;
                 padding     : 3px 0 0 0;
                 margin      : 0 0 0 5px;
@@ -50,14 +52,18 @@
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
+                padding-right: 30px;
             }
             .list-uploadactivity .item .uploadactivity-caption.bold {
                 font-weight: bold;
             }
             
             .list-uploadactivity .item .uploadactivity-progress {
-                display     : inline-block;
+                display     : block;
                 color       : #179439;
+                position: absolute;
+                right: 5px;
+                top: 1px;
             }
             
             .list-uploadactivity .item.hover {
@@ -106,7 +112,7 @@
         <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
             .list-uploadactivity .item .uploadactivity-caption {
                 height  : 17px;
-                padding : 4px 0 0 0;
+                padding : 4px 30px 0 0;
             }
         ]]></a:style>
 
@@ -134,4 +140,87 @@
             </a:empty>
         </a:presentation>
     </a:list>
+    <a:checkbox name="uploadactivity-switch">
+        <a:style><![CDATA[
+            .uploadactivity-switch {
+                position   : relative;
+                overflow   : visible;
+                width      : 9px;
+                height     : 15px;
+            }
+    
+            .uploadactivity-switch .checkbox {
+                width      : 9px;
+                height     : 15px;
+                overflow   : hidden;
+                position   : absolute;
+                background : url("images/list_uploadactivity_switch.png") no-repeat -18px 0;
+            }
+    
+            .uploadactivity-switchChecked.uploadactivity-switchDown .checkbox {
+                background-position : -9px 0;
+            }
+    
+            .uploadactivity-switchChecked .checkbox {
+                background-position : 0 0;
+            }
+    
+            .uploadactivity-switchError span {
+                background-color : #ffb500;
+                color            : #fbfbfb;
+            }
+    
+            .uploadactivity-switchDisabled .checkbox {
+                background-position : 0 0;
+            }
+    
+            .uploadactivity-switchDisabled span {
+                color : #bebebe;
+            }
+        ]]></a:style>
+        <a:style condition="apf.isWebkit"><![CDATA[
+            .uploadactivity-switch span {
+                top : -2px;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main label="span/text()" minheight="15" minwidth="9">
+                <div class='uploadactivity-switch'>
+                    <div class='checkbox'> </div>
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:checkbox>
+    
+    <a:button name="btn-cancel-upload">
+        <a:style><![CDATA[
+            .btn-cancel-upload {
+                position            : relative;
+                -moz-user-select    : none;
+                -khtml-user-select  : none;
+                user-select         : none;
+                color               : #a4a4a4;
+                font-size           : 11px;
+                height              : 14px;
+                cursor              : default;
+            }
+            
+            .btn-cancel-uploadOver {
+                color: #c91212;
+            }
+            
+            .btn-cancel-uploadDown {
+                color: #810707;
+            }
+        ]]></a:style>
+    
+        <a:presentation>
+            <a:main
+              caption    = ".">
+                <div class="btn-cancel-upload">
+                </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
 </a:skin>

@@ -20364,30 +20364,20 @@ apf.GuiElement = function(){
         if (this.$focussable && typeof this.focussable == "undefined")
             apf.GuiElement.propHandlers.focussable.call(this, true);
         
-        
-        
-        if (setResizeEvent)
-            f2();
-        
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", f);
     this.addEventListener("$skinchange", f);
     
     
-    var f2, setResizeEvent;
-    this.addEventListener("$event.resize", f2 = function(c){
-        if (!this.$ext) {
-            setResizeEvent = true;
-            return;
-        }
-        
+    var f;
+    this.addEventListener("$event.resize", f = function(c){
         apf.layout.setRules(this.$ext, "resize", "var o = apf.all[" + this.$uniqueId + "];\
             if (o) o.dispatchEvent('resize');", true);
 
         apf.layout.queue(this.$ext);
         //apf.layout.activateRules(this.$ext);
-        this.removeEventListener("$event.resize", f2);
+        this.removeEventListener("$event.resize", f);
     });
     
 
@@ -66236,7 +66226,8 @@ apf.webdav = function(struct, tagName){
             authRequired = true;
         }
 
-        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        var auth = this.ownerDocument 
+           && this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
         if (authRequired) {
             auth.authRequired(callback);
         }

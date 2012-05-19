@@ -250,7 +250,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
     },
 
-    updateCounter: function(backwards, updateOptions, sameSearch, hide) {
+    updateCounter: function(backwards, updateOptions, increment, hide) {
         var ace = this.$getAce();
         var width;
 
@@ -268,11 +268,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 oIter.parentNode.style.width = "auto";
         }
 
-        if (sameSearch && !this.$matchCountTimer) {
+        if (increment && !this.$matchCountTimer) {
             var iter = parseInt(oIter.innerHTML);
             var total = parseInt(oTotal.innerHTML.substr(3))
-            if (!isNaN(iter) && !isNaN(total))
-                oIter.innerHTML = (iter + 1 + (backwards ? -1 : 1)) % total + 1;
+            if (!isNaN(iter) && !isNaN(total)) {
+				iter += increment;
+                oIter.innerHTML = iter > total ? 1 : iter < 0 ? total : iter;
+			}
             return;
         }
 
@@ -638,10 +640,11 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         }
 
         if (this.$crtSearch != searchTxt) {
-            this.updateCounter(options.backwards);
+            this.updateCounter(!reverseBackwards != !options.backwards);
             this.$crtSearch = searchTxt;
         } else {
-            this.updateCounter(options.backwards, null, true);
+            this.updateCounter(!reverseBackwards != !options.backwards,
+				null, reverseBackwards ? -1 : 1);
         }
 
         if (chkHighlightMatches.checked)
