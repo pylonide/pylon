@@ -265,7 +265,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main container="div/div/div[1]">
+        <a:main container="div/div/div[1]" maxheight="27">
             <div class="c9-menu-bar">
                 <div class="c9-mbar-logo">
                     <div class="c9-mbar-bcont">
@@ -289,7 +289,7 @@
         .black-menu-bar {
 			background    : rgba(26, 26, 26, .9);
 			border-bottom : 1px solid black;
-			height        : 27px !important;
+			height        : 26px !important;
 			overflow      : hidden;
 			padding       : 0 5px 0 0px !important;
 			position      : relative;
@@ -8136,16 +8136,14 @@
         }
 
         .splitter.vertical{
-            display  : -moz-box;
-            display  : -webkit-box;
-            display  : -ms-box;
-            width    : 0;
+            width  : 0;
         }
 
         .splitter.vertical div{
             width : 5px;
             margin-left : -3px;
             background : url(images/spacer.gif);
+            height : 100%;
         }
 
         .splitter.vertical.panelsplitter div {

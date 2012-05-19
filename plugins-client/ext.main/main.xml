@@ -28,7 +28,7 @@
     />
 
     <a:vsplitbox anchors="0 0 0 0" id="vbMain">
-        <a:bar skin="c9-menu-bar" id="logobar" height="27">
+        <a:bar skin="c9-menu-bar" id="logobar" height="31">
             <a:bar class="fakehbox aligncenter padding3" id="barTools">
                 <a:divider skin="c9-divider-double" />
             </a:bar>
@@ -37,18 +37,18 @@
             </a:bar>
         </a:bar>
         
-        <a:hsplitbox flex="1" padding="0">
-            <a:vsplitbox id="mainRow" padding="0" flex="1">
-                <a:hsplitbox id="hboxTabBar" padding="0" edge="0" height="27" align="start">
-                    <a:bar id="barButtonContainer" flex="1" align="start" />
+        <a:hsplitbox>
+            <a:vsplitbox id="mainRow">
+                <a:hsplitbox id="hboxTabBar" height="27">
+                    <a:bar id="barButtonContainer" class="editor_tab" />
                 </a:hsplitbox>
-                <a:hsplitbox id="hboxMain" padding="0" edge="0" flex="1" splitter="true">
+                <a:hsplitbox id="hboxMain" splitter="true">
                     <a:bar id="colLeft" width="200" minwidth="105" visible="false" />
-                    <a:bar id="colMiddle" flex="1" padding="3" />
+                    <a:vsplitbox id="colMiddle" padding="3" />
                 </a:hsplitbox>
             </a:vsplitbox>
-            <a:vsplitbox id="colRight" padding="0" width="39">
-                <a:hbox id="hboxDockPanel" flex="1" class="hboxdockpanel" />
+            <a:vsplitbox id="colRight" width="39">
+                <a:hbox id="hboxDockPanel" class="hboxdockpanel" visible="false" />
             </a:vsplitbox>
         </a:hsplitbox>
     </a:vsplitbox>
