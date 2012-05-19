@@ -1033,6 +1033,16 @@ module.exports = ext.register("ext/editors/editors", {
         return node;
     },
 
+    createFolderNodeFromPath : function (path) {
+        var name = path.split("/").pop();
+        var node = apf.n("<folder />")
+            .attr("name", name)
+            .attr("contenttype", util.getContentType(name))
+            .attr("path", path)
+            .node();
+        return node;
+    },
+
     pauseTabResize : function(){
         return;
         tabEditors.setAttribute("buttons", "close,order");

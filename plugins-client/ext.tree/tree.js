@@ -238,9 +238,7 @@ module.exports = ext.register("ext/tree/tree", {
         var _self = this;
         trFiles.setAttribute("model", this.model);
         if (this.loadedSettings === 1) {
-            //setTimeout(function() {
-                _self.loadProjectTree();
-            //}, 1000);
+            _self.loadProjectTree();
         }
 
         // If no settings were found, then we set the "get" attribute of
@@ -620,7 +618,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return;
 
             _self.loading = false;
-
+            
             // Re-select the last selected item
             if(_self.treeSelection.path) {
                 var xmlNode = trFiles.$model.queryNode('//node()[@path="' +
