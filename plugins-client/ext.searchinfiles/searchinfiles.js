@@ -83,10 +83,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         });
         
         ide.addEventListener("init.ext/console/console", function(e){
-            mainRow.insertBefore(winSearchInFiles, e.ext.splitter);
+            searchRow.insertBefore(winSearchInFiles, e.ext.splitter);
         });
-        if (winSearchInFiles.parentNode != mainRow) {
-            mainRow.insertBefore(winSearchInFiles, 
+        if (winSearchInFiles.parentNode != searchRow) {
+            searchRow.insertBefore(winSearchInFiles, 
                 self.winDbgConsole && winDbgConsole.previousSibling || null);
         }
 

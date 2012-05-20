@@ -10,6 +10,7 @@ var ide = require("core/ide");
 var settings = require("core/settings");
 var panels = require("ext/panels/panels");
 var editors = require("ext/editors/editors");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/sidebar/sidebar", {
     name     : "Side Bar",
@@ -53,12 +54,13 @@ module.exports = ext.register("ext/sidebar/sidebar", {
     
         var timer;
         navbar.$ext.addEventListener("mouseover", function(e){
+            clearTimeout(timer);
+            
             if (!_self.animating 
               && navbar.getWidth() >= navbar.$int.scrollWidth)
               //&& apf.isChildOf(navbar.$ext, e.fromElement, true))
                 return;
             
-            clearTimeout(timer);
             if (navbar.$int.scrollWidth != navbar.$int.offsetWidth) {
                 timer = setTimeout(function(){
                     _self.animateToFullWidth();
@@ -81,7 +83,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         
         ide.addEventListener("panels.animate", function(e){
             if (e.noanim) {
-                _self.animateToDefaultWidth();
+                _self.animateToDefaultWidth(true);
                 if (e.activate)
                     apf.setStyleClass(navbar.$ext, "", ["closed"]);
                 else 
@@ -93,40 +95,33 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             //Stop and prevent any animation to happen
             clearTimeout(timer);
             _self.animating = true;
-            if (_self.animateControl)
-                _self.animateControl.stop();
+//            if (_self.animateControl)
+//                _self.animateControl.stop();
             
-            var lastTween = e.tweens[e.tweens.length - 1];
-            var tween = {
-                oHtml : navbar.$ext, 
-                type  : "width", 
-                from  : navbar.getWidth(),
-                to    : lastTween.to
-            };
+//            var lastTween = e.tweens[e.tweens.length - 1];
+//            var tween = {
+//                oHtml : navbar.$ext, 
+//                type  : "width", 
+//                from  : navbar.getWidth(),
+//                to    : lastTween.to
+//            };
             
-            e.tweens.push(tween);
-            
-            var i = 0;
-            var finish = e.options.onfinish;
-            var oneach = e.options.oneach;
-            e.options.oneach = function(){
-                if (++i == 4 && lastTween.to == 0)
-                    apf.setStyleClass(navbar.$ext, "closed");
-                
-                oneach.apply(this, arguments);
-            }
-            e.options.onfinish = function(){
-                if (lastTween.to == 0)
+//            e.tweens.push(tween);
+
+            anims.animateSplitBoxNode(navbar, {
+                width: parseInt(e.toWidth) + "px", 
+                timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+                duration: 0.3 
+            }, function(){
+                if (e.toWidth == 0)
                     apf.setStyleClass(navbar.$ext, "closed");
                 else 
                     apf.setStyleClass(navbar.$ext, "", ["closed"]);
                 
                 panels.lastPanel.button.$setState("Out", {});
                 
-                finish.apply(this, arguments);
-                
                 _self.animating = false;
-            }
+            });
         });
 
         splitterPanelLeft.addEventListener("dragmove", function(e){
@@ -170,64 +165,31 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         })
     },
     
-    animateToFullWidth : function(cb){
-        if (this.animateControl)
-            this.animateControl.stop();
-        
+    animateToFullWidth : function(){
         editors.pauseTabResize();
         
-        var i = 0, toWidth = navbar.$int.scrollWidth + (editors.showTabs? 6 : 9);
-        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
-            apf.tween.single(navbar.$ext, {
-                type: "width",
-                from: navbar.getWidth(),
-                to: toWidth,
-                steps : 10,
-                interval : apf.isChrome ? 0 : 5,
-                control : this.animateControl = {},
-                anim : apf.tween.easeOutCubic,
-                oneach : function(){
-                    apf.layout.forceResize();
-                }
-            });
-        }
-        else {
-            navbar.$ext.style.width = toWidth + "px";
+        var toWidth = navbar.$int.scrollWidth + (editors.showTabs? 6 : 9);
+        anims.animateSplitBoxNode(navbar, {
+            width: toWidth + "px", 
+            timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+            duration: 0.3 
+        }, function(){
             apf.layout.forceResize();
-        }
+        });
     },
     
-    animateToDefaultWidth : function(){
-        if (this.animateControl)
-            this.animateControl.stop();
-        
-        var i = 0, toWidth = colLeft.getWidth();
-        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
-            apf.tween.single(navbar.$ext, {
-                type: "width",
-                from: navbar.getWidth(),
-                to: toWidth,
-                steps : 10,
-                interval : apf.isChrome ? 0 : 5,
-                control : this.animateControl = {},
-                anim : apf.tween.easeOutCubic,
-                oneach : function(){
-                    if (i++ == 4 && colLeft.getWidth() == 0)
-                        apf.setStyleClass(navbar.$ext, "closed");
-                    
-                    apf.layout.forceResize();
-                },
-                onfinish : function(){
-                    apf.layout.forceResize();
-                    editors.continueTabResize();
-                }
-            });
-        }
-        else {
-            navbar.$ext.style.width = toWidth + "px";
+    animateToDefaultWidth : function(immediate){
+        var toWidth = colLeft.getWidth();
+        anims.animateSplitBoxNode(navbar, {
+            width: toWidth + "px", 
+            timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+            duration: 0.3,
+            immediate: immediate
+        }, function(){
+            apf.setStyleClass(navbar.$ext, "closed");
             apf.layout.forceResize();
             editors.continueTabResize();
-        }
+        });
     },
     
     add : function(panelExt, options) {

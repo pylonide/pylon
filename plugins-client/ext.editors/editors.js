@@ -284,11 +284,13 @@ module.exports = ext.register("ext/editors/editors", {
 
     /**
      * This method has been abstracted so it can be used by
-     * the focus extension to get the destination coordinates and
+     * the zen extension to get the destination coordinates and
      * dimensions of tabEditors.parentNode when the editor goes
-     * out of focus mode
+     * out of zen mode
      */
     setTabResizeValues : function(ext, preview, animate, mouse, dir) {
+        return;
+        
         var ph;
         var pos = apf.getAbsolutePosition(ph = tabPlaceholder.$ext);
         var d = apf.getDiff(ext);
@@ -404,16 +406,16 @@ module.exports = ext.register("ext/editors/editors", {
     /**
      * Disable the resize event when the editors are in focus mode
      */
-    disableTabResizeEvent : function() {
-        tabPlaceholder.removeEventListener("resize", this.$tabPlaceholderResize);
-    },
+//    disableTabResizeEvent : function() {
+//        tabPlaceholder.removeEventListener("resize", this.$tabPlaceholderResize);
+//    },
 
     /**
      * Enable the resize event when the editors come back to non-focus mode
      */
-    enableTabResizeEvent : function() {
-        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize);
-    },
+//    enableTabResizeEvent : function() {
+//        tabPlaceholder.addEventListener("resize", this.$tabPlaceholderResize);
+//    },
 
     isEditorAvailable : function(page, path){
         var editor = ext.extLut[path];
@@ -1040,12 +1042,10 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     pauseTabResize : function(){
-        return;
         tabEditors.setAttribute("buttons", "close,order");
     },
 
     continueTabResize : function(){
-        return;
         setTimeout(function(){
             tabEditors.setAttribute("buttons", "close,scale,order");
             tabEditors.$waitForMouseOut = false;

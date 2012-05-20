@@ -18622,13 +18622,22 @@ apf.aml.setElement("include", apf.XiInclude);
     };
     
     function done(xmlNode) {
+        var addedNode = this.previousSibling || this.nextSibling;
+        
         if (this.callback) {
             this.callback({
                 xmlNode : xmlNode,
                 amlNode : this.parentNode,
-                addedNode: this.previousSibling || this.nextSibling
+                addedNode: addedNode
             })
         }
+        
+        addedNode.dispatchEvent("DOMNodeInserted", {
+            $beforeNode         : addedNode.nextSibling,
+            relatedNode         : this.parentNode,
+            $isMoveWithinParent : false,
+            bubbles             : true
+        });
         
         //@todo hack!! this should never happen. Find out why it happens
         if (this.parentNode)
@@ -20109,12 +20118,12 @@ apf.GuiElement = function(){
         
     }
     
-    this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget == this 
-          && "vbox|hbox|table".indexOf(this.parentNode.localName) == -1) {
-            this.$setLayout();
-        }
-    }); 
+//    this.addEventListener("DOMNodeInserted", function(e){
+//        if (e.currentTarget == this 
+//          && (this.parentNode.$box || "table" == this.parentNode.localName)) {
+//            this.$setLayout();
+//        }
+//    }); 
 
     this.implement(
         
@@ -62339,6 +62348,7 @@ apf.vsplitbox = function(struct, tagName){
     
     this.padding = 0;
     this.edge = 0;
+    this.$edge = [0,0,0,0];
     
     /**** Properties and Attributes ****/
 
@@ -62351,8 +62361,8 @@ apf.vsplitbox = function(struct, tagName){
      * @attribute {String}  padding      the space between each element. Defaults to 2.
      * @attribute {String}  edge         the space between the container and the elements, space seperated in pixels for each side. Similar to css in the sequence top right bottom left. Defaults to "5 5 5 5".
      */
-    this.$booleanProperties["splitters"] = true;
-    this.$supportedProperties.push("padding", "edge", "splitters");
+    this.$booleanProperties["splitter"] = true;
+    this.$supportedProperties.push("padding", "edge", "splitter");
     
     this.$propHandlers["padding"] = function(value){
         this.padding = parseInt(value);
@@ -62360,37 +62370,40 @@ apf.vsplitbox = function(struct, tagName){
         if (!this.$amlLoaded)
             return;
             
-        if (this.$splitter)
-            this.$splitter.$ext.style[this.$vbox ? "height" : "width"] = value + "px";
+        if (this.$handle)
+            this.$handle.$ext.style[this.$vbox ? "height" : "width"] = value + "px";
+        
+        var firstChild = this.getFirstChild();
+        var lastChild  = this.getSecondChild();
         
         if (this.$vbox) {
             //Two flex children
             if (this.flexChild2) {
-                if (this.firstChild.height) {
-                    this.lastChild.$ext.style.marginTop = this.firstChild.visible
+                if (firstChild.height) {
+                    lastChild.$ext.style.marginTop = firstChild.visible
                         ? (this.$edge[0] + value 
-                            + apf.getHeightDiff(this.firstChild.$ext)) + "px"
+                            + apf.getHeightDiff(firstChild.$ext)) + "px"
                         : 0;
                 }
                 else {
-                    this.firstChild.$ext.style.marginBottom = this.lastChild.visible
+                    firstChild.$ext.style.marginBottom = lastChild.visible
                         ? (this.$edge[2] + value 
-                            + apf.getHeightDiff(this.lastChild.$ext)) + "px"
+                            + apf.getHeightDiff(lastChild.$ext)) + "px"
                         : 0;
                 }
             }
-            else if (this.fixedChild.visible) {
+            else if (this.fixedChild && this.fixedChild.visible) {
                 //One flex child (first)
-                if (this.flexChild1 == this.firstChild) {
+                if (this.flexChild1 == firstChild) {
                     if (this.fixedChild.visible) {
-                        this.flexChild1.style.bottom = 
+                        this.flexChild1.$ext.style.bottom = 
                             (parseInt(this.fixedChild.height) + value + this.$edge[2]) + "px";
                     }
                 }
                     
                 //One flex child (last)
-                else if (this.flexChild1 == this.lastChild) {
-                    this.flexChild1.style.top = 
+                else if (this.flexChild1 == lastChild) {
+                    this.flexChild1.$ext.style.top = 
                         (parseInt(this.fixedChild.height) + value + this.$edge[2]) + "px";
                 }
             }
@@ -62398,27 +62411,27 @@ apf.vsplitbox = function(struct, tagName){
         else {
             //Two flex children
             if (this.flexChild2) {
-                if (this.firstChild.width) {
-                    this.lastChild.$ext.style.marginLeft = 
+                if (firstChild.width) {
+                    lastChild.$ext.style.marginLeft = 
                         (this.$edge[3] + value 
-                            + apf.getWidthDiff(this.firstChild.$ext)) + "px";
+                            + apf.getWidthDiff(firstChild.$ext)) + "px";
                 }
                 else {
-                    this.firstChild.$ext.style.marginRight = 
+                    firstChild.$ext.style.marginRight = 
                         (this.$edge[1] + value 
-                            + apf.getWidthDiff(this.lastChild.$ext)) + "px";
+                            + apf.getWidthDiff(lastChild.$ext)) + "px";
                 }
             }
-            else if (this.fixedChild.visible) {
+            else if (this.fixedChild && this.fixedChild.visible) {
                 //One flex child (first)
-                if (this.flexChild1 == this.firstChild) {
-                    this.flexChild1.style.right =   
+                if (this.flexChild1 == firstChild) {
+                    this.flexChild1.$ext.style.right =   
                         (this.fixedChild.width + value + this.$edge[1]) + "px";
                 }
                     
                 //One flex child (last)
-                else if (this.flexChild1 == this.lastChild) {
-                    this.flexChild1.style.left = 
+                else if (this.flexChild1 == lastChild) {
+                    this.flexChild1.$ext.style.left = 
                         (this.fixedChild.width + value + this.$edge[3]) + "px";
                 }
             }
@@ -62427,18 +62440,16 @@ apf.vsplitbox = function(struct, tagName){
     
     this.$propHandlers["splitter"] = function(value){
         if (value) {
-            this.$splitter = this.insertBefore(
-                this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
-                this.lastChild);
-            
-            var _self = this;
-            setTimeout(function(){
-                _self.$splitter.$ext.style.background = "black";
-                _self.$splitter.$ext.style.opacity = 0;
-            });
+            if (this.$handle)
+                this.$handle.show();
+            else {
+                this.$handle = this.insertBefore(
+                    this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                    this.lastChild);
+            }
         }
         else {
-            this.$splitter.destroy(true, true);
+            this.$handle.hide();//destroy(true, true);
         }
     }
     
@@ -62449,9 +62460,10 @@ apf.vsplitbox = function(struct, tagName){
             return;
         
         var fNode = this.getFirstVisibleChild();
-        if (!fNode)
+        if (!fNode) {
+            this.hide();
             return false;
-        
+        }
         fNode.$ext.style.left = this.$edge[3] + "px";
         fNode.$ext.style.top = this.$edge[0] + "px";
         if (this.$vbox)
@@ -62473,34 +62485,35 @@ apf.vsplitbox = function(struct, tagName){
                         ? fNode.height 
                         : ((parseInt(fNode.height) + this.padding + this.$edge[0]) + "px");
                     
-                    if (this.$splitter) {
-                        this.$splitter.$ext.style.top = isPercentage
+                    if (this.$handle) {
+                        this.$handle.$ext.style.top = isPercentage
                             ? fNode.height 
                             : ((parseInt(fNode.height) + this.$edge[0]) + "px");
-                        this.$splitter.$ext.style.marginTop = isPercentage
+                        this.$handle.$ext.style.marginTop = isPercentage
                             ? this.padding + "px"
                             : "0";
                     }
                 }
                 else {
                     isPercentage = String(lNode.height).indexOf("%") > -1;
+                    lNode.$ext.style.top = "";
                     fNode.$ext.style.bottom = isPercentage 
                         ? lNode.height 
                         : ((parseInt(lNode.height) + this.padding + this.$edge[2]) + "px");
                     
-                    if (this.$splitter) {
-                        this.$splitter.$ext.style.bottom = isPercentage
+                    if (this.$handle) {
+                        this.$handle.$ext.style.bottom = isPercentage
                             ? lNode.height 
                             : ((parseInt(lNode.height) + this.$edge[0]) + "px");
-                        this.$splitter.$ext.style.marginBottom = isPercentage
+                        this.$handle.$ext.style.marginBottom = isPercentage
                             ? this.padding + "px"
                             : "0";
                     }
                 }
                 
-                if (this.$splitter) {
-                    this.$splitter.$ext.style.left = this.$edge[3] + "px";
-                    this.$splitter.$ext.style.right = this.$edge[1] + "px";
+                if (this.$handle) {
+                    this.$handle.$ext.style.left = this.$edge[3] + "px";
+                    this.$handle.$ext.style.right = this.$edge[1] + "px";
                 }
             }
             else {
@@ -62512,39 +62525,40 @@ apf.vsplitbox = function(struct, tagName){
                         ? fNode.width 
                         : ((parseInt(fNode.width) + this.padding + this.$edge[3]) + "px");
                     
-                    if (this.$splitter) {
-                        this.$splitter.$ext.style.left = isPercentage
+                    if (this.$handle) {
+                        this.$handle.$ext.style.left = isPercentage
                             ? fNode.width 
                             : ((parseInt(fNode.width) + this.$edge[3]) + "px");
-                        this.$splitter.$ext.style.marginLeft = isPercentage
+                        this.$handle.$ext.style.marginLeft = isPercentage
                             ? this.padding + "px"
                             : "0";
                     }
                 }
                 else {
                     var isPercentage = String(lNode.width).indexOf("%") > -1;
+                    lNode.$ext.style.left = "";
                     fNode.$ext.style.right = isPercentage
                         ? lNode.width 
                         : ((parseInt(lNode.width) + this.padding + this.$edge[1]) + "px");
                     
-                    if (this.$splitter) {
-                        this.$splitter.$ext.style.right = isPercentage
+                    if (this.$handle) {
+                        this.$handle.$ext.style.right = isPercentage
                             ? lNode.width 
                             : ((parseInt(lNode.width) + this.$edge[3]) + "px");
-                        this.$splitter.$ext.style.marginRight = isPercentage
+                        this.$handle.$ext.style.marginRight = isPercentage
                             ? this.padding + "px"
                             : "0";
                     }
                 }
                 
-                if (this.$splitter) {
-                    this.$splitter.$ext.style.top = this.$edge[0] + "px";
-                    this.$splitter.$ext.style.bottom = this.$edge[2] + "px";
+                if (this.$handle) {
+                    this.$handle.$ext.style.top = this.$edge[0] + "px";
+                    this.$handle.$ext.style.bottom = this.$edge[2] + "px";
                 }
             }
             
-            if (this.$splitter)
-                this.$splitter.$ext.style.position = "absolute";
+            if (this.$handle)
+                this.$handle.$ext.style.position = "absolute";
         }
         else {
             if (!this.$vbox) {
@@ -62562,6 +62576,20 @@ apf.vsplitbox = function(struct, tagName){
             fNode.$propHandlers[size].call(fNode, fNode[size]);
         }
     };
+    
+    this.getFirstChild = function(startNode) {
+        var node = startNode || this.firstChild;
+        while (node && node.$splitter) {
+            node = node.nextSibling;
+        }
+        return node || false;
+    }
+    this.getSecondChild = function(){
+        var node = this.getFirstChild();
+        if (!node)
+            return false;
+        return node.nextSibling && this.getFirstChild(node.nextSibling);
+    }
     
     this.getFirstVisibleChild = function(startNode){
         var node = startNode || this.firstChild;
@@ -62581,45 +62609,25 @@ apf.vsplitbox = function(struct, tagName){
     }
     
     function visibleHandler(e){
-        if (this.parentNode.$splitter) {
+        if (this.parentNode.$handle) {
             if (!e.value)
-                this.parentNode.$splitter.hide();
+                this.parentNode.$handle.hide();
             else
-                this.parentNode.$splitter.show();
+                this.parentNode.$handle.show();
         }
         
         if (e.value && !this.parentNode.visible)
             this.parentNode.show();
         
-        var hasChildren = this.parentNode.$propHandlers.edge
+        this.parentNode.$propHandlers.edge
             .call(this.parentNode, this.parentNode.edge, true);
         
         apf.layout.forceResize(this.parentNode.$int);
-        
-        //If no children visible, hide me
-        if (hasChildren === false)
-            this.parentNode.hide();
         
         //Change margin
         this.parentNode.$propHandlers.padding
             .call(this.parentNode, this.parentNode.padding)
     }
-//    
-//    function resizeHandler(){
-//        if (!this.flex) {
-//            if (this.$isRszHandling || this.$lastSizeChild && 
-//              this.$lastSizeChild[0] == this.$ext.offsetWidth && 
-//              this.$lastSizeChild[1] == this.$ext.offsetHeight)
-//                return;
-//            
-//            /*if (this.$skipResizeOnce)
-//                delete this.$skipResizeOnce;
-//            else*/
-//                this.parentNode.$resize(true);
-//            
-//            this.$lastSizeChild = [this.$ext.offsetWidth, this.$ext.offsetHeight];
-//        }
-//    }
     
     var handlers = {
         "width" : function(value){
@@ -62627,9 +62635,9 @@ apf.vsplitbox = function(struct, tagName){
             //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
                 //return;
 
-            (this.$altExt || this.$ext).style.width = !apf.isNot(value) 
+            this.$ext.style.width = !apf.isNot(value) 
                 ? (parseFloat(value) == value 
-                    ? value + "px"
+                    ? (value - apf.getWidthDiff(this.$ext)) + "px"
                     : value)
                 : "";
             
@@ -62643,11 +62651,11 @@ apf.vsplitbox = function(struct, tagName){
             //if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
                 //return;
 
-            (this.$altExt || this.$ext).style.height = !apf.isNot(value) 
+            this.$ext.style.height = !apf.isNot(value) 
                 ? (parseFloat(value) == value 
-                    ? value + "px"
+                    ? (value - apf.getHeightDiff(this.$ext)) + "px"
                     : value)
-                : (apf.isGecko && this.flex && this.parentNode.$vbox ? "auto" : "");
+                : "";
             
             //This can be optimized
             if (this.$amlLoaded)
@@ -62661,9 +62669,9 @@ apf.vsplitbox = function(struct, tagName){
     }
     
     this.register = function(amlNode, insert){
-        if (amlNode.$splitter)
+        if (amlNode.$splitter || amlNode.nodeFunc != apf.NODE_VISIBLE)
             return;
-        
+
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
@@ -62673,7 +62681,8 @@ apf.vsplitbox = function(struct, tagName){
             amlNode.$propHandlers[prop] = handlers[prop];
         }
 
-        if (this.$vbox) {
+        if (this.flexChild1 && this.flexChild1 == amlNode){ }
+        else if (this.$vbox) {
             if (!amlNode.height || String(amlNode.height).indexOf("%") > -1)
                 this[!this.flexChild1 ? "flexChild1" : "flexChild2"] = amlNode;
             else
@@ -62701,10 +62710,13 @@ apf.vsplitbox = function(struct, tagName){
             this.$propHandlers["padding"].call(this, this.padding);
             this.$propHandlers["edge"].call(this, this.edge);
         }
+        
+        //if (this.$handle)
+            //this.insertBefore(this.$handle, this.lastChild);
     }
     
     this.unregister = function(amlNode){
-        if (!amlNode.$propHandlers)
+        if (!amlNode.$splitter || amlNode.nodeFunc != apf.NODE_VISIBLE)
             return;
         
         amlNode.$propHandlers["left"]   = 
@@ -62715,6 +62727,13 @@ apf.vsplitbox = function(struct, tagName){
         for (var prop in handlers) {
             delete amlNode.$propHandlers[prop];
         }
+        
+        if (this.fixedChild == amlNode)
+            delete this.fixedChild;
+        else if (this.flexChild1 == amlNode)
+            delete this.flexChild1;
+        else if (this.flexChild2 == amlNode)
+            delete this.flexChild2;
         
         //Clear css properties and set layout
         amlNode.removeEventListener("prop.visible", visibleHandler);
@@ -62753,6 +62772,14 @@ apf.vsplitbox = function(struct, tagName){
         if (e.currentTarget.nodeType != 1 
           || e.currentTarget.nodeFunc != apf.NODE_VISIBLE)
             return;
+        
+//        if (this.$handle) {
+//            var _self = this;
+//            setTimeout(function(){
+//                if (_self.$handle.nextSibling != _self.lastChild)
+//                    _self.insertBefore(_self.$handle, _self.lastChild);
+//            });
+//        }
 
         if (e.relatedNode == this && !e.$isMoveWithinParent) {
             e.currentTarget.$setLayout(this.localName, true);
@@ -62780,7 +62807,6 @@ apf.vsplitbox = function(struct, tagName){
     };
     
     this.$loadAml = function(x){
-        
     };
 }).call(apf.vsplitbox.prototype = new apf.GuiElement());
 

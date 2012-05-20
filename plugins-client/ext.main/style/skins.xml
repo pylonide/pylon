@@ -265,7 +265,7 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main container="div/div/div[1]" maxheight="27">
+        <a:main container="div/div/div[1]">
             <div class="c9-menu-bar">
                 <div class="c9-mbar-logo">
                     <div class="c9-mbar-bcont">

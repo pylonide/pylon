@@ -12,6 +12,7 @@ var ext = require("core/ext");
 var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 var main = require("ext/main/main");
+var anims = require("ext/anims/anims");
 
 module.exports = ext.register("ext/menus/menus", {
     name    : "Menus",
@@ -370,35 +371,18 @@ module.exports = ext.register("ext/menus/menus", {
      */
     
     restore : function(preview){
-        if (this.animateControl)
-            this.animateControl.stop();
-
         apf.setStyleClass(logobar.$ext, "", ["minimized"]);
         
-        if (apf.isTrue(settings.model.queryValue("general/@animateui"))) {
-            logobar.$ext.style.overflow = "hidden";
-            
-            apf.tween.single(logobar.$ext, {
-                from : logobar.$ext.offsetHeight,
-                to : 31,
-                anim : apf.tween.easeOutCubic,
-                type : "height",
-                control : this.animateControl = {},
-                interval : apf.isWebkit ? 0 : 10,
-                steps : 5,
-                oneach : function(){
-                    apf.layout.forceResize(tabEditors.$ext);
-                },
-                onfinish : function(){
-                    apf.layout.forceResize(tabEditors.$ext);
-                    logobar.$ext.style.overflow = "";
-                }
-            });
-        }
-        else {
-            logobar.$ext.style.height = "31px";
+        logobar.$ext.style.overflow = "hidden";
+        
+        anims.animateSplitBoxNode(logobar, {
+            height: "31px", 
+            timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+            duration: 0.3
+        }, function(){
             apf.layout.forceResize(tabEditors.$ext);
-        }
+            logobar.$ext.style.overflow = "";
+        });
         
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "false");
@@ -407,35 +391,17 @@ module.exports = ext.register("ext/menus/menus", {
     },
     
     minimize : function(preview, noAnim){
-        if (this.animateControl)
-            this.animateControl.stop();
+        logobar.$ext.style.overflow = "hidden";
 
-        var animate = apf.isTrue(settings.model.queryValue("general/@animateui"));
-        if (noAnim || !animate) {
+        anims.animateSplitBoxNode(logobar, {
+            height: "12px", 
+            timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
+            duration: 0.3
+        }, function(){
             apf.setStyleClass(logobar.$ext, "minimized");
-            logobar.$ext.style.height = "12px";
             apf.layout.forceResize();
-        }
-        else {
-            logobar.$ext.style.overflow = "hidden";
-            apf.tween.single(logobar.$ext, {
-                from : logobar.$ext.offsetHeight,
-                to : 12,
-                anim : apf.tween.easeOutCubic,
-                type : "height",
-                control : this.animateControl = {},
-                interval : apf.isWebkit ? 0 : 10,
-                steps : 5,
-                oneach : function(){
-                    apf.layout.forceResize(tabEditors.$ext);
-                },
-                onfinish : function(){
-                    apf.setStyleClass(logobar.$ext, "minimized");
-                    apf.layout.forceResize();
-                    logobar.$ext.style.overflow = "";
-                }
-            });
-        }
+            logobar.$ext.style.overflow = "";
+        });
 
         if (!preview) {
             settings.model.setQueryValue("auto/menus/@minimized", "true");

@@ -38,14 +38,18 @@
         </a:bar>
         
         <a:hsplitbox>
-            <a:vsplitbox id="mainRow">
-                <a:hsplitbox id="hboxTabBar" height="27">
-                    <a:bar id="barButtonContainer" class="editor_tab" />
-                </a:hsplitbox>
-                <a:hsplitbox id="hboxMain" splitter="true">
-                    <a:bar id="colLeft" width="200" minwidth="105" visible="false" />
-                    <a:vsplitbox id="colMiddle" padding="3" />
-                </a:hsplitbox>
+            <a:vsplitbox id="consoleRow" splitter="true">
+                <a:vsplitbox id="searchRow">
+                    <a:vsplitbox id="editorRow">
+                        <a:hsplitbox id="hboxTabBar" height="27">
+                            <a:bar id="barButtonContainer" class="editor_tab" />
+                        </a:hsplitbox>
+                        <a:hsplitbox id="hboxMain" splitter="true">
+                            <a:bar id="colLeft" width="200" minwidth="105" visible="false" />
+                            <a:vsplitbox id="colMiddle" padding="3" />
+                        </a:hsplitbox>
+                    </a:vsplitbox>
+                </a:vsplitbox>
             </a:vsplitbox>
             <a:vsplitbox id="colRight" width="39">
                 <a:hbox id="hboxDockPanel" class="hboxdockpanel" visible="false" />

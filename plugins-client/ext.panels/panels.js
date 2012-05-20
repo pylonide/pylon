@@ -112,6 +112,13 @@ module.exports = ext.register("ext/panels/panels", {
             _self.animating = false;
         }
         
+        ide.dispatchEvent("panels.animate", { 
+            win : win,
+            toWin : toWin,
+            toWidth : toWidth,
+            onfinish : onfinish
+        });
+        
         if (toWin) {
             var toWinExt = toWin.$altExt || toWin.$ext;
             
@@ -186,13 +193,6 @@ module.exports = ext.register("ext/panels/panels", {
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)" //@todo
             }, onfinish);
         }
-        
-//        ide.dispatchEvent("panels.animate", { 
-//            options : options,
-//            tweens : tweens, 
-//            win : win,
-//            toWin : toWin
-//        });
 //        
 //        apf.tween.multi(document.body, options);
     },
@@ -303,22 +303,15 @@ module.exports = ext.register("ext/panels/panels", {
             menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
         );
         
-        var timer;
-        colLeft.addEventListener("resize", function(){
-            if (!_self.currentPanel || _self.animating)
+        splitterPanelLeft.addEventListener("dragdrop", function(e){
+            if (!_self.currentPanel)
                 return;
             
-            clearTimeout(timer);
-            timer = setTimeout(function(){
-                if (!_self.currentPanel)
-                    return;
+            var query = "auto/panels/panel[@path='" 
+                + _self.currentPanel.path + "']/@width";
                 
-                var query = "auto/panels/panel[@path='" 
-                    + _self.currentPanel.path + "']/@width";
-                    
-                if (settings.model.queryValue(query) != colLeft.getWidth())
-                    settings.model.setQueryValue(query, colLeft.getWidth());
-            }, 500);
+            if (settings.model.queryValue(query) != colLeft.getWidth())
+                settings.model.setQueryValue(query, colLeft.getWidth());
         });
         
         /**** Support for state preservation ****/

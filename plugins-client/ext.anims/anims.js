@@ -7,6 +7,8 @@
 
 define(function(require, exports, module) {
 
+require("ext/anims/firmin-all-min");
+
 var ide = require("core/ide");
 var ext = require("core/ext");
 var settings = require("core/settings");
@@ -25,7 +27,7 @@ module.exports = ext.register("ext/anims/anims", {
                 aNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 //apf.layout.forceResize();
                 
-                finish && finish();
+                finish && setTimeout(finish, 30);
             });
         }
         else {
@@ -39,23 +41,29 @@ module.exports = ext.register("ext/anims/anims", {
         var shouldAnimate = apf.isTrue(settings.model.queryValue("general/@animateui"));
         
         var pNode = aNode.parentNode;
-        var oNode = aNode == pNode.firstChild ? pNode.lastChild : pNode.firstChild;
+        var firstChild = pNode.getFirstChild();
+        var lastChild = pNode.getSecondChild();
+        var isFirst, oNode = (isFirst = aNode == firstChild) ? lastChild : firstChild;
         if (oNode == aNode || !oNode.visible)
             throw new Error("animating object that has no partner");
-        
-        if (shouldAnimate) {
-            var to2;
-            if (pNode.$vbox)
-                to2 = { 
-                    top: (parseInt(options.height) + pNode.$edge[0] + pNode.padding) + "px",
-                    timingFunction : options.timingFunction
-                }
-            else
-                to2 = { 
-                    left: (parseInt(options.width) + pNode.$edge[3] + pNode.padding) + "px",
-                    timingFunction : options.timingFunction
-                }
             
+        var to2;
+        if (pNode.$vbox) {
+            to2 = { timingFunction : options.timingFunction };
+            if (isFirst)
+                to2.top = (parseInt(options.height) + pNode.$edge[0] + pNode.padding) + "px";
+            else
+                to2.bottom = (parseInt(options.height) + pNode.$edge[2] + pNode.padding) + "px";
+        }
+        else {
+            to2 = { timingFunction : options.timingFunction };
+            if (isFirst)
+                to2.left = (parseInt(options.width) + pNode.$edge[3] + pNode.padding) + "px";
+            else
+                to2.right = (parseInt(options.width) + pNode.$edge[1] + pNode.padding) + "px";
+        }
+        
+        if (shouldAnimate && !options.immediate) {
             Firmin.animate(aNode.$ext, options, options.duration || 0.2, function() {
                 aNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 //apf.layout.forceResize();
@@ -68,12 +76,20 @@ module.exports = ext.register("ext/anims/anims", {
                     aNode.setHeight(options.height);
                 else
                     aNode.setWidth(options.width);
-                    
-                finish && finish();
+                
+                finish && setTimeout(finish, 30);
             });
         }
         else {
-            //@todo set value
+            if (pNode.$vbox) {
+                aNode.setHeight(options.height);
+                var dir = isFirst ? "top" : "bottom";
+            }
+            else {
+                aNode.setWidth(options.width);
+                var dir = isFirst ? "left" : "right";
+            }
+            oNode.$ext.style[dir] = to2[dir];
             
             finish && finish();
         }

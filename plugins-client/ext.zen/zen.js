@@ -11,8 +11,6 @@
 
 define(function(require, exports, module) {
 
-require("ext/zen/firmin-all-min");
-
 var ext = require("core/ext");
 var ide = require("core/ide");
 var editors = require("ext/editors/editors");

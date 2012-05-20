@@ -305,7 +305,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (_self.accessList.changed) {
                 var list = _self.accessList.slice(0);
                 list.forEach(function(page, i){
-                    if (page)
+                    if (page && page.id)
                         this[i] = page.id;
                 }, list);
                 e.model.setQueryValue("auto/tabcycle/text()", JSON.stringify(list));
@@ -491,6 +491,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.accessedTab = 0;
 
         var next = this.accessList[this.accessedTab];
+        if (typeof next != "object")
+            return this.nexttab();
         tabEditors.set(next);
         
         this.$dirtyNextTab = true;
@@ -504,6 +506,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.accessedTab = this.accessList.length - 1;
 
         var next = this.accessList[this.accessedTab];
+        if (typeof next != "object")
+            return this.nexttab();
         tabEditors.set(next);
         
         this.$dirtyNextTab = true;

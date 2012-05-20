@@ -19,6 +19,7 @@ var markup = require("text!ext/searchreplace/searchreplace.xml");
 var commands = require("ext/commands/commands");
 var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
+var anims = require("ext/anims/anims");
 var searchinfiles;
 
 var oIter, oTotal;
@@ -48,6 +49,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
     hook : function(){
         var _self = this;
+        
+        this.markupInsertionPoint = searchRow;
         
         commands.addCommand({
             name: "replace",
@@ -180,14 +183,6 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
         
         apf.importCssString(_self.css);
-        
-        ide.addEventListener("init.ext/console/console", function(e){
-            mainRow.insertBefore(winSearchReplace, e.ext.splitter);
-        });
-        if (winSearchReplace.parentNode != mainRow) {
-            mainRow.insertBefore(winSearchReplace, 
-                self.winDbgConsole && winDbgConsole.previousSibling || null);
-        }
         
         txtFind.addEventListener("clear", function() {
             _self.execFind();
@@ -434,22 +429,20 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 toHeight -= hboxReplace.$ext.scrollHeight;
             
             if (animate) {
-                Firmin.animate(winSearchReplace.$ext, {
-                    height: toHeight + "px", //(isReplace ? 70 : 38)
-                    timingFunction: "cubic-bezier(.10, .10, .25, .90)"
-                }, 0.2, function() {
+                anims.animateSplitBoxNode(winSearchReplace, {
+                    height: toHeight + "px", 
+                    timingFunction: "cubic-bezier(.10, .10, .25, .90)",
+                    duration : 0.2
+                }, function() {
                     if (stateChange && !isReplace && wasVisible)
                         _self.setupDialog(isReplace);
                     
-                    winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                     winSearchReplace.$ext.style.height = "";
                     
                     divSearchCount.$ext.style.visibility = "";
                     _self.updateCounter();
                     
-                    setTimeout(function(){
-                        apf.layout.forceResize();
-                    }, 50);
+                    apf.layout.forceResize();
                 });
             }
             else {
@@ -472,23 +465,20 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
             //Animate
             if (animate) {
-                Firmin.animate(winSearchReplace.$ext, {
+                anims.animateSplitBoxNode(winSearchReplace, {
                     height: "0px",
-                    timingFunction: "ease-in-out"
-                }, 0.2, function(){
+                    timingFunction: "ease-in-out",
+                    duration: 0.2
+                }, function(){
                     winSearchReplace.visible = true;
                     winSearchReplace.hide();
                     
-                    winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-    
                     if (!noselect)
                         editor.ceEditor.focus();
                     
-                    setTimeout(function(){
-                        callback
-                            ? callback()
-                            : apf.layout.forceResize();
-                    }, 50);
+                    callback
+                        ? callback()
+                        : apf.layout.forceResize();
                 });
             }
             else {
