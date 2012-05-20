@@ -133,12 +133,8 @@ util.inherits(JVMFeatures, Plugin);
           function(err, port) {
             if (err)
               return _self.$error("Could not find a free port", 1, err);
-            var eclipseClient = new EclipseClient("localhost", port,
+            var eclipseClient = _self.eclipseClient  = new EclipseClient("localhost", port,
                _self.workspaceDir);
-            eclipseClient.on("lifecycle:connected", function() {
-              console.log("Eclipse session initalied");
-              _self.eclipseClient = eclipseClient;
-            });
             eclipseClient.on("output", console.log);
             eclipseClient.on("err", console.error);
             eclipseClient.initEclipseSession();
