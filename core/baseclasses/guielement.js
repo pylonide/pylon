@@ -167,12 +167,12 @@ apf.GuiElement = function(){
         // #endif
     }
     
-    this.addEventListener("DOMNodeInserted", function(e){
-        if (e.currentTarget == this 
-          && "vbox|hbox|table".indexOf(this.parentNode.localName) == -1) {
-            this.$setLayout();
-        }
-    }); 
+//    this.addEventListener("DOMNodeInserted", function(e){
+//        if (e.currentTarget == this 
+//          && (this.parentNode.$box || "table" == this.parentNode.localName)) {
+//            this.$setLayout();
+//        }
+//    }); 
 
     this.implement(
         //#ifdef __WITH_ANCHORING

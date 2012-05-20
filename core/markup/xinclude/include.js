@@ -65,13 +65,22 @@ apf.aml.setElement("include", apf.XiInclude);
     };
     
     function done(xmlNode) {
+        var addedNode = this.previousSibling || this.nextSibling;
+        
         if (this.callback) {
             this.callback({
                 xmlNode : xmlNode,
                 amlNode : this.parentNode,
-                addedNode: this.previousSibling || this.nextSibling
+                addedNode: addedNode
             })
         }
+        
+        addedNode.dispatchEvent("DOMNodeInserted", {
+            $beforeNode         : addedNode.nextSibling,
+            relatedNode         : this.parentNode,
+            $isMoveWithinParent : false,
+            bubbles             : true
+        });
         
         //@todo hack!! this should never happen. Find out why it happens
         if (this.parentNode)
