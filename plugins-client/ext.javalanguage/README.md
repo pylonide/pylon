@@ -23,37 +23,51 @@ The debug is now ready for cloud9 debug connections
 6- Set C9_PATH and ECLIPSE_PATH environment variables to the location of your cloud9 folder and the location of your eclipse installation folder respectively.
 
 In linux you can do
-    $ echo "export C9_PATH=/Users/eweda
+    $ echo "export C9_PATH=/Users/eweda/workspace/cloud9
     export ECLIPSE_PATH=/Users/eweda/workspace/eclipse-hellios" >> ~/.bashrc && source ~/.bashrc
 
 On MacOSX, you can do
-    $ echo "export C9_PATH=/Users/eweda
+    $ echo "export C9_PATH=/Users/eweda/workspace/cloud9
     export ECLIPSE_PATH=/Users/eweda/workspace/eclipse-hellios" >> ~/.profile && source ~/.profile
 
 7- Build the plugin
 
-    $ cd node_modules/jvm_features
+    $ cd cloud9/node_modules/jvm_features
     $ java -jar $ECLIPSE_PATH/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar -application org.eclipse.ant.core.antRunner
 
 Ref: [Eclipse plugin headless build](http://eclipse.dzone.com/articles/headless-build-beginners-part)
 
 b-
     $ rm -f $ECLIPSE_PATH/plugins/CodeCompletePlugin*
-    $ cp CodeCompletePlugin* $ECLIPSE_PATH/plugins
+    $ cp CodeCompletePlugin* $ECLIPSE_PATH/plugins/
 
 c- test it with:
 
-    $ java -Dosgi.requiredJavaVersion=1.5 -XX:MaxPermSize=256m -Xms40m -Xmx512m -cp $ECLIPSE_HOME/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar org.eclipse.equinox.launcher.Main -application CodeCompletePlugin.Cloud9Eclipse -data ~/jvm_workspace -consoleLog
+    $ java -cp $ECLIPSE_PATH/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar org.eclipse.equinox.launcher.Main -application CodeCompletePlugin.Cloud9Eclipse -consoleLog
 
 8- Open the init config file in: cloud9/node_modules/jvm_features/js/lib/eclipse/config.js
 
-* Remove the -configuration and -dev attributes 
+Comment the line with -configuration and -dev attributes
+
+9- If you will be running fullly headlessly, you need to install a virtual buffer X server.
+
+    $ sudo apt-get install xvfb
+
+Start the screen buffer server with:
+
+    $ Xvfb :1 -screen 0 800x600x1
+
+Ref: [Xvfb on headless system](http://www.thinkplexx.com/learn/howto/linux/system/start-and-use-xfdb-enable-x-server-on-headless-system)
+
+Start The IDE:
+
+    $ DISPLAY=localhost:1.0 bin/cloud9.sh -w ~/jvm_workspace/${projectName}
 
 Now, the full java stack SHOULD BE ready for testing :)
 
 ## More files to care about
-* cloud9/node_modules/jvm-run/build-tools/templates/j2ee-template/build.xml --> absoulte jetty location
-* cloud9/node_modules/jvm_features/js/lib/eclipse/config.js --> init command
+* cloud9/node_modules/jvm-run/build-tools/templates/j2ee-template/build.xml --> still absoulte jetty location
+* cloud9/node_modules/jvm_features/js/lib/eclipse/config.js --> take a look at the init command
 
 ## TODOs
 
