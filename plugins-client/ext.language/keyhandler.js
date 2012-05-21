@@ -37,6 +37,8 @@ function onCommandKey(e) {
         return false;
     if (language.isContinuousCompletionEnabled())
         typeAlongComplete(e);
+    if (e.keyCode == 27) // Esc
+        require("ext/language/marker").hideToolTip();
     return false;
 }
 
