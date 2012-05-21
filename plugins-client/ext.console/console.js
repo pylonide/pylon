@@ -279,7 +279,7 @@ module.exports = ext.register("ext/console/console", {
         this.cliInputHistory.push(line);
 
         if (line !== "clear" && line !== "newtab")
-            this.createOutputBlock(this.getPrompt(line));
+        this.createOutputBlock(this.getPrompt(line));
 
         var showConsole = true;
         var cmd = argv[0];
@@ -371,7 +371,7 @@ module.exports = ext.register("ext/console/console", {
             var pNode = spinnerElement.parentNode;
 
             var page = apf.findHost(pNode.parentNode.parentNode);
-            if (page.id !== "pgOutput")
+            if (page && page.id !== "pgOutput")
                 page.setCaption("Console");
 
             if (pNode.className.indexOf("quitting") !== -1) {
@@ -387,7 +387,7 @@ module.exports = ext.register("ext/console/console", {
                     spinnerElement = document.getElementById("spinner" + id);
                     pNode = spinnerElement.parentNode;
                     apf.setStyleClass(pNode, "loaded", ["loading"]);
-                    spinnerElement.setAttribute("style", "");
+                spinnerElement.setAttribute("style", "");
                     spinnerElement.style.opacity = "1";
                 }, 300);
             }, 200);
@@ -395,30 +395,30 @@ module.exports = ext.register("ext/console/console", {
     },
 
     createNodeProcessLog : function(message_pid) {
-        var command_id = this.createOutputBlock("Running Node Process", true);
+                var command_id = this.createOutputBlock("Running Node Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
 
-        var containerEl = this.getLogStreamOutObject(command_id).$ext;
-        containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
+                var containerEl = this.getLogStreamOutObject(command_id).$ext;
+                containerEl.setAttribute("rel", command_id);
+                apf.setStyleClass(containerEl, "has_pid");
 
-        if (window.cloud9config.hosted) {
-            var url = location.protocol + "//" +
-                ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
-                "." + location.host;
-            logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
-                "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
+                if (window.cloud9config.hosted) {
+                    var url = location.protocol + "//" +
+                        ide.workspaceId.replace(/(\/)*user(\/)*/, '').split("/").reverse().join(".") +
+                        "." + location.host;
+                    logger.logNodeStream("Tip: you can access long running processes, like a server, at '" + url +
+                        "'.\nImportant: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.\n ",
                 null, this.getLogStreamOutObject(message_pid, true), ide);
-        }
+                }
 
-        this.command_id_tracer++;
+                this.command_id_tracer++;
         return command_id;
     },
 
     onMessage: function(e) {
         if (!e.message.type)
-            return;
+                return;
 
         var message = e.message;
         //console.log(message.type, message);
@@ -433,16 +433,14 @@ module.exports = ext.register("ext/console/console", {
                 this.command_id_tracer = extra.command_id + 1;
         }
 
-        switch(message.type) {
+        switch (message.type) {
             case "node-start":
-                var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
-                if (apf.isTrue(clearOnRun) && window["txtOutput"])
-                    txtOutput.clear();
+                //var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
+                //if (apf.isTrue(clearOnRun) && window["txtOutput"]) txtOutput.clear();
                 this.createNodeProcessLog(message.pid);
                 return;
             case "node-data":
-                logger.logNodeStream(message.data, message.stream,
-                    this.getLogStreamOutObject(message.pid, true), ide);
+                logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
                 return;
             case "node-exit":
                 this.markProcessAsCompleted(message.pid, true);
@@ -477,52 +475,49 @@ module.exports = ext.register("ext/console/console", {
                 break;
             case "kill":
                 if (message.err) {
-                    logger.logNodeStream(message.err, null,
-                        this.getLogStreamOutObject(extra.command_id), ide);
+                    logger.logNodeStream(message.err, null, this.getLogStreamOutObject(extra.command_id), ide);
                 }
                 break;
             default:
                 break;
         }
-
+        
         if (message.type.match(/-start$/)) {
             var command_id = extra && extra.command_id;
-            // @TODO Check from Merge 9966d812455546e7d53c60f4aab5ffa0ffbb5b99
-            //if (!command_id)
-            //    return;
-
+        
+            if (!command_id) {
+                return;
+            }
+        
             this.tracerToPidMap[command_id] = message.pid;
             this.pidToTracerMap[message.pid] = command_id;
-
+        
             var containerEl = this.getLogStreamOutObject(command_id, null, extra.original_line).$ext;
             containerEl.setAttribute("rel", command_id);
             apf.setStyleClass(containerEl, "has_pid");
             return;
         }
-
+        
         if (message.type.match(/-data$/)) {
             var type = "tracer";
             var id = extra && extra.command_id;
-            if (!command_id) {
+        
+            if (!id) {
                 type = "pid";
                 id = message.pid;
             }
-
-            logger.logNodeStream(message.data, message.stream,
-                this.getLogStreamOutObject(id, type === "pid"), ide);
+        
+            logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(id, type === "pid"), ide);
             return;
         }
-
+        
         if (message.type.match(/-exit$/)) {
-            if (extra.command_id)
-                this.markProcessAsCompleted(extra.command_id);
-            else
-                this.markProcessAsCompleted(message.pid, true);
+            if (extra && extra.command_id) this.markProcessAsCompleted(extra.command_id);
+            else this.markProcessAsCompleted(message.pid, true);
             return;
         }
-
-        if (message.type !== "result")
-            return;
+        
+        if (message.type !== "result") return;
 
         var outputElDetails;
         if (extra)
@@ -680,8 +675,8 @@ module.exports = ext.register("ext/console/console", {
 
         ide.addEventListener("settings.load", function(e){
             settings.setDefaults("auto/console", [
-                ["autoshow", "true"],
-                ["clearonrun", "true"]
+                ["autoshow", "true"]
+                //["clearonrun", "true"]
             ]);
 
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
@@ -1018,7 +1013,7 @@ module.exports = ext.register("ext/console/console", {
         this.$collapsedHeight = this.collapsedHeight;
         
         cliBox.show();
-
+        
         var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
         if (!immediate && animOn) {
             cliBox.$ext.style.height = "0px";

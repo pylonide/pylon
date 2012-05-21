@@ -211,12 +211,14 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
     }
 
     childBuffer[outputId].appendChild(fragment);
-    
+
     //@todo this implementation is hacking the apf abstraction
     //      so we have to trigger the scrollbar update ourselves
-    setTimeout(function(){
-        tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update()
-    }, 1000);
+    if (window["tabConsole"]) {
+        setTimeout(function(){
+            tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update();
+        }, 1000);
+    }
 };
 
 module.exports.killBufferInterval = function(sectionNumber) {
@@ -257,9 +259,11 @@ module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
     
     //@todo this implementation is hacking the apf abstraction
     //      so we have to trigger the scrollbar update ourselves
-    setTimeout(function(){
-        tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update()
-    }, 1000);
+    if (window["tabConsole"]) {
+        setTimeout(function(){
+            tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update();
+        }, 1000);
+    }
 };
 
 });

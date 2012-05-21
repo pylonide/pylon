@@ -12,7 +12,8 @@ var keyhandler = require("ext/language/keyhandler");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 
-var ID_REGEX = /[a-zA-Z_0-9\$]/;
+var lang = require("ace/lib/lang");
+var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 
 var oldCommandKey, oldOnTextInput;
 
@@ -46,15 +47,29 @@ function retrievePreceedingIdentifier(text, pos) {
     return buf.reverse().join("");
 }
 
+function retrieveFollowingIdentifier(text, pos) {
+    var buf = [];
+    for (var i = pos; i < text.length; i++) {
+        if (ID_REGEX.test(text[i]))
+            buf.push(text[i]);
+        else
+            break;
+    }
+    return buf;
+}
+
 /**
  * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
- * indicates the cursor position after the replacement
+ * indicates the cursor position after the replacement.
+ * If the prefix is already followed by an identifier substring, that string
+ * is deleted.
  */
 function replaceText(editor, prefix, newText) {
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
     
+    // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
         newText += "^^";
 
@@ -63,6 +78,8 @@ function replaceText(editor, prefix, newText) {
         i++;
     
     var prefixWhitespace = line.substring(0, i);
+    
+    var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
     
     // Pad the text to be inserted
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
@@ -76,7 +93,7 @@ function replaceText(editor, prefix, newText) {
     // Remove cursor marker
     paddedLines = paddedLines.replace("^^", "");
     
-    doc.removeInLine(pos.row, pos.column - prefix.length, pos.column);
+    doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
     editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
 }

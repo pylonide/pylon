@@ -124,7 +124,7 @@ module.exports = {
             ace.moveCursorTo(mainPos.row, mainPos.column);
         }
         p.showOtherMarkers();
-        var continuousCompletionWasEnabled = this.ext.isContinuousCompletionEnabled;
+        var continuousCompletionWasEnabled = this.ext.isContinuousCompletionEnabled();
         if(continuousCompletionWasEnabled)
             this.ext.setContinuousCompletion(false);
         

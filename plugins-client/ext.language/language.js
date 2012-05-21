@@ -103,6 +103,8 @@ module.exports = ext.register("ext/language/language", {
                 worker.emit("serverProxy", {data: message});
             });
 
+            keyhandler.hook(_self, worker);
+
             ide.dispatchEvent("language.worker", {worker: worker});
             ide.addEventListener("$event.language.worker", function(callback){
                 callback({worker: worker});
@@ -185,8 +187,8 @@ module.exports = ext.register("ext/language/language", {
         return isContinuousCompletionEnabled;
     },
     
-    setContinuousCompletion: function() {
-        isContinuousCompletionEnabled = false;
+    setContinuousCompletionEnabled: function(value) {
+        isContinuousCompletionEnabled = value;
     },
     
     updateSettings: function() {

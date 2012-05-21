@@ -105,7 +105,7 @@ util.inherits(JVMRuntimePlugin, Plugin);
                 file: file,
                 args: args,
                 env: env,
-                type: message.runner,
+                jvmType: message.runner,
                 version: version,
                 extra: message.extra
             }, self.channel, function(err, pid, child) {

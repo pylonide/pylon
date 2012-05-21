@@ -2,7 +2,7 @@
     "name": "cloud9.run.jvm-debug",
     "version": "0.0.1",
 
-    "main": "./jvm_debug.js",
+    "main": "./jvm_debug-plugin.js",
     "private": true,
 
     "dependencies": {
@@ -16,7 +16,7 @@
         "consumes": [
             "process-manager",
             "sandbox",
-            "ide"
+            "run-jvm"
         ]
     }
 }
