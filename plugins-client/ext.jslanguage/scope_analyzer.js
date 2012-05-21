@@ -19,6 +19,10 @@ var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 require('treehugger/traverse');
 
+var PROPER = module.exports.PROPER = 80;
+var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
+var NOT_PROPER = module.exports.NOT_PROPER = 0;
+
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
     // Literals
@@ -304,6 +308,19 @@ Variable.prototype.addUse = function(node) {
 
 Variable.prototype.addDeclaration = function(node) {
     this.declarations.push(node);
+};
+
+Variable.prototype.markProperDeclaration = function(confidence) {
+    if (!confidence)
+        return;
+    else if (!this.properDeclarationConfidence)
+        this.properDeclarationConfidence = confidence;
+    else if (this.properDeclarationConfidence < PROPER)
+        this.properDeclarationConfidence += confidence;
+};
+
+Variable.prototype.isProperDeclaration = function() {
+    return this.properDeclarationConfidence > MAYBE_PROPER;
 };
 
 /**
