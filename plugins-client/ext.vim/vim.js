@@ -24,28 +24,28 @@ var isLoading = false;
 var vimHandler = null;
 
 var _loadKeyboardHandler = function(path, callback) {
-	var _self = this;
-	var module;
-	try {
-		module = require(path);
-	} catch (e) {};
-	if (module)
-		return callback(module);
+    var _self = this;
+    var module;
+    try {
+        module = require(path);
+    } catch (e) {};
+    if (module)
+        return callback(module);
 
 
-	fetch(function() {
-		require([path], callback);
-	});
+    fetch(function() {
+        require([path], callback);
+    });
 
-	function fetch(callback) {
-		if (!ace.config.get("packaged"))
-			return callback();
+    function fetch(callback) {
+        if (!ace.config.get("packaged"))
+            return callback();
 
-		var base = path.split("/").pop();
-		var filename = "/static/ace/build/keybinding-" + base + ".js";
-		var aceNetModule = "ace/lib/net";
-		require(aceNetModule).loadScript(filename, callback);
-	}
+        var base = path.split("/").pop();
+        var filename = "/static/ace/build/keybinding-" + base + ".js";
+        var aceNetModule = "ace/lib/net";
+        require(aceNetModule).loadScript(filename, callback);
+    }
 };
 
 var enableVim = function enableVim() {
@@ -55,32 +55,33 @@ var enableVim = function enableVim() {
         var editor = ceEditor.$editor;
         VIM_ENABLED = true;
 
-		if (vimHandler) {
-			editor.setKeyboardHandler(vimHandler);
-			ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
-			require("ext/console/console").showInput();
-		} else {
-			if (isLoading)
-				return;
-			isLoading = true;
-			_loadKeyboardHandler("ace/keyboard/vim", function(module) {
-				vimHandler = module.handler;
-				vimHandler.$statusListener = function(mode) {
-					ide.dispatchEvent("vim.changeMode", { mode : "mode" });				
-				};
-				editor.setKeyboardHandler(vimHandler);				
-				ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
-				require("ext/console/console").showInput();
-				cliCmds.addCommands(vimHandler);
-			})
-		}
+        if (vimHandler) {
+            editor.setKeyboardHandler(vimHandler);
+            ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
+            require("ext/console/console").showInput();
+        } else {
+            if (isLoading)
+                return;
+            isLoading = true;
+            _loadKeyboardHandler("ace/keyboard/vim", function(module) {
+                vimHandler = module.handler;
+                vimHandler.$statusListener = function(mode) {
+                    ide.dispatchEvent("vim.changeMode", { mode : "mode" });                
+                };
+                editor.setKeyboardHandler(vimHandler);                
+                ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
+                require("ext/console/console").showInput();
+                cliCmds.addCommands(vimHandler);
+            })
+        }
     });
 };
 
 var disableVim = function() {
     var editor = ceEditor.$editor;
-	editor && editor.keyBinding.removeKeyboardHandler(vimHandler);
+    editor && editor.keyBinding.removeKeyboardHandler(vimHandler);
     ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
+    VIM_ENABLED = false;
 };
 
 module.exports = ext.register("ext/vim/vim", {
@@ -112,9 +113,9 @@ module.exports = ext.register("ext/vim/vim", {
         var tryEnabling = function () {
             if (settings.model) {
                 var sholdEnable = apf.isTrue(settings.model.queryNode("editors/code").getAttribute("vimmode"));
-				if (VIM_ENABLED == sholdEnable)
-					return;
-				self.enable(sholdEnable === true);
+                if (VIM_ENABLED == sholdEnable)
+                    return;
+                self.enable(sholdEnable === true);
             }
         };
         ide.addEventListener("init.ext/code/code", tryEnabling);
@@ -132,7 +133,7 @@ module.exports = ext.register("ext/vim/vim", {
         // require("ext/console/console").showInput();
     },
 
-	// Enable accepts a `doEnable` argument which executes `disable` if false.
+    // Enable accepts a `doEnable` argument which executes `disable` if false.
     enable: function(doEnable) {
         if (doEnable !== false) {
             ide.removeEventListener("consolecommand", cliCmds.onConsoleCommand);

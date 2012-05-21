@@ -104,13 +104,13 @@ exports.onConsoleCommand = function(e) {
             e.returnValue = false;
         }
         else if (cmd[0] === "/" || cmd[0] === "?") {
+            var options = exports.searchStore.options;
+            options.backwards = cmd[0] === "?";
             cmd = cmd.substr(1);
             if (cmd)
                 exports.searchStore.current = cmd;
             else
                 cmd = exports.searchStore.current;
-            var options = exports.searchStore.options;
-            options.backwards = cmd[0] === "?";
             ed.find(cmd, options);
             ceEditor.focus();
             e.returnValue = false;
