@@ -11,7 +11,7 @@ var exports = module.exports = function setup(options, imports, register) {
         if (err)
             return register(err);
 
-       pm.addRunner("run-npm", exports.factory(imports.vfs, projectDir));
+       pm.addRunner("run-npm", exports.factory(imports.vfs, projectDir, options.nodePath));
 
         register(null, {
             "run-run-npm": {}
@@ -19,7 +19,7 @@ var exports = module.exports = function setup(options, imports, register) {
     });
 };
 
-exports.factory = function(vfs, root) {
+exports.factory = function(vfs, root, nodePath) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
@@ -31,6 +31,7 @@ exports.factory = function(vfs, root) {
         options.extra = args.extra;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
+        options.nodePath = nodePath;
 
         new Runner(vfs, options, callback);
     };
@@ -48,6 +49,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
 
     options.env = options.env || {};
     options.command = process.execPath;
+    options.nodePath = options.nodePath || process.execPath;
 
     options.sandbox.getPort(function (err, port) {
         if (err) return callback(err);
