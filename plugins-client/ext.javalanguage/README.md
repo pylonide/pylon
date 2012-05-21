@@ -49,19 +49,9 @@ c- test it with:
 
 Comment the line with -configuration and -dev attributes
 
-9- If you will be running fullly headlessly, you need to install a virtual buffer X server.
+9- Start The IDE:
 
-    $ sudo apt-get install xvfb
-
-Start the screen buffer server with:
-
-    $ Xvfb :1 -screen 0 800x600x1
-
-Ref: [Xvfb on headless system](http://www.thinkplexx.com/learn/howto/linux/system/start-and-use-xfdb-enable-x-server-on-headless-system)
-
-Start The IDE:
-
-    $ DISPLAY=localhost:1.0 bin/cloud9.sh -w ~/jvm_workspace/${projectName}
+    $ bin/cloud9.sh -w ~/jvm_workspace/${projectName}
 
 Now, the full java stack SHOULD BE ready for testing :)
 
