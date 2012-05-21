@@ -10400,10 +10400,10 @@
     ]]></a:style>
 
     <a:presentation>
-        <a:main input="div[1]/input">
+        <a:main input="div[1]/div">
             <div class="tb_console">
                 <div class="sbtb_middle">
-                    <input type="text"/>
+                    <div class="input"/>
                 </div>
             </div>
         </a:main>

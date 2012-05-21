@@ -783,7 +783,11 @@ apf.codebox = function(struct, tagName) {
 
         this.$editor.focus();
     };
-    
+
+    this.execCommand = function(command) {
+        this.ace.commands.exec(command, this.ace);
+    };
+
     this.createSingleLineAceEditor = function(el) {        
         var renderer = new VirtualRenderer(el);
         el.style.overflow = "hidden";
@@ -868,7 +872,7 @@ apf.codebox = function(struct, tagName) {
         editor.renderer.setHighlightGutterLine(false);
         
         editor.$mouseHandler.$focusWaitTimout = 0;
-
+        
         return editor;
     },
 

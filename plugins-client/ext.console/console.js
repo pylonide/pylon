@@ -51,7 +51,6 @@ module.exports = ext.register("ext/console/console", {
 
     autoOpen : true,
     excludeParent : true,
-    keyEvents: {},
 
     pageIdToPidMap : {},
 
@@ -207,21 +206,6 @@ module.exports = ext.register("ext/console/console", {
         lines.forEach(function(line) {
             logger.logNodeStream(line, null, lsOutObject, ide);
         });
-    },
-
-    commandTextHandler: function(e) {
-        if (this.keyEvents[e.keyCode])
-            this.keyEvents[e.keyCode](e.currentTarget);
-    },
-
-    keyupHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode) !== -1)
-            return this.commandTextHandler(e);
-    },
-
-    keydownHandler: function(e) {
-        if (actionCodes.indexOf(e.keyCode) === -1)
-            return this.commandTextHandler(e);
     },
 
     createOutputBlock: function(line, useOutput, tracerIdFromServer) {
@@ -664,7 +648,7 @@ module.exports = ext.register("ext/console/console", {
                             _self.showInput();
                             txtConsoleInput.setValue(def[1]);
                             if (!def[4]) {
-                                _self.keyEvents[KEY_CR](txtConsoleInput);
+                                txtConsoleInput.execCommand("Return");
                                 txtConsole.$container.scrollTop = txtConsole.$container.scrollHeight;
                             }
                             txtConsoleInput.focus();
@@ -733,9 +717,6 @@ module.exports = ext.register("ext/console/console", {
             }
         });
 
-        txtConsoleInput.addEventListener("keyup", this.keyupHandler.bind(this));
-        txtConsoleInput.addEventListener("keydown", this.keydownHandler.bind(this));
-
         function kdHandler(e){
             if (!e.ctrlKey && !e.metaKey && !e.altKey
               && !e.shiftKey && apf.isCharacter(e.keyCode))
@@ -780,21 +761,18 @@ module.exports = ext.register("ext/console/console", {
 
         this.nodes.push(winDbgConsole, this.splitter);
 
-        this.keyEvents[KEY_UP] = function(input) {
-            var newVal = _self.cliInputHistory.getPrev() || "";
-            input.setValue(newVal);
-        };
-        this.keyEvents[KEY_DOWN] = function(input) {
-            var newVal = _self.cliInputHistory.getNext() || "";
-            input.setValue(newVal);
-        };
-        this.keyEvents[KEY_CR] = function(input) {
-            var inputVal = input.getValue().trim();
-            if (inputVal === "/?")
-                return false;
-            _self.evalInputCommand(inputVal);
-            input.setValue("");
-        };
+        
+        txtConsoleInput.ace.commands.bindKeys({
+            "up": function(input) {input.setValue(_self.cliInputHistory.getPrev(), 1);},
+            "down": function(input) {input.setValue(_self.cliInputHistory.getNext(), 1);},
+            "Return": function(input) {
+                var inputVal = input.getValue().trim();
+                if (inputVal === "/?")
+                    return false;
+                _self.evalInputCommand(inputVal);
+                input.setValue("");
+            },
+        })
 
         if (this.logged.length) {
             this.logged.forEach(function(text){
