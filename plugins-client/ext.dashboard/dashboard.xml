@@ -12,34 +12,32 @@
   <a:hbox
     class = "darkOpaque"
     height = "46"
+    edge = "10"
   >
-      <a:bar
+    <a:bar
         align     = "center"
         skin      = "basic"
-        padding   = "5"
-        flex     = "1">
-          <a:label>New project:</a:label>
+        padding   = "5">
+          <a:label class="new-project fleft">New project:</a:label>
           <a:textbox
             id           = "projectTitle"
+            class        = "fleft"
             focusselect  = "true"
+            height       = "25"
+            skin         = "textbox-on-dark"
+            width        = "214"
             />
-      </a:bar>
-      <a:bar
-        skin      = "basic"
-        padding   = "5">
-          <a:label>Where is your data stored</a:label>
-          <a:dropdown value="auto" width="150" height="27" skin="dropdown-dark-glossy">
+          <a:label class="data fleft">Store my data:</a:label>
+          <a:dropdown value="auto" width="207" height="27" skin="dropdown-dark-glossy" class="fleft">
               <a:item value="cloud9Git">On Cloud9 as a git repo</a:item>
               <a:item value="cloud9Hg">On Cloud9 as a mercurial repo</a:item>
               <a:item value="vm">FTP Server</a:item>
               <a:item value="vm">On my own private virtual machine</a:item>
           </a:dropdown>
-      </a:bar>
-      <a:hbox flex = "1">
-        <a:button caption="Upload" skin="" flex="1" />
-        <a:button caption="Clone" skin="" flex="1" />
-        <a:button caption="Choose template" skin="" flex="1" />
-      </a:hbox>
+        <a:button caption="Pick a template" skin="button-link-dark" class="fleft"/>
+        <a:button caption="Clone" skin="button-link-dark" class="fleft"/>
+        <a:button caption="Upload" skin="button-link-dark" class="fleft"/>
+    </a:bar>
   </a:hbox>
    <!--
         
@@ -58,8 +56,9 @@
             id           = "cloneURL"
             focusselect  = "true"
             flex         = "5"
+            skin         = "textbox-on-dark"
             />
-      <a:button caption="Go" skin="" flex="1" />
+      <a:button caption="Go" skin="button-colorless" flex="1" />
    </a:hbox>
    <!--
           

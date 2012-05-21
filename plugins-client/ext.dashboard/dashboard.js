@@ -34,6 +34,8 @@ module.exports = ext.register("ext/dashboard/dashboard", {
     },
 */
     init : function(amlNode){
+        apf.importCssString(this.css || "");
+
         dashboard.show();
     },
 

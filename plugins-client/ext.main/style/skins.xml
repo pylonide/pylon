@@ -516,10 +516,10 @@
 <a:bar name="darkOpaque">
     <a:style><![CDATA[
         .darkOpaque {
-            background-color: #262626;
-            background-image: -webkit-linear-gradient(top, #292929,#242424);
-            background-image:    -moz-linear-gradient(top, #292929,#242424);
-            background-image:         linear-gradient(top, #292929,#242424);
+            background-color: #2D2D2D;
+            background-image: -webkit-linear-gradient(top, #303030,#292929);
+            background-image:    -moz-linear-gradient(top, #303030,#292929);
+            background-image:         linear-gradient(top, #303030,#292929);
             border-top: 1px solid black;
             box-shadow: 0 1px 0 0 #353535 inset;
             color: #EDEDED;
@@ -5028,6 +5028,48 @@
         .dropdown-dark-glossyDisabled .label {
             color: rgba(255,255,255,.2);
         }
+
+    /**
+     * Options list
+     */
+        .dropdown-dark-glossy-options {
+            box-sizing: border-box;
+            display: none;
+            padding: 2px 16px 0 1px;
+        }
+        .dropdown-dark-glossy-options.upward {
+            margin-top: -12px;
+        }
+        .dropdown-dark-glossy-options .list {
+            background: #494949;
+            border: 1px solid #000208;
+            padding: 3px 0;
+        }
+        .dropdown-dark-glossy-options .list .c9-dd-item {
+            color: #f1f1f1;
+            cursor: default;
+            font-size: 11px;
+            font-family: Tahoma, Arial;
+            height: 13px;
+            line-height: 14px;
+            overflow: hidden;
+            padding: 3px 5px 5px;
+            text-overflow: ellipsis-word;
+            white-space: nowrap;
+        }
+    /**
+     * Options list - HOVER
+     */
+        .dropdown-dark-glossy-options .list .c9-dd-item.hover {
+            background-color: #262626;
+            color: #F5B53C;
+        }
+    /**
+     * Options list - SELECTED
+     */
+        .dropdown-dark-glossy-options .list .c9-dd-item.selected {
+            color: #F5B53C;
+        }
     ]]></a:style>
 
     <a:presentation>
@@ -5037,8 +5079,9 @@
                 <div class="button"> </div>
             </div>
         </a:main>
-        <a:container contents=".">
-            <div class="c9-optionList">
+        <a:container contents="div[1]">
+            <div class="dropdown-dark-glossy-options">
+                <div class="list"> </div>
             </div>
         </a:container>
         <a:item
@@ -10685,6 +10728,57 @@
         </a:main>
     </a:presentation>
 </a:textbox>
+
+<a:textbox name="textbox-on-dark">
+    <a:style><![CDATA[
+        .textbox-on-dark {
+            background-color: #F3F3F3;
+            border: 1px solid #000000;
+            border-radius: 3px;
+            box-shadow: 0 1px 8px 0 rgba(0,0,0,.6),
+                        0 1px 4px 0 #7E7E7E inset;
+            overflow: hidden;
+
+        }
+        .textbox-on-dark .textbox-on-dark-middle,
+        .textbox-on-dark input {
+            height: inherit;
+            width: 100%;
+        }
+        .textbox-on-dark .textbox-on-dark-middle {
+            box-sizing: border-box;
+            padding: 0 10px;
+        }
+        .textbox-on-dark input {
+            background-color: transparent;
+            border: 0 none;
+            margin: 0;
+            outline: 0 !important;
+            padding: 0;
+        }
+    /*
+     * Focus
+     */
+    .textbox-on-darkFocus {
+        outline: -webkit-focus-ring-color auto 5px;
+        outline-offset: -2px;
+    }
+    .textbox-on-darkFocus input {
+        outline-width: 0;
+    }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="div[1]/input">
+            <div class="textbox-on-dark">
+                <div class="textbox-on-dark-middle">
+                    <input type="text"/>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+
 <a:textbox name="tbsimple">
     <a:style><![CDATA[
         .tbsimple{
@@ -11912,6 +12006,78 @@
             </a:main>
         </a:presentation>
     </a:img>
+
+    <a:button name="button-colorless">
+        <a:style><![CDATA[
+            .button-colorless {
+                background: url(images/button-colorless/background.png) repeat-x 0 0;
+                border: 1px solid rgba(0,0,0,.85);
+                border-radius: 4px;
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.34) inset,
+                            0 1px 0 0 rgba(0,0,0,.2);
+                color: #FFFFFF;
+                cursor: pointer;
+                font-family: Arial;
+                font-size: 13px;
+                height: 25px;
+                line-height: 25px;
+                text-align: center;
+                text-shadow: 0 1px 0 rgba(0,0,0,.25);
+            }
+
+            .button-colorlessOver {
+                background-position: 0 -30px;
+            }
+            .button-colorlessDown {
+                background-position: 0 -60px;
+            }
+            .button-colorlessDisabled {
+                background-position: 0 -90px;
+                color: rgba(0,0,0,.5);
+                text-shadow: 0 1px 0 rgba(255,255,255,.15)
+            }
+            .button-colorlessFocus {
+                background-position: 0 -120px;
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.34) inset,
+                        0 0 2px 1px rgba(255,255,255,.2) inset,
+                        0 0 1px 0 rgba(255,255,255,.1) inset;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="button-colorless"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
+
+    <a:button name="button-link-dark">
+        <a:style><![CDATA[
+            .button-link-dark {
+                color: #555555;
+                cursor: pointer;
+                font-size: 11px;
+                text-shadow: 0 1px 1px #242424;
+                
+            }
+
+            .button-link-darkFocus,
+            .button-link-darkOver {
+                color: #C9C9C9;
+            }
+            .button-link-darkDown {
+                color: #aaa;   
+            }
+            .button-link-darkDisabled {
+                color: #434343;
+                cursor: default;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="button-link-dark"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
 
     <a:button name="blackbutton">
         <a:style><![CDATA[
