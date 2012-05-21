@@ -67,7 +67,8 @@ var config = {
                 bundledPlugins: [
                     "helloworld"
                 ],
-                real: false,
+                packed: false,
+                packedName: "",
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",
