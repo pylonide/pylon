@@ -56,6 +56,22 @@ var Runner = exports.Runner = function(options, callback) {
         return callback("No sandbox specified");
     }
     
+    self.root = options.root;
+    self.uid = options.uid;
+    self.nodeVersion = options.nodeVersion || "auto";
+
+    self.file = options.file || "";
+
+    options.env = options.env || {};
+    options.env.NODE_PATH = options.root && (options.root + "/../npm_global/lib/node_modules");
+
+    self.scriptArgs = options.args || [];
+    self.nodeArgs = [];
+
+    if (options.uid) {
+        self.nodeArgs.push("--setuid=" + options.uid);    
+    }
+    
     // first we need to get an open port
     options.sandbox.getPort(function (err, port) {
         if (err) {
@@ -86,22 +102,8 @@ var Runner = exports.Runner = function(options, callback) {
     });    
     
     function startProcess (url, port) {
-        self.root = options.root;
         self.port = port;
-        self.uid = options.uid;
-        self.nodeVersion = options.nodeVersion || "auto";
-    
-        self.file = options.file || "";
-    
-        options.env = options.env || {};
-        options.env.NODE_PATH = options.root && (options.root + "/../npm_global/lib/node_modules");
-    
-        self.scriptArgs = options.args || [];
-        self.nodeArgs = [];
-    
-        if (options.uid)
-            self.nodeArgs.push("--setuid=" + options.uid);
-    
+        
         if (self.port) {
             options.env.C9_PORT = self.port;
             options.env.PORT = self.port;
