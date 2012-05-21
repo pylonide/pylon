@@ -169,4 +169,10 @@ exports.question = function(title, header, msg, onyes, onyesall, onno, onnoall) 
     btnQuestionRevNoAll.onclick = onnoall;
 };
 
+exports.keysToSortedArray = function(obj) {
+    return Object.keys(obj)
+        .map(function(key) { return parseInt(key, 10); })
+        .sort(function(a, b) { return a - b; });
+};
+
 });

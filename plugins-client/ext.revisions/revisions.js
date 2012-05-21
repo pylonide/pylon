@@ -465,8 +465,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     $makeNewRevision: function(rev) {
         var revObj = this.$getRevisionObject(rev.path);
         rev.revisions = revObj.allRevisions;
-        // To not have to extract and sort timestamps from allRevisions
-        rev.timestamps = revObj.allTimestamps;
         this.worker.postMessage(rev);
     },
 
@@ -697,10 +695,9 @@ module.exports = ext.register("ext/revisions/revisions", {
                     break;
                 }
 
-                var group = {};
                 var data = {
                     id: message.id,
-                    group: group,
+                    group: {},
                     type: message.nextAction
                 };
 
@@ -710,19 +707,19 @@ module.exports = ext.register("ext/revisions/revisions", {
                         var groupedRevs = revObj.groupedRevisionIds[i];
                         if (groupedRevs.indexOf(parseInt(message.id, 10)) !== -1) {
                             groupedRevs.forEach(function(ts) {
-                                group[ts] = this.getRevision(ts);
+                                data.group[ts] = this.getRevision(ts);
                             }, this);
                             break;
                         }
                     }
 
-                    if (Object.keys(group).length > 1) {
+                    if (Object.keys(data.group).length > 1) {
                         this.worker.postMessage(data);
                         break;
                     }
                 }
 
-                group[message.id] = this.getRevision(message.id);
+                data.group[message.id] = this.getRevision(message.id);
                 this.worker.postMessage(data);
                 break;
 
@@ -743,7 +740,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                         if (message.nextAction === "storeAsRevision") {
                             data.nextAction = "storeAsRevision";
                         }
-
                         self.worker.postMessage(data);
                     }
                 });
@@ -853,29 +849,15 @@ module.exports = ext.register("ext/revisions/revisions", {
      * - revObj(Object): Body of the message coming from the server
      *
      * This function is called every time the server sends an `update` message.
-     * It generates the revision objects and the revision timestamp arrays used
-     * throughout the extension.
+     * It generates the revision objects used throughout the extension.
      **/
     generateCache: function(revObj) {
         if (!revObj.allRevisions)
             return;
 
-        var getTsAndSort = function(obj) {
-            return Object.keys(obj)
-                .map(function(ts) { return parseInt(ts, 10); })
-                .sort(function(a, b) { return a - b; });
-        };
-
-        // Create an array of the numeric timestamps. `allTimestamps` will store
-        // the numeric array. This is the only place where `allTimestamps should
-        // be modified.
-        revObj.allTimestamps = getTsAndSort(revObj.allRevisions);
-
         // Generate a compacted version of the revision list, where revisions are
-        // grouped by close periods of time. Changes `compactTimestamps` to
-        // reflect the ones in the compact list.
+        // grouped by close periods of time.
         revObj.compactRevisions = this.getCompactRevisions(revObj);
-        revObj.compactTimestamps = getTsAndSort(revObj.compactRevisions);
     },
 
     toggleListView: function(model) {
@@ -911,16 +893,15 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
         }
 
-        var revisions, timestamps;
-        if (revObj.useCompactList && revObj.compactRevisions && revObj.compactTimestamps) {
+        var revisions;
+        if (revObj.useCompactList && revObj.compactRevisions) {
             revisions = revObj.compactRevisions;
-            timestamps = revObj.compactTimestamps;
         }
         else {
             revisions = revObj.allRevisions;
-            timestamps = revObj.allTimestamps;
         }
-
+        
+        var timestamps = Util.keysToSortedArray(revisions);
         var contributorToXml = function(c) {
             return "<contributor email='" + c + "' />";
         };
@@ -930,12 +911,12 @@ module.exports = ext.register("ext/revisions/revisions", {
             var rev = revisions[ts];
             var friendlyDate = (new Date(ts)).toString("MMM d, h:mm tt");
             var restoring = rev.restoring || "";
-            var savedToDisk = rev.saved !== false;
+            // var savedToDisk = rev.saved !== false;
 
             revsXML += "<revision " +
                 "id='" + rev.ts + "' " +
                 "name='" + friendlyDate + "' " +
-                "saved='" + savedToDisk + "' " +
+                // "saved='" + savedToDisk + "' " +
                 "silentsave='" + rev.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
@@ -946,7 +927,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             revsXML += "<contributors>" + contributors + "</contributors></revision>";
         }
-
         this.model.load("<revisions>" + revsXML + "</revisions>");
     },
 
@@ -967,7 +947,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         id = parseInt(id, 10);
 
         var revObj = this.$getRevisionObject(Util.getDocPath());
-        var tstamps = revObj.allTimestamps;
+        var tstamps = Util.keysToSortedArray(revObj.allRevisions);
         var revision = tstamps.indexOf(id);
 
         if (revision !== -1) {
@@ -975,11 +955,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                 content: content,
                 id: id,
                 revision: revision,
-                tsValues: {}
+                patchesByTS: {}
             };
 
             for (var t = 0, l = tstamps.length; t < l; t++) {
-                data.tsValues[tstamps[t]] = revObj.allRevisions[tstamps[t]].patch;
+                data.patchesByTS[tstamps[t]] = revObj.allRevisions[tstamps[t]].patch[0];
             }
             return data;
         }
@@ -1039,7 +1019,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * Assumes that `allRevisions` is populated at this point.
      **/
     getCompactRevisions: function(revObj) {
-        var timestamps = revObj.allTimestamps.slice(0);
         var all = revObj.allRevisions;
         var compactRevisions = {};
         var finalTS = [];
@@ -1058,6 +1037,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return prev;
         };
 
+        var timestamps = Util.keysToSortedArray(revObj.allRevisions);
         Util.compactRevisions(timestamps).forEach(function(ts) {
             finalTS.push.apply(finalTS, ts.__reduce(repack, [[]]));
         });
@@ -1285,11 +1265,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             else {
                 var revObj = this.$getRevisionObject(docPath);
                 data.revisions = revObj.allRevisions;
-                // To not have to extract and sort timestamps from allRevisions
-                data.timestamps = revObj.allTimestamps;
-                var self = this;
                 if (revObj.hasBeenSentToWorker === true) {
-                    self.worker.postMessage({
+                    this.worker.postMessage({
                         type: "newRevision",
                         path: docPath,
                         lastContent: data.lastContent,
@@ -1297,7 +1274,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     });
                 }
                 else {
-                    self.worker.postMessage(data);
+                    this.worker.postMessage(data);
                     revObj.hasBeenSentToWorker = true;
                 }
                 return;
