@@ -288,7 +288,7 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
-        var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
+        var aggregateActions = {markers: [], hint: null, displayPos: null, enableRefactorings: []};
         
         function cursorMoved() {
             asyncForEach(_self.handlers, function(handler, next) {
@@ -303,8 +303,13 @@ function asyncParForEach(array, fn, callback) {
                             aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
                         }
                         if (response.hint) {
-                            // Last one wins, support multiple?
-                            aggregateActions.hint = response.hint;
+                            if (aggregateActions.hint)
+                                aggregateActions.hint += "\n" + response.hint;
+                            else
+                                aggregateActions.hint = response.hint;
+                        }
+                        if (response.displayPos) {
+                            aggregateActions.displayPos = response.displayPos;
                         }
                         next();
                     });
@@ -321,7 +326,8 @@ function asyncParForEach(array, fn, callback) {
                 _self.setLastAggregateActions(aggregateActions);
                 _self.scheduleEmit("hint", {
                     pos: pos,
-                	message: hintMessage
+                    displayPos: aggregateActions.displayPos,
+                    message: hintMessage
                 });
             });
 
