@@ -23,7 +23,7 @@ var exports = module.exports = function setup(options, imports, register) {
 };
 
 exports.factory = function(uid) {
-    return function(args, eventEmitter, eventName) {
+    return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.uid = uid;
@@ -31,12 +31,12 @@ exports.factory = function(uid) {
         options.eventName = eventName;
         options.args = args.args;
         options.command = "npm";
-        return new Runner(options);
+        return new Runner(options, callback);
     };
 };
 
-var Runner = exports.Runner = function(options) {
-    ShellRunner.call(this, options);
+var Runner = exports.Runner = function(options, callback) {
+    ShellRunner.call(this, options, callback);
 };
 
 util.inherits(Runner, ShellRunner);

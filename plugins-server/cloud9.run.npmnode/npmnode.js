@@ -32,7 +32,7 @@ var exports = module.exports = function setup(options, imports, register) {
 };
 
 exports.factory = function(root, port, uid) {
-    return function(args, eventEmitter, eventName) {
+    return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.root = root;
@@ -45,11 +45,12 @@ exports.factory = function(root, port, uid) {
         options.extra = args.extra;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
-        return new Runner(options);
+        
+        new Runner(options, callback);
     };
 };
 
-var Runner = exports.Runner = function(options) {
+var Runner = exports.Runner = function(options, callback) {
     this.uid = options.uid;
     this.file = options.file;
     this.extra = options.extra;
@@ -60,7 +61,7 @@ var Runner = exports.Runner = function(options) {
     options.env = options.env || {};
     options.command = process.execPath;
     
-    ShellRunner.call(this, options);
+    ShellRunner.call(this, options, callback);
 };
 
 util.inherits(Runner, ShellRunner);
