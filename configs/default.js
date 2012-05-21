@@ -130,6 +130,8 @@ var config = {
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
+                    "ext/gitblame/gitblame",
+                    //"ext/githistory/githistory",
                     "ext/revisions/revisions",
                     "ext/language/liveinspect"
                     //"ext/splitview/splitview"
