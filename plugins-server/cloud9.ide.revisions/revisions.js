@@ -12,7 +12,34 @@ var Fs = require("fs");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var Spawn = require("child_process").spawn;
-var Async = require("asyncjs");
+var Async = require("async");
+
+/**
+ * compute(data, callback) -> Void
+ *
+ * - data (Object): Object containing the type of operation and 
+ *   the texts to be diffed/patched
+ * - callback (Function): Function to be called with the result of
+ *   the operation
+ *
+ *   It spawns a 'worker' process that computes the result of the requested
+ *   operation using an external process that uses diff_match_patch.
+ */
+var compute = function(data, callback) {
+    var Dmp = Spawn("node", [__dirname + "/worker.js"]);
+    var In = Dmp.stdin;
+    var Out = Dmp.stdout;
+    var Err = Dmp.stderr;
+
+    In.write(JSON.stringify(data));
+    In.end();
+
+    var str = "";
+    Out.on("data", function(data) { str += data; });
+    Out.on("end", function() { callback(null, str); });
+    Err.on("data", function(msg) { callback(new Error(msg)); });
+    Dmp.on("exit", function() {});
+};
 
 /**
  *  FILE_SUFFIX = "c9save"
@@ -20,14 +47,6 @@ var Async = require("asyncjs");
  *  Suffix (extension) for revision files.
  **/
 var FILE_SUFFIX = "c9save";
-
-/** related to: Revisions#docQueue
- *  SAVE_INTERVAL = 1000
- *
- *  The queue will be inspected every SAVE_INTERVAL milliseconds for new documents
- *  to be saved.
- **/
-var SAVE_INTERVAL = 1000;
 
 /** related to: Revisions#revisions
  *  PURGE_INTERVAL -> 1 hour
@@ -44,10 +63,21 @@ module.exports = function setup(options, imports, register) {
 var RevisionsPlugin = module.exports.RevisionsPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
     this.hooks = ["command"];
-    this.docQueue = [];
     this.name = name;
-
-    this.saveInterval = setInterval(this.saveQueue.bind(this), SAVE_INTERVAL);
+    // `docQueue` will contain the paths of the docs that are being saved ATM.
+    var docQueue = this.docQueue = [];
+    // `saveQueue` is an asynchronous queue that will orderly and asynchronously 
+    // keep saving revisions as told by the client, and remove saved paths from
+    // `docQueue`.
+    this.saveQueue = Async.queue(function(doc, callback) {
+        self.saveRevisionFromMsg(doc[0], doc[1], function() {
+            var ind = docQueue.indexOf(doc[1].path);
+            if (ind !== -1) {
+                docQueue.splice(ind, 1);
+            }
+            callback();
+        });
+    }, 1);
 };
 
 require("util").inherits(RevisionsPlugin, Plugin);
@@ -249,7 +279,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * RevisionsPlugin#retrieveRevisionContent(revObj[, upperTSBound], callback)
      * - revObj (Object): Object containing all the revisions in the document.
      * - upperTSBound (Number): Timestamp of the revision to retrieve. Optional.
-     * - currentDoc (Function): Callback to pass the results to.
+     * - callback (Function): Callback to pass the results to.
      *
      * Asynchronoulsy calculates the content of the documentat a particular
      * revision, or defaults to the current content of the document according to
@@ -272,16 +302,19 @@ require("util").inherits(RevisionsPlugin, Plugin);
         }
 
         var content = "";
-        Async.list(timestamps)
-            .each(function(ts, next) {
-                var revision = revObj.revisions[ts];
-                content = Diff.patch_apply(revision.patch[0], content)[0];
+        Async.forEach(timestamps, function(ts, next) {
+            var revision = revObj.revisions[ts];
+            compute({
+                type: "patch_apply",
+                param1: revision.patch[0],
+                param2: content
+            }, function(err, result) {
+                content += result;
                 next();
-            })
-            .delay(0)
-            .end(function() {
-                callback(null, content);
             });
+        }, function(err) {
+            callback(err, content);
+        });
     };
 
     /**
@@ -374,21 +407,10 @@ require("util").inherits(RevisionsPlugin, Plugin);
     };
 
     this.enqueueDoc = function(user, message, client) {
-        var path = message.path;
-        var docExists = this.docQueue.some(function(doc) {
-            return doc[1].path === path;
-        });
-
-        if (!docExists) {
-            this.docQueue.push([user, message]);
-        }
-    };
-
-    this.saveQueue = function() {
-        var f = function(){};
-        while (this.docQueue.length > 0) {
-            var doc = this.docQueue.shift();
-            this.saveRevisionFromMsg(doc[0], doc[1], f);
+        var ind = this.docQueue.indexOf(message.path);
+        if (ind === -1) {
+            this.docQueue.push(message.path);
+            this.saveQueue.push([user, message]);
         }
     };
 
@@ -396,31 +418,39 @@ require("util").inherits(RevisionsPlugin, Plugin);
         var self = this;
         var path = message.path;
         var currentDoc = this.getCurrentDoc(path, message);
+        
+        if (typeof currentDoc !== "string") {
+            return callback(new Error("The contents for document '" + path + "' could not be retrieved"));
+        }
 
         this.getPreviousRevisionContent(path, function(err, previousRev) {
             if (err) {
                 return callback(err);
             }
 
-            if (typeof currentDoc !== "string") {
-                return callback(new Error("The contents for document '" + path + "' could not be retrieved"));
-            }
+            compute({
+                type: "patch_make",
+                param1: previousRev,
+                param2: currentDoc
+            }, function(err, patch) {
+                if (err)
+                    console.error(err);
 
-            var patch = Diff.patch_make(previousRev, currentDoc);
-            var revision = {
-                ts: Date.now(),
-                silentsave: message.silentsave,
-                restoring: message.restoring,
-                patch: [patch],
-                length: currentDoc.length
-            };
-
-            var contributors = message.contributors;
-            if ((!contributors || !contributors.length) && (user && user.data && user.data.email)) {
-                revision.contributors = [user.data.email];
-            }
-
-            self.pushPatch(path, revision, callback);
+                var revision = {
+                    ts: Date.now(),
+                    silentsave: message.silentsave,
+                    restoring: message.restoring,
+                    patch: [patch],
+                    length: currentDoc.length
+                };
+    
+                var contributors = message.contributors;
+                if ((!contributors || !contributors.length) && (user && user.data && user.data.email)) {
+                    revision.contributors = [user.data.email];
+                }
+    
+                self.pushPatch(path, revision, callback);
+            });
         });
     };
 
