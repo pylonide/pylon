@@ -1,5 +1,7 @@
 .PHONY:    apf ext worker mode theme package test
 
+default: apf worker
+
 # packages apf
 apf:
 	cd node_modules/packager; node package.js projects/apf_cloud9.apr

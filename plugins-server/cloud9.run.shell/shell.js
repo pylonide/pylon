@@ -1,5 +1,7 @@
 "use strict";
 
+var util = require("util");
+var c9util = require("../cloud9.core/util");
 var spawn = require("child_process").spawn;
 var killTree = require("./killtree").killTree;
 
@@ -23,11 +25,14 @@ var exports = module.exports = function setup(options, imports, register) {
 
 exports.factory = function(uid) {
     return function(args, eventEmitter, eventName) {
-        return new Runner({
-            uid: uid, command: args.command, args: args.args, cwd: args.cwd, 
-            env: args.env, encoding: args.encoding, extra: args.extra, 
-            eventEmitter: eventEmitter, eventName: eventName
-        });
+        var options = {};
+        c9util.extend(options, args);
+        options.uid = uid;
+        options.eventEmitter = eventEmitter;
+        options.eventName = eventName;
+        options.args = args.args;
+
+        return new Runner(options);
     };
 };
 
@@ -35,24 +40,18 @@ var Runner = exports.Runner = function(options) {
     this.uid = options.uid;
     this.command = options.command;
     this.args = options.args || [];
-    this.encoding = options.encoding || "utf8";
-
-    if (this.encoding === "binary") {
-        this.encoding = null;
-    }
     this.extra = options.extra;
 
     this.runOptions = {};
     if (options.cwd)
         this.runOptions.cwd = options.cwd;
 
-    var env = options.env || {};
-    
+    this.env = options.env || {};
     for (var key in process.env)
-        if (!env.hasOwnProperty(key))
-            env[key] = process.env[key];
+        if (!this.env.hasOwnProperty(key))
+            this.env[key] = process.env[key];
 
-    this.runOptions.env = env;
+    this.runOptions.env = this.env;
 
     this.eventEmitter = options.eventEmitter;
     this.eventName = options.eventName;
@@ -130,14 +129,8 @@ var Runner = exports.Runner = function(options) {
 
         child.stdout.on("data", sender("stdout"));
         child.stderr.on("data", sender("stderr"));
-        
-        if (this.encoding) {
-            child.stdout.setEncoding(this.encoding);
-            child.stderr.setEncoding(this.encoding);
-        }
-        
+
         function emit(msg) {
-            // console.log(self.eventName, msg);
             self.eventEmitter.emit(self.eventName, msg);
         }
 
@@ -147,7 +140,7 @@ var Runner = exports.Runner = function(options) {
                     "type": self.name + "-data",
                     "pid": pid,
                     "stream": stream,
-                    "data": data,
+                    "data": data.toString("utf8"),
                     "extra": self.extra
                 });
             };
