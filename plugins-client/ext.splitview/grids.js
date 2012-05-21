@@ -291,7 +291,6 @@ function insertEditorAt(parent, editor, insertPoint) {
         //console.log("round", ++count, "tags:",parent.tagName, insertPoint[0]);
         nextPoint = insertPoint.shift();
         if (parent.tagName.indexOf(nextPoint) == -1) {
-            console.log(parent.tagName, nextPoint, insertPoint);
             throw new Error("No valid insertion point found for editor");
         }
         

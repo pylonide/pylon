@@ -6,7 +6,7 @@
       center    = "true"
       width     = "350"
       height    = "300"
-      skin      = "bk-window"
+      skin      = "bk-window2"
       resizable = "true"
       kbclose   = "true"
       buttons   = "close"

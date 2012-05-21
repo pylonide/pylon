@@ -12,6 +12,7 @@ define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var markup = require("text!ext/consolehints/consolehints.xml");
 var css = require("text!ext/consolehints/consolehints.css");
 var c9console = require("ext/console/console");
@@ -20,8 +21,10 @@ var commands = require("ext/commands/commands");
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 var filterCommands = function(commands, word) {
+    var escapedWord = util.escapeRegExp(word);
     return commands.filter(function(cmd) {
-        return cmd.search(new RegExp("^" + word)) !== -1;
+        var regEx = new RegExp("^" + escapedWord, "i");
+        return cmd.search(regEx) !== -1;
     }).sort();
 };
 
@@ -37,24 +40,6 @@ var mouseHandler = function(e) {
     hintsTimer = setTimeout(function() { self.select(el); }, 5);
 };
 
-var fontSize;
-// This function is not accurate, but we don't care since we don't need precision.
-var getFontSize = function(txtNode) {
-    if (fontSize)
-        return fontSize;
-
-    var el = document.createElement("span");
-    el.className = "consoleInputCloned";
-    el.innerHTML = "m";
-    document.body.appendChild(el);
-    fontSize = {
-        width: el.offsetWidth,
-        height: el.offsetHeight
-    };
-    document.body.removeChild(el);
-    return fontSize;
-};
-
 var hintLink = function(data) {
     var dataAttr = [data.base, data.cmdName, data.cursorPos, !!data.cmd].join(",");
     if (!data.cmd)
@@ -66,7 +51,11 @@ var hintLink = function(data) {
         var notation = apf.isMac ? apf.hotkeys.toMacNotation(key) : key;
         spanHotkey = '<span class="hints_hotkey">' + notation + '</span>';
     }
-    var cmdText = '<span>' + data.cmd.hint + '</span>' + spanHotkey;
+
+    var cmdText = "";
+    if (data.showHelperText)
+        cmdText = '<span>' + (data.cmd.hint || '') + '</span>';
+    cmdText += spanHotkey;
     return '<a href="#" data-hint="'+ dataAttr + '">' + data.cmdName + cmdText + '</a>';
 };
 
@@ -81,6 +70,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     hidden : true,
     nodes  : [],
     autoOpen : true,
+    lastCliValue : "",
 
     hook : function(){
         var _self = this;
@@ -107,6 +97,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             
             apf.addListener(document, "click", function(e){
                 var node = e.target;
+                if (node.parentNode.parentNode === txtConsoleInput.$ext)
+                    return;
                 if (node.parentNode != hintsContent || node != hintsContent)
                     _self.hide();
             });
@@ -129,16 +121,21 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     cwd: c9console.getCwd()
                 });
             }, 1000);
-            
-            //txtConsoleInput.addEventListener("blur", function(e) { _self.hide(); });
+
+            txtConsoleInput.addEventListener("focus", function(e) {
+                if (txtConsoleInput.getValue().length) {
+                    winHints.style.display = "block";
+                    winHints.visible = true;
+                }
+            });
+
             txtConsoleInput.addEventListener("keyup", function(e) {
                 // Ignore up/down cursor arrows, enter, here
                 if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 9 || e.keyCode === 13) 
                     return;
                 var getCmdMatches = function(filtered) {
-                    var cli = e.currentTarget;
                     if (filtered.length && filtered[0] !== "[PATH]")
-                        _self.show(cli, "", filtered, cli.getValue().length - 1);
+                        _self.show(txtConsoleInput, "", filtered, txtConsoleInput.getValue().length - 1);
                     else {
                         _self.hide();
                     }
@@ -149,13 +146,19 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                     _self.hide();
                     return;
                 }
-    
+
                 var cliValue = e.currentTarget.getValue();
-                
+
+                if (_self.lastCliValue === cliValue)
+                    return;
+
+                _self.lastCliValue = cliValue;
+
                 if (cliValue)
                     _self.getCmdCompletion(cliValue, getCmdMatches);
                 else
                     _self.hide();
+
             });
     
             // Below we are overwriting the Console default key events in function of
@@ -195,8 +198,15 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     },
     
     show: function(textbox, base, hints, cursorPos) {
+        if (txtConsolePrompt.visible)
+            return;
+
         if (animControl && animControl.stop)
             animControl.stop();
+
+        var showHelperText = true;
+        if (txtConsoleInput.getValue().split(" ").length > 1)
+            showHelperText = false;
 
         var content = hints.map(function(hint) {
             var cmdName = base ? base + hint.substr(1) : hint;
@@ -204,7 +214,8 @@ module.exports = ext.register("ext/consolehints/consolehints", {
                 base: base,
                 cmdName: cmdName,
                 cursorPos: cursorPos,
-                cmd: commands.commands[cmdName]
+                cmd: commands.commands[cmdName],
+                showHelperText: showHelperText
             });
         }).join("");
 
@@ -216,14 +227,13 @@ module.exports = ext.register("ext/consolehints/consolehints", {
             winHints.visible = true;
         }
 
-        var size = getFontSize(textbox.$ext);
         winHints.style.left = parseInt(cursorPos + 5, 10) + "px";
     },
     hide: function() {
         winHints.style.display = "none";
         winHints.visible = false;
         selectedHint = null;
-        
+
         return true;
     },
     click: function(e) {

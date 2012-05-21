@@ -10,7 +10,8 @@
       title    = "Open Files"
       modal    = "false"
       buttons  = "close"
-      optimize = "true">
+      optimize = "true"
+      minwidth = "101">
         <a:button
           skin="header-btn"
           class="panel-settings"

@@ -77,7 +77,13 @@ module.exports = function setup(options, imports, register) {
                 getSocketUrl: function() {
                     return socketUrl;
                 },
-                initUserAndProceed: initUserAndProceed
+                getWorkspaceId: function() {
+                    return ide.options.workspaceId.toString();
+                },
+                canShutdown: ide.canShutdown.bind(ide),
+                initUserAndProceed: initUserAndProceed,
+                on: ide.on.bind(ide),
+                destroy: ide.dispose.bind(ide)
             }
         });
     }

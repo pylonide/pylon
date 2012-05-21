@@ -12,6 +12,12 @@ apfdebug:
 	cd node_modules/packager; node package.js projects/apf_cloud9_debug.apr
 	cd node_modules/packager; cat build/apf_debug.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../plugins-client/lib.apf/www/apf-packaged/apf_debug.js
 
+# package_apf--temporary fix for non-workering infra
+pack_apf:
+	mkdir -p build/src
+	mv plugins-client/lib.apf/www/apf-packaged/apf_release.js build/src/apf_release.js
+	node build/r.js -o name=./build/src/apf_release.js out=./plugins-client/lib.apf/www/apf-packaged/apf_release.js baseUrl=.
+
 # packages core
 core:
 	mkdir -p build/src
@@ -54,3 +60,4 @@ package: apf core worker mode theme ext
 
 test:
 	$(MAKE) -C test
+	cp node_modules/ace/build/src/worker* plugins-client/cloud9.core/www/js/worker

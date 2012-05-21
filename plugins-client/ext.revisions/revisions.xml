@@ -61,17 +61,13 @@
           bufferselect = "true"
           each         = "[revision]">
             <a:caption><?lm
-                 <div class="revision-icon">{
+                {
                     if ([@restoring] != '') {
-                        <div class="rev-restoration" title="Restored"></div>
+                        <div class="revision-icon">
+                            <div class="rev-restoration" title="Restored"></div>
+                        </div>
                     }
-                    else if ([@silentsave] != 'true') {
-                        <span class="rev-usersave" title="Saved by user">U</span>
-                    }
-                    else {
-                        <span class="rev-autosave" title="Autosave">A</span>
-                    }
-                }</div>
+                }
                 <div class="revision-info">{
                     <div class="revision-title">[@name]</div>
                     <ul class="contributors">{
@@ -100,7 +96,7 @@
                 top     = "-25"
                 right   = "10"
                 checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
-                label   = "Show Details"
+                label   = "Show all file changes"
                 onafterchange = "
                     var model = tabEditors.getPage().$mdlRevisions;
                     require('ext/revisions/revisions').toggleListView(model);

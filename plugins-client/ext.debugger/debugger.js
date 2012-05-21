@@ -17,7 +17,6 @@ var commands = require("ext/commands/commands");
 var fs = require("ext/filesystem/filesystem");
 var noderunner = require("ext/noderunner/noderunner");
 var markup = require("text!ext/debugger/debugger.xml");
-var settings = require("ext/settings/settings");
 
 require("ext/debugger/inspector");
 
@@ -135,18 +134,27 @@ module.exports = ext.register("ext/debugger/debugger", {
                     }]
                 },
                 {
-                    width : 250,
-                    height : 300,
+                    width : 410,
+                    height : 230,
+                    flex : 3,
                     buttons : [
                         { caption: "Call Stack", ext : [name, "dbgCallStack"], hidden: true}
                     ]
                 },
                 {
-                    width : 250,
+                    width : 380,
                     height : 300,
+                    flex : 3,
                     buttons : [
                         { caption: "Interactive", ext : [name, "dbInteractive"], hidden: true},
                         { caption: "Variables", ext : [name, "dbgVariable"], hidden: true},
+                    ]
+                },
+                {
+                    width : 350,
+                    height : 230,
+                    flex : 2,
+                    buttons : [
                         { caption: "Breakpoints", ext : [name, "dbgBreakpoints"], hidden: true}
                     ]
                 }
@@ -256,6 +264,11 @@ module.exports = ext.register("ext/debugger/debugger", {
                     _self.showDebugFile(e.selected.getAttribute("scriptid"),
                         parseInt(e.selected.getAttribute("line"), 10) + 1);
                 // TODO sometimes we don't have a scriptID
+            });
+            
+            lstBreakpoints.addEventListener("aftercheck", function(e) {
+                dbg.setBreakPointEnabled(e.xmlNode, 
+                    apf.isTrue(e.xmlNode.getAttribute("enabled")));
             });
         });
 
