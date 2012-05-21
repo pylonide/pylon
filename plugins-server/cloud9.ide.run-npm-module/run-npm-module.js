@@ -6,24 +6,25 @@
  */
 
 var Plugin = require("../cloud9.core/plugin");
+var fsnode = require("vfs/nodefs-adapter");
 var util = require("util");
 
 var name = "npm-runtime";
 var ProcessManager;
 var EventBus;
-var Fs;
+var VFS;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
-    Fs = imports["sandbox.fs"];
-    
+    VFS = imports.vfs;
     imports.ide.register(name, NpmRuntimePlugin, register);
 };
 
 var NpmRuntimePlugin = function(ide, workspace) {
     this.ide = ide;
     this.pm = ProcessManager;
+    this.fs = fsnode(VFS);
     this.eventbus = EventBus;
     this.workspace = workspace;
     this.channel = workspace.workspaceId + "::npm-runtime"; // wtf this should not be needed
@@ -66,7 +67,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
 
     this.$run = function(file, args, env, version, message, client) {
         var self = this;
-        
+
         this.pm.spawn("run-npm", {
             file: file,
             args: args,
@@ -103,14 +104,15 @@ util.inherits(NpmRuntimePlugin, Plugin);
     };
 
     this.searchForModuleHook = function(command, cb) {
-        var baseDir = "node_modules";
+        var baseDir = this.ide.workspaceDir + "/node_modules";
+        var fs = this.fs;
 
         function searchModules(dirs, it) {
             if (!dirs[it])
                 return cb(false);
 
             var currentDir = baseDir + "/" + dirs[it];
-            Fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
+            fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
                 if (err)
                     return searchModules(dirs, it+1);
 
@@ -133,7 +135,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
             });
         }
 
-        Fs.readdir(baseDir, function(err, res) {
+        fs.readdir(baseDir, function(err, res) {
             if (err)
                 return cb(false);
 

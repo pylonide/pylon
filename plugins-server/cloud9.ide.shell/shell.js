@@ -7,7 +7,6 @@
 "use strict";
 
 var util = require("util");
-var Fs = require("fs");
 var Path = require("path");
 var Async = require("asyncjs");
 
@@ -16,9 +15,11 @@ var c9util = require("../cloud9.core/util");
 
 var name = "shell";
 var ProcessManager;
+var VFS;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
+    VFS = imports.vfs;
     imports.ide.register(name, ShellPlugin, register);
 };
 
@@ -26,6 +27,7 @@ var ShellPlugin = function(ide, workspace) {
     Plugin.call(this, ide, workspace);
 
     this.pm = ProcessManager;
+    this.vfs = VFS;
     this.workspaceId = workspace.workspaceId;
     this.workspaceDir = ide.workspaceDir;
     this.hooks = ["command"];
@@ -96,6 +98,13 @@ util.inherits(ShellPlugin, Plugin);
         });
     };
 
+    this._isDir = function(stat) {
+        return (
+            stat.mime == "inode/directory" ||
+            (stat.linkStat && stat.linkStat.mime == "inode/directory")
+        );
+    };
+
     this["command-internal-isfile"] = function(message) {
         var file  = message.argv.pop();
         var path  = message.cwd || this.workspaceDir;
@@ -108,8 +117,8 @@ util.inherits(ShellPlugin, Plugin);
             return;
         }
 
-        Fs.stat(path, function(err, stat) {
-            if (err) {
+        this.vfs.stat(path, {}, function(err, stat) {
+            if (err || stat.err) {
                 return self.sendResult(0, "error", {
                     errmsg: "Problem opening file; it does not exist or something else failed. More info: " +
                         err.toString().replace("Error: ENOENT, ", ""),
@@ -118,7 +127,7 @@ util.inherits(ShellPlugin, Plugin);
             }
             self.sendResult(0, "internal-isfile", {
                 cwd: path,
-                isfile: (stat && !stat.isDirectory()),
+                isfile: (stat && !self._isDir(stat)),
                 sender: message.sender || "shell",
                 extra: message.extra
             });
@@ -181,8 +190,8 @@ util.inherits(ShellPlugin, Plugin);
         if (path.indexOf(this.workspaceDir) === -1)
             return this.sendResult();
 
-        Fs.stat(path, function(err, stat) {
-            if (err) {
+        this.vfs.stat(path, {}, function(err, stat) {
+            if (err || stat.err) {
                 return self.sendResult(0, "error", {
                     errmsg: "Problem changing directory; it does not exist or something else failed. More info: " +
                         err.toString().replace("Error: ENOENT, ", ""),
@@ -190,7 +199,7 @@ util.inherits(ShellPlugin, Plugin);
                 });
             }
 
-            if (!stat.isDirectory()) {
+            if (!self._isDir(stat)) {
                 return self.sendResult(0, "error", {
                     errmsg: "Not a directory.",
                     extra: message.extra
@@ -241,13 +250,23 @@ util.inherits(ShellPlugin, Plugin);
             tail = tail.substr(tail.lastIndexOf("/") + 1).replace(/^[\/]+/, "").replace(/[\/]+$/, "");
         }
 
-        Async.readdir(path).stat().each(function(file, next) {
-            if (file.name.indexOf(tail) === 0 && (!dirmode || file.stat.isDirectory()))
-                matches.push(file.name + (file.stat.isDirectory() ? "/" : ""));
-            next();
-        })
-        .end(function() {
-            callback(tail, matches);
+        this.vfs.readdir(this.path, {encoding: null}, function(err, meta) {
+            if (err)
+                return callback(err);
+
+            var stream = meta.stream;
+            var nodes = [];
+
+            stream.on("data", function(stat) {
+                var isDir = this._isDir(stat);
+
+                if (stat.name.indexOf(tail) === 0 && (!dirmode || isDir))
+                    matches.push(stat.name + (isDir ? "/" : ""));
+            });
+
+            stream.on("end", function() {
+                callback(tail, nodes);
+            });
         });
     };
 

@@ -1,5 +1,7 @@
 "use strict";
 
+var nodefs = require("vfs/nodefs-adapter");
+
 /**
  * Run shell commands
  */
@@ -31,6 +33,7 @@ exports.factory = function(vfs) {
 
 var Runner = exports.Runner = function(vfs, options, callback) {
     this.vfs = vfs;
+    this.fs = nodefs(vfs);
     this.uid = options.uid;
     this.command = options.command;
     this.args = options.args || [];
@@ -45,18 +48,8 @@ var Runner = exports.Runner = function(vfs, options, callback) {
         this.runOptions.stderrEncoding = this.encoding;
     }
 
-    this.env = options.env || {};
-
-    for (var key in process.env)
-        if (!this.env.hasOwnProperty(key))
-            this.env[key] = process.env[key];
-
-    this.runOptions.env = this.env;
-
-    this.encoding = options.encoding || "utf8";
-    if (this.encoding === "binary") {
-        this.encoding = null;
-     }
+    if (options.env)
+        this.runOptions.env = options.env;
 
     this.eventEmitter = options.eventEmitter;
     this.eventName = options.eventName;
