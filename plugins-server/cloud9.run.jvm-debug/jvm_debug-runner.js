@@ -3,6 +3,7 @@
 var util = require("util");
 var Path = require("path");
 var netutil = require("../cloud9.core/netutil");
+var c9util = require("../cloud9.core/util");
 var JavaDebugProxy = require("./javadebugproxy");
 
 var JAVA_DEBUG_PORT = 6000;
@@ -77,10 +78,10 @@ function setup (JvmRunner) {
         this.breakOnStart = options.breakOnStart;
         this.msgQueue = [];
     };
-    
+
     util.inherits(Runner, JvmRunner);
     mixin(Runner, JvmRunner);
-    
+
     function mixin(Class, Parent) {
 
         Class.prototype = Class.prototype || {};

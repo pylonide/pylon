@@ -70,71 +70,12 @@ exports.factory = function(root, port, uid, url, usePortFlag) {
     };
 };
 
-function srcToJavaClass(file) {
-    return file.substring("src/".length)
-        .replace(new RegExp("/", "g"), ".")
-        .replace(/\.java$/, "");
-}
-
-function getJVMInstance (runner, options, callback) {
-    var jvmType = options.jvmType;
-    var cwd = options.cwd;
-    var file = options.file;
-    switch (jvmType) {
-        case "java":
-            var javaClass = srcToJavaClass(file);
-            return buildApp(new JVMInstance(cwd, javaClass));
-
-        case "java-web":    
-            return buildApp(new WebJVMInstance(cwd, 'j2ee', options.port));
-
-        case "jpy":
-            return callback(null, new ScriptJVMInstance(cwd, "jython", file));
-
-        case "jrb":
-            return callback(null, new ScriptJVMInstance(cwd, "jruby1.8.7", file));
-
-        case "groovy":
-            return callback(null, new ScriptJVMInstance(cwd, "groovy", file));
-
-        case "js-rhino":
-            return callback("JS-Rhino not tested yet");
-
-        default:
-            return callback("Unsupported JVM runtime environment '" + jvmType + "' !!");
-    }
-
-    function buildApp(jvmInstance) {
-        jvm.build(cwd, function(err, compilationProblems) {
-            if (err)  return callback(err);
-
-            // If no errors found, we can start
-            if (compilationProblems.filter(function (problem) {
-                return problem.type == "error"; }).length == 0) {
-                callback(null, jvmInstance);
-            }
-            else {
-                console.log("Found " + compilationProblems.length + " compilation errors");
-                // send compilation errors to the user
-                runner.eventEmitter.emit(runner.eventName, {
-                    type: "jvm-build",
-                    code: 0,
-                    body: {
-                        success: true,
-                        body: compilationProblems
-                    }
-                });
-            }
-        }, "build");
-    }
-}
-
 var Runner = exports.Runner = function(options) {
 
     this.root = options.root;
     this.port = options.port;
     this.uid = options.uid;
-    
+
     this.file = options.file || "";
 
     this.jvmArgs = [];
@@ -147,8 +88,9 @@ var Runner = exports.Runner = function(options) {
         options.env.PORT = options.port;
     }
 
-    options.cwd = options.cwd ? options.cwd : options.root;
+    this.cwd = options.cwd = options.cwd ? options.cwd : options.root;
     options.command = "java"; 
+    this.jvmType = options.jvmType;
 
     // a nice debug message for our users when we fire up the process
     var debugMessageListener = function (msg) {
@@ -172,12 +114,17 @@ var Runner = exports.Runner = function(options) {
     options.eventEmitter.on(options.eventName, debugMessageListener);
 
     ShellRunner.call(this, options);
+};
+
+util.inherits(Runner, ShellRunner);
+
+(function() {
 
     this.name = "node";
 
     this.createChild = function(callback) {
         var _self = this;
-        getJVMInstance(this, options, function (err, jvmInstance) {
+        this.getJVMInstance(function (err, jvmInstance) {
             if (err) return console.error(err);
 
             jvmInstance.runArgs(function (runArgs) {
@@ -187,7 +134,64 @@ var Runner = exports.Runner = function(options) {
             });
         });
     };
-};
 
-util.inherits(Runner, ShellRunner);
+    function srcToJavaClass(file) {
+        return file.substring("src/".length)
+            .replace(new RegExp("/", "g"), ".")
+            .replace(/\.java$/, "");
+    }
 
+    this.getJVMInstance = function (callback) {
+        var jvmType = this.jvmType;
+        var cwd = this.cwd;
+        var file = this.file;
+        switch (jvmType) {
+            case "java":
+                var javaClass = srcToJavaClass(file);
+                return buildApp(new JVMInstance(cwd, javaClass));
+
+            case "java-web":    
+                return buildApp(new WebJVMInstance(cwd, 'j2ee', this.port));
+
+            case "jpy":
+                return callback(null, new ScriptJVMInstance(cwd, "jython", file));
+
+            case "jrb":
+                return callback(null, new ScriptJVMInstance(cwd, "jruby1.8.7", file));
+
+            case "groovy":
+                return callback(null, new ScriptJVMInstance(cwd, "groovy", file));
+
+            case "js-rhino":
+                return callback("JS-Rhino not tested yet");
+
+            default:
+                return callback("Unsupported JVM runtime environment '" + jvmType + "' !!");
+        }
+
+        function buildApp(jvmInstance) {
+            jvm.build(cwd, function(err, compilationProblems) {
+                if (err)  return callback(err);
+
+                // If no errors found, we can start
+                if (compilationProblems.filter(function (problem) {
+                    return problem.type == "error"; }).length == 0) {
+                    callback(null, jvmInstance);
+                }
+                else {
+                    console.log("Found " + compilationProblems.length + " compilation errors");
+                    // send compilation errors to the user
+                    runner.eventEmitter.emit(runner.eventName, {
+                        type: "jvm-build",
+                        code: 0,
+                        body: {
+                            success: true,
+                            body: compilationProblems
+                        }
+                    });
+                }
+            }, "build");
+        }
+    };
+
+}).call(Runner.prototype);

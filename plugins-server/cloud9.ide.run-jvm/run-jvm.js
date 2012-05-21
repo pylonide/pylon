@@ -129,7 +129,7 @@ util.inherits(JVMRuntimePlugin, Plugin);
                 args: args,
                 env: env,
                 breakOnStart: breakOnStart,
-                type: message.runner,
+                jvmType: message.runner,
                 version: version,
                 extra: message.extra
             }, self.channel, function(err, pid) {
