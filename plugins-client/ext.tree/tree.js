@@ -161,16 +161,20 @@ module.exports = ext.register("ext/tree/tree", {
 
             // This checks that each expanded folder has a root that's already
             // been saved
+            var splitPrefix = ide.davPrefix.split("/");
+            splitPrefix.pop();
+            var rootPrefixNodes = splitPrefix.length;
+            var rootPrefix = splitPrefix.join("/");
             var cc, parts;
             for (path in lut) {
-                parts = path.split("/");
-                cc = parts.shift();
-                do {
+                parts = path.split("/").splice(rootPrefixNodes);
+                cc = rootPrefix + "/" + parts.shift();
+                while(lut[cc]) {
                     if (!parts.length)
                         break;
 
                     cc += "/" + parts.shift();
-                } while(lut[cc]);
+                }
 
                 if (!parts.length)
                     _self.expandedNodes.push(path);
@@ -230,17 +234,13 @@ module.exports = ext.register("ext/tree/tree", {
                 trFiles.add(xmlNode, parent);
             }
         });
-        
-        //ext.initExtension(this);
     },
 
     onReady : function() {
         var _self = this;
         trFiles.setAttribute("model", this.model);
         if (this.loadedSettings === 1) {
-            //setTimeout(function() {
-                _self.loadProjectTree();
-            //}, 1000);
+            _self.loadProjectTree();
         }
 
         // If no settings were found, then we set the "get" attribute of
@@ -465,12 +465,12 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("collapse", this.$collapse = function(e){
             if (!e.xmlNode)
                 return;
-            delete _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
 
-            if (!_self.loading) {
-                _self.changed = true;
-                settings.save();
-            }
+            var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+            delete _self.expandedList[id];
+
+            _self.changed = true;
+            settings.save();
         });
     },
 
@@ -620,7 +620,7 @@ module.exports = ext.register("ext/tree/tree", {
                 return;
 
             _self.loading = false;
-
+            
             // Re-select the last selected item
             if(_self.treeSelection.path) {
                 var xmlNode = trFiles.$model.queryNode('//node()[@path="' +

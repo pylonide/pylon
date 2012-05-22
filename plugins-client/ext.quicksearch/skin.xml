@@ -48,7 +48,7 @@
                 color: #aaa;
                 font-size: 11px;
                 height: 19px;
-                line-height: 20px;
+                line-height: 19px;
                 text-align: center;
                 vertical-align: middle;
                 display:inline;
@@ -198,7 +198,7 @@
                 height:17px;
                 line-height:0;
                 position:absolute;
-                right: -1px;
+                right: -2px;
                 top:4px;
                 width:0;
                 display: none;

@@ -12,6 +12,8 @@ var ext = require("core/ext");
 var util = require("core/util");
 var commands = require("ext/commands/commands");
 
+require("ext/main/main"); //Make sure apf is inited.
+
 module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
     dev    : "Ajax.org",
@@ -314,11 +316,20 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var page = tabEditors.getPage(path);
         if (page)
             tabEditors.remove(page);
-        
-        if(!callback)
-            callback = function() {};
-            
-        davProject.remove(path, false, callback);
+
+        var cb = function(data, state, extra) {
+            // In WebDAV, a 204 status from the DELETE verb means that the
+            // file was removed successfully.
+            if (extra && extra.status && extra.status === 204) {
+                ide.dispatchEvent("removefile", {
+                    path: path
+                });
+            }
+
+            if (callback)
+                callback(data, state, extra);
+        };
+        davProject.remove(path, false, cb);
     },
 
     /**** Init ****/
@@ -374,13 +385,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         });
 
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
-        this.webdav = new apf.webdav({
+        this.webdav = apf.document.documentElement.appendChild(new apf.webdav({
             id  : "davProject",
             url : dav_url,
             onauthfailure: function() {
                 ide.dispatchEvent("authrequired");
             }
-        });
+        }));
 
         function openHandler(e) {
             ide.send({
