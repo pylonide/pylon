@@ -27,7 +27,7 @@ module.exports = ext.register("ext/anims/anims", {
                 aNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
                 //apf.layout.forceResize();
                 
-                finish && setTimeout(finish, 30);
+                finish && finish(); //setTimeout(finish, 30);
             });
         }
         else {
@@ -77,7 +77,7 @@ module.exports = ext.register("ext/anims/anims", {
                 else
                     aNode.setWidth(options.width);
                 
-                finish && setTimeout(finish, 30);
+                finish && finish(); //setTimeout(finish, 30);
             });
         }
         else {

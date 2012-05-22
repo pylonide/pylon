@@ -92,8 +92,8 @@ module.exports = ext.register("ext/panels/panels", {
             if (toWin) {
                 toWinExt.style.zIndex = zIndex2;
 //                apf.setOpacity(toWinExt, 1);
-                toWinExt.style.minWidth = "";
                 toWinExt.style.left = 0;
+                toWinExt.style.minWidth = "";
                 colLeft.setAttribute("minwidth", toWin.minwidth);
             }
             else {
@@ -102,8 +102,8 @@ module.exports = ext.register("ext/panels/panels", {
             if (win) {
                 winExt.style.zIndex = zIndex;
 //                apf.setOpacity(winExt, 1);
-                win.$ext.style.minWidth = "";
                 win.$ext.style.left = 0;
+                win.$ext.style.minWidth = "";
                 win.hide();
             }
             
