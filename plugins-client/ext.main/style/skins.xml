@@ -9087,6 +9087,16 @@
     	background-position: -98px -132px;
     	z-index: 10000000;
     }
+    .tabsContextMenu:before {
+        background: url(images/c9-no-repeat.png) no-repeat -98px -132px;
+        content: "";
+        display: block;
+        height: 17px;
+        left: -1px;
+        position: absolute;
+        top: -17px;
+        width: 19px;
+    }
 
     /* ------------------------------------------------------------------------------------------
 	 * LEGACY CODE
