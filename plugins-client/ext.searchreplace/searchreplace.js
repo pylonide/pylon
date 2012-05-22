@@ -247,10 +247,13 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             _self.decorateCheckboxes(this);
         });
         
-        var blur = function(e){
+        var blur = function(e){ 
+            var searchInFilesFocus = (typeof(txtSFFind) === "undefined") ? null : txtSFFind;
+            
             if (self.hboxReplace && !hboxReplace.visible 
               && self.winSearchReplace && winSearchReplace.visible 
-              && !apf.isChildOf(winSearchReplace, e.toElement))
+              && !apf.isChildOf(winSearchReplace, e.toElement)
+              && e.toElement !== searchInFilesFocus)
                 _self.toggleDialog(-1, null, true);
         }
         
@@ -387,7 +390,9 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             }
             
             if (searchinfiles && searchinfiles.inited && winSearchInFiles.visible) {
-                searchinfiles.toggleDialog(-1, null, null, function(){
+                txtFind.focus();
+                txtFind.select();
+                searchinfiles.toggleDialog(-1, null, true, function(){
                     _self.toggleDialog(force, isReplace, noselect);
                 });
                 return;
@@ -433,7 +438,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             if (stateChange && !isReplace && wasVisible)
                 toHeight -= hboxReplace.$ext.scrollHeight;
             
-            if (animate) {
+            if (animate && !apf.isGecko) {
                 Firmin.animate(winSearchReplace.$ext, {
                     height: toHeight + "px", //(isReplace ? 70 : 38)
                     timingFunction: "cubic-bezier(.10, .10, .25, .90)"
@@ -471,19 +476,27 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 = winSearchReplace.$ext.offsetHeight + "px";
 
             //Animate
-            if (animate) {
+            if (animate && !apf.isGecko) {
                 Firmin.animate(winSearchReplace.$ext, {
                     height: "0px",
                     timingFunction: "ease-in-out"
                 }, 0.2, function(){
                     winSearchReplace.visible = true;
-                    winSearchReplace.hide();
+                    
+                    if(noselect && apf.window.activeElement) {
+                        var curEle = apf.window.activeElement;
+                        winSearchReplace.hide();
+                        curEle.focus();
+                        curEle.select();
+                    } else {
+                        winSearchReplace.hide();   
+                    }
                     
                     winSearchReplace.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
     
                     if (!noselect)
                         editor.ceEditor.focus();
-                    
+
                     setTimeout(function(){
                         callback
                             ? callback()
