@@ -204,12 +204,12 @@ module.exports = ext.register("ext/revisions/revisions", {
             var hasChanged = Util.pageHasChanged(tabEditors.getPage());
             if (Util.isAutoSaveEnabled() && hasChanged) {
                 apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                apf.setStyleClass(saveStatus, "saving", ["saved"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
                 return btnSave.setCaption("Saving");
             }
             else if (!hasChanged) {
                 apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                apf.setStyleClass(saveStatus, "saved", ["saving"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
                 return btnSave.setCaption("Changes saved");
             }
         }
