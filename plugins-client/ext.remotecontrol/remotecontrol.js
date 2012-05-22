@@ -25,36 +25,21 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     init : function(amlNode) {
         var _self = this;
         
-        ide.addEventListener("init.ext/filesystem/filesystem", function(e) {
-            if (_self.socketMessage)
-                _self.loadFileOrFolder();
-        });
-        
         ide.addEventListener("socketMessage", function (event) {
-            if (event.message.type === "remotecontrol") {
-                _self.socketMessage = event; 
-                
-                if (filesystem.inited)
-                    _self.loadFileOrFolder();       
-            }
+            _self.loadFileOrFolder(event); 
         });
     },
 
-    loadFileOrFolder : function() {
-        var _self = this;
-        
-        if (_self.socketMessage.message.action === "openfile") {
-            // Generic case: hide sidebar (do this first, 'cause it's a little slow)
-            if (_self.socketMessage.currentTarget && _self.socketMessage.currentTarget.workspaceId == "generic") {
+    loadFileOrFolder : function(event) {
+        if (event.message.action === "openfile") {
+            // Generic case: hide sidebar (do this first, it's a little slow)
+            if (event.message.args.options.name === "generic") {
                 require("ext/panels/panels").deactivate(null, false);
             }
             
             // Brand new file: create a dummy file that, when saved, becomes real (can be generic or workspace)
-            if (_self.socketMessage.message.args.noexist === true) {
-                var node = apf.getXml("<file />");
-
-                node.setAttribute("path", _self.socketMessage.message.args.path);
-                node.setAttribute("name", _self.socketMessage.message.args.path.split("/").pop());
+            if (event.message.args.noexist === true) {
+                var node = editors.createFileNodeFromPath( event.message.args.path);
                 node.setAttribute("newfile", "1");
 
                 var doc = ide.createDocument(node);
@@ -63,21 +48,21 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 ide.dispatchEvent("openfile", {doc: doc, node: node});
             }
             else {// Generic case: open the file
-                editors.showFile(_self.socketMessage.message.args.path);
+                editors.showFile(event.message.args.path);
                 
                 // Workspace case: the file is found in tree, expand it
-                if (_self.socketMessage.currentTarget.workspaceId !== "generic") {
-                    var node = apf.getXml("<file />");
-                    node.setAttribute("path", _self.socketMessage.message.args.path);
+                if (event.message.args.options.name !== "generic") {
+                    var node = editors.createFileNodeFromPath(event.message.args.path);
                     
                     tabbehaviors.revealInTree(node);
                 }
             }
         }
-        else if (_self.socketMessage.message.action === "opendir") {
-            var node = filesystem.model.queryNode("//folder[@path='" + _self.socketMessage.message.args.path + "']");
+        else if (event.message.action === "opendir") {
+            alert("SDF");
+            var node = filesystem.model.queryNode("//folder[@path='" + event.message.args.path + "']");
             if (!node) {
-                node = editors.createFolderNodeFromPath(_self.socketMessage.message.args.path);
+                node = editors.createFolderNodeFromPath(event.message.args.path);
             }
             
             tabbehaviors.revealInTree(node);
