@@ -1623,6 +1623,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     _self.$currentMenu.hide();
                 _self.$currentMenu = this;
                 
+                var menuPos = apf.getAbsolutePosition(menu.$ext);
+                var height = apf.getWindowHeight();
                 var pos   = apf.getAbsolutePosition(menu.opener.$ext);
                 var width = apf.getWindowWidth();
                 var dist  = //menu.$ext.offsetWidth > width - pos[0] //Weird bug - chrome only??
@@ -1631,7 +1633,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
                 menu.$ext.style.right = (dist + 5) + "px";
                 menu.$ext.style.left = "";
-
+                menu.maxheight = height - menuPos[1] > 150 ? height - menuPos[1] : 150;
+                
                 var x;
                 setTimeout(x = function(){
 //                    menu.$ext.style.marginRight = "0";
