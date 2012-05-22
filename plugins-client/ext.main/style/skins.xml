@@ -1957,7 +1957,7 @@
             background-position: 0 -523px;
             font-size: 9px;
             line-height: 24px;
-            padding: 0 16px 0 5px;
+            padding: 0 15px 0 10px;
             text-transform: uppercase;
         }
         .c9-toolbarbutton-glossy.saving .c9-label:after,
@@ -1965,18 +1965,19 @@
             background-position: -476px -523px;
         }
         .c9-toolbarbutton-glossy.saving .c9-icon {
-            background-color: #FF8400;
-            right: 6px;
+            background-color: #85C410;
+            right: 10px;
             -webkit-animation: saving .4s linear 0 infinite;
                -moz-animation: saving .4s linear 0 infinite;
                     animation: saving .4s linear 0 infinite;
         }
         .c9-toolbarbutton-glossy.saved .c9-icon {
             background-color: #85C410;
-            right: 6px;
+            right: 10px;
         }
         .c9-toolbarbutton-glossy.save .c9-icon {
             background-color: #D01616;
+            right: 10px;
         }
         .c9-toolbarbutton-glossy.save .c9-label {
             font-size: 9px;
