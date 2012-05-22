@@ -48,7 +48,7 @@
     
                 <a:add type="folder" get="{davProject.mkdir([@path], 'New Folder')}" />
                 <a:add type="file" get="{davProject.create([@path], 'New File.txt', '')}" />
-                <a:rename match="[file|folder[not(@path='/workspace')]]" set="{davProject.rename([@name], [@oldpath])}" />
+                <a:rename match="[file|folder[not(@root)]]" set="{davProject.rename([@name], [@oldpath])}" />
                 <a:move set="{require('ext/tree/tree').moveFile([@path], createPath([@path], [../@path]))}"/>
                 <a:remove match="[file|folder]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
                 <a:copy match="[file|folder]" set="{
