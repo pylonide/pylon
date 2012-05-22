@@ -31,41 +31,42 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     },
 
     loadFileOrFolder : function(event) {
-        if (event.message.action === "openfile") {
-            // Generic case: hide sidebar (do this first, it's a little slow)
-            if (event.message.args.options.name === "generic") {
-                require("ext/panels/panels").deactivate(null, false);
-            }
-            
-            // Brand new file: create a dummy file that, when saved, becomes real (can be generic or workspace)
-            if (event.message.args.noexist === true) {
-                var node = editors.createFileNodeFromPath( event.message.args.path);
-                node.setAttribute("newfile", "1");
-
-                var doc = ide.createDocument(node);
-                doc.cachedValue = "";
-                            
-                ide.dispatchEvent("openfile", {doc: doc, node: node});
-            }
-            else {// Generic case: open the file
-                editors.showFile(event.message.args.path);
+        if (event.message.type === "remotecontrol") {
+            if (event.message.action === "openfile") {
+                // Generic case: hide sidebar (do this first, it's a little slow)
+                if (event.message.args.options.name === "generic") {
+                    require("ext/panels/panels").deactivate(null, false);
+                }
                 
-                // Workspace case: the file is found in tree, expand it
-                if (event.message.args.options.name !== "generic") {
-                    var node = editors.createFileNodeFromPath(event.message.args.path);
+                // Brand new file: create a dummy file that, when saved, becomes real (can be generic or workspace)
+                if (event.message.args.noexist === true) {
+                    var node = editors.createFileNodeFromPath( event.message.args.path);
+                    node.setAttribute("newfile", "1");
+    
+                    var doc = ide.createDocument(node);
+                    doc.cachedValue = "";
+                                
+                    ide.dispatchEvent("openfile", {doc: doc, node: node});
+                }
+                else {// Generic case: open the file
+                    editors.showFile(event.message.args.path);
                     
-                    tabbehaviors.revealInTree(node);
+                    // Workspace case: the file is found in tree, expand it
+                    if (event.message.args.options.name !== "generic") {
+                        var node = editors.createFileNodeFromPath(event.message.args.path);
+                        
+                        tabbehaviors.revealInTree(node);
+                    }
                 }
             }
-        }
-        else if (event.message.action === "opendir") {
-            alert("SDF");
-            var node = filesystem.model.queryNode("//folder[@path='" + event.message.args.path + "']");
-            if (!node) {
-                node = editors.createFolderNodeFromPath(event.message.args.path);
+            else if (event.message.action === "opendir") {
+                var node = filesystem.model.queryNode("//folder[@path='" + event.message.args.path + "']");
+                if (!node) {
+                    node = editors.createFolderNodeFromPath(event.message.args.path);
+                }
+                
+                tabbehaviors.revealInTree(node);
             }
-            
-            tabbehaviors.revealInTree(node);
         }
     },
     
