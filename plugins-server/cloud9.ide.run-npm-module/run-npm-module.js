@@ -61,6 +61,9 @@ util.inherits(NpmRuntimePlugin, Plugin);
         var cmd = (message.command || "").toLowerCase();
         switch(cmd) {
             case "npm-module-stdin":
+                if (!this.children[message.pid])
+                    return true;
+
                 message.line = message.line + '\n';
                 this.children[message.pid].child.stdin.write(message.line);
                 return true;
