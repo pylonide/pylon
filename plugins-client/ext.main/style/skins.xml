@@ -8902,7 +8902,7 @@
 		margin-right : -20px;
 		margin-top   : 0;
 		height       : 21px;
-		overflow     : visible;
+		overflow     : hidden;
     }
     .editor_tab .tab_middle {
         height   : 18px;
@@ -9087,6 +9087,16 @@
     .editor_tab .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -132px;
     	z-index: 10000000;
+    }
+    .tabsContextMenu:before {
+        background: url(images/c9-no-repeat.png) no-repeat -98px -132px;
+        content: "";
+        display: block;
+        height: 17px;
+        left: -1px;
+        position: absolute;
+        top: -17px;
+        width: 19px;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9559,7 +9569,9 @@
         text-overflow : ellipsis;
         white-space : nowrap;
     }
-
+    .editor_tab .session_btn {
+        overflow: visible;
+    }
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */

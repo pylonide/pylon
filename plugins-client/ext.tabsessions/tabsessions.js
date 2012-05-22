@@ -47,7 +47,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             var model = e && e.model || settings.model;
         
             var sessions = model.queryNodes("auto/sessions/session");
-        
+            
             menus.addItemByPath("View/Tabs/~", new apf.divider(), 700);
             
             menus.addItemByPath("View/Tabs/Load Tab Session", {

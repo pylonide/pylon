@@ -157,6 +157,9 @@ module.exports = ext.register("ext/editors/editors", {
                     onmouseover : function(){
                         this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
                     },
+                    onmousedown : function(){
+                        apf.setStyleClass(window[menus.getMenuId('View/Tabs')].$ext, 'tabsContextMenu');
+                    },
                    /* showme  : "[{require('core/settings').model}::auto/tabs/@show]",
                     visible : "{apf.isTrue(this.showme)}", */
                     skin : "btn_icon_only",
