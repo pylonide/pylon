@@ -8901,7 +8901,7 @@
 		margin-right : -20px;
 		margin-top   : 0;
 		height       : 21px;
-		overflow     : visible;
+		overflow     : hidden;
     }
     .editor_tab .tab_middle {
         height   : 18px;
@@ -9562,7 +9562,7 @@
     }
 
     .editor_tab .tab_right, .editor_tab .tab_left {
-        height : 22px;
+        height : 23px;
     }
 </a:style>
 <a:style condition="apf.isWebkit">
@@ -9582,7 +9582,9 @@
         text-overflow : ellipsis;
         white-space : nowrap;
     }
-
+    .editor_tab .session_btn {
+        overflow: visible;
+    }
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
