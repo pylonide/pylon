@@ -10,6 +10,7 @@ var node = require("./node_debug");
 var V8Debugger = require("v8debug").V8Debugger;
 var WSV8DebuggerService = require("v8debug").WSV8DebuggerService;
 
+var vfsLocal = require("vfs/local");
 var home = __dirname + "/../fixtures/node_env";
 
 module.exports = {
@@ -20,7 +21,10 @@ module.exports = {
 
     setUp: function(next) {
         this.eventEmitter = new EventEmitter();
-        this.factory = node.factory(null);
+        var vfs = vfsLocal({
+            root: "/"
+        });
+        this.factory = node.factory(vfs, home);
         async.makePath(home, next);
     },
 
