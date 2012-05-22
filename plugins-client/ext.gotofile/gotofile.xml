@@ -2,22 +2,13 @@
     <a:bar id="winGoToFile"
       buttons   = "close" 
       width     = "500" 
-      skin      = "basic"
+      skin      = "winGoToFile"
       minheight = "35"
       maxheight = "400"
       zindex    = "99999"
       showtab   = "[{require('ext/settings/settings').model}::auto/tabs/@show]"
       top       = "6"
-      style     = "
-        background:#e8e8e8;
-        box-shadow:0 5px 7px rgba(0,0,0,0.5);
-        border:1px solid #bbb;
-        border-width:0 1px 1px 1px;
-        position:absolute;
-        left:50%;
-        margin-left:-250px;
-        top : 37px;
-      ">
+      >
         <a:vbox edge="0 5 5 5" padding="5" anchors2="0 0 0 0">
             <a:textbox id="txtGoToFile" realtime="true" skin="searchbox_textbox" focusselect="true" />
             <a:list id="dgGoToFile"
@@ -37,7 +28,7 @@
                     <span>{
                         (apf.getFilename(value) || "").replace(re, <strong>$1</strong>);
                     }</span>
-                    value.replace(re, <strong>$1</strong>);
+                    <span class="path">{value.replace(re, <strong>$1</strong>);}</span>
                 ?></a:caption>
             </a:list>
         </a:vbox>

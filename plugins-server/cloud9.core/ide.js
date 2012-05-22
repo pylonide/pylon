@@ -48,7 +48,8 @@ var Ide = module.exports = function(options) {
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
-        real: (options.real === true) ? true : false,
+        packed: (options.packed === true) ? true : false,
+        packedName: options.packedName,
         hosted: !!options.hosted
     };
 
@@ -136,7 +137,8 @@ util.inherits(Ide, EventEmitter);
                 projectName: _self.options.projectName,
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
-                real: _self.options.real
+                packed: _self.options.packed,
+                packedName: _self.options.packedName
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");

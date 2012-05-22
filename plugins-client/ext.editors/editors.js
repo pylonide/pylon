@@ -217,16 +217,11 @@ module.exports = ext.register("ext/editors/editors", {
         this.$buttonContainer = new apf.bar({
             skin : "basic",
             "class": "editor_tab",
-            "style": "position:absolute",
+            "style": "position:absolute;z-index:10;",
             htmlNode : document.body
         });
         this.$buttonContainer.$int.appendChild(tabEditors.$buttons);
         //tabEditors.$buttons.style[apf.CSSPREFIX + "BoxFlex"] = 1;
-        this.$buttonContainer.$int.style.paddingRight
-            = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
-            + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
-
-        tabEditors.$buttons.style.width = "100%";
 
 //        var timer;
 //        tabEditors.$buttons.addEventListener("mouseover",function(e){
@@ -317,7 +312,7 @@ module.exports = ext.register("ext/editors/editors", {
                 tweens : [
                     { from: ext.offsetTop, to: ((this.showTabs || preview ? 0 : - 16) + pos[1]), type: "top" },
                     { from: ext.offsetHeight - d[1], to: ((this.showTabs || preview ? 0 : 16) + ph.offsetHeight - d[1]), type: "height" },
-                    { oHtml: tabEditors.$buttons, from: parseInt(tabEditors.$buttons.style.height), to: (this.showTabs || preview ? 26 : 12), type: "height" },
+                    { oHtml: tabEditors.$buttons, from: parseInt(tabEditors.$buttons.style.height), to: (this.showTabs || preview ? 27 : 12), type: "height" },
                     { oHtml: this.buttons.add, from: dir ? 0 : 1, to : dir ? 1 : 0, type: "fade" },
                     { oHtml: this.buttons.add, from: dir ? 10 : 17, to : dir ? 17 : 10, type: "height" },
                     { oHtml: this.buttons.menu, from: dir ? 0 : 1, to : dir ? 1 : 0, type: "fade" },
@@ -348,7 +343,7 @@ module.exports = ext.register("ext/editors/editors", {
         }
         else {
             if (this.showTabs || preview) {
-                tabEditors.$buttons.style.height = "26px";
+                tabEditors.$buttons.style.height = "27px";
                 apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
                 this.buttons.menu.setHeight(17);
                 this.buttons.add.setHeight(17);
@@ -1026,6 +1021,16 @@ module.exports = ext.register("ext/editors/editors", {
     createFileNodeFromPath : function (path) {
         var name = path.split("/").pop();
         var node = apf.n("<file />")
+            .attr("name", name)
+            .attr("contenttype", util.getContentType(name))
+            .attr("path", path)
+            .node();
+        return node;
+    },
+
+    createFolderNodeFromPath : function (path) {
+        var name = path.split("/").pop();
+        var node = apf.n("<folder />")
             .attr("name", name)
             .attr("contenttype", util.getContentType(name))
             .attr("path", path)
