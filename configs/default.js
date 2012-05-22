@@ -189,7 +189,10 @@ var config = {
             "./cloud9.ide.hg",
             "./cloud9.ide.npm",
             "./cloud9.ide.run-node",
-            "./cloud9.ide.run-npm-module",
+            {
+                packagePath: "./cloud9.ide.run-npm-module",
+                allowShell: true
+            },
             "./cloud9.ide.run-python",
             "./cloud9.ide.revisions",
             {
