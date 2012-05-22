@@ -126,8 +126,8 @@ util.inherits(NpmRuntimePlugin, Plugin);
                 return callback(null, false);
 
             self.pm.spawn("shell", {
-                command: out.trim(),
-                args: message.argv.slice(1),
+                command: "sh",
+                args: ["-c", message.argv.join(" ")],
                 cwd: cwd,
                 extra: message.extra
             }, self.channel, function(err, pid, child) {
