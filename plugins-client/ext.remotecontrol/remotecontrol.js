@@ -23,49 +23,67 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     deps   : [],
 
     init : function(amlNode) {
+        var _self = this;
+        
+        ide.addEventListener("init.ext/filesystem/filesystem", function(e) {
+            if (_self.socketMessage)
+                _self.loadFileOrFolder();
+        });
+        
         ide.addEventListener("socketMessage", function (event) {
-                    
             if (event.message.type === "remotecontrol") {
-
-                if (event.message.action === "openfile") {
-                    // Workspace case: if the file is found in tree, expand it
-                    var node = filesystem.model.queryNode("//file[@path='" + event.message.args.path + "']");
-                    if (node) {
-                        tabbehaviors.revealInTree(node);
-                        ide.dispatchEvent("openfile", {doc: ide.createDocument(node), node: node});
-                    } // Brand new file: create a dummy file that, when the user saves it, becomes real
-                    else if (node === null && event.message.args.noexist === true) {
-                        var node = apf.getXml("<file />");
-
-                        node.setAttribute("path", event.message.args.path);
-                        node.setAttribute("name", event.message.args.path.split("/").pop());
-                        node.setAttribute("newfile", "1");
-
-                        var doc = ide.createDocument(node);
-                        doc.cachedValue = "";
-                                    
-                        ide.dispatchEvent("openfile", {doc: doc, node: node});
-                    } // Generic case: open the file, hide the sidebar
-                    else {
-                        editors.showFile(event.message.args.path);
-
-                        if (event.currentTarget && event.currentTarget.workspaceId == "generic") {
-                            require("ext/panels/panels").deactivate(null, false);
-                        }
-                    }
-                }
-                else if (event.message.action === "opendir") {
-                    var node = filesystem.model.queryNode("//folder[@path='" + event.message.args.path + "']");
-                    if (!node) {
-                        node = editors.createFolderNodeFromPath(event.message.args.path);
-                    }
-                    
-                    tabbehaviors.revealInTree(node);
-                }
+                _self.socketMessage = event; 
+                
+                if (filesystem.inited)
+                    _self.loadFileOrFolder();       
             }
         });
     },
 
+    loadFileOrFolder : function() {
+        var _self = this;
+        
+        if (_self.socketMessage.message.action === "openfile") {
+            // Generic case: hide sidebar (do this first, 'cause it's a little slow)
+            if (_self.socketMessage.currentTarget && _self.socketMessage.currentTarget.workspaceId == "generic") {
+                require("ext/panels/panels").deactivate(null, false);
+            }
+            
+            // Brand new file: create a dummy file that, when saved, becomes real (can be generic or workspace)
+            if (_self.socketMessage.message.args.noexist === true) {
+                var node = apf.getXml("<file />");
+
+                node.setAttribute("path", _self.socketMessage.message.args.path);
+                node.setAttribute("name", _self.socketMessage.message.args.path.split("/").pop());
+                node.setAttribute("newfile", "1");
+
+                var doc = ide.createDocument(node);
+                doc.cachedValue = "";
+                            
+                ide.dispatchEvent("openfile", {doc: doc, node: node});
+            }
+            else {// Generic case: open the file
+                editors.showFile(_self.socketMessage.message.args.path);
+                
+                // Workspace case: the file is found in tree, expand it
+                if (_self.socketMessage.currentTarget.workspaceId !== "generic") {
+                    var node = apf.getXml("<file />");
+                    node.setAttribute("path", _self.socketMessage.message.args.path);
+                    
+                    tabbehaviors.revealInTree(node);
+                }
+            }
+        }
+        else if (_self.socketMessage.message.action === "opendir") {
+            var node = filesystem.model.queryNode("//folder[@path='" + _self.socketMessage.message.args.path + "']");
+            if (!node) {
+                node = editors.createFolderNodeFromPath(_self.socketMessage.message.args.path);
+            }
+            
+            tabbehaviors.revealInTree(node);
+        }
+    },
+    
     enable : function(){
     },
 
