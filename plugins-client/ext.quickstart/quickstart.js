@@ -142,7 +142,6 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     arrangeQSImages : function() {
         var divToId, position, imgDiv;
         for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
-            console.log(jsonQuickStart.identifiers[i].el)
             if((jsonQuickStart.identifiers[i].visible && !jsonQuickStart.identifiers[i].visible()) || !jsonQuickStart.identifiers[i].el)
                 continue;
 
@@ -168,7 +167,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
              div.setAttribute("left", (posArray[0] + (posArray[2]/2)) - (div.getWidth()/2));
         }
         else if (position == "right"){
-            div.setAttribute("left", posArray[0] + posArray[2] - 2);
+            div.setAttribute("left", posArray[0] + 10);
             div.setAttribute("top", (posArray[1] + (posArray[3]/2)) - (div.getHeight()/2));
         }
         else if (position == "bottom"){
