@@ -225,7 +225,7 @@ module.exports = {
             }
             else {
                 html += "<span class='main'>" + match.name;
-                matchEl.style.color = "#666666";
+                matchEl.style.color = "#999999";
             }
             if (match.meta) {
                 html += '<span class="meta">' + match.meta + '</span>';
