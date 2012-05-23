@@ -88,7 +88,7 @@ function boot() {
 	
 	// server plugins
 	config.containers.master.plugins.forEach(function(plugin) {
-	   if (plugin.packagePath && /\/plugins-server\/cloud9.core$/.test(plugin.packagePath)) {
+	   if (plugin.packagePath && /\.\/cloud9.core$/.test(plugin.packagePath)) {
 	       plugin.debug = debug;
 	       plugin.packed = packed;
 	       plugin.packedName = packedName;

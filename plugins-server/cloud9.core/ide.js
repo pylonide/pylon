@@ -133,7 +133,7 @@ util.inherits(Ide, EventEmitter);
                 readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
-                scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
+                scripts: (_self.options.debug || _self.options.packed) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
