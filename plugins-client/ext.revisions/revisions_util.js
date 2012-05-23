@@ -129,8 +129,7 @@ exports.pageHasChanged = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");
     }
-    var model = page.getModel();
-    return model && model.queryValue("@changed") == 1;
+    return page.changed === 1;
 };
 
 exports.pageIsCode = function(page) {

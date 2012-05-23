@@ -536,7 +536,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         }
 
-        var page = doc.$page, self = this;
+        var page = doc.$page;
+        var self = this;
         if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
             setTimeout(function(){
                 self.setSaveButtonCaption();
