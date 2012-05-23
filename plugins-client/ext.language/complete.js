@@ -163,10 +163,10 @@ module.exports = {
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
         var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
         var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight + 1));
-        var completionBoxWidth = isDocShown ? MENU_WIDTH * 2 : MENU_WIDTH;
         var cursorLayer = ace.renderer.$cursorLayer;
         
         setTimeout(drawCompletionBox = function() {
+            var completionBoxWidth = isDocShown ? MENU_WIDTH * 2 : MENU_WIDTH;
             apf.popup.show("completionBox", {
                 x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
                 y        : _self.cursorConfig.lineHeight,
