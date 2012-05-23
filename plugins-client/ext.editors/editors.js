@@ -856,15 +856,19 @@ module.exports = ext.register("ext/editors/editors", {
                     var parent_path = apf.getDirname(path).replace(/\/$/, "");
                     var expandEventListener = function(e) {
                         if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
+                            var oldNode = doc.getNode();
                             // if the file has been loaded from the tree
-                            if (doc.getNode().getAttribute("newfile") != 1) {
+                            if (oldNode.getAttribute("newfile") != 1) {
+                                var newNode = e.xmlNode.selectSingleNode("node()[@path='" + path + "']");
+                                if (!newNode.hasAttribute("scriptName") && oldNode.hasAttribute("scriptName"))
+                                    newNode.setAttribute("scriptName", oldNode.getAttribute("scriptName"));
                                 // databind the node from the tree to the document
-                                doc.setNode(e.xmlNode.selectSingleNode("node()[@path='" + path + "']"));
+                                doc.setNode(newNode);
                             }
                             else {
                                 // if not? then keep it this way, but invoke setNode() anyway because
                                 // it triggers events
-                                doc.setNode(doc.getNode());
+                                doc.setNode(oldNode);
                             }
                             trFiles.removeEventListener("expand", expandEventListener);
                         }
