@@ -348,8 +348,8 @@ module.exports = {
                     return;
                 }
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
-                if(this.selectedIdx < this.matches.length - MENU_SHOWN_ITEMS && this.scrollIdx > 0) {
-                    this.scrollIdx = this.selectedIdx - MENU_SHOWN_ITEMS;
+                if(this.selectedIdx < this.scrollIdx) {
+                    this.scrollIdx--;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
                 e.stopPropagation();
