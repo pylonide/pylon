@@ -254,29 +254,25 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     this.$updateBreakpoints = function(doc) {
         doc = doc || this.$editor.getSession();
 
-        doc.setBreakpoints([]);
-        if (!this.$breakpoints) {
-            return;
-        }
-
-        if (this.xmlRoot) {
-            var scriptName = this.xmlRoot.getAttribute("scriptname");
-            if (!scriptName)
-                return;
-
+        var rows = [];
+        if (this.xmlRoot && this.$breakpoints) {
+            var path = this.xmlRoot.getAttribute("path");
+            var scriptName = ide.workspaceDir + path.slice(ide.davPrefix.length);
+            
             var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']");
 
-            var rows = [];
             for (var i=0; i<breakpoints.length; i++) {
                 rows.push(parseInt(breakpoints[i].getAttribute("line"), 10) - parseInt(breakpoints[i].getAttribute("lineoffset"), 10));
             }
-            if (rows.length)
-                doc.setBreakpoints(rows);
         }
+        doc.setBreakpoints(rows);
     };
 
     this.$toggleBreakpoint = function(row, content) {
-        this.$debugger.toggleBreakpoint(this.xmlRoot, row, content);
+        var script = this.xmlRoot;
+        script.setAttribute("scriptname", 
+            ide.workspaceDir + script.getAttribute("path").slice(ide.davPrefix.length));
+        this.$debugger.toggleBreakpoint(script, row, content);
     };
 
     this.$propHandlers["theme"] = function(value) {
@@ -621,14 +617,17 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             _self.setProperty("overwrite", e.data);
         });
 
-        ed.addEventListener("gutterclick", function(e) {
-            if (_self.$debugger && e.clientX - ed.container.getBoundingClientRect().left < 20) {
-                _self.$toggleBreakpoint(e.getDocumentPosition().row,
-                    ed.getSession().getLine(e.getDocumentPosition().row));
+        ed.addEventListener("guttermousedown", function(e) {
+            if (_self.$debugger && ed.isFocused()) {
+                if (e.clientX - ed.container.getBoundingClientRect().left > 20)
+                    return;
+
+                var row = e.getDocumentPosition().row;
+                _self.$toggleBreakpoint(row, ed.getSession().getLine(row));
                 e.stop();
             }
             else {
-                _self.dispatchEvent("gutterclick", e);
+                _self.dispatchEvent("guttermousedown", e);
             }
         });
 
