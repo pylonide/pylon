@@ -51,7 +51,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     nodes: [],
     skin: skin,
     isAutoSaveEnabled: false,
-    
+
     /**
      * Revisions#rawRevisions -> Object
      * Holds the cached revisions and some meta-data about them so Cloud9 can
@@ -59,7 +59,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * needed with the server in single-user mode.
      */
     rawRevisions: {},
-    revisionsData: {},
     docChangeTimeout: null,
     docChangeListeners: {},
     /**
@@ -131,11 +130,11 @@ module.exports = ext.register("ext/revisions/revisions", {
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
             self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
-        
+
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
-                
+
             self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
@@ -184,7 +183,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
         // in OSS Cloud9.
-        if (!this.isCollab || window.cloud9config.hosted) {
+        if (window.cloud9config.hosted || !this.isCollab()) {
             apf.ajax("/api/context/getemail", {
                 method: "get",
                 callback: function(data, state, extra) {
@@ -198,6 +197,17 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.$initWorker();
+    },
+
+    $initWorker: function() {
+        var worker = this.worker = new Worker("/static/ext/revisions/revisions_worker.js");
+        worker.onmessage = this.onWorkerMessage.bind(this);
+        worker.onerror = function(error) {
+            throw(new Error("Error from worker:\n" + error.message));
+        };
+        // Preload diff libraries so they are available to the worker in case we
+        // go offline.
+        worker.postMessage({ type: "preloadlibs" });
     },
 
     setSaveButtonCaption: function(caption, page) {
@@ -268,17 +278,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$setRevisionListClass();
     },
 
-    $initWorker: function() {
-        var worker = this.worker = new Worker("/static/ext/revisions/revisions_worker.js");
-        worker.onmessage = this.onWorkerMessage.bind(this); //!
-        worker.onerror = function(error) {
-            throw(new Error("Error from worker:\n" + error.message));
-        };
-        // Preload diff libraries so they are available to the worker in case we
-        // go offline.
-        worker.postMessage({ type: "preloadlibs" });
-    },
-
     $switchToPageModel: function(page) {
         if (!page || !Util.pageIsCode(page)) {
             return;
@@ -317,6 +316,25 @@ module.exports = ext.register("ext/revisions/revisions", {
         return revObj;
     },
 
+    hideRevisionsInfo : function() {
+        var self = this;
+        if (!isInfoActive) {
+            setTimeout(function(e) {
+                ext.initExtension(self);
+                if (!isInfoActive) {
+                    apf.tween.single(revisionsInfo, {
+                        from:1,
+                        to:0,
+                        steps: 10,
+                        type     : "opacity",
+                        anim     : apf.tween.easeInOutCubic,
+                        interval: 30
+                    });
+                }
+            }, 200);
+        }
+    },
+
     /////////////////////
     // Event listeners //
     /////////////////////
@@ -341,8 +359,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var path = Util.stripWSFromPath(e.path);
         this.changedPaths.push(path);
 
-        if (winQuestionRev.visible !== true &&
-            !this.isCollab(tabEditors.getPage().$doc)) { // Only in single user mode
+        if (winQuestionRev.visible !== true && !this.isCollab()) { // Only in single user mode
             ide.send({
                 command: "revisions",
                 subCommand: "getRealFileContents",
@@ -350,25 +367,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
         return false;
-    },
-
-    hideRevisionsInfo : function() {
-        var self = this;
-        if (!isInfoActive) {
-            setTimeout(function(e) {
-                ext.initExtension(self);
-                if (!isInfoActive) {
-                    apf.tween.single(revisionsInfo, {
-                        from:1,
-                        to:0,
-                        steps: 10,
-                        type     : "opacity",
-                        anim     : apf.tween.easeInOutCubic,
-                        interval: 30
-                    });
-                }
-            }, 200);
-        }
     },
 
     onBeforeSaveWarning: function(e) {
@@ -411,7 +409,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
         (doc.acedoc || doc).addEventListener("change", this.docChangeListeners[path]);
     },
-    
+
     onSwitchFile: function(e) {
         this.$switchToPageModel(e.nextPage);
     },
@@ -445,7 +443,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (self.docChangeListeners[path]) {
                 delete self.docChangeListeners[path];
             }
-            
+
             self.worker.postMessage({
                 type: "closefile",
                 path: path
@@ -512,6 +510,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPage().$selectedRevision = id;
     },
 
+    // Gets called twice. Why??
     afterModelUpdate: function(e) {
         var model = e.currentTarget;
         if (!model || !model.data || model.data.childNodes.length === 0) {
@@ -524,7 +523,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
-    isSaving : false,
     onDocChange: function(e, doc) {
         if (e.data && e.data.delta) {
             var suffix = e.data.delta.suffix;
@@ -539,7 +537,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             setTimeout(function(){
                 self.setSaveButtonCaption();
             });
-            
+
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
                 self.save(page);
@@ -636,7 +634,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         var revObj = this.$getRevisionObject(message.path);
         switch (message.subtype) {
             case "confirmSave":
-                revObj = this.$getRevisionObject(message.path);
                 var ts = message.ts;
                 // This could happen in edge cases, like the user having two browsers
                 // opened and active on the same file, and then saving. Only one
@@ -666,7 +663,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     revObj.allRevisions[ts] = revision;
                     delete this.revisionQueue[ts];
 
-                    this.generateCache(revObj);
+                    this.generateCompactRevisions(revObj);
                     ide.dispatchEvent("revisionSaved", {
                         ts: ts,
                         path: message.path,
@@ -686,7 +683,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                     revObj.allRevisions = message.body.revisions;
                 }
 
-                this.generateCache(revObj);
+                this.generateCompactRevisions(revObj);
                 if (!message.nextAction || !message.id) {
                     if (page && Util.getDocPath(page) === message.path &&
                         page.$showRevisions === true) {
@@ -844,22 +841,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
     },
 
-    /**
-     * Revisions#generateTimestamps(page)
-     * - revObj(Object): Body of the message coming from the server
-     *
-     * This function is called every time the server sends an `update` message.
-     * It generates the revision objects used throughout the extension.
-     **/
-    generateCache: function(revObj) {
-        if (!revObj.allRevisions)
-            return;
-
-        // Generate a compacted version of the revision list, where revisions are
-        // grouped by close periods of time.
-        revObj.compactRevisions = this.getCompactRevisions(revObj);
-    },
-
     toggleListView: function(model) {
         var revObj = this.$getRevisionObject(Util.getDocPath());
         revObj.useCompactList = !!!revObj.useCompactList;
@@ -900,7 +881,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         else {
             revisions = revObj.allRevisions;
         }
-        
+
         var timestamps = Util.keysToSortedArray(revisions);
         var contributorToXml = function(c) {
             return "<contributor email='" + c + "' />";
@@ -950,7 +931,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var tstamps = Util.keysToSortedArray(revObj.allRevisions);
         var revision = tstamps.indexOf(id);
 
-        if (revision !== -1) {
+        if (revision !== -1) { // If there is such revision
             var data = {
                 content: content,
                 id: id,
@@ -1008,7 +989,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     /**
-     * Revisions#getCompactRevisions() -> Object
+     * Revisions#generateCompactRevisions() -> Object
      *
      * Creates a compacted revisions object from the extended revisions object
      * returned from the server. A compacted revisions object (CRO) is a revision
@@ -1018,8 +999,11 @@ module.exports = ext.register("ext/revisions/revisions", {
      *
      * Assumes that `allRevisions` is populated at this point.
      **/
-    getCompactRevisions: function(revObj) {
+    generateCompactRevisions: function(revObj) {
         var all = revObj.allRevisions;
+        if (!all)
+            return;
+
         var compactRevisions = {};
         var finalTS = [];
         var isRestoring = function(id) { return all[id] && all[id].restoring; };
@@ -1082,6 +1066,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             compactRevisions[id] = groupObj;
         });
 
+        revObj.compactRevisions = compactRevisions;
         return compactRevisions;
     },
 
@@ -1190,7 +1175,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
 
-        tabEditors.getPages().forEach(this.save, this);
+        this.save(tabEditors.getPage());
     },
 
     /**
@@ -1232,7 +1217,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!Util.pageIsCode(page)) {
             return;
         }
-        
+
         var docPath = Util.getDocPath(page);
         var contributors = this.$getEditingUsers(docPath);
         if (contributors.length === 0 && this.defaultUser.email) {
@@ -1256,7 +1241,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!this.isCollab(doc)) {
             data.type = "newRevision";
             data.lastContent = doc.getValue();
-            
+
             if (ide.onLine === false) {
                 data.ts = Date.now();
                 this.offlineQueue.push(data);
@@ -1296,7 +1281,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     addUserToDocChangeList: function(user, doc) {
         if (user && doc) {
             var path = Util.getDocPath(doc.$page);
-            var stack = this.revisionsData[path];
+            var stack = this.rawRevisions[path];
             if (stack && (stack.usersChanged.indexOf(user.user.email) === -1)) {
                 stack.usersChanged.push(user.user.email);
             }
@@ -1341,18 +1326,17 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     $getEditingUsers: function(path) {
         var users = [];
-        var rev = this.revisionsData[path];
-        if (rev && rev.usersChanged) {
-            users = rev.usersChanged;
+        if (this.rawRevisions[path] && this.rawRevisions[path].usersChanged) {
+            users = this.rawRevisions[path].usersChanged;
         }
         return users;
     },
 
     $resetEditingUsers: function(path) {
-        if (this.revisionsData[path]) {
-            this.revisionsData[path] = [];
+        if (this.rawRevisions[path]) {
+            this.rawRevisions[path].usersChanged = [];
         }
-        return this.revisionsData[path];
+        return this.rawRevisions[path].usersChanged;
     },
 
     $setRevisionListClass: function() {
@@ -1370,9 +1354,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.populateModel(revObj, this.model);
     },
-    
+
     isNewPage: function(page) {
-        return parseInt(page.$model.getXml().getAttribute("newfile"), 10) === 1;
+        return parseInt(page.$model.getXml().getAttribute("newfile"), 10) === 1; // Expensive, ask Ruben
     },
 
     show: function() {
