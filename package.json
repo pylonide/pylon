@@ -35,14 +35,14 @@
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/f4b5a13855997e60abe8b57bfcc56755ea00dc7d"],
-        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/f1f38fd3718c81803defb487385fd5eb93c30e6e"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/2f006d2a5a64a8a6ef09ef0976fb412a5718711b"],
+        "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/10179a17662c221c72bb010bd7e4feda485d2b34"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/21c6fea18d3480ef2641d9889e531ded60216082"],
         "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/09ce2bef1c33add76ed5c52ce477df339101b435"],
-        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/c7ee419c6c985d4369d71619b8e97044de3e502e"],
-        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/1c115e04228127614e81b90b2821bc28bf02994b"]
+        "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/ed2b6ebb8a812de48f0dfb12b675b91c4e4b3170"],
+        "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"]
     },
 
     "repository" : {

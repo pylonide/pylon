@@ -316,11 +316,20 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var page = tabEditors.getPage(path);
         if (page)
             tabEditors.remove(page);
-        
-        if(!callback)
-            callback = function() {};
-            
-        davProject.remove(path, false, callback);
+
+        var cb = function(data, state, extra) {
+            // In WebDAV, a 204 status from the DELETE verb means that the
+            // file was removed successfully.
+            if (extra && extra.status && extra.status === 204) {
+                ide.dispatchEvent("removefile", {
+                    path: path
+                });
+            }
+
+            if (callback)
+                callback(data, state, extra);
+        };
+        davProject.remove(path, false, cb);
     },
 
     /**** Init ****/
