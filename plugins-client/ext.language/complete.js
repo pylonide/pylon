@@ -248,8 +248,8 @@ module.exports = {
             matchEl.style.color = 0xaaaaaa;
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
-            _self.updateDoc();
         });
+        _self.updateDoc();
     },
     
     updateDoc : function() {
@@ -265,7 +265,7 @@ module.exports = {
         }
         if (selected && selected.docUrl)
             this.docElement.innerHTML += '<div><a href="' + selected.docUrl + '" target="c9doc">(more)</a></div>';
-        this.docElement.innerHTML += '</span>'
+        this.docElement.innerHTML += '</span>';
     },
 
     onTextInput : function(text, pasted) {
