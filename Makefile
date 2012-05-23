@@ -1,5 +1,7 @@
 .PHONY:    apf ext worker mode theme package test
 
+default: apf worker
+
 # packages apf
 apf:
 	cd node_modules/packager; node package.js projects/apf_cloud9.apr
@@ -12,8 +14,18 @@ apfdebug:
 	cd node_modules/packager; node package.js projects/apf_cloud9_debug.apr
 	cd node_modules/packager; cat build/apf_debug.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../plugins-client/lib.apf/www/apf-packaged/apf_debug.js
 
+# package_apf--temporary fix for non-workering infra
+pack_apf:
+	mkdir -p build/src
+	mv plugins-client/lib.apf/www/apf-packaged/apf_release.js build/src/apf_release.js
+	node build/r.js -o name=./build/src/apf_release.js out=./plugins-client/lib.apf/www/apf-packaged/apf_release.js baseUrl=.
+
+# makes ace; at the moment, requires dryice@0.4.2
+ace:
+	cd node_modules/ace; make clean build
+
 # packages core
-core:
+core: ace
 	mkdir -p build/src
 	node build/r.js -o build/core.build.js
 
@@ -47,10 +59,20 @@ theme:
 	mkdir -p plugins-client/lib.ace/www/theme
 	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` plugins-client/lib.ace/www/theme
 
-gzip:
-	gzip plugins-client/lib.packed/www/packed.js
+gzip_safe:
+	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
+		gzip -9 -v -c -q $$i > $$i.gz ; \
+	done
 
-package: apf core worker mode theme ext
+gzip:
+	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
+		gzip -9 -v -q $$i ; \
+	done
+
+c9core: apf ace core worker mode theme
+    
+package: c9core ext
 
 test:
 	$(MAKE) -C test
+	cp node_modules/ace/build/src/worker* plugins-client/cloud9.core/www/js/worker

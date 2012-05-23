@@ -96,7 +96,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{this.checked ? 'debug' : 'run'}",
+                caption  : "{apf.isTrue(this.checked) ? 'debug' : 'run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
@@ -109,7 +109,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 caption  : "stop",
                 width    : "52",
                 tooltip  : "Stop",
-                skin     : "c9-toolbarbutton",
+                skin     : "c9-toolbarbutton-glossy",
                 command  : "stop",
                 visible  : "{stProcessRunning.active and 1}" ,
                 disabled : "{!!!ide.onLine}"
@@ -122,8 +122,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             this.model = new apf.model().load("<configurations />")
         );
         
-        btnRun.$ext.className = "btnRun";
-        btnStop.$ext.className = "btnStop";
+        apf.setStyleClass(btnRun.$ext, "btnRun");
+        apf.setStyleClass(btnStop.$ext, "btnStop");
 
         tooltip.add( btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications.\
@@ -131,7 +131,8 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             Want your language supported? Tweet us \
             <a href='http://twitter.com/Cloud9IDE' target='_blank'>@Cloud9IDE</a>!",
             width : "203px",
-            timeout : 1000
+            timeout : 1000,
+            hideonclick : true
         });
         
         var c = 0;
@@ -319,12 +320,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         var path, name, file = ide.getActivePageModel();
         var extension = "";
         
-        if(!file)
-            return;
-            
-        path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
-        name  = file.getAttribute("name").replace(/\.(js|py)$/,
-            function(full, ext){ extension = ext; return ""; });
+        if (file) {
+            path  = file.getAttribute("path").slice(ide.davPrefix.length + 1); //@todo inconsistent
+            name  = file.getAttribute("name").replace(/\.(js|py)$/,
+                function(full, ext){ extension = ext; return ""; });
+        }
+        else {
+            extension = name = path = "";
+        }
 
         var cfg = apf.n("<config />")
             .attr("path", path)

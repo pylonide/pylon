@@ -125,10 +125,6 @@ exports.addCodeMarker = function(session, doc, type, range) {
     anchor.on("change", updateFloat);
 };
 
-exports.isAutoSaveEnabled = function() {
-    return apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-};
-
 exports.pageHasChanged = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");
@@ -162,21 +158,11 @@ exports.getDocPath = function(page) {
     return exports.stripWSFromPath(page.name);
 };
 
-exports.localDate = function(ts) {
-    var getTZOffset = function() {
-        return -(new Date()).getTimezoneOffset() * 60000;
-    };
-
-    return new Date(ts + getTZOffset());
-};
-
-exports.question = function(title, header, msg, onyes, onyesall, onno, onnoall) {
+exports.question = function(title, header, msg, onyesall, onnoall) {
     winQuestionRev.show();
     winQuestionRev.setAttribute("title", title);
     winQuestionRevHeader.$ext.innerHTML = header;
     winQuestionRevMsg.$ext.innerHTML = msg;
-    btnQuestionRevYes.onclick = onyes;
-    btnQuestionRevNo.onclick = onno;
     btnQuestionRevYesAll.onclick = onyesall;
     btnQuestionRevNoAll.onclick = onnoall;
 };

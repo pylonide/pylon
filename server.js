@@ -70,7 +70,7 @@ if (debug == false && packed == false)
 function boot() {
 	var configPath = path.resolve(__dirname, "./configs/", configName);
 	var config = require(configPath);
-	
+
 	config.containers.master.plugins = config.containers.master.plugins.filter(function(plugin) {
 	   if (packed === true) {
 	       if (
@@ -85,16 +85,16 @@ function boot() {
 	   }
 	   return true;
 	});
-	
+
 	// server plugins
 	config.containers.master.plugins.forEach(function(plugin) {
-	   if (plugin.packagePath && /\/plugins-server\/cloud9.core$/.test(plugin.packagePath)) {
+	   if (plugin.packagePath && /\.\/cloud9.core$/.test(plugin.packagePath)) {
 	       plugin.debug = debug;
 	       plugin.packed = packed;
 	       plugin.packedName = packedName;
 	   }
 	});
-	
+
 	if (packed === true) {
 	   config.containers.master.plugins.push("./../plugins-client/lib.packed");
 	}

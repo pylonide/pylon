@@ -33,6 +33,7 @@ module.exports = function startup(options, imports, register) {
     
     api.on = server.on;
     api.emit = server.emit;
+    api.close = server.close;
     
     function startListening (port, host) {
         api.getPort = function () { 

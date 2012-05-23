@@ -8,9 +8,24 @@ define(function(require, exports, module) {
 
 var editors = require("ext/editors/editors");
 var dom = require("ace/lib/dom");
+var keyhandler = require("ext/language/keyhandler");
 
-var oldCommandKey;
-var ID_REGEX = /[a-zA-Z_0-9\$]/;
+var lang = require("ace/lib/lang");
+var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
+
+var oldCommandKey, oldOnTextInput;
+
+var deferredInvoke = lang.deferredCall(function() {
+    var editor = editors.currentEditor.ceEditor.$editor;
+    var pos = editor.getCursorPosition();
+    var line = editor.getSession().getDocument().getLine(pos.row);
+    if(keyhandler.preceededByIdentifier(line, pos.column) || line[pos.column - 1] === '.')
+        module.exports.invoke(true);
+    else
+        module.exports.closeCompletionBox();
+    isInvokeScheduled = false;
+});
+var isInvokeScheduled = false;
 
 function retrievePreceedingIdentifier(text, pos) {
     var buf = [];
@@ -23,15 +38,29 @@ function retrievePreceedingIdentifier(text, pos) {
     return buf.reverse().join("");
 }
 
+function retrieveFollowingIdentifier(text, pos) {
+    var buf = [];
+    for (var i = pos; i < text.length; i++) {
+        if (ID_REGEX.test(text[i]))
+            buf.push(text[i]);
+        else
+            break;
+    }
+    return buf;
+}
+
 /**
  * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
- * indicates the cursor position after the replacement
+ * indicates the cursor position after the replacement.
+ * If the prefix is already followed by an identifier substring, that string
+ * is deleted.
  */
 function replaceText(editor, prefix, newText) {
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
     
+    // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
         newText += "^^";
 
@@ -40,6 +69,8 @@ function replaceText(editor, prefix, newText) {
         i++;
     
     var prefixWhitespace = line.substring(0, i);
+    
+    var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
     
     // Pad the text to be inserted
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
@@ -53,7 +84,7 @@ function replaceText(editor, prefix, newText) {
     // Remove cursor marker
     paddedLines = paddedLines.replace("^^", "");
     
-    doc.removeInLine(pos.row, pos.column - prefix.length, pos.column);
+    doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
     editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
 }
@@ -68,6 +99,7 @@ module.exports = {
             if(ext.disabled) return;
             _self.onComplete(event);
         });
+        this.$onChange = this.onChange.bind(this);
         
         ext.nodes.push(
             menus.addItemByPath("Edit/~", new apf.divider(), 2000),
@@ -84,7 +116,6 @@ module.exports = {
                 return apf.activeElement.localName == "codeeditor";
             },
             exec: function(editor) {
-                if(ext.disabled) return;
                 _self.invoke();
             }
         });
@@ -110,8 +141,12 @@ module.exports = {
         barCompleterCont.setAttribute('visible', true);
 
         // Monkey patch
-        oldCommandKey = ace.keyBinding.onCommandKey;
-        ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
+        if(!oldCommandKey) {
+            oldCommandKey = ace.keyBinding.onCommandKey;
+            ace.keyBinding.onCommandKey = this.onKeyPress.bind(this);
+            oldOnTextInput = ace.keyBinding.onTextInput;
+            ace.keyBinding.onTextInput = this.onTextInput.bind(this);
+        }
         
         this.populateCompletionBox(matches);
         document.addEventListener("click", this.closeCompletionBox);
@@ -119,17 +154,14 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, this.matches.length * (this.cursorConfig.lineHeight+1));
+        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, (this.matches.length || 1) * (this.cursorConfig.lineHeight + 1));
         var cursorLayer = ace.renderer.$cursorLayer;
-        var cursorLocation = cursorLayer.getPixelPosition(true);
-        var distanceFromBottom = ace.container.offsetHeight - cursorLocation.top;
-        if (distanceFromBottom < completionBoxHeight) {
-            ace.centerSelection();
-        }
+        
         setTimeout(function() {
             apf.popup.show("completionBox", {
                 x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
                 y        : _self.cursorConfig.lineHeight,
+                height   : completionBoxHeight,
                 animate  : false,
                 ref      : cursorLayer.cursor,
                 callback : function() {
@@ -148,28 +180,71 @@ module.exports = {
         document.removeEventListener("click", this.closeCompletionBox);
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
+        
+        if(oldCommandKey) {
         ace.keyBinding.onCommandKey = oldCommandKey;
+            ace.keyBinding.onTextInput = oldOnTextInput;
+        }
+        oldCommandKey = oldOnTextInput = null;
     },
         
 
     populateCompletionBox: function (matches) {
         var _self = this;
         _self.completionElement.innerHTML = "";
+        var cursorConfig = ceEditor.$editor.renderer.$cursorLayer.config;
+        var hasIcons = false;
+        matches.forEach(function(match) {
+            if (match.icon)
+                hasIcons = true;
+        });
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? "cc_complete_option_selected" : "cc_complete_option";
-            matchEl.innerHTML = "<u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
-            if(match.meta) {
-                matchEl.innerHTML += '<span class="meta">' + match.meta + '</score>';
+            var html = "";
+            
+            if (match.icon)
+                html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
+            if (!hasIcons || match.icon) {
+                html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
             }
-            matchEl.addEventListener("click", function() {
-                var editor = editors.currentEditor.amlEditor.$editor;
-                replaceText(editor, _self.prefix, match.replaceText);
-                editor.focus();
+            else {
+                html += "<span class='main'>" + match.name;
+                matchEl.style.color = "#666666";
+            }
+            if (match.meta) {
+                html += '<span class="meta">' + match.meta + '</span>';
+            }
+            html += '</span>';
+            matchEl.innerHTML = html;
+            matchEl.addEventListener("mouseover", function() {
+                _self.matchEls[_self.selectedIdx].className = "cc_complete_option";
+                _self.selectedIdx = idx;
+                _self.matchEls[_self.selectedIdx].className = "cc_complete_option_selected";
             });
+            matchEl.addEventListener("click", function() {
+                var amlEditor = editors.currentEditor.amlEditor;
+                replaceText(amlEditor.$editor, _self.prefix, match.replaceText);
+                amlEditor.focus();
+            });
+            matchEl.style.height = cursorConfig.lineHeight + "px";
+            matchEl.style.color = 0xaaaaaa;
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });
+    },
+
+    onTextInput : function(text, pasted) {
+        var keyBinding = editors.currentEditor.ceEditor.$editor.keyBinding;
+        oldOnTextInput.apply(keyBinding, arguments);
+        if(!pasted) {
+            if(text.match(/[^A-Za-z0-9_\$\.]/))
+                this.closeCompletionBox();
+            else {
+                this.closeCompletionBox(null, true);
+                deferredInvoke();
+            }
+        }
     },
 
     onKeyPress : function(e, hashKey, keyCode) {
@@ -179,6 +254,11 @@ module.exports = {
             keyCode = 40; // Up
         else if(keyCode === 9 && e.shiftKey) // Shift-Tab
             keyCode = 38; // Down
+        
+        if(e.metaKey || e.ctrlKey || e.altKey) {
+            this.closeCompletionBox();
+            return;
+        }
         
         var keyBinding = editors.currentEditor.amlEditor.$editor.keyBinding;
 
@@ -195,7 +275,7 @@ module.exports = {
                 oldCommandKey.apply(keyBinding, arguments);
                 setTimeout(function() {
                     _self.closeCompletionBox(null, true);
-                    _self.invoke(true);
+                    deferredInvoke();
                 }, 100);
                 e.preventDefault();
                 break;
@@ -213,9 +293,8 @@ module.exports = {
                 break;
             case 40: // Down
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
-                if(this.selectedIdx < this.matches.length-1) {
+                if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
-                }
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx - this.scrollIdx > 4) {
                     this.scrollIdx++;
@@ -226,8 +305,11 @@ module.exports = {
                 break;
             case 38: // Up
                 this.matchEls[this.selectedIdx].className = "cc_complete_option";
-                if(this.selectedIdx > 0) {
+                if(this.selectedIdx > 0) 
                     this.selectedIdx--;
+                else {
+                    this.closeCompletionBox();
+                    return;
                 }
                 this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
                 if(this.selectedIdx < this.matches.length - 4 && this.scrollIdx > 0) {
@@ -237,11 +319,6 @@ module.exports = {
                 e.stopPropagation();
                 e.preventDefault();
                 break;
-            default:
-                setTimeout(function() {
-                    _self.closeCompletionBox(null, true);
-                    _self.invoke(true);
-                });
         }
     },
     
@@ -249,14 +326,36 @@ module.exports = {
         this.worker = worker;
     },
 
+    deferredInvoke: function() {
+       if (isInvokeScheduled)
+            return;
+        isInvokeScheduled = true;
+        deferredInvoke.schedule(200);
+    },
+    
+    onChange: function() {
+        this.deferredInvoke();
+    },
+
     invoke: function(forceBox) {
         var editor = editors.currentEditor.amlEditor.$editor;
+        if (editor.inMultiSelectMode) {
+            _self.closeCompletionBox();
+            return;
+        }
         this.forceBox = forceBox;
+        editor.addEventListener("change", this.$onChange);
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
         var worker = this.worker;
         setTimeout(function() {
             worker.emit("complete", {data: editor.getCursorPosition()});
         });
+        var _self = this;
+        if(forceBox)
+            this.hideTimer = setTimeout(function() {
+                // Completion takes or crashed
+                _self.closeCompletionBox();
+            }, 4000);
     },
     
     onComplete: function(event) {
@@ -265,7 +364,18 @@ module.exports = {
         var line = editor.getSession().getLine(pos.row);
         var identifier = retrievePreceedingIdentifier(line, pos.column);
     
+        editor.removeEventListener("change", this.$onChange);
+        clearTimeout(this.hideTimer);
+    
         var matches = event.data;
+        
+        // Remove out-of-date matches
+        for (var i = 0; i < matches.length; i++) {
+            if(matches[i].name.indexOf(identifier) !== 0) {
+                matches.splice(i, 1);
+                i--;
+            }
+        }        
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, identifier, matches[0].replaceText);

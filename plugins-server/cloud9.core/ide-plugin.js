@@ -61,7 +61,8 @@ module.exports = function setup(options, imports, register) {
             plugins: options.clientPlugins || [],
             bundledPlugins: options.bundledPlugins || [],
             hosted: options.hosted,
-            real: (options.real === true) ? true : false
+            packed: (options.packed === true) ? true : false,
+            packedName: options.packedName
         });
 
         register(null, {
@@ -77,7 +78,13 @@ module.exports = function setup(options, imports, register) {
                 getSocketUrl: function() {
                     return socketUrl;
                 },
-                initUserAndProceed: initUserAndProceed
+                getWorkspaceId: function() {
+                    return ide.options.workspaceId.toString();
+                },
+                canShutdown: ide.canShutdown.bind(ide),
+                initUserAndProceed: initUserAndProceed,
+                on: ide.on.bind(ide),
+                destroy: ide.dispose.bind(ide)
             }
         });
     }

@@ -27,13 +27,8 @@
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionRevYes" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevNo" skin="btn-default-css3" class="btn-red">No (but keep changes in a revision)</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes to all</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevNoAll" skin="btn-default-css3" class="btn-red">No to all</a:button>
+            <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
+            <a:button id="btnQuestionRevNoAll" skin="btn-default-css3" class="btn-red">No</a:button>
         </a:hbox>
     </a:window>
 
@@ -61,17 +56,13 @@
           bufferselect = "true"
           each         = "[revision]">
             <a:caption><?lm
-                 <div class="revision-icon">{
+                {
                     if ([@restoring] != '') {
-                        <div class="rev-restoration" title="Restored"></div>
+                        <div class="revision-icon">
+                            <div class="rev-restoration" title="Restored"></div>
+                        </div>
                     }
-                    else if ([@silentsave] != 'true') {
-                        <span class="rev-usersave" title="Saved by user">U</span>
-                    }
-                    else {
-                        <span class="rev-autosave" title="Autosave">A</span>
-                    }
-                }</div>
+                }
                 <div class="revision-info">{
                     <div class="revision-title">[@name]</div>
                     <ul class="contributors">{
@@ -100,7 +91,7 @@
                 top     = "-25"
                 right   = "10"
                 checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
-                label   = "Show Details"
+                label   = "Show all file changes"
                 onafterchange = "
                     var model = tabEditors.getPage().$mdlRevisions;
                     require('ext/revisions/revisions').toggleListView(model);

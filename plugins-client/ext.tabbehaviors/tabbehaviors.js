@@ -15,6 +15,8 @@ var openfiles = require("ext/openfiles/openfiles");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 var settings = require("core/settings");
+var clientSettings = require("ext/settings/settings");
+var markupSettings =  require("text!ext/tabbehaviors/settings.xml");
 
 module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     name       : "Tab Behaviors",
@@ -75,8 +77,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             name: "closealltotheright",
             isAvailable : function(){
                 return ide.onLine && tabEditors.length > 1 
-                  && mnuContextTabs.$page.nextSibling
-                  && mnuContextTabs.$page.nextSibling.localName == "page";
+                  && tabEditors.getPage().nextSibling
+                  && tabEditors.getPage().nextSibling.localName == "page";
             },
             exec: function (editor, args) { 
                 _self.closealltotheright(args[0]); 
@@ -250,6 +252,10 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.accessList.changed = true;
                 settings.save();
             }
+            
+            if (settings.model.queryValue("auto/panels/@active") == "ext/tree/tree" && apf.isTrue(settings.model.queryValue('general/@revealfile'))) {
+                _self.revealtab(page);
+            }
         });
 
         tabEditors.addEventListener("close", function(e) {
@@ -294,11 +300,14 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 page.removeEventListener("aftersavedialogclosed", arguments.callee);
             }
         });
-        
+
         ide.addEventListener("settings.save", function(e){
             if (_self.accessList.changed) {
                 var list = _self.accessList.slice(0);
-                list.forEach(function(page, i){ this[i] = page.id }, list);
+                list.forEach(function(page, i){
+                    if (page)
+                        this[i] = page.id;
+                }, list);
                 e.model.setQueryValue("auto/tabcycle/text()", JSON.stringify(list));
                 _self.accessList.changed = false;
             }
@@ -320,6 +329,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 _self.accessList = list;
             }
         });
+        
+        ide.addEventListener("settings.load", function(e){
+            settings.setDefaults("general", [["revealfile", false]]);
+        });
+        
+        clientSettings.addSettings("General", markupSettings);
     },
     
     closetab: function(page) {
@@ -613,15 +628,21 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         // so this operation is visible
         ide.dispatchEvent("exitfullscreen");
 
-        this.revealfile(page.$doc.getNode());
+        this.revealInTree(page.$doc.getNode());
     },
 
-    revealfile : function(docNode) {
+    revealInTree : function(docNode) {
+        var _self = this;
+
+        if (this.control && this.control.stop)
+            this.control.stop();
+
         panels.activate(require("ext/tree/tree"));
         
         var parts, file, pathList, str, xpath;
+        var type = docNode.tagName || "file";
         var path = docNode.getAttribute('path');
-        var node = trFiles.queryNode('//file[@path="' + path + '"]');
+        var node = trFiles.queryNode('//' + type + '[@path="' + path + '"]');
 
         if (node) {
             trFiles.expandAndSelect(node);
@@ -642,7 +663,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             xpath = pathList[pathList.length - 1];
 
             trFiles.expandList(pathList, function() {
-                trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
+                trFiles.select(trFiles.queryNode(xpath + '/' + type + '[@name="' + file + '"]'));
                 trFiles.focus();
                 scrollToFile();
             });
@@ -664,7 +685,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         apf.xmldb.setAttribute(docNode, "lookup", "1");
 
         trFiles.expandList(pathList, function() {
-            trFiles.select(trFiles.queryNode(xpath + '/file[@name="' + file + '"]'));
+            trFiles.select(trFiles.queryNode(xpath + '/' + type + '[@name="' + file + '"]'));
             trFiles.focus();
             scrollToFile();
 
@@ -689,7 +710,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
             var center = (tree.$container.offsetHeight / 2) | 0;
             var newTop = itemPos[1] - center;
-            tree.$ext.scrollTop = newTop;
+
+            apf.tween.single(trFiles, {
+                type    : "scrollTop",
+                from    : trFiles.$ext.scrollTop,
+                to      : newTop,
+                control : (_self.control = {})
+            });
         }
     },
 

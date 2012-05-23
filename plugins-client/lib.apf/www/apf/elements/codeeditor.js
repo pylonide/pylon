@@ -55,10 +55,6 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     this.documents = [];
     this.$cache    = {};
-
-    //this.setProperty("overwrite", false);
-    this.setProperty("line", 1);
-    this.setProperty("col", 1);
 };
 
 (function() {
@@ -183,6 +179,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             });
         }
         _self.syntax = doc.syntax;
+        _self.dispatchEvent("prop.syntax", {
+            value : doc.syntax
+        });
 
         doc.setTabSize(parseInt(_self.tabsize, 10));
         doc.setUseSoftTabs(_self.softtabs);
@@ -249,7 +248,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         var type = isTop ? "arrow" : "stack";
         this.$lastRow = [row, type];
         this.$editor.renderer.addGutterDecoration(row, type);
-        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10));
+        this.$editor.gotoLine(row + 1, parseInt(frame.getAttribute("column"), 10), false);
     };
 
     this.$updateBreakpoints = function(doc) {
@@ -276,8 +275,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         }
     };
 
-    this.$toggleBreakpoint = function(row) {
-        this.$debugger.toggleBreakpoint(this.xmlRoot, row);
+    this.$toggleBreakpoint = function(row, content) {
+        this.$debugger.toggleBreakpoint(this.xmlRoot, row, content);
     };
 
     this.$propHandlers["theme"] = function(value) {
@@ -624,7 +623,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         ed.addEventListener("gutterclick", function(e) {
             if (_self.$debugger && e.clientX - ed.container.getBoundingClientRect().left < 20) {
-                _self.$toggleBreakpoint(e.getDocumentPosition().row);
+                _self.$toggleBreakpoint(e.getDocumentPosition().row,
+                    ed.getSession().getLine(e.getDocumentPosition().row));
                 e.stop();
             }
             else {

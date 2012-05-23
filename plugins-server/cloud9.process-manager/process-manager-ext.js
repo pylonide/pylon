@@ -30,7 +30,9 @@ module.exports = function setup(options, imports, register) {
             addRunner: function(name, runner) {
                 runners[name] = runner;
             },
-            execCommands: pm.execCommands.bind(pm)
+            execCommands: pm.execCommands.bind(pm),
+            destroy: pm.destroy.bind(pm),
+            prepareShutdown: pm.prepareShutdown.bind(pm)
         }
     });
 };

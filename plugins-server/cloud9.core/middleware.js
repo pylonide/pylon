@@ -2,8 +2,13 @@ var error = require("http-error");
 var fs = require("fs");
 
 exports.errorHandler = function() {
+    
     return function(err, req, res, next) {
-        if (!(err instanceof Error)) {
+        if (err && (typeof err.code !== "undefined" && typeof err.defaultMessage !== "undefined")) {
+            // if it walks like a duck, etc.
+            // don't do anything
+        }
+        else if (!(err instanceof Error)) {
             err = new error.InternalServerError(err.message || err.toString());
         }
         else if (!(err instanceof error.HttpError)) {

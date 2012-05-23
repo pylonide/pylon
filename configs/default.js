@@ -17,6 +17,7 @@ var projectDir = (argv.w && path.resolve(process.cwd(), argv.w)) || process.cwd(
 var fsUrl = "/workspace";
 
 var port = argv.p || process.env.PORT || 3131;
+var host = argv.l || "localhost";
 
 var config = {
     name: "Cloud9",
@@ -28,7 +29,7 @@ var config = {
             plugins: [{
                 packagePath: "./cloud9.connect",
                 port: port,
-                host: "localhost"
+                host: host
             }, {
                 packagePath: "./cloud9.sourcemint",
                 prefix: "/static/bundles",
@@ -53,7 +54,9 @@ var config = {
                 packagePath: "./cloud9.sandbox",
                 projectDir: projectDir,
                 workspaceId: "Cloud9",
-                unixId: null
+                userDir: null, // is this always there??
+                unixId: null,
+                host: host
             }, {
                 packagePath: "./cloud9.core",
                 debug: false,
@@ -63,7 +66,8 @@ var config = {
                 bundledPlugins: [
                     "helloworld"
                 ],
-                real: false,
+                packed: false,
+                packedName: "",
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",
@@ -84,7 +88,6 @@ var config = {
                     "ext/searchinfiles/searchinfiles",
                     "ext/searchreplace/searchreplace",
                     "ext/quickwatch/quickwatch",
-                    "ext/quicksearch/quicksearch",
                     "ext/gotoline/gotoline",
                     "ext/preview/preview",
                     "ext/log/log",
@@ -126,6 +129,8 @@ var config = {
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
+                    "ext/gitblame/gitblame",
+                    //"ext/githistory/githistory",
                     "ext/revisions/revisions",
                     "ext/language/liveinspect"
                     //"ext/splitview/splitview"
@@ -156,6 +161,7 @@ var config = {
             "./cloud9.run.node",
             "./cloud9.run.node-debug",
             "./cloud9.run.npm",
+            "./cloud9.run.npmnode",
             "./cloud9.log",
             "./cloud9.ide.auth",
             "./cloud9.ide.blame",
@@ -164,6 +170,7 @@ var config = {
             "./cloud9.ide.hg",
             "./cloud9.ide.npm",
             "./cloud9.ide.run-node",
+            "./cloud9.ide.run-npm-module",
             "./cloud9.ide.run-python",
             "./cloud9.ide.revisions",
             {

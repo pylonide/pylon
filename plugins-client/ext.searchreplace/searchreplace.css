@@ -1,33 +1,34 @@
-#divSearchReplaceCount {
+#divSearchCount {
     position: absolute;
     width: auto;
     height: 19px;
-    right: 12px;
-    top: 18px;
+    right: 51px;
+    top: 10px;
+    z-index : 100;
 }
 
-#divSearchReplaceCount .searchIter,
-#divSearchReplaceCount .searchTotal {
+#divSearchCount .searchIter,
+#divSearchCount .searchTotal {
     color: #aaa;
     font-size: 11px;
     height: 19px;
-    line-height: 20px;
+    line-height: 19px;
     text-align: center;
     vertical-align: middle;
     display:inline;
     float: left;
 }
 
-#divSearchReplaceCount .searchIter {
+#divSearchCount .searchIter {
     margin: 0 1px 0 0;
     padding: 0 0 0 7px;
 }
 
-#divSearchReplaceCount .searchTotal {
+#divSearchCount .searchTotal {
     margin: 0;
     padding: 0 5px 0 2px;
 }
 
 .tb_textbox.searchTxt .sbtb_middle input {
-    width: 255px;
+    width: 100%;
 }
