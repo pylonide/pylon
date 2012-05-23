@@ -39,7 +39,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 }
                 
                 // Brand new file: create a dummy file that, when saved, becomes real (can be generic or workspace)
-                if (event.message.args.noexist === true) {
+                if (event.message.args.options.noexist === true) {
                     var node = editors.createFileNodeFromPath( event.message.args.path);
                     node.setAttribute("newfile", "1");
     
