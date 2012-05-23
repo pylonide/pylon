@@ -56,6 +56,8 @@
     }],
 
     "scripts": {
-        "start": "sh ./bin/cloud9.sh"
+        "start": "sh ./bin/cloud9.sh",
+        "buildDebug": "node ./scripts/debug",
+        "buildPacked": "node ./scripts/packed"
     }
 }
