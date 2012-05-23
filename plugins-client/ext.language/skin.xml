@@ -154,8 +154,9 @@
                 color: #333;
                 position: relative;
                 overflow: hidden;
-                border: 1px solid transparent;
-                border-top-color: #fff;
+                border: 1px solid;
+                background-color: #ffffd5;
+                padding: 5px;
                 font-family: sans-serif;
             }
             
