@@ -169,6 +169,9 @@ module.exports = {
     },
     
     evaluateRegExp : function(txtFind, tooltip, win, e){
+        if (apf.isGecko)
+            return true;
+            
         this.updateInputRegExp(txtFind, e);
         
         var searchTxt = txtFind.getValue();
