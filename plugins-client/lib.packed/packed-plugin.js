@@ -11,6 +11,7 @@ module.exports = function setup(options, imports, register) {
     }]);
 
     register(null, {
+        "client.cloud9": {},
         "client.apf": {},
         "client.ace": {},
         "client.treehugger": {},
