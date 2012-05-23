@@ -14,31 +14,15 @@ module.exports = {
         "hello joshua": "How about a nice game of Global Thermonuclear War?",
         "xyzzy": "Nothing happens.",
         "hello": "Why hello there!",
-        "su": "God mode activated. Remember, with great power comes great ... aw, screw it, go have fun.",
         "fuck": "I have a headache.",
-        "nano": "Seriously? Why don't you just use Notepad.exe? Or MS Paint?",
         "moo":"moo",
         "hi":"Hi.",
-        "bash": "You bash your head against the wall. It's not very effective.",
         "ssh": "ssh, this is a library.",
         "use the force luke": "I believe you mean source.",
         "use the source luke": "I'm not luke, you're luke!",
         "serenity": "You can't take the sky from me.",
         "enable time travel": "TARDIS error: Time Lord missing.",
         "ed": "You are not a diety."
-    },
-    sudo: {
-        "make me a sandwich": "Okay.",
-        "apt-get moo": [" ",
-            "        (__)",
-            "        (oo)",
-            "  /------\\/ ",
-            " / |    ||  ",
-            "*  /\\---/\\  ",
-            "   ~~   ~~  ",
-            "....\"Have you mooed today?\"...",
-            " "],
-        "__default__": "E: Invalid operation %s"
     },
     // If there is a predefined (i.e. hardcoded) output for the current
     // command being executed in the CLI, show that.
