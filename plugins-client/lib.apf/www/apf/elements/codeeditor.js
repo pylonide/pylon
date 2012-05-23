@@ -152,7 +152,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                 apf.xmldb.addNodeListener(value.nodeType == 1
                     ? value : value.parentNode, this);
             }
-            
+
             doc = new EditSession(new ProxyDocument(new Document(typeof value == "string"
               ? value
               : (value.nodeType > 1 && value.nodeType < 5 //@todo replace this by a proper function
@@ -258,7 +258,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         if (this.xmlRoot && this.$breakpoints) {
             var path = this.xmlRoot.getAttribute("path");
             var scriptName = ide.workspaceDir + path.slice(ide.davPrefix.length);
-            
+
             var breakpoints = this.$breakpoints.queryNodes("//breakpoint[@script='" + scriptName + "']");
 
             for (var i=0; i<breakpoints.length; i++) {
@@ -268,11 +268,14 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         doc.setBreakpoints(rows);
     };
 
-    this.$toggleBreakpoint = function(row, content) {
+    this.$toggleBreakpoint = function(row, session) {
+        var bp = session.getBreakpoints();
+        bp[row] = !bp[row];
+        session.setBreakpoints(bp);
         var script = this.xmlRoot;
-        script.setAttribute("scriptname", 
+        script.setAttribute("scriptname",
             ide.workspaceDir + script.getAttribute("path").slice(ide.davPrefix.length));
-        this.$debugger.toggleBreakpoint(script, row, content);
+        this.$debugger.toggleBreakpoint(script, row, session.getLine(row));
     };
 
     this.$propHandlers["theme"] = function(value) {
@@ -603,7 +606,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
             function(width){
                 _self.$corner.style.left = (width - 5) + "px"
             });
-            
+
         if (apf.isTrue(this.getAttribute("globalcommands"))){
             if(this.$editor.keyBinding.setDefaultHandler)
                 this.$editor.keyBinding.setDefaultHandler(null);
@@ -623,7 +626,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                     return;
 
                 var row = e.getDocumentPosition().row;
-                _self.$toggleBreakpoint(row, ed.getSession().getLine(row));
+                _self.$toggleBreakpoint(row, ed.getSession());
                 e.stop();
             }
             else {
