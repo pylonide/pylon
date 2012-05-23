@@ -14,6 +14,13 @@ var lang = require("ace/lib/lang");
 var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 
 var oldCommandKey, oldOnTextInput;
+var isDocShown;
+var drawCompletionBox;
+
+var CLASS_SELECTED = "cc_complete_option_selected";
+var CLASS_UNSELECTED = "cc_complete_option";
+var MENU_WIDTH = 300;
+var MENU_SHOWN_ITEMS = 8;
 
 var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
@@ -133,10 +140,10 @@ module.exports = {
         this.prefix = prefix;
         this.matches = matches;
         this.completionElement = txtCompleter.$ext;
+        this.docElement = txtCompleterDoc.$ext;
         this.cursorConfig = ace.renderer.$cursorLayer.config;
         var style = dom.computedStyle(this.editor.amlEditor.$ext);
         this.completionElement.style.fontSize = style.fontSize;
-        //this.completionElement.style.maxHeight = 10 * this.cursorConfig.lineHeight;
         
         barCompleterCont.setAttribute('visible', true);
 
@@ -154,19 +161,22 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var boxLength = Math.max(5, this.matches.length || 1);
+        var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
         var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight + 1));
+        var completionBoxWidth = isDocShown ? MENU_WIDTH * 2 : MENU_WIDTH;
         var cursorLayer = ace.renderer.$cursorLayer;
         
-        setTimeout(function() {
+        setTimeout(drawCompletionBox = function() {
             apf.popup.show("completionBox", {
                 x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
                 y        : _self.cursorConfig.lineHeight,
                 height   : completionBoxHeight,
+                width    : completionBoxWidth,
                 animate  : false,
                 ref      : cursorLayer.cursor,
                 callback : function() {
                     barCompleterCont.setHeight(completionBoxHeight);
+                    barCompleterCont.setWidth(completionBoxWidth);
                     sbCompleter.$resize();
                     _self.completionElement.scrollTop = 0;
                 }
@@ -187,6 +197,10 @@ module.exports = {
             ace.keyBinding.onTextInput = oldOnTextInput;
         }
         oldCommandKey = oldOnTextInput = null;
+        setTimeout(function() {
+            if (!apf.popup.isShowing("completionBox"))
+                isDocShown = false;
+        }, 100);
     },
         
 
@@ -201,7 +215,7 @@ module.exports = {
         });
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
-            matchEl.className = idx === _self.selectedIdx ? "cc_complete_option_selected" : "cc_complete_option";
+            matchEl.className = idx === _self.selectedIdx ? CLASS_SELECTED : CLASS_UNSELECTED;
             var html = "";
             
             if (match.icon)
@@ -219,9 +233,10 @@ module.exports = {
             html += '</span>';
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
-                _self.matchEls[_self.selectedIdx].className = "cc_complete_option";
+                _self.matchEls[_self.selectedIdx].className = CLASS_UNSELECTED;
                 _self.selectedIdx = idx;
-                _self.matchEls[_self.selectedIdx].className = "cc_complete_option_selected";
+                _self.matchEls[_self.selectedIdx].className = CLASS_SELECTED;
+                _self.updateDoc();                
             });
             matchEl.addEventListener("click", function() {
                 var amlEditor = editors.currentEditor.amlEditor;
@@ -229,10 +244,28 @@ module.exports = {
                 amlEditor.focus();
             });
             matchEl.style.height = cursorConfig.lineHeight + "px";
+            matchEl.style.width = (MENU_WIDTH - 10) + "px";
             matchEl.style.color = 0xaaaaaa;
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
+            _self.updateDoc();
         });
+    },
+    
+    updateDoc : function() {
+        this.docElement.innerHTML = '<span class="codecompletedoc_body">';
+        var selected = this.matches[this.selectedIdx];
+        if (selected && selected.doc) {
+            if (!isDocShown) {
+                isDocShown = true;
+                if (drawCompletionBox)
+                    drawCompletionBox();
+            }
+            this.docElement.innerHTML += selected.doc + '</span>';
+        }
+        if (selected && selected.docUrl)
+            this.docElement.innerHTML += '<div><a href="' + selected.docUrl + '" target="c9doc">(more)</a></div>';
+        this.docElement.innerHTML += '</span>'
     },
 
     onTextInput : function(text, pasted) {
@@ -291,34 +324,37 @@ module.exports = {
                 replaceText(editor, this.prefix, this.matches[this.selectedIdx].replaceText);
                 this.closeCompletionBox();
                 e.preventDefault();
+                this.updateDoc();
                 break;
             case 40: // Down
-                this.matchEls[this.selectedIdx].className = "cc_complete_option";
+                this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
-                this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
-                if(this.selectedIdx - this.scrollIdx > 4) {
+                this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
+                if(this.selectedIdx - this.scrollIdx > MENU_SHOWN_ITEMS) {
                     this.scrollIdx++;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
                 e.stopPropagation();
                 e.preventDefault();
+                this.updateDoc();
                 break;
             case 38: // Up
-                this.matchEls[this.selectedIdx].className = "cc_complete_option";
+                this.matchEls[this.selectedIdx].className = CLASS_UNSELECTED;
                 if(this.selectedIdx > 0) 
                     this.selectedIdx--;
                 else {
                     this.closeCompletionBox();
                     return;
                 }
-                this.matchEls[this.selectedIdx].className = "cc_complete_option_selected";
-                if(this.selectedIdx < this.matches.length - 4 && this.scrollIdx > 0) {
-                    this.scrollIdx = this.selectedIdx - 4;
+                this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
+                if(this.selectedIdx < this.matches.length - MENU_SHOWN_ITEMS && this.scrollIdx > 0) {
+                    this.scrollIdx = this.selectedIdx - MENU_SHOWN_ITEMS;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
                 e.stopPropagation();
                 e.preventDefault();
+                this.updateDoc();
                 break;
         }
     },

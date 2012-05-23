@@ -96,7 +96,7 @@
             .code_complete_bar span.meta {
                 position: absolute;
                 color: #999;
-                right: 10px;
+                right: 50px;
                 margin-left: 6px;
             }
         ]]></a:style>
@@ -140,6 +140,34 @@
         <a:presentation>
             <a:main container=".">
                 <div class="code_complete_text"/>
+            </a:main>
+        </a:presentation>
+    </a:text>
+    
+    <a:text name="codecompletedoc_text">
+        <a:style><![CDATA[
+            .code_complete_doc_text .cc_complete_option_selected {
+                text-shadow: none;
+            }
+            
+            .code_complete_doc_text {
+                color: #333;
+                position: relative;
+                overflow: hidden;
+                border: 1px solid transparent;
+                border-top-color: #fff;
+                font-family: sans-serif;
+            }
+            
+            .code_complete_doc_text u {
+                text-decoration: none;
+                color: blue;
+                text-shadow: none;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main container=".">
+                <div class="code_complete_doc_text"/>
             </a:main>
         </a:presentation>
     </a:text>
