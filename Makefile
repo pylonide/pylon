@@ -61,12 +61,12 @@ theme:
 
 gzip_safe:
 	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
-		gzip -9 -v -c $$i > $$i.gz ; \
+		gzip -9 -v -c -q $$i > $$i.gz ; \
 	done
 
 gzip:
 	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
-		gzip -9 -v $$i ; \
+		gzip -9 -v -q $$i ; \
 	done
 
 c9core: apf ace core worker mode theme
