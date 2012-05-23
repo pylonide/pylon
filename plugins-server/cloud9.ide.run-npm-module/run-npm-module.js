@@ -97,16 +97,19 @@ util.inherits(NpmRuntimePlugin, Plugin);
             return this.$run(message.argv[1], message.argv.slice(2), message.env || {},  message.version, message, null);
 
         var self = this;
-        this.searchForModuleHook(message.command, function(found, filePath) {
-            if (!found) {
-                self.searchAndRunShell(message, cb);
-                return;
-            }
+        this.searchAndRunShell(message, function(err, found) {
+            if (err || found)
+                return cb(err, found);
 
-            if (message.argv.length)
-                message.argv.shift();
+            self.searchForModuleHook(message.command, function(found, filePath) {
+                if (!found)
+                    return cb(null, false);
 
-            self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
+                if (message.argv.length)
+                    message.argv.shift();
+
+                self.$run(filePath, message.argv || [], message.env || {},  message.version, message, null);
+            });
         });
     };
 
