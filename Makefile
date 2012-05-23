@@ -59,12 +59,19 @@ theme:
 	mkdir -p plugins-client/lib.ace/www/theme
 	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` plugins-client/lib.ace/www/theme
 
-gzip:
+gzip_safe:
 	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
-		gzip -9 -v -c $$i > $$i.gz ; \
+		gzip -9 -v -c -q $$i > $$i.gz ; \
 	done
 
-package: apf core worker mode theme ext
+gzip:
+	for i in `ls ./plugins-client/lib.packed/www/*.js`; do \
+		gzip -9 -v -q $$i ; \
+	done
+
+c9core: apf ace core worker mode theme
+    
+package: c9core ext
 
 test:
 	$(MAKE) -C test
