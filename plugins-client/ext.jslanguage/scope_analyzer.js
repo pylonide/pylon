@@ -336,12 +336,18 @@ var Scope = module.exports.Scope = function Scope(parent) {
 /**
  * Declare a variable in the current scope
  */
-Scope.prototype.declare = function(name, resolveNode) {
-    if(!this.vars['_'+name]) 
-        this.vars['_'+name] = new Variable(resolveNode);
-    else if(resolveNode)
-        this.vars['_'+name].addDeclaration(resolveNode);
-    return this.vars['_'+name];
+Scope.prototype.declare = function(name, resolveNode, properDeclarationConfidence) {
+    var result;
+    if (!this.vars['_'+name]) {
+        result = this.vars['_'+name] = new Variable(resolveNode);
+    }
+    else if (resolveNode) {
+        result = this.vars['_'+name];
+        result.addDeclaration(resolveNode);
+    }
+    if (result)
+        result.markProperDeclaration(properDeclarationConfidence);
+    return result;
 };
 
 Scope.prototype.isDeclared = function(name) {
@@ -404,19 +410,19 @@ handler.analyze = function(doc, ast, callback) {
             // var bla;
             'VarDecl(x)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope.declare(b.x.value, b.x);
+                scope.declare(b.x.value, b.x, PROPER);
                 return node;
             },
             // var bla = 10;
             'VarDeclInit(x, e)', function(b, node) {
                 node.setAnnotation("scope", scope);
-                scope.declare(b.x.value, b.x);
+                scope.declare(b.x.value, b.x, PROPER);
             },
             // function bla(farg) { }
             'Function(x, _, _)', function(b, node) {
                 node.setAnnotation("scope", scope);
                 if(b.x.value) {
-                    scope.declare(b.x.value, b.x);
+                    scope.declare(b.x.value, b.x, PROPER);
                 }
                 return node;
             }
