@@ -269,7 +269,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
-        
+
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
         this.$setRevisionListClass();
@@ -424,10 +424,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
-            btnSave.hide(); 
+            btnSave.hide();
         else
             this.setSaveButtonCaption(null, e.page);
-            
+
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
@@ -536,6 +536,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
+                stripws.disable();
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
@@ -628,11 +629,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
-        
+
         // guided tour magic conflicts with revisions--skip it
         if (page && page.$model.data.getAttribute("guidedtour") === "1")
             return;
-            
+
         switch (message.subtype) {
             case "confirmSave":
                 var ts = message.ts;
@@ -1200,7 +1201,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        Save.quicksave(page, function() {}, true);
+        Save.quicksave(page, function() {
+            stripws.enable();
+        }, true);
     },
 
     /**
