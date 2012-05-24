@@ -168,7 +168,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
         ide.addEventListener("afterfilesave", this.$onFileSaveFn);
         ide.addEventListener("closefile", this.$onCloseFileFn);
-        ide.addEventListener("onafteronline", this.$onAfterOnline);
+        ide.addEventListener("afteronline", this.$onAfterOnline);
         ide.addEventListener("revisionSaved", this.$onRevisionSaved);
         ide.addEventListener("beforewatcherchange", this.$onExternalChange);
         ide.addEventListener("beforesavewarn", this.$onBeforeSaveWarning);
@@ -256,12 +256,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             })
         );
 
-        apf.document.documentElement.appendChild(winQuestionRev);
-
-        /**
-         * @todo the panel should move to the active editor tab using
-         *       afterselect
-         */
         ide.addEventListener("init.ext/code/code", function(e) {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
@@ -275,6 +269,8 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
+        
+        this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
         this.$setRevisionListClass();
     },
@@ -289,14 +285,13 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         this.$restoreSelection(page, page.$mdlRevisions);
-        this.$afterModelUpdate = this.afterModelUpdate.bind(this);
         this.model = page.$mdlRevisions;
         this.model.addEventListener("afterload", this.$afterModelUpdate);
         return this.model;
     },
 
     $restoreSelection: function(page, model) {
-        if (page.$showRevisions === true && lstRevisions && !this.isNewPage(page)) {
+        if (page.$showRevisions === true && window.lstRevisions && !this.isNewPage(page)) {
             var selection = lstRevisions.selection;
             var node = model.data.firstChild;
             if (selection && selection.length === 0 && page.$selectedRevision) {
@@ -318,10 +313,8 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     hideRevisionsInfo : function() {
-        var self = this;
-        if (!isInfoActive) {
+        if (!isInfoActive && window.revisionsInfo) {
             setTimeout(function(e) {
-                ext.initExtension(self);
                 if (!isInfoActive) {
                     apf.tween.single(revisionsInfo, {
                         from:1,
@@ -350,8 +343,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * modified file as it is after the external changes.
      **/
     onExternalChange: function(e) {
-        ext.initExtension(this);
-
         // We want to prevent autosave to keep saving while we are resolving
         // this query.
         this.prevAutoSaveValue = this.isAutoSaveEnabled;
@@ -662,7 +653,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
                 var revision = this.revisionQueue[ts].revision;
                 if (revision) {
-                    revision.saved = true
+                    revision.saved = true;
                     // In the case that a new file has just been created and saved
                     // `allRevisions` won't be there (since there has never been
                     // a `getRevisionhistory` that creates it), so we create it.
@@ -817,7 +808,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var pages = tabEditors.getPages();
         var page = pages.filter(function(_page) {
             var pagePath = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            return data.path === pagePath
+            return data.path === pagePath;
         })[0];
 
         Util.question(
@@ -853,7 +844,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     toggleListView: function(model) {
         var revObj = this.$getRevisionObject(Util.getDocPath());
-        revObj.useCompactList = !!!revObj.useCompactList;
+        revObj.useCompactList = !revObj.useCompactList;
 
         // We don't want to mix up compact/detailed preview caches
         revObj.previewCache = {};
@@ -1209,7 +1200,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        ext.initExtension(this); //Why???
         Save.quicksave(page, function() {}, true);
     },
 
@@ -1366,7 +1356,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     isNewPage: function(page) {
-        return parseInt(page.$model.getXml().getAttribute("newfile"), 10) === 1; // Expensive, ask Ruben
+        return parseInt(page.$model.data.getAttribute("newfile"), 10) === 1;
     },
 
     show: function() {

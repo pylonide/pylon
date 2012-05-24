@@ -34,10 +34,10 @@ var getLastAndAfterRevisions = function(data) {
     var keys = keysToSortedArray(data.group);
     var minKey = keys[0];
     var maxKey = keys[keys.length - 1];
-    var revision = group[keys[0]];
+    var revision = group[minKey];
     var beforeRevision = "";
 
-    var i, ts;
+    var i, l, ts;
     var patches = [];
     var timestamps = keysToSortedArray(revision.patchesByTS);
     for (i = 0; i <= timestamps.length; i++) {
@@ -51,7 +51,7 @@ var getLastAndAfterRevisions = function(data) {
 
     patches = [];
     var afterRevision = beforeRevision;
-    for (i = 0; i <= keys.length; i++) {
+    for (i = 0, l = keys.length; i <= l; i++) {
         ts = keys[i];
         var rev = group[ts];
         patches = patches.concat(rev.patchesByTS[ts]);
@@ -247,7 +247,6 @@ self.onmessage = function(e) {
                     nextAction: e.data.nextAction
                 }
             };
-
             break;
     }
     self.postMessage(packet);
