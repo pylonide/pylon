@@ -2,7 +2,7 @@
     "name": "cloud9.run.node-debug",
     "version": "0.0.1",
 
-    "main": "./node_debug.js",
+    "main": "./node_debug-plugin.js",
     "private": true,
 
     "dependencies": {
@@ -16,7 +16,7 @@
         "consumes": [
             "process-manager",
             "sandbox",
-            "ide"
+            "run-node"
         ]
     }
 }

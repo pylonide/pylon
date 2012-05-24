@@ -2,7 +2,7 @@
     
     <a:window id="winUploadFiles"
       onshow  = "require('ext/uploadfiles/uploadfiles').onShow()"
-      onclose = "require('ext/uploadfiles/uploadfiles').onClose()"
+      onhide = "require('ext/uploadfiles/uploadfiles').onClose()"
       title   = "Upload Files"
       buttons = "close"
       skin    = "bk-window"
@@ -39,7 +39,19 @@
     </a:model>
     
     <a:vbox id="boxUploadActivity" visible="false">
-        <div class="uploadactivity-header" height="30">Upload Activity</div>
+        <a:hbox class="uploadactivity-header" height="30" align="center" padding="3">
+            <span class="header">Upload Activity</span>
+            <span id="uploadactivityNumFiles"></span>
+            <a:filler />
+            <a:button id="btnCancelUploads" 
+              caption="Cancel" 
+              skin="btn-cancel-upload" 
+              skinset="uploadfiles" 
+              margin="7 3 0 0"
+              onclick="require('ext/uploadfiles/uploadfiles').cancelAll()"
+            ></a:button>
+            <a:checkbox id="cbToggleUploadQueue" skin="uploadactivity-switch" skinset="uploadfiles" value="1" margin="6 5 0 0" />
+        </a:hbox>
         <a:list id="lstUploadActivity"
             skin = "list-uploadactivity"
             skinset = "uploadfiles"

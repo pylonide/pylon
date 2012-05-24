@@ -186,7 +186,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         // Retrieve the current user email in case we are not in Collab mode
         // (where we can retrieve the participants' email from the server) or
         // in OSS Cloud9.
-        if (!this.isCollab || window.cloud9config.hosted) {
+        if (!this.isCollab() || window.cloud9config.hosted) {
             apf.ajax("/api/context/getemail", {
                 method: "get",
                 callback: function(data, state, extra) {
@@ -209,17 +209,18 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (caption)
             return btnSave.setCaption(caption);
 
+        btnSave.show();
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
                 apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                apf.setStyleClass(saveStatus, "saving", ["saved"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
                 return btnSave.setCaption("Saving");
             }
             else if (!hasChanged) {
                 apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                apf.setStyleClass(saveStatus, "saved", ["saving"]);
+                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
                 return btnSave.setCaption("Changes saved");
             }
         }
@@ -435,8 +436,11 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onCloseFile: function(e) {
-        this.setSaveButtonCaption(null, e.page);
-
+        if (tabEditors.getPages().length == 1)
+            btnSave.hide(); 
+        else
+            this.setSaveButtonCaption(null, e.page);
+            
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
@@ -627,6 +631,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
+        
+        // guided tour magic conflicts with revisions--skip it
+        if (page && page.$model.data.getAttribute("guidedtour") === "1")
+            return;
+            
         switch (message.subtype) {
             case "confirmSave":
                 revObj = this.$getRevisionObject(message.path);
