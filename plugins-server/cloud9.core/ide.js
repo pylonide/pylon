@@ -30,15 +30,6 @@ var Ide = module.exports = function(options) {
 
     this.workspaceDir = options.workspaceDir;
 
-	// TODO: find a better way to propogate infra flag to here
-	var packageFlag = false;
-	for (var p = 2; p < process.argv.length; p++) {
-	   if (process.argv[p] == "-P") {
-	       packageFlag = true;
-	       break;
-	   }
-	}
-
     options.plugins = options.plugins || [];
     this.options = {
         workspaceDir: this.workspaceDir,
@@ -65,7 +56,7 @@ var Ide = module.exports = function(options) {
     this.nodeCmd = options.exec || process.execPath;
 
     this.workspace = new Workspace(this);
-    console.log(options);
+    
     var _self = this;
     this.router = connect.router(function(app) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
@@ -108,8 +99,6 @@ util.inherits(Ide, EventEmitter);
             });
             
             var permissions = _self.getPermissions(req);
-            var role = _self.getRole(req);
-            console.log(role); process.exit(10);
             var plugins = c9util.arrayToMap(_self.options.plugins);
             var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
 
@@ -148,7 +137,7 @@ util.inherits(Ide, EventEmitter);
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
                 packed: _self.options.packed,
-                packedName: "packed_devel-git.js"
+                packedName: _self.options.packedName
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");
