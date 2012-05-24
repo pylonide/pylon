@@ -137,7 +137,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
-        
+
         // Remove the revision file if the file is removed.
         ide.addEventListener("removefile", function(data) {
             ide.send({
@@ -145,6 +145,28 @@ module.exports = ext.register("ext/revisions/revisions", {
                 subCommand: "removeRevision",
                 path: Util.stripWSFromPath(data.path)
             });
+        });
+
+        // Rename/move the revision file if the file is renamed/moved
+        ide.addEventListener("updatefile", function(data) {
+            if (data && data.path && data.newPath) {
+                var path = Util.stripWSFromPath(data.path);
+                var newPath = Util.stripWSFromPath(data.newPath);
+
+                // Remove reference by path to old path in `rawRevisions and
+                // create reference with the new path.
+                if (self.rawRevisions[path]) {
+                    self.rawRevisions[newPath] = self.rawRevisions[path];
+                    delete self.rawRevisions[path];
+                }
+
+                ide.send({
+                    command: "revisions",
+                    subCommand: "moveRevision",
+                    path: path,
+                    newPath: newPath
+                });
+            }
         });
 
         btnSave.setAttribute("caption", "");
@@ -278,7 +300,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
-        
+
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
         this.$setRevisionListClass();
@@ -433,10 +455,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
-            btnSave.hide(); 
+            btnSave.hide();
         else
             this.setSaveButtonCaption(null, e.page);
-            
+
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
@@ -637,11 +659,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
-        
+
         // guided tour magic conflicts with revisions--skip it
         if (page && page.$model.data.getAttribute("guidedtour") === "1")
             return;
-            
+
         switch (message.subtype) {
             case "confirmSave":
                 var ts = message.ts;

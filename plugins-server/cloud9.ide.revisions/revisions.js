@@ -149,14 +149,42 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         return console.error("No path sent for the file to be closed");
                     }
                     break;
-                    
+
                 case "removeRevision":
                     if (!message.path) {
                         return console.error("No path sent for the file to be removed");
                     }
-                    
+
                     var path = PathUtils.getAbsolutePath.call(this, message.path);
                     Fs.unlink(path + "." + FILE_SUFFIX);
+                    break;
+
+                case "moveRevision":
+                    if (!message.path || !message.newPath) {
+                        return console.error("Not enough paths sent for the file to be moved");
+                    }
+
+                    var fromPath = PathUtils.getAbsolutePath.call(this, message.path) + "." + FILE_SUFFIX;
+                    var toPath = PathUtils.getAbsolutePath.call(this, message.newPath) + "." + FILE_SUFFIX;
+
+                    Fs.readFile(fromPath, function(err, data) {
+                        if (err) {
+                            return console.error(err);
+                        }
+                        // Check if the destination folder actually exists
+                        Path.exists(Path.dirname(toPath), function(exists) {
+                            if (exists) {
+                                Fs.writeFile(toPath, data, function(err) {
+                                    if (err) {
+                                        return console.error(err);
+                                    }
+                                    // Remove revisions file for old file
+                                    Fs.unlink(fromPath);
+                                });
+                            }
+                        });
+                    });
+
                     break;
             }
         }
