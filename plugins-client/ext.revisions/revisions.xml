@@ -12,6 +12,7 @@
       buttons   = "close"
       width     = "600"
       skin      = "bk-window2"
+      render    = "runtime"
       onkeydown = "
         if(event.keyCode == 89) {
             btnQuestionYes.dispatchEvent('click', {htmlEvent: {}});
