@@ -110,9 +110,12 @@ module.exports = ext.register("ext/themes/themes", {
              + "." + cssClass + " .editor_tab .curbtn .tab_middle, "
              + "." + cssClass + " .codeditorHolder, "
              + "." + cssClass + " .winGoToFile, "
+             + "." + cssClass + " .revisionsBar .topbar, "
+             + "." + cssClass + " .revisionsBar .revisionsHolder, "
              + "." + cssClass + " .session_page", 
              "color:" + fg + " !important; background-color: " + bg + " !important"],
             ["." + cssClass + " .searchresults > div > span, "
+             + "." + cssClass + ".dark .revisions-list .revision, "
              + "." + cssClass + " .searchresults > div",
             "color:" + fg + ";"],
             ["." + cssClass + " .ace_corner", 

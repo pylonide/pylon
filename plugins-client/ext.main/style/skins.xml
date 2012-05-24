@@ -1957,7 +1957,7 @@
             background-position: 0 -523px;
             font-size: 9px;
             line-height: 24px;
-            padding: 0 16px 0 5px;
+            padding: 0 15px 0 10px;
             text-transform: uppercase;
         }
         .c9-toolbarbutton-glossy.saving .c9-label:after,
@@ -1965,18 +1965,19 @@
             background-position: -476px -523px;
         }
         .c9-toolbarbutton-glossy.saving .c9-icon {
-            background-color: #FF8400;
-            right: 6px;
+            background-color: #85C410;
+            right: 10px;
             -webkit-animation: saving .4s linear 0 infinite;
                -moz-animation: saving .4s linear 0 infinite;
                     animation: saving .4s linear 0 infinite;
         }
         .c9-toolbarbutton-glossy.saved .c9-icon {
             background-color: #85C410;
-            right: 6px;
+            right: 10px;
         }
         .c9-toolbarbutton-glossy.save .c9-icon {
             background-color: #D01616;
+            right: 10px;
         }
         .c9-toolbarbutton-glossy.save .c9-label {
             font-size: 9px;
@@ -8901,7 +8902,7 @@
 		margin-right : -20px;
 		margin-top   : 0;
 		height       : 21px;
-		overflow     : visible;
+		overflow     : hidden;
     }
     .editor_tab .tab_middle {
         height   : 18px;
@@ -9086,6 +9087,16 @@
     .editor_tab .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
     	background-position: -98px -132px;
     	z-index: 10000000;
+    }
+    .tabsContextMenu:before {
+        background: url(images/c9-no-repeat.png) no-repeat -98px -132px;
+        content: "";
+        display: block;
+        height: 17px;
+        left: -1px;
+        position: absolute;
+        top: -17px;
+        width: 19px;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9552,7 +9563,7 @@
     }
 
     .editor_tab .tab_right, .editor_tab .tab_left {
-        height : 22px;
+        height : 23px;
     }
 </a:style>
 <a:style condition="apf.isWebkit">
@@ -9572,7 +9583,9 @@
         text-overflow : ellipsis;
         white-space : nowrap;
     }
-
+    .editor_tab .session_btn {
+        overflow: visible;
+    }
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
@@ -11300,38 +11313,41 @@
             text-indent : -2000px;
         }
         
-        .filemgr-tree.openfile .item SPAN{
-            left: 3px;
-            display: block;
-            text-indent: 0;
-            line-height: 6px;
-            width: 7px;
-            height: 7px;
-            padding: 2px 3px 5px 3px;
-            font-family: Tahoma;
-            font-size: 11px;
-            top: 2px;
+        .filemgr-tree.openfile .item {
+            padding: 0 14px 0 0;
+        }
+        .filemgr-tree.openfile .item SPAN {
+            background: url(images/close_tab_btn.png) no-repeat -14px 0;
             cursor: default;
+            display: block;
+            height: 14px;
+            left: auto !important;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            right: 2px;
+            text-indent: 100%;
+            top: 2px;
+            width: 14px;
             z-index: 1000;
-            text-shadow: 1px 1px 0px white;
-            color: #999;
         }
-        .filemgr-tree.openfile .item-fix SPAN:hover{
-            color : #555;
+        .filemgr-tree.openfile .item:hover SPAN {
+            opacity: 1;
         }
-        .filemgr-tree.openfile .item-fix.selected SPAN{
-            color : rgb(17,82,139);
-            text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+        .filemgr-tree.openfile .item SPAN:hover {
+            background-position: -14px 0;
         }
-        .filemgr-tree.openfile .item-fix.selected SPAN:hover{
-            color : #041b2f;
+        .filemgr-tree.openfile .item SPAN:active {
+            background-position: -28px 0;
+            opacity: 1 !important;
         }
-        .filemgr-tree.openfile .item-fix SPAN:active{
-            color : red;
-            text-shadow: 1px 1px 0 rgba(255,0,0,0.3);
+        
+        .filemgr-tree.openfile .item-fix.selected SPAN,
+        .filemgr-tree.openfile .item-fix.selected SPAN:hover {
+            background-position: -14px -14px;
         }
-        .filemgr-tree.openfile .item-fix.selected SPAN:active{
-            color : red;
+        .filemgr-tree.openfile .item-fix.selected SPAN:active {
+            background-position: -28px -14px;
         }
         
         .filemgr-tree U.root .item-fix.min .item SPAN,
