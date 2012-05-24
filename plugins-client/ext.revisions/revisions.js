@@ -195,6 +195,11 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
             });
         }
+        
+        // If it doesn't exist, initialize an offline queue for revisions.
+        if (!localStorage.offlineQueue) {
+            localStorage.offlineQueue = "[]";
+        }
 
         this.$initWorker();
     },
@@ -269,7 +274,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
-        
+
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
         this.$setRevisionListClass();
@@ -424,10 +429,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
-            btnSave.hide(); 
+            btnSave.hide();
         else
             this.setSaveButtonCaption(null, e.page);
-            
+
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
@@ -473,10 +478,12 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterOnline: function(e) {
-        var queue = this.offlineQueue;
-        if (!queue || !queue.length) {
+        if (!localStorage.offlineQueue) {
             return;
         }
+        
+        var queue = JSON.parse(localStorage.offlineQueue);
+        if (!queue.length) { return; }
 
         queue.forEach(function(rev, ind, _queue) {
             var prev = _queue[ind - 1];
@@ -485,6 +492,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             }
         });
         this.$makeNewRevision(queue.shift()); // First item doesn't depend on anything
+        
+        localStorage.offlineQueue = "[]"; //empty local storage
+        this.offlineQueue = [];
     },
 
     afterSelect: function(e) {
@@ -628,11 +638,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
-        
+
         // guided tour magic conflicts with revisions--skip it
         if (page && page.$model.data.getAttribute("guidedtour") === "1")
             return;
-            
+
         switch (message.subtype) {
             case "confirmSave":
                 var ts = message.ts;
@@ -1245,6 +1255,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (ide.onLine === false) {
                 data.ts = Date.now();
                 this.offlineQueue.push(data);
+                localStorage.offlineQueue = JSON.stringify(this.offlineQueue);
                 return;
             }
             else {

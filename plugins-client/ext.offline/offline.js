@@ -114,7 +114,7 @@ module.exports = ext.register("ext/offline/offline", {
                 return false;
             }
         });
-        
+
         // make sure that ide.onLine is actual 1 here already
         // because otherwise you'll run into timing issues, because some
         // extensions do an additional check for ide.onLine !== 0 as well (like jsdav)
@@ -124,7 +124,7 @@ module.exports = ext.register("ext/offline/offline", {
             stServerConnected.activate();
             ide.onLine = true;
         });
-        
+
         ide.addEventListener("afteronline", function(e){
             apf.setStyleClass(logobar.$ext, "", ["offline"]);
 
@@ -145,8 +145,6 @@ module.exports = ext.register("ext/offline/offline", {
         // fIdent is used for localStorage in Firefox or if local Filesystem is
         // not available
         var fIdent = "cloud9.files." + ide.workspaceId;
-
-
         ide.addEventListener("init.ext/filesystem/filesystem", function(){
             // If we don't have the real webdav, we need to use the offline one
             if (!fs.realWebdav)
@@ -340,7 +338,7 @@ module.exports = ext.register("ext/offline/offline", {
         ide.addEventListener("socketDisconnect", function(){
             offline.goOffline();
         });
- 
+
         if (_self.offlineStartup)
             ide.dispatchEvent("afteroffline"); //Faking offline startup
     },
