@@ -12010,11 +12010,14 @@
     <a:button name="button-colorless">
         <a:style><![CDATA[
             .button-colorless {
-                background: url(images/button-colorless/background.png) repeat-x 0 0;
-                border: 1px solid rgba(0,0,0,.85);
+                background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                background-image:         linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                border: 1px solid rgba(0,0,0,.1);
                 border-radius: 4px;
-                box-shadow: 0 1px 0 0 rgba(237,237,237,.34) inset,
-                            0 1px 0 0 rgba(0,0,0,.2);
+                box-shadow: 0 1px 0px 0 rgba(237,237,237,.37) inset,
+                            0 1px 0 0 rgba(0,0,0,.08),
+                            0 1px 2px 1px rgba(0,0,0,.1);
                 color: #FFFFFF;
                 cursor: pointer;
                 font-family: Arial;
@@ -12026,22 +12029,55 @@
             }
 
             .button-colorlessOver {
-                background-position: 0 -30px;
+                background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+                background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+                background-image:         linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
             }
             .button-colorlessDown {
-                background-position: 0 -60px;
+                background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+                background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+                background-image:         linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
             }
             .button-colorlessDisabled {
-                background-position: 0 -90px;
                 color: rgba(0,0,0,.5);
                 text-shadow: 0 1px 0 rgba(255,255,255,.15)
             }
             .button-colorlessFocus {
-                background-position: 0 -120px;
                 box-shadow: 0 1px 0 0 rgba(237,237,237,.34) inset,
-                        0 0 2px 1px rgba(255,255,255,.2) inset,
-                        0 0 1px 0 rgba(255,255,255,.1) inset;
+                            0 0 2px 1px rgba(255,255,255,.2) inset,
+                            0 0 1px 0 rgba(255,255,255,.4) inset,
+                            0 1px 0 0 rgba(0,0,0,.23);
             }
+            /*
+             * Dark
+             */
+            .button-colorless.dark {
+                border: 1px solid rgba(0,0,0,.89);
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.37) inset,0 1px 0 0 rgba(0,0,0,.23);
+            }
+            /*
+             * Colors
+             */
+            .button-colorless.grey {
+                background-color: #303030;
+            }
+            .button-colorless.lightGrey {
+                background-color: #494850
+            }
+            .button-colorless.red {
+                background-color: #B60000;
+            }
+            .button-colorless.green {
+                background-color: #088E04;
+            }
+            .button-colorless.lightBlue {
+                background-color: #415566
+            }
+            .button-colorless.blue {
+                background-color: #1473DA
+            }
+
+
         ]]></a:style>
         <a:presentation>
             <a:main caption = ".">
