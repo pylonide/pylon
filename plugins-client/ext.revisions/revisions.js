@@ -621,6 +621,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onMessage: function(e) {
+        var self = this;
         var message = e.message;
         if (message.type !== "revision") {
             return;
@@ -671,11 +672,20 @@ module.exports = ext.register("ext/revisions/revisions", {
                         revision: revision
                     });
 
-                    // If we are on the page for the doc, let's populate the model,
-                    // otherwise it is a waste of resources
-                    if (Util.getDocPath() === message.path) {
-                        this.populateModel(revObj, this.model);
-                    }
+                    // The following code inserts the confirmed revision as the
+                    // first (most recent) revision in the list, only if the model
+                    // has been populated before already
+                    var revisionString = this.getXmlStringFromRevision(revision);
+                    var pages = tabEditors.getPages();
+                    pages.forEach(function(page) {
+                        var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
+                        if (message.path === path) {
+                            var model = page.$mdlRevisions;
+                            if (model && model.data && model.data.childNodes.length) {
+                                model.insertBefore(apf.getXml(revisionString), model.data.firstChild);
+                            }
+                        }
+                    });
                 }
                 break;
 
@@ -722,7 +732,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 break;
 
             case "getRealFileContents":
-                var self = this;
                 var pages = tabEditors.getPages();
                 pages.forEach(function(page) {
                     var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
@@ -884,32 +893,36 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var timestamps = Util.keysToSortedArray(revisions);
+        var revsXML = "";
+        for (var i = timestamps.length - 1; i >= 0; i--) {
+            revsXML += this.getXmlStringFromRevision(revisions[timestamps[i]]);
+        }
+        this.model.load("<revisions>" + revsXML + "</revisions>");
+    },
+
+    getXmlStringFromRevision: function(revision) {
+        if (!revision) { return; }
+
         var contributorToXml = function(c) {
             return "<contributor email='" + c + "' />";
         };
-        var revsXML = "";
-        for (var i = timestamps.length - 1; i >= 0; i--) {
-            var ts = timestamps[i];
-            var rev = revisions[ts];
-            var friendlyDate = (new Date(ts)).toString("MMM d, h:mm tt");
-            var restoring = rev.restoring || "";
-            // var savedToDisk = rev.saved !== false;
 
-            revsXML += "<revision " +
-                "id='" + rev.ts + "' " +
+        var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");
+        var restoring = revision.restoring || "";
+
+        var xmlString = "<revision " +
+                "id='" + revision.ts + "' " +
                 "name='" + friendlyDate + "' " +
-                // "saved='" + savedToDisk + "' " +
-                "silentsave='" + rev.silentsave + "' " +
+                "silentsave='" + revision.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
-            var contributors = "";
-            if (rev.contributors && rev.contributors.length) {
-                contributors = rev.contributors.map(contributorToXml).join("");
-            }
-
-            revsXML += "<contributors>" + contributors + "</contributors></revision>";
+        var contributors = "";
+        if (revision.contributors && revision.contributors.length) {
+            contributors = revision.contributors.map(contributorToXml).join("");
         }
-        this.model.load("<revisions>" + revsXML + "</revisions>");
+
+        xmlString += "<contributors>" + contributors + "</contributors></revision>";
+        return xmlString;
     },
 
     /**
@@ -1393,7 +1406,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         if (model) {
-            if (!model.data || model.data.length === 0) {
+            if (!model.data || model.data.childNodes.length === 0) {
                 this.populateModel(this.rawRevisions[Util.getDocPath()], model);
             }
             else {
