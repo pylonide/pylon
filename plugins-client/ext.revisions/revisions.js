@@ -264,8 +264,8 @@ module.exports = ext.register("ext/revisions/revisions", {
             revisionsPanel.appendChild(pgRevisions);
         });
         
-        apf.addEventListener("exit", function() {
-            localStorage.offlineQueue = JSON.stringify(this.offlineQueue);
+         apf.addEventListener("exit", function() {
+            localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
         this.$afterSelectFn = this.afterSelect.bind(this);
