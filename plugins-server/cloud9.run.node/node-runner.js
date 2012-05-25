@@ -99,7 +99,7 @@ var Runner = exports.Runner = function(options, callback) {
         else {
             startProcess(options.url, port);
         }        
-    });    
+    });
     
     function startProcess (url, port) {
         self.port = port;

@@ -11,19 +11,15 @@ var exports = module.exports = function setup(options, imports, register) {
     sandbox.getUserDir(function(err, userDir) {
         if (err) return register(err);
         
-        sandbox.getPort(function(err, port) {
+        sandbox.getUnixId(function(err, unixId) {
             if (err) return register(err);
             
-            sandbox.getUnixId(function(err, unixId) {
-                if (err) return register(err);
-                
-                init(userDir, port, unixId);
-            });
+            init(userDir, unixId);
         });
     });
 
-    function init(userDir, port, unixId) {
-        pm.addRunner("run-npm", exports.factory(userDir, port, unixId));
+    function init(userDir, unixId) {
+        pm.addRunner("run-npm", exports.factory(imports.sandbox, userDir, unixId));
 
         register(null, {
             "run-run-npm": {}
@@ -31,12 +27,11 @@ var exports = module.exports = function setup(options, imports, register) {
     }
 };
 
-exports.factory = function(root, port, uid) {
+exports.factory = function(sandbox, root, uid) {
     return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.root = root;
-        options.port = port;
         options.uid = uid;
         options.file = args.file;
         options.args = args.args;
@@ -45,6 +40,8 @@ exports.factory = function(root, port, uid) {
         options.extra = args.extra;
         options.eventEmitter = eventEmitter;
         options.eventName = eventName;
+        
+        options.sandbox = sandbox;
         
         new Runner(options, callback);
     };
@@ -61,7 +58,13 @@ var Runner = exports.Runner = function(options, callback) {
     options.env = options.env || {};
     options.command = process.execPath;
     
-    ShellRunner.call(this, options, callback);
+    options.sandbox.getPort(function (err, port) {
+        if (err) return callback(err);
+        
+        options.port = port;
+        
+        ShellRunner.call(this, options, callback);
+    });
 };
 
 util.inherits(Runner, ShellRunner);

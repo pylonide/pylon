@@ -116,7 +116,7 @@ var Runner = exports.Runner = function(options, callback) {
             this.args = ["-Hu", "#" + this.uid, this.command].concat(this.args);
             this.command = "sudo";
         }
-
+        
         try {
             var child = spawn(this.command, this.args, this.runOptions);
         } catch (e) {
