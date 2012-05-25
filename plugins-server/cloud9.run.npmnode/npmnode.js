@@ -48,6 +48,8 @@ exports.factory = function(sandbox, root, uid) {
 };
 
 var Runner = exports.Runner = function(options, callback) {
+    var self = this;
+    
     this.uid = options.uid;
     this.file = options.file;
     this.extra = options.extra;
@@ -63,7 +65,7 @@ var Runner = exports.Runner = function(options, callback) {
         
         options.port = port;
         
-        ShellRunner.call(this, options, callback);
+        ShellRunner.call(self, options, callback);
     });
 };
 

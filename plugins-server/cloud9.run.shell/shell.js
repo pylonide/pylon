@@ -37,6 +37,10 @@ exports.factory = function(uid) {
 };
 
 var Runner = exports.Runner = function(options, callback) {
+    if (!options.uid) {
+        console.log("SHELLRUNNER");
+        console.trace();
+    }
     this.uid = options.uid;
     this.command = options.command;
     this.args = options.args || [];
