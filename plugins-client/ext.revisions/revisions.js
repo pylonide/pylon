@@ -263,6 +263,10 @@ module.exports = ext.register("ext/revisions/revisions", {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
+        
+        apf.addEventListener("exit", function() {
+            localStorage.offlineQueue = JSON.stringify(this.offlineQueue);
+        });
 
         this.$afterSelectFn = this.afterSelect.bind(this);
         lstRevisions.addEventListener("afterselect", this.$afterSelectFn);
