@@ -1,5 +1,10 @@
 /**
  * Console for the Cloud9 IDE
+ * 
+ * TODO:
+ * - Mnemonics ($file)
+ * - Firefox prompt overflows
+ * - Recreating tabs
  *
  * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -106,9 +111,14 @@ module.exports = ext.register("ext/console/console", {
         }
 
         for (var i = 0, len = savedCliPageIds.length; i < len; i++) {
+            // "clipage0", "clipage1"
             var outputNumId = parseInt(savedCliPageIds[i].substr(7), 10);
+            this.numNewTabs = Math.max(this.numNewTabs, outputNumId);
             this.createNewTab(outputNumId, false);
         }
+
+        if (savedCliPageIds.length)
+            this.numNewTabs++;
 
         this.tabsRestored = true;
     },
@@ -119,10 +129,10 @@ module.exports = ext.register("ext/console/console", {
                 continue;
 
             var proc = serverProcs[spi];
+            var extra = proc.extra;
 
             var original_line;
             var command_id;
-            var extra = proc.extra;
             if (extra) {
                 command_id = extra.command_id;
                 original_line = extra.original_line;
@@ -141,6 +151,11 @@ module.exports = ext.register("ext/console/console", {
                         $ext: page.childNodes[0].$ext,
                         id: "console_section" + command_id
                     };
+                }
+                else {
+                    // @TODO Implement
+                    // This is where, say, we would store the output for
+                    // recreation later
                 }
 
                 this.createOutputBlock(this.getPrompt(original_line), outputTextObject, command_id);
@@ -465,7 +480,7 @@ module.exports = ext.register("ext/console/console", {
             return;
 
         var message = e.message;
-        console.log(message.type, message);
+        //console.log(message.type, message);
         var extra = message.extra;
         if (!extra && message.body)
             extra = message.body.extra;
