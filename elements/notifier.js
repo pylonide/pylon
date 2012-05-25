@@ -105,18 +105,19 @@ apf.notifier = function(struct, tagName){
 };
 
 (function() {
-    this.timeout    = 2000;
-    this.position   = "top-right";
-    this.columnsize = 300;
-    this.arrange    = "vertical";
-    this.margin     = "10 10 10 10";
-
-    this.lastPos    = null;
-    this.showing    = 0;
-    this.sign       = 1;
+    this.timeout      = 2000;
+    this.position     = "top-right";
+    this.columnsize   = 300;
+    this.arrange      = "vertical";
+    this.margin       = "10 10 10 10";
+    this.startPadding = 0;
+    
+    this.lastPos      = null;
+    this.showing      = 0;
+    this.sign         = 1;
 
     this.$supportedProperties.push("margin", "position", "timeout",
-        "columnsize", "arrange");
+        "columnsize", "arrange", "start-padding");
 
     this.$propHandlers["position"] = function(value) {
         this.lastPos = null;
@@ -124,6 +125,10 @@ apf.notifier = function(struct, tagName){
     
     this.$propHandlers["margin"] = function(value) {
         this.margin = value;
+    };
+    
+    this.$propHandlers["start-padding"] = function(value) {
+        this.startPadding = value;
     };
     
     this.$propHandlers["timeout"] = function(value) {
@@ -145,12 +150,12 @@ apf.notifier = function(struct, tagName){
                  ? margin[0]
                  : (x[0] == "bottom"
                      ? wh - nh - margin[2]
-                     : wh / 2 - nh / 2)) + scrolled[0],
+                     : wh / 2 - nh / 2)) + scrolled[0] + this.startPadding,
              (x[1] == "left"
                  ? margin[3]
                  : (x[1] == "right"
                      ? ww - nw - margin[1]
-                     : ww / 2 - nw / 2)) + scrolled[1]
+                     : ww / 2 - nw / 2)) + scrolled[1] + this.startPadding
         ];
     }
 
