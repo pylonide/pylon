@@ -4,7 +4,7 @@
 
     <a:bar id="barCompleterCont" skinset="language_skin" skin="codecomplete" width="600" visible="false">
         <!-- see ext.language/complete.MENU_WIDTH for widths -->
-        <a:hbox anchors="0 0 0 0" width="250">
+        <a:hbox class="code_complete_text_holder" anchors="0 0 0 0" edge="5" width="250">
             <a:text id="txtCompleter" skin="codecomplete_text" flex="1" />
             <a:scrollbar
               for      = "txtCompleter"

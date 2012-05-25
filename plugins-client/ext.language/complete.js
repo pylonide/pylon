@@ -17,7 +17,7 @@ var oldCommandKey, oldOnTextInput;
 var isDocShown;
 var drawCompletionBox;
 
-var CLASS_SELECTED = "cc_complete_option_selected";
+var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 8;
@@ -142,6 +142,7 @@ module.exports = {
         this.completionElement = txtCompleter.$ext;
         this.docElement = txtCompleterDoc.$ext;
         this.cursorConfig = ace.renderer.$cursorLayer.config;
+        this.cursorConfig.lineHeight += 4;
         var style = dom.computedStyle(this.editor.amlEditor.$ext);
         this.completionElement.style.fontSize = style.fontSize;
         
@@ -161,8 +162,9 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
-        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight + 1));
+        //var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
+        var boxLength = this.matches.length || 1;
+        var completionBoxHeight = 11 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight));
         var cursorLayer = ace.renderer.$cursorLayer;
         
         setTimeout(drawCompletionBox = function() {
@@ -245,7 +247,6 @@ module.exports = {
             });
             matchEl.style.height = cursorConfig.lineHeight + "px";
             matchEl.style.width = (MENU_WIDTH - 10) + "px";
-            matchEl.style.color = 0xaaaaaa;
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });
