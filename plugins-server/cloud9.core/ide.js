@@ -47,7 +47,7 @@ var Ide = module.exports = function(options) {
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
-        packed: (options.packed === true || packageFlag === true) ? true : false,
+        packed: (options.packed === true) ? true : false,
         packedName: options.packedName,
         hosted: !!options.hosted
     };
