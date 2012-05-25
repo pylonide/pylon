@@ -6042,7 +6042,7 @@
             position: relative;
         }
 
-        .bg-bk-content {
+        .bk-window .bg-bk-content {
             background:url(images/modalbg.png) repeat 0 0;
             position: absolute;
             top  : 33px;
@@ -6159,6 +6159,155 @@
                 <div class="bk-container">
                     <div class="bk-win-footer"></div>
                 </div>
+            </div>
+        </a:main>
+        <a:button>
+            <div/>
+        </a:button>
+    </a:presentation>
+</a:modalwindow>
+<a:modalwindow name="bk-win-noisebg">
+    <a:style><![CDATA[
+        .bk-win-noisebg {
+            position : relative;
+            overflow : hidden;
+            z-index  : 10000;
+            
+            border : 1px solid #000;
+            -moz-border-radius : 8px;
+            -webkit-border-radius : 8px;
+            border-radius : 8px;
+            background : -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
+            background : -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
+            padding : 5px 5px 10px;
+
+            color: #ffffff;
+
+            margin-top : 10px;
+            border : 1px solid #000;
+
+            -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
+
+            -webkit-box-shadow: inset 0px 1px 0px 0px #424242;
+            -moz-box-shadow: inset 0px 1px 0px 0px #424242;
+            box-shadow: inset 0px 1px 0px 0px #424242; 
+        }
+
+        .bk-win-noisebg .noise_bg {
+            background: url(images/noise_pattern_transparent.png) 0 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.1;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+            
+        .bk-win-noisebg .bk-header {
+            position : relative;
+            overflow : hidden;
+            height   : 20px;
+            top      : 0;
+            -moz-border-radius    : 8px 8px 0 0;
+            -webkit-border-radius : 8px 8px 0 0;
+            border-radius         : 8px 8px 0 0;
+        }
+
+        .bk-win-noisebg .bk-header .hcontent {
+            position      : relative;
+            /*overflow      : hidden;*/
+            height        : 15px;
+            margin       : 5px 5px 0;
+            font-family   : Arial;
+            font-size     : 14px;
+            line-height   : 16px;
+            font-weight   : bold;
+            color         : #ffffff;
+            cursor        : default;
+        }
+
+        .bk-win-noisebg .bk-header .hcontent .buttons {
+            position: absolute;
+            right: -5px;
+            top: -5px;
+        }
+
+        .bk-win-noisebg .bk-header .hcontent .buttons .close {
+            background: url(images/bk-close-btn.png)  no-repeat 0 0;
+            width: 13px;
+            height: 15px;
+        }
+
+        .bk-win-noisebg .bk-header .hcontent .buttons .close.hover {
+            background-position: 0 -19px;
+        }
+        .bk-win-noisebg .bk-header .hcontent .buttons .close.down {
+            background-position: 0 -39px;
+        }
+
+        .bk-win-noisebg .bk-container {
+            position:relative;
+            overflow:visible;
+            left : 0;
+            top  : 0;
+            right : 0;
+            bottom : 0;
+            z-index: 1;
+        }
+
+        .bk-win-noisebg .bg-bk-content {
+            position: absolute;
+            top  : 30px;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            z-index: 0;
+        }
+        
+        .bk-window-cover {
+            background:url(images/bg-overlay.png) repeat 0 0;
+            opacity: 1;
+        }
+
+        .bk-window-cover .header {
+            background: url(images/cover-heaeder.png) repeat-x 0 0;
+            height: 12px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+        }
+        .bk-window-cover .logo {
+            background: url(images/cover-logo.png) no-repeat 0 0;
+            width: 215px;
+            height: 44px;
+            position: absolute;
+            right: 20px;
+            top: 25px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+          collapsed-height = "26"
+          minheight        = "50"
+          minwidth         = "50"
+          container        = "div[2]"
+          drag             = "div[1]/div[1]"
+          title            = "div[1]/div[1]/text()"
+          icon             = "div[1]/div[1]/div[1]"
+          buttons          = "div[1]/div[1]/div[2]">
+            <div class="bk-win-noisebg">
+                <div class="bk-header">
+                    <div class="hcontent">
+                        -
+                        <div class="icon"></div>
+                        <div class="buttons"></div>
+                    </div>
+                </div>
+                <div class="bk-container"> </div>
             </div>
         </a:main>
         <a:button>
@@ -10326,4 +10475,85 @@
             </a:main>
         </a:presentation>
     </a:img>
+    
+    <a:button name="button-colorless">
+        <a:style><![CDATA[
+            .button-colorless {
+                background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                background-image:         linear-gradient(top, rgba(255,255,255,0.18) 0, rgba(255,255,255,0) 100%);
+                border: 1px solid rgba(0,0,0,.1);
+                border-radius: 4px;
+                box-shadow: 0 1px 0px 0 rgba(237,237,237,.37) inset,
+                            0 1px 0 0 rgba(0,0,0,.08),
+                            0 1px 2px 1px rgba(0,0,0,.1);
+                color: #FFFFFF;
+                cursor: pointer;
+                font-family: Arial;
+                font-size: 13px;
+                height: 25px;
+                line-height: 23px;
+                text-align: center;
+                text-shadow: 0 1px 0 rgba(0,0,0,.25);
+            }
+
+            .button-colorlessOver {
+                background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+                background-image:    -moz-linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+                background-image:         linear-gradient(top, rgba(255,255,255,0.31) 0, rgba(255,255,255,0.1) 100%);
+            }
+            .button-colorlessDown {
+                background-image: -webkit-linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+                background-image:    -moz-linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+                background-image:         linear-gradient(bottom, rgba(255,255,255,.18) 0, rgba(255,255,255,0) 100%);
+            }
+            .button-colorlessDisabled {
+                color: rgba(0,0,0,.5);
+                text-shadow: 0 1px 0 rgba(255,255,255,.15)
+            }
+            .button-colorlessFocus {
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.34) inset,
+                            0 0 2px 1px rgba(255,255,255,.2) inset,
+                            0 0 1px 0 rgba(255,255,255,.4) inset,
+                            0 1px 0 0 rgba(0,0,0,.23);
+            }
+            /*
+             * Dark
+             */
+            .button-colorless.dark {
+                border: 1px solid rgba(0,0,0,.89);
+                box-shadow: 0 1px 0 0 rgba(237,237,237,.37) inset,0 1px 0 0 rgba(0,0,0,.23);
+            }
+            /*
+             * Colors
+             */
+            .button-colorless.grey {
+                background-color: #303030;
+            }
+            .button-colorless.lightGrey {
+                background-color: #494850
+            }
+            .button-colorless.red {
+                background-color: #B60000;
+            }
+            .button-colorless.green {
+                background-color: #088E04;
+            }
+            .button-colorless.lightBlue {
+                background-color: #415566;
+            }
+            .button-colorless.blue {
+                background-color: #1473DA;
+            }
+            .button-colorless.orange {
+                background-color: #bb3411;
+            }
+    
+        ]]></a:style>
+        <a:presentation>
+            <a:main caption = ".">
+                <div class="button-colorless"> </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
 </a:skin>

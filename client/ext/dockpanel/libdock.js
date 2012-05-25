@@ -2106,17 +2106,17 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                       && self[this.submenu].firstChild.set 
                       && self[this.submenu].firstChild.set(page);
                     btnLock = false;
-                    
                     if (options && (tmp = options.primary)) {
+                        var icoState = !this.value ? tmp.activeState : tmp.defaultState;
                         var span = button.$ext.getElementsByTagName("span");
                         span[2].style.backgroundPosition = 
-                            tmp.activeState.x + 'px ' 
-                            + tmp.activeState.y + 'px';
+                            icoState.x + 'px ' 
+                            + icoState.y + 'px';
                 
                         if (tmp = options.secondary) {
                             span[1].style.backgroundPosition = 
-                                tmp.activeState.x + 'px ' 
-                                + tmp.activeState.y + 'px';
+                                icoState.x + 'px ' 
+                                + icoState.y + 'px';
                         }
                     }
                     
@@ -2131,28 +2131,29 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             
             function _setBtnIco(_btn){
                 if (options && (tmp = options.primary)) {
+                    var icoState = _btn.value ? tmp.activeState : tmp.defaultState;
                     var span = _btn.$ext.getElementsByTagName("span");
                     
                     _btn.setAttribute("tooltip", options.menu.split("/").pop());
                     
                     span[2].style.background = 'url("' 
                         + tmp.backgroundImage + '") '
-                        + tmp.defaultState.x + 'px '
-                        + tmp.defaultState.y + 'px no-repeat';
+                        + icoState.x + 'px '
+                        + icoState.y + 'px no-repeat';
                     
                     if (tmp = options.secondary) {
                         span[1].style.background = 'url("' 
                             + tmp.backgroundImage + '") '
-                            + tmp.defaultState.x + 'px '
-                            + tmp.defaultState.y + 'px no-repeat'
+                            + icoState.x + 'px '
+                            + icoState.y + 'px no-repeat'
                     }
                     
                     if (tmp = options.tertiary) {
                         span[0].style.background =
                             tmp.backgroundColor + ' url("'
                             + tmp.backgroundImage + '") '
-                            + tmp.defaultState.x + 'px '
-                            + tmp.defaultState.y + 'px no-repeat';
+                            + icoState.x + 'px '
+                            + icoState.y + 'px no-repeat';
                         span[0].style.border = "1px solid #c7c7c7";
                     }
                 }
