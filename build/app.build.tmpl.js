@@ -2,6 +2,7 @@
 
 ({
 	//optimize: "none",
+	preserveLicenseComments: false,
 	baseUrl: "../",
 	paths: {
 		"text" : "%b/text", // plugin for pulling in text! files
