@@ -210,29 +210,37 @@ module.exports = ext.register("ext/revisions/revisions", {
         worker.postMessage({ type: "preloadlibs" });
     },
 
-    setSaveButtonCaption: function(caption, page) {
+    setSaveButtonCaption: function(page) {
         if (!self.btnSave)
             return;
 
-        if (caption)
-            return btnSave.setCaption(caption);
+        var SAVING = 0;
+        var SAVED = 1;
 
         btnSave.show();
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
-                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
-                return btnSave.setCaption("Saving");
+                if (btnSave.currentState !== SAVING) {
+                    apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
+                    apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
+                    btnSave.currentState = SAVING;
+                    btnSave.setCaption("Saving");
+                }
             }
             else if (!hasChanged) {
-                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
-                return btnSave.setCaption("Changes saved");
+                if (btnSave.currentState !== SAVED) {
+                    apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
+                    apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
+                    btnSave.currentState = SAVED;
+                    btnSave.setCaption("Changes saved");
+                }
             }
         }
-        btnSave.setCaption("");
+        else {
+            btnSave.setCaption("");
+        }
     },
 
     init: function() {
@@ -426,7 +434,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (tabEditors.getPages().length == 1)
             btnSave.hide();
         else
-            this.setSaveButtonCaption(null, e.page);
+            this.setSaveButtonCaption(e.page);
 
         var self = this;
         setTimeout(function() {
