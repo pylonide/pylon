@@ -17,7 +17,7 @@ define(function(require, exports, module) {
 var baseLanguageHandler = require('ext/language/base_handler');
 var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
-require('treehugger/traverse');
+var traverse = require('treehugger/traverse');
 
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
@@ -398,6 +398,11 @@ handler.analyze = function(doc, ast, callback) {
     var handler = this;
     var markers = [];
     
+    if(ast.parent === undefined) {
+        traverse.addParentPointers(ast);
+        ast.parent = null;
+    }
+    
     // Preclare variables (pre-declares, yo!)
     function preDeclareHoisted(scope, node) {
         node.traverseTopDown(
@@ -526,7 +531,7 @@ handler.analyze = function(doc, ast, callback) {
                 if (localVariables[i].uses.length === 0) {
                     var v = localVariables[i];
                     v.declarations.forEach(function(decl) {
-                        if (decl.value === decl.value.toUpperCase())
+                        if (decl.value === decl.value.toUpperCase() || isRequireVarDecl(decl.parent))
                             return;
                         markers.push({
                             pos: decl.getPos(),
@@ -543,6 +548,13 @@ handler.analyze = function(doc, ast, callback) {
     scopeAnalyzer(rootScope, ast);
     callback(markers);
 };
+
+function isRequireVarDecl(decl) {
+    return decl.cons === "VarDeclInit" &&
+        decl[1].cons === "Call" &&
+        decl[1][0].cons === "Var" &&
+        decl[1][0][0].value === "require";
+}
 
 handler.onCursorMovedNode = function(doc, fullAst, cursorPos, currentNode, callback) {
     if (!currentNode)
