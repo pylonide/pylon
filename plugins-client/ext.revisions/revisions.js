@@ -676,16 +676,14 @@ module.exports = ext.register("ext/revisions/revisions", {
                     // first (most recent) revision in the list, only if the model
                     // has been populated before already
                     var revisionString = this.getXmlStringFromRevision(revision);
-                    var pages = tabEditors.getPages();
-                    pages.forEach(function(page) {
-                        var path = Util.stripWSFromPath(page.$model.data.getAttribute("path"));
-                        if (message.path === path) {
+                    var page = tabEditors.getPage(ide.davPrefix + "/" + message.path);
+                    if (page) {
                             var model = page.$mdlRevisions;
                             if (model && model.data && model.data.childNodes.length) {
-                                model.insertBefore(apf.getXml(revisionString), model.data.firstChild);
+                            var revisionNode = apf.getXml(revisionString);
+                            apf.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
                             }
                         }
-                    });
                 }
                 break;
 
