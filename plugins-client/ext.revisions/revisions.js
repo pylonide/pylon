@@ -269,7 +269,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         this.$onAfterSwitchFn = this.onAfterSwitch.bind(this);
         tabEditors.addEventListener("afterswitch", this.$onAfterSwitchFn);
-        
+
         this.$afterModelUpdate = this.afterModelUpdate.bind(this);
 
         this.$setRevisionListClass();
@@ -424,10 +424,10 @@ module.exports = ext.register("ext/revisions/revisions", {
 
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
-            btnSave.hide(); 
+            btnSave.hide();
         else
             this.setSaveButtonCaption(null, e.page);
-            
+
         var self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
@@ -628,11 +628,11 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var page = tabEditors.getPage();
         var revObj = this.$getRevisionObject(message.path);
-        
+
         // guided tour magic conflicts with revisions--skip it
         if (page && page.$model.data.getAttribute("guidedtour") === "1")
             return;
-            
+
         switch (message.subtype) {
             case "confirmSave":
                 var ts = message.ts;
@@ -1502,12 +1502,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPages().forEach(function(page) {
             var listener = this.docChangeListeners[page.name];
             if (listener) {
-                page.$doc.removeEventListener(listener);
+                page.$doc.removeEventListener("change", listener);
                 if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener(listener);
+                    page.$doc.acedoc.removeEventListener("change", listener);
                 }
 
-                (page.$doc.acedoc || page.$doc).addEventListener(listener);
+                (page.$doc.acedoc || page.$doc).addEventListener("change", listener);
             }
         }, this);
 
@@ -1523,9 +1523,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPages().forEach(function(page) {
             var listener = this.docChangeListeners[page.name];
             if (listener) {
-                page.$doc.removeEventListener(listener);
+                page.$doc.removeEventListener("change", listener);
                 if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener(listener);
+                    page.$doc.acedoc.removeEventListener("change", listener);
                 }
             }
             if (page.$mdlRevisions) {
@@ -1551,9 +1551,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         tabEditors.getPages().forEach(function(page) {
             var listener = this.docChangeListeners[page.name];
             if (listener) {
-                page.$doc.removeEventListener(listener);
+                page.$doc.removeEventListener("change", listener);
                 if (page.$doc.acedoc) {
-                    page.$doc.acedoc.removeEventListener(listener);
+                    page.$doc.acedoc.removeEventListener("change", listener);
                 }
             }
             if (page.$mdlRevisions) {
