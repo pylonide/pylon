@@ -100,7 +100,6 @@ var createItem = module.exports.test.createItem = function(line, ide) {
 
 var childBuffer = {};
 var childBufferInterval = {};
-var eventsAttached;
 
 var preInitConsoleBuffer = document.createElement("div");
 var preInitOutputBuffer = document.createElement("div");

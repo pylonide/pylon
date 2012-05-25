@@ -77,7 +77,7 @@
                     visible="false"
                     value="" />
                 <a:textbox id="txtConsoleInput"
-                  initial-message = 'Type "help" to get a list of commands'
+                  initial-message = 'Type "help" or an NPM package, e.g. "express"'
                   margin          = "2 1 1 5"
                   skin            = "tb_console"
                   flex            = "1" />
