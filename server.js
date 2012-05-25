@@ -40,9 +40,9 @@ for (var p = 2; p < process.argv.length; p++) {
    else if (process.argv[p] == "-P") {
        packed = true;
        if (process.argv[p + 1] && process.argv[p + 1].indexOf("-") < 0) // use this specific packed file
-       	packedName = process.argv[++p];
+            packedName = process.argv[++p];
        else
-       	packedName = "packed.js";
+            packedName = "packed.js";
        	
        if(!path.existsSync("plugins-client/lib.packed/www/" + packedName)) {
        		console.log("Building packed file for first run...Please wait...");
@@ -70,22 +70,19 @@ if (debug == false && packed == false)
 function boot() {
 	var configPath = path.resolve(__dirname, "./configs/", configName);
 	var config = require(configPath);
-	
+
 	config.containers.master.plugins = config.containers.master.plugins.filter(function(plugin) {
-	   if (packed === true) {
-	       if (
-	           /\/plugins-client\/cloud9.core$/.test(plugin) ||
-	           /\/plugins-client\/lib.ace$/.test(plugin) ||
-	           /\/plugins-client\/lib.apf$/.test(plugin) ||
-	           /\/plugins-client\/lib.treehugger$/.test(plugin) ||
-	           /\/plugins-client\/lib.v8debug$/.test(plugin)
-	       ) {
-	           return false;
-	       }
+	   if (packed) {
+           // returns false of any of these plugins are detected; lib.packed will emit them
+           return !(/\/plugins-client\/cloud9.core$/.test(plugin) ||
+                    /\/plugins-client\/lib.ace$/.test(plugin) ||
+                    /\/plugins-client\/lib.apf$/.test(plugin) ||
+                    /\/plugins-client\/lib.treehugger$/.test(plugin) ||
+                    /\/plugins-client\/lib.v8debug$/.test(plugin))
 	   }
 	   return true;
 	});
-	
+
 	// server plugins
 	config.containers.master.plugins.forEach(function(plugin) {
 	   if (plugin.packagePath && /\.\/cloud9.core$/.test(plugin.packagePath)) {
@@ -94,10 +91,9 @@ function boot() {
 	       plugin.packedName = packedName;
 	   }
 	});
-	
-	if (packed === true) {
+
+	if (packed)
 	   config.containers.master.plugins.push("./../plugins-client/lib.packed");
-	}
 
 	architect.createApp(config, {
 	   console: ((debug)?console:null)
