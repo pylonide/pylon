@@ -221,17 +221,21 @@ module.exports = ext.register("ext/revisions/revisions", {
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(page);
-            if (this.isAutoSaveEnabled && hasChanged && btnSave.currentState !== SAVING) {
-                apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
-                apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
-                btnSave.currentState = SAVING;
-                return btnSave.setCaption("Saving");
+            if (this.isAutoSaveEnabled && hasChanged) {
+                if (btnSave.currentState !== SAVING) {
+                    apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
+                    apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
+                    btnSave.currentState = SAVING;
+                    btnSave.setCaption("Saving");
+                }
             }
-            else if (!hasChanged && btnSave.currentState !== SAVED) {
-                apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
-                apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
-                btnSave.currentState = SAVED;
-                return btnSave.setCaption("Changes saved");
+            else if (!hasChanged) {
+                if (btnSave.currentState !== SAVED) {
+                    apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
+                    apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
+                    btnSave.currentState = SAVED;
+                    btnSave.setCaption("Changes saved");
+                }
             }
         }
         else {
