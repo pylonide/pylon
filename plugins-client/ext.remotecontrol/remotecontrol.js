@@ -14,7 +14,6 @@ var filesystem = require("ext/filesystem/filesystem");
 var tabbehaviors = require("ext/tabbehaviors/tabbehaviors");
 var editors = require("ext/editors/editors");
 
-
 module.exports = ext.register("ext/remotecontrol/remotecontrol", {
     name   : "Remote Control",
     dev    : "Ajax.org",
@@ -41,13 +40,13 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 // Brand new file: create a dummy file that, when saved, becomes real (can be generic or workspace)
                 if (event.message.args.options.noexist === true) {
                     var node = editors.createFileNodeFromPath( event.message.args.path);
-                    node.setAttribute("newfile", "1"); // we need this on to launch openfile...
-    
+                    node.setAttribute("newfile", "1");
+    				node.setAttribute("cli", "1"); // blocks Save As dialog
+    				
                     var doc = ide.createDocument(node);
                     doc.cachedValue = "";
                                 
                     ide.dispatchEvent("openfile", {doc: doc, node: node});
-                    node.removeAttribute("newfile"); // ...but we need it off to remove the "save as" dialog
                 }
                 else {// Generic case: open the file
                     editors.showFile(event.message.args.path);
