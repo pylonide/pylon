@@ -162,10 +162,13 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        //var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
-        var boxLength = this.matches.length || 1;
+        var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
         var completionBoxHeight = 11 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight));
         var cursorLayer = ace.renderer.$cursorLayer;
+        
+        var innerBoxLength = this.matches.length || 1;
+        var innerCompletionBoxHeight = Math.min(10 * this.cursorConfig.lineHeight, innerBoxLength * (this.cursorConfig.lineHeight));
+        txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
         setTimeout(drawCompletionBox = function() {
             var completionBoxWidth = isDocShown ? MENU_WIDTH * 2 : MENU_WIDTH;
@@ -256,6 +259,11 @@ module.exports = {
     updateDoc : function() {
         this.docElement.innerHTML = '<span class="codecompletedoc_body">';
         var selected = this.matches[this.selectedIdx];
+        if(this.selectedIdx === 1)
+            selected.doc = "HELLO THIS IS DOCUMENTATION";
+        else if(this.selectedIdx === 3)
+            selected.doc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor mattis sapien, eget volutpat ipsum faucibus sit amet. Vestibulum faucibus sapien est, in egestas diam. Curabitur dictum, ipsum eget pellentesque hendrerit, ante leo tristique leo, id auctor elit purus a enim. Maecenas felis justo, dapibus quis aliquet et, ornare vitae neque. Vivamus malesuada libero vel orci eleifend volutpat. Nulla et ante elit. Vivamus egestas erat quis nulla tempus lacinia. Nam et lacus eget massa aliquet accumsan. Quisque venenatis risus ut tortor sagittis aliquet. Aliquam sed turpis condimentum diam venenatis hendrerit. Etiam blandit ullamcorper dictum. Integer neque risus, feugiat iaculis condimentum vel, dictum non libero. Nam eget nibh eros. Nunc bibendum rutrum augue, nec cursus est euismod in";
+
         if (selected && selected.doc) {
             if (!isDocShown) {
                 isDocShown = true;
@@ -263,6 +271,10 @@ module.exports = {
                     drawCompletionBox();
             }
             this.docElement.innerHTML += selected.doc + '</span>';
+            txtCompleterDoc.parentNode.show();   
+        }
+        else {
+            txtCompleterDoc.parentNode.hide();   
         }
         if (selected && selected.docUrl)
             this.docElement.innerHTML += '<div><a href="' + selected.docUrl + '" target="c9doc">(more)</a></div>';
