@@ -745,7 +745,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
     },
 
-
     /**
      * Revisions#showQuestionWindow(data) -> Void
      * - data (Object): Data about the revision to be potentially submitted, and
@@ -763,7 +762,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         delete data.revision.finalContent;
         delete data.revision.realContent;
 
+        var self = this;
         var finalize = function() {
+            self.changedPaths = [];
             winQuestionRev.hide();
             settings.model.setQueryValue("general/@autosaveenabled", this.prevAutoSaveValue || true);
         };
@@ -804,39 +805,17 @@ module.exports = ext.register("ext/revisions/revisions", {
             return index;
         };
 
-        var self = this;
         var pages = tabEditors.getPages();
-        var page = pages.filter(function(_page) {
-            var pagePath = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            return data.path === pagePath;
-        })[0];
-
         Util.question(
             "File changed, reload tab?",
             "'" + data.path + "' has been modified while you were editing it.",
             "Do you want to reload it?",
-            function YesReload() {
-                var index = reloadAndSave(page);
-                if (index > -1) {
-                    self.changedPaths.splice(index, 1);
-                }
-                setTimeout(finalize);
-            },
             function YesReloadAll() {
                 pages.forEach(reloadAndSave);
-                self.changedPaths = [];
-                setTimeout(finalize);
-            },
-            function NoDontReload() {
-                var index = dontReloadAndStore(page);
-                if (index > -1) {
-                    self.changedPaths.splice(index, 1);
-                }
                 setTimeout(finalize);
             },
             function NoDontReloadAll() {
                 pages.forEach(dontReloadAndStore);
-                self.changedPaths = [];
                 setTimeout(finalize);
             }
         );

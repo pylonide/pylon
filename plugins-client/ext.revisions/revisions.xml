@@ -28,13 +28,8 @@
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionRevYes" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevNo" skin="btn-default-css3" class="btn-red">No (but keep changes in a revision)</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes to all</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevNoAll" skin="btn-default-css3" class="btn-red">No to all</a:button>
+            <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
+            <a:button id="btnQuestionRevNoAll" skin="btn-default-css3" class="btn-red">No</a:button>
         </a:hbox>
     </a:window>
 
