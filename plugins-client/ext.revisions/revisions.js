@@ -35,7 +35,7 @@ var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
-
+    
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 500;
@@ -67,13 +67,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * confirmed to be saved.
      */
     revisionQueue: {},
-    /**
-     * Revisions#offlineQueue -> Array
-     * Contains the revisions that have been saved during Cloud9 being offline.
-     * Its items are not revision objects, but hold their own format (for
-     * example, they have a generated timestamp of the moment of saving).
-     */
-    offlineQueue: [],
 
     /** related to: Revisions#onExternalChange
      * Revisions#changedPaths -> Array
@@ -195,10 +188,15 @@ module.exports = ext.register("ext/revisions/revisions", {
                 }
             });
         }
-        
-        // If it doesn't exist, initialize an offline queue for revisions.
-        if (!localStorage.offlineQueue) {
-            localStorage.offlineQueue = "[]";
+
+        // Contains the revisions that have been saved during Cloud9 being offline.
+        // Its items are not revision objects, but hold their own format (for
+        // example, they have a generated timestamp of the moment of saving).
+        if (localStorage.offlineQueue) {
+            this.offlineQueue = JSON.parse(localStorage.offlineQueue);
+        }
+        else {
+            this.offlineQueue = [];
         }
 
         this.$initWorker();
@@ -478,22 +476,19 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterOnline: function(e) {
-        if (!localStorage.offlineQueue) {
+        if (!this.offlineQueue.length) {
             return;
         }
-        
-        var queue = JSON.parse(localStorage.offlineQueue);
-        if (!queue.length) { return; }
 
-        queue.forEach(function(rev, ind, _queue) {
+        this.offlineQueue.forEach(function(rev, ind, _queue) {
             var prev = _queue[ind - 1];
             if (prev) {
                 rev.applyOn = prev.ts;
             }
         });
-        this.$makeNewRevision(queue.shift()); // First item doesn't depend on anything
-        
-        localStorage.offlineQueue = "[]"; //empty local storage
+        this.$makeNewRevision(this.offlineQueue.shift()); // First item doesn't depend on anything
+
+        localStorage.offlineQueue = "[]"; // Empty local storage
         this.offlineQueue = [];
     },
 
@@ -1183,6 +1178,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
+        // Take advantage of the interval and dump our offlineQueue into
+        // localStorage.
+        localStorage.offlineQueue = JSON.stringify(this.offlineQueue);
+
         if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
 
@@ -1255,7 +1254,6 @@ module.exports = ext.register("ext/revisions/revisions", {
             if (ide.onLine === false) {
                 data.ts = Date.now();
                 this.offlineQueue.push(data);
-                localStorage.offlineQueue = JSON.stringify(this.offlineQueue);
                 return;
             }
             else {
