@@ -41,7 +41,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 if (event.message.args.options.noexist === true) {
                     var node = editors.createFileNodeFromPath( event.message.args.path);
                     node.setAttribute("newfile", "1");
-    				node.setAttribute("cli", "1"); // blocks Save As dialog
+                    node.setAttribute("cli", "1"); // blocks Save As dialog
     				
                     var doc = ide.createDocument(node);
                     doc.cachedValue = "";
