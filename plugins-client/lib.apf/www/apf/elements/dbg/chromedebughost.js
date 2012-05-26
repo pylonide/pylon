@@ -71,7 +71,7 @@ var ChromeDebugHost = module.exports = function(hostname, port, o3obj, ws) {
         });
     };
     
-    this.attach = function(tabId, callback) {
+    this.attach = function(tabId, commandName, callback) {
         var dbg;
         
         if (dbg = this.$debuggers[tabId])

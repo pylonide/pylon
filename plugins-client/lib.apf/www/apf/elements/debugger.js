@@ -111,10 +111,10 @@ apf.dbg = module.exports = function(struct, tagName){
         this.autoAttachComingIn = false;
     };
 
-    this.attach = function(host, tab) {
+    this.attach = function(host, tab, commandName) {
         var _self = this;
 
-        host.$attach(this, tab, function(err, dbgImpl) {
+        host.$attach(this, tab, commandName, function(err, dbgImpl) {
             _self.$host = host;
             _self.$debugger = dbgImpl;
 

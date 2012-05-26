@@ -48,7 +48,7 @@ var V8DebugHost = module.exports = function(hostname, port, o3obj) {
         model.load("<tabs><tab id='0'>V8</tab></tabs>");
     };
     
-    this.attach = function(tabId, callback) {
+    this.attach = function(tabId, commandName, callback) {
         var dbg = this.$debugger;
         
         if (dbg)

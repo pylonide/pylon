@@ -56,10 +56,9 @@ util.inherits(NodeRuntimePlugin, Plugin);
     };
 
     this.command = function(user, message, client) {
-        return false;
         var cmd = (message.command || "").toLowerCase();
         if (!(/default|auto|0\.6\.x|0\.4\.x/.test(message.runner))
-            && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
+            && !(cmd.indexOf("debugnode") > -1))
             return false;
 
         var res = true;

@@ -64,7 +64,7 @@ util.inherits(JVMRuntimePlugin, Plugin);
     this.command = function(user, message, client) {
         var cmd = (message.command || "").toLowerCase();
         if (!(/java|jpy|jrb|groovy|js-rhino/.test(message.runner))
-            && !(cmd.indexOf("debug") > -1 && cmd.indexOf("node") > -1))
+            && !(cmd.indexOf("debugjava") > -1))
           return false;
 
         var res = true;
@@ -81,7 +81,7 @@ util.inherits(JVMRuntimePlugin, Plugin);
             case "kill":
                 this.$kill(message.pid, message, client);
                 break;
-            case "debugnode":
+            case "debugjava":
                 this.pm.debug(message.pid, message.body, function(err) {
                     if (err) console.error(err);
                 });

@@ -110,14 +110,14 @@ apf.debughost = module.exports = function(struct, tagName){
             this.init();
     });
     
-    this.$attach = function(dbg, tab, callback) {        
+    this.$attach = function(dbg, tab, commandName, callback) {
         if (!this.$host) 
             this.init();
         
         var id = tab ? tab.getAttribute("id") : null;
         
         var _self = this;
-        this.$host.attach(id, function(err, dbg) {
+        this.$host.attach(id, commandName, function(err, dbg) {
             dbg.setStrip(_self.strip || "");
             callback(err, dbg);
         });

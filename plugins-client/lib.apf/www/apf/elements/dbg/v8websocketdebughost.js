@@ -15,9 +15,9 @@ var V8WebSocketDebugHost = module.exports = function(socket) {
 
 (function() {
      
-    this.$connect = function(callback) {
+    this.$connect = function(commandName, callback) {
         if (this.state != "connected")
-            this.$v8ds = new WSV8DebuggerService(this.$socket);
+            this.$v8ds = new WSV8DebuggerService(this.$socket, commandName);
         
         this.state = "connected";
         this.dispatchEvent("connect");
@@ -28,14 +28,14 @@ var V8WebSocketDebugHost = module.exports = function(socket) {
         model.load("<tabs><tab id='0'>V8</tab></tabs>");
     };
     
-    this.attach = function(tabId, callback) {
+    this.attach = function(tabId, commandName, callback) {
         var dbg = this.$debugger;
         
         if (dbg)
             return callback(null, dbg)
 
         var self = this;
-        this.$connect(function() {
+        this.$connect(commandName, function() {
             self.$v8ds.attach(0, function() {
                 dbg = new APFV8Debugger(new V8Debugger(0, self.$v8ds), this);
                 self.$debugger = dbg;
