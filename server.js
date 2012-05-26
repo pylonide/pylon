@@ -12,13 +12,20 @@ var configName = process.argv[2] || "default";
 if (configName.indexOf("-") === 0) {
     configName = "default";
 }
+
 var debug = false;
-if (process.argv.indexOf("-d") >= 0 ) {
-    debug = true;
-}
-var real = false;
-if (process.argv.indexOf("-r") >= 0 ) {
-    real = true;
+var packed = false;
+var packedName = "";
+for (var p = 2; p < process.argv.length; p++) {
+    if (process.argv[p] == "-d") {
+        debug = true;
+    }
+
+    else if (process.argv[p] == "-P") {
+        packed = true;
+        if (process.argv[p + 1].indexOf("-") < 0) // use this specific packed file
+            packedName = process.argv[++p];
+    }
 }
 
 var configPath = path.resolve(__dirname, "./configs/", configName);
@@ -27,7 +34,8 @@ var config = require(configPath);
 config.containers.master.plugins.forEach(function(plugin) {
     if (plugin.packagePath && /\/cloud9.core$/.test(plugin.packagePath)) {
         plugin.debug = debug;
-        plugin.real = real;
+        plugin.packed = packed;
+        plugin.packedName = packedName;
     }
 });
 

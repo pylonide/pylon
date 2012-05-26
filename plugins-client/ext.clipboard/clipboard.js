@@ -29,9 +29,9 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     hook : function(){
         var _self = this;
         
-        var isAvailable = function(){
+        var isAvailable = function(editor, event){
             if (apf.activeElement && apf.activeElement.localName == "codeeditor")
-                return !(window.event instanceof KeyboardEvent);
+                return !(event instanceof KeyboardEvent);
             
             return self.trFiles && apf.activeElement == trFiles;
         };
