@@ -40,12 +40,12 @@
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
         "jsDAV":        ["npm", "https://github.com/ajaxorg/jsDAV/tarball/21c6fea18d3480ef2641d9889e531ded60216082"],
-        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/09ce2bef1c33add76ed5c52ce477df339101b435"],
+        "v8debug":      ["npm", "https://github.com/ajaxorg/lib-v8debug/tarball/f06d2074f60366a544aedd5dfa8100321c15b565"],
         "treehugger":   ["npm", "https://github.com/ajaxorg/treehugger/tarball/c7ee419c6c985d4369d71619b8e97044de3e502e"],
         "packager":     ["npm", "https://github.com/ajaxorg/packager/tarball/0b1aaac94d21a10a8ee8117495a71f788ca01372"],
-        "jvm_features": ["npm", "https://github.com/ajaxorg/jvm_features/tarball/1669e6d7c11ce9bf138949f41082dcddcdd4bffc"],
+        "jvm_features": ["npm", "https://github.com/ajaxorg/jvm_features/tarball/1a534c024043751ddd51772449c0e6d953506abf"],
         "jvm-run":      ["npm", "https://github.com/ajaxorg/javarunvm/tarball/d224cc946cbce5abeb920423b70f84ce9a569330"],
-        "javadebug":    ["npm", "https://github.com/ajaxorg/lib-javadebug/tarball/7e3a8d0ebee4b3da76a22006bb55d008914d748c"]
+        "javadebug":    ["npm", "https://github.com/ajaxorg/lib-javadebug/tarball/36ad26d619f66528652dd196e2ff0c9c582cfe03"]
     },
 
     "repository" : {

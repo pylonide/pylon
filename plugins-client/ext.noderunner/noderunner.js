@@ -61,8 +61,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     },
 
     $onDebugProcessActivate : function() {
-        var debugCommand = "debug" + (ddRunnerSelector.value == "java" ? "Java" : "Node");
-        dbg.attach(dbgNode, 0, debugCommand);
+        dbg.attach(dbgNode, 0, ddRunnerSelector.value);
     },
 
     $onDebugProcessDeactivate : function() {
