@@ -49,7 +49,11 @@ c- test it with:
 
 Comment the line with -configuration and -dev attributes
 
-9- Start The IDE:
+9- Build worker files
+
+    $ make worker
+
+10- Clear your browser cache and start The IDE:
 
     $ bin/cloud9.sh -w ~/jvm_workspace/${projectName}
 
