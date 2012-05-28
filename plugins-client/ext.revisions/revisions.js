@@ -544,6 +544,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
+                stripws.disable();
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
@@ -1198,7 +1199,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        Save.quicksave(page, function() {}, true);
+        Save.quicksave(page, function() {
+            stripws.enable();
+        }, true);
     },
 
     /**
