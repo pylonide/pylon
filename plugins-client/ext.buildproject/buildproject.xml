@@ -12,7 +12,7 @@
           class         = "noscrollbar"
           scrollbar     = "sbShared 20 2 2"
           autoselect    = "false"
-          onafterchoose = "require('ext/build/build').jumpTo(this.selected)"
+          onafterchoose = "require('ext/buildproject/buildproject').jumpTo(this.selected)"
           visible    = "false">
               <a:each match="[problem]">
                   <a:column width="10%" value="[@icon]" caption="Icon" />

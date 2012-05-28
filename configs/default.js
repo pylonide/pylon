@@ -126,7 +126,7 @@ var config = {
                     "ext/quickstart/quickstart",
                     "ext/jslanguage/jslanguage",
                     "ext/javalanguage/javalanguage",
-                    "ext/build/build",
+                    "ext/buildproject/buildproject",
                     //"ext/autotest/autotest",
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",

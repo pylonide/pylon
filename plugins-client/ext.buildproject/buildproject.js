@@ -14,7 +14,7 @@ var util = require("core/util");
 var editors = require("ext/editors/editors");
 var Range = require("ace/range").Range;
 var ideConsole = require("ext/console/console");
-var markup = require("text!ext/build/build.xml");
+var markup = require("text!ext/buildproject/buildproject.xml");
 
 var calculatePosition = function(doc, offset) {
     var row = 0, column, newLineLength = doc.getNewLineCharacter().length;;
@@ -35,7 +35,7 @@ var calculatePosition = function(doc, offset) {
     };
 };
 
-module.exports = ext.register("ext/build/build", {
+module.exports = ext.register("ext/buildproject/buildproject", {
     name     : "Build projects",
     dev      : "Ajax.org",
     type     : ext.GENERAL,
