@@ -6,7 +6,8 @@
     "private": true,
 
     "dependencies": {
-        "v8debug": "0.0.x"
+        "v8debug": "0.0.x",
+        "javadebug": "0.0.x"
     },
 
     "plugin": {
