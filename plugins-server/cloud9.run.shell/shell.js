@@ -24,7 +24,7 @@ var exports = module.exports = function setup(options, imports, register) {
 };
 
 exports.factory = function(uid) {
-    return function(args, eventEmitter, eventName) {
+    return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.uid = uid;
@@ -32,11 +32,11 @@ exports.factory = function(uid) {
         options.eventName = eventName;
         options.args = args.args;
 
-        return new Runner(options);
+        return new Runner(options, callback);
     };
 };
 
-var Runner = exports.Runner = function(options) {
+var Runner = exports.Runner = function(options, callback) {
     this.uid = options.uid;
     this.command = options.command;
     this.args = options.args || [];
@@ -64,6 +64,8 @@ var Runner = exports.Runner = function(options) {
     this.__defineGetter__("pid", function(){
         return (self.child.exitCode === null && self.child.signalCode === null)  ? self.child.pid : 0;
     });
+    
+    callback(null, self);
 };
 
 (function() {
@@ -114,7 +116,7 @@ var Runner = exports.Runner = function(options) {
             this.args = ["-Hu", "#" + this.uid, this.command].concat(this.args);
             this.command = "sudo";
         }
-
+        
         try {
             var child = spawn(this.command, this.args, this.runOptions);
         } catch (e) {
