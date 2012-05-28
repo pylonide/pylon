@@ -248,6 +248,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
         if (!state.bars)
             return;
+        // make sure the state does not contain empty bar defs
+        state.bars = state.bars.filter(function(bar) { return !!bar; });
+        if (!state.bars.length)
+            return;
 
         state.bars.each(function(bar){
             bar.uniqueId = lookup.push({data: bar}) - 1;

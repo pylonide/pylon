@@ -28,6 +28,21 @@
     />
 
     <a:vbox anchors="0 0 0 0" id="vbMain">
+        <a:hbox id="view-mode-box" visible="false" height="55" class="view-mode-box" align="center" edge="0 10">
+            <a href="http://c9.io" class="c9-logo-view-mode"></a>
+            <a:filler />
+            <a:hbox align="center">
+                <span class="green-label">You are in view mode. </span> To edit
+                <a:button skin="button-colorless" class="dark blue" onclick="winLogin.show()" margin="0 10" width="65">sign in</a:button>
+                or
+                <a href="http://c9.io/site/pricing/" target="_blank" class="nodecor-link">
+                    <a:button skin="button-colorless" class="dark orange" onclick="" margin="0 10" width="65">sign up</a:button>
+                </a>
+            </a:hbox>
+            <a:filler />
+            <div align="end" class="blue-label">You might have to request editing rights to project admins.</div>
+        </a:hbox>
+
         <a:bar skin="c9-menu-bar" id="logobar">
             <a:hbox>
                 <a:hbox id="barTools" edge="0 0 0 0" padding="3" align="center">
@@ -39,7 +54,7 @@
                 </a:hbox>
             </a:hbox>
         </a:bar>
-        
+
         <a:hbox flex="1" padding="0">
             <a:vbox id="mainRow" padding="0" flex="1">
                 <a:hbox id="hboxTabBar" padding="0" edge="0" height="27" align="start">
