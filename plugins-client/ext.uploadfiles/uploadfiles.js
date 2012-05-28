@@ -36,6 +36,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     markup      : markup,
     deps        : [],
     offline     : false,
+    autodisable     : ext.ONLINE | ext.LOCAL,
     worker      : null,
     
     currentSettings : [],
