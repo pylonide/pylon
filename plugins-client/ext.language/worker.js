@@ -95,24 +95,24 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     sender.on("code_format", function(event) {
         _self.codeFormat();
     });
-    sender.on("complete", function(event) {
+    sender.on("complete", applyEventOnce(function(event) {
         _self.complete(event);
-    });
+    }));
     sender.on("documentClose", function(event) {
         _self.documentClose(event);
     });
-    sender.on("analyze", function(event) {
+    sender.on("analyze", applyEventOnce(function(event) {
         _self.analyze(function() { });
-    });
+    }));
     sender.on("cursormove", function(event) {
         _self.onCursorMove(event);
     });
-    sender.on("inspect", function(event) {
+    sender.on("inspect", applyEventOnce(function(event) {
         _self.inspect(event);
-    });
-    sender.on("change", function() {
+    }));
+    sender.on("change", applyEventOnce(function() {
         _self.scheduledUpdate = true;
-    });
+    }));
     sender.on("jumpToDefinition", function(event) {
         _self.jumpToDefinition(event);
     });
@@ -132,6 +132,20 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         _self.serverProxy.onMessage(event.data);
     });
 };
+
+/**
+ * Ensure that an event handler is called only once if multiple
+ * events are received at the same time.
+ **/
+function applyEventOnce(eventHandler) {
+    var timer;
+    return function() {
+        var _arguments = arguments;
+        if (timer)
+            clearTimeout(timer);
+        timer = setTimeout(function() { eventHandler.apply(eventHandler, _arguments); }, 0);
+    };
+}
 
 oop.inherits(LanguageWorker, Mirror);
 
@@ -318,8 +332,9 @@ function asyncParForEach(array, fn, callback) {
                         next();
                     });
                 }
-                else
+                else {
                     next();
+                }
             }, function() {
                 var extendedMakers = markers;
                 filterMarkersAroundError(ast, markers);

@@ -98,16 +98,6 @@ module.exports = ext.register("ext/debugger/debugger", {
             _self.deactivate();
         });
 
-        ide.addEventListener("afteropenfile", function(e) {
-            var doc = e.doc;
-            var node = e.node;
-            if (!node)
-                return;
-            var path = node.getAttribute("path");
-
-            node.setAttribute("scriptname", ide.workspaceDir + path.slice(ide.davPrefix.length));
-        });
-
         var name = "ext/debugger/debugger"; //this.name
 
         dock.addDockable({

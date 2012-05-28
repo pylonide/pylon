@@ -20,42 +20,26 @@ var exports = module.exports = function (url, pm, sandbox, runJvm, usePortFlag, 
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
         
-        sandbox.getPort(function(err, port) {
+        sandbox.getUnixId(function(err, unixId) {
             if (err) return callback(err);
             
-            sandbox.getUnixId(function(err, unixId) {
-                if (err) return callback(err);
-                
-                if (!url) {
-                    sandbox.getHost(function(err, host) {
-                        if (err) return callback(err);
-                        
-                        url = "http://" + host + ":" + port;
-                        
-                        init(projectDir, port, unixId, url);
-                    });
-                }
-                else {
-                    init(projectDir, port, unixId, url);
-                }
-            });
+            init(projectDir, unixId, url);
         });
     });
 
-    function init(projectDir, port, unixId, url) {
-        pm.addRunner("jvm-debug", exports.factory(projectDir, port, unixId, url, usePortFlag));
+    function init(projectDir, unixId, url) {
+        pm.addRunner("jvm-debug", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
 
         callback();
     }
 };
 
 function setup (JvmRunner) {
-    exports.factory = function(root, port, uid, url, usePortFlag) {
-        return function(args, eventEmitter, eventName) {
+    exports.factory = function(sandbox, root, port, uid, url, usePortFlag) {
+        return function(args, eventEmitter, eventName, callback) {
             var options = {};
             c9util.extend(options, args);
             options.root = root;
-            options.port = port;
             options.uid = uid;
             options.file = args.file;
             options.args = args.args;
@@ -69,14 +53,42 @@ function setup (JvmRunner) {
             options.url = url;
             options.usePortFlag = usePortFlag;
             
-            return new Runner(options);
+            options.sandbox = sandbox;
+            
+            return new Runner(options, callback);
         };
     };
     
-    var Runner = exports.Runner = function(options) {
-        JvmRunner.call(this, options);
+    var Runner = exports.Runner = function(options, callback) {
+        var self = this;
+
         this.breakOnStart = options.breakOnStart;
         this.msgQueue = [];
+
+        netutil.findFreePort(JAVA_DEBUG_PORT, 64000, "localhost", function(err, port) {
+            if (err)
+                return callback("Could not find a free port");
+
+            var debugParams = '-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=localhost:'
+                    + port + ',server=y,suspend=';
+
+            if (self.breakOnStart)
+                debugParams += "y";
+            else
+                debugParams += "n";
+
+            options.jvmArgs = debugParams.split(' ').concat(options.jvmArgs);
+
+            JvmRunner.call(self, options, function (err) {
+                if (err) return callback(err);
+
+                callback.apply(null, arguments);
+
+                setTimeout(function() {
+                    self._startDebug(port, options);
+                }, 4000);
+            });
+        });
     };
 
     util.inherits(Runner, JvmRunner);
@@ -89,31 +101,6 @@ function setup (JvmRunner) {
 
         proto.name = "node-debug";
 
-        proto.createChild = function(callback) {
-            var self = this;
-
-            netutil.findFreePort(JAVA_DEBUG_PORT, 64000, "localhost", function(err, port) {
-                if (err)
-                    return callback("Could not find a free port");
-
-                var debugParams = '-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=localhost:'
-                        + port + ',server=y,suspend=';
-
-                if (self.breakOnStart)
-                    debugParams += "y";
-                else
-                    debugParams += "n";
-
-                self.jvmArgs = debugParams.split(' ').concat(self.jvmArgs);
-
-                Parent.prototype.createChild.call(self, callback);
-
-                setTimeout(function() {
-                    self._startDebug(port);
-                }, 2000);
-            });
-        };
-
         proto.debugCommand = function(msg) {
             this.msgQueue.push(msg);
 
@@ -125,7 +112,7 @@ function setup (JvmRunner) {
 
         proto._flushSendQueue = function() {
             for (var i = 0; i < this.msgQueue.length; i++) {
-                // console.log("\nSEND", this.msgQueue[i])
+                console.log("\nSEND", this.msgQueue[i])
                 try {
                     this.javaDebugProxy.send(this.msgQueue[i]);
                 } catch(e) {
@@ -136,20 +123,20 @@ function setup (JvmRunner) {
             this.msgQueue = [];
         };
 
-        proto._startDebug = function(port) {
+        proto._startDebug = function(port, options) {
             var self = this;
             function send(msg) {
-                self.eventEmitter.emit(self.eventName, msg);
+                options.eventEmitter.emit(options.eventName, msg);
             }
 
             var debugOptions = {
                 port: port,
-                sourcepath: Path.join(self.cwd, 'src')
+                sourcepath: Path.join(options.cwd, 'src')
             };
 
             this.javaDebugProxy = new JavaDebugProxy(JAVA_DEBUG_PORT, debugOptions);
             this.javaDebugProxy.on("message", function(body) {
-                // console.log("\nRECV", body);
+                console.log("\nRECV", body);
                 send({
                     "type": "node-debug",
                     "pid": self.pid,
@@ -159,7 +146,7 @@ function setup (JvmRunner) {
             });
 
             this.javaDebugProxy.on("connection", function() {
-                // console.log('debug proxy connected');
+                console.log('debug proxy connected');
                 send({
                     "type": "node-debug-ready",
                     "pid": self.pid,

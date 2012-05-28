@@ -18,42 +18,26 @@ var exports = module.exports = function (url, pm, sandbox, runNode, usePortFlag,
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
         
-        sandbox.getPort(function(err, port) {
+        sandbox.getUnixId(function(err, unixId) {
             if (err) return callback(err);
             
-            sandbox.getUnixId(function(err, unixId) {
-                if (err) return callback(err);
-                
-                if (!url) {
-                    sandbox.getHost(function(err, host) {
-                        if (err) return callback(err);
-                        
-                        url = "http://" + host + ":" + port;
-                        
-                        init(projectDir, port, unixId, url);
-                    });
-                }
-                else {
-                    init(projectDir, port, unixId, url);
-                }
-            });
+            init(projectDir, unixId, url);
         });
     });
 
-    function init(projectDir, port, unixId, url) {
-        pm.addRunner("node-debug", exports.factory(projectDir, port, unixId, url, usePortFlag));
+    function init(projectDir, unixId, url) {
+        pm.addRunner("node-debug", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
 
         callback();
     }
 };
 
 function setup (NodeRunner) {
-    exports.factory = function(root, port, uid, url, usePortFlag) {
-        return function(args, eventEmitter, eventName) {
+    exports.factory = function(sandbox, root, uid, url, usePortFlag) {
+        return function(args, eventEmitter, eventName, callback) {
             var options = {};
             c9util.extend(options, args);
             options.root = root;
-            options.port = port;
             options.uid = uid;
             options.file = args.file;
             options.args = args.args;
@@ -67,12 +51,14 @@ function setup (NodeRunner) {
             options.url = url;
             options.usePortFlag = usePortFlag;
             
-            return new Runner(options);
+            options.sandbox = sandbox;
+            
+            return new Runner(options, callback);
         };
     };
     
-    var Runner = exports.Runner = function(options) {
-        NodeRunner.call(this, options);
+    var Runner = exports.Runner = function(options, callback) {
+        NodeRunner.call(this, options, callback);
         this.breakOnStart = options.breakOnStart;
         this.msgQueue = [];
     };
