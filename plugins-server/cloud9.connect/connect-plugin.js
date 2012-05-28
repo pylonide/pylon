@@ -25,6 +25,26 @@ module.exports = function startup(options, imports, register) {
         api["use" + name] = hookServer.use.bind(hookServer);
     });
 
+    var buildVersion = false;
+    if (options.buildVersionHeader) {
+        if (typeof options.buildVersionHeader === "function") {
+            options.buildVersionHeader(function(err, value) {
+                if (err) {
+                    throw err;
+                }
+                buildVersion = value;
+            });
+        } else {
+            buildVersion = options.buildVersionHeader;
+        }
+    }
+    api.useSetup(function (req, res, next) {
+        if (buildVersion !== false) {
+            res.setHeader("x-build-version", buildVersion);
+        }
+        next();
+    });
+
     api.useSetup(connect.cookieParser());
     api.useSetup(connect.bodyParser());
 
