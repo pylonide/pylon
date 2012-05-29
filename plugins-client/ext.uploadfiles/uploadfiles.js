@@ -79,7 +79,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                 )
             });
             
-            ide.addEventListener("init.ext/auth/auth", function(){
+            if(window.cloud9config.hosted) {
                 _self.nodes.push(
                     menus.addItemByPath("File/Download Project", new apf.item({
                         onclick : function(){
@@ -87,7 +87,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         }
                     }), 390)
                 );
-            });
+            }
         });
     },
     

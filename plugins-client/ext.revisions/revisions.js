@@ -67,13 +67,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * confirmed to be saved.
      */
     revisionQueue: {},
-    /**
-     * Revisions#offlineQueue -> Array
-     * Contains the revisions that have been saved during Cloud9 being offline.
-     * Its items are not revision objects, but hold their own format (for
-     * example, they have a generated timestamp of the moment of saving).
-     */
-    offlineQueue: [],
 
     /** related to: Revisions#show
      * Revisions#toggle() -> Void
@@ -193,6 +186,16 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
 
+        // Contains the revisions that have been saved during Cloud9 being offline.
+        // Its items are not revision objects, but hold their own format (for
+        // example, they have a generated timestamp of the moment of saving).
+        if (localStorage.offlineQueue) {
+            this.offlineQueue = JSON.parse(localStorage.offlineQueue);
+        }
+        else {
+            this.offlineQueue = [];
+        }
+
         this.$initWorker();
     },
 
@@ -207,29 +210,37 @@ module.exports = ext.register("ext/revisions/revisions", {
         worker.postMessage({ type: "preloadlibs" });
     },
 
-    setSaveButtonCaption: function(caption, page) {
+    setSaveButtonCaption: function(page) {
         if (!self.btnSave)
             return;
 
-        if (caption)
-            return btnSave.setCaption(caption);
+        var SAVING = 0;
+        var SAVED = 1;
 
         btnSave.show();
         var page = page || tabEditors.getPage();
         if (page) {
             var hasChanged = Util.pageHasChanged(page);
             if (this.isAutoSaveEnabled && hasChanged) {
+                if (btnSave.currentState !== SAVING) {
                 apf.setStyleClass(btnSave.$ext, "saving", ["saved"]);
                 apf.setStyleClass(document.getElementById("saveStatus"), "saving", ["saved"]);
-                return btnSave.setCaption("Saving");
+                    btnSave.currentState = SAVING;
+                    btnSave.setCaption("Saving");
+                }
             }
             else if (!hasChanged) {
+                if (btnSave.currentState !== SAVED) {
                 apf.setStyleClass(btnSave.$ext, "saved", ["saving"]);
                 apf.setStyleClass(document.getElementById("saveStatus"), "saved", ["saving"]);
-                return btnSave.setCaption("Changes saved");
+                    btnSave.currentState = SAVED;
+                    btnSave.setCaption("Changes saved");
+                }
             }
         }
+        else {
         btnSave.setCaption("");
+        }
     },
 
     init: function() {
@@ -256,6 +267,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("init.ext/code/code", function(e) {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
+        });
+
+         apf.addEventListener("exit", function() {
+            localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
         this.$afterSelectFn = this.afterSelect.bind(this);
@@ -437,7 +452,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (tabEditors.getPages().length == 1)
             btnSave.hide();
         else
-            this.setSaveButtonCaption(null, e.page);
+            this.setSaveButtonCaption(e.page);
 
         var self = this;
         setTimeout(function() {
@@ -484,18 +499,20 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterOnline: function(e) {
-        var queue = this.offlineQueue;
-        if (!queue || !queue.length) {
+        if (!this.offlineQueue.length) {
             return;
         }
 
-        queue.forEach(function(rev, ind, _queue) {
+        this.offlineQueue.forEach(function(rev, ind, _queue) {
             var prev = _queue[ind - 1];
             if (prev) {
                 rev.applyOn = prev.ts;
             }
         });
-        this.$makeNewRevision(queue.shift()); // First item doesn't depend on anything
+        this.$makeNewRevision(this.offlineQueue.shift()); // First item doesn't depend on anything
+
+        localStorage.offlineQueue = "[]"; // Empty local storage
+        this.offlineQueue = [];
     },
 
     afterSelect: function(e) {
@@ -549,6 +566,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
+                stripws.disable();
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
@@ -650,6 +668,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onMessage: function(e) {
+        var self = this;
         var message = e.message;
         if (message.type !== "revision") {
             return;
@@ -700,10 +719,17 @@ module.exports = ext.register("ext/revisions/revisions", {
                         revision: revision
                     });
 
-                    // If we are on the page for the doc, let's populate the model,
-                    // otherwise it is a waste of resources
-                    if (Util.getDocPath() === message.path) {
-                        this.populateModel(revObj, this.model);
+                    // The following code inserts the confirmed revision as the
+                    // first (most recent) revision in the list, only if the model
+                    // has been populated before already
+                    var revisionString = this.getXmlStringFromRevision(revision);
+                    var page = tabEditors.getPage(ide.davPrefix + "/" + message.path);
+                    if (page) {
+                            var model = page.$mdlRevisions;
+                            if (model && model.data && model.data.childNodes.length) {
+                            var revisionNode = apf.getXml(revisionString);
+                            apf.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
+                            }
                     }
                 }
                 break;
@@ -751,7 +777,6 @@ module.exports = ext.register("ext/revisions/revisions", {
                 break;
 
             case "getRealFileContents":
-                var self = this;
                 var pages = tabEditors.getPages();
                 pages.forEach(function(page) {
                     var path = Util.stripWSFromPath(page.$model.queryValue("@path"));
@@ -806,7 +831,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         delete data.revision.finalContent;
         delete data.revision.realContent;
 
+        var self = this;
         var finalize = function() {
+            self.changedPaths = [];
             winQuestionRev.hide();
             settings.model.setQueryValue("general/@autosaveenabled", this.prevAutoSaveValue || true);
         };
@@ -838,27 +865,13 @@ module.exports = ext.register("ext/revisions/revisions", {
                 });
         };
 
-        var self = this;
         var pages = tabEditors.getPages();
-        var page = pages.filter(function(_page) {
-            var pagePath = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            return data.path === pagePath;
-        })[0];
-
         Util.question(
             "File changed, reload tab?",
             "'" + data.path + "' has been modified while you were editing it.",
             "Do you want to reload it?",
-            function YesReload() {
-                reloadAndSave(page);
-                setTimeout(finalize);
-            },
             function YesReloadAll() {
                 pages.forEach(reloadAndSave);
-                setTimeout(finalize);
-            },
-            function NoDontReload() {
-                dontReloadAndStore(page);
                 setTimeout(finalize);
             },
             function NoDontReloadAll() {
@@ -910,32 +923,36 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var timestamps = Util.keysToSortedArray(revisions);
+        var revsXML = "";
+        for (var i = timestamps.length - 1; i >= 0; i--) {
+            revsXML += this.getXmlStringFromRevision(revisions[timestamps[i]]);
+        }
+        this.model.load("<revisions>" + revsXML + "</revisions>");
+    },
+
+    getXmlStringFromRevision: function(revision) {
+        if (!revision) { return; }
+
         var contributorToXml = function(c) {
             return "<contributor email='" + c + "' />";
         };
-        var revsXML = "";
-        for (var i = timestamps.length - 1; i >= 0; i--) {
-            var ts = timestamps[i];
-            var rev = revisions[ts];
-            var friendlyDate = (new Date(ts)).toString("MMM d, h:mm tt");
-            var restoring = rev.restoring || "";
-            // var savedToDisk = rev.saved !== false;
 
-            revsXML += "<revision " +
-                "id='" + rev.ts + "' " +
+        var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");
+        var restoring = revision.restoring || "";
+
+        var xmlString = "<revision " +
+                "id='" + revision.ts + "' " +
                 "name='" + friendlyDate + "' " +
-                // "saved='" + savedToDisk + "' " +
-                "silentsave='" + rev.silentsave + "' " +
+                "silentsave='" + revision.silentsave + "' " +
                 "restoring='" + restoring + "'>";
 
             var contributors = "";
-            if (rev.contributors && rev.contributors.length) {
-                contributors = rev.contributors.map(contributorToXml).join("");
+        if (revision.contributors && revision.contributors.length) {
+            contributors = revision.contributors.map(contributorToXml).join("");
             }
 
-            revsXML += "<contributors>" + contributors + "</contributors></revision>";
-        }
-        this.model.load("<revisions>" + revsXML + "</revisions>");
+        xmlString += "<contributors>" + contributors + "</contributors></revision>";
+        return xmlString;
     },
 
     /**
@@ -1005,14 +1022,14 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
         else {
-          // We haven't cached the original content. Let's load it from the server.
-          ide.send({
-              command: "revisions",
-              subCommand: "getRevisionHistory",
-              nextAction: nextAction,
-              path: path,
-              id: id
-          });
+        // We haven't cached the original content. Let's load it from the server.
+        ide.send({
+            command: "revisions",
+            subCommand: "getRevisionHistory",
+            nextAction: nextAction,
+            path: path,
+            id: id
+        });
         }
     },
 
@@ -1200,6 +1217,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
+        // Take advantage of the interval and dump our offlineQueue into
+        // localStorage.
+        localStorage.offlineQueue = JSON.stringify(this.offlineQueue);
+
         if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
 
@@ -1227,7 +1248,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        Save.quicksave(page, function() {}, true);
+        Save.quicksave(page, function() {
+            stripws.enable();
+        }, true);
     },
 
     /**
@@ -1420,7 +1443,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         if (model) {
-            if (!model.data || model.data.length === 0) {
+            if (!model.data || model.data.childNodes.length === 0) {
                 this.populateModel(this.rawRevisions[Util.getDocPath()], model);
             }
             else {
