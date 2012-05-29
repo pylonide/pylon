@@ -28,6 +28,8 @@ module.exports = ext.register("ext/codetools/codetools", {
     },
 
     attachEditorEvents: function(amlEditor) {
+        if (amlEditor.$codeToolsAttached)
+            return;
         amlEditor.$codeToolsAttached = true;
 
         var editor = amlEditor.$editor;
@@ -113,10 +115,11 @@ module.exports = ext.register("ext/codetools/codetools", {
         }
 
         function sessionChange(e) {
-            if (e.oldsession) {
-                e.oldsession.removeEventListener("changeCursor", cursorChange);
-                e.oldsession.removeEventListener("changeSelection", cursorChange);
-            }
+            if (!e.oldsession)
+                e.oldsession = e.session;
+
+            e.oldsession.removeEventListener("changeCursor", cursorChange);
+            e.oldsession.removeEventListener("changeSelection", cursorChange);
             e.session.selection.addEventListener("changeCursor", cursorChange);
             e.session.selection.addEventListener("changeSelection", cursorChange);
         }
