@@ -22,9 +22,9 @@ require('treehugger/traverse');
 var PROPER = module.exports.PROPER = 80;
 var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
 var NOT_PROPER = module.exports.NOT_PROPER = 0;
-var KIND_EVENT = exports.KIND_EVENT = "event";
-var KIND_PACKAGE = exports.KIND_PACKAGE = "package";
-var KIND_DEFAULT = exports.KIND_DEFAULT = undefined;
+var KIND_EVENT = module.exports.KIND_EVENT = "event";
+var KIND_PACKAGE = module.exports.KIND_PACKAGE = "package";
+var KIND_DEFAULT = module.exports.KIND_DEFAULT = undefined;
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
