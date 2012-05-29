@@ -1,5 +1,5 @@
 <a:application xmlns:a="http://ajax.org/2005/aml">
-    <a:hbox edge="5 5 2 5" align="center" position="20000" class="underlined">
+    <a:hbox edge="2 5 2 5" align="center" position="20000" class="underlined">
         <a:label flex="1">Keybindings: </a:label>
         <a:dropdown id="ddKeyBind"
           model     = "mdlKeyBindings"

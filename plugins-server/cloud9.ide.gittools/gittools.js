@@ -72,14 +72,14 @@ util.inherits(GitToolsPlugin, Plugin);
      *      message.command
      */
     this.command = function(user, message, client) {
-        if (message.command != "gittools")
+        if (message.command != "gittools" || !message.file)
             return false;
 
         var _self = this;
 
         // Cleanup the file path
-        //if (message.file.indexOf("/workspace/" >= 0))
-        //    message.file = message.file.substr(11);
+        if (message.file.indexOf("/workspace/" >= 0))
+            message.file = message.file.substr(11);
 
         // Get the file's parent directory path
         var lastSlash = message.file.lastIndexOf("/");

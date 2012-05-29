@@ -30,7 +30,6 @@ var Ide = module.exports = function(options) {
 
     this.workspaceDir = options.workspaceDir;
 
-
     options.plugins = options.plugins || [];
     this.options = {
         workspaceDir: this.workspaceDir,
@@ -48,7 +47,8 @@ var Ide = module.exports = function(options) {
         projectName: options.projectName || this.workspaceDir.split("/").pop(),
         version: options.version,
         extra: options.extra,
-        real: (options.real === true) ? true : false,
+        packed: (options.packed === true) ? true : false,
+        packedName: options.packedName,
         hosted: !!options.hosted
     };
 
@@ -56,7 +56,7 @@ var Ide = module.exports = function(options) {
     this.nodeCmd = options.exec || process.execPath;
 
     this.workspace = new Workspace(this);
-
+    
     var _self = this;
     this.router = connect.router(function(app) {
         app.get(/^(\/|\/index.html?)$/, function(req, res, next) {
@@ -97,7 +97,7 @@ util.inherits(Ide, EventEmitter);
                 "cache-control": "no-transform",
                 "Content-Type": "text/html"
             });
-
+            
             var permissions = _self.getPermissions(req);
             var plugins = c9util.arrayToMap(_self.options.plugins);
             var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
@@ -132,11 +132,12 @@ util.inherits(Ide, EventEmitter);
                 readonly: (permissions.fs !== "rw"),
                 requirejsConfig: _self.options.requirejsConfig,
                 settingsXml: "",
-                scripts: (_self.options.debug || _self.options.real) ? "" : aceScripts,
+                scripts: (_self.options.debug || _self.options.packed) ? "" : aceScripts,
                 projectName: _self.options.projectName,
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
-                real: _self.options.real
+                packed: _self.options.packed,
+                packedName: _self.options.packedName
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");
@@ -210,12 +211,13 @@ util.inherits(Ide, EventEmitter);
 
     this.getPermissions = function(req) {
         var user = this.getUser(req);
+        
         if (!user)
             return User.VISITOR_PERMISSIONS;
         else
             return user.getPermissions();
     };
-
+    
     this.hasUser = function(username) {
         return !!this.$users[username];
     };
