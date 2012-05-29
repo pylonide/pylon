@@ -77,7 +77,7 @@ function setup (JvmRunner) {
             else
                 debugParams += "n";
 
-            options.jvmArgs = debugParams.split(' ').concat(options.jvmArgs);
+            options.jvmArgs = debugParams.split(' ').concat(options.jvmArgs || []);
 
             JvmRunner.call(self, options, function (err) {
                 if (err) return callback(err);
