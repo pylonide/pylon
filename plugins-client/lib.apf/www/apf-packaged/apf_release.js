@@ -6413,6 +6413,24 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
     }
 
     
+    if (applyChanges) {
+        var node;
+        if (xpath) {
+            var node = undoObj.xmlNode;//.selectSingleNode(newNodes.foundpath);
+            if (node.nodeType == 9) {
+                node = node.documentElement;
+                xpath = xpath.replace(/^[^\/]*\//, "");//xpath.substr(newNodes.foundpath.length);
+            }
+        }
+        else
+            node = xmlNode;
+
+        apf.xmldb.applyRDB(["setValueByXpath", node, nodeValue, xpath,
+            options && options.forceNew],
+            undoObj || {xmlNode: xmlNode}
+        );
+    }
+    
 };
 
 /**
@@ -12868,6 +12886,8 @@ apf.xmldb = new (function(){
         this.applyChanges("text", tNode.parentNode, undoObj);
 
         
+        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj || {xmlNode: pNode}); //@todo apf3.0 for range support
+        
     };
 
     /**
@@ -12897,6 +12917,8 @@ apf.xmldb = new (function(){
 
         this.applyChanges("attribute", xmlNode, undoObj);
         
+        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj || {xmlNode: xmlNode});  //@todo apf3.0 for range support
+        
     };
 
     /**
@@ -12922,6 +12944,8 @@ apf.xmldb = new (function(){
         (xpath ? xmlNode.selectSingleNode(xpath) : xmlNode).removeAttribute(name);
         this.applyChanges("attribute", xmlNode, undoObj);
 
+        
+        this.applyRDB(["removeAttribute", xmlNode, name, xpath], undoObj || {xmlNode: xmlNode});
         
     };
 
@@ -12950,6 +12974,8 @@ apf.xmldb = new (function(){
                 oldNodeS.parentNode.removeChild(oldNodeS);
         }
 
+        
+        this.applyRDB(["replaceNode", oldNode, this.cleanXml(newNode.xml), xpath], undoObj || {xmlNode: oldNode});
         
 
         //Action Tracker Support
@@ -13003,6 +13029,8 @@ apf.xmldb = new (function(){
         this.applyChanges("add", xmlNode, undoObj);
 
         
+        this.applyRDB(["addChildNode", pNode, tagName, attr, beforeNode], undoObj || {xmlNode: pNode});
+        
 
         return xmlNode;
     };
@@ -13034,6 +13062,8 @@ apf.xmldb = new (function(){
                 oldNode.parentNode.removeChild(oldNode);
         }
 
+        
+        this.applyRDB(["appendChild", pNode, this.cleanXml(xmlNode.xml), beforeNode, unique, xpath], undoObj || {xmlNode: pNode});
         
 
         //Add xmlNode to parent pNode or one selected by xpath statement
@@ -13108,6 +13138,8 @@ apf.xmldb = new (function(){
         }
 
         
+        this.applyRDB(["moveNode", pNode, xmlNode, beforeNode, xpath], undoObj || {xmlNode: pNode}); //note: important that transport of rdb is async
+        
 
         undoObj.extra.parent.insertBefore(xmlNode, beforeNode);
         this.applyChanges("move", xmlNode, undoObj);
@@ -13135,6 +13167,8 @@ apf.xmldb = new (function(){
         }
 
         
+        this.applyRDB(["removeNode", xmlNode, xpath], undoObj || {xmlNode: xmlNode}); //note: important that transport of rdb is async
+        
 
         //Apply Changes
         this.applyChanges("remove", xmlNode, undoObj);
@@ -13157,6 +13191,8 @@ apf.xmldb = new (function(){
      */
     this.removeNodeList =
     apf.removeNodeList  = function(xmlNodeList, undoObj){
+        
+        this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj || {xmlNode: p});
         
 
         //if(xpath) xmlNode = xmlNode.selectSingleNode(xpath);
@@ -13350,6 +13386,52 @@ apf.xmldb = new (function(){
         }
     };
 
+    
+    /**
+     * Sends Message through transport to tell remote databound this.$listeners
+     * that data has been changed
+     * @private
+     */
+    this.applyRDB = function(args, undoObj){
+        if (apf.xmldb.disableRDB)
+            return;
+
+        var xmlNode = undoObj.localName || !undoObj.xmlNode
+            ? args[1] && args[1].length && args[1][0] || args[1]
+            : undoObj.xmlNode;
+
+        if (xmlNode.nodeType == 2)
+            xmlNode = xmlNode.ownerElement || xmlNode.selectSingleNode("..");
+        
+        var mdlId   = apf.xmldb.getXmlDocId(xmlNode),
+            model   = apf.nameserver.get("model", mdlId);
+        if (!model && apf.isO3)
+            model = self[mdlId];
+        if (!model) {
+            if (!apf.nameserver.getAll("remote").length)
+                return;
+            
+            return;
+        }
+
+        if (!model.rdb) return;
+        var rdb = model.rdb;
+
+        // Add the messages to the undo object
+        if (undoObj.action)
+            rdb.$queueMessage(args, model, undoObj);
+        // Or send message now
+        else {
+            clearTimeout(rdb.queueTimer);
+
+            rdb.$queueMessage(args, model, rdb);
+            // use a timeout to batch consecutive calls into one RDB call
+            rdb.queueTimer = $setTimeout(function() {
+                rdb.$processQueue(rdb);
+            });
+        }
+        
+    };
     
 
     /**
@@ -26980,6 +27062,19 @@ apf.DataAction = function(){
     };
 
     
+    // @todo think about if this is only for rdb
+    this.addEventListener("xmlupdate", function(e){
+        if (apf.xmldb.disableRDB != 2)
+            return;
+
+        for (var name in this.$actionsLog) {
+            if (apf.isChildOf(this.$actionsLog[name], e.xmlNode, true)) {
+                //this.$stopAction(name, true);
+                this.$actionsLog[name].rollback.call(this, this.$actionsLog[name].xmlContext);
+            }
+        }
+    });
+    
 
     this.$stopAction = function(name, isCancelled, curLock){
         delete this.$actionsLog[name];
@@ -28599,37 +28694,6 @@ apf.BaseList = function(){
     };
     
     
-    
-    /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
-     */
-    this.$mode = 0;
-    this.$propHandlers["mode"] = function(value){
-        if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
-            
-            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
-            
-            this.multicheck = value == "check"; //radio is single
-            this.$mode = this.multicheck ? 1 : 2;
-        }
-        else {
-            //@todo undo actionRules setting
-            this.removeEventListener("afterrename", $afterRenameMode);
-            //@todo unimplement??
-            this.$mode = 0;
-        }
-    };
-    
-    //@todo apf3.0 retest this completely
-    function $afterRenameMode(){
-    }
-    
-    
 
     /**** Keyboard support ****/
 
@@ -29004,8 +29068,6 @@ apf.BaseList = function(){
         }
         
         
-        //@todo
-        
 
         htmlNode.title = this.$applyBindRule("title", xmlNode) || "";
 
@@ -29098,26 +29160,6 @@ apf.BaseList = function(){
         
         
         
-        
-        if (this.$mode) {
-            var elCheck = this.$getLayoutNode("item", "check");
-            if (elCheck) {
-                elCheck.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
-                    o.checkToggle(this, true);\o.$skipSelect = true;");
-
-                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
-                    this.$checkedList.push(xmlNode);
-                    this.$setStyleClass(oItem, "checked");
-                }
-                else if (this.isChecked(xmlNode))
-                    this.$setStyleClass(oItem, "checked");
-            }
-            else {
-                
-                return false;
-            }
-        }
         
 
         //Setup Nodes Identity (Look)
@@ -32496,15 +32538,6 @@ apf.BaseTree = function(){
                     this.$selectTemp();
 
                 
-                if (this.$mode && !ctrlKey) {
-                    var sel = this.getSelection();
-                    if (!sel.length || !this.multiselect)
-                        this.checkToggle(this.caret, true);
-                    else
-                        this.checkList(sel, this.isChecked(this.selected), true, false, true);
-                }
-                else
-                
                 if (ctrlKey || !this.isSelected(this.caret))
                     this.select(this.caret, true);
                 return false;
@@ -35497,333 +35530,6 @@ apf.__MEDIA__ = 1 << 20;
  */
 
 apf.__MULTICHECK__ = 1 << 22;
-
-
-
-/**
- * All elements inheriting from this {@link term.baseclass baseclass} have checkable items.
- *
- * @constructor
- * @baseclass
- * @author      Ruben Daniels (ruben AT ajax DOT org)
- * @version     %I%, %G%
- * @since       3.0
- *
- * @todo type detection, errors (see functions in multiselect)
- */
-apf.MultiCheck = function(){
-    this.$regbase    = this.$regbase | apf.__MULTICHECK__;
-
-    /**** Properties ****/
-
-    this.multicheck  = true;
-    this.checklength = 0;
-    this.$checkedList = [];
-
-    /**** Public Methods ****/
-    
-    /**
-     * Checks a single, or set of.
-     * The checking can be visually represented in this element.
-     * The element can be checked, partialy checked or unchecked
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     * @return  {Boolean}  whether the selection could not be made
-     *
-     * @event  beforecheck  Fires before a check is made
-     *
-     * @event  aftercheck  Fires after a check is made
-     *
-     */
-    this.check = function(xmlNode, userAction){
-        if (userAction && this.disabled 
-          || this.$checkedList.indexOf(xmlNode) > -1)
-            return;
-
-        if (userAction
-          && this.$executeSingleValue("check", "checked", xmlNode, "true") !== false)
-            return;
-        
-        if (this.dispatchEvent("beforecheck", {xmlNode : xmlNode}) === false)
-            return false;
-        
-        if (!this.multicheck && this.$checkedList.length)
-            this.clearChecked(true);
-
-        this.$checkedList.push(xmlNode);
-        
-        
-
-        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this),
-            "checked", ["partial"]);
-        
-        this.dispatchEvent("aftercheck", {
-            list        : this.$checkedList,
-            xmlNode     : xmlNode
-        });
-    };
-    
-    /**
-     * Unchecks a single, or set of.
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     * @return  {Boolean}  whether the selection could be made
-     *
-     * @event  beforeuncheck  Fires before a uncheck is made
-     *
-     * @event  afteruncheck  Fires after a uncheck is made
-     *
-     */
-    this.uncheck = function(xmlNode, userAction){
-        if (userAction && this.disabled 
-          || this.$checkedList.indexOf(xmlNode) == -1)
-            return;
-        
-        if (userAction
-          && this.$executeSingleValue("check", "checked", xmlNode, "false") !== false)
-            return;
-        
-        
-        
-        if (this.dispatchEvent("beforeuncheck", {
-            xmlNode : xmlNode
-        }) === false)
-            return false;
-
-        this.$checkedList.remove(xmlNode);
-        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), 
-            "", ["checked", "partial"]);
-        
-        this.dispatchEvent("afteruncheck", {
-            list        : this.$checkedList,
-            xmlNode     : xmlNode
-        });
-    };
-
-    /**
-     * Toggles between check and uncheck a single, or set of.
-     *
-     * @param {mixed}   xmlNode      the identifier to determine the selection.
-     *
-     */
-    this.checkToggle = function(xmlNode, userAction){
-        if (userAction && this.disabled)
-            return;
-        
-        if (xmlNode.style) {
-            var htmlNode = xmlNode,
-                id       = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
-            while (!id && htmlNode.parentNode)
-                id = (htmlNode = htmlNode.parentNode)
-                    .getAttribute(apf.xmldb.htmlIdTag);
-            xmlNode = apf.xmldb.getNode(htmlNode)
-        }
-
-        if (this.$checkedList.indexOf(xmlNode) > -1)
-            this.uncheck(xmlNode, userAction);
-        else
-            this.check(xmlNode, userAction);
-    };
-    
-    /**
-     * Checks a set of items
-     *
-     * @param {Array} xmlNodeList the {@link term.datanode data nodes} that will be selected.
-     * @param {boolean} uncheck
-     * @param {boolean} noClear
-     * @param {boolean} noEvent whether to not call any events
-     * @event  beforecheck  Fires before a check is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
-     * @event  aftercheck   Fires after a check is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
-     */
-    this.checkList = function(xmlNodeList, uncheck, noClear, noEvent, userAction){
-        //if (apf.isIE < 8)
-        if (!xmlNodeList.indexOf)
-            xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
-            //@todo is this need for ie8 and/or other browsers
-
-        if (userAction){
-            if (this.disabled) 
-                return;
-            
-            var changes = [];
-            for (var c, i = 0; i < xmlNodeList.length; i++) {
-                c = this.$executeSingleValue("check", "checked", xmlNodeList[i], uncheck ? "false" : "true", true)
-                if (c === false) break;
-                changes.push(c);
-            }
-    
-            if (changes.length) {
-                return this.$executeAction("multicall", changes, "checked", 
-                  xmlNodeList[0], null, null, 
-                  xmlNodeList.length > 1 ? xmlNodeList : null);
-            }
-        }
-        
-        if (userAction && this.disabled) return;
-        
-        if (!noEvent && this.dispatchEvent("beforecheck", {
-            list : xmlNodeList
-        }) === false)
-            return false;
-        
-        if (!uncheck && !noClear) 
-            this.clearChecked(true);
-        
-        if (!this.multicheck)
-            xmlNodeList = [xmlNodeList[0]];
-
-        var i;
-        if (uncheck) {
-            for (i = xmlNodeList.length - 1; i >= 0; i--) {
-                this.$checkedList.remove(xmlNodeList[i]);
-                this.$setStyleClass(
-                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
-            }
-        }
-        else {
-            for (i = xmlNodeList.length - 1; i >= 0; i--) {
-                this.$checkedList.push(xmlNodeList[i]);
-                this.$setStyleClass(
-                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
-            }
-        }
-
-        
-        
-        if (!noEvent)
-            this.dispatchEvent("aftercheck", {
-                list        : xmlNodeList
-            });
-    };
-
-    /**
-     * Removes the selection of one or more checked nodes.
-     *
-     * @param {Boolean} [singleNode] whether to only deselect the indicated node
-     * @param {Boolean} [noEvent]    whether to not call any events
-     * @event  beforeuncheck  Fires before a uncheck is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that will be deselected.
-     * @event  afteruncheck   Fires after a uncheck is made
-     *   object:
-     *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
-     */
-    this.clearChecked = function(noEvent){
-        if (!noEvent && this.dispatchEvent("beforeuncheck", {
-            xmlNode : this.$checkedList
-        }) === false)
-            return false;
-        
-        for (var i = this.$checkedList.length - 1; i >= 0; i--) {
-            this.$setStyleClass(
-                apf.xmldb.getHtmlNode(this.$checkedList[i], this), "", ["checked"]);
-        }
-        
-        this.$checkedList.length = 0;
-        
-        if (!noEvent) {
-            this.dispatchEvent("afteruncheck", {
-                list : this.$checkedList
-            });
-        }
-    };
-    
-    /**
-     * Determines whether a node is checked.
-     *
-     * @param  {XMLElement} xmlNode  The {@link term.datanode data node} to be checked.
-     * @return  {Boolean} whether the element is selected.
-     */
-    this.isChecked = function(xmlNode){
-        return this.$checkedList.indexOf(xmlNode) > -1;
-    };
-
-    /**
-     * Retrieves an array or a document fragment containing all the checked
-     * {@link term.datanode data nodes} from this element.
-     *
-     * @param {Boolean} [xmldoc] whether the method should return a document fragment.
-     * @return {mixed} the selection of this element.
-     */
-    this.getChecked = function(xmldoc){
-        var i, r;
-        if (xmldoc) {
-            r = this.xmlRoot
-                ? this.xmlRoot.ownerDocument.createDocumentFragment()
-                : apf.getXmlDom().createDocumentFragment();
-            for (i = 0; i < this.$checkedList.length; i++)
-                apf.xmldb.cleanNode(r.appendChild(
-                    this.$checkedList[i].cloneNode(true)));
-        }
-        else {
-            for (r = [], i = 0; i < this.$checkedList.length; i++)
-                r.push(this.$checkedList[i]);
-        }
-
-        return r;
-    };
-    
-    /**
-     * Checks all the {@link term.eachnode each nodes} of this element
-     *
-     */
-    this.checkAll = function(userAction){
-        if (!this.multicheck || userAction && this.disabled || !this.xmlRoot)
-            return;
-
-        var nodes = this.$isTreeArch
-            ? this.xmlRoot.selectNodes(".//" 
-              + this.each.split("|").join("|.//"))
-            : this.getTraverseNodes();
-        
-        this.checkList(nodes);
-    };
-    
-    this.addEventListener("beforeload", function(){
-        if (!this.$hasBindRule("checked")) //only reset state when check state isnt recorded
-            this.clearChecked(true);
-    });
-    
-    this.addEventListener("afterload", function(){
-        if (!this.$hasBindRule("checked") && this.$checkedList.length) //only reset state when check state isnt recorded
-            this.checkList(this.$checkedList, false, true, false); //@todo could be optimized (no event calling)
-    });
-    
-    this.addEventListener("xmlupdate", function(e){
-        if (e.action == "attribute" || e.action == "text"
-          || e.action == "synchronize" || e.action == "update") {
-            //@todo list support!
-            var c1 = apf.isTrue(this.$applyBindRule("checked", e.xmlNode));
-            var c2 = this.isChecked(e.xmlNode);
-            if (c1 != c2) {
-                if (c1) {
-                    this.check(e.xmlNode);
-                }
-                else {
-                    this.uncheck(e.xmlNode);
-                }
-            }
-        }
-    });
-    
-    
-    this.addEventListener("aftercheck", function(){
-        //@todo inconsistent because setting this is in event callback
-        if (this.checklength != this.$checkedList.length)
-            this.setProperty("checklength", this.$checkedList.length);
-    });
-    
-    this.addEventListener("afteruncheck", function(){
-        //@todo inconsistent because setting this is in event callback
-        if (this.checklength != this.$checkedList.length)
-            this.setProperty("checklength", this.$checkedList.length);
-    });
-    
-};
 
 
 
@@ -44384,6 +44090,9 @@ apf.actiontracker = function(struct, tagName){
             }, extra));
 
             
+            //Send out the RDB message, letting friends know of our change
+            UndoObj.processRsbQueue();
+            
 
             if (callback)
                 callback();
@@ -44404,6 +44113,8 @@ apf.actiontracker = function(struct, tagName){
 
             
 
+            
+            UndoObj.clearRsbQueue();
             
 
             return;
@@ -49617,37 +49328,6 @@ apf.datagrid = function(struct, tagName){
 
      
     
-    /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
-     */
-    this.$mode = 0;
-    this.$propHandlers["mode"] = function(value){
-        if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
-            
-            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
-            
-            this.multicheck = value == "check"; //radio is single
-            this.$mode = this.multicheck ? 1 : 2;
-        }
-        else {
-            //@todo undo actionRules setting
-            this.removeEventListener("afterrename", $afterRenameMode);
-            //@todo unimplement??
-            this.$mode = 0;
-        }
-    };
-    
-    //@todo apf3.0 retest this completely
-    function $afterRenameMode(){
-    }
-    
-    
-    
     this.$propHandlers["options"] = function(value){
         for (var i = 0, l = this.$headings.length; i < l; i++) {
             this.$headings[i].setAttribute("options", value);
@@ -50134,33 +49814,13 @@ apf.datagrid = function(struct, tagName){
             }
             else {
                 
-                cellType = h.check ? "checkcell" : "cell";
+                cellType = "cell";
                 
                 
                 this.$getNewContext(cellType);
                 cell = this.$getLayoutNode(cellType);
             }
             
-            
-            if (this.$mode && h.check) {
-                var elCheck = this.$getLayoutNode(cellType, "check");
-                if (elCheck) {
-                    elCheck.setAttribute("onmousedown",
-                        "var o = apf.lookup(" + this.$uniqueId + ");\
-                        o.checkToggle(this, true);\o.$skipSelect = true;");
-    
-                    if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
-                        this.$checkedList.push(xmlNode);
-                        this.$setStyleClass(oRow, "checked");
-                    }
-                    else if (this.isChecked(xmlNode))
-                        this.$setStyleClass(oRow, "checked");
-                }
-                else {
-                    
-                    return false;
-                }
-            }
             
             
             apf.setStyleClass(cell, h.$className);
@@ -50253,8 +49913,6 @@ apf.datagrid = function(struct, tagName){
                 apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
 
             if (h.tree) {
-                
-                //@todo
                 
                 
                 /*var oc = this.$getLayoutNode("treecell", "openclose", cell);
@@ -51536,6 +51194,43 @@ apf.aml.setElement("errorbox", apf.errorbox);
  *
  */
 
+
+
+/**
+ * Displays a popup element with a message with optionally an icon at the
+ * position specified by the position attribute. After the timeout has passed
+ * the popup will dissapear automatically. When the mouse hovers over the popup
+ * it doesn't dissapear.
+ *
+ * @event click Fires when the user clicks on the representation of this event.
+ */
+apf.event = function(struct, tagName){
+    this.$init(tagName || "event", apf.NODE_HIDDEN, struct);
+};
+
+(function() {
+    this.$hasInitedWhen = false;
+
+    this.$booleanProperties["repeat"] = true;
+    this.$supportedProperties.push("when", "message", "icon", "repeat");
+
+    this.$propHandlers["when"] = function(value) {
+        if (this.$hasInitedWhen && value && this.parentNode && this.parentNode.popup) {
+            var _self = this;
+            $setTimeout(function() {
+                _self.parentNode.popup(_self.message, _self.icon, _self);
+            });
+        }
+        this.$hasInitedWhen = true;
+
+        if (this.repeat)
+            delete this.when;
+    };
+
+    this.$loadAml = function(x) {};
+}).call(apf.event.prototype = new apf.AmlElement());
+
+apf.aml.setElement("event", apf.event);
 
 
 
@@ -56129,6 +55824,40 @@ apf.model = function(struct, tagName){
     };
 
     
+    //Connect to a remote databinding
+    this.$propHandlers["remote"] = function(value, prop){
+        if (value) {
+            if (this.src && this.src.indexOf("rdb://") === 0) {
+                var _self = this;
+                apf.queue.add("rdb_load_" + this.$uniqueId, function(){
+                    _self.unshare();
+                    _self.share();
+                });
+            }
+        }
+        else
+            this.unshare();
+    };
+
+    this.share = function(xpath) {
+        this.rdb = typeof this.remote == "string"
+            ? 
+            
+            apf.nameserver.get("remote", this.remote)
+            
+            : this.remote;
+
+        
+
+        this.rdb.createSession(this.src, this, xpath);
+    };
+
+    this.unshare = function(xpath) {
+        if (!this.rdb) return;
+        this.rdb.endSession(this.src);
+        this.rdb = null;
+    };
+    
 
     /**
      * Registers a aml element to this model in order for the aml element to
@@ -56632,6 +56361,11 @@ apf.model = function(struct, tagName){
      */
     this.$loadFrom = function(instruction, options){
         
+        if (instruction.indexOf("rdb://") === 0) {
+            this.src = instruction; //@todo
+            return this.$propHandlers["remote"].call(this, this.remote);
+        }
+        
         var data = instruction.split(":");
 
         if (!options)
@@ -56849,6 +56583,9 @@ apf.model = function(struct, tagName){
             return;
         }
         
+        
+        if (this.rdb && !this.$at && UndoObj)
+            this.$at = UndoObj.at;
         
 
         
@@ -57105,6 +56842,394 @@ apf.aml.setElement("model", apf.model);
  *
  */
 
+
+/**
+ * Notification element, which shows popups when events occur. Similar
+ * to growl on the OSX platform.
+ * Example:
+ * <code>
+ *  <a:notifier position="bottom-right" margin="10 10">
+ *      <a:event 
+ *        when    = "{offline.onLine}"
+ *        message = "You are currently working offline"
+ *        icon    = "icoOffline.gif" />
+ *      <a:event 
+ *        when    = "{!offline.onLine}"
+ *        message = "You are online"
+ *        icon    = "icoOnline.gif" />
+ *      <a:event 
+ *        when    = "{offline.syncing}" 
+ *        message = "Your changes are being synced" 
+ *        icon    = "icoSyncing.gif" />
+ *      <a:event 
+ *        when    = "{!offline.syncing}"
+ *        message = "Syncing done"
+ *        icon    = "icoDone.gif" />
+ *  </a:notifier>
+ * </code>
+ * Example:
+ * Notifier with 4 notifications which appears and stays over the 3 seconds
+ * begins to the top right corner and goes to the left. First notification will
+ * be displayed when value in textbox will be bigger than 4. In next two cases 
+ * notification will be shown when notifier's position or arrange attribute will 
+ * be changed. In the last case notification will be shown when date 2008-12-24 
+ * will be selected on calendar.
+ * <code>
+ *  <a:notifier id="notiTest" position="top-right" margin="20" timeout="3" arrange="horizontal" columnsize="200">
+ *      <a:event when="{txtNumber.value > 4}" message="Incorrect value, please enter a number not bigger than 4." icon="evil.png"></a:event>
+ *      <a:event when="{notiTest.position}" message="Notifier display position has been changed"></a:event>
+ *      <a:event when="{notiTest.arrange}" message="Notifier display arrange has been changed"></a:event>
+ *      <a:event when="{txtDrop.value == '2008-12-24'}" message="Marry christmas !" icon="Reindeer.png" ></a:event>
+ *  </a:notifier>
+ * </code>
+ * 
+ * @define notifier
+ * @attribute   {String}   position     Vertical and horizontal element's start
+ *                                      position, it can be changed in any time,
+ *                                      default is 'top-right'
+ *     Possible values:
+ *     top-right       element is placed in top-right corner of browser window
+ *     top-left        element is placed in top-left corner of browser window
+ *     bottom-right    element is placed in bottom-right corner of browser window
+ *     bottom-left     element is placed in bottom-left corner of browser window
+ *     center-center   element is placed in the middle of browser window
+ *     right-top       element is placed in top-right corner of browser window
+ *     left-top        element is placed in top-left corner of browser window
+ *     right-bottom    element is placed in bottom-right corner of browser window
+ *     left-bottom     element is placed in bottom-left corner of browser window
+ *     center-center   element is placed in the middle of browser window
+ * @attribute   {String}   margin       It's a free space around popup element,
+ *                                      default is '10 10 10 10' pixels
+ * @attribute   {String}   columnsize   Specify element width and col width where
+ *                                      element will be displayed, default is 300 pixels
+ * @attribute   {String}   arrange      popup elements can be displayed in rows
+ *                                      or columns, default is 'vertical'
+ *     Possible values:
+ *     vertical     element will be displayed in rows
+ *     horizontal   element will be displayed in columns
+ * @attribute   {String}   timeout      After the timeout has passed the popup
+ *                                      will dissapear automatically. When the
+ *                                      mouse hovers over the popup it doesn't
+ *                                      dissapear, default is 2 seconds
+ * $attribute   {String}   onclick      It's an action executed after user click
+ *                                      on notifier cloud
+ * 
+ * @constructor
+ *
+ * @inherits apf.Presentation
+ * 
+ * @author      
+ * @version     %I%, %G% 
+ * 
+ * @allowchild event
+ */
+apf.notifier = function(struct, tagName){
+    this.$init(tagName || "notifier", apf.NODE_VISIBLE, struct);
+};
+
+(function() {
+    this.timeout    = 2000;
+    this.position   = "top-right";
+    this.columnsize = 300;
+    this.arrange    = "vertical";
+    this.margin     = "10 10 10 10";
+
+    this.lastPos    = null;
+    this.showing    = 0;
+    this.sign       = 1;
+
+    this.$supportedProperties.push("margin", "position", "timeout",
+        "columnsize", "arrange");
+
+    this.$propHandlers["position"] = function(value) {
+        this.lastPos = null;
+    };
+    
+    this.$propHandlers["margin"] = function(value) {
+        this.margin = value;
+    };
+    
+    this.$propHandlers["timeout"] = function(value) {
+        this.timeout = parseInt(value) * 1000;
+    };
+    
+    function getPageScroll() {
+        return [
+            document.documentElement.scrollTop || document.body.scrollTop,
+            document.documentElement.scrollLeft || document.body.scrollLeft
+        ];
+    }
+
+    function getStartPosition(x, wh, ww, nh, nw, margin) {
+        var scrolled = getPageScroll();
+
+        return [
+             (x[0] == "top"
+                 ? margin[0]
+                 : (x[0] == "bottom"
+                     ? wh - nh - margin[2]
+                     : wh / 2 - nh / 2)) + scrolled[0],
+             (x[1] == "left"
+                 ? margin[3]
+                 : (x[1] == "right"
+                     ? ww - nw - margin[1]
+                     : ww / 2 - nw / 2)) + scrolled[1]
+        ];
+    }
+
+    /**
+     * Function creates new notifie popup element
+     * 
+     * @param {String}  message  Message content displaing in popup element,
+     *                           default is [No message]
+     * @param {String}  icon     Path to icon file relative to "icon-path" which
+     *                           is set in skin declaration
+     * @param {Object}  ev       object representation of event
+     * 
+     */
+    this.popup = function(message, icon, ev) {
+        if (!this.$ext)
+            return;
+
+        this.$ext.style.width = this.columnsize + "px";
+
+        var _self = this,
+            oNoti = this.$pHtmlNode.appendChild(this.$ext.cloneNode(true)),
+            ww    = apf.isIE
+                ? document.documentElement.offsetWidth
+                : window.innerWidth,
+            wh    = apf.isIE
+                ? document.documentElement.offsetHeight
+                : window.innerHeight,
+        
+            removed = false,
+
+            oIcon = this.$getLayoutNode("notification", "icon", oNoti),
+            oBody = this.$getLayoutNode("notification", "body", oNoti);
+
+        this.showing++;
+
+        if (oIcon && icon) {
+            if (oIcon.nodeType == 1) {
+                oIcon.style.backgroundImage = "url("
+                + this.iconPath + icon + ")";
+            }
+            else {
+                oIcon.nodeValue = this.iconPath + icon;
+            }
+
+            this.$setStyleClass(oNoti, this.$baseCSSname + "ShowIcon");
+        }
+
+        oBody.insertAdjacentHTML("beforeend", message || "[No message]");
+        oNoti.style.display = "block";
+
+        var margin = apf.getBox(this.margin || "0"),
+            nh     = oNoti.offsetHeight,
+            nw     = oNoti.offsetWidth,
+            /* It's possible to set for example: position: top-right or right-top */
+            x      = this.position.split("-"),
+            _reset = false;
+
+        if (x[1] == "top" || x[1] == "bottom" || x[0] == "left" || x[0] == "right")
+            x = [x[1], x[0]];
+        /* center-X and X-center are disabled */
+        if ((x[0] == "center" && x[1] !== "center") || (x[0] !== "center" && x[1] == "center"))
+            x = ["top", "right"];
+
+        /* start positions */
+        if (!this.lastPos) {
+            this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+            this.sign = 1;
+            _reset = true;
+        }
+
+        if ((!_reset && x[0] == "bottom" && this.sign == 1) ||
+           (x[0] == "top" && this.sign == -1)) {
+            if (this.arrange == "vertical") {
+                this.lastPos[0] += x[1] == "center"
+                    ? 0
+                    : this.sign * (x[0] == "top"
+                        ? margin[0] + nh
+                        : (x[0] == "bottom"
+                            ? - margin[2] - nh
+                            : 0));
+            }
+            else {
+                this.lastPos[1] += x[0] == "center"
+                    ? 0
+                    : this.sign * (x[1] == "left"
+                        ? margin[3] + nw
+                        : (x[1] == "right"
+                            ? - margin[1] - nw
+                            : 0));
+            }
+        }
+
+        /* reset to next line, first for vertical, second horizontal */
+        var scrolled = getPageScroll();
+        
+        if (this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[0]) {
+            this.lastPos[1] += (x[1] == "left"
+                ? nw + margin[3]
+                : (x[1] == "right"
+                    ? - nw - margin[3]
+                    : 0));
+            this.sign *= -1;
+            this.lastPos[0] += this.sign*(x[0] == "top"
+                ? margin[0] + nh
+                : (x[0] == "bottom"
+                    ? - margin[2] - nh
+                    : 0));
+        }
+        else if (this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1]) {
+            this.lastPos[0] += (x[0] == "top"
+                ? nh + margin[0]
+                : (x[0] == "bottom"
+                    ? - nh - margin[0]
+                    : 0));
+            this.sign *= -1;
+            this.lastPos[1] += x[0] == "center"
+                ? 0
+                : this.sign * (x[1] == "left"
+                    ? margin[3] + nw
+                    : (x[1] == "right"
+                        ? - margin[1] - nw
+                        : 0));
+        }
+
+        /* Start from begining if entire screen is filled */
+        if (this.lastPos) {
+            if ((this.lastPos[0] > wh + scrolled[0] - nh || this.lastPos[0] < scrolled[1])
+              && this.arrange == "horizontal") {
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+                this.sign = 1;
+            }
+            if ((this.lastPos[1] > ww + scrolled[1] - nw || this.lastPos[1] < scrolled[1])
+              && this.arrange == "vertical") {
+                this.lastPos = getStartPosition(x, wh, ww, nh, nw, margin);
+                this.sign = 1;
+            }
+        }  
+
+        oNoti.style.left = this.lastPos[1] + "px";
+        oNoti.style.top  = this.lastPos[0] + "px";
+
+        if ((x[0] == "top" && this.sign == 1) || (x[0] == "bottom" && this.sign == -1)) {
+            if (this.arrange == "vertical") {
+                this.lastPos[0] += x[1] == "center"
+                    ? 0
+                    : this.sign * (x[0] == "top"
+                        ? margin[0] + nh
+                        : (x[0] == "bottom"
+                            ? - margin[2] - nh
+                            : 0));
+            }
+            else {
+                this.lastPos[1] += x[0] == "center"
+                    ? 0
+                    : this.sign * (x[1] == "left"
+                        ? margin[3] + nw
+                        : (x[1] == "right"
+                            ? - margin[1] - nw
+                            : 0));
+            }
+        };
+
+        var isMouseOver = false;
+
+        apf.tween.css(oNoti, "fade", {
+            anim     : apf.tween.NORMAL,
+            steps    : 10,
+            interval : 10,
+            onfinish : function(container) {
+                oNoti.style.filter = "";
+                $setTimeout(hideWindow, _self.timeout)
+            }
+        });
+
+        function hideWindow() {
+            if (isMouseOver)
+                return;
+
+            apf.tween.css(oNoti, "notifier_hidden", {
+                anim    : apf.tween.NORMAL,
+                steps   : 10,
+                interval: 20,
+                onfinish: function(container) {
+                    apf.setStyleClass(oNoti, "", ["notifier_hover"]);
+                    if (isMouseOver)
+                        return;
+
+                    if (oNoti.parentNode) {
+                        if (oNoti.parentNode.removeChild(oNoti) && !removed) {
+                            _self.showing--;
+                            removed = true;
+                        }
+                    }
+
+                    if (_self.showing == 0)
+                        _self.lastPos = null;
+                }
+            });
+        }
+
+        /* Events */
+        oNoti.onmouseover = function(e) {
+            e = (e || event);
+            var tEl = e.explicitOriginalTarget || e.toElement;
+            if (isMouseOver)
+                return;
+            if (tEl == oNoti || apf.isChildOf(oNoti, tEl)) {
+                apf.tween.css(oNoti, "notifier_hover", {
+                    anim    : apf.tween.NORMAL,
+                    steps   : 10,
+                    interval: 20,
+                    onfinish: function(container) {
+                        apf.setStyleClass(oNoti, "", ["notifier_shown"]);
+                    }
+                });
+                
+                isMouseOver = true;
+            }
+        };
+
+        oNoti.onmouseout = function(e) {
+            e = (e || event);
+            var tEl = e.explicitOriginalTarget || e.toElement;
+
+            if (!isMouseOver)
+                return;
+
+            if (apf.isChildOf(tEl, oNoti) ||
+               (!apf.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
+                isMouseOver = false;
+                hideWindow();
+            }
+        };
+
+        if (ev) {
+            oNoti.onclick = function() {
+                ev.dispatchEvent("click");
+            };
+        }
+    };
+
+    /**** Init ****/
+
+    this.$draw = function() {
+        //Build Main Skin
+        this.$pHtmlNode = document.body;
+        
+        this.$ext = this.$getExternal("notification");
+        this.$ext.style.display  = "none";
+        this.$ext.style.position = "absolute";
+        apf.window.zManager.set("notifier", this.$ext);
+    };
+}).call(apf.notifier.prototype = new apf.Presentation());
+
+apf.aml.setElement("notifier", apf.notifier);
+apf.aml.setElement("event", apf.event);
 
 
 
@@ -58884,6 +59009,514 @@ apf.aml.setElement("group", apf.$group);
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
+
+
+
+/**
+ * Element allowing data synchronization between multiple clients using the same
+ * application or application part. This element is designed as thecore of
+ * collaborative application logic for Ajax.org Platform. The children of this
+ * element specify how the uniqueness of {@link term.datanode data nodes} is determined. By pointing
+ * models to this element, all changes to their data will be streamed through
+ * this element to all listening client over a choosen protocol.
+ * Example:
+ * This example shows a small application which is editable by all clients that
+ * have started it. Any change to the data is synchronized to all participants.
+ * <code>
+ *  <a:teleport>
+ *      <a:xmpp id="myXMPP"
+ *        url           = "http://ajax.org:5280/http-bind"
+ *        model         = "mdlRoster"
+ *        connection    = "bosh"
+ *  </a:teleport>
+ *
+ *  <a:remote transport="myXMPP" id="rmtPersons" />
+ *
+ *  <a:model id="mdlPersons" remote="rmtPersons">
+ *      <persons>
+ *          <person id="1">mike</person>
+ *          <person id="2">ruben</person>
+ *      </persons>
+ *  </a:model>
+ *
+ *  <a:list id="lstPersons" model="mdlPersons" width="200" height="100">
+ *      <a:bindings>
+ *          <a:each match="[person]" />
+ *          <a:caption match="[text()]" />
+ *          <a:icon value="icoUsers.gif" />
+ *      </a:bindings>
+ *  </a:list>
+ *
+ *  <a:button action="remove" target="lstPersons">Remove</a:button>
+ *  <a:button action="rename" target="lstPersons">Rename</a:button>
+ *
+ *  <a:button onclick="myXMPP.connect('testuser@ajax.org', 'testpass')">
+ *      Login
+ *  </a:button>
+ * </code>
+ * Remarks:
+ * Although locking is solved in smartbindings it is directly connected
+ * to remote databindings. When multiple people are working within the same
+ * application it's important to have a system that prevents corruption of data
+ * and data loss by either user overwriting records edited during the same period.
+ * Ajax.org Platform has built in support for optimistic and pessimistic locking
+ * in smartbindings. For more information please see {@link term.locking}.
+ *
+ * Advanced:
+ * There is a very small theoretical risk that a user initiates and finishes an
+ * action during the latency period of the rdb communication. Usually this
+ * latency is no more than 100 to 300ms which is near impossible for such action
+ * to be performed. Therefor this is deemed acceptable.
+ *
+ * Working in a multi user environment usually implies that data has a high
+ * probability of changing. This might become a problem when syncing offline
+ * changes after several hours. This should be a consideration for the
+ * application architect.
+ *
+ * Another concern for offline use is the offline messaging feature of certain
+ * collaborative protocols (i.e. xmpp). In many cases offline rdb messages should
+ * not be stored after the user has been offline for longer then a certain time.
+ * For instance 10 minutes. An accumulation of change messages would create a
+ * serious scaling problem and is not preferred. apf.offline has built in support
+ * for this type of timeout. By setting the rdb-timeout attribute it is aware
+ * of when the server has timed out. When this timeout is reached the application
+ * will reload all its data from the server and discard all offline rdb
+ * messages before reconnecting to the server.
+ *
+ * @attribute {String} transport the name of the teleport element that provides a
+ * bidirectional connection to (a pool of) other clients.
+ *
+ * @see element.auth
+ *
+ * @define remote
+ * @allowchild unique, {any}
+ * @addnode elements
+ *
+ * @define unique Element defining what is unique about a set of data elements.
+ * This enables remote databindings to point to xml data in  the same way on all
+ * clients. This way changes that happen to these elements are described
+ * non-ambiguously. The tagName can be replaced by the tagName of the
+ * {@link term.datanode data node} for which the uniqueness is specified.
+ * Example:
+ * This example shows a complex data set and a remote databinding that
+ * specifies the uniqueness of all nodes concerned.
+ * <code>
+ *  <a:model id="mdlPersons" remote="rmtPersons">
+ *      <universe>
+ *          <galaxy name="milkyway">
+ *              <planet id="ALS-3947">
+ *                  <species>3564</species>
+ *                  <species>8104</species>
+ *              </planet>
+ *              <planet id="Earth">
+ *                  <person number="802354897">Mike</person>
+ *                  <person number="836114798">Rik</person>
+ *              </planet>
+ *          </galaxy>
+ *      </universe>
+ *  </a:model>
+ *
+ *  <a:remote transport="myXMPP" id="rmtPersons" />
+ * </code>
+ * @attribute {String} transport   ID of a Teleport element that is able to serve
+ *                                 as a transport for RDB message like {@link element.xmpp xmpp}
+ */
+/**
+ * @author      Mike de Boer (mike AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       3.0
+ *
+ * @default_private
+ * @constructor
+ *
+ * @todo Think about wrapping multiple messages in a single call
+ * @todo Make RDB support different encoding protocols (think REX)
+ */
+apf.remote = function(struct, tagName){
+    this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
+
+//    this.lookup              = {};
+//    this.select              = [];
+    this.$sessions           = {};
+    this.rdbQueue            = {};
+    this.queueTimer          = null;
+    this.pendingTerminations = {};
+    this.offlineQueue        = [];
+};
+
+apf.remote.SESSION_INITED     = 0x0001; //Session has not started yet.
+apf.remote.SESSION_STARTED    = 0x0002; //Session is started
+apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
+
+(function(){
+    
+
+    this.logprefix = "";
+    if (!apf.isO3) {
+        this.log = function(msg){
+            apf.console.log(msg);
+        }
+    }
+
+    //1 = force no bind rule, 2 = force bind rule
+    this.$attrExcludePropBind = apf.extend({
+        match : 1
+    }, this.$attrExcludePropBind);
+
+    this.$supportedProperties.push("transport");
+
+    /* @todo move this to the rdb-xmpp transport layer
+    function checkProtocol(uri) {
+        if (uri.indexOf("rdb__") === 0)
+            return "rdb:" + uri.substr(3).replace(/_/g, "/");
+        return uri;
+    } */
+
+    this.$propHandlers["transport"] = function(value) {
+        this.transport = typeof value == "object" ? value : self[this["transport"]];
+
+        
+
+        var _self = this;
+        this.transport.addEventListener("connect", function() {
+            var uri, oSession;
+            for (uri in _self.$sessions) {
+                oSession = _self.$sessions[uri];
+                if (oSession.state == apf.remote.SESSION_STARTED)
+                    continue;
+
+                this.join(uri, function(uri, iTime) {
+                    //_self.$startSession(uri, iTime);
+                });
+            }
+        });
+
+        this.transport.addEventListener("disconnect", function() {
+            var uri, oSession;
+            for (uri in _self.$sessions) {
+                oSession       = _self.$sessions[uri];
+                oSession.state = apf.remote.SESSION_TERMINATED;
+            }
+        });
+
+        this.transport.addEventListener("update", function(e){
+            _self.$update(e);
+        });
+
+        this.transport.addEventListener("join", function(e) {
+            if (!e.uri)
+                return;
+
+            var uri      = e.uri,
+                oSession = _self.$sessions[e.uri];
+            //if document isn't passed this must be a join request from a peer
+            if (!e.document) {
+                
+
+                return _self.dispatchEvent("joinrequest", e);
+            }
+
+            //Create sesssion if it doesn't exist
+            if (!oSession)
+                oSession = _self.createSession(uri, null, null, e.document, e.basetime);
+            else {
+                oSession.model.load(e.document);
+                _self.$startSession(uri, e.basetime);
+            }
+        });
+
+        this.transport.addEventListener("leave", function(e) {
+            _self.endSession(e.uri);
+        });
+    };
+
+    this.$update = function(e){
+        var sData    = e.message.args ? [e.message] : e.message;
+        var oData    = typeof sData == "string"
+                ? apf.unserialize(sData)
+                : sData;
+        var oSession = this.$sessions[e.uri];
+        var i        = 0;
+        var l        = oData.length;
+
+        for (; i < l; i++)
+            this.$receiveChange(oData[i], oSession, e.annotator);
+    };
+
+    this.clear = function(){
+        this.$sessions = {};
+    };
+
+    /**
+     * Create a new RDB session based on a URI.
+     * @param uri
+     * @param model
+     * @param xpath
+     */
+    this.createSession = function(uri, model, xpath, doc, iTime){
+        this.log && this.log(this.logprefix + "Creating session for " + uri);
+
+        if (!model)
+            model = this.dispatchEvent("modelfind", {uri: uri});
+        if (model) {
+            delete model.src;
+            //@todo if this model is in a session stop that session
+        }
+        else
+            model = new apf.model(); //apf.nameserver.register("model", id, );
+
+        model.setProperty("remote", this);
+        model.rdb = this;
+        model.src = uri;
+
+        var oSession = this.$addSession(uri, model, xpath);
+
+        //We received the document and load it
+        if (doc) {
+            model.load(doc);
+            this.$startSession(uri, iTime);
+        }
+        //We did not receive a document and will issue a join request to the server
+        else {
+            //If the transport is already connected, let
+            if (this.transport && this.transport.isConnected()) {
+                var _self = this;
+                this.transport.join(uri, function(uri, iTime) {
+                    _self.$startSession(uri, iTime);
+                });
+            }
+        }
+
+        return oSession;
+    };
+
+    /**
+     * Terminate an RDB session based on a URI.
+     * @param uri
+     */
+    this.endSession = function(uri) {
+        if (!this.$sessions || !this.$sessions[uri])
+            return;
+
+        var oSession = this.$sessions[uri];
+        if (this.transport && this.transport.isConnected() && oSession.state != apf.remote.SESSION_TERMINATED)
+            this.transport.leave(uri);
+
+        oSession.state = apf.remote.SESSION_TERMINATED;
+
+        delete this.$sessions[uri];
+    };
+
+    this.$addSession = function(uri, model, xpath){
+        delete this.$sessions[uri];
+
+        return this.$sessions[uri] = {
+            uri   : uri,
+            model : model,
+            xpath : xpath,
+            state : apf.remote.SESSION_INITED
+        };
+    };
+
+    this.$startSession = function(uri, basetime){
+        var oSession = this.$sessions[uri];
+
+        if (!oSession) {
+            
+            return false;
+        }
+
+        oSession.state = apf.remote.SESSION_STARTED;
+        if (basetime && !oSession.basetime)
+            oSession.basetime = basetime;
+
+        
+    };
+
+    this.$queueMessage = function(args, model, qHost){
+        if (!qHost.rdbQueue)
+            qHost.rdbQueue = {};
+
+        var uri      = model.src;
+        var oSession = this.$sessions[uri];
+
+        
+
+        if (!qHost.rdbQueue[uri]) {
+            qHost.rdbQueue[uri] = [];
+            qHost.rdbModel      = model;
+        }
+
+        for (var node, i = 0, l = args.length; i < l; ++i) {
+            if ((node = args[i]) && node.nodeType) {
+                //@todo some changes should not be sent to the server
+                if (args[0] == "setAttribute" && args[2] == "level"
+                  && args[1] == args[1].ownerDocument.documentElement)
+                    return false; //@todo refactor and make configurable
+
+                args[i] = this.xmlToXpath(args[i], model.data);
+            }
+            else if (node && node.dataType == apf.ARRAY) {
+                for (var j = 0; j < node.length; j++) {
+                    if (node[j] && node[j].nodeType)
+                        node[j] = this.xmlToXpath(node[j], model.data);
+                }
+            }
+        }
+
+        qHost.rdbQueue[uri].push({
+            uri       : uri,
+            args      : args,
+            currdelta : (new Date()).toISOString() - oSession.basetime
+        });
+    };
+
+    this.$processQueue = function(qHost){
+        if (qHost === this)
+            clearTimeout(this.queueTimer);
+        if (apf.xmldb.disableRDB)
+            return;
+
+        var list;
+        for (var uri in qHost.rdbQueue) {
+            if (!(list = qHost.rdbQueue[uri]).length)
+                continue;
+
+            
+
+            if (this.transport)
+                this.transport.sendUpdate(uri, JSON.stringify(list));
+
+            this.dispatchEvent("rdbsend", {
+                uri     : uri,
+                message : list
+            });
+        }
+
+        qHost.rdbQueue = {};
+    };
+
+    this.$receiveChange = function(oMessage, oSession, sAnnotator){
+        //if (apf.xmldb.disableRDB) {
+            this.log && this.log(this.logprefix + "Receiving change. disableRDB=" + apf.xmldb.disableRDB);
+            //return;
+        //}
+
+        
+
+        if (!oSession && oMessage.uri)
+            oSession = this.$sessions[oMessage.uri];
+
+        if (!oSession) {
+            
+            return;
+        }
+
+        //if (oMessage.timestamp < this.discardBefore) //@todo discardBefore
+            //return;
+
+        var model = oSession.model;
+        if (!model) {
+            
+            return;
+        }
+        if (!model.$at)
+            model.$at = apf.window.$at; //@todo find better solution to the case of a missing ActionTracker...
+
+        var oError, xmlNode, disableRDB = apf.xmldb.disableRDB;
+        apf.xmldb.disableRDB = 2; //Feedback prevention
+
+        // Correct timestamp with the session basetime
+        var time = oSession.basetime + parseInt(oMessage.currdelta, 10);
+
+        
+
+        // Undo all items until state is equal to when message was executed on original client.
+        var aUndos = []; //model.$at.getDone(time),
+        var i      = 0;
+        var l      = aUndos.length;
+        if (l) {
+            for (; i < l; ++i)
+                aUndos[i].$dontapply = true;
+            model.$at.undo(l);
+        }
+
+        //Fetch node based on their xpath
+        var q     = oMessage.args.slice();
+        var xpath = q[1];
+        xmlNode = q[1] = this.xpathToXml(xpath, model.data);
+        if (xmlNode) {
+            var action = q.shift();
+
+            if (action == "addChildNode")
+                q[3] = this.xpathToXml(q[3], model.data);
+            else if (action == "appendChild") {
+                q[1] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
+                q[2] = q[2] ? this.xpathToXml(q[2], model.data) : null;
+            }
+            else if (action == "moveNode") {
+                q[1] = this.xpathToXml(q[1], model.data);
+                q[2] = q[2] ? this.xpathToXml(q[2], model.data) : null;
+            }
+            else if (action == "replaceNode") {
+                q[0] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
+                q[1] = xmlNode;
+            }
+            else if (action == "removeNodeList") {
+                var arr = q[0];
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i] = this.xpathToXml(arr[i], model.data);
+                }
+            }
+            else if (action == "setValueByXpath") {}
+
+            // pass the action to the actiontracker to execute it
+            model.$at.execute({
+                action   : action,
+                args     : q,
+                annotator: sAnnotator,
+                message  : oMessage,
+                rdb      : true
+            });
+
+            this.dispatchEvent("change", {
+                uri      : oMessage.uri,
+                model    : model,
+                xmlNode  : xmlNode,
+                message  : oMessage
+            });
+        }
+        
+
+        if (l) {
+            model.$at.redo(l);
+            for (i = 0; i < l; ++i)
+                delete aUndos[i].$dontapply;
+        }
+
+        apf.xmldb.disableRDB = disableRDB;
+
+        if (oError) {
+            apf.console.error(this.logprefix + oError.message)
+        }
+    };
+
+    this.xmlToXpath = apf.xmlToXpath;
+    this.xpathToXml = apf.xpathToXml;
+
+    this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
+        
+
+        
+    });
+
+    this.addEventListener("DOMNodeRemovedFromDocument", function(e){
+        for (var i = 0, l = this.$sessions.length; i < l; ++i)
+            this.endSession(this.$sessions[i].uri);
+    });
+}).call(apf.remote.prototype = new apf.AmlElement());
+
+apf.aml.setElement("remote", apf.remote);
 
 
 
@@ -65486,37 +66119,6 @@ apf.tree = function(struct, tagName){
     
     
     
-    /**
-     * @attribute {String} mode Sets the way this element interacts with the user.
-     *   Possible values:
-     *   check  the user can select a single item from this element. The selected item is indicated.
-     *   radio  the user can select multiple items from this element. Each selected item is indicated.
-     */
-    this.$mode = 0;
-    this.$propHandlers["mode"] = function(value){
-        if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
-            
-            this.addEventListener("afterrename", $afterRenameMode); //what does this do?
-            
-            this.multicheck = value == "check"; //radio is single
-            this.$mode = this.multicheck ? 1 : 2;
-        }
-        else {
-            //@todo undo actionRules setting
-            this.removeEventListener("afterrename", $afterRenameMode);
-            //@todo unimplement??
-            this.$mode = 0;
-        }
-    };
-    
-    //@todo apf3.0 retest this completely
-    function $afterRenameMode(){
-        
-    }
-    
-    
     this.$initNode = function(xmlNode, state, Lid){
         //Setup Nodes Interaction
         this.$getNewContext("item");
@@ -65552,26 +66154,6 @@ apf.tree = function(struct, tagName){
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
         
-        
-        if (this.$mode) {
-            var elCheck = this.$getLayoutNode("item", "check");
-            if (elCheck) {
-                elCheck.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
-                    o.checkToggle(this, true);\o.$skipSelect = true;");
-
-                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
-                    this.$checkedList.push(xmlNode);
-                    this.$setStyleClass(oItem, "checked");
-                }
-                else if (this.isChecked(xmlNode))
-                    this.$setStyleClass(oItem, "checked");
-            }
-            else {
-                
-                return false;
-            }
-        }
         
         
         var ocAction = this.opencloseaction || "ondblclick";
@@ -65707,8 +66289,6 @@ apf.tree = function(struct, tagName){
                     + apf.getAbsolutePath(this.iconPath, iconURL) + ")";
         }
         
-        
-        //@todo
         
 
         var elCaption = this.$getLayoutNode("item", "caption", htmlNode);
@@ -67203,6 +67783,8 @@ apf.UndoData = function(settings, at){
     this.localName = "UndoData";
     this.extra     = {};
     
+    this.rdbQueue  = {};
+    
     apf.extend(this, settings);
 
     if (!this.timestamp)
@@ -67213,6 +67795,8 @@ apf.UndoData = function(settings, at){
     //Copy Constructor
     else if (settings && settings.tagName == "UndoData") {
         this.args    = settings.args.slice();
+        
+        this.rdbArgs = settings.rdbArgs.slice();
         
     }
     //Constructor
@@ -67232,6 +67816,17 @@ apf.UndoData = function(settings, at){
 
     
 
+    
+    //Send RDB Message..
+    this.processRsbQueue = function(){
+        if (this.rdbModel)
+            this.rdbModel.rdb.$processQueue(this);
+    };
+
+    this.clearRsbQueue = function(){
+        this.rdbQueue =
+        this.rdbModel = null;
+    };
     
 
     /**
@@ -67254,6 +67849,8 @@ apf.UndoData = function(settings, at){
         }
 
         if (!dataInstruction) {
+            
+            this.processRsbQueue();
             
             return at.$queueNext(this);
         }
@@ -67544,7 +68141,15 @@ apf.actiontracker.actions = {
                 if (!q[i].extra)
                     q[i].extra = {};
                 
+                if (q[0].rdbModel)
+                    q[i].rdbQueue = q[0].rdbQueue;
+                
                 apf.actiontracker.actions[q[i].action](q[i], false, at);
+            }
+            
+            if (q[0].rdbModel) {
+                undoObj.rdbModel = q[0].rdbModel;
+                undoObj.rdbQueue = q[0].rdbQueue;
             }
             
         }
