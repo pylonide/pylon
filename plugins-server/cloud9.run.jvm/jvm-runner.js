@@ -145,9 +145,9 @@ var Runner = exports.Runner = function(options, callback) {
         if (!options.url) {
             options.sandbox.getHost(function(err, host) {
                 if (err) return console.error(err);
-                
+
                 var url = "http://" + host + ":" + port;
-                
+
                 startProcess(url, port);
             });
         }
@@ -192,7 +192,6 @@ var Runner = exports.Runner = function(options, callback) {
 
             jvmInstance.runArgs(function (runArgs) {
                 self.args = options.args = self.jvmArgs.concat(runArgs).concat(self.scriptArgs);
-
                 ShellRunner.call(self, options, callback);
             });
         });

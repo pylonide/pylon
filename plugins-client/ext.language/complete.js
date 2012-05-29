@@ -194,9 +194,13 @@ module.exports = {
     },
 
     closeCompletionBox : function() {
-        var ace = editors.currentEditor.amlEditor.$editor;
         barCompleterCont.$ext.style.display = "none";
         document.removeEventListener("click", this.closeCompletionBox);
+
+        if (! editors.currentEditor)
+            return;
+
+        var ace = editors.currentEditor.amlEditor.$editor;
         ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
         ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
         

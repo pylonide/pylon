@@ -77,31 +77,35 @@ function setup (JvmRunner) {
             else
                 debugParams += "n";
 
-            options.jvmArgs = debugParams.split(' ').concat(options.jvmArgs || []);
+            options.jvmArgs = debugParams.split(' ');
 
             JvmRunner.call(self, options, function (err) {
                 if (err) return callback(err);
 
                 callback.apply(null, arguments);
 
-                setTimeout(function() {
-                    self._startDebug(port, options);
-                }, 4000);
+                // Start debug as soon as the "Listening for socket" message is printed
+                var startDebugListener = function (msg) {
+                    console.log("msg: ", msg);
+                    if (msg.type == "node-data" && /dt_socket/.test(msg.data)) {
+                        self._startDebug(port, options);
+                        options.eventEmitter.removeListener(options.eventName, startDebugListener);
+                    } else if (msg.type === "node-exit") {
+                        options.eventEmitter.removeListener(options.eventName, startDebugListener);
+                    }
+                }
+                options.eventEmitter.on(options.eventName, startDebugListener);
             });
         });
     };
 
     util.inherits(Runner, JvmRunner);
-    mixin(Runner, JvmRunner);
 
-    function mixin(Class, Parent) {
+    (function() {
 
-        Class.prototype = Class.prototype || {};
-        var proto = Class.prototype;
+        this.name = "node-debug";
 
-        proto.name = "node-debug";
-
-        proto.debugCommand = function(msg) {
+        this.debugCommand = function(msg) {
             this.msgQueue.push(msg);
 
             if (!this.javaDebugProxy)
@@ -110,9 +114,9 @@ function setup (JvmRunner) {
             this._flushSendQueue();
         };
 
-        proto._flushSendQueue = function() {
+        this._flushSendQueue = function() {
             for (var i = 0; i < this.msgQueue.length; i++) {
-                console.log("\nSEND", this.msgQueue[i])
+                // console.log("\nSEND", this.msgQueue[i])
                 try {
                     this.javaDebugProxy.send(this.msgQueue[i]);
                 } catch(e) {
@@ -123,7 +127,7 @@ function setup (JvmRunner) {
             this.msgQueue = [];
         };
 
-        proto._startDebug = function(port, options) {
+        this._startDebug = function(port, options) {
             var self = this;
             function send(msg) {
                 options.eventEmitter.emit(options.eventName, msg);
@@ -136,7 +140,7 @@ function setup (JvmRunner) {
 
             this.javaDebugProxy = new JavaDebugProxy(JAVA_DEBUG_PORT, debugOptions);
             this.javaDebugProxy.on("message", function(body) {
-                console.log("\nRECV", body);
+                // console.log("\nRECV", body);
                 send({
                     "type": "node-debug",
                     "pid": self.pid,
@@ -146,7 +150,7 @@ function setup (JvmRunner) {
             });
 
             this.javaDebugProxy.on("connection", function() {
-                console.log('debug proxy connected');
+                // console.log('java debug proxy connected');
                 send({
                     "type": "node-debug-ready",
                     "pid": self.pid,
@@ -168,7 +172,6 @@ function setup (JvmRunner) {
 
             this.javaDebugProxy.connect();
         };
-    }
 
-    exports.mixin = mixin;
+    }).call(Runner.prototype);
 }
