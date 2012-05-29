@@ -13,6 +13,12 @@ var debug = function() {
     });
 };
 
+var keysToSortedArray = function(obj) {
+    return Object.keys(obj)
+        .map(function(key) { return parseInt(key, 10); })
+        .sort(function(a, b) { return a - b; });
+};
+
 var rNL = /\r?\n/;
 var startChar = {
     "equal" : "  ",
@@ -20,33 +26,35 @@ var startChar = {
     "insert": "+ "
 };
 
+var docContentsOnRev = {};
+
 var getLastAndAfterRevisions = function(data) {
     var group = data.group;
     // Ordered timestamps
-    var keys = data.groupKeys;
+    var keys = keysToSortedArray(data.group);
     var minKey = keys[0];
     var maxKey = keys[keys.length - 1];
-    var revision = group[keys[0]];
+    var revision = group[minKey];
     var beforeRevision = "";
 
-    var i, ts;
+    var i, l, ts;
     var patches = [];
-    for (i = 0; i <= revision.ts.length; i++) {
-        ts = revision.ts[i];
+    var timestamps = keysToSortedArray(revision.patchesByTS);
+    for (i = 0; i <= timestamps.length; i++) {
+        ts = timestamps[i];
         if (minKey == ts) {
             break;
         }
-
-        patches = patches.concat(revision.tsValues[ts][0]);
+        patches = patches.concat(revision.patchesByTS[ts]);
     }
     beforeRevision = self.dmp.patch_apply(patches, beforeRevision)[0];
 
     patches = [];
     var afterRevision = beforeRevision;
-    for (i = 0; i <= keys.length; i++) {
+    for (i = 0, l = keys.length; i <= l; i++) {
         ts = keys[i];
         var rev = group[ts];
-        patches = patches.concat(rev.tsValues[ts][0]);
+        patches = patches.concat(rev.patchesByTS[ts]);
 
         if (maxKey == ts) {
             break;
@@ -75,6 +83,9 @@ self.onmessage = function(e) {
     switch (e.data.type) {
         case "preloadlibs":
             loadLibs();
+            break;
+        case "closefile":
+            docContentsOnRev[e.data.path] = null;
             break;
         case "preview":
             var results = getLastAndAfterRevisions(e.data);
@@ -158,15 +169,35 @@ self.onmessage = function(e) {
             break;
 
         case "newRevision":
-            beforeRevision = "";
-            var tss = e.data.timestamps || [];
-            for (var i = 0, l = tss.length; i < l; i++) {
-                patch = e.data.revisions[tss[i]].patch[0];
-                beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
-            }
-
             lastContent = e.data.lastContent;
+            // That means that the main thread has already sent the revisions to
+            // the worker before, thus the latter has the data and the previous 
+            // content of the document, so we don't have to calculate again, and 
+            // more important, the amount of data the main thread has to sent is
+            // MUCH smaller.
+            if (e.data.hasBeenSentToWorker === true) {
+                // Assuming it always is the previous revision, which could be wrong
+                beforeRevision = docContentsOnRev[e.data.path];
+            }
+            else {
+                try {
+                    beforeRevision = "";
+                    var tss = keysToSortedArray(e.data.revisions);
+                    for (var i = 0, l = tss.length; i < l; i++) {
+                        patch = e.data.revisions[tss[i]].patch[0];
+                        beforeRevision = self.dmp.patch_apply(patch, beforeRevision)[0];
+                    }
+                }
+                catch(err) {
+                    self.postMessage({
+                        type: "newRevision.error",
+                        path: e.data.path
+                    });
+                }
+            }
+            
             patch = self.dmp.patch_make(beforeRevision, lastContent);
+            docContentsOnRev[e.data.path] = lastContent;
 
             // If there is no actual changes, let's return
             if (patch.length === 0) {
@@ -216,7 +247,6 @@ self.onmessage = function(e) {
                     nextAction: e.data.nextAction
                 }
             };
-
             break;
     }
     self.postMessage(packet);

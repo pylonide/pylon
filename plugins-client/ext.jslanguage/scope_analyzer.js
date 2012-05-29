@@ -493,10 +493,10 @@ handler.analyze = function(doc, ast, callback) {
                 'Catch(x, body)', function(b, node) {
                     var oldVar = scope.get(b.x.value);
                     // Temporarily override
-                    scope.vars[b.x.value] = new Variable(b.x);
+                    scope.vars["_" + b.x.value] = new Variable(b.x);
                     scopeAnalyzer(scope, b.body, localVariables);
                     // Put back
-                    scope.vars[b.x.value] = oldVar;
+                    scope.vars["_" + b.x.value] = oldVar;
                     return node;
                 },
                 'PropAccess(_, "lenght")', function(b, node) {

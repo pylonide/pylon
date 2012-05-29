@@ -2268,6 +2268,10 @@
         	right:31px;
         	top: 0;
         }
+        .deploy.c9-header-plus {
+            right: 1px;
+        }
+        
         .c9-header-plus.header-btnOver {
         	background-position: -30px -294px;
         }
@@ -2279,6 +2283,11 @@
             right: 1px;
             top: 0;
         }
+        
+        .deploy.c9-header-minus {
+            right: -30px;
+        }
+        
         .c9-header-minus.header-btnOver {
             background-position: -30px -320px;
         }
