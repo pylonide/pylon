@@ -229,8 +229,7 @@ module.exports = {
                 html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
             }
             else {
-                html += "<span class='main'>" + match.name;
-                matchEl.style.color = "#999999";
+                html += '<span class="main"><span class="deferred">' + match.name + '</span>';
             }
             if (match.meta) {
                 html += '<span class="meta">' + match.meta + '</span>';
