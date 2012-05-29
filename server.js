@@ -2,7 +2,7 @@
 
 var path = require('path');
 var architect = require("architect");
-var EXEC = require("child_process").exec;
+var exec = require("child_process").exec;
 
 // TODO: Need better args parser.
 
@@ -24,7 +24,7 @@ for (var p = 2; p < process.argv.length; p++) {
        
        if(!path.existsSync("plugins-client/lib.apf/www/apf-packaged/apf_debug.js")) {
        		console.log("Building apfdebug for first run...");
-       		EXEC("npm run-script build-debug", function (error, stdout, stderr) {
+       		exec("npm run-script build-debug", function (error, stdout, stderr) {
 		        if (error || stderr) {
 		            console.error(stderr);
 		            process.exit(1);
@@ -50,7 +50,7 @@ for (var p = 2; p < process.argv.length; p++) {
 		   				"   /,`.-'`'    -.  ;-;;,_\n" +
 		  				"   |,4-  ) )-,_..;\\ (  `'-'\n" +
 		 				"   '---''(_/--'  `-'\\_)  Felix Lee");
-       		EXEC("npm run-script build-packed", function (error, stdout, stderr) {
+       		exec("npm run-script build-packed", function (error, stdout, stderr) {
 		        if (error || stderr) {
 		            console.error(stderr);
 		            process.exit(1);
