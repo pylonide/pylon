@@ -150,33 +150,4 @@
             </a:main>
         </a:presentation>
     </a:text>
-    
-    <a:text name="codecompletedoc_text">
-        <a:style><![CDATA[
-            .code_complete_doc_text .cc_complete_option_selected {
-                text-shadow: none;
-            }
-            
-            .code_complete_doc_text {
-                color: #333;
-                position: relative;
-                overflow: hidden;
-                border: 1px solid;
-                background-color: #ffffd5;
-                padding: 5px;
-                font-family: sans-serif;
-            }
-            
-            .code_complete_doc_text u {
-                text-decoration: none;
-                color: blue;
-                text-shadow: none;
-            }
-        ]]></a:style>
-        <a:presentation>
-            <a:main container=".">
-                <div class="code_complete_doc_text"/>
-            </a:main>
-        </a:presentation>
-    </a:text>
 </a:skin>
