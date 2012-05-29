@@ -12,6 +12,7 @@
       buttons   = "close"
       width     = "600"
       skin      = "bk-window2"
+      render    = "runtime"
       onkeydown = "
         if(event.keyCode == 89) {
             btnQuestionYes.dispatchEvent('click', {htmlEvent: {}});
@@ -27,13 +28,8 @@
         </a:vbox>
 
         <a:hbox edge="6 10 10" pack="end" padding="8">
-            <a:button id="btnQuestionRevYes" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevNo" skin="btn-default-css3" class="btn-red">No (but keep changes in a revision)</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes to all</a:button>
-            <a:filler/>
-            <a:button id="btnQuestionRevNoAll" skin="btn-default-css3" class="btn-red">No to all</a:button>
+            <a:button id="btnQuestionRevYesAll" default="3" skin="btn-default-css3" class="btn-green">Yes</a:button>
+            <a:button id="btnQuestionRevNoAll" skin="btn-default-css3" class="btn-red">No</a:button>
         </a:hbox>
     </a:window>
 
@@ -95,8 +91,8 @@
                 skin    = "checkbox_grey"
                 top     = "-25"
                 right   = "10"
-                checked = "{require('ext/revisions/revisions').useCompactList == false ? 'false' : 'true'}"
-                label   = "Group by same timeframe"
+                checked = "{require('ext/revisions/revisions').useCompactList == false ? 'true' : 'false'}"
+                label   = "Show all file changes"
                 onafterchange = "
                     var model = tabEditors.getPage().$mdlRevisions;
                     require('ext/revisions/revisions').toggleListView(model);

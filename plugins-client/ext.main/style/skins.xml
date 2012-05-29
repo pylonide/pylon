@@ -247,7 +247,7 @@
                         <div class="c9-mbar-cont"> </div>
                         
                         <div class="c9-mbar-round">
-                            <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
+                            <a href="http://c9.io/" class="mainlogo" target="_blank" title="Go to c9.io">c9.io</a>
                             <div class="c9-activity"><div id="saveStatus" class="light"> </div></div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
                             <div id="offlineInfoDiv" class="c9-offlineInfo menu-bk upward moveleft menu-bkFocus">Keep working without<br />internet. When you're back online, Cloud9 syncs your files for you!<div class="offlineInfoWarn">Some features are disabled.</div></div>
@@ -2239,6 +2239,10 @@
         	right:31px;
         	top: 0;
         }
+        .deploy.c9-header-plus {
+            right: 1px;
+        }
+        
         .c9-header-plus.header-btnOver {
         	background-position: -30px -294px;
         }
@@ -2250,6 +2254,11 @@
             right: 1px;
             top: 0;
         }
+        
+        .deploy.c9-header-minus {
+            right: -30px;
+        }
+        
         .c9-header-minus.header-btnOver {
             background-position: -30px -320px;
         }
@@ -9382,6 +9391,14 @@
     }
     .editor_tab.hidetabs .curbtn {
         top: 5px;
+    }
+
+    .editor_tab .tab_middle {
+        height : 18px;
+    }
+
+    .editor_tab .tab_right, .editor_tab .tab_left {
+        height : 22px;
     }
 </a:style>
 <a:style condition="apf.isWebkit">

@@ -48,11 +48,11 @@
             <a:divider />
             
             <a:divider />
-            <a:item type="check" checked="true" onclick="
-                require('ext/testpanel/testpanel').toggleSubmodules(this.value);
+            <a:item type="check" checked="[{require('core/settings').model}::auto/testpanel/@showlibraries]" onclick="
+                require('ext/testpanel/testpanel').toggleSubmodules(this.checked);
             ">Show Libraries</a:item>
-            <a:item type="check" checked="true" onclick="
-                require('ext/testpanel/testpanel').toggleExpandTests(this.value);
+            <a:item type="check" checked="[{require('core/settings').model}::auto/testpanel/@autoexpand]" onclick="
+                require('ext/testpanel/testpanel').toggleExpandTests(this.checked);
             ">Auto Expand Tests</a:item>
             <a:divider />
             <a:item submenu="mnuAutorunTests">Auto-run Tests</a:item>

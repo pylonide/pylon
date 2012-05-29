@@ -2,7 +2,6 @@ define(function(require, exports, module) {
 
 var Range = require("ace/range").Range;
 var Anchor = require("ace/anchor").Anchor;
-var settings = require("ext/settings/settings");
 var ide = require("core/ide");
 
 var TIMELAPSE = 10 * 60 * 1000;
@@ -125,18 +124,11 @@ exports.addCodeMarker = function(session, doc, type, range) {
     anchor.on("change", updateFloat);
 };
 
-//@todo this is inefficient. Better set a property via settings.load
-//      and listening to the checkbox in the settings
-exports.isAutoSaveEnabled = function() {
-    return apf.isTrue(settings.model.queryValue("general/@autosaveenabled"));
-};
-
 exports.pageHasChanged = function(page) {
     if (!page) {
         throw new Error("Page object parameter missing");
     }
-    var model = page.getModel();
-    return model && model.queryValue("@changed") == 1;
+    return page.changed === 1;
 };
 
 exports.pageIsCode = function(page) {
@@ -164,15 +156,19 @@ exports.getDocPath = function(page) {
     return exports.stripWSFromPath(page.name);
 };
 
-exports.question = function(title, header, msg, onyes, onyesall, onno, onnoall) {
+exports.question = function(title, header, msg, onyesall, onnoall) {
     winQuestionRev.show();
     winQuestionRev.setAttribute("title", title);
     winQuestionRevHeader.$ext.innerHTML = header;
     winQuestionRevMsg.$ext.innerHTML = msg;
-    btnQuestionRevYes.onclick = onyes;
-    btnQuestionRevNo.onclick = onno;
     btnQuestionRevYesAll.onclick = onyesall;
     btnQuestionRevNoAll.onclick = onnoall;
+};
+
+exports.keysToSortedArray = function(obj) {
+    return Object.keys(obj)
+        .map(function(key) { return parseInt(key, 10); })
+        .sort(function(a, b) { return a - b; });
 };
 
 });

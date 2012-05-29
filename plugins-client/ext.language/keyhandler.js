@@ -37,6 +37,8 @@ function onCommandKey(e) {
         return false;
     if (language.isContinuousCompletionEnabled())
         typeAlongComplete(e);
+    if (e.keyCode == 27) // Esc
+        require("ext/language/marker").hideToolTip();
     return false;
 }
 
@@ -46,12 +48,13 @@ function typeAlongComplete(e) {
     if(editors.currentEditor.amlEditor.syntax !== "javascript")
         return false;
     if(e.keyCode === 8) { // Backspace
+        var complete = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
         if(!preceededByIdentifier(line, pos.column))
             return false;
-        language.deferredInvoke();
+        complete.deferredInvoke();
     }
 }
 

@@ -37,6 +37,10 @@ module.exports = {
         else
             tooltip.hide();
     },
+    
+    hideToolTip: function() {
+        tooltip.hide();
+    },
 
     removeMarkers: function(session) {
         var markers = session.getMarkers(false);
