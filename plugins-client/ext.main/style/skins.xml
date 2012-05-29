@@ -9103,6 +9103,7 @@
         display: block;
         height: 17px;
         left: -1px;
+        pointer-events: none;
         position: absolute;
         top: -17px;
         width: 19px;
