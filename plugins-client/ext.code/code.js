@@ -475,11 +475,11 @@ module.exports = ext.register("ext/code/code", {
                 // check if there is a scriptid, if not check if the file is somewhere in the stack
                 if (typeof mdlDbgStack != "undefined" && mdlDbgStack.data && e.node
                   && (!e.node.hasAttribute("scriptid") || !e.node.getAttribute("scriptid"))
-                  && e.node.hasAttribute("scriptname") && e.node.getAttribute("scriptname")) {
-                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + e.node.getAttribute("scriptname").replace(ide.workspaceDir + "/", "").replace(/"/g, "&quot;") + '"]');
-                    if (nodes.length) {
+                  && e.node.hasAttribute("path")) {
+                    var path = e.node.getAttribute("path").slice(ide.davPrefix.length + 1);
+                    var nodes = mdlDbgStack.data.selectNodes('//frame[@script="' + path.replace(/"/g, "&quot;") + '"]');
+                    if (nodes.length)
                         e.node.setAttribute("scriptid", nodes[0].getAttribute("scriptid"));
-                    }
                 }
                 e.doc.editor.amlEditor.afterOpenFile(e.doc.editor.amlEditor.getSession());
             }

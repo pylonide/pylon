@@ -48,7 +48,7 @@
                 height:17px;
                 line-height:0;
                 position:absolute;
-                right: -1px;
+                right: -2px;
                 top:4px;
                 width:0;
                 display: none;

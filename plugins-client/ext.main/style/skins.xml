@@ -55,6 +55,34 @@
         </a:main>
     </a:presentation>
 </a:bar>
+<a:bar name="winGoToFile">
+    <a:style><![CDATA[
+        .winGoToFile {
+            background:#e8e8e8;
+            box-shadow:0 5px 7px rgba(0,0,0,0.5);
+            border:1px solid #bbb;
+            border-width:0 1px 1px 1px;
+            position:absolute;
+            left:50%;
+            margin-left:-250px;
+            top : 37px;
+        }
+        .dark .winGoToFile {
+            border-color: rgba(255,255,255,.1);
+        }
+        .dark .winGoToFile .searchbox_textbox .sbtb_middle {
+            border-color: rgba(0,0,0,.9);
+            box-shadow: 0px 1px 0px rgba(255,255,255,.1);
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="winGoToFile">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
 <a:bar name="c9-header-bar">
     <a:style><![CDATA[
         .c9-header-bar{
@@ -76,7 +104,7 @@
     <a:style><![CDATA[
         body > .vbox,
         .editor_tab .curbtn .tab_middle {
-            background-color: #e8e8e8 !important; /*#0c9*/
+        	background-color: #e8e8e8 !important; /*#0c9*/
         }
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar expanded
@@ -177,7 +205,7 @@
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: -21px -70px;
         }
-        .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+        .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
             height: 37px;
             position: fixed;
@@ -186,25 +214,7 @@
             width: 74px;
             z-index: 999;
         }
-
-        .c9-menu-bar .c9-mbar-bcont .c9-activity {
-            background : url(images/c9-no-repeat.png) no-repeat -84px 0;
-            height: 10px;
-            left: 24px;
-            position: absolute;
-            top: 4px;
-            width: 10px;
-        }
-        .c9-menu-bar .c9-mbar-bcont .c9-activity .light {
-            background : url(images/c9-no-repeat.png) no-repeat 100px 100px; /* nothing */
-            height: 10px;
-            left: 0;
-            position: absolute;
-            top: 0;
-            width: 10px;
-        }
-
-        .c9-menu-bar .mainlogo {
+        .c9-mbar-round .mainlogo {
             background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
             display: block;
             height: 26px;
@@ -214,6 +224,24 @@
             top: 4px;
             width: 37px;
         }
+
+        .c9-menu-bar .c9-mbar-bcont .c9-activity {
+        	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
+        	height: 10px;
+        	left: 24px;
+        	position: absolute;
+        	top: 4px;
+        	width: 10px;
+        }
+        .c9-menu-bar .c9-mbar-bcont .c9-activity .light {
+            background : url(images/c9-no-repeat.png) no-repeat -102px -19px; /* nothing */
+            height: 10px;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 10px;
+        }
+
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar minimized
          * --------------------------------------------------------------------------------------- */
@@ -262,15 +290,15 @@
 <a:bar name="black-menu-bar">
     <a:style><![CDATA[
         .black-menu-bar {
-            background    : rgba(26, 26, 26, .9);
-            border-bottom : 1px solid black;
-            height        : 27px !important;
-            overflow      : hidden;
-            padding       : 0 5px 0 0px !important;
-            position      : relative;
-            width         : 200px;
-            box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-            min-width : 196px;
+			background    : rgba(26, 26, 26, .9);
+			border-bottom : 1px solid black;
+			height        : 27px !important;
+			overflow      : hidden;
+			padding       : 0 5px 0 0px !important;
+			position      : relative;
+			width         : 200px;
+			box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
+			min-width : 196px;
             z-index   : 1000;
         }
 
@@ -312,17 +340,17 @@
         }
 
         .black-menu-bar .c9-logo {
-            background: url(images/c9-no-repeat.png) no-repeat;
-            box-shadow: 1px 0 0 0  black;
-            cursor: pointer;
-            height: 27px;
-            width: 39px;
+        	background: url(images/c9-no-repeat.png) no-repeat;
+        	box-shadow: 1px 0 0 0  black;
+        	cursor: pointer;
+        	height: 27px;
+        	width: 39px;
         }
         .black-menu-bar.closed .c9-logo {
-            background-position: 0px -346px;
+        	background-position: 0px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnOver {
-            background-position: -40px -346px;
+        	background-position: -40px -346px;
         }
         .black-menu-bar.closed .c9-logo.mnubtnDown {
             background-position: -80px -346px;
@@ -332,7 +360,7 @@
             background-position: -120px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnOver {
-            background-position: -160px -346px;
+        	background-position: -160px -346px;
         }
         .black-menu-bar .c9-logo.mnubtnDown {
             background-position: -200px -346px;
@@ -342,14 +370,14 @@
         }
 
         .black-menu-bar .toggle-black-menu-bar {
-            background: url(images/c9-no-repeat.png) no-repeat 0 -383px;
+        	background: url(images/c9-no-repeat.png) no-repeat 0 -383px;
             box-shadow: none;
-            cursor: pointer;
-            height: 27px;
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 5px;
+        	cursor: pointer;
+        	height: 27px;
+        	position: absolute;
+        	right: 0;
+        	top: 0;
+        	width: 5px;
         }
         .black-menu-bar.closed .toggle-black-menu-bar {
             background-position: 0px -383px;
@@ -1929,7 +1957,7 @@
             background-position: 0 -523px;
             font-size: 9px;
             line-height: 24px;
-            padding: 0 16px 0 5px;
+            padding: 0 15px 0 10px;
             text-transform: uppercase;
         }
         .c9-toolbarbutton-glossy.saving .c9-label:after,
@@ -1937,18 +1965,19 @@
             background-position: -476px -523px;
         }
         .c9-toolbarbutton-glossy.saving .c9-icon {
-            background-color: #FF8400;
-            right: 6px;
+            background-color: #85C410;
+            right: 10px;
             -webkit-animation: saving .4s linear 0 infinite;
                -moz-animation: saving .4s linear 0 infinite;
                     animation: saving .4s linear 0 infinite;
         }
         .c9-toolbarbutton-glossy.saved .c9-icon {
             background-color: #85C410;
-            right: 6px;
+            right: 10px;
         }
         .c9-toolbarbutton-glossy.save .c9-icon {
             background-color: #D01616;
+            right: 10px;
         }
         .c9-toolbarbutton-glossy.save .c9-label {
             font-size: 9px;
@@ -2227,20 +2256,24 @@
         }
 
         .panel-settings {
-            background-position: 0px -270px;
-            right: 0;
+        	background-position: 0px -270px;
+        	right: 0;
         }
         .panel-settings:hover,
         .panel-settings.header-btnDown {
-            background-position: -30px -270px;
+        	background-position: -30px -270px;
         }
         .c9-header-plus {
-            background-position: 0px -294px;
-            right:31px;
-            top: 0;
+        	background-position: 0px -294px;
+        	right:31px;
+        	top: 0;
         }
+        .deploy.c9-header-plus {
+            right: 1px;
+        }
+        
         .c9-header-plus.header-btnOver {
-            background-position: -30px -294px;
+        	background-position: -30px -294px;
         }
         .c9-header-plus.header-btnDisabled {
             background-position: -60px -294px;
@@ -2250,6 +2283,11 @@
             right: 1px;
             top: 0;
         }
+        
+        .deploy.c9-header-minus {
+            right: -30px;
+        }
+        
         .c9-header-minus.header-btnOver {
             background-position: -30px -320px;
         }
@@ -2258,6 +2296,9 @@
         }
         .header-btnOver {
             background-color: rgba(255,255,255,.3);
+        }
+        .panel-settings:first-child {
+            background-color: transparent;
         }
         .c9-header-plus.header-btnDown {
             background-color: rgba(0,0,0,.05);
@@ -2398,20 +2439,20 @@
 <a:button name="mnubtn">
     <a:style><![CDATA[
         .mnubtn {
-            height   : 26px !important;
-            position : relative;
-            cursor   : default;
-            overflow : hidden;
-            display  : block;
-            border   : 0;
-            width    : 30px;
+			height   : 26px !important;
+			position : relative;
+			cursor   : default;
+			overflow : hidden;
+			display  : block;
+			border   : 0;
+			width    : 30px;
         }
 
         .mnubtnOver,
         .mnubtnDown {
-            background-image: url(images/c9-repeat-x.png);
-            background-repeat: repeat-x;
-            box-shadow: -1px 0 0 0 #000, 1px 0 0 0 #000;
+        	background-image: url(images/c9-repeat-x.png);
+        	background-repeat: repeat-x;
+        	box-shadow: -1px 0 0 0 #000, 1px 0 0 0 #000;
         }
         .mnubtnOver {
             background-position: 50% -181px;
@@ -2425,19 +2466,19 @@
         }
 
         .mnubtn .icon {
-            background-image  : url(images/c9-repeat-x.png);
-            background-repeat : no-repeat;
-            width             : 100%;
-            height            : 26px;
+			background-image  : url(images/c9-repeat-x.png);
+			background-repeat : no-repeat;
+			width             : 100%;
+			height            : 26px;
         }
 
         .mnubtnDisabled .icon {
-            opacity: 0.3;
+        	opacity: 0.3;
         }
 
         .mnubtnDisabled {
-            box-shadow: none;
-            background-image: none;
+        	box-shadow: none;
+        	background-image: none;
         }
 
         .mnubtn .pointer {
@@ -2990,7 +3031,8 @@
             padding: 0;
             width: 28px;
         }
-        .grouped_checkbox_holder .cbcontainerOver {
+        .grouped_checkbox_holder .cbcontainerOver,
+        .grouped_checkbox_holder .cbcontainerFocus {
             box-shadow: 0 0 0 1000px rgba(131,145,129,.08) inset;
         }
         .grouped_checkbox_holder .cbcontainer:first-child {
@@ -3035,7 +3077,7 @@
         .grouped_checkbox_holder .chkPreserveCase.cbcontainerChecked .checkbox { background-position: 50% -715px; }
         .grouped_checkbox_holder .chkSearchBackwards .checkbox { background-position: 50% -790px; }
         .grouped_checkbox_holder .chkSearchBackwards.cbcontainerChecked .checkbox { background-position: 50% -815px; }
-   
+        
         .grouped_checkbox_holder .chkWrapAround .checkbox { background-position: 50% -890px; }
         .grouped_checkbox_holder .chkWrapAround.cbcontainerChecked .checkbox { background-position: 50% -915px; }
         
@@ -3043,7 +3085,7 @@
         .grouped_checkbox_holder .chkSearchSelection.cbcontainerChecked .checkbox { background-position: 50% -865px; }
         .grouped_checkbox_holder .chkHighlightMatches .checkbox { background-position: 50% -740px; }
         .grouped_checkbox_holder .chkHighlightMatches.cbcontainerChecked .checkbox { background-position: 50% -765px; }
-
+        
         .grouped_checkbox_holder .chkConsole .checkbox { background-position: 50% -1150px; }
         .grouped_checkbox_holder .chkConsole.cbcontainerChecked .checkbox { background-position: 50% -1190px; }
 
@@ -3367,8 +3409,8 @@
           user-select: none;
           z-index : 10001 !important;
         }
-        
-        /* These nocorner classes apply to Search Results tab */
+ 
+         /* These nocorner classes apply to Search Results tab */
         .nocorner .ace_gutter {
             opacity: rgba(200, 200, 200, 0.3);
         }
@@ -3389,7 +3431,14 @@
             background: transparent;
         }
         
-        .ace_corner {
+        .ace_gutter .ace_gutter_active_line {
+            background: rgba(0, 0, 0, 0.07);
+        }
+        .dark .ace_gutter .ace_gutter_active_line {
+            background: rgba(255, 255, 255, 0.07);
+        }
+               
+        .ace_corner{
             position : absolute;
             left : 41px;
             top : -5px;
@@ -3406,7 +3455,7 @@
         .ace_scroller.horscroll {
             box-shadow: 17px 0px 16px -16px rgba(0,0,0,0.4) inset;
         }
-        
+
         .ace_editor .ace_printMargin {
           position: absolute;
           height: 100%;
@@ -3435,29 +3484,89 @@
 
         /*** TM ***/
 
+
+
+       /* 
+        * Gutter Icons
+       
+              .oooooo.                    .       .                         ooooo                                          
+             d8P'  `Y8b                 .o8     .o8                         `888'                                          
+            888           oooo  oooo  .o888oo .o888oo  .ooooo.  oooo d8b     888   .ooooo.   .ooooo.  ooo. .oo.    .oooo.o 
+            888           `888  `888    888     888   d88' `88b `888""8P     888  d88' `"Y8 d88' `88b `888P"Y88b  d88(  "8 
+            888     ooooo  888   888    888     888   888ooo888  888         888  888       888   888  888   888  `"Y88b.  
+            `88.    .88'   888   888    888 .   888 . 888    .o  888         888  888   .o8 888   888  888   888  o.  )88b 
+             `Y8bood8P'    `V88V"V8P'   "888"   "888" `Y8bod8P' d888b       o888o `Y8bod8P' `Y8bod8P' o888o o888o 8""888P' 
+                                                                                                                           
+        
+        */
+        .ace_gutter-layer .ace_gutter-cell {
+          background-repeat: no-repeat;
+        }
+
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
           background-image: url("icons/debugger/brkp_obj.png");
-          background-repeat: no-repeat;
           background-position: 4px center;
        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint {
+          background-image: url("icons/debugger/brkp_obj_dark.png");
+        }
 
        .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.arrow {
           background-image: url("icons/debugger/brkp_obj_current_line.png");
-          background-repeat: no-repeat;
           background-position: 4px center;
        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_breakpoint.ace_arrow {
+          background-image: url("icons/debugger/brkp_obj_current_line_dark.png");
+        }
 
        .ace_gutter-layer .ace_gutter-cell.arrow {
           background-image: url("icons/debugger/current_line.png");
-          background-repeat: no-repeat;
           background-position: 4px center;
        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_arrow {
+          background-image: url("icons/debugger/current_line_dark.png");
+        }
 
        .ace_gutter-layer .ace_gutter-cell.stack {
           background-image: url("icons/debugger/stack_co.png");
-          background-repeat: no-repeat;
           background-position: 4px center;
        }
+
+        .ace_gutter-layer .ace_gutter-cell.ace_error {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px 0;
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_error {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -20px;
+        }
+
+        .ace_gutter-layer .ace_gutter-cell.ace_warning {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -40px;
+        }
+        .ace_dark .ace_gutter-layer .ace_gutter-cell.ace_warning {
+            background-image: url(images/c9-no-repeat.png);
+            background-position: -462px -60px;
+        }
+
+        /* 
+         * Themes
+        
+             ooooooooooooo oooo                                                       
+             8'   888   `8 `888                                                       
+                  888       888 .oo.    .ooooo.  ooo. .oo.  .oo.    .ooooo.   .oooo.o 
+                  888       888P"Y88b  d88' `88b `888P"Y88bP"Y88b  d88' `88b d88(  "8 
+                  888       888   888  888ooo888  888   888   888  888ooo888 `"Y88b.  
+                  888       888   888  888    .o  888   888   888  888    .o o.  )88b 
+                 o888o     o888o o888o `Y8bod8P' o888o o888o o888o `Y8bod8P' 8""888P' 
+                                                                                      
+         */
+
+         .ace-solarized-light .fm-window .fm-content,
+         .fm-window .fm-header .hcontent {
+            background-color: rgba(220, 220, 220, 0.73);
+         }
     ]]></a:style>
     <a:presentation>
         <a:main content="." corner="div[1]">
@@ -3498,11 +3607,11 @@
         }
 
         .noscrollbar .headings {
-            margin : -21px 1px 0 0;
-        }
-        .noscrollbar .datagrid{
-            background : transparant;
-        }
+    	    margin : -21px 1px 0 0;
+		}
+		.noscrollbar .datagrid{
+		    background : transparant;
+		}
 
         .datagrid .headings div{
             background : -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(229,229,229)),color-stop(1, rgb(248,248,248)));
@@ -3925,7 +4034,7 @@
         }
     ]]></a:style>
     <a:style condition="apf.isWin">
-        .datagrid .headings{
+    	.datagrid .headings{
             margin : -20px 17px 0 0;
         }
     </a:style>
@@ -3975,8 +4084,8 @@
         }
 
         .datagrid div.records .treecell strong {
-            top : 0px;
-        }
+			top : 0px;
+		}
 
         .draggrid .treecell .iconCell,
         .datagrid .records span.treecell .iconCell {
@@ -4555,6 +4664,12 @@
         .divider-status-bar {
             border: none;
             background: url(images/toolbar-divider.png) 0px 0px repeat-y;
+        }
+        
+        .dark .divider-status-bar {
+            background: none;
+            border-left: 1px solid rgba(0,0,0,.3);   
+            border-right: 1px solid rgba(255,255,255,.05);
         }
         
         .ace_dark .divider-status-bar {
@@ -5203,26 +5318,26 @@
     ]]></a:style>
     <a:style condition="apf.isIE6">
         .frame {
-            height: 1%;
-        }
+    	    height: 1%;
+    	}
     </a:style>
     <a:style condition="!apf.isIE">
-        .frame .legend{
-            margin : 5px 0 2px -3px;
-        }
+    	.frame .legend{
+    	    margin : 5px 0 2px -3px;
+    	}
     </a:style>
     <a:style condition="apf.isWebkit">
-        .frame .legend{
-            height:15px
-        }
+    	.frame .legend{
+    	    height:15px
+    	}
     </a:style>
     <a:style condition="apf.isIE &gt; 7">
         .frame {
             padding-top : 10px;
         }
         .frame .legend{
-            margin : -15px 0 2px -3px;
-        }
+    	    margin : -15px 0 2px -3px;
+    	}
     </a:style>
     <a:style condition="apf.isChrome"><![CDATA[
         .frame {
@@ -5257,13 +5372,13 @@
         }
 
         .run-panel-info {
-            background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
+        	background: rgba(230, 230, 230, 0.8) url(images/c9-repeat-x.png) repeat-x;
             background-position:  0 -954px;
             border-right: 1px solid white;
-            padding: 10px 10px 4px 10px;
+			padding: 10px 10px 4px 10px;
         }
         .run-panel-info .black_label {
-            color: #919191;
+        	color: #919191;
             text-shadow: 0 1px 0 white;
         }
         .run-panel-info .btextbox {
@@ -5285,7 +5400,7 @@
         }
 
         .run-panel-info .hbox {
-            padding-bottom: 5px !important;
+        	padding-bottom: 5px !important;
         }
     ]]></a:style>
 
@@ -5355,12 +5470,19 @@
             padding : 2px 3px 4px 10px;
             border-top : 1px solid rgba(255,255,255,0.8);
             border-bottom : 1px solid rgba(0,0,0,0.1);
-            font-size : 11px;
             cursor : default;
             white-space : nowrap;
         }
         .searchresults>div:hover{
-            background : rgba(255,255,255,0.6);
+            box-shadow : 0 0 0 1000em rgba(255,255,255,0.6) inset;
+        }
+        .dark .searchresults>div {
+            background : rgba(255,255,255,0.1);   
+            border-top-color: rgba(255,255,255,0.05);
+            border-bottom-color : rgba(0,0,0,0.3);
+        }
+        .dark .searchresults>div:hover{
+            box-shadow : 0 0 0 1000em rgba(255,255,255,0.1) inset;
         }
         .searchresults>div>span{
             font-size : 14px;
@@ -5368,14 +5490,23 @@
             display : block;
             padding : 2px;
         }
-        .searchresults>div>span>strong{
-            color : #111;
+        .searchresults .path {
+            font-size: 11px;
+            opacity: .9;
         }
         .searchresults>div.selected{
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(51,124,188)),color-stop(1, rgb(64,145,216)));
             background: -moz-linear-gradient(center bottom,rgb(51,124,188) 0%,rgb(64,145,216) 100%);
-            color : white;
         }
+        .dark .searchresults>div.selected{
+            background: none !important;
+            box-shadow: none !important;
+        }
+        .searchresults>div.selected,
+        .searchresults>div.selected>span {
+            color : white !important;
+        }
+        
         .searchresults>div.selected>span{
             color : #f1f1f1;
         }
@@ -6113,7 +6244,7 @@
                 overflow : hidden;
                 z-index  : 10000;
                 padding  : 30px 0 0 0;
-                border-right: 1px solid rgba(43,43,43,0.5);
+                border-right: 1px solid rgba(43,43,43,0.4);
             }
 
             .fm-window .fm-header {
@@ -6124,7 +6255,13 @@
             }
 
             .fm-window .fm-header .hcontent {
-                background    : url(images/c9-repeat-x.png)  repeat-x 0 -138px;
+                background-color: rgba(220, 220, 220, 0.93);
+                background-image: url(images/c9-repeat-x.png),
+                                  url(images/c9-noise-light-10.png),
+                                  url(images/c9-noise-light-10.png),
+                                  url(images/c9-noise-light-10.png);
+                background-position: 0 -138px, 0 0;
+                background-repeat: repeat-x;
                 position      : relative;
                 overflow      : hidden;
                 height        : 26px;
@@ -6134,7 +6271,7 @@
                 line-height   : 14px;
                 color         : #595959;
                 text-shadow   : #fff 0px 1px 0px;
-                box-shadow       : -1px 0 0 0 rgba(255,255,255,.8) inset;
+                box-shadow 	  : -1px 0 0 0 rgba(255,255,255,.4) inset;
                 text-transform : uppercase;
             }
 
@@ -6145,14 +6282,13 @@
                 top  : 32px;
                 right : 0;
                 bottom : 0;
-                box-shadow: 0 1px 0 0 rgba(255,255,255,0.4) inset, /* top */
-                            -1px 0 0 0 rgba(255,255,255,.9) inset; /* right */
-                background-color: rgba(220, 220, 220, 0.8);
+                box-shadow: 0 1px 0 0 rgba(255,255,255,0.3) inset, /* top */
+                			-1px 0 0 0 rgba(255,255,255,.4) inset; /* right */
+                background-color: rgba(220, 220, 220, 0.93);
                 background-image:   -webkit-linear-gradient(180deg, rgba(0,0,0,.03) 0, transparent 35px),
-                                    url(images/c9-noise-light-10.png),
-                                    url(images/c9-noise-light-10.png),
-                                    url(images/c9-noise-light-10.png), 
-                                    url(images/c9-noise-light-10.png);
+                					url(images/c9-noise-light-10.png),
+                					url(images/c9-noise-light-10.png),
+                					url(images/c9-noise-light-10.png);
             }
         ]]></a:style>
 
@@ -6868,7 +7004,8 @@
         <a:cover>
             <div class="bk-window-cover" opacity="1">
                 <div class="header"> </div>
-                <div class="logo"> </div>
+                <div class="c9-mbar-round"> <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
+                </div>
             </div>
         </a:cover>
     </a:presentation>
@@ -8604,11 +8741,11 @@
     .tab_console .btncontainer .btntab .tab_console_title {
         overflow : hidden;
         padding  : 0 0 0 0;
-        -moz-user-select: -moz-none;
-        -khtml-user-select: none;
-        -webkit-user-select: none;
-        -o-user-select: none;
-        user-select: none;
+		-moz-user-select: -moz-none;
+	    -khtml-user-select: none;
+	    -webkit-user-select: none;
+	    -o-user-select: none;
+	    user-select: none;
     }
 
     .tab_console .btncontainer .btntab.btnclose .tab_console_title {
@@ -8758,22 +8895,26 @@
     }
     
     .editor_tab .btnsesssioncontainer {
-        padding : 0px 45px 0 21px;    
-        height: 26px;
+        background: rgba(24,24,24,.9) url(images/c9-noise.png);
+        padding : 0 100px 0 21px;  
+        height: 27px;
         overflow: visible;
         white-space: nowrap;
         color: #f5f5f5;
         font-family : Arial;
         font-size : 12px;
-        border-bottom : 1px solid #000;
-        background: rgba(24,24,24,.9) url(images/c9-noise.png);
         width : auto;
 
-        -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-           -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-                box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-
         position: relative;
+
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset, 0 1px 0 0 rgba(255, 255, 255, .9);
+        margin-bottom: 1px;
+    }
+    .dark .editor_tab .btnsesssioncontainer {
+        box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset, 0 1px 0 0 rgba(255, 255, 255, .1);
+    }
+    .editor_tab.hidetabs .btnsesssioncontainer {
+        padding-right: 80px;
     }
         
     .editor_tab .btnsesssioncontainer > div {
@@ -8788,12 +8929,12 @@
      * Tab shape
      * --------------------------------------------------------------------------------------- */
     .editor_tab .session_btn {
-        padding      : 0 20px;
-        position     : relative;
-        margin-right : -20px;
-        margin-top   : 0;
-        height       : 21px;
-        overflow     : visible;
+		padding      : 0 20px;
+		position     : relative;
+		margin-right : -20px;
+		margin-top   : 0;
+		height       : 21px;
+		overflow     : hidden;
     }
     .editor_tab .tab_middle {
         height   : 18px;
@@ -8830,7 +8971,8 @@
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .btnclose .tab_middle > strong {
+    .editor_tab .btnclose .tab_middle > strong,
+    .dark .editor_tab .btnclose.curbtn .tab_middle > strong {
         width               : 14px;
         height              : 14px;
         display             : block;
@@ -8853,11 +8995,13 @@
     /* ------------------------------------------------------------------------------------------
      * Unselected tab hover
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .btnclose .tab_middle > strong:hover {
+    .editor_tab .btnclose .tab_middle > strong:hover,
+    .dark .editor_tab .btnclose.curbtn .tab_middle > strong:hover {
         background-position : -14px -14px;
     }
 
-    .editor_tab .btnclose .tab_middle > strong:active {
+    .editor_tab .btnclose .tab_middle > strong:active,
+    .dark .editor_tab .btnclose.curbtn .tab_middle > strong:active {
         background-position : -28px -14px;
     }
 
@@ -8867,16 +9011,23 @@
     /* ------------------------------------------------------------------------------------------
      * Selected tab default state
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .curbtn {;
+    .editor_tab .btnsesssioncontainer .curbtn {
         cursor      : default;
-        height      : 22px;
+        height      : 23px;
         text-shadow : 0px 1px 0px rgba(255, 255, 255, .4);
-        top         : 1px;
         z-index     : 10;
+    }
+    .dark .editor_tab .curbtn {
+        text-shadow : 0px 1px 0px rgba(0, 0, 0, .4);
+    }
+    .editor_tab .curbtn .tab_middle:before,
+    .editor_tab .curbtn .tab_middle:after {
+        height: 23px;
     }
     .editor_tab .curbtn .tab_middle {
         background-color    : #e8e8e8;
         color               : #000;
+        height              : 19px;
         padding-top         : 4px;
         text-shadow         : 0 1px 0 0 rgba(255,255,255,.4);
     }
@@ -8937,46 +9088,57 @@
     }
 
     .editor_tab .btnsesssioncontainer .plus_tab_button {
-        background-image: url(images/c9-no-repeat.png);
-        background-position: -58px -80px;
-        background-repeat: no-repeat;
-        display: inline-block;
-        height: 17px;
-        margin: 0px 0px 0 12px;
-        top: 6px;
-        width: 30px;
+		background-image: url(images/c9-no-repeat.png);
+		background-position: -58px -80px;
+		background-repeat: no-repeat;
+    	display: inline-block;
+		height: 17px;
+		margin: 0px 0px 0 12px;
+		top: 6px;
+		width: 30px;
         vertical-align : top;
     }
     .editor_tab .btnsesssioncontainer .plus_tab_button:hover {
-        background-position: -58px -106px;
+		background-position: -58px -106px;
     }
     .editor_tab .btnsesssioncontainer .plus_tab_button:active {
-        background-position: -58px -132px;
+		background-position: -58px -132px;
     }
 
     .editor_tab .btnsesssioncontainer > .tabmenubtn {
-        background: url(images/c9-no-repeat.png) no-repeat -98px -80px;
-        height: 17px;
-        left: 4px;
-        position: absolute;
-        top: 7px;
-        width: 19px;
+    	background: url(images/c9-no-repeat.png) no-repeat -98px -80px;
+    	height: 17px;
+    	left: 4px;
+    	position: absolute;
+    	top: 7px;
+    	width: 19px;
     }
     .editor_tab .btnsesssioncontainer > .tabmenubtn:hover {
-        background-position: -98px -106px;
+    	background-position: -98px -106px;
     }
     .editor_tab .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
-        background-position: -98px -132px;
-        z-index: 10000000;
+    	background-position: -98px -132px;
+    	z-index: 10000000;
+    }
+    .tabsContextMenu:before {
+        background: url(images/c9-no-repeat.png) no-repeat -98px -132px;
+        content: "";
+        display: block;
+        height: 17px;
+        left: -1px;
+        pointer-events: none;
+        position: absolute;
+        top: -17px;
+        width: 19px;
     }
 
     /* ------------------------------------------------------------------------------------------
-     * LEGACY CODE
-     * --------------------------------------------------------------------------------------- */
+	 * LEGACY CODE
+	 * --------------------------------------------------------------------------------------- */
     .editor_tab .tab_middle {
         background-image    : url(images/editor_tab.png);
         background-position : 0 -104px;
-        height              : 20px;
+        height              : 18px;
         position            : relative;
         overflow            : hidden;
         padding             : 4px 0 0 0;
@@ -9045,33 +9207,33 @@
     }
     .editor_tab.hidetabs .tab_middle *,
     .editor_tab.hidetabs .btnclose .tab_middle > strong {
-        display: none;
+    	display: none;
     }
     .editor_tab.hidetabs .tab_middle:before,
     .editor_tab.hidetabs .tab_middle:after {
-        -webkit-mask-image  : none;
-        top                 : 0;
-        width: 19px;
+		-webkit-mask-image  : none;
+		top                 : 0;
+		width: 19px;
     }        
     
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
-        border-bottom: 2px solid transparent;
+    	border-bottom: 2px solid transparent;
         height: 5px;
-        overflow: hidden;
-        top : 4px;
+    	overflow: hidden;
+        top : 5px;
     }
     .editor_tab.hidetabs .session_btn .tab_middle {
-        overflow: visible;
+    	overflow: visible;
     }
     .editor_tab.hidetabs .session_btn .tab_left,
     .editor_tab.hidetabs .session_btn .tab_right {
-        display: none;
+    	display: none;
     }
     .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle {
-        background-color: #7A7A7A;
+    	background-color: #7A7A7A;
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
         background-position : 50% -124px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
@@ -9087,13 +9249,13 @@
     }
 
     .editor_tab.hidetabs .tab_middle {
-        border-top-right-radius: 1px;
+    	border-top-right-radius: 1px;
     }
     .editor_tab.hidetabs .tab_middle:before {
-        border-top-left-radius: 1px;
+    	border-top-left-radius: 1px;
     }
     .editor_tab.hidetabs .session_btn:not(.curbtn) .tab_middle:after {
-        display: none;
+    	display: none;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9106,9 +9268,9 @@
      * Selected tab default state
      * --------------------------------------------------------------------------------------- */
     .editor_tab.hidetabs .curbtn {
-        height: 8px;
-        overflow: hidden;
-        top : 3px;
+    	height: 8px;
+    	overflow: hidden;
+        top : 5px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle {
         background-image    : url(images/c9-repeat-x.png), url(images/c9-repeat-x.png);
@@ -9116,14 +9278,20 @@
         background-repeat   : no-repeat, repeat-x;
         border-top-right-radius: 1px;   
     }
+    .dark .editor_tab.hidetabs .curbtn .tab_middle {
+        background-position: 50% -129px, 0 -1185px;
+    }
     .editor_tab.hidetabs .curbtn .tab_middle:before {
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -111px;
         background-repeat   : repeat-x;
-        border-top-left-radius: 1px;    
+    	border-top-left-radius: 1px;	
+    }
+    .dark .editor_tab.hidetabs .curbtn .tab_middle:before {
+        background-position: 0 -1185px;
     }
     .editor_tab.hidetabs .curbtn .tab_middle:after {
-            display: none;
+    		display: none;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -9135,29 +9303,29 @@
      * Minimized tab elements
      * --------------------------------------------------------------------------------------- */
     /*.editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button {
-        background-position: -58px -158px;
-        height: 10px;
-        margin: 0px 0px 5px 3px;
-        top: 2px;
+		background-position: -58px -158px;
+		height: 10px;
+		margin: 0px 0px 5px 3px;
+		top: 2px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button:hover {
-        background-position: -58px -178px;
+		background-position: -58px -178px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button:active {
-        background-position: -58px -198px;
+		background-position: -58px -198px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn {
-        background-position: -98px -158px;
-        height: 9px;
-        left: 1px;
-        top: 2px;
-        width: 19px;
+    	background-position: -98px -158px;
+    	height: 9px;
+    	left: 1px;
+    	top: 2px;
+    	width: 19px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn:hover {
-        background-position: -98px -178px;
+    	background-position: -98px -178px;
     }
     .editor_tab.hidetabs .btnsesssioncontainer > .tabmenubtn.btn_icon_onlymenuDown {
-        background-position: -98px -198px;
+    	background-position: -98px -198px;
     }*/
     
     .editor_tab.hidetabs .btnsesssioncontainer .plus_tab_button,
@@ -9213,6 +9381,14 @@
         background-position : 0 -57px;
         background-repeat   : repeat-x;
         top                 : 0;
+    }
+  
+    .dark .editor_tab .step1 .curbtn .tab_middle:before,
+    .dark .editor_tab .step2 .curbtn .tab_middle:before,
+    .dark .editor_tab .step3 .curbtn .tab_middle:before,
+    .dark .editor_tab .step4 .curbtn .tab_middle:before,
+    .dark .editor_tab .step5 .curbtn .tab_middle:before {
+        background-position : 0 -1126px;
     }
   
 
@@ -9272,19 +9448,27 @@
         color: #d9d9d9;
     }
 
-    .codeditorHolder {
-    }
-    
     .editor_tab.offline .btnsesssioncontainer .btnclose strong{
         display : none;
     }
 
+    .codeditorHolder .editor_tab {
+        background-color: rgba(220, 220, 220, 0.93);
+        background-image: url(images/c9-noise-light-10.png),
+                          url(images/c9-noise-light-10.png),
+                          url(images/c9-noise-light-10.png);
+    }
     .editor_tab .editor_bg {
         height : 100%;
         position : absolute;
+        /* Old, from before merge
         top : 0;
         margin : 0 auto 0 auto;
         background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;
+	*/
+        top : 25%;
+        margin: -100px auto 0 auto;
+        /*background: #e8e8e8 url(images/editor_tab_bg.png) repeat 0 0;*/
         /*border-bottom: 1px solid #8c8c8c;
         border-left: 1px solid #8c8c8c;
         border-right: 1px solid #8c8c8c;*/
@@ -9292,6 +9476,7 @@
         clear: both;
         left: 0;
         right: 0;
+        opacity: .8;
     }
 
     .editor_tab .editor_bg .editor_bg_content {
@@ -9411,19 +9596,19 @@
     }
 
     .editor_tab .tab_right, .editor_tab .tab_left {
-        height : 22px;
+        height : 23px;
     }
 </a:style>
 <a:style condition="apf.isWebkit">
-    /* ------------------------------------------------------------------------------------------
+	/* ------------------------------------------------------------------------------------------
      * Tab shape
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .tab_middle {
+	.editor_tab .tab_middle {
         overflow: visible;
     }
     .editor_tab .tab_left,
     .editor_tab .tab_right {
-        display: none;
+    	display: none;
     }
     .editor_tab .scale .btn .tab_middle {
         display : block;
@@ -9431,22 +9616,29 @@
         text-overflow : ellipsis;
         white-space : nowrap;
     }
-
+    .editor_tab .session_btn {
+        overflow: visible;
+    }
     /* ------------------------------------------------------------------------------------------
      * Unselected tab default state
      * --------------------------------------------------------------------------------------- */
-    .editor_tab .session_btn:not(.curbtn) .tab_middle,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:before,
     .editor_tab .session_btn:not(.curbtn) .tab_middle:after {
-        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
+        box-shadow   : 0 1px 0 0 rgba(255,255,255,.10) inset, 0 -1px 0 0 #000 inset;
     }
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
-        box-shadow   : 0 0px 0 1px rgba(0,0,0,0.7), 0 -3px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
+        box-shadow   : 0 -1px 0 0 #000 inset, 0 1px 0 0 rgba(255,255,255,.10) inset;
     }
     .editor_tab .session_btn .tab_middle {
         background-image    : url(images/c9-repeat-x.png);
         background-repeat   : repeat-x;
         background-position : 0 -79px;
+    }
+    .dark .editor_tab .session_btn .tab_middle {
+        background-position : 0 -1155px;
+    }
+    .dark .editor_tab .session_btn:not(.curbtn) .tab_middle .sessiontab_title {
+        color: rgba(255,255,255,.5);
     }
     .editor_tab .session_btn:not(.curbtn) .tab_middle {
         background-color    : #303030;
@@ -9461,10 +9653,16 @@
         background-position : 0 -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
     }
+    .dark .editor_tab .session_btn .tab_middle:before {
+        background-position : 0 -158px, 0 -1155px;
+    }
     .editor_tab .session_btn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
         background-position : -31px -158px, 0 -79px;
         background-repeat   : no-repeat, repeat-x;
+    }
+    .dark .editor_tab .session_btn .tab_middle:after {
+        background-position : -31px -158px, 0 -1155px;
     }
     
     /* ------------------------------------------------------------------------------------------
@@ -9481,16 +9679,24 @@
         background-image    : url(images/c9-repeat-x.png);
         background-position : 0 -57px;
         background-repeat   : repeat-x;
-        /*box-shadow          : 0 0px 0 1px rgba(0,0,0,0.7);*/
         color               : #000;
+    }
+    .dark .editor_tab .curbtn .tab_middle {
+        background-position : 0 -1126px;
     }
     .editor_tab .curbtn .tab_middle:before {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
         background-position : 0px -132px, 0 -57px;
     }
+    .dark .editor_tab .curbtn .tab_middle:before {
+        background-position : 0px -192px, 0 -1126px;
+    }
     .editor_tab .curbtn .tab_middle:after {
         background-image    : url(images/c9-no-repeat.png), url(images/c9-repeat-x.png);
         background-position : -31px -132px, 0 -57px;
+    }
+    .dark .editor_tab .curbtn .tab_middle:after {
+        background-position : -31px -192px, 0 -1126px;
     }
 
     /* ------------------------------------------------------------------------------------------
@@ -11127,7 +11333,7 @@
         }
 
         .filemgr-treeFocus > .item-fix.selected:first-child {
-            border-top-color:#166CAD;
+        	border-top-color:#166CAD;
         }
 
         .filemgr-tree .item SPAN {
@@ -11140,38 +11346,41 @@
             text-indent : -2000px;
         }
         
+        .filemgr-tree.openfile .item {
+            padding: 0 14px 0 0;
+        }
         .filemgr-tree.openfile .item SPAN{
-            left: 3px;
-            display: block;
-            text-indent: 0;
-            line-height: 6px;
-            width: 7px;
-            height: 7px;
-            padding: 2px 3px 5px 3px;
-            font-family: Tahoma;
-            font-size: 11px;
-            top: 2px;
+            background: url(images/close_tab_btn.png) no-repeat -14px 0;
             cursor: default;
+            display: block;
+            height: 14px;
+            left: auto !important;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            right: 2px;
+            text-indent: 100%;
+            top: 2px;
+            width: 14px;
             z-index: 1000;
-            text-shadow: 1px 1px 0px white;
-            color: #999;
         }
-        .filemgr-tree.openfile .item-fix SPAN:hover{
-            color : #555;
+        .filemgr-tree.openfile .item:hover SPAN {
+            opacity: 1;
         }
-        .filemgr-tree.openfile .item-fix.selected SPAN{
-            color : rgb(17,82,139);
-            text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+        .filemgr-tree.openfile .item SPAN:hover {
+            background-position: -14px 0;
         }
+        .filemgr-tree.openfile .item SPAN:active {
+            background-position: -28px 0;
+            opacity: 1 !important;
+        }
+        
+        .filemgr-tree.openfile .item-fix.selected SPAN,
         .filemgr-tree.openfile .item-fix.selected SPAN:hover{
-            color : #041b2f;
-        }
-        .filemgr-tree.openfile .item-fix SPAN:active{
-            color : red;
-            text-shadow: 1px 1px 0 rgba(255,0,0,0.3);
+            background-position: -14px -14px;
         }
         .filemgr-tree.openfile .item-fix.selected SPAN:active{
-            color : red;
+            background-position: -28px -14px;
         }
         
         .filemgr-tree U.root .item-fix.min .item SPAN,
@@ -11689,7 +11898,7 @@
             /* Temporary spot */
             .find-and-replace {
                 background-image: url(images/c9-find-and-replace.png), url(images/c9-noise-with-background.png);
-                background-position: 100% 1px, 0 0;          
+                background-position: 100% 1px, 0 0;
                 background-repeat: repeat-y, repeat;
                 box-shadow: 0 1px 0 0 rgba(255,255,255,.1) inset, 0 0 17px 1px rgba(0,0,0,.7) inset;
                 border-top: 1px solid #000;
@@ -11772,7 +11981,7 @@
             
             .searchTxt .btnclose {
                 position: absolute;
-                top: 7px;
+                top: 6px;
                 right: 8px;
                 width: 14px;
                 height: 14px;

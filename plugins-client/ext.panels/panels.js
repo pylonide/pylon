@@ -65,9 +65,11 @@ module.exports = ext.register("ext/panels/panels", {
             }
         });
         
-        var active = settings.model.queryValue("auto/panels/@active");
-        if (panelExt["default"] && !active || active == panelExt.path)
-            _self.activate(panelExt, null, true);
+        ide.addEventListener("init.ext/remotecontrol/remotecontrol", function(e){
+        	var active = settings.model.queryValue("auto/panels/@active");
+        	if ((panelExt["default"] && !active || active == panelExt.path) && e.currentTarget.workspaceId !== "generic")
+            	_self.activate(panelExt, null, true);
+        });
     },
     
     animate : function(win, toWin, toWidth){
