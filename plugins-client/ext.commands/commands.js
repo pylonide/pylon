@@ -82,7 +82,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             if (Array.isArray(command)) {
                 for (var i = command.length; i--; ) {
                     var cmd = command[i];
-                    if (!cmd.isAvailable || cmd.isAvailable(editor))
+                    if (!cmd.isAvailable || cmd.isAvailable(editor, e))
                         break;
                     else
                         cmd = null;
@@ -90,7 +90,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 if (!cmd)
                     return;
                 command = cmd;
-            } else if (command.isAvailable && !command.isAvailable(editor))
+            } else if (command.isAvailable && !command.isAvailable(editor, e))
                 return; //Disable commands for other contexts
 
             if (command.findEditor)

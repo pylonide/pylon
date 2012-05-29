@@ -67,7 +67,8 @@ var config = {
                 bundledPlugins: [
                     "helloworld"
                 ],
-                real: false,
+                packed: false,
+                packedName: "",
                 clientPlugins: [
                     "ext/filesystem/filesystem",
                     "ext/settings/settings",
@@ -129,6 +130,8 @@ var config = {
                     "ext/closeconfirmation/closeconfirmation",
                     "ext/codetools/codetools",
                     "ext/colorpicker/colorpicker",
+                    "ext/gitblame/gitblame",
+                    //"ext/githistory/githistory",
                     "ext/revisions/revisions",
                     "ext/language/liveinspect",
                     "ext/jsinfer/jsinfer"

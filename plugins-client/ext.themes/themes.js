@@ -87,7 +87,7 @@ module.exports = ext.register("ext/themes/themes", {
             apf.setStyleClass(document.body, "dark");
         else
             apf.setStyleClass(document.body, "", ["dark"]);
-        
+
         var cssClass = theme.cssClass;
         
         if (_self.lastTheme)
@@ -102,15 +102,24 @@ module.exports = ext.register("ext/themes/themes", {
         
         var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
         var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
-        
+
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],
             ["body." + cssClass + " > .vbox, "
              + "." + cssClass + " .editor_tab .curbtn .tab_middle, "
              + "." + cssClass + " .codeditorHolder, "
+             + "." + cssClass + " .winGoToFile, "
+             + "." + cssClass + " .revisionsBar .topbar, "
+             + "." + cssClass + " .revisionsBar .revisionsHolder, "
+             + "." + cssClass + " .code_complete_text_holder, "
              + "." + cssClass + " .session_page", 
              "color:" + fg + " !important; background-color: " + bg + " !important"],
+            ["." + cssClass + " .searchresults > div > span, "
+             + "." + cssClass + ".dark .revisions-list .revision, "
+             + "." + cssClass + ".dark .cc_complete_option, "
+             + "." + cssClass + " .searchresults > div",
+            "color:" + fg + ";"],
             ["." + cssClass + " .ace_corner", 
              "border-color:" + bg + " !important; box-shadow: 4px 4px 0px " 
              + bg + " inset !important;"]

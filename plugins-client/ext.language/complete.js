@@ -17,7 +17,7 @@ var oldCommandKey, oldOnTextInput;
 var isDocShown;
 var drawCompletionBox;
 
-var CLASS_SELECTED = "cc_complete_option_selected";
+var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var MENU_WIDTH = 300;
 var MENU_SHOWN_ITEMS = 8;
@@ -142,6 +142,7 @@ module.exports = {
         this.completionElement = txtCompleter.$ext;
         this.docElement = txtCompleterDoc.$ext;
         this.cursorConfig = ace.renderer.$cursorLayer.config;
+        this.cursorConfig.lineHeight += 4;
         var style = dom.computedStyle(this.editor.amlEditor.$ext);
         this.completionElement.style.fontSize = style.fontSize;
         
@@ -162,8 +163,12 @@ module.exports = {
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
         var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
-        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight + 1));
+        var completionBoxHeight = 11 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight));
         var cursorLayer = ace.renderer.$cursorLayer;
+        
+        var innerBoxLength = this.matches.length || 1;
+        var innerCompletionBoxHeight = Math.min(10 * this.cursorConfig.lineHeight, innerBoxLength * (this.cursorConfig.lineHeight));
+        txtCompleterHolder.$ext.style.height = innerCompletionBoxHeight + "px";
         
         setTimeout(drawCompletionBox = function() {
             var completionBoxWidth = isDocShown ? MENU_WIDTH * 2 : MENU_WIDTH;
@@ -245,7 +250,6 @@ module.exports = {
             });
             matchEl.style.height = cursorConfig.lineHeight + "px";
             matchEl.style.width = (MENU_WIDTH - 10) + "px";
-            matchEl.style.color = 0xaaaaaa;
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });
@@ -255,6 +259,7 @@ module.exports = {
     updateDoc : function() {
         this.docElement.innerHTML = '<span class="codecompletedoc_body">';
         var selected = this.matches[this.selectedIdx];
+
         if (selected && selected.doc) {
             if (!isDocShown) {
                 isDocShown = true;
@@ -262,6 +267,10 @@ module.exports = {
                     drawCompletionBox();
             }
             this.docElement.innerHTML += selected.doc + '</span>';
+            txtCompleterDoc.parentNode.show();   
+        }
+        else {
+            txtCompleterDoc.parentNode.hide();   
         }
         if (selected && selected.docUrl)
             this.docElement.innerHTML += '<div><a href="' + selected.docUrl + '" target="c9doc">(more)</a></div>';
