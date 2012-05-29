@@ -66,9 +66,9 @@
                 <a:item type="check"
                   checked = "[{require('core/settings').model}::auto/console/@autoshow]"
                   caption = "Auto-show console when running" />
-                <a:item type="check"
+                <!--a:item type="check"
                   checked = "[{require('core/settings').model}::auto/console/@clearonrun]"
-                  caption = "Clear output on run" />
+                  caption = "Clear output on run" /-->
             </a:menu>
 
             <a:hbox id="cliBox" class="consoleInputBox" edge="1 1 2 1" padding="4" pack="end" visible="false">

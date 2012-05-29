@@ -236,7 +236,8 @@ module.exports = (function () {
         
         // I have to do a fairly weak filename compare. 
         // An improvement is to store the full path in the stack model.
-        if (apf.getFilename(page.getModel().queryValue("@path")) != scriptName)
+        if (page.getModel().queryValue("@path")
+            .substr(ide.davPrefix.length + 1) != scriptName)
             return false;
         
         return true;

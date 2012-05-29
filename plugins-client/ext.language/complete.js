@@ -11,7 +11,7 @@ var dom = require("ace/lib/dom");
 var keyhandler = require("ext/language/keyhandler");
 
 var lang = require("ace/lib/lang");
-var ID_REGEX = /[a-zA-Z_0-9\$]/;
+var ID_REGEX = /[a-zA-Z_0-9\$\_]/;
 
 var oldCommandKey, oldOnTextInput;
 
@@ -38,15 +38,29 @@ function retrievePreceedingIdentifier(text, pos) {
     return buf.reverse().join("");
 }
 
+function retrieveFollowingIdentifier(text, pos) {
+    var buf = [];
+    for (var i = pos; i < text.length; i++) {
+        if (ID_REGEX.test(text[i]))
+            buf.push(text[i]);
+        else
+            break;
+    }
+    return buf;
+}
+
 /**
  * Replaces the preceeding identifier (`prefix`) with `newText`, where ^^
- * indicates the cursor position after the replacement
+ * indicates the cursor position after the replacement.
+ * If the prefix is already followed by an identifier substring, that string
+ * is deleted.
  */
 function replaceText(editor, prefix, newText) {
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
     
+    // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
         newText += "^^";
 
@@ -55,6 +69,8 @@ function replaceText(editor, prefix, newText) {
         i++;
     
     var prefixWhitespace = line.substring(0, i);
+    
+    var postfix = retrieveFollowingIdentifier(line, pos.column) || "";
     
     // Pad the text to be inserted
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
@@ -68,7 +84,7 @@ function replaceText(editor, prefix, newText) {
     // Remove cursor marker
     paddedLines = paddedLines.replace("^^", "");
     
-    doc.removeInLine(pos.row, pos.column - prefix.length, pos.column);
+    doc.removeInLine(pos.row, pos.column - prefix.length, pos.column + postfix.length);
     doc.insert({row: pos.row, column: pos.column - prefix.length}, paddedLines);
     editor.moveCursorTo(pos.row + rowOffset, pos.column + colOffset - prefix.length);
 }
@@ -177,15 +193,26 @@ module.exports = {
         var _self = this;
         _self.completionElement.innerHTML = "";
         var cursorConfig = ceEditor.$editor.renderer.$cursorLayer.config;
+        var hasIcons = false;
+        matches.forEach(function(match) {
+            if (match.icon)
+                hasIcons = true;
+        });
         matches.forEach(function(match, idx) {
             var matchEl = dom.createElement("div");
             matchEl.className = idx === _self.selectedIdx ? "cc_complete_option_selected" : "cc_complete_option";
             var html = "";
             
-            if(match.icon)
+            if (match.icon)
                 html = "<img src='/static/ext/language/img/" + match.icon + ".png'/>";
-            html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
-            if(match.meta) {
+            if (!hasIcons || match.icon) {
+                html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
+            }
+            else {
+                html += "<span class='main'>" + match.name;
+                matchEl.style.color = "#666666";
+            }
+            if (match.meta) {
                 html += '<span class="meta">' + match.meta + '</span>';
             }
             html += '</span>';
@@ -201,6 +228,7 @@ module.exports = {
                 amlEditor.focus();
             });
             matchEl.style.height = cursorConfig.lineHeight + "px";
+            matchEl.style.color = 0xaaaaaa;
             _self.completionElement.appendChild(matchEl);
             _self.matchEls.push(matchEl);
         });

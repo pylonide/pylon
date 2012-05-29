@@ -2239,6 +2239,10 @@
         	right:31px;
         	top: 0;
         }
+        .deploy.c9-header-plus {
+            right: 1px;
+        }
+        
         .c9-header-plus.header-btnOver {
         	background-position: -30px -294px;
         }
@@ -2250,6 +2254,11 @@
             right: 1px;
             top: 0;
         }
+        
+        .deploy.c9-header-minus {
+            right: -30px;
+        }
+        
         .c9-header-minus.header-btnOver {
             background-position: -30px -320px;
         }
@@ -9382,6 +9391,14 @@
     }
     .editor_tab.hidetabs .curbtn {
         top: 5px;
+    }
+
+    .editor_tab .tab_middle {
+        height : 18px;
+    }
+
+    .editor_tab .tab_right, .editor_tab .tab_left {
+        height : 22px;
     }
 </a:style>
 <a:style condition="apf.isWebkit">
