@@ -50,14 +50,18 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         var runnerFactory = this.runners[runnerId];
         if (!runnerFactory)
             return callback("Could not find runner with ID " + runnerId);
-
-        var child = runnerFactory(options, this.eventEmitter, eventName);
-        child.spawn(function(err) {
+            
+        runnerFactory(options, this.eventEmitter, eventName, function (err, child) {
             if (err)
                 return callback(err);
 
-            self.processes[child.pid] = child;
-            callback(null, child.pid, child);
+            child.spawn(function(err) {
+                if (err)
+                    return callback(err);
+    
+                self.processes[child.pid] = child;
+                callback(null, child.pid, child);
+            });
         });
     };
 
@@ -75,15 +79,19 @@ var ProcessManager = module.exports = function(runners, eventEmitter) {
         if (!runnerFactory)
             return onStart("Could not find runner with ID " + runnerId);
 
-        var child = runnerFactory(options, this.eventEmitter, "");
-        child.exec(function(err, pid) {
+        runnerFactory(options, this.eventEmitter, "", function (err, child) {
             if (err)
                 return onStart(err);
 
-            self.processes[child.pid] = child;
-            onStart(null, child.pid);
-
-        }, onExit);
+            child.exec(function(err, pid) {
+                if (err)
+                    return onStart(err);
+    
+                self.processes[child.pid] = child;
+                onStart(null, child.pid);
+    
+            }, onExit);
+        });
     };
 
     this.execCommands = function(runnerId, cmds, callback) {

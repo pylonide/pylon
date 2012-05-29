@@ -205,7 +205,7 @@
         .c9-menu-bar .c9-mbar-bcont .c9-mbar-minimize:hover {
             background-position: -21px -70px;
         }
-        .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
+        .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
             height: 37px;
             position: fixed;
@@ -214,14 +214,24 @@
             width: 74px;
             z-index: 999;
         }
+        .c9-mbar-round .mainlogo {
+            background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
+            display: block;
+            height: 26px;
+            left: 33px;
+            position: absolute;
+            text-indent: 100%;
+            top: 4px;
+            width: 37px;
+        }
 
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
-        	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
-        	height: 10px;
-        	left: 24px;
-        	position: absolute;
-        	top: 4px;
-        	width: 10px;
+            background : url(images/c9-no-repeat.png) no-repeat -84px 0;
+            height: 10px;
+            left: 24px;
+            position: absolute;
+            top: 4px;
+            width: 10px;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-activity .light {
             background : url(images/c9-no-repeat.png) no-repeat -102px -19px; /* nothing */
@@ -232,16 +242,6 @@
             width: 10px;
         }
 
-        .c9-menu-bar .mainlogo {
-            background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
-            display: block;
-            height: 26px;
-            left: 33px;
-            position: absolute;
-            text-indent: 100%;
-            top: 4px;
-            width: 37px;
-        }
         /* ------------------------------------------------------------------------------------------
          * c9 Menu Bar minimized
          * --------------------------------------------------------------------------------------- */
@@ -2268,6 +2268,10 @@
         	right:31px;
         	top: 0;
         }
+        .deploy.c9-header-plus {
+            right: 1px;
+        }
+        
         .c9-header-plus.header-btnOver {
         	background-position: -30px -294px;
         }
@@ -2279,6 +2283,11 @@
             right: 1px;
             top: 0;
         }
+        
+        .deploy.c9-header-minus {
+            right: -30px;
+        }
+        
         .c9-header-minus.header-btnOver {
             background-position: -30px -320px;
         }
@@ -6973,7 +6982,9 @@
         <a:cover>
             <div class="bk-window-cover" opacity="1">
                 <div class="header"> </div>
-                <div class="logo"> </div>
+                <div class="c9-mbar-round">
+                    <a href="/dashboard.html" class="mainlogo" target="_blank" title="back to dashboard">Dashboard</a>
+                </div>
             </div>
         </a:cover>
     </a:presentation>
@@ -9094,6 +9105,7 @@
         display: block;
         height: 17px;
         left: -1px;
+        pointer-events: none;
         position: absolute;
         top: -17px;
         width: 19px;
