@@ -156,13 +156,11 @@ exports.getDocPath = function(page) {
     return exports.stripWSFromPath(page.name);
 };
 
-exports.question = function(title, header, msg, onyes, onyesall, onno, onnoall) {
+exports.question = function(title, header, msg, onyesall, onnoall) {
     winQuestionRev.show();
     winQuestionRev.setAttribute("title", title);
     winQuestionRevHeader.$ext.innerHTML = header;
     winQuestionRevMsg.$ext.innerHTML = msg;
-    btnQuestionRevYes.onclick = onyes;
-    btnQuestionRevNo.onclick = onno;
     btnQuestionRevYesAll.onclick = onyesall;
     btnQuestionRevNoAll.onclick = onnoall;
 };

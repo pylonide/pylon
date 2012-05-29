@@ -156,6 +156,16 @@ module.exports = ext.register("ext/menus/menus", {
                     self["req"+"uire"]("ext/editors/editors").currentEditor.focus();
             } || null;
         }
+        
+        //update c9 main logo link
+        if(window.cloud9config.hosted) {
+            var mainlogo = logobar.$ext.getElementsByClassName('mainlogo');
+            if(mainlogo && (mainlogo = mainlogo[0])) {
+                mainlogo.title = "back to dashboard";
+                mainlogo.href = "/dashboard.html";
+                mainlogo.innerHTML = "Dashboard";
+            }
+        }
     },
     
     $insertByIndex : function(parent, item, index) {
