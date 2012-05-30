@@ -11,6 +11,7 @@ var Diff_Match_Patch = require("./diff_match_patch");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var Async = require("async");
+var fs;
 
 /**
  *  FILE_SUFFIX = "c9save"
@@ -42,14 +43,10 @@ var REV_FOLDER_NAME = ".c9revisions";
 var Diff = new Diff_Match_Patch();
 var name = "revisions";
 
-var IMPORTS;
-
 module.exports = function setup(options, imports, register) {
-    imports.ide.register(name, RevisionsPlugin, register);
+    fs = imports["sandbox.fs"];
     
-    IMPORTS = {
-        fs: imports["sandbox.fs"]
-    };
+    imports.ide.register(name, RevisionsPlugin, register);    
 };
 
 var RevisionsPlugin = module.exports.RevisionsPlugin = function(ide, workspace) {
@@ -157,7 +154,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
                 case "getRealFileContents":
                     console.log("Revisions getRealFileContents", message.path);
-                    IMPORTS.fs.readFile(message.path, "utf8", function (err, data) {
+                    fs.readFile(message.path, "utf8", function (err, data) {
                           if (err) {
                               console.log(err);
                           }
@@ -195,7 +192,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
     this.getAllRevisions = function(absPath, callback) {
         var revObj = {};
-        IMPORTS.fs.readFile(absPath, function(err, data) {
+        fs.readFile(absPath, function(err, data) {
             if (err) {
                 return callback(err);
             }
@@ -249,8 +246,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
         var self = this;
         
         // does the revisions file exists?
-        IMPORTS.fs.exists(absPath, function (err, exists) {
-            console.log("GETREV", absPath, exists);
+        fs.exists(absPath, function (err, exists) {
             if (err)
                 return callback(err);
 
@@ -259,13 +255,13 @@ require("util").inherits(RevisionsPlugin, Plugin);
             }
             else {
                 // otherwise read the original file
-                IMPORTS.fs.readFile(filePath, function(err, data) {
+                fs.readFile(filePath, function(err, data) {
                     if (err) {
                         return callback(err);
                     }
                     
                     // create a parent dir if not exists
-                    IMPORTS.fs.exists(parentDir, function(err, exists) {
+                    fs.exists(parentDir, function(err, exists) {
                         if (err) {
                             return callback(err);
                         }
@@ -290,7 +286,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                             var revObj = {};
                             revObj[ts] = revision;
                 
-                            IMPORTS.fs.writeFile(absPath, revisionString + "\n", function(err) {
+                            fs.writeFile(absPath, revisionString + "\n", function(err) {
                                 if (err) {
                                     return callback(err);
                                 }
@@ -299,7 +295,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         };
                     
                         if (!exists) {
-                            IMPORTS.fs.mkdir(parentDir, "0755", createRevisionsFile);
+                            fs.mkdir(parentDir, "0755", createRevisionsFile);
                         }
                         else {
                             createRevisionsFile();
@@ -495,7 +491,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
         var originalPath = path;
         var absPath = this.getRevisionsPath(path);
 
-        IMPORTS.fs.readFile(originalPath, function(err, data) {
+        fs.readFile(originalPath, function(err, data) {
             if (err) {
                 return callback(err);
             }
@@ -519,7 +515,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 var revObj = {};
                 revObj[ts] = revision;
 
-                IMPORTS.fs.writeFile(absPath, revisionString + "\n", function(err) {
+                fs.writeFile(absPath, revisionString + "\n", function(err) {
                     if (err) {
                         return callback(err);
                     }
@@ -527,14 +523,14 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 });
             };
             
-            IMPORTS.fs.exists(parentDir, function (err, exists) {
+            fs.exists(parentDir, function (err, exists) {
                 if (err) return callback(err);
                 
                 if (exists) {
                     writeFile();
                 }
                 else {
-                    IMPORTS.fs.mkdir(parentDir, "0755", writeFile);
+                    fs.mkdir(parentDir, "0755", writeFile);
                 }
             });
         });
@@ -560,22 +556,22 @@ require("util").inherits(RevisionsPlugin, Plugin);
         }
 
         var absPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
-        IMPORTS.fs.exists(absPath, function(err, exists) {
+        fs.exists(absPath, function(err, exists) {
             if (err) 
                 return callback(err);
             
             if (!exists)
                 return callback(new Error("Backup file path doesn't exist:" + absPath));
 
-            IMPORTS.fs.open(absPath, "a", 666, function(err, id) {
+            fs.open(absPath, "a", 666, function(err, id) {
                 if (err) return callback(err);
                 
-                IMPORTS.fs.write(id, JSON.stringify(revision) + "\n", null, "utf8", function(err, written, buffer) {
+                fs.write(id, JSON.stringify(revision) + "\n", null, "utf8", function(err, written, buffer) {
                     if (err) {
                         callback(new Error("Could not save backup file" + absPath));
                     }
                     else {
-                        IMPORTS.fs.close(id, function(err) {
+                        fs.close(id, function(err) {
                             callback(err, {
                                 absPath: absPath,
                                 path: path,
