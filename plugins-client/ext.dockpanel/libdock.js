@@ -2097,6 +2097,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 visible : options && (options.hidden < 0) || true, 
                 "class" : options["class"] || "",
                 draggable : drag,
+                onblur: function(){
+                console.log('blur')    
+                },
                 onmousedown  : function(){
                     btnLock = true;
     
@@ -2173,6 +2176,22 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 else if (e.value == false && options && options.cbOnPageHide)
                     options.cbOnPageHide();
             });
+            
+            button.addEventListener("prop.value", function(e){
+                if (options && (tmp = options.primary)) {
+                    var icoState = button.value ? tmp.activeState : tmp.defaultState;
+                    var span = button.$ext.getElementsByTagName("span");
+                    span[2].style.backgroundPosition = 
+                        icoState.x + 'px ' 
+                        + icoState.y + 'px';
+            
+                    if (tmp = options.secondary) {
+                        span[1].style.backgroundPosition = 
+                            icoState.x + 'px ' 
+                            + icoState.y + 'px';
+                    }
+                }
+            })
             
             button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
                 var originalButton = this;
