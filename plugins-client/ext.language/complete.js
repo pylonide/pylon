@@ -154,7 +154,8 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, (this.matches.length || 1) * (this.cursorConfig.lineHeight + 1));
+        var boxLength = Math.max(5, this.matches.length || 1);
+        var completionBoxHeight = 5 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight + 1));
         var cursorLayer = ace.renderer.$cursorLayer;
         
         setTimeout(function() {
@@ -210,7 +211,7 @@ module.exports = {
             }
             else {
                 html += "<span class='main'>" + match.name;
-                matchEl.style.color = "#666666";
+                matchEl.style.color = "#999999";
             }
             if (match.meta) {
                 html += '<span class="meta">' + match.meta + '</span>';
