@@ -66,6 +66,10 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 }
                 
                 tabbehaviors.revealInTree(node);
+            } else if(event.message.action === "notify") {
+
+console.log("Notification received: ", event.message);
+
             }
         }
     },
