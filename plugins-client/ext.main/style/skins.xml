@@ -3086,8 +3086,8 @@
         .grouped_checkbox_holder .chkHighlightMatches .checkbox { background-position: 50% -740px; }
         .grouped_checkbox_holder .chkHighlightMatches.cbcontainerChecked .checkbox { background-position: 50% -765px; }
         
-        .grouped_checkbox_holder .chkConsole .checkbox { background-position: 50% -1150px; }
-        .grouped_checkbox_holder .chkConsole.cbcontainerChecked .checkbox { background-position: 50% -1190px; }
+        .grouped_checkbox_holder .chkConsole .checkbox { background-position: 50% -1235px; }
+        .grouped_checkbox_holder .chkConsole.cbcontainerChecked .checkbox { background-position: 50% -1268px; }
 
         .grouped_checkbox_holder .cbcontainer span {
             display: none;
