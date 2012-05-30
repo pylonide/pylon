@@ -153,7 +153,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     break;
 
                 case "getRealFileContents":
-                    console.log("Revisions getRealFileContents", message.path);
                     fs.readFile(message.path, "utf8", function (err, data) {
                           if (err) {
                               console.log(err);
