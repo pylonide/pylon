@@ -20,7 +20,8 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     type   : ext.GENERAL,
     alone  : true,
     deps   : [],
-
+    autodisable : ext.ONLINE | ext.LOCAL,
+    
     readFile : function (path, callback){
         if (!this.webdav) return;
         
