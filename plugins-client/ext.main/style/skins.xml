@@ -5744,7 +5744,16 @@
             color         : #f1f1f1;
             cursor:default;
         }
-
+        
+        .menu-bk.share-url {
+            text-align: center;
+            background-image: linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+            background-image: -o-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+            background-image: -moz-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+            background-image: -webkit-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+            background-image: -ms-linear-gradient(bottom, #191919 0%, #1D1D1D 50%, #232323 50%, #363636 100%);
+        }
+        
         .menu-bk.moveleft {
             margin-left: 6px;
         }
@@ -5757,7 +5766,17 @@
         .menu-bk.downward {
             margin-top: 30px;
         }
-
+        
+        .menu-bk.share-url.upward {
+            margin-top: -12px !important;
+            margin-left: 5px !important;
+        }
+        
+        .menu-bk.share-url.downward {
+            margin-top: 9px !important;
+            margin-left: 5px !important;
+        }
+        
         .menu-bk.moveright {
             margin-left: -8px;
         }
@@ -5781,7 +5800,7 @@
             width: 20px;
             background-position: -22px -45px;
         }
-
+        
         .menu-bk>div.menu_item{
             padding: 3px 16px 5px 23px;
             white-space: nowrap;
@@ -5887,6 +5906,11 @@
         .menu-bk.c9-tooltip .arrow{
             left : 50%;
             margin-left : -12px;
+        }
+        
+        .menu-bk.share-url .arrow {
+            right: 10px;
+            left: auto;
         }
     ]]></a:style>
 
@@ -9313,7 +9337,7 @@
         { -webkit-mask-position : -164px -128px; top : 0; width : 0px;  right: 0;     display: block;}
 
     .editor_tab .step1 .tab_middle:before
-        { -webkit-mask-position : -137px    0px; width : 17px; }
+        { -webkit-mask-positionmenu-bk : -137px    0px; width : 17px; }
     .editor_tab .step2 .tab_middle:before
         { -webkit-mask-position : -137px  -32px; width : 17px; }
     .editor_tab .step3 .tab_middle:before
