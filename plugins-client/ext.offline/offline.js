@@ -12,6 +12,7 @@ var Offline = require("ext/offline/lib-offline");
 var Sync    = require("ext/offline/lib-sync");
 var fs      = require("ext/filesystem/filesystem");
 var WebdavWrapper = require("ext/offline/lib-webdav-wrap");
+var markup  = require("text!ext/offline/skin.xml");
 
 module.exports = ext.register("ext/offline/offline", {
     dev      : "Ajax.org",
@@ -22,7 +23,8 @@ module.exports = ext.register("ext/offline/offline", {
     handlers : {},
 
     offlineStartup : 0,
-
+    
+    markup   : markup,
     /**
      * Test method for going offline/online
      * @param {Boolean} online If the request is to go online or not
@@ -52,10 +54,13 @@ module.exports = ext.register("ext/offline/offline", {
         var offline = this.offline = new Offline("cloud9", (window.location.pathname + "/$reconnect").replace(/\/\//g, "/"));
         var sync    = this.sync    = new Sync("cloud9");
 
-        // preload the offline image programmatically:
+        // preload the offline images programmatically:
         var img = new Image();
         img.src = ide.staticPrefix + "/ext/main/style/images/offline.png";
 
+        img = new Image();
+        img.src = ide.staticPrefix + "/ext/main/style/images/local_green.png";
+        
         //Replace http checking because we already have a socket
         //offline.isSiteAvailable = function(){};
 
@@ -88,6 +93,9 @@ module.exports = ext.register("ext/offline/offline", {
             ide.onLine = false;
             apf.setStyleClass(logobar.$ext, "offline");
 
+			if (ide.local)
+				offlineNotifyDialog.show();
+			
             _self.bringExtensionsOffline();
         });
 
@@ -129,6 +137,10 @@ module.exports = ext.register("ext/offline/offline", {
             apf.setStyleClass(logobar.$ext, "", ["offline"]);
 
             _self.bringExtensionsOnline();
+            
+			if (ide.local)
+				offlineNotifyDialog.hide();
+
         });
 
         /**** File System ****/
@@ -145,7 +157,6 @@ module.exports = ext.register("ext/offline/offline", {
         // fIdent is used for localStorage in Firefox or if local Filesystem is
         // not available
         var fIdent = "cloud9.files." + ide.workspaceId;
-
 
         ide.addEventListener("init.ext/filesystem/filesystem", function(){
             // If we don't have the real webdav, we need to use the offline one
@@ -274,7 +285,7 @@ module.exports = ext.register("ext/offline/offline", {
             if (webdav.fake) throw new Error("Found fake webdav, while expecting real one!");
             webdav.rename(item.from, item.to, false, false, callback);
         });
-
+        
         var ident = "cloud9.filetree." + ide.workspaceId;
         function saveModel(){
             localStorage[ident] = fs.model.data.xml;

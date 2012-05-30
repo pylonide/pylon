@@ -49,6 +49,7 @@ var Ide = module.exports = function(options) {
         extra: options.extra,
         packed: (options.packed === true) ? true : false,
         packedName: options.packedName,
+        local: options.local,
         hosted: !!options.hosted
     };
 
@@ -137,7 +138,8 @@ util.inherits(Ide, EventEmitter);
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
                 packed: _self.options.packed,
-                packedName: _self.options.packedName
+                packedName: _self.options.packedName,
+                local: _self.options.local
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");
