@@ -192,15 +192,15 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 return callback(err);
             }
 
-            var lines = data.toString().split("\n").filter(function(line) {
-                return line.length > 0;
-            });
+            var lines = data.toString().split("\n");
 
             Async.forEachSeries(lines,
-                function(line, cb) {
-                    var revision = JSON.parse(line);
-                    revObj[revision.ts] = revision;
-                    cb();
+                function(line, next) {
+                    if (line) {
+                        var revision = JSON.parse(line);
+                        revObj[revision.ts] = revision;
+                    }
+                    next();
                 },
                 function() { callback(null, revObj); });
         });
