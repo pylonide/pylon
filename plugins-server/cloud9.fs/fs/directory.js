@@ -145,7 +145,7 @@ require("util").inherits(jsDAV_FS_Directory, jsDAV_FS_Node);
         var self = this;
         var path = Path.join(this.path, name);
 
-        this._stat(path, {}, function(err, stat) {
+        this._stat(path, function(err, stat) {
             if (err)
                 return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found"));
 

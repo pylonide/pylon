@@ -47,8 +47,14 @@ exports.jsDAV_FS_Node = jsDAV_FS_Node;
         });
     };
 
-    this._stat = function(callback) {
+    this._stat = function(path, callback) {
         var self = this;
+        
+        if (!callback) {
+            callback = path;
+            path = this.path;
+        }
+        
         if (this.$stat)
             return callback(null, this.$stat);
 
