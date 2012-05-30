@@ -63,7 +63,6 @@ util.inherits(SettingsPlugin, Plugin);
         // console.log("load settings", this.settingsPath);
         var _self = this;
         fs.exists(this.settingsPath, function(err, exists) {
-            console.log("settings exist", _self.settingsPath, exists)
             if (exists) {
                 fs.readFile(_self.settingsPath, "utf8", callback);
             }
@@ -79,7 +78,6 @@ util.inherits(SettingsPlugin, Plugin);
         // Atomic write (write to tmp file and rename) so we don't get corrupted reads if at same time.
         var tmpPath = _self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
         fs.writeFile(tmpPath, settings, "utf8", function(err) {
-            console.log("storeSettings", tmpPath);
             if (err) {
                 callback(err);
                 return;
