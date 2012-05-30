@@ -8,10 +8,8 @@
 require("amd-loader");
 var Plugin = require("../cloud9.core/plugin");
 var Diff_Match_Patch = require("./diff_match_patch");
-//var Fs = require("fs");
 var Path = require("path");
-//var PathUtils = require("./path_utils.js");
-//var Spawn = require("child_process").spawn;
+var PathUtils = require("./path_utils.js");
 var Async = require("async");
 
 /**
@@ -28,6 +26,13 @@ var FILE_SUFFIX = "c9save";
  *  to be saved.
  **/
 var SAVE_INTERVAL = 1000;
+
+/**
+ * REV_FOLDER_NAME = ".c9revisions"
+ * 
+ * Folder to save revisions into
+ */
+var REV_FOLDER_NAME = ".c9revisions";
 
 /** related to: Revisions#revisions
  *  PURGE_INTERVAL -> 1 hour
@@ -216,7 +221,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
      * Creates the path to a relevant revisions file for a given file
      **/
     this.getRevisionsPath = function(filePath) {
-        return Path.join(".c9revisions", filePath);
+        return Path.join(REV_FOLDER_NAME, filePath);
     };
 
     /**
@@ -387,23 +392,13 @@ require("util").inherits(RevisionsPlugin, Plugin);
             return message.content;
         }
 
-        path = this.getSessionStylePath.call(this, path);
+        path = PathUtils.getSessionStylePath.call(this, path);
 
         var sessions = this.workspace.plugins.concorde.server.getSessions();
         var docSession = sessions[path];
         if (docSession && docSession.getDocument) {
             return (docSession.getDocument() || "").toString();
         }
-    };
-
-    // temp ported this from `path_utils.js`
-    this.getSessionStylePath = function (path) {
-        var baseUrl = this.ide.options.baseUrl;
-        var baseUrlRegex = new RegExp("^" + baseUrl);
-        if (!baseUrlRegex.test(path)) {
-            path = Path.join(baseUrl, path);
-        }
-        return path.replace(/^\/+/, "");
     };
 
     this.isCollab = function() {
@@ -565,7 +560,6 @@ require("util").inherits(RevisionsPlugin, Plugin);
         }
 
         var absPath = this.getRevisionsPath(path + "." + FILE_SUFFIX);
-        console.log("APPEND TO FILE", absPath);
         IMPORTS.fs.exists(absPath, function(err, exists) {
             if (err) 
                 return callback(err);
