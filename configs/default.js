@@ -48,7 +48,6 @@ var config = {
             "./../plugins-client/lib.treehugger", 
             "./../plugins-client/lib.v8debug",
             "./../plugins-client/lib.requirejs",
-            "./../plugins-client/lib.packed",
 
             // server plugins
             {
@@ -133,6 +132,7 @@ var config = {
                     "ext/gitblame/gitblame",
                     //"ext/githistory/githistory",
                     "ext/revisions/revisions",
+                    "ext/quicksearch/quicksearch",
                     "ext/language/liveinspect"
                     //"ext/splitview/splitview"
                     //"ext/minimap/minimap"

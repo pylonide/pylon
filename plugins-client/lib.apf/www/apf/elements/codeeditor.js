@@ -39,6 +39,7 @@
 define(function(require, exports, module) {
 "use strict";
 
+var ide = require("core/ide");
 var Editor = require("ace/editor").Editor;
 var EditSession = require("ace/edit_session").EditSession;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
