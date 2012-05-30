@@ -85,7 +85,7 @@ util.inherits(Socket, EventEmitter);
             if (err)
                 return callback(new error.InternalServerError(err));
 
-            if (!session || !session.uid)
+            if (!session || !(session.uid || session.anonid))
                 return callback(new error.Unauthorized("Session ID missing"));
 
             return callback(null, session);

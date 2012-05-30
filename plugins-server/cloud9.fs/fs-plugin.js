@@ -46,11 +46,11 @@ module.exports = function setup(options, imports, register) {
             if (req.url.indexOf(options.urlPrefix) !== 0)
                 return next();
 
-            if (!req.session || !req.session.uid)
+            if (!req.session || !(req.session.uid || req.session.anonid))
                 return next(new error.Unauthorized());
 
             var pause = utils.pause(req);
-            permissions.getPermissions(req.session.uid, workspaceId, function(err, permissions) {
+            permissions.getPermissions(req.session.uid, workspaceId, "cloud9.fs.fs-plugin", function(err, permissions) {
                 if (err) {
                     next(err);
                     pause.resume();
