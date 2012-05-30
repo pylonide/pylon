@@ -110,6 +110,48 @@ document.body.appendChild(preInitOutputBuffer);
 
 // Modify this to create a document fragment if txtOutput is not defined
 var getOutputElement = function(getTxtOutput) {
+//    var hasOutput = typeof txtOutput !== "undefined" && txtOutput !== null;
+//    
+//    // OK. this is the most hacky stuff we ever did probably but we need it for the FTP log
+//    // if there is no output element specified, AND we have no 'txtOutput' field
+//    if (getTxtOutput === null && !hasOutput) {
+//        // search for all childNodes of the tabConsole's $activepage element
+//        var nodes = [];
+//        var getChildNodes = function (node) {
+//            nodes = nodes.concat(node.childNodes);
+//            node.childNodes.forEach(getChildNodes);
+//        };
+//        getChildNodes(tabConsole.$activepage);
+//        
+//        // then filter them so we can find a target textbox
+//        var textNodes = nodes.filter(function (c) {
+//            return c instanceof apf.text;
+//        });
+//        
+//        // cant find any? then though luck, just buffer it to the preInit thingy
+//        if (!textNodes.length) {
+//            console.error("Cannot find any apf.text node in the tabConsole $activepage");
+//            return {
+//                element: preInitOutputBuffer,
+//                id: "output"
+//            };
+//        }
+//        
+//        // otherwise just use that one
+//        return {
+//            element: textNodes[0].$ext,
+//            id: textNodes[0].id
+//        };
+//    }
+
+    // this is a hack for commands that are not associated with anything
+    // if this happens we usually write it to `txtConsole`
+    // but if we don't have that one, we just pump it to /dev/null
+    // in this case the preInitConsoleBuffer
+    var defaultHandler = typeof txtConsole !== "undefined" && txtConsole && txtConsole.$ext
+                            ? txtConsole.$ext
+                            : preInitOutputBuffer;
+    
     if (typeof getTxtOutput === "object" && getTxtOutput && getTxtOutput.$ext && getTxtOutput.id) {
         return {
             element: getTxtOutput.$ext,
@@ -139,13 +181,15 @@ var getOutputElement = function(getTxtOutput) {
     }
     else if (getTxtOutput === "undefined" || !getTxtOutput) {
         return {
-            element: txtConsole.$ext,
+            element: defaultHandler,
             id: "console"
         };
     }
 
-    if (!getTxtOutput.$ext)
-        getTxtOutput.$ext = txtConsole.$ext;
+
+    if (!getTxtOutput.$ext) {
+        getTxtOutput.$ext = defaultHandler;
+    }
 
     return {
         element: getTxtOutput.$ext,
