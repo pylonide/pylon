@@ -154,6 +154,19 @@ module.exports = {
             next();
         });
     },
+    
+    "test mkdir should chown": function (next) {
+        var mkdir = Fs.mkdir = sinon.stub().callsArgWith(2, null);
+        var chown = Fs.chown = sinon.stub().callsArgWith(3, null);
+        
+        this.fs.mkdir("somefolder", "0775", function (err) {
+            assert.equal(err, null);
+            sinon.assert.calledWith(mkdir, "/usr/jan/1299/somefolder", "0775");
+            sinon.assert.calledWith(chown, "/usr/jan/1299/somefolder", 987, 987);
+            
+            next();
+        });
+    }  
 };
 
 !module.parent && require("asyncjs").test.testcase(module.exports, "Sandbox.Fs").exec();
