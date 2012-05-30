@@ -2,7 +2,7 @@
 
 var path = require('path');
 var architect = require("architect");
-var exec = require("child_process").exec;
+var spawn = require("child_process").spawn;
 
 // TODO: Need better args parser.
 
@@ -24,17 +24,23 @@ for (var p = 2; p < process.argv.length; p++) {
        
        if(!path.existsSync("plugins-client/lib.apf/www/apf-packaged/apf_debug.js")) {
        		console.log("Building apfdebug for first run...");
-       		exec("npm run-script build-debug", function (error, stdout, stderr) {
-		        if (error || stderr) {
-		            console.error(stderr);
-		            process.exit(1);
-		        }
-		        console.log(stdout);
-		        boot();
-	    	});
+       		
+            var buildDebug = spawn("npm", ["run-script", "build-debug"]);
+
+            buildDebug.stderr.setEncoding("utf8");
+            buildDebug.stderr.on('data', function (data) {
+              console.error(data);
+            });
+            buildDebug.on('exit', function (code) {
+              if (code !== 0) {
+                console.error('build-debug process exited with code ' + code);
+                process.exit(code);
+              }
+              boot();
+            });
        }
        else
-       	boot();
+           boot();
    }
 
    else if (process.argv[p] === "-P") {
@@ -52,17 +58,23 @@ for (var p = 2; p < process.argv.length; p++) {
 		   				"   /,`.-'`'    -.  ;-;;,_\n" +
 		  				"   |,4-  ) )-,_..;\\ (  `'-'\n" +
 		 				"   '---''(_/--'  `-'\\_)  Felix Lee");
-       		exec("npm run-script build-packed", function (error, stdout, stderr) {
-		        if (error || stderr) {
-		            console.error(stderr);
-		            process.exit(1);
-		        }
-		        console.log(stdout);
-		        boot();
-	    	});
+
+            var buildPackage = spawn("npm", ["run-script", "build-packed"]);
+            
+            buildPackage.stderr.setEncoding("utf8");
+            buildPackage.stderr.on('data', function (data) {
+              console.error(data);
+            });
+            buildPackage.on('exit', function (code) {
+              if (code !== 0) {
+                console.error('build-package process exited with code ' + code);
+                process.exit(code);
+              }
+              boot();
+            });
        }
        else
-       	boot();
+           boot();
    }
 }
 

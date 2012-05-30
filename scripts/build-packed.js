@@ -1,10 +1,15 @@
-var exec = require("child_process").exec;
+var spawn = require('child_process').spawn;
+var pack = spawn('make', ['package']);
 
-exec("make package", function (error, stdout, stderr) {
-    if (error) {
-        console.error(stderr);
-        process.exit(1);
-    }
-    
-    console.log(stdout);
+pack.stderr.setEncoding("utf8");
+
+pack.stderr.on('data', function (data) {
+  console.error(data);
+});
+
+pack.on('exit', function (code) {
+  if (code !== 0) {
+    console.error('grep process exited with code ' + code);
+    process.exit(code);
+  }
 });
