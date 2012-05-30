@@ -55,19 +55,7 @@ module.exports = function (projectDir, unixId) {
         });        
     };
     
-    /**
-     * Wrapper around fs.readFile
-     */
-    this.readFile = function () {
-        return this.$simpleWrapper.call(this, "readFile", arguments);
-    };
-    
-    /**
-     * Wrapper around fs.writeFile
-     */
-    this.writeFile = function () {
-        var fnArgs = arguments;
-        
+    this.$chownWrapper = function (name, fnArgs) {
         var path = fnArgs[0];
         var callback = this.$normalizeCallback(fnArgs[fnArgs.length - 1]);
         
@@ -97,8 +85,22 @@ module.exports = function (projectDir, unixId) {
                 };
             }
             
-            Fs.writeFile.apply(Fs, [path].concat(args).concat([lastArg]));
-        });     
+            Fs[name].apply(Fs, [path].concat(args).concat([lastArg]));
+        }); 
+    };
+        
+    /**
+     * Wrapper around fs.readFile
+     */
+    this.readFile = function () {
+        return this.$simpleWrapper.call(this, "readFile", arguments);
+    };
+    
+    /**
+     * Wrapper around fs.writeFile
+     */
+    this.writeFile = function () {
+        return this.$chownWrapper.call(this, "writeFile", arguments); 
     };
     
     /**
@@ -113,5 +115,33 @@ module.exports = function (projectDir, unixId) {
      */
     this.readdir = function () {
         return this.$simpleWrapper.call(this, "readdir", arguments);     
+    };
+    
+    /**
+     * Wrapper around open
+     */
+    this.open = function () {
+        return this.$simpleWrapper.call(this, "open", arguments);     
+    };
+    
+    /**
+     * Wrapper around write
+     */
+    this.write = function () {
+        Fs.write.apply(this, arguments);
+    };
+    
+    /**
+     * Wrapper around close
+     */
+    this.close = function () {
+        Fs.close.apply(this, arguments);
+    };
+    
+    /**
+     * Wrapper around mkdir
+     */
+    this.mkdir = function () {
+        return this.$chownWrapper.call(this, "mkdir", arguments);
     };
 };
