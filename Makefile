@@ -87,7 +87,7 @@ gzip:
 
 c9core: apf ace core worker mode theme
     
-package: c9core ext min_ace
+package: helper c9core ext min_ace
 
 test:
 	$(MAKE) -C test
