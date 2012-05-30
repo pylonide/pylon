@@ -52,7 +52,7 @@
                 left: 15px;
                 overflow: hidden;
                 position: absolute;
-                top: 2px;
+                top: 0px;
                 white-space: nowrap;
                 width: inherit;
             }

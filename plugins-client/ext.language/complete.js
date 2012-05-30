@@ -142,7 +142,6 @@ module.exports = {
         this.completionElement = txtCompleter.$ext;
         this.docElement = txtCompleterDoc.$ext;
         this.cursorConfig = ace.renderer.$cursorLayer.config;
-        this.cursorConfig.lineHeight += 4;
         var style = dom.computedStyle(this.editor.amlEditor.$ext);
         this.completionElement.style.fontSize = style.fontSize;
         
