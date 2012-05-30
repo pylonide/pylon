@@ -228,8 +228,7 @@ module.exports = {
                 html += "<span class='main'><u>" + _self.prefix + "</u>" + match.name.substring(_self.prefix.length);
             }
             else {
-                html += "<span class='main'>" + match.name;
-                matchEl.style.color = "#666666";
+                html += '<span class="main"><span class="deferred">' + match.name + '</span>';
             }
             if (match.meta) {
                 html += '<span class="meta">' + match.meta + '</span>';
@@ -258,10 +257,6 @@ module.exports = {
     updateDoc : function() {
         this.docElement.innerHTML = '<span class="codecompletedoc_body">';
         var selected = this.matches[this.selectedIdx];
-        if(this.selectedIdx === 1)
-            selected.doc = "HELLO THIS IS DOCUMENTATION";
-        else if(this.selectedIdx === 3)
-            selected.doc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor mattis sapien, eget volutpat ipsum faucibus sit amet. Vestibulum faucibus sapien est, in egestas diam. Curabitur dictum, ipsum eget pellentesque hendrerit, ante leo tristique leo, id auctor elit purus a enim. Maecenas felis justo, dapibus quis aliquet et, ornare vitae neque. Vivamus malesuada libero vel orci eleifend volutpat. Nulla et ante elit. Vivamus egestas erat quis nulla tempus lacinia. Nam et lacus eget massa aliquet accumsan. Quisque venenatis risus ut tortor sagittis aliquet. Aliquam sed turpis condimentum diam venenatis hendrerit. Etiam blandit ullamcorper dictum. Integer neque risus, feugiat iaculis condimentum vel, dictum non libero. Nam eget nibh eros. Nunc bibendum rutrum augue, nec cursus est euismod in";
 
         if (selected && selected.doc) {
             if (!isDocShown) {

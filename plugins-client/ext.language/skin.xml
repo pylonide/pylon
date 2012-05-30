@@ -56,6 +56,11 @@
                 white-space: nowrap;
                 width: inherit;
             }
+
+            .code_complete_bar .deferred {
+                opacity: .8;
+            }
+
             .code_complete_bar .main u {
                 font-weight: bold;
                 text-decoration: none;
