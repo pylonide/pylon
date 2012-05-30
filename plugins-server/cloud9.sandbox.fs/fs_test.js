@@ -6,37 +6,27 @@ var SandboxFs = require("./fs");
 
 var Path = require("path");
 var Fs = require("fs");
+var FsMock = require("./fs_mock");
 
 module.exports = {
 
     timeout: 5000,
 
     setUp: function(next) {
-        this.fs = new SandboxFs("/usr/jan/1299", 987);
+        var self = this;
         
-        var backup = { Path: {}, Fs: {} };
-        Object.keys(Path).forEach(function (k) {
-            backup.Path[k] = Path[k];
+        this.fsMock = new FsMock("/usr/jan/1299", 987);
+        this.fsMock.setUp(function (err, fs) {
+            if (err) return next(err);
+            
+            self.fs = fs;
+            
+            next();
         });
-        Object.keys(Fs).forEach(function (k) {
-            backup.Fs[k] = Fs[k];
-        });
-        this.backup = backup;
-        
-        next();
     },
     
     tearDown: function(next) {
-        var backup = this.backup;
-        
-        Object.keys(backup.Path).forEach(function (k) {
-            Path[k] = backup.Path[k];
-        });
-        Object.keys(backup.Fs).forEach(function (k) {
-            Fs[k] = backup.Fs[k];
-        });
-        
-        next();
+        this.fsMock.tearDown(next);
     },
 
     "test exists true": function (next) {
@@ -154,6 +144,19 @@ module.exports = {
             next();
         });
     },
+    
+    "test mkdir should chown": function (next) {
+        var mkdir = Fs.mkdir = sinon.stub().callsArgWith(2, null);
+        var chown = Fs.chown = sinon.stub().callsArgWith(3, null);
+        
+        this.fs.mkdir("somefolder", "0775", function (err) {
+            assert.equal(err, null);
+            sinon.assert.calledWith(mkdir, "/usr/jan/1299/somefolder", "0775");
+            sinon.assert.calledWith(chown, "/usr/jan/1299/somefolder", 987, 987);
+            
+            next();
+        });
+    }  
 };
 
 !module.parent && require("asyncjs").test.testcase(module.exports, "Sandbox.Fs").exec();

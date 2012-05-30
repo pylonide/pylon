@@ -124,6 +124,10 @@ module.exports = ext.register("ext/console/console", {
     },
 
     getLogStreamOutObject: function(tracer_id, idIsPid, originalInput) {
+        if (typeof tracer_id === "undefined") {
+            return null;
+        }
+        
         if (idIsPid)
             tracer_id = this.pidToTracerMap[tracer_id];
         var id = "section" + tracer_id;
