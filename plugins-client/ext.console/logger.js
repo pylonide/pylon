@@ -110,6 +110,15 @@ document.body.appendChild(preInitOutputBuffer);
 
 // Modify this to create a document fragment if txtOutput is not defined
 var getOutputElement = function(getTxtOutput) {
+
+    // this is a hack for commands that are not associated with anything
+    // if this happens we usually write it to `txtConsole`
+    // but if we don't have that one, we just pump it to /dev/null
+    // in this case the preInitConsoleBuffer
+    var defaultHandler = typeof txtConsole !== "undefined" && txtConsole && txtConsole.$ext
+                            ? txtConsole.$ext
+                            : preInitOutputBuffer;
+    
     if (typeof getTxtOutput === "object" && getTxtOutput && getTxtOutput.$ext && getTxtOutput.id) {
         return {
             element: getTxtOutput.$ext,
@@ -139,13 +148,15 @@ var getOutputElement = function(getTxtOutput) {
     }
     else if (getTxtOutput === "undefined" || !getTxtOutput) {
         return {
-            element: txtConsole.$ext,
+            element: defaultHandler,
             id: "console"
         };
     }
 
-    if (!getTxtOutput.$ext)
-        getTxtOutput.$ext = txtConsole.$ext;
+
+    if (!getTxtOutput.$ext) {
+        getTxtOutput.$ext = defaultHandler;
+    }
 
     return {
         element: getTxtOutput.$ext,
