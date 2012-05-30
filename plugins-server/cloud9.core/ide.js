@@ -49,7 +49,8 @@ var Ide = module.exports = function(options) {
         version: options.version,
         extra: options.extra,
         real: (options.real === true) ? true : false,
-        hosted: !!options.hosted
+        hosted: !!options.hosted,
+        env: options.env
     };
 
     this.$users = {};
@@ -139,7 +140,8 @@ util.inherits(Ide, EventEmitter);
                 projectName: _self.options.projectName,
                 version: _self.options.version,
                 hosted: _self.options.hosted.toString(),
-                real: _self.options.real
+                real: _self.options.real ? "true" : "false",
+                env: _self.options.env || "local"
             };
 
             var settingsPlugin = _self.workspace.getExt("settings");
