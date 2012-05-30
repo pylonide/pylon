@@ -387,6 +387,21 @@ Scope.prototype.getVariableNames = function() {
     return names;
 };
 
+Scope.prototype.getNamesByKind = function(kind) {
+    var results = [];
+    for (var v in this.vars) {
+        if (this.vars[v].kind == kind && this.vars.hasOwnProperty(v))
+            results.push(v.slice(1));
+    }
+    if(this.parent) {
+        var namesFromParent = this.parent. getNamesByKind(kind);
+        for (var i = 0; i < namesFromParent.length; i++) {
+            names.push(namesFromParent[i]);
+        }
+    }
+    return results;
+};
+
 var GLOBALS_ARRAY = Object.keys(GLOBALS);
 
 handler.complete = function(doc, fullAst, pos, currentNode, callback) {
