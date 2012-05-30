@@ -9,17 +9,18 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var Path = require("path");
-var fs = require("fs");
 var util = require("util");
 var assert = require("assert");
 
 var name = "settings";
 
 var SETTINGS_PATH;
+var fs;
 
 module.exports = function setup(options, imports, register) {
     assert(options.settingsPath, "option 'settingsPath' is required");
     SETTINGS_PATH = options.settingsPath;
+    fs = imports["sandbox.fs"];
 
     imports.ide.register(name, SettingsPlugin, register);
 };
@@ -61,7 +62,8 @@ util.inherits(SettingsPlugin, Plugin);
     this.loadSettings = function(user, callback) {
         // console.log("load settings", this.settingsPath);
         var _self = this;
-        Path.exists(this.settingsPath, function(exists) {
+        fs.exists(this.settingsPath, function(err, exists) {
+            console.log("settings exist", _self.settingsPath, exists)
             if (exists) {
                 fs.readFile(_self.settingsPath, "utf8", callback);
             }
@@ -77,6 +79,7 @@ util.inherits(SettingsPlugin, Plugin);
         // Atomic write (write to tmp file and rename) so we don't get corrupted reads if at same time.
         var tmpPath = _self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
         fs.writeFile(tmpPath, settings, "utf8", function(err) {
+            console.log("storeSettings", tmpPath);
             if (err) {
                 callback(err);
                 return;
