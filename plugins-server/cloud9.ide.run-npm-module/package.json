@@ -11,7 +11,8 @@
             "process-manager",
             "run-node",
             "ide.ext.state",
-            "eventbus"
+            "eventbus",
+            "sandbox.fs"
         ]
     }
 }
