@@ -19,7 +19,9 @@ var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getDocument().getLine(pos.row);
-    if(keyhandler.preceededByIdentifier(line, pos.column) || line[pos.column - 1] === '.')
+    if(keyhandler.preceededByIdentifier(line, pos.column) ||
+       line[pos.column - 1] === '.' ||
+       keyhandler.isRequireJSCall(line, pos.column))
         module.exports.invoke(true);
     else
         module.exports.closeCompletionBox();
@@ -55,10 +57,17 @@ function retrieveFollowingIdentifier(text, pos) {
  * If the prefix is already followed by an identifier substring, that string
  * is deleted.
  */
-function replaceText(editor, prefix, newText) {
+function replaceText(editor, prefix, match) {
+    var newText = match.replaceText;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getLine(pos.row);
     var doc = editor.getSession().getDocument();
+    
+    if (match.replaceText === "require(^^)") {
+        console.log("require");
+        newText = "require(\"^^\")";
+        setTimeout(module.exports.deferredInvoke, 0);
+    }   
     
     // Ensure cursor marker
     if (newText.indexOf("^^") === -1)
@@ -225,7 +234,7 @@ module.exports = {
             });
             matchEl.addEventListener("click", function() {
                 var amlEditor = editors.currentEditor.amlEditor;
-                replaceText(amlEditor.$editor, _self.prefix, match.replaceText);
+                replaceText(amlEditor.$editor, _self.prefix, match);
                 amlEditor.focus();
             });
             matchEl.style.height = cursorConfig.lineHeight + "px";
@@ -288,7 +297,7 @@ module.exports = {
                 break;
             case 13: // Enter
                 var editor = editors.currentEditor.amlEditor.$editor;
-                replaceText(editor, this.prefix, this.matches[this.selectedIdx].replaceText);
+                replaceText(editor, this.prefix, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();
                 e.preventDefault();
                 break;
@@ -379,7 +388,7 @@ module.exports = {
         }        
         
         if (matches.length === 1 && !this.forceBox) {
-            replaceText(editor, identifier, matches[0].replaceText);
+            replaceText(editor, identifier, matches[0]);
         }
         else if (matches.length > 0) {
             this.showCompletionBox(matches, identifier);
