@@ -292,12 +292,12 @@ module.exports = ext.register("ext/quicksearch/quicksearch", {
 
         var highlightTxt = ace.session.getTextRange(ace.selection.getRange());
 
-        // super ace bug ! if you're already highlighting some text, another find executes
+        // N.B. ace behavior: if you're already highlighting some text, another find executes
         // from the end of the cursor, not the start of your current highlight. thus,
         // if the text is "copyright" and you execute a search for "c", followed immediately by
         // "co", you'll never find the "co"--a search for "c" followed by a search for "o"
         // DOES work, but doesn't highlight the content, so it's kind of lame.
-        // Let's just reset the cursor in the doc whilst waiting for an Ace fix, hm?
+        // Let's reset the cursor in the doc whilst waiting for an Ace update
 
         if (highlightTxt !== "") {
             // we have a selection, that is the start of the current needle, but selection !== needle

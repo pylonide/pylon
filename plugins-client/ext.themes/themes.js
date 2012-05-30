@@ -83,17 +83,19 @@ module.exports = ext.register("ext/themes/themes", {
         
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
+        var div = hboxMain.$ext;
+        
         if (theme.isDark)
-            apf.setStyleClass(document.body, "dark");
+            apf.setStyleClass(div, "dark");
         else
-            apf.setStyleClass(document.body, "", ["dark"]);
-
+            apf.setStyleClass(div, "", ["dark"]);
+        
         var cssClass = theme.cssClass;
         
         if (_self.lastTheme)
-            apf.setStyleClass(document.body, "", [_self.lastTheme]);
+            apf.setStyleClass(div, "", [_self.lastTheme]);
         
-        apf.setStyleClass(document.body, _self.lastTheme = cssClass);
+        apf.setStyleClass(div, _self.lastTheme = cssClass);
         
         if (_self.loaded[path])
             return;
@@ -102,7 +104,7 @@ module.exports = ext.register("ext/themes/themes", {
         
         var bg = apf.getStyleRule("." + cssClass + " .ace_gutter", "background-color");
         var fg = apf.getStyleRule("." + cssClass + " .ace_gutter", "color");
-
+        
         apf.importStylesheet([
             ["." + cssClass + " .ace_editor",
              "border: 0 !important;"],

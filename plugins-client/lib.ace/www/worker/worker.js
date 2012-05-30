@@ -187,6 +187,9 @@ define('ace/lib/regexp', ['require', 'exports', 'module' ], function(require, ex
             return !x.lastIndex;
         }();
 
+    if (compliantLastIndexIncrement && compliantExecNpcg)
+        return;
+
     //---------------------------------
     //  Overriden native methods
     //---------------------------------
@@ -4970,24 +4973,24 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
     Mirror.call(this, sender);
     this.setTimeout(500);
     
-    sender.on("complete", function(pos) {
+    sender.on("complete", applyEventOnce(function(pos) {
         _self.complete(pos);
-    });
+    }));
     sender.on("documentClose", function(event) {
         _self.documentClose(event);
     });
-    sender.on("analyze", function(event) {
+    sender.on("analyze", applyEventOnce(function(event) {
         _self.analyze(function() { });
-    });
+    }));
     sender.on("cursormove", function(event) {
         _self.onCursorMove(event);
     });
-    sender.on("inspect", function(event) {
+    sender.on("inspect", applyEventOnce(function(event) {
         _self.inspect(event);
-    });
-    sender.on("change", function() {
+    }));
+    sender.on("change", applyEventOnce(function() {
         _self.scheduledUpdate = true;
-    });
+    }));
     sender.on("jumpToDefinition", function(event) {
         _self.jumpToDefinition(event);
     });
@@ -4995,6 +4998,20 @@ var LanguageWorker = exports.LanguageWorker = function(sender) {
         _self.sendVariablePositions(event);
     });
 };
+
+/**
+ * Ensure that an event handler is called only once if multiple
+ * events are received at the same time.
+ **/
+function applyEventOnce(eventHandler) {
+    var timer;
+    return function() {
+        var _arguments = arguments;
+        if (timer)
+            clearTimeout(timer);
+        timer = setTimeout(function() { eventHandler.apply(eventHandler, _arguments); }, 0);
+    };
+}
 
 oop.inherits(LanguageWorker, Mirror);
 
@@ -5124,6 +5141,9 @@ function asyncParForEach(array, fn, callback) {
                             markers = markers.concat(result);
                         next();
                     });
+                }
+                else {
+                    next();
                 }
             }, function() {
                 var extendedMakers = markers;
@@ -5541,13 +5561,12 @@ var Anchor = require("./anchor").Anchor;
 var Document = function(text) {
     this.$lines = [];
 
-    if (Array.isArray(text)) {
-        this.insertLines(0, text);
-    }
     // There has to be one line at least in the document. If you pass an empty
     // string to the insert function, nothing will happen. Workaround.
-    else if (text.length == 0) {
+    if (text.length == 0) {
         this.$lines = [""];
+    } else if (Array.isArray(text)) {
+        this.insertLines(0, text);
     } else {
         this.insert({row: 0, column:0}, text);
     }
@@ -5807,6 +5826,13 @@ var Document = function(text) {
         if (lines.length == 0)
             return {row: row, column: 0};
 
+        // apply doesn't work for big arrays (smallest threshold is on safari 0xFFFF)
+        // to circumvent that we have to break huge inserts into smaller chunks here
+        if (lines.length > 0xFFFF) {
+            var end = this.insertLines(row, lines.slice(0xFFFF));
+            lines = lines.slice(0, 0xFFFF);
+        }
+
         var args = [row, 0];
         args.push.apply(args, lines);
         this.$lines.splice.apply(this.$lines, args);
@@ -5818,7 +5844,7 @@ var Document = function(text) {
             lines: lines
         };
         this._emit("change", { data: delta });
-        return range.end;
+        return end || range.end;
     };
 
     /**
@@ -7043,6 +7069,20 @@ exports.escapeRegExp = function(str) {
     return str.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1');
 };
 
+exports.getMatchOffsets = function(string, regExp) {
+    var matches = [];
+
+    string.replace(regExp, function(str) {
+        matches.push({
+            offset: arguments[arguments.length-2],
+            length: str.length
+        });
+    });
+
+    return matches;
+};
+
+
 exports.deferredCall = function(fcn) {
 
     var timer = null;
@@ -7078,15 +7118,15 @@ exports.deferredCall = function(fcn) {
 define('treehugger/tree', ['require', 'exports', 'module' ], function(require, exports, module) {
 
 function inRange(p, pos) {
-    if(p && p.sl <= pos.line && p.el >= pos.line) {
-        if(p.sl < pos.line && p.el > pos.line)
+    if(p && p.sl <= pos.line && pos.line <= p.el) {
+        if(p.sl < pos.line && pos.line < p.el)
             return true;
-        else if(p.sl == pos.line && p.el > pos.line)
+        else if(p.sl == pos.line && pos.line < p.el)
             return p.sc <= pos.col;
         else if(p.sl == pos.line && p.el === pos.line)
-            return p.sc <= pos.col && p.ec >= pos.col;
+            return p.sc <= pos.col && pos.col <= p.ec;
         else if(p.sl < pos.line && p.el === pos.line)
-            return p.ec >= pos.col;
+            return pos.col <= p.ec;
     }
 }
 
@@ -7279,7 +7319,7 @@ ConsNode.prototype.findNode = function(pos) {
                 var node = this[i].findNode(pos);
                 if(node)
                     return node instanceof StringNode ? this : node;
-                else
+                else if(p2.sl == p2.el)
                     return this[i];
             }
         }
@@ -7696,7 +7736,7 @@ function wordDistanceAnalyzer(doc, pos, prefix) {
     var textBefore = doc.getLines(0, pos.row-1).join("\n") + "\n";
     var currentLine = doc.getLine(pos.row);
     textBefore += currentLine.substr(0, pos.column);
-    var prefixPosition = textBefore.trim().split(SPLIT_REGEX).length;
+    var prefixPosition = textBefore.trim().split(SPLIT_REGEX).length - 1;
     
     // Split entire document into words
     var identifiers = text.split(SPLIT_REGEX);
@@ -7704,6 +7744,8 @@ function wordDistanceAnalyzer(doc, pos, prefix) {
     
     // Find prefix to find other identifiers close it
     for (var i = 0; i < identifiers.length; i++) {
+        if (i === prefixPosition)
+            continue;
         var ident = identifiers[i];
         var distance = Math.max(prefixPosition, i) - Math.min(prefixPosition, i);
         // Score substracted from 100000 to force descending ordering
@@ -7721,8 +7763,6 @@ function analyze(doc, pos) {
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
     
     var analysisCache = wordDistanceAnalyzer(doc, pos, identifier);
-    // Remove the word to be completed
-    delete analysisCache[identifier];
     return analysisCache;
 }
 
@@ -7974,7 +8014,7 @@ completer.fetchText = function(path) {
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePreceedingIdentifier(line, pos.column);
-    if(line[pos.column-1] === '.') // No snippet completion after "."
+    if(line[pos.column - identifier.length - 1] === '.') // No snippet completion after "."
         return callback([]);
 
     var snippets = snippetCache[this.language];
@@ -9874,6 +9914,10 @@ var completeUtil = require("ext/codecomplete/complete_util");
 var handler = module.exports = Object.create(baseLanguageHandler);
 require('treehugger/traverse');
 
+var PROPER = module.exports.PROPER = 80;
+var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
+var NOT_PROPER = module.exports.NOT_PROPER = 0;
+
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
 var GLOBALS = {
     // Literals
@@ -9884,7 +9928,7 @@ var GLOBALS = {
     "this"                   : true,
     "arguments"              : true,
     self                     : true,
-    Infinity                 : true,
+    "Infinity"               : true,
     onmessage                : true,
     postMessage              : true,
     importScripts            : true,
@@ -10161,6 +10205,19 @@ Variable.prototype.addDeclaration = function(node) {
     this.declarations.push(node);
 };
 
+Variable.prototype.markProperDeclaration = function(confidence) {
+    if (!confidence)
+        return;
+    else if (!this.properDeclarationConfidence)
+        this.properDeclarationConfidence = confidence;
+    else if (this.properDeclarationConfidence < PROPER)
+        this.properDeclarationConfidence += confidence;
+};
+
+Variable.prototype.isProperDeclaration = function() {
+    return this.properDeclarationConfidence > MAYBE_PROPER;
+};
+
 /**
  * Implements Javascript's scoping mechanism using a hashmap with parent
  * pointers.
@@ -10331,10 +10388,10 @@ handler.analyze = function(doc, ast, callback) {
                 'Catch(x, body)', function(b, node) {
                     var oldVar = scope.get(b.x.value);
                     // Temporarily override
-                    scope.vars[b.x.value] = new Variable(b.x);
+                    scope.vars["_" + b.x.value] = new Variable(b.x);
                     scopeAnalyzer(scope, b.body, localVariables);
                     // Put back
-                    scope.vars[b.x.value] = oldVar;
+                    scope.vars["_" + b.x.value] = oldVar;
                     return node;
                 },
                 'PropAccess(_, "lenght")', function(b, node) {
@@ -10708,7 +10765,7 @@ var baseLanguageHandler = require('ext/language/base_handler');
 var lint = require("ace/worker/jshint").JSHINT;
 var handler = module.exports = Object.create(baseLanguageHandler);
 
-var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/];
+var disabledJSHintWarnings = [/Missing radix parameter./, /Bad for in variable '(.+)'./, /use strict/, /Expected an assignment or function call/];
 
 handler.handlesLanguage = function(language) {
     return language === 'javascript';
@@ -10738,10 +10795,14 @@ handler.analyze = function(doc, ast, callback) {
                 return;
             var type = "warning"
             var reason = warning.reason;
-            if(reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
+            if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
                 type = "error";
-            if(reason.indexOf("Missing semicolon") !== -1)
+            if (reason.indexOf("Missing semicolon") !== -1)
                 type = "info";
+            if (reason.indexOf("conditional expression and instead saw an assignment") !== -1) {
+                type = "warning";
+                warning.reason = "Assignment in conditional expression";
+            }
             for (var i = 0; i < disabledJSHintWarnings.length; i++)
                 if(disabledJSHintWarnings[i].test(warning.reason))
                     return;
