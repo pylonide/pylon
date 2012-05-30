@@ -1707,13 +1707,12 @@ var Anchor = require("./anchor").Anchor;
 var Document = function(text) {
     this.$lines = [];
 
-    if (Array.isArray(text)) {
-        this.insertLines(0, text);
-    }
     // There has to be one line at least in the document. If you pass an empty
     // string to the insert function, nothing will happen. Workaround.
-    else if (text.length == 0) {
+    if (text.length == 0) {
         this.$lines = [""];
+    } else if (Array.isArray(text)) {
+        this.insertLines(0, text);
     } else {
         this.insert({row: 0, column:0}, text);
     }
@@ -1973,6 +1972,13 @@ var Document = function(text) {
         if (lines.length == 0)
             return {row: row, column: 0};
 
+        // apply doesn't work for big arrays (smallest threshold is on safari 0xFFFF)
+        // to circumvent that we have to break huge inserts into smaller chunks here
+        if (lines.length > 0xFFFF) {
+            var end = this.insertLines(row, lines.slice(0xFFFF));
+            lines = lines.slice(0, 0xFFFF);
+        }
+
         var args = [row, 0];
         args.push.apply(args, lines);
         this.$lines.splice.apply(this.$lines, args);
@@ -1984,7 +1990,7 @@ var Document = function(text) {
             lines: lines
         };
         this._emit("change", { data: delta });
-        return range.end;
+        return end || range.end;
     };
 
     /**
@@ -3208,6 +3214,20 @@ exports.arrayRemove = function(array, value) {
 exports.escapeRegExp = function(str) {
     return str.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1');
 };
+
+exports.getMatchOffsets = function(string, regExp) {
+    var matches = [];
+
+    string.replace(regExp, function(str) {
+        matches.push({
+            offset: arguments[arguments.length-2],
+            length: str.length
+        });
+    });
+
+    return matches;
+};
+
 
 exports.deferredCall = function(fcn) {
 

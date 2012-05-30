@@ -66594,6 +66594,7 @@ apf.webdav = function(struct, tagName){
         aCont.push("</D:", reportName, ">");
 
         this.method = "REPORT";
+        
         return this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.status, 10);
             if (state != apf.SUCCESS) {

@@ -10,7 +10,7 @@
         "apf-packaged": "plugins-client/lib.apf/www/apf-packaged"
     },
     include: [
-        "node_modules/ace/build/src-uncompressed/ace",
+        "node_modules/ace/build/src/ace",
         "apf-packaged/apf_release",
         "core/document", 
         "core/ext", 
