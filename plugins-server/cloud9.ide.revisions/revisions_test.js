@@ -2,14 +2,15 @@
 
 var testCase = require('nodeunit').testCase;
 var sinon = require("sinon");
-var Fs = require("fs");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
-var RevisionsPlugin = require("./revisions").RevisionsPlugin;
+var RevisionsModule = require("./revisions");
 var rimraf = require("rimraf");
 var Diff_Match_Patch = require("./diff_match_patch");
 
 var BASE_URL = "/sergi/node_chat";
+var FsMock = require("../cloud9.sandbox.fs/fs_mock");
+var Fs = require("fs");
 
 var assertPath = function(test, path, shouldExist, message) {
     test.ok(Path.existsSync(path) == shouldExist, message || "");
@@ -18,10 +19,15 @@ var assertPath = function(test, path, shouldExist, message) {
 module.exports = testCase(
 {
     setUp: function(next) {
+        var self = this;
+        
         var ide = {
             workspaceDir: __dirname,
             options: {
                 baseUrl: BASE_URL
+            },
+            register: function (name, plugin, cb) {
+                cb();
             }
         };
 
@@ -32,18 +38,33 @@ module.exports = testCase(
                 }
             }
         };
-
-        this.revisionsPlugin = new RevisionsPlugin(ide, workspace);
-        next();
+        
+        this.fsMock = new FsMock(__dirname, process.getuid());
+        this.fsMock.setUp(function (err, fs) {
+            if (err) return next(err);
+            
+            self.fs = fs;
+            
+            // init the module
+            RevisionsModule(null, {
+                "sandbox.fs": self.fs,
+                ide: ide
+            }, function () {
+                self.revisionsPlugin = new RevisionsModule.RevisionsPlugin(ide, workspace);
+                next();
+            });
+        });
     },
 
     tearDown: function(next) {
-        var revPath = __dirname + "/.c9revisions";
-        rimraf(revPath, function(err) {
-            if (!err)
-                next();
-            else
-                throw new Error("Revisions directory (" + revPath + ") was not deleted");
+        this.fsMock.tearDown(function () {
+            var revPath = __dirname + "/.c9revisions";
+            rimraf(revPath, function(err) {
+                if (!err)
+                    next();
+                else
+                    throw new Error("Revisions directory (" + revPath + ") was not deleted");
+            });
         });
     },
 
@@ -55,25 +76,6 @@ module.exports = testCase(
     "test getSessionStylePath": function(test) {
         var path1 = PathUtils.getSessionStylePath.call(this.revisionsPlugin, "lib/test1.js");
         test.equal("sergi/node_chat/lib/test1.js", path1);
-        test.done();
-    },
-
-    "test getAbsoluteParent works": function(test) {
-        var path1 = PathUtils.getAbsoluteParent.call(this.revisionsPlugin, "lib/test1.js");
-        test.equal(__dirname + "/.c9revisions/lib", path1);
-        test.done();
-    },
-
-    "test getAbsoluteParent no workspace": function(test) {
-        this.revisionsPlugin.ide.workspaceDir = null;
-        var path1 = PathUtils.getAbsoluteParent.call(this.revisionsPlugin, "lib/test1.js");
-        test.equal(null, path1);
-        test.done();
-    },
-
-    "test getAbsolutePath works": function(test) {
-        var path1 = PathUtils.getAbsolutePath.call(this.revisionsPlugin, "lib/test1.js");
-        test.equal(__dirname + "/.c9revisions/lib/test1.js", path1);
         test.done();
     },
 
@@ -93,10 +95,10 @@ module.exports = testCase(
             Fs.readFile(filePath, function(err, data) {
                 test.ok(err === null);
                 var revObj = JSON.parse(data);
-
+                
                 test.ok(typeof revObj === "object");
                 test.ok(typeof revObj.revisions === "object");
-                test.ok(revObj.revisions.length === 0);
+                test.ok(revObj.revisions && revObj.revisions.length === 0);
 
                 Fs.readFile(__filename, function(err, data) {
                     test.ok(err === null);

@@ -404,8 +404,8 @@ function asyncParForEach(array, fn, callback) {
         var _self = this;
         var hintMessage = ""; // this.checkForMarker(pos) || "";
         // Not going to parse for this, only if already parsed successfully
-        var aggregateActions = {markers: [], hint: null, enableRefactorings: []};
-
+        var aggregateActions = {markers: [], hint: null, displayPos: null, enableRefactorings: []};
+        
         function cursorMoved() {
             asyncForEach(_self.handlers, function(handler, next) {
                 if (handler.handlesLanguage(_self.$language)) {
@@ -419,8 +419,13 @@ function asyncParForEach(array, fn, callback) {
                             aggregateActions.enableRefactorings = aggregateActions.enableRefactorings.concat(response.enableRefactorings);
                         }
                         if (response.hint) {
-                            // Last one wins, support multiple?
-                            aggregateActions.hint = response.hint;
+                            if (aggregateActions.hint)
+                                aggregateActions.hint += "\n" + response.hint;
+                            else
+                                aggregateActions.hint = response.hint;
+                        }
+                        if (response.displayPos) {
+                            aggregateActions.displayPos = response.displayPos;
                         }
                         next();
                     });
@@ -437,7 +442,8 @@ function asyncParForEach(array, fn, callback) {
                 _self.setLastAggregateActions(aggregateActions);
                 _self.scheduleEmit("hint", {
                     pos: pos,
-                	message: hintMessage
+                    displayPos: aggregateActions.displayPos,
+                    message: hintMessage
                 });
             });
 
@@ -660,7 +666,13 @@ function asyncParForEach(array, fn, callback) {
                         return 1;
                     else if (a.score > b.score)
                         return -1;
-                    else if(a.name < b.name)
+                    else if (a.id && a.id === b.id) {
+                        if (a.isFunction)
+                            return -1;
+                        else if (b.isFunction)
+                            return 1;
+                    }
+                    if (a.name < b.name)
                         return -1;
                     else if(a.name > b.name)
                         return 1;

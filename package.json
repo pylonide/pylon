@@ -25,7 +25,8 @@
         "dryice": "0.4.2",
 
         "mappings": "0.1.x",
-        "amd-loader": "~0.0.4"
+        "amd-loader": "~0.0.4",
+        "async": "0.1.21"
     },
 
     "devDependencies": {
@@ -35,7 +36,7 @@
     },
 
     "mappings": {
-        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/2f006d2a5a64a8a6ef09ef0976fb412a5718711b"],
+        "ace":          ["npm", "https://github.com/ajaxorg/ace/tarball/e496e734b27188f5d5f213a3eef0610e55dc2318"],
         "apf":          ["npm", "https://github.com/ajaxorg/apf/tarball/10179a17662c221c72bb010bd7e4feda485d2b34"],
         "architect":    ["npm", "https://github.com/c9/architect/tarball/6a7069e6d1b65a515af73d1dd92757da33bfc2a9"],
         "asyncjs":      ["npm", "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08"],
