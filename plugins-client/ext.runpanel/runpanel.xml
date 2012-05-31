@@ -95,9 +95,10 @@
                         <a:model id="mdlRunnerSelector">
                             <data>
                                 <element caption="Default" value="default" />
-                                <element caption="Auto" value="auto" />
-                                <element caption="Node.js 0.6.x" value="0.6.x" />
-                                <element caption="Node.js 0.4.x" value="0.4.x" />
+                                <element caption="Node.js (Auto)" value="node auto" />
+                                <element caption="Node.js 0.6.x" value="node 0.6.x" />
+                                <element caption="Node.js 0.4.x" value="node 0.4.x" />
+                                <element caption="PHP 5.3.x" value="php 5.3.x" />
                             </data>
                         </a:model>
                     </a:hbox>
