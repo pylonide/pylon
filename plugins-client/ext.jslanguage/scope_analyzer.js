@@ -24,6 +24,7 @@ var MAYBE_PROPER = module.exports.MAYBE_PROPER = 1;
 var NOT_PROPER = module.exports.NOT_PROPER = 0;
 var KIND_EVENT = module.exports.KIND_EVENT = "event";
 var KIND_PACKAGE = module.exports.KIND_PACKAGE = "package";
+var KIND_HIDDEN = module.exports.KIND_HIDDEN = "hidden";
 var KIND_DEFAULT = module.exports.KIND_DEFAULT = undefined;
 
 // Based on https://github.com/jshint/jshint/blob/master/jshint.js#L331
@@ -372,19 +373,7 @@ Scope.prototype.get = function(name) {
 };
 
 Scope.prototype.getVariableNames = function() {
-    var names = [];
-    for(var p in this.vars) {
-        if(this.vars.hasOwnProperty(p)) {
-            names.push(p.slice(1));
-        }
-    }
-    if(this.parent) {
-        var namesFromParent = this.parent.getVariableNames();
-        for (var i = 0; i < namesFromParent.length; i++) {
-            names.push(namesFromParent[i]);
-        }
-    }
-    return names;
+    return this.getNamesByKind(KIND_DEFAULT);
 };
 
 Scope.prototype.getNamesByKind = function(kind) {
