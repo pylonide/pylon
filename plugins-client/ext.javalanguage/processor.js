@@ -378,7 +378,6 @@ var convertToHierarchyTree = function(doc, root) {
     };
 
      this.analyze = function(doc, fullAst /* null */, callback) {
-        return callback();
         var _self = this;
         var command = {
           command : "jvmfeatures",

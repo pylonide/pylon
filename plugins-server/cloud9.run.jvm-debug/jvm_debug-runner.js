@@ -86,7 +86,6 @@ function setup (JvmRunner) {
 
                 // Start debug as soon as the "Listening for socket" message is printed
                 var startDebugListener = function (msg) {
-                    console.log("msg: ", msg);
                     if (msg.type == "node-data" && /dt_socket/.test(msg.data)) {
                         self._startDebug(port, options);
                         options.eventEmitter.removeListener(options.eventName, startDebugListener);
