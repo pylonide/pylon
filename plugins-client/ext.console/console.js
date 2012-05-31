@@ -444,6 +444,30 @@ module.exports = ext.register("ext/console/console", {
                 this.createNodeProcessLog(message.pid);
                 return;
             case "node-data":
+                if (message.data && message.data.indexOf("Tip: you can") === 0) {
+                    (function () {
+                        var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
+                        if (!prjmatch) return;
+                        
+                        var user = prjmatch[2];
+                        var project = prjmatch[1];
+                        
+                        var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
+                        
+                        if (project !== ide.projectName) {
+                            // concurrency bug, project does not match
+                        }
+                        else if (urlPath.length && user !== urlPath[0]) {
+                            // concurrency bug, user does not match
+                        }
+                        else {
+                            // everything is OK
+                        }
+                        
+                        return;
+                    }());
+                }
+                
                 logger.logNodeStream(message.data, message.stream, this.getLogStreamOutObject(message.pid, true), ide);
                 return;
             case "node-exit":
