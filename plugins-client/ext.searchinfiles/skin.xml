@@ -1,200 +1,77 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml">
-  <a:tree name="tree">
-      <a:style><![CDATA[
-      .searchtree {
-          padding : 3px;
-          overflow: hidden;
-          cursor : default;
-          position : relative;
-          color: #fff;
-          font-family : Arial;
-          font-size : 12px;
-      }
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <a:button name="btnquicksearchnav">
+        <a:style><![CDATA[
+            .btnquicksearchnav {
+                height             : 22px;
+                cursor             : pointer;
+                position           : relative;
+                -moz-user-select   : none;
+                -khtml-user-select : none;
+                user-select        : none;
+                width              : 20px;
+            }
+            .btnquicksearchnav .lbl{
+                margin: 0;
+                outline: none;
+                height : 25px;
+            }
+            .btnquicksearchnav.btnquicksearchnavLeft .lbl {
+                border-right: none;
+                border-left: none;
+            }
 
-      searchtree .trDefines {
-          background: none;
-          border-bottom: 1px solid #c3c3c3;
-          border-top: 1px solid #c3c3c3;
-          border-right: none;
-          border-left: none;
-          posittion: relative;
-          padding-top: 8px;
-      }
+            .btnquicksearchnav span {
+                background-position: 0 0;
+                background-repeat:no-repeat;
+                display: block;
+                height: 25px;
+            }
+            .btnquicksearchnavOver span {
+                background-position: 0 -25px;
+            }
+            .btnquicksearchnavDown span {
+                background-position: 0 -50px;
+            }
+            .btnquicksearchnavDisabled span {
+                background-position: 0 -75px;
+            }
 
-      .searchtree SPAN{
-          width: 15px;
-          height: 18px;
-          background: no-repeat 3px 4px;
-          display: block;
-          margin-left: -13px;
-      }
+            .btnquicksearchnav .btnDivider {
+                z-index: 1;
+                border-color: transparent white transparent #C3C3C3;
+                border-left:1px solid #C3C3C3;
+                border-right:1px solid white;
+                border-style:none solid;
+                border-width:medium 1px;
+                cursor:default;
+                height:17px;
+                line-height:0;
+                position:absolute;
+                right: -1px;
+                top:4px;
+                width:0;
+                display: none;
+            }
 
-      .searchtree DIV.pluslast SPAN,
-      .searchtree DIV.plus SPAN{
-          background-image:url(images/search_expand.png);
-      }
-
-      .searchtree DIV.minlast SPAN,
-      .searchtree DIV.min SPAN{
-          background-image:url(images/search_collapse.png);
-      }
-
-      .searchtree DIV{
-          padding: 1px 0 0 0;
-          height: auto;
-          padding-left: 15px;
-          overflow : hidden;
-          font-family: menlo,courier new,fixed,swiss,sans-serif;
-          font-size: 12px;
-      }
-
-      .searchtree .responseHeader {
-          color: #e6db70;
-      }
-
-      .searchtree .linenumber {
-          width : 35px;
-          display : inline;
-          text-align : right;
-          padding : 0 10px 0 4px;
-      }
-
-      .searchtree .excerpt {
-          margin : 0;
-          display : inline-block;
-          color: #ffffff;
-      }
-
-      .searchtree .line{
-          width : 35px;
-          display : inline-block;
-          text-align : right;
-          padding : 0 5px 0 0;
-      }
-
-      .searchtree pre{
-          margin : 0;
-          display : inline-block;
-      }
-
-      .searchtree .focusbug{
-          padding-left : 0;
-          overflow : visible;
-      }
-
-      .searchtree LABEL{
-          padding: 1px 0 0 20px;
-          background: no-repeat 1px 1px;
-          white-space: nowrap;
-          margin-left: 0px;
-          display: block;
-          float: left;
-          margin-top: -18px;
-          padding: 1px 0 0 2px !important;
-          height: auto;
-      }
-
-      .searchtree DIV.loading LABEL{
-
-      }
-      .searchtree DIV.loading SPAN{
-          background: no-repeat 0px 0px;
-      }
-
-      .searchtree U{
-          text-decoration: none;
-          cursor: default;
-          display: inline !important; display: block;
-          padding: 2px 4px 2px 2px;
-      }
-
-      .searchtree blockquote .indicate U{
-          border: 1px dotted #CCC;
-          padding: 0px 3px 1px 1px;
-      }
-
-      .searchtree .responseHeader.selected U{
-          -webkit-border-radius: 3px;
-          -moz-border-radius: 3px;
-          border-radius: 3px;
-          border: 1px dotted #CCC;
-          padding: 0px 3px 1px 1px;
-      }
-
-      .searchtreeFocus .selected U, .tree .dragAppend U{
-          -webkit-border-radius: 3px;
-          -moz-border-radius: 3px;
-          border-radius: 3px;
-      }
-
-      .searchtree BLOCKQUOTE{
-          margin: 0;
-          padding: 0 0 0 0px;
-          display: none;
-          height: 0;
-          overflow: hidden;
-          background: repeat-y 0px center;
-      }
-
-      .searchtree .empty, .searchtree .offline, .searchtree .loading{
-          padding: 8px;
-          color: #AAA;
-          font-weight : normal;
-          height : 0;
-          overflow: visible;
-          text-align: left !important;
-      }
-
-      .searchtree div.loading{
-          text-align : left;
-      }
-
-      .searchtree .message{
-          text-align: center;
-      }
-
-      .searchtree .root{
-          position : relative;
-      }
-  ]]>
-      </a:style>
-      <a:style condition="!apf.isIE"><![CDATA[
-      .tree LABEL, .dragtree LABEL{
-          padding: 3px 0 0 20px;
-      }
-  ]]>
-      </a:style>
-      <a:presentation>
-          <a:main container="." startclosed="false">
-              <div class="searchtree">
-
-              </div>
-          </a:main>
-          <a:item
-            class        = "."
-            caption      = "label/u"
-            icon         = "label"
-            openclose    = "span"
-            select       = "label"
-            container    = "following-sibling::blockquote">
-              <div>
-                  <span> </span>
-                  <label>
-                      <u>-</u>
-                  </label>
-              </div>
-              <blockquote> </blockquote>
-          </a:item>
-          <a:loading>
-              <div class="loading">
-                  <span> </span>
-                  <label>Loading...</label>
-              </div>
-          </a:loading>
-          <a:empty caption=".">
-              <div class="message"></div>
-          </a:empty>
-      </a:presentation>
-  </a:tree>
+            .btnquicksearchnav.withDivider .btnDivider {
+                display: block;
+            }
+        ]]></a:style>
+        <a:presentation>
+            <a:main
+              caption    = "div[1]/text()"
+              label      = "div[1]/text()"
+              background = "."
+              icon       = "div[1]/span"
+              minwidth   = "20">
+                <div class="btnquicksearchnav">
+                    <div class="lbl">-
+                        <span></span>
+                        <div class="btnDivider"></div>
+                    </div>
+                 </div>
+            </a:main>
+        </a:presentation>
+    </a:button>
 </a:skin>

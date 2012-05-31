@@ -52,12 +52,12 @@ worker:
 # copies built ace modes
 mode:
 	mkdir -p plugins-client/lib.ace/www/mode
-	cp `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_]+.js"`  plugins-client/lib.ace/www/mode
+	cp `find node_modules/ace/build/src | grep -E "mode-[a-zA-Z_0-9]+.js"`  plugins-client/lib.ace/www/mode
 
 # copies built ace themes
 theme:
 	mkdir -p plugins-client/lib.ace/www/theme
-	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_]+.js"` plugins-client/lib.ace/www/theme
+	cp `find node_modules/ace/build/src | grep -E "theme-[a-zA-Z_0-9]+.js"` plugins-client/lib.ace/www/theme
 
 min_ace:
 	for i in `ls ./node_modules/ace/build/src/worker*.js`; do \
@@ -83,7 +83,7 @@ gzip:
 
 c9core: apf ace core worker mode theme
     
-package: c9core ext min_ace
+package: helper c9core ext min_ace
 
 test:
 	$(MAKE) -C test
