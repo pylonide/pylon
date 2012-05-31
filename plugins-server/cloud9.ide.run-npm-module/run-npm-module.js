@@ -7,15 +7,17 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var util = require("util");
-var fs = require("fs");
 
 var name = "npm-runtime";
 var ProcessManager;
 var EventBus;
+var Fs;
 
 module.exports = function setup(options, imports, register) {
     ProcessManager = imports["process-manager"];
     EventBus = imports.eventbus;
+    Fs = imports["sandbox.fs"];
+    
     imports.ide.register(name, NpmRuntimePlugin, register);
 };
 
@@ -101,14 +103,14 @@ util.inherits(NpmRuntimePlugin, Plugin);
     };
 
     this.searchForModuleHook = function(command, cb) {
-        var baseDir = this.ide.workspaceDir + "/node_modules";
+        var baseDir = "node_modules";
 
         function searchModules(dirs, it) {
             if (!dirs[it])
                 return cb(false);
 
             var currentDir = baseDir + "/" + dirs[it];
-            fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
+            Fs.readFile(currentDir + "/package.json", "utf-8", function(err, file) {
                 if (err)
                     return searchModules(dirs, it+1);
 
@@ -131,7 +133,7 @@ util.inherits(NpmRuntimePlugin, Plugin);
             });
         }
 
-        fs.readdir(baseDir, function(err, res) {
+        Fs.readdir(baseDir, function(err, res) {
             if (err)
                 return cb(false);
 
