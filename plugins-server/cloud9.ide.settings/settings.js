@@ -9,17 +9,18 @@
 
 var Plugin = require("../cloud9.core/plugin");
 var Path = require("path");
-var fs = require("fs");
 var util = require("util");
 var assert = require("assert");
 
 var name = "settings";
 
 var SETTINGS_PATH;
+var fs;
 
 module.exports = function setup(options, imports, register) {
     assert(options.settingsPath, "option 'settingsPath' is required");
     SETTINGS_PATH = options.settingsPath;
+    fs = imports["sandbox.fs"];
 
     imports.ide.register(name, SettingsPlugin, register);
 };
@@ -61,7 +62,7 @@ util.inherits(SettingsPlugin, Plugin);
     this.loadSettings = function(user, callback) {
         // console.log("load settings", this.settingsPath);
         var _self = this;
-        Path.exists(this.settingsPath, function(exists) {
+        fs.exists(this.settingsPath, function(err, exists) {
             if (exists) {
                 fs.readFile(_self.settingsPath, "utf8", callback);
             }

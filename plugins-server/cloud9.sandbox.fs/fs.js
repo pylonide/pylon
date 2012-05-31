@@ -111,6 +111,13 @@ module.exports = function (projectDir, unixId) {
     };
     
     /**
+     * Wrapper around rename
+     */
+    this.rename = function () {
+        return this.$simpleWrapper.call(this, "rename", arguments);
+    };    
+    
+    /**
      * Wrapper around readdir
      */
     this.readdir = function () {
