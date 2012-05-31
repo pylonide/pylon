@@ -96,21 +96,6 @@ apf.dbg = module.exports = function(struct, tagName){
         this.autoAttachComingIn = false;
     };
 
-    /**
-     * If you are auto attaching, please announce yourself here
-     */
-    this.registerAutoAttach = function () {
-        this.autoAttachComingIn = true;
-    };
-
-    /**
-     * Manual click on the run button?
-     * Youll get special behavior!
-     */
-    this.registerManualAttach = function () {
-        this.autoAttachComingIn = false;
-    };
-
     this.attach = function(host, tab) {
         var _self = this;
 
