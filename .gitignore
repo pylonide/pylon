@@ -17,6 +17,7 @@ aut.js
 helloworld.js
 .*.gz
 .c9revisions
+.c9search
 .architect/
 .sourcemint/
 /mapped_packages/
