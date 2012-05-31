@@ -2,21 +2,21 @@
 
 ## Installation
 
-1- Install sun-java6-jdk on your machine and ant to build from source code.
+1- Install sun-java6-jdk & ant to build from source code.
 
 2- Build the java debug project:
 
-    $ cd node_modules/lib-javadebug && npm install && ant
+    $ cd node_modules/javadebug && ant
 
-3- Run the java debug daemon
+3- Start the java debug daemon
 
-    $ java -cp bin/:lib/commons-logging-1.1.1.jar:lib/log4j-1.2.16.jar:lib/tools.jar com.cloud9ide.debug.daemon.Cloud9Daemon
+    $ ./debug
 
 The debug is now ready for cloud9 debug connections
 
 4- Build the jvm-run sub projects:
 
-    $ cd node_modules/jvm-run && && ant
+    $ cd node_modules/jvm-run && ant
 
 5- Download eclipse hellios sr2 - j2ee version - for your platform and extract it somewhere.
 
