@@ -192,16 +192,17 @@ var Runner = exports.Runner = function(options, callback) {
 
             jvmInstance.runArgs(function (runArgs) {
                 self.args = options.args = self.jvmArgs.concat(runArgs).concat(self.scriptArgs);
+                console.log("name: ", self.name);
                 ShellRunner.call(self, options, callback);
             });
         });
     }
 };
 
+util.inherits(Runner, ShellRunner);
+
 (function() {
 
     this.name = "node";
 
 }).call(Runner.prototype);
-
-util.inherits(Runner, ShellRunner);
