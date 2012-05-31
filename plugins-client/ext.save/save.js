@@ -556,7 +556,7 @@ module.exports = ext.register("ext/save/save", {
         function expand(){
             var tabPage = tabEditors.getPage(),
                 path    = tabPage ? tabPage.$model.data.getAttribute('path') : false,
-                isNew   = tabPage.$model.data.getAttribute('newfile');
+                isNew   = tabPage ? tabPage.$model.data.getAttribute('newfile') : false;
             if (!isNew)
                 _self.choosePath(path);
             else
