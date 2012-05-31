@@ -35,7 +35,7 @@ var quicksearch = require("ext/quicksearch/quicksearch");
 var statusbar = require("ext/statusbar/statusbar");
 var stripws = require("ext/stripws/stripws");
 var language = require("ext/language/language");
-
+    
 var BAR_WIDTH = 200;
 var INTERVAL = 60000;
 var CHANGE_TIMEOUT = 500;
@@ -67,13 +67,6 @@ module.exports = ext.register("ext/revisions/revisions", {
      * confirmed to be saved.
      */
     revisionQueue: {},
-    /**
-     * Revisions#offlineQueue -> Array
-     * Contains the revisions that have been saved during Cloud9 being offline.
-     * Its items are not revision objects, but hold their own format (for
-     * example, they have a generated timestamp of the moment of saving).
-     */
-    offlineQueue: [],
 
     /** related to: Revisions#onExternalChange
      * Revisions#changedPaths -> Array
@@ -196,6 +189,16 @@ module.exports = ext.register("ext/revisions/revisions", {
             });
         }
 
+        // Contains the revisions that have been saved during Cloud9 being offline.
+        // Its items are not revision objects, but hold their own format (for
+        // example, they have a generated timestamp of the moment of saving).
+        if (localStorage.offlineQueue) {
+            this.offlineQueue = JSON.parse(localStorage.offlineQueue);
+        }
+        else {
+            this.offlineQueue = [];
+        }
+
         this.$initWorker();
     },
 
@@ -267,6 +270,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("init.ext/code/code", function(e) {
             self.panel = ceEditor.parentNode.appendChild(self.panel);
             revisionsPanel.appendChild(pgRevisions);
+        });
+        
+         apf.addEventListener("exit", function() {
+            localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
         this.$afterSelectFn = this.afterSelect.bind(this);
@@ -481,18 +488,20 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onAfterOnline: function(e) {
-        var queue = this.offlineQueue;
-        if (!queue || !queue.length) {
+        if (!this.offlineQueue.length) {
             return;
         }
 
-        queue.forEach(function(rev, ind, _queue) {
+        this.offlineQueue.forEach(function(rev, ind, _queue) {
             var prev = _queue[ind - 1];
             if (prev) {
                 rev.applyOn = prev.ts;
             }
         });
-        this.$makeNewRevision(queue.shift()); // First item doesn't depend on anything
+        this.$makeNewRevision(this.offlineQueue.shift()); // First item doesn't depend on anything
+
+        localStorage.offlineQueue = "[]"; // Empty local storage
+        this.offlineQueue = [];
     },
 
     afterSelect: function(e) {
@@ -544,6 +553,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
             clearTimeout(this.docChangeTimeout);
             this.docChangeTimeout = setTimeout(function(self) {
+                stripws.disable();
                 self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
@@ -1171,6 +1181,10 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     doAutoSave: function() {
+        // Take advantage of the interval and dump our offlineQueue into
+        // localStorage.
+        localStorage.offlineQueue = JSON.stringify(this.offlineQueue);
+
         if (typeof tabEditors === "undefined" || !this.isAutoSaveEnabled)
             return;
 
@@ -1198,7 +1212,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (node.getAttribute("newfile") || node.getAttribute("debug"))
             return;
 
-        Save.quicksave(page, function() {}, true);
+        Save.quicksave(page, function() {
+            stripws.enable();
+        }, true);
     },
 
     /**

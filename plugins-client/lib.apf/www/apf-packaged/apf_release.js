@@ -67170,7 +67170,8 @@ apf.webdav = function(struct, tagName){
         aCont.push("</D:", reportName, ">");
 
         this.method = "REPORT";
-        this.doRequest(function(data, state, extra) {
+        
+        return this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.status, 10);
             if (state != apf.SUCCESS) {
                 var oError = WebDAVError.call(this, "Unable to fetch report on '" + sPath

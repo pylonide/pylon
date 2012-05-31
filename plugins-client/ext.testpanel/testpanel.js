@@ -67,7 +67,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
             if (autoRun == "none")
                 return;
             
-            if (autoRun == "selection") {
+            if (autoRun == "selection" && _self.dgTestProject) {
                 var sel = dgTestProject.getSelection();
                 if (sel.length)
                     _self.run(sel);

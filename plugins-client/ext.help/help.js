@@ -67,8 +67,6 @@ define(function(require, exports, module) {
             c = 0;
             menus.addItemByPath("Help/Support/FAQ", new apf.item({ onclick : function(){ window.open('http://support.cloud9ide.com/forums/20346041-frequently-asked-questions'); }}), c += 100);
             menus.addItemByPath("Help/Support/Troubleshooting Tips", new apf.item({ onclick : function(){ window.open('http://support.cloud9ide.com/forums/20329737-troubleshooting') }}), c += 100);
-            menus.addItemByPath("Help/Support/~", new apf.divider(), c += 100);
-            menus.addItemByPath("Help/Support/Report a bug", new apf.item({ onclick : function(){ window.open('https://github.com/ajaxorg/cloud9/issues?milestone=1') }}), c += 100);
 
             c = 0;
             menus.addItemByPath("Help/Learning/YouTube Channel for Cloud9 IDE", new apf.item({ onclick : function(){ window.open('http://www.youtube.com/user/c9ide/videos?view=pl'); }}), c += 100);

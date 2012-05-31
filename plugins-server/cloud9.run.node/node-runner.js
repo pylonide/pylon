@@ -12,41 +12,25 @@ var exports = module.exports = function (url, pm, sandbox, usePortFlag, callback
     sandbox.getProjectDir(function(err, projectDir) {
         if (err) return callback(err);
         
-        sandbox.getPort(function(err, port) {
+        sandbox.getUnixId(function(err, unixId) {
             if (err) return callback(err);
             
-            sandbox.getUnixId(function(err, unixId) {
-                if (err) return callback(err);
-                
-                if (!url) {
-                    sandbox.getHost(function(err, host) {
-                        if (err) return callback(err);
-                        
-                        url = "http://" + host + ":" + port;
-                        
-                        init(projectDir, port, unixId, url);
-                    });
-                }
-                else {
-                    init(projectDir, port, unixId, url);
-                }
-            });
+            init(projectDir, unixId, url);
         });
     });
 
-    function init(projectDir, port, unixId, url) {
-        pm.addRunner("node", exports.factory(projectDir, port, unixId, url, usePortFlag));
+    function init(projectDir, unixId, url) {
+        pm.addRunner("node", exports.factory(sandbox, projectDir, unixId, url, usePortFlag));
 
         callback();
     }
 };
 
-exports.factory = function(root, port, uid, url, usePortFlag) {
-    return function(args, eventEmitter, eventName) {
+exports.factory = function(sandbox, root, uid, url, usePortFlag) {
+    return function(args, eventEmitter, eventName, callback) {
         var options = {};
         c9util.extend(options, args);
         options.root = root;
-        options.port = port;
         options.uid = uid;
         options.file = args.file;
         options.args = args.args;
@@ -59,65 +43,105 @@ exports.factory = function(root, port, uid, url, usePortFlag) {
         options.url = url;
         options.usePortFlag = usePortFlag;
         
-        return new Runner(options);
+        options.sandbox = sandbox;
+        
+        new Runner(options, callback);
     };
 };
 
-var Runner = exports.Runner = function(options) {
-    this.root = options.root;
-    this.port = options.port;
-    this.uid = options.uid;
-    this.nodeVersion = options.nodeVersion || "auto";
+var Runner = exports.Runner = function(options, callback) {
+    var self = this;
+    
+    if (!options.sandbox) {
+        return callback("No sandbox specified");
+    }
+    
+    self.root = options.root;
+    self.uid = options.uid;
+    self.nodeVersion = options.nodeVersion || "auto";
 
-    this.file = options.file || "";
+    self.file = options.file || "";
 
     options.env = options.env || {};
     options.env.NODE_PATH = options.root && (options.root + "/../npm_global/lib/node_modules");
 
-    this.scriptArgs = options.args || [];
-    this.nodeArgs = [];
+    self.scriptArgs = options.args || [];
+    self.nodeArgs = [];
 
-    if (options.uid)
-        this.nodeArgs.push("--setuid=" + options.uid);
-
-    if (options.port) {
-        options.env.C9_PORT = options.port;
-        options.env.PORT = options.port;
+    if (options.uid) {
+        self.nodeArgs.push("--setuid=" + options.uid);    
     }
     
-    if (options.usePortFlag) {
-        this.nodeArgs.push("--ports=" + options.port);
-    }
-
-    // a nice debug message for our users when we fire up the process
-    var debugMessageListener = function (msg) {
-        // process dies? then we die as well
-        if (msg.type === "node-exit") {
-            return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+    // first we need to get an open port
+    options.sandbox.getPort(function (err, port) {
+        if (err) {
+            return console.error("getPort failed");
         }
         
-        if (msg.type === "node-start") {
-            var info = [
-                "Tip: you can access long running processes, like a server, at '" + options.url + "'.",
-                "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
-            ];
-            
-            options.eventEmitter.emit(options.eventName, {
-                type: "node-debug-data",
-                stream: "stdout",
-                data: info.join("\n"),
-                extra: null,
-                pid: msg.pid
+        // the port flag is only present in the precompiled binaries that we provide
+        // in the hosted version, so only add it then
+        if (options.usePortFlag) {
+            self.nodeArgs.push("--ports=" + port);
+        }
+        
+        // then create a url.
+        // this can be passed in as an option, or we can construct it
+        // based on the host and the port
+        if (!options.url) {
+            options.sandbox.getHost(function(err, host) {
+                if (err) return console.error(err);
+                
+                var url = "http://" + host + ":" + port;
+                
+                startProcess(url, port);
             });
         }
-    };
-    options.eventEmitter.on(options.eventName, debugMessageListener);
-
-    options.cwd = options.cwd ? options.cwd : options.root;
-    options.command = "node"; 
+        else {
+            startProcess(options.url, port);
+        }        
+    });
     
-    ShellRunner.call(this, options);
+    function startProcess (url, port) {
+        self.port = port;
+        
+        if (self.port) {
+            options.env.C9_PORT = self.port;
+            options.env.PORT = self.port;
+        }
+        
+        if (options.usePortFlag) {
+            self.nodeArgs.push("--ports=" + self.port);
+        }
+    
+        // a nice debug message for our users when we fire up the process
+        var debugMessageListener = function (msg) {
+            // process dies? then we die as well
+            if (msg.type === "node-exit") {
+                return options.eventEmitter.removeListener(options.eventName, debugMessageListener);
+            }
+            
+            if (msg.type === "node-start") {
+                var info = [
+                    "Tip: you can access long running processes, like a server, at '" + url + "'.",
+                    "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
+                ];
+                
+                options.eventEmitter.emit(options.eventName, {
+                    type: "node-debug-data",
+                    stream: "stdout",
+                    data: info.join("\n"),
+                    extra: null,
+                    pid: msg.pid
+                });
+            }
+        };
+        options.eventEmitter.on(options.eventName, debugMessageListener);
+    
+        options.cwd = options.cwd ? options.cwd : options.root;
+        options.command = "node"; 
+        
+        ShellRunner.call(self, options, callback);
+    }
 };
 
 util.inherits(Runner, ShellRunner);
-
