@@ -222,9 +222,20 @@ module.exports = ext.register("ext/panels/panels", {
         if (this.currentPanel && (this.currentPanel != this))
             this.deactivate();
         
-        var width = settings.model.queryValue("auto/panels/panel[@path='" 
-            + panelExt.path + "']/@width") || panelExt.defaultWidth;
-        
+        var width = 0;
+        if(colLeft.getWidth() || settings.model.queryValue("auto/panels/panel[@path='" + panelExt.path + "']/@width"))
+            var width = Math.max(
+                colLeft.getWidth(), 
+                panelExt.minWidth || 0, 
+                parseInt(settings.model.queryValue("auto/panels/panel[@path='" + panelExt.path + "']/@width"))
+            );
+        else
+            width = panelExt.defaultWidth;
+        //remember the new value
+        var query = "auto/panels/panel[@path='" + panelExt.path + "']/@width";
+        settings.model.setQueryValue(query, width);
+
+
         if (noAnim || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
             panelExt.panel.show();
             colLeft.show();
@@ -242,7 +253,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         if (!noButton && panelExt.button)
             panelExt.button.setValue(true);
-
+        
         splitterPanelLeft.show();
         this.currentPanel = panelExt;
         this.lastPanel    = panelExt;
@@ -253,6 +264,7 @@ module.exports = ext.register("ext/panels/panels", {
         
         this.mnuPanelsNone.setAttribute("selected", false);
         panelExt.mnuItem.select(); //Will set setting too
+
     },
     
     deactivate : function(noButton, anim){

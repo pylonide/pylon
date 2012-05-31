@@ -24,7 +24,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     markup          : markup,
     nodes           : [],
     
-    defaultWidth    : 130,
+    defaultWidth    : 200,
     
     hook : function(){
         var _self = this;

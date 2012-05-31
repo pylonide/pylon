@@ -11,7 +11,7 @@
       modal    = "false"
       buttons  = "close"
       optimize = "true"
-      minwidth = "101">
+      minwidth = "200">
         <a:button
           skin="header-btn"
           class="panel-settings"

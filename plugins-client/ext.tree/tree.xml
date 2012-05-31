@@ -14,7 +14,7 @@
       title    = "Project Files"
       modal    = "false"
       buttons  = "close"
-      minwidth = "130"
+      minwidth = "200"
       optimize = "true">
         <a:button
           skin="header-btn"
