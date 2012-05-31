@@ -394,9 +394,9 @@ Scope.prototype.getNamesByKind = function(kind) {
             results.push(v.slice(1));
     }
     if(this.parent) {
-        var namesFromParent = this.parent. getNamesByKind(kind);
+        var namesFromParent = this.parent.getNamesByKind(kind);
         for (var i = 0; i < namesFromParent.length; i++) {
-            names.push(namesFromParent[i]);
+            results.push(namesFromParent[i]);
         }
     }
     return results;
