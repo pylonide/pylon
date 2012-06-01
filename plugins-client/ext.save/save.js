@@ -233,9 +233,9 @@ module.exports = ext.register("ext/save/save", {
         // previous version of this function used
         // .forEach(this.quicksave), but that also passes the index parameter (2nd one)
         // of forEach to the quicksave function.
-        var self = this;
+        var _self = this;
         tabEditors.getPages().forEach(function (page) {
-            self.quicksave(page);
+            _self.quicksave(page);
         });
     },
 
@@ -385,7 +385,7 @@ module.exports = ext.register("ext/save/save", {
         }
         apf.xmldb.setAttribute(file, "saving", "1");
 
-        var self = this;
+        var _self = this;
         var value = page.$doc.getValue();
         fs.saveFile(newPath, value, function(value, state, extra) {
             if (state != apf.SUCCESS) {
@@ -409,9 +409,9 @@ module.exports = ext.register("ext/save/save", {
             apf.xmldb.removeAttribute(oldFile, "saving");
             apf.xmldb.removeAttribute(file, "saving");
 
-            if (self.saveBuffer[path]) {
-                delete self.saveBuffer[path];
-                self._saveAsNoUI(page);
+            if (_self.saveBuffer[path]) {
+                delete _self.saveBuffer[path];
+                _self._saveAsNoUI(page);
             }
 
             if (parseInt(file.getAttribute("newfile") || "0", 10) === 1) {
@@ -424,9 +424,8 @@ module.exports = ext.register("ext/save/save", {
                                     .replace(/\//, "") || "node()";
                 if (self.trFiles && xpath) {
                     var oNode = trFiles.queryNode(xpath);
-                    if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]')) {
+                    if (oNode && !trFiles.queryNode('//node()[@path="' + newPath + '"]'))
                         apf.xmldb.appendChild(oNode, file);
-                    }
                 }
             }
 
@@ -507,10 +506,10 @@ module.exports = ext.register("ext/save/save", {
 
         //apf.xmldb.setAttribute(file, "saving", "1");
 
-        var self = this;
+        var _self = this;
         var doSave = function() {
             winSaveAs.hide();
-            self._saveAsNoUI(page, path, newPath, isReplace);
+            _self._saveAsNoUI(page, path, newPath, isReplace);
 
             if (window.winConfirm) {
                 winConfirm.hide();
