@@ -365,6 +365,9 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var path = Util.stripWSFromPath(e.path);
         this.changedPaths.push(path);
+        
+        // Force initialization of extension (so that UI is available)
+        ext.initExtension(this);
 
         if (winQuestionRev.visible !== true && !this.isCollab()) { // Only in single user mode
             ide.send({
