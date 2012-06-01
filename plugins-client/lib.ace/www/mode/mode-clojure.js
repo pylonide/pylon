@@ -275,6 +275,10 @@ var ClojureHighlightRules = function() {
                 token : "string", // single line
                 regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
             }, {
+                token : "string", // multi line
+                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?$',
+                next: "string"
+            }, {
                 token : "string", // symbol
                 regex : "[:](?:[a-zA-Z]|\\d)+"
             }, {
@@ -292,6 +296,17 @@ var ClojureHighlightRules = function() {
                 token : "comment", // comment spanning whole line
                 merge : true,
                 regex : ".+"
+            }
+        ],
+        "string" : [
+            {
+                token : "string",
+                merge : true,
+                regex : "\\\\."
+            }, {
+                token : "string",
+                regex : '[^"\\\\]*?"',
+                next : "start"
             }
         ]
     };

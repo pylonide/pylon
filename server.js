@@ -2,7 +2,7 @@
 
 var path = require('path');
 var architect = require("architect");
-var EXEC = require("child_process").exec;
+var spawn = require("child_process").spawn;
 
 // TODO: Need better args parser.
 
@@ -19,48 +19,62 @@ var packed = false;
 var packedName = "";
 
 for (var p = 2; p < process.argv.length; p++) {
-   if (process.argv[p] == "-d") {
+   if (process.argv[p] === "-d") {
        debug = true;
        
        if(!path.existsSync("plugins-client/lib.apf/www/apf-packaged/apf_debug.js")) {
        		console.log("Building apfdebug for first run...");
-       		EXEC("npm run-script build-debug", function (error, stdout, stderr) {
-		        if (error || stderr) {
-		            console.error(stderr);
-		            process.exit(1);
-		        }
-		        console.log(stdout);
-		        boot();
-	    	});
+       		
+            var buildDebug = spawn("npm", ["run-script", "build-debug"]);
+
+            buildDebug.stderr.setEncoding("utf8");
+            buildDebug.stderr.on('data', function (data) {
+              console.error(data);
+            });
+            buildDebug.on('exit', function (code) {
+              if (code !== 0) {
+                console.error('build-debug process exited with code ' + code);
+                process.exit(code);
+              }
+              boot();
+            });
        }
        else
-       	boot();
+           boot();
    }
 
-   else if (process.argv[p] == "-P") {
+   else if (process.argv[p] === "-P") {
        packed = true;
        if (process.argv[p + 1] && process.argv[p + 1].indexOf("-") < 0) // use this specific packed file
             packedName = process.argv[++p];
        else
             packedName = "packed.js";
-       	
+
+       configName = "packed";
+
        if(!path.existsSync("plugins-client/lib.packed/www/" + packedName)) {
        		console.log("Building packed file for first run...Please wait...");
 		   	console.log("   |\\      _,,,---,,_\n"+
 		   				"   /,`.-'`'    -.  ;-;;,_\n" +
 		  				"   |,4-  ) )-,_..;\\ (  `'-'\n" +
 		 				"   '---''(_/--'  `-'\\_)  Felix Lee");
-       		EXEC("npm run-script build-packed", function (error, stdout, stderr) {
-		        if (error || stderr) {
-		            console.error(stderr);
-		            process.exit(1);
-		        }
-		        console.log(stdout);
-		        boot();
-	    	});
+
+            var buildPackage = spawn("npm", ["run-script", "build-packed"]);
+            
+            buildPackage.stderr.setEncoding("utf8");
+            buildPackage.stderr.on('data', function (data) {
+              console.error(data);
+            });
+            buildPackage.on('exit', function (code) {
+              if (code !== 0) {
+                console.error('build-package process exited with code ' + code);
+                process.exit(code);
+              }
+              boot();
+            });
        }
        else
-       	boot();
+           boot();
    }
 }
 
@@ -71,18 +85,6 @@ function boot() {
 	var configPath = path.resolve(__dirname, "./configs/", configName);
 	var config = require(configPath);
 
-	config.containers.master.plugins = config.containers.master.plugins.filter(function(plugin) {
-	   if (packed) {
-           // returns false of any of these plugins are detected; lib.packed will emit them
-           return !(/\/plugins-client\/cloud9.core$/.test(plugin) ||
-                    /\/plugins-client\/lib.ace$/.test(plugin) ||
-                    /\/plugins-client\/lib.apf$/.test(plugin) ||
-                    /\/plugins-client\/lib.treehugger$/.test(plugin) ||
-                    /\/plugins-client\/lib.v8debug$/.test(plugin))
-	   }
-	   return true;
-	});
-
 	// server plugins
 	config.containers.master.plugins.forEach(function(plugin) {
 	   if (plugin.packagePath && /\.\/cloud9.core$/.test(plugin.packagePath)) {
@@ -91,9 +93,6 @@ function boot() {
 	       plugin.packedName = packedName;
 	   }
 	});
-
-	if (packed)
-	   config.containers.master.plugins.push("./../plugins-client/lib.packed");
 
 	architect.createApp(config, {
 	   console: ((debug)?console:null)

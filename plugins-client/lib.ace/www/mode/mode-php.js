@@ -1030,18 +1030,12 @@ var PhpHighlightRules = function() {
                 token : "string.regexp",
                 regex : "[/](?:(?:\\[(?:\\\\]|[^\\]])+\\])|(?:\\\\/|[^\\]/]))*[/][gimy]*\\s*(?=[).,;]|$)"
             }, {
-                token : "string", // single line
-                regex : '["](?:(?:\\\\.)|(?:[^"\\\\]))*?["]'
-            }, {
-                token : "string", // multi line string start
-                regex : '["][\\s\\S]*',
+                token : "string", // " string start
+                regex : '"',
                 next : "qqstring"
             }, {
-                token : "string", // single line
-                regex : "['](?:(?:\\\\.)|(?:[^'\\\\]))*?[']"
-            }, {
-                token : "string", // multi line string start
-                regex : "['][\\s\\S]+",
+                token : "string", // ' string start
+                regex : "'",
                 next : "qstring"
             }, {
                 token : "constant.numeric", // hex
@@ -1122,33 +1116,45 @@ var PhpHighlightRules = function() {
         ],
         "qqstring" : [
             {
+                token : "constant.language.escape",
+                regex : '\\\\(?:[nrtvef\\\\"$]|[0-7]{1,3}|x[0-9A-Fa-f]{1,2})'
+            }, {
+                token : "constant.language.escape",
+                regex : /\$[\w\d]+(?:\[[\w\d]+\])?/
+            }, {
+                token : "constant.language.escape",
+                regex : /\$\{[^"\}]+\}?/           // this is wrong but ok for now
+            }, {
                 token : "string",
                 regex : '"',
                 next : "start"
             }, {
                 token : "string",
-                regex : '[^"]+'
+                regex : '.+?'
             }
         ],
         "qstring" : [
             {
+                token : "constant.language.escape",
+                regex : "\\\\['\\\\]"
+            }, {
                 token : "string",
                 regex : "'",
                 next : "start"
             }, {
                 token : "string",
-                regex : "[^']+"
+                regex : ".+?"
             }
         ],
         "htmlcomment" : [
-             {
-                 token : "comment",
-                 regex : ".*?-->",
-                 next : "start"
-             }, {
-                 token : "comment",
-                 regex : ".+"
-             } 
+            {
+                token : "comment",
+                regex : ".*?-->",
+                next : "start"
+            }, {
+                token : "comment",
+                regex : ".+"
+            } 
          ],
          "htmltag" : [ 
              {
@@ -1474,7 +1480,7 @@ var CstyleBehaviour = function () {
                 }
 
                 // Find what token we're inside.
-                var tokens = session.getTokens(selection.start.row, selection.start.row)[0].tokens;
+                var tokens = session.getTokens(selection.start.row);
                 var col = 0, token;
                 var quotepos = -1; // Track whether we're inside an open quote.
 
@@ -1645,9 +1651,9 @@ var FoldMode = exports.FoldMode = function() {};
         }
     };
 
-    this.openingBracketBlock = function(session, bracket, row, column) {
+    this.openingBracketBlock = function(session, bracket, row, column, typeRe, allowBlankLine) {
         var start = {row: row, column: column + 1};
-        var end = session.$findClosingBracket(bracket, start);
+        var end = session.$findClosingBracket(bracket, start, typeRe, allowBlankLine);
         if (!end)
             return;
 

@@ -13,7 +13,6 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var code = require("ext/code/code");
-var cmdModule = require("ext/vim/commands");
 var cliCmds = require("ext/vim/cli");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
@@ -25,59 +24,27 @@ var isLoading = false;
 var vimHandler = null;
 
 var _loadKeyboardHandler = function(path, callback) {
-	var _self = this;
-	var module;
-	try {
-		module = require(path);
-	} catch (e) {};
-	if (module)
-		return callback(module);
+    var _self = this;
+    var module;
+    try {
+        module = require(path);
+    } catch (e) {};
+    if (module)
+        return callback(module);
 
 
-	fetch(function() {
-		require([path], callback);
-	});
+    fetch(function() {
+        require([path], callback);
+    });
 
-	function fetch(callback) {
-		if (!ace.config.get("packaged"))
-			return callback();
+    function fetch(callback) {
+        if (!ace.config.get("packaged"))
+            return callback();
 
-		var base = path.split("/").pop();
-		var filename = "/static/ace/build/keybinding-" + base + ".js";
-		var aceNetModule = "ace/lib/net";
-		require(aceNetModule).loadScript(filename, callback);
-	}
-};
-
-
-var onConsoleCommand = function onConsoleCommand(e) {
-    var cmd = e.data.command;
-    if ((typeof ceEditor !== "undefined") && cmd && typeof cmd === "string") {
-        var ed = ceEditor.$editor;
-        if (cmd[0] === ":") {
-            cmd = cmd.substr(1);
-
-            if (cliCmds[cmd]) {
-                cliCmds[cmd](ed, e.data);
-            }
-            else if (cmd.match(/^\d+$/)) {
-                ed.gotoLine(cmd, 0);
-                ed.navigateLineStart();
-            }
-            else {
-                console.log("Vim command '" + cmd + "' not implemented.");
-            }
-
-            ceEditor.focus();
-            e.returnValue = false;
-        }
-        else if (cmd[0] === "/") {
-            cmd = cmd.substr(1);
-            cmdModule.searchStore.current = cmd;
-            ed.find(cmd, cmdModule.searchStore.options);
-            ceEditor.focus();
-            e.returnValue = false;
-        }
+        var base = path.split("/").pop();
+        var filename = "/static/ace/build/keybinding-" + base + ".js";
+        var aceNetModule = "ace/lib/net";
+        require(aceNetModule).loadScript(filename, callback);
     }
 };
 
@@ -88,31 +55,33 @@ var enableVim = function enableVim() {
         var editor = ceEditor.$editor;
         VIM_ENABLED = true;
 
-		if (vimHandler) {
-			editor.setKeyboardHandler(vimHandler);
-			ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
-			require("ext/console/console").showInput();
-		} else {
-			if (isLoading)
-				return;
-			isLoading = true;
-			_loadKeyboardHandler("ace/keyboard/vim", function(module) {
-				vimHandler = module.handler;
-				vimHandler.$statusListener = function(mode) {
-					ide.dispatchEvent("vim.changeMode", { mode : "mode" });				
-				};
-				editor.setKeyboardHandler(vimHandler);				
-				ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
-				require("ext/console/console").showInput();
-			})
-		}
+        if (vimHandler) {
+            editor.setKeyboardHandler(vimHandler);
+            ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
+            require("ext/console/console").showInput();
+        } else {
+            if (isLoading)
+                return;
+            isLoading = true;
+            _loadKeyboardHandler("ace/keyboard/vim", function(module) {
+                vimHandler = module.handler;
+                vimHandler.$statusListener = function(mode) {
+                    ide.dispatchEvent("vim.changeMode", { mode : "mode" });                
+                };
+                editor.setKeyboardHandler(vimHandler);                
+                ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
+                require("ext/console/console").showInput();
+                cliCmds.addCommands(vimHandler);
+            })
+        }
     });
 };
 
 var disableVim = function() {
     var editor = ceEditor.$editor;
-	editor && editor.keyBinding.removeKeyboardHandler(vimHandler);
+    editor && editor.keyBinding.removeKeyboardHandler(vimHandler);
     ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
+    VIM_ENABLED = false;
 };
 
 module.exports = ext.register("ext/vim/vim", {
@@ -144,9 +113,9 @@ module.exports = ext.register("ext/vim/vim", {
         var tryEnabling = function () {
             if (settings.model) {
                 var sholdEnable = apf.isTrue(settings.model.queryNode("editors/code").getAttribute("vimmode"));
-				if (VIM_ENABLED == sholdEnable)
-					return;
-				self.enable(sholdEnable === true);
+                if (VIM_ENABLED == sholdEnable)
+                    return;
+                self.enable(sholdEnable === true);
             }
         };
         ide.addEventListener("init.ext/code/code", tryEnabling);
@@ -164,11 +133,11 @@ module.exports = ext.register("ext/vim/vim", {
         // require("ext/console/console").showInput();
     },
 
-	// Enable accepts a `doEnable` argument which executes `disable` if false.
+    // Enable accepts a `doEnable` argument which executes `disable` if false.
     enable: function(doEnable) {
         if (doEnable !== false) {
-            ide.removeEventListener("consolecommand", onConsoleCommand);
-            ide.addEventListener("consolecommand", onConsoleCommand);
+            ide.removeEventListener("consolecommand", cliCmds.onConsoleCommand);
+            ide.addEventListener("consolecommand", cliCmds.onConsoleCommand);
             enableVim.call(this);
         }
         else {
@@ -177,7 +146,7 @@ module.exports = ext.register("ext/vim/vim", {
     },
 
     disable: function() {
-        ide.removeEventListener("consolecommand", onConsoleCommand);
+        ide.removeEventListener("consolecommand", cliCmds.onConsoleCommand);
         disableVim();
     },
 

@@ -11,12 +11,13 @@ require("apf/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");
+var util = require("core/util");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 var EditSession = require("ace/edit_session").EditSession;
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
-var MultiSelectCommands = require("ace/multi_select").commands.defaultCommands;
+var MultiSelectCommands = require("ace/multi_select").commands;
 var ProxyDocument = require("ext/code/proxydocument");
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
@@ -101,10 +102,13 @@ var SupportedModes = {
     "text/x-script.powershell": "powershell",
     "text/x-scala": "scala",
     "text/x-coldfusion": "coldfusion",
-    "text/x-sql": "sql"
+    "text/x-sql": "sql",
+    "text/x-c9search" : "c9search"
 };
 
 var contentTypes = {
+    "c9search": "text/x-c9search",
+    
     "js": "application/javascript",
     "json": "application/json",
     "css": "text/css",
@@ -789,6 +793,14 @@ module.exports = ext.register("ext/code/code", {
         this.amlEditor.$editor.$nativeCommands = ceEditor.$editor.commands;
         this.amlEditor.$editor.commands = commands;
 
+        // for search in files
+        this.amlEditor.$editor.renderer.scroller.addEventListener("dblclick", function(e) {
+            var node = tabEditors.getPage().$doc.getNode();
+            
+            if (node.getAttribute("customtype") == util.getContentType("c9search"))
+                require("ext/searchinfiles/searchinfiles").launchFileFromSearch(_self.amlEditor.$editor);
+        });
+        
         // preload common language modes
         var noop = function() {};
         ceEditor.getMode("javascript", noop);

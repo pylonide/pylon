@@ -23,7 +23,7 @@ module.exports = ext.register("ext/offline/offline", {
     handlers : {},
 
     offlineStartup : 0,
-    
+
     markup   : markup,
     /**
      * Test method for going offline/online
@@ -157,7 +157,6 @@ module.exports = ext.register("ext/offline/offline", {
         // fIdent is used for localStorage in Firefox or if local Filesystem is
         // not available
         var fIdent = "cloud9.files." + ide.workspaceId;
-
         ide.addEventListener("init.ext/filesystem/filesystem", function(){
             // If we don't have the real webdav, we need to use the offline one
             if (!fs.realWebdav)
@@ -285,7 +284,7 @@ module.exports = ext.register("ext/offline/offline", {
             if (webdav.fake) throw new Error("Found fake webdav, while expecting real one!");
             webdav.rename(item.from, item.to, false, false, callback);
         });
-        
+
         var ident = "cloud9.filetree." + ide.workspaceId;
         function saveModel(){
             localStorage[ident] = fs.model.data.xml;

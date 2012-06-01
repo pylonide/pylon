@@ -66,7 +66,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         tourControlsDialog.addEventListener("hide", this.shutdown(this.hlElement));
     },
 
-    launchGT: function(){        
+    launchGT: function(){
         ext.initExtension(this);
         this.hideMenus();
         madeNewFile = wentToZen = madeDebug = deletedFile = false;
@@ -78,6 +78,11 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
         winTourButtonStart.show();
         winTourButtonClose.show();
         winTourButtonDone.hide();
+        
+        
+        //hide the seccond unneeded cover
+        var modalBackground = document.getElementsByClassName("bk-window-cover");
+        modalBackground[modalBackground.length - 2].style.opacity = "0";
     },
     
     hideMenus: function(){
