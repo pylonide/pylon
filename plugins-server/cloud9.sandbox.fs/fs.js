@@ -169,11 +169,6 @@ module.exports = function (projectDir, unixId) {
             mode = parseInt(mode, 8);
         }
 
-        self._mkdirP.call(self, path, mode, cb, made);
-     };
-
-    this._mkdirP = function _mkdirP(path, mode, cb, made) {
-        var self = this;
         self.mkdir(path, mode, function (er) {
             if (!er) {
                 made = made || path;
