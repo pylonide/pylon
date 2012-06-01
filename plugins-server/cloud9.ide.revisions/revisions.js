@@ -237,9 +237,14 @@ require("util").inherits(RevisionsPlugin, Plugin);
 
             Async.forEachSeries(lines,
                 function(line, next) {
-                    if (line) {
-                        var revision = JSON.parse(line);
-                        revObj[revision.ts] = revision;
+                    try {
+                        if (line) {
+                            var revision = JSON.parse(line);
+                            revObj[revision.ts] = revision;
+                        }
+                    }
+                    catch(e) {
+                        console.error("Revision JSON Parse error", e.message, line);
                     }
                     next();
                 },
@@ -331,12 +336,11 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         };
 
                         if (!exists) {
-                            fs.mkdir(parentDir, "0755", createRevisionsFile);
+                            fs.mkdirP(parentDir, "0755", createRevisionsFile);
                         }
                         else {
                             createRevisionsFile();
                         }
-
                     });
                 });
             }
