@@ -196,22 +196,31 @@ require("util").inherits(RevisionsPlugin, Plugin);
                 return callback(err);
             }
 
+            var error;
+            var lineCount = 0;
             var lines = data.toString().split("\n");
 
-            Async.forEachSeries(lines,
-                function(line, next) {
+            if (lines.length) {
+                Async.whilst(
+                    function () {
+                        return (lineCount < lines.length && error === null);
+                    },
+                    function (next) {
                     try {
-                        if (line) {
-                            var revision = JSON.parse(line);
+                            var revision = JSON.parse(lines[lineCount]);
                             revObj[revision.ts] = revision;
                         }
-                    }
                     catch(e) {
-                        console.error("Revision JSON Parse error", e.message, line);
+                            error = e;
                     }
+                        lineCount++;
                     next();
                 },
-                function() { callback(null, revObj); });
+                    function (e) {
+                        callback(error, revObj);
+                    }
+                );
+            }
         });
     };
     
