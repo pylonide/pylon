@@ -52,9 +52,9 @@ for (var p = 2; p < process.argv.length; p++) {
 
        configName = "packed";
 
-       if(!path.existsSync("plugins-client/lib.packed/www/" + packedName)) {
+       if(!path.existsSync("plugins-client/lib.packed/www/" + packedName) && !path.existsSync("plugins-client/lib.packed/www/" + packedName + ".gz")) {
        		console.log("Building packed file for first run...Please wait...");
-		   	console.log("   |\\      _,,,---,,_\n"+
+		   	  console.log("   |\\      _,,,---,,_\n"+
 		   				"   /,`.-'`'    -.  ;-;;,_\n" +
 		  				"   |,4-  ) )-,_..;\\ (  `'-'\n" +
 		 				"   '---''(_/--'  `-'\\_)  Felix Lee");
