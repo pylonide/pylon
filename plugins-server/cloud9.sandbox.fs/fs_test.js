@@ -158,6 +158,17 @@ module.exports = {
         });
     },
     
+    "test rename should resolve first and second parameter": function (next) {
+        var rename = Fs.rename = sinon.stub().callsArgWith(2, null);
+        
+        this.fs.rename("hello.js", "pietje.js", function (err) {
+            assert.equal(err, null);
+            sinon.assert.calledWith(rename, "/usr/jan/1299/hello.js", "/usr/jan/1299/pietje.js");
+            
+            next();
+        });
+    },
+
     "test mkdirP should chown": function (next) {
         var mkdir = Fs.mkdir = sinon.stub().callsArgWith(2, null);
         var chown = Fs.chown = sinon.stub().callsArgWith(3, null);
@@ -182,7 +193,7 @@ module.exports = {
                 require("rimraf")(__dirname + "/folder", next);
             });
         });
-    }
+    }  
 };
 
 !module.parent && require("asyncjs").test.testcase(module.exports, "Sandbox.Fs").exec();
