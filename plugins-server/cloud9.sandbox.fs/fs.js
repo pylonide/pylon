@@ -114,7 +114,25 @@ module.exports = function (projectDir, unixId) {
      * Wrapper around rename
      */
     this.rename = function () {
-        return this.$simpleWrapper.call(this, "rename", arguments);
+        var self = this;
+        var args = arguments;
+        var callback = self.$normalizeCallback(args[args.length - 1]);
+        
+        // so the first argument will auto resolve
+        // the second parameter doesn't but it's required for a rename
+        if (args.length > 1 && typeof args[1] === "string") {
+            self.$resolvePath(args[1], function (err, renamePath) {
+                if (err) return callback(err);
+                
+                // swap arg[1]
+                args[1] = renamePath;
+                
+                self.$simpleWrapper.call(self, "rename", args);
+            });
+        }
+        else {
+            self.$simpleWrapper.call(self, "rename", args);
+        }
     };    
     
     /**
