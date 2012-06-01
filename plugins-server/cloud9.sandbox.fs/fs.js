@@ -209,4 +209,11 @@ module.exports = function (projectDir, unixId) {
             }
         });
     };
+    
+    /**
+     * Wrapper around unlink
+     */
+    this.unlink = function () {
+        return this.$simpleWrapper.call(this, "unlink", arguments);
+    };
 };

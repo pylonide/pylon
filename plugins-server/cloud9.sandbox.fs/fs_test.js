@@ -167,7 +167,22 @@ module.exports = {
             
             next();
         });
-    }  
+    },
+    
+    "test mkdirP should actually create the dir": function (next) {
+        var fs = new SandboxFs(__dirname, null);
+        
+        fs.mkdirP("folder/child/grandchild", "0775", function (err) {
+            assert.equal(err, null);
+            
+            fs.exists("folder/child/grandchild", function (err, exists) {
+                assert.equal(err, null);
+                assert.equal(exists, true);
+                
+                require("rimraf")(__dirname + "/folder", next);
+            });
+        });
+    }
 };
 
 !module.parent && require("asyncjs").test.testcase(module.exports, "Sandbox.Fs").exec();
