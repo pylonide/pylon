@@ -26,6 +26,7 @@ module.exports = ext.register("ext/debugger/debugger", {
     type    : ext.GENERAL,
     alone   : true,
     offline : false,
+    autodisable : ext.ONLINE | ext.LOCAL,
     markup  : markup,
     buttonClassName : "debug1",
     deps    : [fs, noderunner],

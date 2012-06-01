@@ -62,7 +62,8 @@ module.exports = function setup(options, imports, register) {
             bundledPlugins: options.bundledPlugins || [],
             hosted: options.hosted,
             packed: (options.packed === true) ? true : false,
-            packedName: options.packedName
+            packedName: options.packedName,
+            local: options.local
         });
 
         register(null, {

@@ -19,7 +19,8 @@ module.exports = ext.register("ext/html/html", {
     alone : true,
     deps  : [code],
     nodes : [],
-
+    autodisable : ext.ONLINE | ext.LOCAL,
+    
     init : function(){
         var _self = this;
         
