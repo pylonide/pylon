@@ -143,9 +143,14 @@ module.exports = ext.register("ext/offline/offline", {
 
         });
 
-		ide.addEventListener("onLocalOffline", function(e) {
-			apf.setStyleClass(logobar.$ext, "", ["offline"]);
+		ide.addEventListener("localOffline", function(e) {
+			 apf.setStyleClass(logobar.$ext, "offline local");
 		});
+
+		ide.addEventListener("localOnline", function(e) {
+			apf.setStyleClass(logobar.$ext, "", ["offline", "local"]);
+		});
+		
         /**** File System ****/
         /**
          * Here, we need to first create the offlineWebdav object in the main scope

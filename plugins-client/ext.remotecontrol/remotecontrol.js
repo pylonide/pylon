@@ -25,11 +25,11 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
         var _self = this;
         
         ide.addEventListener("socketMessage", function (event) {
-            _self.loadFileOrFolder(event); 
+            _self.handleMessage(event); 
         });
     },
 
-    loadFileOrFolder : function(event) {
+    handleMessage : function(event) {
         if (event.message.type === "remotecontrol") {
             if (event.message.action === "openfile") {
                 // Generic case: hide sidebar (do this first, it's a little slow)
@@ -67,17 +67,16 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 
                 tabbehaviors.revealInTree(node);
             } 
-            else if(event.message.action === "notify") {
+            else if (event.message.action === "notify") {
             	var eventName = event.message.args.event.name;
 				if (eventName === "internet") {
 					var state = event.message.args.event.value;
 					if 	(state === false) {
-						ide.dispatchEvent("onLocalOffline");	
+						ide.dispatchEvent("localOffline", event);	
 					}
 					else
-						ide.dispatchEvent("onLocalOnline");
+						ide.dispatchEvent("localOnline", event);
 				}
-console.log(event.message.args.event.name + ":" + event.message.args.event.value);
             }
         }
     },
