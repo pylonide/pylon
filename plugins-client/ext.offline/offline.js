@@ -286,9 +286,6 @@ module.exports = ext.register("ext/offline/offline", {
         });
 
         var ident = "cloud9.filetree." + ide.workspaceId;
-        function saveModel(){
-            localStorage[ident] = fs.model.data.xml;
-        }
 
         //@todo after being longer than 5 minutes offline reload tree when coming online
 
@@ -299,13 +296,7 @@ module.exports = ext.register("ext/offline/offline", {
                     fs.projectName = fs.model.queryValue("folder[@root='1']/@name");
                 }
             }
-            else {
-                saveModel();
-            }
         });
-
-        fs.model.addEventListener("update", saveModel);
-        fs.model.addEventListener("afterload", saveModel);
 
         //File contents
         /**
