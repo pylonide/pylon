@@ -156,6 +156,17 @@ module.exports = {
             
             next();
         });
+    },
+    
+    "test mkdirP should chown": function (next) {
+        var mkdir = Fs.mkdir = sinon.stub().callsArgWith(2, null);
+        var chown = Fs.chown = sinon.stub().callsArgWith(3, null);
+        this.fs.mkdirP("somefolder/andItsChildren/andItsGrandChildren", "0775", function (err) {
+            assert.equal(err, null);
+            sinon.assert.calledWith(chown, "/usr/jan/1299/somefolder/andItsChildren/andItsGrandChildren", 987, 987);
+            
+            next();
+        });
     }  
 };
 
