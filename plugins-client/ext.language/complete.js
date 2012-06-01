@@ -20,7 +20,7 @@ var drawCompletionBox;
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var MENU_WIDTH = 300;
-var MENU_SHOWN_ITEMS = 8;
+var MENU_SCROLL_AT = 4;
 
 var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.ceEditor.$editor;
@@ -170,7 +170,7 @@ module.exports = {
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
         apf.popup.setContent("completionBox", barCompleterCont.$ext);
-        var boxLength = Math.max(MENU_SHOWN_ITEMS, this.matches.length || 1);
+        var boxLength = this.matches.length || 1;
         var completionBoxHeight = 11 + Math.min(10 * this.cursorConfig.lineHeight, boxLength * (this.cursorConfig.lineHeight));
         var cursorLayer = ace.renderer.$cursorLayer;
         
@@ -347,7 +347,7 @@ module.exports = {
                 if(this.selectedIdx < this.matches.length-1)
                     this.selectedIdx++;
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
-                if(this.selectedIdx - this.scrollIdx > MENU_SHOWN_ITEMS) {
+                if(this.selectedIdx - this.scrollIdx > MENU_SCROLL_AT) {
                     this.scrollIdx++;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
@@ -364,8 +364,8 @@ module.exports = {
                     return;
                 }
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
-                if(this.selectedIdx < this.scrollIdx) {
-                    this.scrollIdx--;
+                if(this.selectedIdx < this.matches.length - MENU_SCROLL_AT && this.scrollIdx > 0) {
+                    this.scrollIdx = this.selectedIdx - MENU_SCROLL_AT;
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
                 e.stopPropagation();
