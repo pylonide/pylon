@@ -13,11 +13,14 @@ module.exports = function setup(options, imports, register) {
         var uid = message.session.uid || message.session.anonid;
         permissions.getPermissions(uid, message.workspaceId, "cloud9.socket.socket-ext", function(err, userPermissions) {
             if (err) {
-                client.send(JSON.stringify({
-                    "type": "error",
-                    "code": err.code || 500,
-                    "message": err.message || err
-                }));
+                client.send(JSON.stringify(err.toJSON
+                    ? err.toJSON()
+                    : {
+                          "type": "error",
+                          "code": err.code || 500,
+                          "message": err.message || err
+                      })
+                );
             }
 
             ide.addUser(uid, userPermissions);
