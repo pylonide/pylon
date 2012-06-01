@@ -365,7 +365,7 @@ module.exports = {
                 }
                 this.matchEls[this.selectedIdx].className = CLASS_SELECTED;
                 if(this.selectedIdx < this.matches.length - MENU_SCROLL_AT && this.scrollIdx > 0) {
-                    this.scrollIdx = this.selectedIdx - MENU_SCROLL_AT;
+                    this.scrollIdx = Math.max(0, this.selectedIdx - MENU_SCROLL_AT);
                     this.matchEls[this.scrollIdx].scrollIntoView(true);
                 }
                 e.stopPropagation();
