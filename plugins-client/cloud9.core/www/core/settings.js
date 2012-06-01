@@ -61,9 +61,6 @@ module.exports = {
                 settings: data
             });
         }
-        else {
-            localStorage[this.sIdent] = data;
-        }
     },
 
     load : function(xml){

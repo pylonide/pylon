@@ -43,7 +43,8 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     currentStep: -1,
     currentEl: null,
     nodes: [],
-
+    autodisable : ext.ONLINE | ext.LOCAL,
+    
     hook: function() {
         //this.launchGT();
     },

@@ -39,7 +39,8 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
     type            : ext.GENERAL,
     nodes           : [],
     template        : template,
-
+    autodisable     : ext.ONLINE | ext.LOCAL,
+    
     hook : function(){
         var _self = this;
         ide.addEventListener("init.ext/testpanel/testpanel", function(){

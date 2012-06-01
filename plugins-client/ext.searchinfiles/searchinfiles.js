@@ -36,6 +36,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     type     : ext.GENERAL,
     alone    : true,
     offline  : false,
+    autodisable  : ext.ONLINE | ext.LOCAL,
     replaceAll : false,
     markup   : markup,
     skin     : {
