@@ -66,10 +66,18 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
                 }
                 
                 tabbehaviors.revealInTree(node);
-            } else if(event.message.action === "notify") {
-
-console.log("Notification received: ", event.message);
-
+            } 
+            else if(event.message.action === "notify") {
+            	var eventName = event.message.args.event.name;
+				if (eventName === "internet") {
+					var state = event.message.args.event.value;
+					if 	(state === false) {
+						ide.dispatchEvent("onLocalOffline");	
+					}
+					else
+						ide.dispatchEvent("onLocalOnline");
+				}
+console.log(event.message.args.event.name + ":" + event.message.args.event.value);
             }
         }
     },
