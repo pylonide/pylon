@@ -153,7 +153,7 @@ module.exports = function (projectDir, unixId) {
      * Equivalent to "mkdir - p"
      * Adapted from https://github.com/substack/node-mkdirp
      */
-    this.mkdirP = function(path, mode, f, made) {
+    this.mkdirP = function mkdirP(path, mode, f, made) {
         var self = this;
         if (typeof mode === "function" || mode === undefined) {
             f = mode;
@@ -177,12 +177,12 @@ module.exports = function (projectDir, unixId) {
 
             switch (er.code) {
                 case "ENOENT":
-                    _mkdirP.call(self, Path.dirname(path), mode, function (er, made) {
+                    mkdirP.call(self, Path.dirname(path), mode, function (er, made) {
                         if (er) {
                             cb(er, made);
                         }
                         else {
-                            _mkdirP.call(self, path, mode, cb, made);
+                            mkdirP.call(self, path, mode, cb, made);
                         }
                     });
                     break;
