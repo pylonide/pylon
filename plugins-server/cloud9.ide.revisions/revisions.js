@@ -108,6 +108,10 @@ require("util").inherits(RevisionsPlugin, Plugin);
                             self.broadcastConfirmSave(message.path, revisionInfo.revision);
                             if (message.forceRevisionListResponse === true) {
                                 self.getAllRevisions(revisionInfo.absPath, function(err, revObj) {
+                                    if (err) {
+                                        return console.error(err);
+                                    }
+
                                     self.broadcastRevisions.call(self, revObj, user, {
                                         path: message.path
                                     });
@@ -117,7 +121,8 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         else {
                             this.getRevisions(message.path, function(err, revObj) {
                                 if (err) {
-                                    return console.error("There was a problem retrieving the revisions" + " for the file " + message.path + ":\n", err);
+                                    return console.error("There was a problem retrieving revisions" +
+                                        " for the file " + message.path + ":\n", err);
                                 }
                     
                                 self.broadcastRevisions.call(self, revObj, null, {
@@ -199,13 +204,14 @@ require("util").inherits(RevisionsPlugin, Plugin);
             var error;
             var lineCount = 0;
             var lines = data.toString().split("\n");
-
             if (lines.length) {
                 Async.whilst(
                     function () {
-                        return (lineCount < lines.length && error === null);
+                        return lineCount < lines.length && !error;
                     },
                     function (next) {
+                        var line = lines[lineCount];
+                        if (line) {
                     try {
                             var revision = JSON.parse(lines[lineCount]);
                             revObj[revision.ts] = revision;
@@ -213,6 +219,7 @@ require("util").inherits(RevisionsPlugin, Plugin);
                     catch(e) {
                             error = e;
                     }
+                        }
                         lineCount++;
                     next();
                 },
