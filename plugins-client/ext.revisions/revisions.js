@@ -93,7 +93,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     hook: function() {
-        var self = this;
+        var _self = this;
         commands.addCommand({
             name: "revisionpanel",
             hint: "File Revision History...",
@@ -102,7 +102,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 return editor && !!editor.ceEditor;
             },
             exec: function () {
-                self.toggle();
+                _self.toggle();
             }
         });
 
@@ -121,14 +121,14 @@ module.exports = ext.register("ext/revisions/revisions", {
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
-            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
 
-            self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
         btnSave.setAttribute("caption", "");
@@ -181,7 +181,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                 method: "get",
                 callback: function(data, state, extra) {
                     if (state === 200 && data) {
-                        self.defaultUser = {
+                        _self.defaultUser = {
                             email: data
                         };
                     }
@@ -247,7 +247,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     init: function() {
-        var self = this;
+        var _self = this;
         var page = tabEditors.getPage();
         if (page) {
             this.$switchToPageModel(page);
@@ -268,12 +268,12 @@ module.exports = ext.register("ext/revisions/revisions", {
         );
 
         ide.addEventListener("init.ext/code/code", function(e) {
-            self.panel = ceEditor.parentNode.appendChild(self.panel);
+            _self.panel = ceEditor.parentNode.appendChild(_self.panel);
             revisionsPanel.appendChild(pgRevisions);
         });
         
          apf.addEventListener("exit", function() {
-            localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
+            localStorage.offlineQueue = JSON.stringify(_self.offlineQueue);
         });
 
         this.$afterSelectFn = this.afterSelect.bind(this);
@@ -391,7 +391,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!data || !data.doc)
             return;
 
-        var self = this;
+        var _self = this;
         var doc = data.doc;
         var page = doc.$page;
         if (!page || !Util.pageIsCode(page)) {
@@ -403,7 +403,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var path = Util.getDocPath(page);
         if (path && !this.docChangeListeners[path]) {
             this.docChangeListeners[path] = function(e) {
-                self.onDocChange.call(self, e, doc);
+                _self.onDocChange.call(_self, e, doc);
             };
         }
 
@@ -446,26 +446,26 @@ module.exports = ext.register("ext/revisions/revisions", {
         else
             this.setSaveButtonCaption(e.page);
 
-        var self = this;
+        var _self = this;
         setTimeout(function() {
             var path = Util.getDocPath(e.page);
-            if (self.rawRevisions[path]) {
-                delete self.rawRevisions[path];
+            if (_self.rawRevisions[path]) {
+                delete _self.rawRevisions[path];
             }
 
-            if (self.docChangeListeners[path]) {
-                delete self.docChangeListeners[path];
+            if (_self.docChangeListeners[path]) {
+                delete _self.docChangeListeners[path];
             }
 
-            self.worker.postMessage({
+            _self.worker.postMessage({
                 type: "closefile",
                 path: path
             });
 
-            for (var rev in self.revisionQueue) {
-                var _path = self.revisionQueue[rev].path;
+            for (var rev in _self.revisionQueue) {
+                var _path = _self.revisionQueue[rev].path;
                 if (_path && _path === path) {
-                    delete self.revisionQueue[rev];
+                    delete _self.revisionQueue[rev];
                 }
             }
         }, 100);
@@ -548,16 +548,16 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         var page = doc.$page;
-        var self = this;
+        var _self = this;
         if (page && this.isAutoSaveEnabled && !this.isNewPage(page)) {
             setTimeout(function(){
-                self.setSaveButtonCaption();
+                _self.setSaveButtonCaption();
             });
 
             clearTimeout(this.docChangeTimeout);
-            this.docChangeTimeout = setTimeout(function(self) {
+            this.docChangeTimeout = setTimeout(function(_self) {
                 stripws.disable();
-                self.save(page);
+                _self.save(page);
             }, CHANGE_TIMEOUT, this);
         }
     },
@@ -642,7 +642,7 @@ module.exports = ext.register("ext/revisions/revisions", {
     },
 
     onMessage: function(e) {
-        var self = this;
+        var _self = this;
         var message = e.message;
         if (message.type !== "revision") {
             return;
@@ -766,7 +766,7 @@ module.exports = ext.register("ext/revisions/revisions", {
                         if (message.nextAction === "storeAsRevision") {
                             data.nextAction = "storeAsRevision";
                         }
-                        self.worker.postMessage(data);
+                        _self.worker.postMessage(data);
                     }
                 });
                 break;
@@ -790,9 +790,9 @@ module.exports = ext.register("ext/revisions/revisions", {
         delete data.revision.finalContent;
         delete data.revision.realContent;
 
-        var self = this;
+        var _self = this;
         var finalize = function() {
-            self.changedPaths = [];
+            _self.changedPaths = [];
             winQuestionRev.hide();
             settings.model.setQueryValue("general/@autosaveenabled", this.prevAutoSaveValue || true);
         };
@@ -801,15 +801,15 @@ module.exports = ext.register("ext/revisions/revisions", {
         // with the new content.
         var reloadAndSave = function(_page) {
             var path = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            var index = self.changedPaths.indexOf(path);
-            if (self.changedPaths.indexOf(path) > -1) {
+            var index = _self.changedPaths.indexOf(path);
+            if (_self.changedPaths.indexOf(path) > -1) {
                 ide.addEventListener("afterreload", function onDocReload(e) {
                     if (e.doc === _page.$doc) {
                         // doc.setValue is redundant here, but it ensures that
                         // the proper value will be saved.
                         e.doc.setValue(e.data);
                         setTimeout(function() {
-                            self.save(_page, true);
+                            _self.save(_page, true);
                         });
                         ide.removeEventListener("afterreload", onDocReload);
                     }
@@ -821,7 +821,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var dontReloadAndStore = function(_page) {
             var path = Util.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            var index = self.changedPaths.indexOf(path);
+            var index = _self.changedPaths.indexOf(path);
             if (index > -1) {
                 ide.send({
                     command: "revisions",

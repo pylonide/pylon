@@ -18,8 +18,8 @@ module.exports = (function () {
     var currentExpression = null;
     
     var hook = function () {
-        var self = this;
-        ext.initExtension(self);
+        var _self = this;
+        ext.initExtension(_self);
         
         // listen to changes that affect the debugger, so we can toggle the visibility based on this
         stRunning.addEventListener("prop.active", checkDebuggerActive);

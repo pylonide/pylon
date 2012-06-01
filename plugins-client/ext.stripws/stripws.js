@@ -51,7 +51,7 @@ module.exports = ext.register("ext/stripws/stripws", {
     init: function () {},
 
     hook: function () {
-        var self = this;
+        var _self = this;
         
         commands.addCommand({
             name: "stripws",
@@ -60,8 +60,8 @@ module.exports = ext.register("ext/stripws/stripws", {
                 return editor && editor.ceEditor;
             },
             exec: function(){
-                ext.initExtension(self);
-                self.stripws();
+                ext.initExtension(_self);
+                _self.stripws();
             }
         });
         
@@ -78,7 +78,7 @@ module.exports = ext.register("ext/stripws/stripws", {
             // If the 'Strip whitespace on save' option is enabled, we strip
             // whitespaces from the node value just before the file is saved.
             if (node && node.firstChild && node.firstChild.nodeValue == "true") {
-                self.stripws();
+                _self.stripws();
             }
         });
         

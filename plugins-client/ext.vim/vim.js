@@ -124,11 +124,11 @@ module.exports = ext.register("ext/vim/vim", {
     alone : true,
 
     hook : function() {
-        var self = this;
+        var _self = this;
         var menuItem = new apf.item({
             type: "check",
             checked: "[{require('core/settings').model}::editors/code/@vimmode]",
-            onclick: function() { self.toggle(); }
+            onclick: function() { _self.toggle(); }
         });
         
         menus.addItemByPath("View/Vim Mode", menuItem, 150000);
@@ -146,7 +146,7 @@ module.exports = ext.register("ext/vim/vim", {
                 var sholdEnable = apf.isTrue(settings.model.queryNode("editors/code").getAttribute("vimmode"));
 				if (VIM_ENABLED == sholdEnable)
 					return;
-				self.enable(sholdEnable === true);
+				_self.enable(sholdEnable === true);
             }
         };
         ide.addEventListener("init.ext/code/code", tryEnabling);

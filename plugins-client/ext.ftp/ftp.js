@@ -50,9 +50,9 @@ module.exports = ext.register("ext/ftp/ftp", {
                 var console = window.tabConsole;
                 
                 // append our own panel to the console
-                self.$panel = console.add("FTP Log", _self.pageId);
-                self.$panel.setAttribute("closebtn", false);
-                self.$panel.appendChild(ftpConsoleHbox);
+                _self.$panel = console.add("FTP Log", _self.pageId);
+                _self.$panel.setAttribute("closebtn", false);
+                _self.$panel.appendChild(ftpConsoleHbox);
                 
                 // make ourselves the active panel
                 // first show then activate
@@ -80,12 +80,12 @@ module.exports = ext.register("ext/ftp/ftp", {
     },
 
     write: function(lines) {
-        var self = this;
+        var _self = this;
         if (typeof lines === "string")
             lines = lines.split("\n");
 
         lines.forEach(function(line) {
-            self.log(line, "log");
+            _self.log(line, "log");
         });
     },
 

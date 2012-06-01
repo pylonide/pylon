@@ -189,9 +189,9 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 return;
 
             var ckb = this.commmandKeyBinding;
-            var self = this;
+            var _self = this;
             key.split("|").forEach(function(keyPart) {
-                var binding = self.parseKeys(keyPart, command);
+                var binding = _self.parseKeys(keyPart, command);
                 var hashId = binding.hashId;
                 var hash = (ckb[hashId] || (ckb[hashId] = {}))
                 

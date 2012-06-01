@@ -36,8 +36,8 @@ var mouseHandler = function(e) {
 
     if (el.tagName !== "A") return;
 
-    var self = this;
-    hintsTimer = setTimeout(function() { self.select(el); }, 5);
+    var _self = this;
+    hintsTimer = setTimeout(function() { _self.select(el); }, 5);
 };
 
 var hintLink = function(data) {

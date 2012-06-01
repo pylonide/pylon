@@ -24,13 +24,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
     readFile : function (path, callback){
         if (!this.webdav) return;
         
-        var self = this;
+        var _self = this;
         
         // in webdav.read, if ide.onLine === 0, it is calling callback immediately without content
         // if we're not online, we'll add an event handler that listens to the socket connecting (or the ping or so)
         if (!ide.onLine) {
             var afterOnlineHandler = function () {
-                self.webdav.read(path, callback);
+                _self.webdav.read(path, callback);
                 ide.removeEventListener("afteronline", afterOnlineHandler);
             };
             ide.addEventListener("afteronline", afterOnlineHandler);
