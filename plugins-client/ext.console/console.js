@@ -449,19 +449,36 @@ module.exports = ext.register("ext/console/console", {
                         var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
                         if (!prjmatch) return;
                         
-                        var user = prjmatch[2];
-                        var project = prjmatch[1];
+                        var user = prjmatch[1];
+                        var project = prjmatch[2];
                         
                         var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
                         
                         if (project !== ide.projectName) {
                             // concurrency bug, project does not match
+                            apf.ajax("/api/debug", {
+                                method: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify({
+                                    agent: navigator.userAgent,
+                                    type: "Concurrency bug, project does not match",
+                                    e: [user, project, urlPath],
+                                    workspaceId: ide.workspaceId
+                                })
+                            });
                         }
                         else if (urlPath.length && user !== urlPath[0]) {
                             // concurrency bug, user does not match
-                        }
-                        else {
-                            // everything is OK
+                            apf.ajax("/api/debug", {
+                                method: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify({
+                                    agent: navigator.userAgent,
+                                    type: "Concurrency bug, user does not match",
+                                    e: [user, project, urlPath],
+                                    workspaceId: ide.workspaceId
+                                })
+                            });
                         }
                         
                         return;
