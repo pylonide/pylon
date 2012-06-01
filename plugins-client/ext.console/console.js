@@ -449,8 +449,8 @@ module.exports = ext.register("ext/console/console", {
                         var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
                         if (!prjmatch) return;
                         
-                        var user = prjmatch[1];
-                        var project = prjmatch[2];
+                        var user = prjmatch[2];
+                        var project = prjmatch[1];
                         
                         var urlPath = window.location.pathname.split("/").filter(function (f) { return !!f; });
                         
