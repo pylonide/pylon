@@ -2,6 +2,8 @@
 
 cd `dirname $0`/..
 
+make update
+
 case `uname -a` in
 Linux*x86_64*)  echo "Linux 64 bit"   
     node server.js "$@" -a x-www-browser

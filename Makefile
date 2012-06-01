@@ -2,6 +2,8 @@
 
 default: apf worker
 
+update: worker
+
 # packages apf
 apf:
 	cd node_modules/packager; node package.js projects/apf_cloud9.apr
@@ -39,7 +41,21 @@ ext:
 	echo "module = {exports: undefined};" | cat - plugins-client/lib.packed/www/packed.js > temp_file && mv temp_file plugins-client/lib.packed/www/packed.js
 
 # calls dryice on worker & packages it
-worker:
+worker: plugins-client/lib.ace/www/worker/worker.js
+
+plugins-client/lib.ace/www/worker/worker.js : $(wildcard plugins-client/ext.language/*) \
+        $(wildcard plugins-client/ext.language/*/*) \
+        $(wildcard plugins-client/ext.codecomplete/*) \
+        $(wildcard plugins-client/ext.codecomplete/*/*) \
+        $(wildcard plugins-client/ext.jslanguage/*) \
+        $(wildcard plugins-client/ext.jslanguage/*/*) \
+        $(wildcard plugins-client/ext.jsinfer/*) \
+        $(wildcard plugins-client/ext.jsinfer/*/*) \
+        $(wildcard node_modules/treehugger/lib/*) \
+        $(wildcard node_modules/treehugger/lib/*/*) \
+        $(wildcard node_modules/ace/lib/*) \
+        $(wildcard node_modules/ace/*/*) \
+        Makefile.dryice.js
 	mkdir -p plugins-client/lib.ace/www/worker
 	rm -rf /tmp/c9_worker_build
 	mkdir -p /tmp/c9_worker_build/ext
