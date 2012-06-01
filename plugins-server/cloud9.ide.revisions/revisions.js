@@ -294,12 +294,11 @@ require("util").inherits(RevisionsPlugin, Plugin);
                         };
                     
                         if (!exists) {
-                            fs.mkdir(parentDir, "0755", createRevisionsFile);
+                            fs.mkdirP(parentDir, "0755", createRevisionsFile);
                         }
                         else {
                             createRevisionsFile();
                         }
-                    
                     });
                 });
             }

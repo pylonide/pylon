@@ -156,7 +156,33 @@ module.exports = {
             
             next();
         });
-    }  
+    },
+    
+    "test mkdirP should chown": function (next) {
+        var mkdir = Fs.mkdir = sinon.stub().callsArgWith(2, null);
+        var chown = Fs.chown = sinon.stub().callsArgWith(3, null);
+        this.fs.mkdirP("somefolder/andItsChildren/andItsGrandChildren", "0775", function (err) {
+            assert.equal(err, null);
+            sinon.assert.calledWith(chown, "/usr/jan/1299/somefolder/andItsChildren/andItsGrandChildren", 987, 987);
+            
+            next();
+        });
+    },
+    
+    "test mkdirP should actually create the dir": function (next) {
+        var fs = new SandboxFs(__dirname, null);
+        
+        fs.mkdirP("folder/child/grandchild", "0775", function (err) {
+            assert.equal(err, null);
+            
+            fs.exists("folder/child/grandchild", function (err, exists) {
+                assert.equal(err, null);
+                assert.equal(exists, true);
+                
+                require("rimraf")(__dirname + "/folder", next);
+            });
+        });
+    }
 };
 
 !module.parent && require("asyncjs").test.testcase(module.exports, "Sandbox.Fs").exec();
